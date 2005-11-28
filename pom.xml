@@ -194,7 +194,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
       </plugin>
-<!-- TODO: needs to be adjusted for the "not a java project" case
+      <!-- TODO: should be omitted when there are no sources -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
@@ -203,20 +203,23 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jdepend-maven-plugin</artifactId>
       </plugin>
+      <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>surefire-report-maven-plugin</artifactId>
       </plugin>
+      <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
         <artifactId>maven-clover-plugin</artifactId>
       </plugin>
+      <!-- TODO: should be omitted when there are no sources/not java -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
+      <!-- TODO: should be omitted when there are no sources/not java -->
       <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
       </plugin>
--->
     </plugins>
   </reporting>
 </project>
