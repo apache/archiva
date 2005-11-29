@@ -50,9 +50,9 @@ public abstract class AbstractArtifactDiscoverer
     private List kickedOutPaths = new ArrayList();
 
     /**
-     * Scan the repository for artifact paths
+     * Scan the repository for artifact paths.
      *
-     * @todo operate on better parameters, more collections, less arrays
+     * @todo replace blacklisted patterns by an artifact filter
      */
     protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
     {
