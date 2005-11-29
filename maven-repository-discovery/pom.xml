@@ -22,18 +22,4 @@
       <artifactId>maven-artifact</artifactId>
     </dependency>
   </dependencies>
-  <!-- TODO: why are these needed? -->
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clover-plugin</artifactId>
-        <configuration>
-          <flushPolicy>threaded</flushPolicy>
-          <flushInterval>100</flushInterval>
-        </configuration>
-      </plugin>
-    </plugins>
-  </reporting>
-
 </project>

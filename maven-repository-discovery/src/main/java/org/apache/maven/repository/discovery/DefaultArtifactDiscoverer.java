@@ -94,14 +94,34 @@ public class DefaultArtifactDiscoverer
         Collections.reverse( pathParts );
         String groupId = StringUtils.join( pathParts.iterator(), "." );
 
-        if ( !filename.startsWith( artifactId + "-" ) )
+        result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
+
+        String remainingFilename = filename;
+        if ( !remainingFilename.startsWith( artifactId + "-" ) )
         {
             addKickedOutPath( path );
 
             return null;
         }
 
-        result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
+        remainingFilename = remainingFilename.substring( artifactId.length() + 1 );
+        if ( result.isSnapshot() )
+        {
+            result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
+            result.setResolvedVersion( remainingFilename.substring( 0, remainingFilename.length() - 4 ) );
+            if ( !result.getBaseVersion().equals( version ) )
+            {
+                addKickedOutPath( path );
+
+                return null;
+            }
+        }
+        else if ( !remainingFilename.startsWith( version ) )
+        {
+            addKickedOutPath( path );
+
+            return null;
+        }
 
         result.setFile( new File( path ) );
 
