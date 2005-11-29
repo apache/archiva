@@ -104,9 +104,11 @@
   </modules>
   <repositories>
     <repository>
+<!--
       <releases>
         <enabled>false</enabled>
       </releases>
+-->
       <id>apache.snapshots</id>
       <name>Apache Development Repository</name>
       <url>http://cvs.apache.org/maven-snapshot-repository</url>
