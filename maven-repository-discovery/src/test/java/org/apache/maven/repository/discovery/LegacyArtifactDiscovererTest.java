@@ -25,10 +25,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Test the default artifact discoverer.
+ * Test the legacy artifact discoverer.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
+ * @todo share as much as possible with default via abstract test case
  */
 public class LegacyArtifactDiscovererTest
     extends PlexusTestCase
@@ -147,6 +148,44 @@ public class LegacyArtifactDiscovererTest
         }
     }
 
+    public void testKickoutWithInvalidType()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/foo/invalid-1.0.foo" );
+        }
+        assertTrue( "Check exclusion was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not invalid-1.0.foo", a.getFile().getName().equals( "invalid-1.0.foo" ) );
+        }
+    }
+
+    public void testInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0" ) ) );
+    }
+
+    public void testJavaSourcesInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createSourceArtifact( "org.apache.maven", "testing", "1.0" ) ) );
+    }
+
     public void testSnapshotInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
@@ -170,6 +209,11 @@ public class LegacyArtifactDiscovererTest
     private Artifact createArtifact( String groupId, String artifactId, String version )
     {
         return factory.createArtifact( groupId, artifactId, version, null, "jar" );
+    }
+
+    private Artifact createSourceArtifact( String groupId, String artifactId, String version )
+    {
+        return factory.createArtifact( groupId, artifactId, version, null, "java-source" );
     }
 
 }

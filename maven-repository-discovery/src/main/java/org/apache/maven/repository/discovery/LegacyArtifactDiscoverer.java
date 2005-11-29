@@ -79,10 +79,13 @@ public class LegacyArtifactDiscoverer
 
         String type = tokens.nextToken();
 
-        if ( type.endsWith( "s" ) )
+        if ( !type.endsWith( "s" ) )
         {
-            type = type.substring( 0, type.length() - 1 );
+            addKickedOutPath( path );
+
+            return null;
         }
+        type = type.substring( 0, type.length() - 1 );
 
         // contains artifactId, version, classifier, and extension.
         String avceGlob = tokens.nextToken();
