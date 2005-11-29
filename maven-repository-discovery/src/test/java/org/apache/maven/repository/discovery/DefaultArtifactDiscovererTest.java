@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
- * @todo other tests for kickouts to do here, along the lines of wrong artifactId, parse classifiers, locate poms
+ * @todo test location of poms, checksums
  */
 public class DefaultArtifactDiscovererTest
     extends PlexusTestCase
@@ -212,6 +212,45 @@ public class DefaultArtifactDiscovererTest
         }
     }
 
+    public void testInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0" ) ) );
+    }
+
+    public void testArtifactWithClassifier()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "some-ejb", "1.0", "jar", "client" ) ) );
+    }
+
+    public void testJavaSourcesInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "java-source" ) ) );
+    }
+
+    public void testDistributionInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check zip included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-zip" ) ) );
+
+        assertTrue( "Check tar.gz included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-tgz" ) ) );
+    }
+
     public void testSnapshotInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
@@ -235,6 +274,16 @@ public class DefaultArtifactDiscovererTest
     private Artifact createArtifact( String groupId, String artifactId, String version )
     {
         return factory.createArtifact( groupId, artifactId, version, null, "jar" );
+    }
+
+    private Artifact createArtifact( String groupId, String artifactId, String version, String type )
+    {
+        return factory.createArtifact( groupId, artifactId, version, null, type );
+    }
+
+    private Artifact createArtifact( String groupId, String artifactId, String version, String type, String classifier )
+    {
+        return factory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
     }
 
 }

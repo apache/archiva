@@ -99,6 +99,7 @@ public class LegacyArtifactDiscoverer
 
         String lastAvceToken = (String) avceTokenList.removeLast();
 
+        // TODO: share with other discoverer, use artifact handlers instead
         if ( lastAvceToken.endsWith( ".tar.gz" ) )
         {
             type = "distribution-tgz";

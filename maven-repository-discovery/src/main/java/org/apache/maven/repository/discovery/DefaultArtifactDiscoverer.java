@@ -94,8 +94,6 @@ public class DefaultArtifactDiscoverer
         Collections.reverse( pathParts );
         String groupId = StringUtils.join( pathParts.iterator(), "." );
 
-        result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
-
         String remainingFilename = filename;
         if ( !remainingFilename.startsWith( artifactId + "-" ) )
         {
@@ -105,11 +103,67 @@ public class DefaultArtifactDiscoverer
         }
 
         remainingFilename = remainingFilename.substring( artifactId.length() + 1 );
+
+        String classifier = null;
+
+        // TODO: use artifact handler, share with legacy discoverer
+        String type;
+        if ( remainingFilename.endsWith( ".tar.gz" ) )
+        {
+            type = "distribution-tgz";
+            remainingFilename = remainingFilename.substring( 0, remainingFilename.length() - 7 );
+        }
+        else if ( remainingFilename.endsWith( ".zip" ) )
+        {
+            type = "distribution-zip";
+            remainingFilename = remainingFilename.substring( 0, remainingFilename.length() - 4 );
+        }
+        else if ( remainingFilename.endsWith( "-sources.jar" ) )
+        {
+            type = "java-source";
+            classifier = "sources";
+            remainingFilename = remainingFilename.substring( 0, remainingFilename.length() - 12 );
+        }
+        else
+        {
+            int index = remainingFilename.lastIndexOf( "." );
+            if ( index < 0 )
+            {
+                addKickedOutPath( path );
+
+                return null;
+            }
+
+            type = remainingFilename.substring( index + 1 );
+            remainingFilename = remainingFilename.substring( 0, index );
+        }
+
+        if ( classifier == null )
+        {
+            result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
+        }
+        else
+        {
+            result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
+        }
+
         if ( result.isSnapshot() )
         {
-            result = artifactFactory.createArtifact( groupId, artifactId,
-                                                     remainingFilename.substring( 0, remainingFilename.length() - 4 ),
-                                                     Artifact.SCOPE_RUNTIME, "jar" );
+            // version is XXX-SNAPSHOT, filename is XXX-yyyyMMdd.hhmmss-b
+            int classifierIndex = remainingFilename.indexOf( '-', version.length() + 8 );
+            if ( classifierIndex >= 0 )
+            {
+                classifier = remainingFilename.substring( classifierIndex + 1 );
+                remainingFilename = remainingFilename.substring( 0, classifierIndex );
+                result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, remainingFilename, type,
+                                                                       classifier );
+            }
+            else
+            {
+                result = artifactFactory.createArtifact( groupId, artifactId, remainingFilename, Artifact.SCOPE_RUNTIME,
+                                                         type );
+            }
+
             // poor encapsulation requires we do this to populate base version
             if ( !result.isSnapshot() )
             {
@@ -129,6 +183,17 @@ public class DefaultArtifactDiscoverer
             addKickedOutPath( path );
 
             return null;
+        }
+        else if ( !remainingFilename.equals( version ) )
+        {
+            if ( remainingFilename.charAt( version.length() ) != '-' )
+            {
+                addKickedOutPath( path );
+
+                return null;
+            }
+            classifier = remainingFilename.substring( version.length() + 1 );
+            result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
         }
 
         result.setFile( new File( path ) );
