@@ -107,8 +107,16 @@ public class DefaultArtifactDiscoverer
         remainingFilename = remainingFilename.substring( artifactId.length() + 1 );
         if ( result.isSnapshot() )
         {
-            result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
-            result.setResolvedVersion( remainingFilename.substring( 0, remainingFilename.length() - 4 ) );
+            result = artifactFactory.createArtifact( groupId, artifactId,
+                                                     remainingFilename.substring( 0, remainingFilename.length() - 4 ),
+                                                     Artifact.SCOPE_RUNTIME, "jar" );
+            // poor encapsulation requires we do this to populate base version
+            if ( !result.isSnapshot() )
+            {
+                addKickedOutPath( path );
+
+                return null;
+            }
             if ( !result.getBaseVersion().equals( version ) )
             {
                 addKickedOutPath( path );
