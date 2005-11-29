@@ -190,6 +190,28 @@ public class DefaultArtifactDiscovererTest
         }
     }
 
+    public void testKickoutWithSnapshotBaseVersion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals(
+                "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'invalid-1.0-20050611-123456-1.jar'",
+                         a.getFile().getName().equals( "invalid-1.0-20050611.123456-1.jar" ) );
+        }
+    }
+
     public void testSnapshotInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
