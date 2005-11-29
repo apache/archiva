@@ -18,6 +18,7 @@ package org.apache.maven.repository.discovery;
 
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,24 +56,18 @@ public abstract class AbstractArtifactDiscoverer
      */
     protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
     {
-        String[] blacklisted;
+        List allExcludes = new ArrayList();
+        allExcludes.addAll( FileUtils.getDefaultExcludesAsList() );
+        allExcludes.addAll( Arrays.asList( STANDARD_DISCOVERY_EXCLUDES ) );
+
         if ( blacklistedPatterns != null && blacklistedPatterns.length() > 0 )
         {
-            blacklisted = blacklistedPatterns.split( "," );
+            allExcludes.addAll( Arrays.asList( blacklistedPatterns.split( "," ) ) );
         }
-        else
-        {
-            blacklisted = EMPTY_STRING_ARRAY;
-        }
-
-        String[] allExcludes = new String[STANDARD_DISCOVERY_EXCLUDES.length + blacklisted.length];
-
-        System.arraycopy( STANDARD_DISCOVERY_EXCLUDES, 0, allExcludes, 0, STANDARD_DISCOVERY_EXCLUDES.length );
-        System.arraycopy( blacklisted, 0, allExcludes, STANDARD_DISCOVERY_EXCLUDES.length, blacklisted.length );
 
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir( repositoryBase );
-        scanner.setExcludes( allExcludes );
+        scanner.setExcludes( (String[]) allExcludes.toArray( EMPTY_STRING_ARRAY ) );
 
         scanner.scan();
 

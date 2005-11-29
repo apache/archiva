@@ -18,11 +18,11 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -93,27 +93,12 @@ public class DefaultArtifactDiscoverer
         pathParts.remove( 0 );
 
         // the remaining are the groupId.
-        StringBuffer groupBuffer = new StringBuffer();
+        Collections.reverse( pathParts );
+        String groupId = StringUtils.join( pathParts.iterator(), "." );
 
-        boolean firstPart = true;
-        for ( Iterator it = pathParts.iterator(); it.hasNext(); )
-        {
-            String part = (String) it.next();
+        result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
 
-            groupBuffer.append( part );
-
-            if ( firstPart )
-            {
-                firstPart = false;
-            }
-            else if ( it.hasNext() )
-            {
-                groupBuffer.append( "." );
-            }
-        }
-
-        result = artifactFactory.createArtifact( groupBuffer.toString(), artifactId, version, Artifact.SCOPE_RUNTIME,
-                                                 "jar" );
+        result.setFile( new File( path ) );
 
         return result;
     }

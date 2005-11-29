@@ -16,6 +16,8 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -33,6 +35,8 @@ public class DefaultArtifactDiscovererTest
 {
     private ArtifactDiscoverer discoverer;
 
+    private ArtifactFactory factory;
+
     private File repositoryLocation;
 
     protected void setUp()
@@ -42,29 +46,90 @@ public class DefaultArtifactDiscovererTest
 
         discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "default" );
 
+        factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+
         repositoryLocation = getTestFile( "src/test/repository" );
     }
 
     public void testDefaultExcludes()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
-        assertNotNull( "Check artifacts returned", artifacts );
-        assertTrue( "Check no artifacts returned", artifacts.isEmpty() );
+        assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
-        for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext(); )
+        for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
             String path = (String) i.next();
 
-            if ( !path.startsWith( ".svn" ) )
-            {
-                assertEquals( "Check the excluded path", "KEYS", path );
-                if ( found )
-                {
-                    fail( "KEYS entry found twice" );
-                }
-                found = true;
-            }
+            found = path.indexOf( ".svn" ) >= 0;
         }
         assertTrue( "Check exclusion was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not .svn", a.getFile().getPath().indexOf( ".svn" ) >= 0 );
+        }
     }
+
+    public void testStandardExcludes()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.equals( "KEYS" );
+        }
+        assertTrue( "Check exclusion was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not KEYS", a.getFile().getName().equals( "KEYS" ) );
+        }
+    }
+
+    public void testBlacklistedExclude()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, "javax/**", false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "javax/sql/jdbc/2.0/jdbc-2.0.jar" );
+        }
+        assertTrue( "Check exclusion was found", found );
+
+        assertFalse( "Check jdbc not included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
+    }
+
+    public void testSnapshotInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
+        assertTrue( "Check snapshot included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ) ) );
+    }
+
+    public void testSnapshotExclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
+        assertFalse( "Check snapshot included",
+                     artifacts.contains( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ) ) );
+    }
+
+    private Artifact createArtifact( String groupId, String artifactId, String version )
+    {
+        return factory.createArtifact( groupId, artifactId, version, null, "jar" );
+    }
+
 }
