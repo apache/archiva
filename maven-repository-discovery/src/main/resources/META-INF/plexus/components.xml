@@ -1,0 +1,27 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.repository.discovery.ArtifactDiscoverer</role>
+      <role-hint>legacy</role-hint>
+      <implementation>org.apache.maven.repository.discovery.LegacyArtifactDiscoverer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.maven.repository.discovery.ArtifactDiscoverer</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.repository.discovery.DefaultArtifactDiscoverer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+        </requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>
