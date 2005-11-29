@@ -150,6 +150,26 @@ public class DefaultArtifactDiscovererTest
         }
     }
 
+    public void testKickoutWithNoType()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/invalid/1/invalid-1" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'invalid-1'", a.getFile().getName().equals( "invalid-1" ) );
+        }
+    }
+
     public void testKickoutWithWrongVersion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
@@ -167,6 +187,26 @@ public class DefaultArtifactDiscovererTest
         {
             Artifact a = (Artifact) i.next();
             assertFalse( "Check not 'invalid-2.0.jar'", a.getFile().getName().equals( "invalid-2.0.jar" ) );
+        }
+    }
+
+    public void testKickoutWithLongerVersion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/invalid/1.0/invalid-1.0b.jar" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'invalid-1.0b.jar'", a.getFile().getName().equals( "invalid-1.0b.jar" ) );
         }
     }
 
@@ -259,6 +299,15 @@ public class DefaultArtifactDiscovererTest
         assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
         assertTrue( "Check snapshot included",
                     artifacts.contains( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1" ) ) );
+    }
+
+    public void testSnapshotInclusionWithClassifier()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check snapshot included", artifacts.contains(
+            createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1", "jar", "javadoc" ) ) );
     }
 
     public void testSnapshotExclusion()
