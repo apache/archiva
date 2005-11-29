@@ -80,6 +80,7 @@ public abstract class AbstractArtifactDiscoverer
      * Add a path to the list of files that were kicked out due to being invalid.
      *
      * @param path the path to add
+     * @todo add a reason
      */
     protected void addKickedOutPath( String path )
     {

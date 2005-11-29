@@ -81,20 +81,25 @@ public class DefaultArtifactDiscoverer
             return null;
         }
 
-        //discard the actual artifact filename.
-        pathParts.remove( 0 );
+        // the actual artifact filename.
+        String filename = (String) pathParts.remove( 0 );
 
         // the next one is the version.
-        String version = (String) pathParts.get( 0 );
-        pathParts.remove( 0 );
+        String version = (String) pathParts.remove( 0 );
 
         // the next one is the artifactId.
-        String artifactId = (String) pathParts.get( 0 );
-        pathParts.remove( 0 );
+        String artifactId = (String) pathParts.remove( 0 );
 
         // the remaining are the groupId.
         Collections.reverse( pathParts );
         String groupId = StringUtils.join( pathParts.iterator(), "." );
+
+        if ( !filename.startsWith( artifactId + "-" ) )
+        {
+            addKickedOutPath( path );
+
+            return null;
+        }
 
         result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, "jar" );
 

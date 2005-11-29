@@ -29,6 +29,7 @@ import java.util.List;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
+ * @todo other tests for kickouts to do here, along the lines of wrong artifactId, parse classifiers, locate poms
  */
 public class DefaultArtifactDiscovererTest
     extends PlexusTestCase
@@ -118,12 +119,34 @@ public class DefaultArtifactDiscovererTest
 
             found = path.replace( '\\', '/' ).equals( "invalid/invalid-1.0.jar" );
         }
-        assertTrue( "Check exclusion was found", found );
+        assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
             assertFalse( "Check not invalid-1.0.jar", a.getFile().getName().equals( "invalid-1.0.jar" ) );
+        }
+    }
+
+    public void testKickoutWithWrongArtifactId()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals(
+                "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not wrong jar",
+                         a.getFile().getName().equals( "wrong-artifactId-1.0-20050611.112233-1.jar" ) );
         }
     }
 

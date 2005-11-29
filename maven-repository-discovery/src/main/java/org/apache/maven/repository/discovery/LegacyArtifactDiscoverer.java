@@ -303,7 +303,10 @@ public class LegacyArtifactDiscoverer
             }
         }
 
-        result.setFile( new File( path ) );
+        if ( result != null )
+        {
+            result.setFile( new File( path ) );
+        }
 
         return result;
     }

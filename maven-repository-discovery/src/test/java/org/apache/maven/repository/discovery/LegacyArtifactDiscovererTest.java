@@ -107,7 +107,6 @@ public class LegacyArtifactDiscovererTest
         assertFalse( "Check jdbc not included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
     }
 
-/*
     public void testKickoutWithShortPath()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
@@ -128,6 +127,26 @@ public class LegacyArtifactDiscovererTest
         }
     }
 
+    public void testKickoutWithLongPath()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/jars/1.0/invalid-1.0.jar" );
+        }
+        assertTrue( "Check exclusion was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not invalid-1.0.jar", a.getFile().getName().equals( "invalid-1.0.jar" ) );
+        }
+    }
+
     public void testSnapshotInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
@@ -135,7 +154,7 @@ public class LegacyArtifactDiscovererTest
 
         assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
         assertTrue( "Check snapshot included",
-                    artifacts.contains( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ) ) );
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0-20050611.112233-1" ) ) );
     }
 
     public void testSnapshotExclusion()
@@ -145,9 +164,8 @@ public class LegacyArtifactDiscovererTest
 
         assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
         assertFalse( "Check snapshot included",
-                     artifacts.contains( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ) ) );
+                     artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0-20050611.112233-1" ) ) );
     }
-*/
 
     private Artifact createArtifact( String groupId, String artifactId, String version )
     {
