@@ -107,6 +107,26 @@ public class DefaultArtifactDiscovererTest
         assertFalse( "Check jdbc not included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
     }
 
+    public void testKickoutWithShortPath()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/invalid-1.0.jar" );
+        }
+        assertTrue( "Check exclusion was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not invalid-1.0.jar", a.getFile().getName().equals( "invalid-1.0.jar" ) );
+        }
+    }
+
     public void testSnapshotInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
