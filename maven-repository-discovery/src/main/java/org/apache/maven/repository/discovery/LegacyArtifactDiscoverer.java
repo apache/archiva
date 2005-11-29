@@ -18,7 +18,6 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -143,6 +142,13 @@ public class LegacyArtifactDiscoverer
 
                     return null;
                 }
+            }
+            else
+            {
+                // no extension
+                addKickedOutPath( path );
+
+                return null;
             }
         }
 
@@ -281,7 +287,9 @@ public class LegacyArtifactDiscoverer
 
         if ( version.length() < 1 )
         {
-            version = null;
+            addKickedOutPath( path );
+
+            return null;
         }
 
         getLogger().debug( "Extracted artifact information from path:\n" + "groupId: \'" + groupId + "\'\n" +
@@ -299,17 +307,10 @@ public class LegacyArtifactDiscoverer
         }
         else
         {
-            if ( StringUtils.isNotEmpty( groupId ) && StringUtils.isNotEmpty( artifactId ) &&
-                StringUtils.isNotEmpty( version ) && StringUtils.isNotEmpty( type ) )
-            {
-                result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
-            }
+            result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
         }
 
-        if ( result != null )
-        {
-            result.setFile( new File( path ) );
-        }
+        result.setFile( new File( path ) );
 
         return result;
     }

@@ -119,7 +119,7 @@ public class LegacyArtifactDiscovererTest
 
             found = path.replace( '\\', '/' ).equals( "invalid/invalid-1.0.jar" );
         }
-        assertTrue( "Check exclusion was found", found );
+        assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -139,7 +139,7 @@ public class LegacyArtifactDiscovererTest
 
             found = path.replace( '\\', '/' ).equals( "invalid/jars/1.0/invalid-1.0.jar" );
         }
-        assertTrue( "Check exclusion was found", found );
+        assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -159,12 +159,72 @@ public class LegacyArtifactDiscovererTest
 
             found = path.replace( '\\', '/' ).equals( "invalid/foo/invalid-1.0.foo" );
         }
-        assertTrue( "Check exclusion was found", found );
+        assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
             assertFalse( "Check not invalid-1.0.foo", a.getFile().getName().equals( "invalid-1.0.foo" ) );
+        }
+    }
+
+    public void testKickoutWithNoExtension()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/jars/no-extension" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'no-extension'", a.getFile().getName().equals( "no-extension" ) );
+        }
+    }
+
+    public void testKickoutWithWrongExtension()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/jars/invalid-1.0.rar" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'invalid-1.0.rar'", a.getFile().getName().equals( "invalid-1.0.rar" ) );
+        }
+    }
+
+    public void testKickoutWithNoVersion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, false );
+        assertNotNull( "Check artifacts not null", artifacts );
+        boolean found = false;
+        for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
+        {
+            String path = (String) i.next();
+
+            found = path.replace( '\\', '/' ).equals( "invalid/jars/invalid.jar" );
+        }
+        assertTrue( "Check kickout was found", found );
+
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            assertFalse( "Check not 'invalid.jar'", a.getFile().getName().equals( "invalid.jar" ) );
         }
     }
 
@@ -177,13 +237,43 @@ public class LegacyArtifactDiscovererTest
                     artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0" ) ) );
     }
 
+    public void testTextualVersion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "UNKNOWN" ) ) );
+    }
+
+    public void testArtifactWithClassifier()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check normal included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "some-ejb", "1.0", "jar", "client" ) ) );
+    }
+
     public void testJavaSourcesInclusion()
     {
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included",
-                    artifacts.contains( createSourceArtifact( "org.apache.maven", "testing", "1.0" ) ) );
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "java-source" ) ) );
+    }
+
+    public void testDistributionInclusion()
+    {
+        List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check zip included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-zip" ) ) );
+
+        assertTrue( "Check tar.gz included",
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-tgz" ) ) );
     }
 
     public void testSnapshotInclusion()
@@ -211,9 +301,14 @@ public class LegacyArtifactDiscovererTest
         return factory.createArtifact( groupId, artifactId, version, null, "jar" );
     }
 
-    private Artifact createSourceArtifact( String groupId, String artifactId, String version )
+    private Artifact createArtifact( String groupId, String artifactId, String version, String type )
     {
-        return factory.createArtifact( groupId, artifactId, version, null, "java-source" );
+        return factory.createArtifact( groupId, artifactId, version, null, type );
+    }
+
+    private Artifact createArtifact( String groupId, String artifactId, String version, String type, String classifier )
+    {
+        return factory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
     }
 
 }
