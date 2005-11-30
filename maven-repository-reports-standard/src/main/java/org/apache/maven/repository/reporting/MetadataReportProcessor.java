@@ -19,6 +19,9 @@ package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
+/**
+ * This interface is called by the main system for each piece of metadata as it is discovered.
+ */
 public interface MetadataReportProcessor
 {
     String ROLE = MetadataReportProcessor.class.getName();

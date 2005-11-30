@@ -20,6 +20,10 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Model;
 
+/**
+ * This interface will be called by the main system for each artifact as it is discovered. This is how each of the 
+ *      different types of reports are implemented.
+ */
 public interface ArtifactReportProcessor
 {
     String ROLE = ArtifactReportProcessor.class.getName();
