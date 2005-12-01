@@ -17,6 +17,7 @@ package org.apache.maven.repository.reporting;
  * limitations under the License. 
  */
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
 /**
@@ -26,5 +27,5 @@ public interface MetadataReportProcessor
 {
     String ROLE = MetadataReportProcessor.class.getName();
 
-    void processMetadata( RepositoryMetadata metadata, ArtifactReporter reporter );
+    void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter );
 }
