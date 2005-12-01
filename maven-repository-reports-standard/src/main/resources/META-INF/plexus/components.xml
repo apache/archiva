@@ -14,19 +14,3 @@
     </component>
   </components>
 </component-set>
-<component-set>
-  <components>
-    <component>
-      <role>org.apache.maven.repository.reporting.ArtifactReporter</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.repository.reporting.DefaultArtifactReporter</implementation>
-      <instantiation-strategy>per-lookup</instantiation-strategy>
-    </component>
-    <component>
-      <role>org.apache.maven.repository.reporting.RepositoryQueryLayer</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.repository.reporting.DefaultRepositoryQueryLayer</implementation>
-      <instantiation-strategy>per-lookup</instantiation-strategy>
-    </component>
-  </components>
-</component-set>
