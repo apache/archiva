@@ -17,6 +17,7 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
 /**
  * This interface is used by the single artifact processor.
@@ -34,4 +35,10 @@ public interface ArtifactReporter
     void addSuccess( Artifact artifact );
 
     void addWarning( Artifact artifact, String message );
+    
+    void addFailure( RepositoryMetadata metadata, String reason );
+
+    void addSuccess( RepositoryMetadata metadata );
+
+    void addWarning( RepositoryMetadata metadata, String message );
 }

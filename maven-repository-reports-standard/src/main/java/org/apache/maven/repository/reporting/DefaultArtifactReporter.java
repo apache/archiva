@@ -1,10 +1,5 @@
 package org.apache.maven.repository.reporting;
 
-import org.apache.maven.repository.discovery.AbstractArtifactDiscoverer;
-import org.apache.maven.artifact.Artifact;
-
-import java.util.List;
-
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
  *
@@ -21,6 +16,7 @@ import java.util.List;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
 
 /**
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
@@ -38,6 +34,18 @@ public class DefaultArtifactReporter
     }
 
     public void addWarning( Artifact artifact, String message )
+    {
+    }
+
+    public void addWarning(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String message)
+    {
+    }
+
+    public void addFailure(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String reason)
+    {
+    }
+
+    public void addSuccess(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata)
     {
     }
 }

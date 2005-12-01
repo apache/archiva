@@ -12,5 +12,18 @@
       <implementation>org.apache.maven.repository.reporting.DefaultRepositoryQueryLayer</implementation>
       <instantiation-strategy>per-lookup</instantiation-strategy>
     </component>
+    <component>
+      <role>org.apache.maven.repository.reporting.BadMetadataReporter</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.repository.reporting.BadMetadataReporter</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.manager.WagonManager</role>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+        </requirement>
+      </requirements>
+    </component>
   </components>
 </component-set>
