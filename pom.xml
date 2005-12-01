@@ -184,6 +184,11 @@
         <artifactId>wagon-http-lightweight</artifactId>
         <version>1.0-alpha-5</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-discovery</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <distributionManagement>

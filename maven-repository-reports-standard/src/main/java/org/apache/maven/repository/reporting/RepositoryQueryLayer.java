@@ -26,5 +26,5 @@ public interface RepositoryQueryLayer
 {
     String ROLE = RepositoryQueryLayer.class.getName();
 
-    void containsArtifact( Artifact artifact );
+    boolean containsArtifact( Artifact artifact );
 }
