@@ -24,9 +24,16 @@ import org.codehaus.plexus.PlexusTestCase;
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
  */
 public class DefaultRepositoryQueryLayerTest
-    extends PlexusTestCase
+    extends AbstractRepositoryReportsTestCase
 {
+    private static final String[] testRepoStructure = { "valid-poms/", "invalid-poms/" };
+
     private RepositoryQueryLayer queryLayer;
+
+    public DefaultRepositoryQueryLayerTest()
+    {
+        super( System.getProperty( "basedir" ) + "/src/test/repository/", testRepoStructure );
+    }
 
     protected void setUp()
         throws Exception

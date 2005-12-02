@@ -18,15 +18,25 @@ package org.apache.maven.repository.reporting;
 
 import org.codehaus.plexus.PlexusTestCase;
 
+import java.io.File;
+import java.lang.System;
+
 /**
  * Test the artifact reporter.
  *
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
  */
 public class DefaultArtifactReporterTest
-    extends PlexusTestCase
+    extends AbstractRepositoryReportsTestCase
 {
+    private static final String[] testRepoStructure = { "valid-poms/", "invalid-poms/" };
+
     private ArtifactReporter reporter;
+
+    public DefaultArtifactReporterTest()
+    {
+        super( System.getProperty( "basedir" ) + "/src/test/repository/", testRepoStructure );
+    }
 
     protected void setUp()
         throws Exception
@@ -35,9 +45,9 @@ public class DefaultArtifactReporterTest
         reporter = (ArtifactReporter) lookup( ArtifactReporter.ROLE, "default" );
     }
 
-    public void testAddSuccess()
+    public void testAddSuccess() throws Exception
     {
-        assertTrue( true );
+        assertTrue( writeTestArtifact( "valid-poms/", "test" ) );
     }
 
     protected void tearDown()
