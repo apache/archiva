@@ -18,48 +18,53 @@ package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.Artifact;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
  */
-public class DefaultArtifactReporter
-    implements ArtifactReporter
+public class ReportCondition
 {
-    private List success;
-    private List warnings;
-    private List failures;
+    public final static int SUCCESS = 0;
+    public final static int FAILURE = -1;
+    public final static int WARNING = 1;
 
+    private int result;
+    private Artifact artifact;
+    private String reason;
 
-    public DefaultArtifactReporter()
+    public ReportCondition( int result, Artifact artifact, String reason )
     {
-        success = new ArrayList();
-        warnings = new ArrayList();
-        failures = new ArrayList();
+        this.result = result;
+        this.artifact = artifact;
+        this.reason = reason;
     }
 
-    public void addFailure( Artifact artifact, String reason )
+    public int getResult()
     {
+        return result;
     }
 
-    public void addSuccess( Artifact artifact )
+    public void setResult( int result )
     {
+        this.result = result;
     }
 
-    public void addWarning( Artifact artifact, String message )
+    public Artifact getArtifact()
     {
+        return artifact;
     }
 
-    public void addWarning(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String message)
+    public void setArtifact( Artifact artifact )
     {
+        this.artifact = artifact;
     }
 
-    public void addFailure(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String reason)
+    public String getReason()
     {
+        return reason;
     }
 
-    public void addSuccess(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata)
+    public void setReason( String reason )
     {
+        this.reason = reason;
     }
 }

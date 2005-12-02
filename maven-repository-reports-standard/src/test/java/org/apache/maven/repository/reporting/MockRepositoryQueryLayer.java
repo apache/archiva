@@ -19,47 +19,46 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.Artifact;
 
 import java.util.List;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 /**
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
  */
-public class DefaultArtifactReporter
-    implements ArtifactReporter
+public class MockRepositoryQueryLayer
+    implements RepositoryQueryLayer
 {
-    private List success;
-    private List warnings;
-    private List failures;
+    private List queryConditions;
+    private Iterator iterator;
 
-
-    public DefaultArtifactReporter()
+    public MockRepositoryQueryLayer()
     {
-        success = new ArrayList();
-        warnings = new ArrayList();
-        failures = new ArrayList();
+        queryConditions = new ArrayList();
     }
 
-    public void addFailure( Artifact artifact, String reason )
+    public boolean containsArtifact( Artifact artifact )
     {
+        if ( iterator == null || !iterator.hasNext() ) // not initialized or reached end of the list. start again
+        {
+            iterator = queryConditions.iterator();
+        }
+        if ( queryConditions.isEmpty() )
+        {
+            return false;
+        }
+        else
+        {
+            return ( (Boolean) iterator.next() ).booleanValue();
+        }
     }
 
-    public void addSuccess( Artifact artifact )
+    public void addReturnValue( boolean queryCondition )
     {
+        queryConditions.add( new Boolean( queryCondition ) );
     }
 
-    public void addWarning( Artifact artifact, String message )
+    public void clearList()
     {
-    }
-
-    public void addWarning(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String message)
-    {
-    }
-
-    public void addFailure(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata, String reason)
-    {
-    }
-
-    public void addSuccess(org.apache.maven.artifact.repository.metadata.RepositoryMetadata metadata)
-    {
+        queryConditions.clear();
     }
 }
