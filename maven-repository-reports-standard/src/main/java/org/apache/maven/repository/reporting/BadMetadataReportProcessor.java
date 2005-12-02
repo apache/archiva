@@ -35,7 +35,7 @@ import org.apache.maven.repository.RepositoryFileFilter;
  * information inside the metadata file.  Plugin metadata will be checked for validity of the latest plugin artifacts.
  *
  */
-public class BadMetadataReporter implements MetadataReportProcessor
+public class BadMetadataReportProcessor implements MetadataReportProcessor
 {
     // plexus components
     private ArtifactFactory artifactFactory;
