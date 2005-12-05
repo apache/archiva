@@ -194,6 +194,24 @@ public class BadMetadataReportProcessorTest
         assertFalse( "check there are no failures", failures.hasNext() );
     }
     
+    public void testMissingMetadataPlugin()
+        throws ReportProcessorException
+    {
+        ArtifactReporter reporter = new MockArtifactReporter();
+
+        RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "missing-plugin", "default" ) );
+        
+        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+
+        Iterator failures = reporter.getRepositoryMetadataFailureIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        RepositoryMetadataResult result = (RepositoryMetadataResult) failures.next();
+        // TODO: should be more robust
+        assertEquals( "check reason", "Metadata plugin missing-plugin is not present in the repository", result.getReason() );
+        assertFalse( "check no more failures", failures.hasNext() );
+    }
+    
     public void testInvalidPluginArtifactId()
         throws ReportProcessorException
     {
@@ -214,6 +232,29 @@ public class BadMetadataReportProcessorTest
         result = (RepositoryMetadataResult) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Missing or empty artifactId in group metadata.", result.getReason() );
+        assertFalse( "check no more failures", failures.hasNext() );
+    }
+    
+    public void testInvalidPluginPrefix()
+        throws ReportProcessorException
+    {
+        ArtifactReporter reporter = new MockArtifactReporter();
+
+        RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", null ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "" ) );
+        
+        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+
+        Iterator failures = reporter.getRepositoryMetadataFailureIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        RepositoryMetadataResult result = (RepositoryMetadataResult) failures.next();
+        // TODO: should be more robust
+        assertEquals( "check reason", "Missing or empty plugin prefix for artifactId artifactId.", result.getReason() );
+        assertTrue( "check there is a 2nd failure", failures.hasNext() );
+        result = (RepositoryMetadataResult) failures.next();
+        // TODO: should be more robust
+        assertEquals( "check reason", "Missing or empty plugin prefix for artifactId snapshot-artifact.", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
     

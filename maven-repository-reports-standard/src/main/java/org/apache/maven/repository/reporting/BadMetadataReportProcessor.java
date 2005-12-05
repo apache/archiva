@@ -119,7 +119,7 @@ public class BadMetadataReportProcessor
             String prefix = plugin.getPrefix();
             if ( prefix == null || prefix.length() == 0 )
             {
-                reporter.addFailure( metadata, "Missing or empty plugin prefix for artifactId " + artifactId );
+                reporter.addFailure( metadata, "Missing or empty plugin prefix for artifactId " + artifactId + ".");
                 hasFailures = true;
             }
             else
@@ -195,10 +195,7 @@ public class BadMetadataReportProcessor
             {
                 reporter.addFailure( metadata, "Artifact version " + version + " is present in metadata but " +
                     "missing in the repository." );
-                if ( !hasFailures )
-                {
-                    hasFailures = true;
-                }
+                hasFailures = true;
             }
         }
         return hasFailures;
@@ -226,10 +223,7 @@ public class BadMetadataReportProcessor
             {
                 reporter.addFailure( metadata, "Artifact version " + version + " found in the repository but " +
                     "missing in the metadata." );
-                if ( !hasFailures )
-                {
-                    hasFailures = true;
-                }
+                hasFailures = true;
             }
         }
         return hasFailures;
