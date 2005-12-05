@@ -17,9 +17,8 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
-
 import java.io.File;
+import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
