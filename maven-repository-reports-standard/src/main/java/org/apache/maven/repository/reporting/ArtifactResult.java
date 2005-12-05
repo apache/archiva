@@ -1,6 +1,4 @@
-package org.apache.maven.repository.reporting.reports;
-
-import org.apache.maven.artifact.Artifact;
+package org.apache.maven.repository.reporting;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -18,16 +16,30 @@ import org.apache.maven.artifact.Artifact;
  * limitations under the License.
  */
 
-/**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
- */
-public class ReportResult
-{
-    private Artifact artifact;
+import org.apache.maven.artifact.Artifact;
 
-    public ReportResult( Artifact artifact )
+/**
+ * A result of the report for a given artifact being processed.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @version $Id$
+ */
+public class ArtifactResult
+{
+    private final Artifact artifact;
+
+    private final String reason;
+
+    public ArtifactResult( Artifact artifact )
     {
         this.artifact = artifact;
+        this.reason = null;
+    }
+
+    public ArtifactResult( Artifact artifact, String reason )
+    {
+        this.artifact = artifact;
+        this.reason = reason;
     }
 
     public Artifact getArtifact()
@@ -35,8 +47,8 @@ public class ReportResult
         return artifact;
     }
 
-    public void setArtifact( Artifact artifact )
+    public String getReason()
     {
-        this.artifact = artifact;
+        return reason;
     }
 }

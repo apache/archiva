@@ -18,9 +18,9 @@ package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.Artifact;
 
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
@@ -29,6 +29,7 @@ public class MockRepositoryQueryLayer
     implements RepositoryQueryLayer
 {
     private List queryConditions;
+
     private Iterator iterator;
 
     public MockRepositoryQueryLayer()
@@ -54,7 +55,7 @@ public class MockRepositoryQueryLayer
 
     public void addReturnValue( boolean queryCondition )
     {
-        queryConditions.add( new Boolean( queryCondition ) );
+        queryConditions.add( Boolean.valueOf( queryCondition ) );
     }
 
     public void clearList()

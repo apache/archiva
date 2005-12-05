@@ -1,7 +1,4 @@
-package org.apache.maven.repository.reporting.reports;
-
-import org.apache.maven.repository.reporting.reports.ReportResult;
-import org.apache.maven.artifact.Artifact;
+package org.apache.maven.repository.reporting;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -11,7 +8,6 @@ import org.apache.maven.artifact.Artifact;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
-
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,13 +17,16 @@ import org.apache.maven.artifact.Artifact;
  */
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * Exception occurring during reporting.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @version $Id$
  */
-public class Success
-    extends ReportResult
+public class ReportProcessorException
+    extends Exception
 {
-    public Success( Artifact artifact )
+    public ReportProcessorException( String msg, Throwable cause )
     {
-        super( artifact );
+        super( msg, cause );
     }
 }

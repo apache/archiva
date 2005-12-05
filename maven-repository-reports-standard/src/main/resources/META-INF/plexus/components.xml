@@ -1,24 +1,16 @@
 <component-set>
   <components>
     <component>
-      <role>org.apache.maven.repository.reporting.ArtifactReporter</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.repository.reporting.DefaultArtifactReporter</implementation>
-      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <role>org.apache.maven.repository.reporting.RepositoryQueryLayerFactory</role>
+      <implementation>org.apache.maven.repository.reporting.DefaultRepositoryQueryLayerFactory</implementation>
     </component>
     <component>
-      <role>org.apache.maven.repository.reporting.RepositoryQueryLayer</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.repository.reporting.DefaultRepositoryQueryLayer</implementation>
-      <instantiation-strategy>per-lookup</instantiation-strategy>
-    </component>
-    <component>
-      <role>org.apache.maven.repository.reporting.BadMetadataReporter</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.repository.reporting.BadMetadataReporter</implementation>
+      <role>org.apache.maven.repository.reporting.MetadataReportProcessor</role>
+      <role-hint>bad-metadata</role-hint>
+      <implementation>org.apache.maven.repository.reporting.BadMetadataReportProcessor</implementation>
       <requirements>
         <requirement>
-          <role>org.apache.maven.repository.reporting.RepositoryQueryLayer</role>
+          <role>org.apache.maven.repository.reporting.RepositoryQueryLayerFactory</role>
         </requirement>
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>

@@ -1,7 +1,4 @@
-package org.apache.maven.repository.reporting.reports;
-
-import org.apache.maven.repository.reporting.reports.ReportError;
-import org.apache.maven.artifact.Artifact;
+package org.apache.maven.repository.reporting;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -11,7 +8,6 @@ import org.apache.maven.artifact.Artifact;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
-
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,14 +16,19 @@ import org.apache.maven.artifact.Artifact;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * Gets the default implementation of a repository query layer for the given repository.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @version $Id$
  */
-public class Warning
-    extends ReportError
+public class DefaultRepositoryQueryLayerFactory
+    implements RepositoryQueryLayerFactory
 {
-    public Warning( Artifact artifact, String reason )
+    public RepositoryQueryLayer createRepositoryQueryLayer( ArtifactRepository repository )
     {
-        super( artifact, reason );
+        return new DefaultRepositoryQueryLayer( repository );
     }
 }

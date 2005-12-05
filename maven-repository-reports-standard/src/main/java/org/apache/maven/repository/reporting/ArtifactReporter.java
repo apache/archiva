@@ -19,12 +19,14 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
+import java.util.Iterator;
+
 /**
  * This interface is used by the single artifact processor.
- *
- * The initial implementation of this will just need to be a mock implementation in src/test/java, used to track the 
- *      failures and successes for checking assertions. Later, implementations will be made to present reports on the 
- *      web interface, send them via mail, and so on.
+ * <p/>
+ * The initial implementation of this will just need to be a mock implementation in src/test/java, used to track the
+ * failures and successes for checking assertions. Later, implementations will be made to present reports on the
+ * web interface, send them via mail, and so on.
  */
 public interface ArtifactReporter
 {
@@ -35,10 +37,23 @@ public interface ArtifactReporter
     void addSuccess( Artifact artifact );
 
     void addWarning( Artifact artifact, String message );
-    
+
     void addFailure( RepositoryMetadata metadata, String reason );
 
     void addSuccess( RepositoryMetadata metadata );
 
     void addWarning( RepositoryMetadata metadata, String message );
+
+    Iterator getArtifactFailureIterator();
+
+    Iterator getArtifactSuccessIterator();
+
+    Iterator getArtifactWarningIterator();
+
+    Iterator getRepositoryMetadataFailureIterator();
+
+    Iterator getRepositoryMetadataSuccessIterator();
+
+    Iterator getRepositoryMetadataWarningIterator();
+
 }

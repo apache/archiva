@@ -8,7 +8,6 @@ package org.apache.maven.repository.reporting;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +16,23 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 
-public class TestBadMetadataReportProcessor extends BadMetadataReportProcessor
+/**
+ * Gets the preferred implementation of a repository query layer for the given repository.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @version $Id$
+ */
+public interface RepositoryQueryLayerFactory
 {
-    public TestBadMetadataReportProcessor( ArtifactFactory factory, RepositoryQueryLayer layer )
-    {
-        artifactFactory = factory ;
-        repositoryQueryLayer = layer ;
-    }
+    String ROLE = RepositoryQueryLayerFactory.class.getName();
+
+    /**
+     * Create or obtain a query interface.
+     *
+     * @param repository the repository to query
+     * @return the obtained query layer
+     */
+    RepositoryQueryLayer createRepositoryQueryLayer( ArtifactRepository repository );
 }

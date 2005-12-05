@@ -27,5 +27,6 @@ public interface MetadataReportProcessor
 {
     String ROLE = MetadataReportProcessor.class.getName();
 
-    void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter );
+    void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
+        throws ReportProcessorException;
 }
