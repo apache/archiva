@@ -30,6 +30,7 @@ public class MockArtifactReportProcessor
     implements ArtifactReportProcessor
 {
     private List reportConditions;
+
     private Iterator iterator;
 
     public MockArtifactReportProcessor()
@@ -43,23 +44,26 @@ public class MockArtifactReportProcessor
         {
             iterator = reportConditions.iterator();
         }
-        if ( ! reportConditions.isEmpty() )
+        if ( !reportConditions.isEmpty() )
         {
-            ReportCondition reportCondition = (ReportCondition) iterator.next();
-            switch( reportCondition.getResult() )
+            while(iterator.hasNext())
             {
-                case ReportCondition.SUCCESS :
-                    {
-                        reporter.addSuccess( reportCondition.getArtifact() );
-                    }
-                case ReportCondition.WARNING :
-                    {
-                        reporter.addWarning( reportCondition.getArtifact(), reportCondition.getReason() );
-                    }
-                case ReportCondition.FAILURE :
-                    {
-                        reporter.addFailure( reportCondition.getArtifact(), reportCondition.getReason() );
-                    }
+                ReportCondition reportCondition = (ReportCondition) iterator.next();
+                switch ( reportCondition.getResult() )
+                {
+                    case ReportCondition.SUCCESS:
+                        {
+                            reporter.addSuccess( reportCondition.getArtifact() );
+                        }
+                    case ReportCondition.WARNING:
+                        {
+                            reporter.addWarning( reportCondition.getArtifact(), reportCondition.getReason() );
+                        }
+                    case ReportCondition.FAILURE:
+                        {
+                            reporter.addFailure( reportCondition.getArtifact(), reportCondition.getReason() );
+                        }
+                }
             }
         }
     }
