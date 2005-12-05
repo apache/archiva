@@ -18,6 +18,7 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 /**
  * The transitive and metadata validation reports will need to query the repository for artifacts.
@@ -27,4 +28,6 @@ public interface RepositoryQueryLayer
     String ROLE = RepositoryQueryLayer.class.getName();
 
     boolean containsArtifact( Artifact artifact );
+    
+    boolean containsArtifact( Artifact artifact, Snapshot snapshot );
 }

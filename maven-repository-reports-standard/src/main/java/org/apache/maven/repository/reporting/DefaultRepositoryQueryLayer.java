@@ -18,6 +18,7 @@ package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 import java.io.File;
 
@@ -38,5 +39,14 @@ public class DefaultRepositoryQueryLayer
     {
         File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
         return f.exists();
+    }
+    
+    public boolean containsArtifact( Artifact artifact, Snapshot snapshot )
+    {
+        File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
+        String snapshotInfo = artifact.getVersion().replaceAll( "SNAPSHOT", snapshot.getTimestamp() + "-" + 
+                                                                            snapshot.getBuildNumber() + ".pom" );
+        File snapshotFile = new File( f.getParentFile(), artifact.getArtifactId() + "-" + snapshotInfo );
+        return snapshotFile.exists();
     }
 }

@@ -49,41 +49,44 @@ public class BadMetadataReportProcessor
     {
         boolean hasFailures = false;
 
-        String lastUpdated = metadata.getMetadata().getVersioning().getLastUpdated();
-        if ( lastUpdated == null || lastUpdated.length() == 0 )
-        {
-            reporter.addFailure( metadata, "Missing lastUpdated element inside the metadata." );
-            hasFailures = true;
-        }
-
         if ( metadata.storedInGroupDirectory() )
         {
             checkPluginMetadata( metadata, repository, reporter );
         }
-        else if ( metadata.storedInArtifactVersionDirectory() )
-        {
-            checkSnapshotMetadata( metadata, repository, reporter );
-        }
         else
         {
-            if ( !checkMetadataVersions( metadata, repository, reporter ) )
+            String lastUpdated = metadata.getMetadata().getVersioning().getLastUpdated();
+            if ( lastUpdated == null || lastUpdated.length() == 0 )
             {
+                reporter.addFailure( metadata, "Missing lastUpdated element inside the metadata." );
                 hasFailures = true;
             }
 
-            try
+            if ( metadata.storedInArtifactVersionDirectory() )
             {
-                if ( checkRepositoryVersions( metadata, repository, reporter ) )
+                checkSnapshotMetadata( metadata, repository, reporter );
+            }
+            else
+            {
+                if ( !checkMetadataVersions( metadata, repository, reporter ) )
                 {
                     hasFailures = true;
                 }
-            }
-            catch ( IOException e )
-            {
-                throw new ReportProcessorException( "Error getting versions", e );
+
+                try
+                {
+                    if ( checkRepositoryVersions( metadata, repository, reporter ) )
+                    {
+                        hasFailures = true;
+                    }
+                }
+                catch ( IOException e )
+                {
+                    throw new ReportProcessorException( "Error getting versions", e );
+                }
             }
         }
-
+        
         if ( !hasFailures )
         {
             reporter.addSuccess( metadata );
@@ -93,7 +96,7 @@ public class BadMetadataReportProcessor
     /**
      * Checks the plugin metadata
      */
-    public boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
+    protected boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
                                         ArtifactReporter reporter )
     {
         boolean hasFailures = false;
@@ -123,7 +126,7 @@ public class BadMetadataReportProcessor
             {
                 if ( prefixes.containsKey( prefix ) )
                 {
-                    reporter.addFailure( metadata, "Duplicate plugin prefix found: " + prefix );
+                    reporter.addFailure( metadata, "Duplicate plugin prefix found: " + prefix + "." );
                     hasFailures = true;
                 }
                 else
@@ -132,11 +135,14 @@ public class BadMetadataReportProcessor
                 }
             }
 
-            File pluginDir = new File( metadataDir, artifactId );
-            if ( !pluginDir.exists() )
+            if ( artifactId != null )
             {
-                reporter.addFailure( metadata, "Metadata plugin " + artifactId + " is not present in the repository" );
-                hasFailures = true;
+                File pluginDir = new File( metadataDir, artifactId );
+                if ( !pluginDir.exists() )
+                {
+                    reporter.addFailure( metadata, "Metadata plugin " + artifactId + " is not present in the repository" );
+                    hasFailures = true;
+                }
             }
         }
 
@@ -146,23 +152,22 @@ public class BadMetadataReportProcessor
     /**
      * Checks the snapshot metadata
      */
-    private boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
+    protected boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
                                            ArtifactReporter reporter )
     {
+        RepositoryQueryLayer repositoryQueryLayer =
+            repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
+
         boolean hasFailures = false;
 
         Snapshot snapshot = metadata.getMetadata().getVersioning().getSnapshot();
         String timestamp = snapshot.getTimestamp();
         String buildNumber = String.valueOf( snapshot.getBuildNumber() );
-        String artifactName = metadata.getArtifactId() + "-" + timestamp + "-" + buildNumber + ".pom";
 
-        //@todo use wagon instead
         Artifact artifact = createArtifact( metadata );
-        File artifactFile = new File( repository.pathOf( artifact ) );
-        File snapshotFile = new File( artifactFile.getParentFile(), artifactName );
-        if ( !snapshotFile.exists() )
+        if ( !repositoryQueryLayer.containsArtifact( artifact, snapshot ) )
         {
-            reporter.addFailure( metadata, "Snapshot artifact " + artifactName + " does not exist." );
+            reporter.addFailure( metadata, "Snapshot artifact " + timestamp + "-" + buildNumber + " does not exist." );
             hasFailures = true;
         }
 
@@ -172,7 +177,7 @@ public class BadMetadataReportProcessor
     /**
      * Checks the declared metadata versions if the artifacts are present in the repository
      */
-    private boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
+    protected boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
                                            ArtifactReporter reporter )
     {
         RepositoryQueryLayer repositoryQueryLayer =
@@ -203,7 +208,7 @@ public class BadMetadataReportProcessor
      * Searches the artifact repository directory for all versions and verifies that all of them are listed in the
      * metadata file.
      */
-    private boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
+    protected boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
                                              ArtifactReporter reporter )
         throws IOException
     {
