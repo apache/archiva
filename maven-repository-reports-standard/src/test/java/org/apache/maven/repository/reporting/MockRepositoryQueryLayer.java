@@ -17,6 +17,7 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,5 +62,11 @@ public class MockRepositoryQueryLayer
     public void clearList()
     {
         queryConditions.clear();
+    }
+
+    public boolean containsArtifact( Artifact artifact, Snapshot snapshot )
+    {
+        // TODO
+        return containsArtifact( artifact );
     }
 }
