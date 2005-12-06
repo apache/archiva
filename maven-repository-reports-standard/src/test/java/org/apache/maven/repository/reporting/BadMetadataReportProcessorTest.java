@@ -214,6 +214,25 @@ public class BadMetadataReportProcessorTest
         assertEquals( "check reason", "Metadata plugin missing-plugin not found in the repository", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
+
+    public void testIncompletePluginMetadata()
+        throws ReportProcessorException
+    {
+        ArtifactReporter reporter = new MockArtifactReporter();
+
+        RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
+        
+        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+
+        Iterator failures = reporter.getRepositoryMetadataFailureIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        RepositoryMetadataResult result = (RepositoryMetadataResult) failures.next();
+        // TODO: should be more robust
+        assertEquals( "check reason", "Plugin snapshot-artifact is present in the repository but " +
+                    "missing in the metadata.", result.getReason() );
+        assertFalse( "check no more failures", failures.hasNext() );
+    }
     
     public void testInvalidPluginArtifactId()
         throws ReportProcessorException
