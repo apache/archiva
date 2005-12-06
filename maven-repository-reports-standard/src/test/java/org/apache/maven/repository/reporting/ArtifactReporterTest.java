@@ -18,7 +18,6 @@ package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.model.Model;
 
@@ -31,10 +30,15 @@ public class ArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
     protected ArtifactReporter reporter;
+
     protected ArtifactFactory artifactFactory;
+
     protected Artifact artifact;
+
     protected MockArtifactReportProcessor processor;
+
     protected Versioning versioning;
+
     protected Model model;
 
     protected void setUp()
@@ -63,18 +67,23 @@ public class ArtifactReporterTest
 
     public void testArtifactReporterMultipleSuccess()
     {
+        processor.clearList();
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "one" );
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "two" );
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "three" );
+        reporter = new DefaultArtifactReporter();
         processor.processArtifact( model, artifact, reporter, null );
         Iterator success = reporter.getArtifactSuccessIterator();
         assertTrue( success.hasNext() );
         int i;
-        for (i = 0; success.hasNext(); i++)
+        for ( i = 0; success.hasNext(); i++ )
         {
             success.next();
         }
-        assertTrue(i == 3);
+        assertTrue( i == 3 );
+        assertTrue( reporter.getSuccesses() == 3 );
+        assertTrue( reporter.getFailures() == 0 );
+        assertTrue( reporter.getWarnings() == 0 );
     }
 
     public void testArtifactReporterSingleFailure()
@@ -85,6 +94,9 @@ public class ArtifactReporterTest
         assertTrue( failure.hasNext() );
         failure.next();
         assertFalse( failure.hasNext() );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
     }
 
     public void testArtifactReporterMultipleFailure()
@@ -96,21 +108,39 @@ public class ArtifactReporterTest
         Iterator failure = reporter.getArtifactFailureIterator();
         assertTrue( failure.hasNext() );
         int i;
-        for (i = 0; failure.hasNext(); i++)
+        for ( i = 0; failure.hasNext(); i++ )
         {
             failure.next();
         }
-        assertTrue(i == 3);
+        assertTrue( i == 3 );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 3 );
+        assertTrue( reporter.getWarnings() == 0 );
+    }
+
+    public void testFailureMessages()
+    {
+        processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed once" );
+        processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed twice" );
+        processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed thrice" );
+        processor.processArtifact( model, artifact, reporter, null );
+        Iterator failure = reporter.getArtifactFailureIterator();
+        assertTrue( "failed once".equals( ((ArtifactResult) failure.next()).getReason() ) );
+        assertTrue( "failed twice".equals( ((ArtifactResult) failure.next()).getReason() ) );
+        assertTrue( "failed thrice".equals( ((ArtifactResult) failure.next()).getReason() ) );
     }
 
     public void testArtifactReporterSingleWarning()
     {
         processor.addReturnValue( ReportCondition.WARNING, artifact, "you've been warned" );
         processor.processArtifact( model, artifact, reporter, null );
-        Iterator warning = reporter.getArtifactFailureIterator();
+        Iterator warning = reporter.getArtifactWarningIterator();
         assertTrue( warning.hasNext() );
         warning.next();
         assertFalse( warning.hasNext() );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 0 );
+        assertTrue( reporter.getWarnings() == 1 );
     }
 
     public void testArtifactReporterMultipleWarning()
@@ -119,19 +149,35 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.WARNING, artifact, "you have to stop now" );
         processor.addReturnValue( ReportCondition.WARNING, artifact, "all right... that does it!" );
         processor.processArtifact( model, artifact, reporter, null );
-        Iterator warning = reporter.getArtifactFailureIterator();
+        Iterator warning = reporter.getArtifactWarningIterator();
         assertTrue( warning.hasNext() );
         int i;
-        for (i = 0; warning.hasNext(); i++)
+        for ( i = 0; warning.hasNext(); i++ )
         {
             warning.next();
         }
-        assertTrue(i == 3);
+        assertTrue( i == 3 );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 0 );
+        assertTrue( reporter.getWarnings() == 3 );
+    }
+
+    public void testWarningMessages()
+    {
+        processor.addReturnValue( ReportCondition.WARNING, artifact, "i'm warning you" );
+        processor.addReturnValue( ReportCondition.WARNING, artifact, "you have to stop now" );
+        processor.addReturnValue( ReportCondition.WARNING, artifact, "all right... that does it!" );
+        processor.processArtifact( model, artifact, reporter, null );
+        Iterator warning = reporter.getArtifactWarningIterator();
+        assertTrue( "i'm warning you".equals( ((ArtifactResult) warning.next()).getReason() ) );
+        assertTrue( "you have to stop now".equals( ((ArtifactResult) warning.next()).getReason() ) );
+        assertTrue( "all right... that does it!".equals( ((ArtifactResult) warning.next()).getReason() ) );
     }
 
     protected void tearDown()
         throws Exception
     {
+        model = null;
         versioning = null;
         processor.clearList();
         processor = null;

@@ -50,13 +50,14 @@ public class MockRepositoryQueryLayer
         }
         else
         {
-            return ( (Boolean) iterator.next() ).booleanValue();
+            boolean temp = ( (Boolean) iterator.next() ).booleanValue();
+            return temp;
         }
     }
 
     public void addReturnValue( boolean queryCondition )
     {
-        queryConditions.add( Boolean.valueOf( queryCondition ) );
+        queryConditions.add( new Boolean( queryCondition ) );
     }
 
     public void clearList()

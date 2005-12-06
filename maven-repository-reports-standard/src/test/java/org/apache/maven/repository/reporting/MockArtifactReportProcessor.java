@@ -39,7 +39,7 @@ public class MockArtifactReportProcessor
         reportConditions = new ArrayList();
     }
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository )
+    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository artifactRepository )
     {
         if ( iterator == null || !iterator.hasNext() ) // not initialized or reached end of the list. start again
         {
@@ -55,14 +55,17 @@ public class MockArtifactReportProcessor
                     case ReportCondition.SUCCESS:
                         {
                             reporter.addSuccess( reportCondition.getArtifact() );
+                            break;
                         }
                     case ReportCondition.WARNING:
                         {
                             reporter.addWarning( reportCondition.getArtifact(), reportCondition.getReason() );
+                            break;
                         }
                     case ReportCondition.FAILURE:
                         {
                             reporter.addFailure( reportCondition.getArtifact(), reportCondition.getReason() );
+                            break;
                         }
                 }
             }

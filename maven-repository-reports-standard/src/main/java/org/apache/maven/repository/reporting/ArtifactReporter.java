@@ -32,6 +32,11 @@ public interface ArtifactReporter
 {
     String ROLE = ArtifactReporter.class.getName();
 
+    public static String NULL_MODEL = "Provided model was null";
+    public static String NULL_ARTIFACT = "Provided artifact was null";
+    public static String NO_DEPENDENCIES = "Artifact has no dependencies";
+    public static String ARTIFACT_NOT_FOUND = "Artifact does not exist in the repository";
+
     void addFailure( Artifact artifact, String reason );
 
     void addSuccess( Artifact artifact );
@@ -56,4 +61,9 @@ public interface ArtifactReporter
 
     Iterator getRepositoryMetadataWarningIterator();
 
+    int getFailures();
+
+    int getSuccesses();
+
+    int getWarnings();
 }

@@ -27,7 +27,10 @@ public interface RepositoryQueryLayer
 {
     String ROLE = RepositoryQueryLayer.class.getName();
 
+    public final static boolean ARTIFACT_FOUND = true;
+    public final static boolean ARTIFACT_NOT_FOUND = false;
+
     boolean containsArtifact( Artifact artifact );
-    
+
     boolean containsArtifact( Artifact artifact, Snapshot snapshot );
 }

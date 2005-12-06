@@ -103,4 +103,19 @@ public class MockArtifactReporter
     {
         return metadataWarnings.iterator();
     }
+
+    public int getFailures()
+    {
+        return artifactFailures.size();
+    }
+
+    public int getSuccesses()
+    {
+        return artifactSuccesses.size();
+    }
+
+    public int getWarnings()
+    {
+        return artifactWarnings.size();
+    }
 }
