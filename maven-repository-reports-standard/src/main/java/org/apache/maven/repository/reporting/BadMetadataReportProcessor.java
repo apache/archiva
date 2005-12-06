@@ -44,6 +44,16 @@ public class BadMetadataReportProcessor
 
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
+    
+    /**
+     * Process the metadata encountered in the repository and report all errors found, if any.
+     *
+     * @param metadata   the metadata to be processed.
+     * @param repository the repository where the metadata was encountered
+     * @param reporter   the ArtifactReporter to receive processing results
+     *
+     * @throws ReportProcessorException if an error was occurred while processing the metadata
+     */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
         throws ReportProcessorException
     {
@@ -94,7 +104,11 @@ public class BadMetadataReportProcessor
     }
 
     /**
-     * Checks the plugin metadata
+     * Method for processing a GroupRepositoryMetadata
+     *
+     * @param metadata   the metadata to be processed.
+     * @param repository the repository where the metadata was encountered
+     * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
                                         ArtifactReporter reporter )
@@ -150,7 +164,11 @@ public class BadMetadataReportProcessor
     }
 
     /**
-     * Checks the snapshot metadata
+     * Method for processing a SnapshotArtifactRepository
+     *
+     * @param metadata   the metadata to be processed.
+     * @param repository the repository where the metadata was encountered
+     * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
                                            ArtifactReporter reporter )
@@ -175,7 +193,11 @@ public class BadMetadataReportProcessor
     }
 
     /**
-     * Checks the declared metadata versions if the artifacts are present in the repository
+     * Method for validating the versions declared inside an ArtifactRepositoryMetadata
+     *
+     * @param metadata   the metadata to be processed.
+     * @param repository the repository where the metadata was encountered
+     * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
                                            ArtifactReporter reporter )
@@ -203,7 +225,11 @@ public class BadMetadataReportProcessor
 
     /**
      * Searches the artifact repository directory for all versions and verifies that all of them are listed in the
-     * metadata file.
+     * ArtifactRepositoryMetadata
+     *
+     * @param metadata   the metadata to be processed.
+     * @param repository the repository where the metadata was encountered
+     * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
                                              ArtifactReporter reporter )
