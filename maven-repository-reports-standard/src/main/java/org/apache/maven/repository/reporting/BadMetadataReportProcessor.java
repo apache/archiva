@@ -27,6 +27,8 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +63,14 @@ public class BadMetadataReportProcessor
 
         if ( metadata.storedInGroupDirectory() )
         {
-            checkPluginMetadata( metadata, repository, reporter );
+            try
+            {
+                checkPluginMetadata( metadata, repository, reporter );
+            }
+            catch ( IOException e )
+            {
+                throw new ReportProcessorException( "Error getting plugin artifact directories versions", e );
+            }
         }
         else
         {
@@ -112,11 +121,13 @@ public class BadMetadataReportProcessor
      */
     protected boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
                                         ArtifactReporter reporter )
+        throws IOException
     {
         boolean hasFailures = false;
 
         File metadataDir =
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
+        List pluginDirs = getArtifactIdFiles( metadataDir );
 
         HashMap prefixes = new HashMap();
         for ( Iterator plugins = metadata.getMetadata().getPlugins().iterator(); plugins.hasNext(); )
@@ -149,15 +160,30 @@ public class BadMetadataReportProcessor
                 }
             }
 
-            if ( artifactId != null )
+            if ( artifactId != null && artifactId.length() > 0 )
             {
                 File pluginDir = new File( metadataDir, artifactId );
-                if ( !pluginDir.exists() )
+                if ( !pluginDirs.contains( pluginDir ) )
                 {
-                    reporter.addFailure( metadata, "Metadata plugin " + artifactId + " is not present in the repository" );
+                    reporter.addFailure( metadata, "Metadata plugin " + artifactId + " not found in the repository" );
                     hasFailures = true;
                 }
+                else
+                {
+                    pluginDirs.remove( pluginDir );
+                }
             }
+        }
+        
+        if ( pluginDirs.size() > 0 )
+        {
+            for( Iterator plugins = pluginDirs.iterator(); plugins.hasNext(); )
+            {
+                File plugin = (File) plugins.next();
+                reporter.addFailure( metadata, "Plugin " + plugin.getName() + " is present in the repository but " +
+                    "missing in the metadata." );
+            }
+            hasFailures = true;
         }
 
         return hasFailures;
@@ -270,5 +296,31 @@ public class BadMetadataReportProcessor
     private Artifact createArtifact( RepositoryMetadata metadata, String version )
     {
         return artifactFactory.createBuildArtifact( metadata.getGroupId(), metadata.getArtifactId(), version, "pom" );
+    }
+    
+    /**
+     * Used to gather artifactIds from a groupId directory
+     */
+    private List getArtifactIdFiles( File groupIdDir )
+        throws IOException
+    {
+        List artifactIdFiles = new ArrayList();
+        
+        List fileArray = new ArrayList( Arrays.asList( groupIdDir.listFiles() ) );
+        for( Iterator files=fileArray.iterator(); files.hasNext(); )
+        {
+            File artifactDir = (File) files.next();
+            
+            if ( artifactDir.isDirectory() )
+            {
+                List versions = FileUtils.getFileNames( artifactDir, "*/*.pom", null, false );
+                if ( versions.size() > 0 )
+                {
+                    artifactIdFiles.add( artifactDir );
+                }
+            }
+        }
+        
+        return artifactIdFiles;
     }
 }

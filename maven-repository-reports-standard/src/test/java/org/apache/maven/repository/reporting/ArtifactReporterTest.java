@@ -54,7 +54,7 @@ public class ArtifactReporterTest
     public void testArtifactReporterSingleSuccess()
     {
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "all is good" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator success = reporter.getArtifactSuccessIterator();
         assertTrue( success.hasNext() );
         success.next();
@@ -66,7 +66,7 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "one" );
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "two" );
         processor.addReturnValue( ReportCondition.SUCCESS, artifact, "three" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator success = reporter.getArtifactSuccessIterator();
         assertTrue( success.hasNext() );
         int i;
@@ -80,7 +80,7 @@ public class ArtifactReporterTest
     public void testArtifactReporterSingleFailure()
     {
         processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed once" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator failure = reporter.getArtifactFailureIterator();
         assertTrue( failure.hasNext() );
         failure.next();
@@ -92,7 +92,7 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed once" );
         processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed twice" );
         processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed thrice" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator failure = reporter.getArtifactFailureIterator();
         assertTrue( failure.hasNext() );
         int i;
@@ -106,7 +106,7 @@ public class ArtifactReporterTest
     public void testArtifactReporterSingleWarning()
     {
         processor.addReturnValue( ReportCondition.WARNING, artifact, "you've been warned" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator warning = reporter.getArtifactFailureIterator();
         assertTrue( warning.hasNext() );
         warning.next();
@@ -118,7 +118,7 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.WARNING, artifact, "i'm warning you" );
         processor.addReturnValue( ReportCondition.WARNING, artifact, "you have to stop now" );
         processor.addReturnValue( ReportCondition.WARNING, artifact, "all right... that does it!" );
-        processor.processArtifact( model, artifact, reporter );
+        processor.processArtifact( model, artifact, reporter, null );
         Iterator warning = reporter.getArtifactFailureIterator();
         assertTrue( warning.hasNext() );
         int i;

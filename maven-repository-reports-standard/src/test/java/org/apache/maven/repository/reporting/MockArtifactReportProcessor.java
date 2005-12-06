@@ -1,6 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class MockArtifactReportProcessor
         reportConditions = new ArrayList();
     }
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter )
+    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository )
     {
         if ( iterator == null || !iterator.hasNext() ) // not initialized or reached end of the list. start again
         {

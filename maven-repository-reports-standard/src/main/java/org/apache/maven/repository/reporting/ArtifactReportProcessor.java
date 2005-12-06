@@ -18,6 +18,7 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 
 /**
@@ -28,5 +29,6 @@ public interface ArtifactReportProcessor
 {
     String ROLE = ArtifactReportProcessor.class.getName();
 
-    void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter );
+    void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository );
+    
 }

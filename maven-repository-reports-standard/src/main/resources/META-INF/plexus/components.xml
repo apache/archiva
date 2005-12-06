@@ -17,5 +17,11 @@
         </requirement>
       </requirements>
     </component>
+    <component>
+    	<role>org.apache.maven.repository.reporting.ArtifactReportProcessor</role>
+    	<role-hint>default</role-hint>
+    	<implementation>org.apache.maven.repository.reporting.ChecksumArtifactReporter</implementation>
+    	<instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
   </components>
 </component-set>

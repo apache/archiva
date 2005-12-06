@@ -20,13 +20,13 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 
 import java.util.Iterator;
-import org.apache.maven.artifact.repository.metadata.Plugin;
-import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 
 /**
  * @todo???  should use MetadataXpp3Reader instead ?
@@ -187,6 +187,7 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
         
         badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
         
@@ -200,7 +201,9 @@ public class BadMetadataReportProcessorTest
         ArtifactReporter reporter = new MockArtifactReporter();
 
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
-        metadata.getMetadata().addPlugin( createMetadataPlugin( "missing-plugin", "default" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "missing-plugin", "default3" ) );
         
         badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
 
@@ -208,7 +211,7 @@ public class BadMetadataReportProcessorTest
         assertTrue( "check there is a failure", failures.hasNext() );
         RepositoryMetadataResult result = (RepositoryMetadataResult) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason", "Metadata plugin missing-plugin is not present in the repository", result.getReason() );
+        assertEquals( "check reason", "Metadata plugin missing-plugin not found in the repository", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
     
@@ -218,8 +221,10 @@ public class BadMetadataReportProcessorTest
         ArtifactReporter reporter = new MockArtifactReporter();
 
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
-        metadata.getMetadata().addPlugin( createMetadataPlugin( null, "default" ) );
-        metadata.getMetadata().addPlugin( createMetadataPlugin( "", "default2" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( null, "default3" ) );
+        metadata.getMetadata().addPlugin( createMetadataPlugin( "", "default4" ) );
         
         badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
 
