@@ -23,7 +23,7 @@ import org.apache.maven.artifact.repository.metadata.Snapshot;
 import java.io.File;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class DefaultRepositoryQueryLayer
     implements RepositoryQueryLayer

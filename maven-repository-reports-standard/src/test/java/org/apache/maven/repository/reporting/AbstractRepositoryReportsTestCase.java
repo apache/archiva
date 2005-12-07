@@ -25,7 +25,7 @@ import org.codehaus.plexus.PlexusTestCase;
 import java.io.File;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public abstract class AbstractRepositoryReportsTestCase
     extends PlexusTestCase

@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class MockRepositoryQueryLayer
     implements RepositoryQueryLayer

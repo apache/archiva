@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class MockArtifact
     implements Artifact

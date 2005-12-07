@@ -19,7 +19,7 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.Artifact;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class ReportCondition
 {

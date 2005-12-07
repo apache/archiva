@@ -21,7 +21,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.artifact.Artifact;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class ArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase

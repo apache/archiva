@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Iterator;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class DefaultArtifactReportProcessor
     implements ArtifactReportProcessor

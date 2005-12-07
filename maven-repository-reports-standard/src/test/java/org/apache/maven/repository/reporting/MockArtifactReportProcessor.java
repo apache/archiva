@@ -25,7 +25,7 @@ import java.util.ArrayList;
  */
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class MockArtifactReportProcessor
     implements ArtifactReportProcessor

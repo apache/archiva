@@ -24,7 +24,7 @@ import org.apache.maven.model.Model;
 import java.util.Iterator;
 
 /**
- * @author <a href="mailto:jtolentino@mergere.com">John Tolentino</a>
+ * 
  */
 public class ArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
