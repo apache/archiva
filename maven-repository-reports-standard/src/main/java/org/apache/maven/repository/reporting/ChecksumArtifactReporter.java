@@ -60,10 +60,9 @@ public class ChecksumArtifactReporter
         System.out.println( " " );
         System.out
             .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
+        
         String artifactUrl = "";
         String repositoryUrl = repository.getUrl();
-        System.out.println("REPOSITORY PROTOCOL ------>>>> " + repository.getProtocol());
-
         artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/"
             + artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getBaseVersion() + "."
             + artifact.getType();
