@@ -33,12 +33,21 @@ import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
+/**
+ * @TODO
+ *  - Create more valid and invalid artifacts & metadata files for further testing.
+ *
+ * This class creates the artifact and metadata files used for testing the ChecksumArtifactReporter.
+ * It is extended by ChecksumArtifactReporterTest class.
+ */
 public class AbstractChecksumArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
     protected static final String[] validArtifactChecksumJars = { "validArtifact-1.0" };
 
     protected static final String[] invalidArtifactChecksumJars = { "invalidArtifact-1.0" };
+
+    protected static final String metadataChecksumFilename = "maven-metadata";
 
     public AbstractChecksumArtifactReporterTest()
     {
@@ -93,6 +102,29 @@ public class AbstractChecksumArtifactReporterTest
     }
 
     /**
+     * Create checksum files for metadata.
+     * @param type The type of checksum to be created. (Valid or invalid)
+     * @return
+     */
+    protected boolean createMetadataFile( String type )
+    {
+        boolean written = true;
+
+        //loop through the valid artifact names..
+        if ( type.equals( "VALID" ) )
+        {
+            writeMetadataFile( "checksumTest/validArtifact/1.0/", metadataChecksumFilename, "xml", true );
+
+        }
+        else if ( type.equals( "INVALID" ) )
+        {
+            writeMetadataFile( "checksumTest/invalidArtifact/1.0/", metadataChecksumFilename, "xml", false );
+        }
+
+        return written;
+    }
+
+    /**
      * Create artifact together with its checksums.
      * @param relativePath The groupId
      * @param filename The filename of the artifact to be created.
@@ -102,12 +134,13 @@ public class AbstractChecksumArtifactReporterTest
      */
     private boolean writeChecksumFile( String relativePath, String filename, String type, boolean isValid )
     {
+        System.out.println( " " );
+        System.out.println( "========================= ARTIFACT CHECKSUM ==================================" );
 
         //Initialize variables for creating jar files
         FileOutputStream f = null;
         JarOutputStream out = null;
         String repoUrl = super.repository.getUrl();
-
         try
         {
             String dirs = filename.replace( '-', '/' );
@@ -175,6 +208,76 @@ public class AbstractChecksumArtifactReporterTest
         {
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Create metadata file together with its checksums.
+     * @param relativePath The groupId
+     * @param filename The filename of the artifact to be created.
+     * @param type The file type (JAR)
+     * @param isValid Indicates whether the checksum to be created is valid or not.
+     * @return
+     */
+    private boolean writeMetadataFile( String relativePath, String filename, String type, boolean isValid )
+    {
+        System.out.println( " " );
+        System.out.println( "========================= METADATA CHECKSUM ==================================" );
+        try
+        {
+            //create checksum for the metadata file..
+            String repoUrl = super.repository.getUrl();
+
+            //System.out.println( "REPO URL :::: " + repoUrl );
+            String[] split1 = repoUrl.split( "file:/" );
+            split1[1] = split1[1] + "/";
+
+            // get the pre-created metadata file
+            String[] split = split1[1].split( "/repository" );
+            String url = split[0] + "/" + filename + "." + type;
+            //System.out.println( "URL of maven-metadata file :: " + url );
+
+            boolean copied = copyFile( url, split1[1] + relativePath + filename + "." + type );
+            //System.out.println( "META FILE COPIED ---->>> " + copied );
+
+            //Create md5 and sha-1 checksum files..
+            byte[] md5chk = createChecksum( split1[1] + relativePath + filename + "." + type, "MD5" );
+            byte[] sha1chk = createChecksum( split1[1] + relativePath + filename + "." + type, "SHA-1" );
+            System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
+            System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
+
+            File file = null;
+
+            if ( md5chk != null )
+            {
+                file = new File( split1[1] + relativePath + filename + "." + type + ".md5" );
+                OutputStream os = new FileOutputStream( file );
+                OutputStreamWriter osw = new OutputStreamWriter( os );
+                if ( !isValid )
+                    osw.write( byteArrayToHexStr( md5chk ) + "1" );
+                else
+                    osw.write( byteArrayToHexStr( md5chk ) );
+                osw.close();
+            }
+
+            if ( sha1chk != null )
+            {
+                file = new File( split1[1] + relativePath + filename + "." + type + ".sha1" );
+                OutputStream os = new FileOutputStream( file );
+                OutputStreamWriter osw = new OutputStreamWriter( os );
+                if ( !isValid )
+                    osw.write( byteArrayToHexStr( sha1chk ) + "2" );
+                else
+                    osw.write( byteArrayToHexStr( sha1chk ) );
+                osw.close();
+            }
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            return false;
+        }
+
         return true;
     }
 
@@ -255,6 +358,80 @@ public class AbstractChecksumArtifactReporterTest
         }
 
         return output.toUpperCase();
+    }
+
+    /**
+     * Copy created metadata file to the repository.
+     * @param srcUrl
+     * @param destUrl
+     * @return
+     */
+    private boolean copyFile( String srcUrl, String destUrl )
+    {
+        try
+        {
+            //source file
+            File src = new File( srcUrl );
+            //destination file
+            File dest = new File( destUrl );
+
+            InputStream in = new FileInputStream( src );
+            OutputStream out = new FileOutputStream( dest );
+
+            byte[] buf = new byte[1024];
+            int len;
+            while ( ( len = in.read( buf ) ) > 0 )
+            {
+                out.write( buf, 0, len );
+            }
+            in.close();
+            out.close();
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Delete the test directory created in the repository.
+     * @param dirname The directory to be deleted.
+     * @return
+     */
+    protected boolean deleteTestDirectory( File dir )
+    {
+        boolean b = false;
+
+        if ( dir.isDirectory() == true )
+        {
+            if ( dir.listFiles().length > 0 )
+            {
+                File[] files = dir.listFiles();
+                for ( int i = 0; i < files.length; i++ )
+                {
+                    b = this.deleteTestDirectory( files[i] );
+                                        
+                    //check if this is the last file in the directory
+                    //delete the parent file
+                    if((i == (files.length - 1)) && b == true){
+                        String[] split = dir.getAbsolutePath().split("/repository");
+                        if(!files[i].getParent().equals(split[0] + "/repository")){
+                            b = this.deleteTestDirectory(new File(files[i].getParent()));
+                        }
+                    }
+                }
+                
+            }else{
+                b = dir.delete();
+            }
+        }
+        else
+        {
+            b = dir.delete();
+        }
+
+        return b;
     }
 
 }

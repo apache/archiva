@@ -34,6 +34,9 @@ import org.apache.maven.artifact.repository.*;
 /**
  * This class reports invalid and mismatched checksums of artifacts and metadata files. 
  * It validates MD5 and SHA-1 chacksums.
+ * 
+ * @TODO 
+ *  - Validate using remote repository.
  */
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor, MetadataReportProcessor
@@ -54,16 +57,22 @@ public class ChecksumArtifactReporter
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                 ArtifactRepository repository )
     {
+        System.out.println( " " );
+        System.out
+            .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
         String artifactUrl = "";
         String repositoryUrl = repository.getUrl();
+        System.out.println("REPOSITORY PROTOCOL ------>>>> " + repository.getProtocol());
 
         artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/"
             + artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getBaseVersion() + "."
             + artifact.getType();
+        //System.out.println("ARTIFACT URL ------->>>> " + artifactUrl);
 
         //check if checksum files exist
         boolean md5Exists = getMD5File( artifactUrl );
         boolean sha1Exists = getSHA1File( artifactUrl );
+
         if ( md5Exists )
         {
             if ( validateChecksum( artifactUrl, "MD5" ) )
@@ -95,37 +104,63 @@ public class ChecksumArtifactReporter
      */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
     {
+        System.out.println( " " );
+        System.out
+            .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
 
-        /*
-         String metadataUrl = "";
-         String filename = metadata.getLocalFilename(repository);
-         String repositoryUrl = repository.getUrl();
-         
-         String groupId, artifactId, version;
-         version = metadata.getBaseVersion();
-         groupId = metadata.getGroupId();
-         artifactId = metadata.getArtifactId();
-         
-         //version metadata
-         if(metadata.storedInArtifactVersionDirectory() == true && metadata.storedInGroupDirectory() == false){
-         metadataUrl = repositoryUrl + groupId + "/" + artifactId + "/" + version;
-         //group metadata
-         }else if(metadata.storedInArtifactVersionDirectory() == false && metadata.storedInGroupDirectory() == true){
-         metadataUrl = repositoryUrl + groupId;
-         //artifact metadata
-         }else{
-         metadataUrl = repositoryUrl + groupId + "/" + artifactId;
-         }
-         
-         metadataUrl = metadataUrl + "/" + filename;        
-         boolean valid = validateChecksum(metadataUrl);
-         
-         if(!valid){
-         reporter.addFailure(metadata, "Mismatched metadata checksum.");
-         }else{
-         reporter.addSuccess(metadata);
-         }
-         */
+        String metadataUrl = "";
+        String repositoryUrl = repository.getUrl();
+        String filename = metadata.getRemoteFilename();
+
+        //version metadata
+        if ( metadata.storedInArtifactVersionDirectory() == true && metadata.storedInGroupDirectory() == false )
+        {
+            metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/"
+                + metadata.getBaseVersion() + "/";
+            //group metadata
+        }
+        else if ( metadata.storedInArtifactVersionDirectory() == false && metadata.storedInGroupDirectory() == true )
+        {
+            metadataUrl = repositoryUrl + metadata.getGroupId() + "/";
+            //artifact metadata
+        }
+        else
+        {
+            metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/";
+        }
+
+        //add the file name of the metadata
+        metadataUrl = metadataUrl + filename;
+        //System.out.println( "METADATA URL -------> " + metadataUrl );
+
+        //check if checksum files exist
+        boolean md5Exists = getMD5File( metadataUrl );
+        boolean sha1Exists = getSHA1File( metadataUrl );
+
+        if ( md5Exists )
+        {
+            if ( validateChecksum( metadataUrl, "MD5" ) )
+            {
+                reporter.addSuccess( metadata );
+            }
+            else
+            {
+                reporter.addFailure( metadata, "MD5 checksum does not match." );
+            }
+        }
+
+        if ( sha1Exists )
+        {
+            if ( validateChecksum( metadataUrl, "SHA-1" ) )
+            {
+                reporter.addSuccess( metadata );
+            }
+            else
+            {
+                reporter.addFailure( metadata, "SHA-1 checksum does not match." );
+            }
+        }
+
     }
 
     /**
@@ -138,6 +173,7 @@ public class ChecksumArtifactReporter
         try
         {
             md5InputStream = new FileInputStream( filename + ".md5" );
+            md5InputStream.close();
         }
         catch ( Exception e )
         {
@@ -156,6 +192,7 @@ public class ChecksumArtifactReporter
         try
         {
             sha1InputStream = new FileInputStream( filename + ".sha1" );
+            sha1InputStream.close();
         }
         catch ( Exception e )
         {

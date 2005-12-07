@@ -23,5 +23,11 @@
     	<implementation>org.apache.maven.repository.reporting.ChecksumArtifactReporter</implementation>
     	<instantiation-strategy>per-lookup</instantiation-strategy>
     </component>
+    <component>
+    	<role>org.apache.maven.repository.reporting.MetadataReportProcessor</role>
+    	<role-hint>checksum-metadata</role-hint>
+    	<implementation>org.apache.maven.repository.reporting.ChecksumArtifactReporter</implementation>
+    	<instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
   </components>
 </component-set>
