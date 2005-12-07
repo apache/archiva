@@ -17,7 +17,6 @@ package org.apache.maven.repository.reporting;
  * limitations under the License. 
  */
 
-import java.util.Iterator;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
@@ -26,6 +25,8 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.versioning.VersionRange;
+
+import java.util.Iterator;
 
 public class ChecksumArtifactReporterTest
     extends AbstractChecksumArtifactReporterTest

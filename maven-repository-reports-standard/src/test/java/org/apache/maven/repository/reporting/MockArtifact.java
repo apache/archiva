@@ -35,24 +35,28 @@ import java.util.List;
 public class MockArtifact
     implements Artifact
 {
+    private String groupId;
+    private String artifactId;
+    private String version;
 
     public String getGroupId()
     {
-        return null;
+        return groupId;
     }
 
     public String getArtifactId()
     {
-        return null;
+        return artifactId;
     }
 
     public String getVersion()
     {
-        return null;
+        return version;
     }
 
     public void setVersion( String s )
     {
+        version = s;
     }
 
     public String getScope()
@@ -176,10 +180,12 @@ public class MockArtifact
 
     public void setGroupId( String s )
     {
+        groupId = s;
     }
 
     public void setArtifactId( String s )
     {
+        artifactId = s;
     }
 
     public boolean isSnapshot()

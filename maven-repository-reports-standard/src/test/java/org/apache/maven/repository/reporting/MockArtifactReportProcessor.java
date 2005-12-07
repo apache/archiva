@@ -1,13 +1,5 @@
 package org.apache.maven.repository.reporting;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.Model;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
  *
@@ -23,6 +15,14 @@ import java.util.ArrayList;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Model;
+
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * 

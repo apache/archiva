@@ -34,8 +34,15 @@ public interface ArtifactReporter
 
     public static String NULL_MODEL = "Provided model was null";
     public static String NULL_ARTIFACT = "Provided artifact was null";
+    public static String EMPTY_GROUP_ID = "Group id was empty or null";
+    public static String EMPTY_ARTIFACT_ID = "Artifact id was empty or null";
+    public static String EMPTY_VERSION = "Version was empty or null";
+    public static String EMPTY_DEPENDENCY_GROUP_ID = "Group id was empty or null";
+    public static String EMPTY_DEPENDENCY_ARTIFACT_ID = "Artifact id was empty or null";
+    public static String EMPTY_DEPENDENCY_VERSION = "Version was empty or null";
     public static String NO_DEPENDENCIES = "Artifact has no dependencies";
     public static String ARTIFACT_NOT_FOUND = "Artifact does not exist in the repository";
+    public static String DEPENDENCY_NOT_FOUND = "Artifact's dependency does not exist in the repository";
 
     void addFailure( Artifact artifact, String reason );
 

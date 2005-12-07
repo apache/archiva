@@ -20,12 +20,18 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.artifact.Artifact;
 
+import java.util.Iterator;
+
 /**
  * 
  */
 public class ArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
+    private final static String EMPTY_STRING = "";
+
+    private final static String VALID = "temp";
+
     protected MockArtifactReporter reporter;
 
     protected Artifact artifact;
@@ -50,14 +56,24 @@ public class ArtifactReportProcessorTest
         assertTrue( reporter.getSuccesses() == 0 );
         assertTrue( reporter.getFailures() == 1 );
         assertTrue( reporter.getWarnings() == 0 );
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.NULL_ARTIFACT.equals( result.getReason() ) );
     }
 
     public void testNoProjectDescriptor()
     {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+        setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( null, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getSuccesses() == 1 );
         assertTrue( reporter.getFailures() == 1 );
         assertTrue( reporter.getWarnings() == 0 );
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.NULL_MODEL.equals( result.getReason() ) );
     }
 
     public void testArtifactFoundButNoDirectDependencies()
@@ -65,6 +81,7 @@ public class ArtifactReportProcessorTest
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
+        setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
         assertTrue( reporter.getSuccesses() == 1 );
         assertTrue( reporter.getFailures() == 0 );
@@ -76,9 +93,34 @@ public class ArtifactReportProcessorTest
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_NOT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
+        setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
         assertTrue( reporter.getSuccesses() == 0 );
         assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.ARTIFACT_NOT_FOUND.equals( result.getReason() ) );
+    }
+
+    public void testValidArtifactWithNullDependency()
+    {
+        MockArtifactFactory artifactFactory = new MockArtifactFactory();
+        processor.setArtifactFactory( artifactFactory );
+
+        setRequiredElements( artifact, VALID, VALID, VALID );
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, VALID, VALID );
+        model.addDependency( dependency );
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        processor.setRepositoryQueryLayer( queryLayer );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 2 );
+        assertTrue( reporter.getFailures() == 0 );
         assertTrue( reporter.getWarnings() == 0 );
     }
 
@@ -87,10 +129,12 @@ public class ArtifactReportProcessorTest
         MockArtifactFactory artifactFactory = new MockArtifactFactory();
         processor.setArtifactFactory( artifactFactory );
 
+        setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
@@ -110,6 +154,7 @@ public class ArtifactReportProcessorTest
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
         model.addDependency( dependency );
@@ -121,6 +166,7 @@ public class ArtifactReportProcessorTest
         model.addDependency( dependency );
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
+        setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
         assertTrue( reporter.getSuccesses() == 6 );
@@ -137,6 +183,7 @@ public class ArtifactReportProcessorTest
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
         model.addDependency( dependency );
@@ -148,11 +195,243 @@ public class ArtifactReportProcessorTest
         model.addDependency( dependency );
         queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
 
+        setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
         assertTrue( reporter.getSuccesses() == 5 );
         assertTrue( reporter.getFailures() == 1 );
         assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.DEPENDENCY_NOT_FOUND.equals( result.getReason() ) );
+    }
+
+    public void testEmptyGroupId()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, EMPTY_STRING, VALID, VALID );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+    }
+
+    public void testEmptyArtifactId()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, VALID, EMPTY_STRING, VALID );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+    }
+
+    public void testEmptyVersion()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, VALID, VALID, EMPTY_STRING );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+    }
+
+    public void testNullGroupId()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, null, VALID, VALID );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+    }
+
+    public void testNullArtifactId()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, VALID, null, VALID );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+    }
+
+    public void testNullVersion()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, VALID, VALID, null );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+    }
+
+    public void testMultipleFailures()
+    {
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        processor.setRepositoryQueryLayer( queryLayer );
+
+        setRequiredElements( artifact, null, null, null );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 0 );
+        assertTrue( reporter.getFailures() == 3 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+        result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+        result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+    }
+
+    public void testValidArtifactWithInvalidDependencyGroupId()
+    {
+        MockArtifactFactory artifactFactory = new MockArtifactFactory();
+        processor.setArtifactFactory( artifactFactory );
+
+        setRequiredElements( artifact, VALID, VALID, VALID );
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        Dependency dependency = new Dependency();
+        setRequiredElements( dependency, null, VALID, VALID );
+        model.addDependency( dependency );
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        processor.setRepositoryQueryLayer( queryLayer );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 1 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID.equals( result.getReason() ) );
+    }
+
+    public void testValidArtifactWithInvalidDependencyArtifactId()
+    {
+        MockArtifactFactory artifactFactory = new MockArtifactFactory();
+        processor.setArtifactFactory( artifactFactory );
+
+        setRequiredElements( artifact, VALID, VALID, VALID );
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, null, VALID );
+        model.addDependency( dependency );
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        processor.setRepositoryQueryLayer( queryLayer );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 1 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID.equals( result.getReason() ) );
+    }
+
+    public void testValidArtifactWithInvalidDependencyVersion()
+    {
+        MockArtifactFactory artifactFactory = new MockArtifactFactory();
+        processor.setArtifactFactory( artifactFactory );
+
+        setRequiredElements( artifact, VALID, VALID, VALID );
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        Dependency dependency = new Dependency();
+        setRequiredElements( dependency, VALID, VALID, null );
+        model.addDependency( dependency );
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        processor.setRepositoryQueryLayer( queryLayer );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 1 );
+        assertTrue( reporter.getFailures() == 1 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_VERSION.equals( result.getReason() ) );
+    }
+
+    public void testValidArtifactWithInvalidDependencyRequiredElements()
+    {
+        MockArtifactFactory artifactFactory = new MockArtifactFactory();
+        processor.setArtifactFactory( artifactFactory );
+
+        setRequiredElements( artifact, VALID, VALID, VALID );
+        MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        Dependency dependency = new Dependency();
+        setRequiredElements( dependency, null, null, null );
+        model.addDependency( dependency );
+        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+
+        processor.setRepositoryQueryLayer( queryLayer );
+        processor.processArtifact( model, artifact, reporter, null );
+        assertTrue( reporter.getSuccesses() == 1 );
+        assertTrue( reporter.getFailures() == 3 );
+        assertTrue( reporter.getWarnings() == 0 );
+
+        Iterator failures = reporter.getArtifactFailureIterator();
+        ArtifactResult result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID.equals( result.getReason() ) );
+        result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID.equals( result.getReason() ) );
+        result = (ArtifactResult) failures.next();
+        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_VERSION.equals( result.getReason() ) );
     }
 
     protected void tearDown()
@@ -162,5 +441,19 @@ public class ArtifactReportProcessorTest
         artifact = null;
         reporter = null;
         super.tearDown();
+    }
+
+    protected void setRequiredElements( Artifact artifact, String groupId, String artifactId, String version )
+    {
+        artifact.setGroupId( groupId );
+        artifact.setArtifactId( artifactId );
+        artifact.setVersion( version );
+    }
+
+    protected void setRequiredElements( Dependency dependency, String groupId, String artifactId, String version )
+    {
+        dependency.setGroupId( groupId );
+        dependency.setArtifactId( artifactId );
+        dependency.setVersion( version );
     }
 }

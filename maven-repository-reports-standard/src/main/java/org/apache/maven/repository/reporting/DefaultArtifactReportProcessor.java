@@ -31,18 +31,25 @@ import java.util.Iterator;
 public class DefaultArtifactReportProcessor
     implements ArtifactReportProcessor
 {
+    private final static String EMPTY_STRING = "";
 
     // plexus components
     private ArtifactFactory artifactFactory;
 
     private RepositoryQueryLayer repositoryQueryLayer;
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository )
+    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
+                                 ArtifactRepository repository )
     {
         if ( artifact == null )
         {
             reporter.addFailure( artifact, ArtifactReporter.NULL_ARTIFACT );
         }
+        else
+        {
+            processArtifact( artifact, reporter );
+        }
+
         if ( model == null )
         {
             reporter.addFailure( artifact, ArtifactReporter.NULL_MODEL );
@@ -50,38 +57,85 @@ public class DefaultArtifactReportProcessor
         else
         {
             List dependencies = model.getDependencies();
-            if ( ( artifact != null ) && ( model != null ) && ( dependencies != null ) )
+            processDependencies( dependencies, reporter );
+        }
+    }
+
+    protected void processArtifact( Artifact artifact, ArtifactReporter reporter )
+    {
+        boolean hasFailed = false;
+        if ( EMPTY_STRING.equals( artifact.getGroupId() ) || artifact.getGroupId() == null )
+        {
+            reporter.addFailure( artifact, ArtifactReporter.EMPTY_GROUP_ID );
+            hasFailed = true;
+        }
+        if ( EMPTY_STRING.equals( artifact.getArtifactId() ) || artifact.getArtifactId() == null )
+        {
+            reporter.addFailure( artifact, ArtifactReporter.EMPTY_ARTIFACT_ID );
+            hasFailed = true;
+        }
+        if ( EMPTY_STRING.equals( artifact.getVersion() ) || artifact.getVersion() == null )
+        {
+            reporter.addFailure( artifact, ArtifactReporter.EMPTY_VERSION );
+            hasFailed = true;
+        }
+        if ( !hasFailed )
+        {
+            if ( repositoryQueryLayer.containsArtifact( artifact ) )
             {
-                if ( repositoryQueryLayer.containsArtifact( artifact ) )
-                {
-                    reporter.addSuccess( artifact );
-                }
-                else
-                {
-                    reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
-                }
-                if ( dependencies.size() > 0 )
-                {
-                    Iterator iterator = dependencies.iterator();
-                    while ( iterator.hasNext() )
-                    {
-                        Dependency dependency = (Dependency) iterator.next();
-                        if ( repositoryQueryLayer.containsArtifact( createArtifact( dependency ) ) )
-                        {
-                            reporter.addSuccess( artifact );
-                        }
-                        else
-                        {
-                            reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
-                        }
-                    }
-                }
+                reporter.addSuccess( artifact );
+            }
+            else
+            {
+                reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
             }
         }
     }
 
+    protected void processDependencies( List dependencies, ArtifactReporter reporter )
+    {
+        if ( dependencies.size() > 0 )
+        {
+            Iterator iterator = dependencies.iterator();
+            while ( iterator.hasNext() )
+            {
+                boolean hasFailed = false;
+                Dependency dependency = (Dependency) iterator.next();
+                Artifact artifact = createArtifact( dependency );
+                if ( EMPTY_STRING.equals( dependency.getGroupId() ) || dependency.getGroupId() == null )
+                {
+                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID );
+                    hasFailed = true;
+                }
+                if ( EMPTY_STRING.equals( dependency.getArtifactId() ) || dependency.getArtifactId() == null )
+                {
+                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID );
+                    hasFailed = true;
+                }
+                if ( EMPTY_STRING.equals( dependency.getVersion() ) || dependency.getVersion() == null )
+                {
+                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_VERSION );
+                    hasFailed = true;
+                }
+                if ( !hasFailed )
+                {
+                    if ( repositoryQueryLayer.containsArtifact( artifact ) )
+                    {
+                        reporter.addSuccess( artifact );
+                    }
+                    else
+                    {
+                        reporter.addFailure( artifact, ArtifactReporter.DEPENDENCY_NOT_FOUND );
+                    }
+                }
+            }
+        }
+
+    }
+
     /**
      * Only used for passing a mock object when unit testing
+     *
      * @param repositoryQueryLayer
      */
     protected void setRepositoryQueryLayer( RepositoryQueryLayer repositoryQueryLayer )
@@ -91,6 +145,7 @@ public class DefaultArtifactReportProcessor
 
     /**
      * Only used for passing a mock object when unit testing
+     *
      * @param artifactFactory
      */
     protected void setArtifactFactory( ArtifactFactory artifactFactory )

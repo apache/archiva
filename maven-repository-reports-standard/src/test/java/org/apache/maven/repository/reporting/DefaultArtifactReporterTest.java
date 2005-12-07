@@ -16,12 +16,13 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import java.util.Iterator;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
+
+import java.util.Iterator;
 
 /**
  *

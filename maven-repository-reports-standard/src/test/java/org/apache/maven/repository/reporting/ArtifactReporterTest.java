@@ -61,7 +61,11 @@ public class ArtifactReporterTest
         processor.processArtifact( model, artifact, reporter, null );
         Iterator success = reporter.getArtifactSuccessIterator();
         assertTrue( success.hasNext() );
-        success.next();
+        assertTrue( reporter.getSuccesses() == 1 );
+        Artifact result = ( (ArtifactResult) success.next() ).getArtifact();
+        assertTrue( "groupId".equals( result.getGroupId() ) );
+        assertTrue( "artifactId".equals( result.getArtifactId() ) );
+        assertTrue( "1.0-alpha-1".equals( result.getVersion() ) );
         assertFalse( success.hasNext() );
     }
 
@@ -125,9 +129,9 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.FAILURE, artifact, "failed thrice" );
         processor.processArtifact( model, artifact, reporter, null );
         Iterator failure = reporter.getArtifactFailureIterator();
-        assertTrue( "failed once".equals( ((ArtifactResult) failure.next()).getReason() ) );
-        assertTrue( "failed twice".equals( ((ArtifactResult) failure.next()).getReason() ) );
-        assertTrue( "failed thrice".equals( ((ArtifactResult) failure.next()).getReason() ) );
+        assertTrue( "failed once".equals( ( (ArtifactResult) failure.next() ).getReason() ) );
+        assertTrue( "failed twice".equals( ( (ArtifactResult) failure.next() ).getReason() ) );
+        assertTrue( "failed thrice".equals( ( (ArtifactResult) failure.next() ).getReason() ) );
     }
 
     public void testArtifactReporterSingleWarning()
@@ -169,9 +173,9 @@ public class ArtifactReporterTest
         processor.addReturnValue( ReportCondition.WARNING, artifact, "all right... that does it!" );
         processor.processArtifact( model, artifact, reporter, null );
         Iterator warning = reporter.getArtifactWarningIterator();
-        assertTrue( "i'm warning you".equals( ((ArtifactResult) warning.next()).getReason() ) );
-        assertTrue( "you have to stop now".equals( ((ArtifactResult) warning.next()).getReason() ) );
-        assertTrue( "all right... that does it!".equals( ((ArtifactResult) warning.next()).getReason() ) );
+        assertTrue( "i'm warning you".equals( ( (ArtifactResult) warning.next() ).getReason() ) );
+        assertTrue( "you have to stop now".equals( ( (ArtifactResult) warning.next() ).getReason() ) );
+        assertTrue( "all right... that does it!".equals( ( (ArtifactResult) warning.next() ).getReason() ) );
     }
 
     protected void tearDown()
