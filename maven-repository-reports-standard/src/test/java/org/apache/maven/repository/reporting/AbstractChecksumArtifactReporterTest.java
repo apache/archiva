@@ -140,25 +140,25 @@ public class AbstractChecksumArtifactReporterTest
         //Initialize variables for creating jar files
         FileOutputStream f = null;
         JarOutputStream out = null;
-        String repoUrl = super.repository.getUrl();
+        String repoUrl = super.repository.getBasedir();
         try
         {
             String dirs = filename.replace( '-', '/' );
-            String[] split1 = repoUrl.split( "file:/" );
-            split1[1] = split1[1] + "/";
+            //String[] split1 = repoUrl.split( "file:/" );
+            //split1[1] = split1[1] + "/";
 
             //create the group level directory of the artifact    
-            File dirFiles = new File( split1[1] + relativePath + dirs );
+            File dirFiles = new File( repoUrl + relativePath + dirs );
 
             if ( dirFiles.mkdirs() )
             {
 
                 // create a jar file
-                f = new FileOutputStream( split1[1] + relativePath + dirs + "/" + filename + "." + type );
+                f = new FileOutputStream( repoUrl + relativePath + dirs + "/" + filename + "." + type );
                 out = new JarOutputStream( new BufferedOutputStream( f ) );
 
                 // jar sample.txt
-                String filename1 = split1[1] + relativePath + dirs + "/sample.txt";
+                String filename1 = repoUrl + relativePath + dirs + "/sample.txt";
                 boolean bool = createSampleFile( filename1 );
 
                 BufferedReader in = new BufferedReader( new FileReader( filename1 ) );
@@ -172,8 +172,8 @@ public class AbstractChecksumArtifactReporterTest
                 out.close();
 
                 //Create md5 and sha-1 checksum files..
-                byte[] md5chk = createChecksum( split1[1] + relativePath + dirs + "/" + filename + "." + type, "MD5" );
-                byte[] sha1chk = createChecksum( split1[1] + relativePath + dirs + "/" + filename + "." + type, "SHA-1" );
+                byte[] md5chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "MD5" );
+                byte[] sha1chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "SHA-1" );
                 System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
                 System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
 
@@ -181,7 +181,7 @@ public class AbstractChecksumArtifactReporterTest
 
                 if ( md5chk != null )
                 {
-                    file = new File( split1[1] + relativePath + dirs + "/" + filename + "." + type + ".md5" );
+                    file = new File( repoUrl + relativePath + dirs + "/" + filename + "." + type + ".md5" );
                     OutputStream os = new FileOutputStream( file );
                     OutputStreamWriter osw = new OutputStreamWriter( os );
                     if ( !isValid )
@@ -193,7 +193,7 @@ public class AbstractChecksumArtifactReporterTest
 
                 if ( sha1chk != null )
                 {
-                    file = new File( split1[1] + relativePath + dirs + "/" + filename + "." + type + ".sha1" );
+                    file = new File( repoUrl + relativePath + dirs + "/" + filename + "." + type + ".sha1" );
                     OutputStream os = new FileOutputStream( file );
                     OutputStreamWriter osw = new OutputStreamWriter( os );
                     if ( !isValid )
@@ -226,23 +226,22 @@ public class AbstractChecksumArtifactReporterTest
         try
         {
             //create checksum for the metadata file..
-            String repoUrl = super.repository.getUrl();
+            String repoUrl = repository.getBasedir();
+            //System.out.println("repoUrl ---->>> " + repoUrl);
 
-            //System.out.println( "REPO URL :::: " + repoUrl );
-            String[] split1 = repoUrl.split( "file:/" );
-            split1[1] = split1[1] + "/";
+            System.out.println( "REPO URL :::: " + repoUrl );
+           // String[] split1 = repoUrl.split( "file:/" );
+           // split1[1] = split1[1] + "/";
 
-            // get the pre-created metadata file
-            String[] split = split1[1].split( "/repository" );
-            String url = split[0] + "/" + filename + "." + type;
-            //System.out.println( "URL of maven-metadata file :: " + url );
+            String url = repository.getBasedir() + "/" + filename + "." + type;
 
-            boolean copied = copyFile( url, split1[1] + relativePath + filename + "." + type );
+            boolean copied = copyFile( url, repoUrl + relativePath + filename + "." + type );
+            //FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
             //System.out.println( "META FILE COPIED ---->>> " + copied );
 
             //Create md5 and sha-1 checksum files..
-            byte[] md5chk = createChecksum( split1[1] + relativePath + filename + "." + type, "MD5" );
-            byte[] sha1chk = createChecksum( split1[1] + relativePath + filename + "." + type, "SHA-1" );
+            byte[] md5chk = createChecksum( repoUrl + relativePath + filename + "." + type, "MD5" );
+            byte[] sha1chk = createChecksum( repoUrl + relativePath + filename + "." + type, "SHA-1" );
             System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
             System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
 
@@ -250,7 +249,7 @@ public class AbstractChecksumArtifactReporterTest
 
             if ( md5chk != null )
             {
-                file = new File( split1[1] + relativePath + filename + "." + type + ".md5" );
+                file = new File( repoUrl + relativePath + filename + "." + type + ".md5" );
                 OutputStream os = new FileOutputStream( file );
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 if ( !isValid )
@@ -262,7 +261,7 @@ public class AbstractChecksumArtifactReporterTest
 
             if ( sha1chk != null )
             {
-                file = new File( split1[1] + relativePath + filename + "." + type + ".sha1" );
+                file = new File( repoUrl + relativePath + filename + "." + type + ".sha1" );
                 OutputStream os = new FileOutputStream( file );
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 if ( !isValid )
