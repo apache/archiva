@@ -32,6 +32,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * @TODO
@@ -235,8 +236,8 @@ public class AbstractChecksumArtifactReporterTest
 
             String url = repository.getBasedir() + "/" + filename + "." + type;
 
-            boolean copied = copyFile( url, repoUrl + relativePath + filename + "." + type );
-            //FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
+            //boolean copied = copyFile( url, repoUrl + relativePath + filename + "." + type );
+            FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
             //System.out.println( "META FILE COPIED ---->>> " + copied );
 
             //Create md5 and sha-1 checksum files..
@@ -360,40 +361,6 @@ public class AbstractChecksumArtifactReporterTest
     }
 
     /**
-     * Copy created metadata file to the repository.
-     * @param srcUrl
-     * @param destUrl
-     * @return
-     */
-    private boolean copyFile( String srcUrl, String destUrl )
-    {
-        try
-        {
-            //source file
-            File src = new File( srcUrl );
-            //destination file
-            File dest = new File( destUrl );
-
-            InputStream in = new FileInputStream( src );
-            OutputStream out = new FileOutputStream( dest );
-
-            byte[] buf = new byte[1024];
-            int len;
-            while ( ( len = in.read( buf ) ) > 0 )
-            {
-                out.write( buf, 0, len );
-            }
-            in.close();
-            out.close();
-        }
-        catch ( Exception e )
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Delete the test directory created in the repository.
      * @param dirname The directory to be deleted.
      * @return
@@ -402,32 +369,14 @@ public class AbstractChecksumArtifactReporterTest
     {
         boolean b = false;
 
-        if ( dir.isDirectory() == true )
+        try
         {
-            if ( dir.listFiles().length > 0 )
-            {
-                File[] files = dir.listFiles();
-                for ( int i = 0; i < files.length; i++ )
-                {
-                    b = this.deleteTestDirectory( files[i] );
-                                        
-                    //check if this is the last file in the directory
-                    //delete the parent file
-                    if((i == (files.length - 1)) && b == true){
-                        String[] split = dir.getAbsolutePath().split("/repository");
-                        if(!files[i].getParent().equals(split[0] + "/repository")){
-                            b = this.deleteTestDirectory(new File(files[i].getParent()));
-                        }
-                    }
-                }
-                
-            }else{
-                b = dir.delete();
-            }
+            FileUtils.deleteDirectory( dir );
+            b = true;
         }
-        else
+        catch ( IOException ioe )
         {
-            b = dir.delete();
+            ioe.printStackTrace();
         }
 
         return b;
