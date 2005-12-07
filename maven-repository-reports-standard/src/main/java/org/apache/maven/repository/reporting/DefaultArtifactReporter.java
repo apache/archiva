@@ -103,16 +103,16 @@ public class DefaultArtifactReporter
     }
     public int getFailures()
     {
-        return artifactFailures.size();
+        return artifactFailures.size() + metadataFailures.size();
     }
 
     public int getSuccesses()
     {
-        return artifactSuccesses.size();
+        return artifactSuccesses.size() + metadataSuccesses.size();
     }
 
     public int getWarnings()
     {
-        return artifactWarnings.size();
+        return artifactWarnings.size() + metadataWarnings.size();
     }
 }
