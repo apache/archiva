@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -47,6 +48,8 @@ public class ChecksumArtifactReporter
 
     protected InputStream sha1InputStream;
 
+    private boolean isLocal = true;
+
     /**
      * Validate the checksum of the specified artifact.
      * @param model
@@ -60,13 +63,23 @@ public class ChecksumArtifactReporter
         System.out.println( " " );
         System.out
             .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
-        
+
         String artifactUrl = "";
-        String repositoryUrl = repository.getUrl();
+        String repositoryUrl = "";
+
+        if ( !repository.getProtocol().equals( "file" ) )
+        {
+            isLocal = false;
+            repositoryUrl = repository.getUrl();
+        }
+        else
+        {
+            repositoryUrl = repository.getBasedir();
+        }
+
         artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/"
             + artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getBaseVersion() + "."
             + artifact.getType();
-        //System.out.println("ARTIFACT URL ------->>>> " + artifactUrl);
 
         //check if checksum files exist
         boolean md5Exists = getMD5File( artifactUrl );
@@ -107,9 +120,18 @@ public class ChecksumArtifactReporter
         System.out
             .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
 
-        String metadataUrl = "";
-        String repositoryUrl = repository.getUrl();
-        String filename = metadata.getRemoteFilename();
+        String metadataUrl = "", repositoryUrl = "", filename = "";
+        if ( !repository.getProtocol().equals( "file" ) )
+        {
+            isLocal = false;
+            repositoryUrl = repository.getUrl();
+            filename = metadata.getRemoteFilename();
+        }
+        else
+        {
+            repositoryUrl = repository.getBasedir();
+            filename = metadata.getLocalFilename( repository );
+        }
 
         //version metadata
         if ( metadata.storedInArtifactVersionDirectory() == true && metadata.storedInGroupDirectory() == false )
@@ -130,7 +152,6 @@ public class ChecksumArtifactReporter
 
         //add the file name of the metadata
         metadataUrl = metadataUrl + filename;
-        //System.out.println( "METADATA URL -------> " + metadataUrl );
 
         //check if checksum files exist
         boolean md5Exists = getMD5File( metadataUrl );
@@ -171,7 +192,16 @@ public class ChecksumArtifactReporter
     {
         try
         {
-            md5InputStream = new FileInputStream( filename + ".md5" );
+            if ( isLocal )
+            {
+                md5InputStream = new FileInputStream( filename + ".md5" );
+            }
+            else
+            {
+                URL url = new URL( filename );
+                md5InputStream = url.openStream();
+            }
+
             md5InputStream.close();
         }
         catch ( Exception e )
@@ -190,7 +220,15 @@ public class ChecksumArtifactReporter
     {
         try
         {
-            sha1InputStream = new FileInputStream( filename + ".sha1" );
+            if ( isLocal )
+            {
+                sha1InputStream = new FileInputStream( filename + ".sha1" );
+            }
+            else
+            {
+                URL url = new URL( filename );
+                sha1InputStream = url.openStream();
+            }
             sha1InputStream.close();
         }
         catch ( Exception e )
@@ -223,9 +261,20 @@ public class ChecksumArtifactReporter
 
                 //read the md5 file
                 chk2 = new byte[chk1.length];
-
                 File f = new File( fileUrl + ext );
-                InputStream is = new FileInputStream( f );
+                InputStream is = null;
+
+                //check whether the file is located locally or remotely
+                if ( isLocal )
+                {
+                    is = new FileInputStream( f );
+                }
+                else
+                {
+                    URL url = new URL( fileUrl + ext );
+                    is = url.openStream();
+                }
+
                 char[] chars = new char[is.available()];
                 InputStreamReader isr = new InputStreamReader( is );
                 isr.read( chars );
@@ -237,7 +286,7 @@ public class ChecksumArtifactReporter
                 System.out.println( "-----" + algo + " Checksum value (CHK2 - content of CHECKSUM file) ::::: "
                     + chk2Str );
 
-                if ( chk2Str.equals( byteArrayToHexStr( chk1 ) ) )
+                if ( chk2Str.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() ) )
                 {
                     valid = true;
                 }
@@ -269,8 +318,19 @@ public class ChecksumArtifactReporter
         throws FileNotFoundException, NoSuchAlgorithmException, IOException
     {
 
-        InputStream fis = new FileInputStream( filename );
+        InputStream fis = null;
         byte[] buffer = new byte[1024];
+
+        //check whether file is located locally or remotely
+        if ( isLocal )
+        {
+            fis = new FileInputStream( filename );
+        }
+        else
+        {
+            URL url = new URL( filename );
+            fis = url.openStream();
+        }
 
         MessageDigest complete = MessageDigest.getInstance( algo );
         int numRead;

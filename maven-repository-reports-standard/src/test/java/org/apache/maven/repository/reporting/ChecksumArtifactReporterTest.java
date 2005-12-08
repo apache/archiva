@@ -47,6 +47,20 @@ public class ChecksumArtifactReporterTest
 
     private MetadataReportProcessor metadataReportProcessor;
 
+    private static final String remoteRepoUrl = "http://public.planetmirror.com/pub/maven2/";
+
+    private static final String remoteArtifactGroup = "HTTPClient";
+
+    private static final String remoteArtifactId = "HTTPClient";
+
+    private static final String remoteArtifactVersion = "0.3-3";
+
+    private static final String remoteArtifactScope = "compile";
+
+    private static final String remoteArtifactType = "jar";
+
+    private static final String remoteRepoId = "remote-repo";
+
     public ChecksumArtifactReporterTest()
     {
 
@@ -75,7 +89,6 @@ public class ChecksumArtifactReporterTest
 
     /**
      * Test creation of artifact with checksum files.
-     *
      */
     public void testCreateChecksumFile()
     {
@@ -89,7 +102,6 @@ public class ChecksumArtifactReporterTest
         assertTrue( createMetadataFile( "INVALID" ) );
     }
 
-   
     /**
      * Test the ChecksumArtifactReporter when the checksum files are valid.
      */
@@ -101,18 +113,10 @@ public class ChecksumArtifactReporterTest
             VersionRange version = VersionRange.createFromVersion( "1.0" );
             Artifact artifact = new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "",
                                                      handler );
-            ArtifactRepository repository = new DefaultArtifactRepository( "repository", System.getProperty( "basedir" )
-                + "/src/test/repository/", new DefaultRepositoryLayout() );
-
-            /*  VersionRange version = VersionRange.createFromVersion("0.3-3");
-             Artifact artifact = new DefaultArtifact("HTTPClient", "HTTPClient", version, "compile", "jar", "", 
-             handler);
-             ArtifactRepository repository = new DefaultArtifactRepository("remote-repo", "http://www.ibiblio.org/maven2/", 
-             new DefaultRepositoryLayout());
-             */
+            ArtifactRepository repository = new DefaultArtifactRepository( "repository", "file:/"
+                + System.getProperty( "basedir" ) + "/src/test/repository/", new DefaultRepositoryLayout() );
 
             artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-
             Iterator iter = reporter.getArtifactSuccessIterator();
             int ctr = 0;
             while ( iter.hasNext() )
@@ -141,8 +145,8 @@ public class ChecksumArtifactReporterTest
             VersionRange version = VersionRange.createFromVersion( "1.0" );
             Artifact artifact = new DefaultArtifact( "checksumTest", "invalidArtifact", version, "compile", "jar", "",
                                                      handler );
-            ArtifactRepository repository = new DefaultArtifactRepository( "repository", System.getProperty( "basedir" )
-                + "/src/test/repository/", new DefaultRepositoryLayout() );
+            ArtifactRepository repository = new DefaultArtifactRepository( "repository", "file:/"
+                + System.getProperty( "basedir" ) + "/src/test/repository/", new DefaultRepositoryLayout() );
 
             artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
 
@@ -162,14 +166,18 @@ public class ChecksumArtifactReporterTest
         }
     }
 
+    /**
+     * Test the valid checksum of a metadata file. 
+     * The reporter should report 2 success validation.
+     */
     public void testChecksumMetadataReporterSuccess()
     {
 
         try
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            ArtifactRepository repository = new DefaultArtifactRepository( "repository", System.getProperty( "basedir" )
-                + "/src/test/repository/", new DefaultRepositoryLayout() );
+            ArtifactRepository repository = new DefaultArtifactRepository( "repository", "file:/"
+                + System.getProperty( "basedir" ) + "/src/test/repository/", new DefaultRepositoryLayout() );
             VersionRange version = VersionRange.createFromVersion( "1.0" );
             Artifact artifact = new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "",
                                                      handler );
@@ -193,14 +201,18 @@ public class ChecksumArtifactReporterTest
         }
     }
 
+    /**
+     * Test the corrupted checksum of a metadata file. 
+     * The reporter must report 2 failures.
+     */
     public void testChecksumMetadataReporterFailure()
     {
 
         try
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            ArtifactRepository repository = new DefaultArtifactRepository( "repository", System.getProperty( "basedir" )
-                + "/src/test/repository/", new DefaultRepositoryLayout() );
+            ArtifactRepository repository = new DefaultArtifactRepository( "repository", "file:/"
+                + System.getProperty( "basedir" ) + "/src/test/repository/", new DefaultRepositoryLayout() );
             VersionRange version = VersionRange.createFromVersion( "1.0" );
             Artifact artifact = new DefaultArtifact( "checksumTest", "invalidArtifact", version, "compile", "jar", "",
                                                      handler );
@@ -223,11 +235,70 @@ public class ChecksumArtifactReporterTest
             e.printStackTrace();
         }
     }
-    
-   
-    public void testDeleteTestDirectory(){        
-        String[] split = super.repository.getUrl().split("file:/");
-        assertTrue(deleteTestDirectory(new File(split[1] + "checksumTest") ));
-    }    
+
+    /**
+     * Test the checksum of an artifact located in a remote location.
+     */
+    public void testChecksumArtifactRemote()
+    {
+        ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
+        VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
+        Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version, remoteArtifactScope,
+                                                 remoteArtifactType, "", handler );
+        ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
+                                                                       new DefaultRepositoryLayout() );
+
+        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        Iterator iter = reporter.getArtifactSuccessIterator();
+        int ctr = 0;
+        while ( iter.hasNext() )
+        {
+            ArtifactResult result = (ArtifactResult) iter.next();
+            ctr++;
+        }
+        System.out.println( "[REMOTE] ARTIFACT Number of success --- " + ctr );
+    }
+
+    /**
+     * Test the checksum of a metadata file located in a remote location.
+     */
+    public void testChecksumMetadataRemote()
+    {
+
+        try
+        {
+            ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
+            VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
+            Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version,
+                                                     remoteArtifactScope, remoteArtifactType, "", handler );
+            ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
+                                                                           new DefaultRepositoryLayout() );
+            RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+
+            metadataReportProcessor.processMetadata( metadata, repository, reporter );
+            Iterator iter = reporter.getRepositoryMetadataFailureIterator();
+            int ctr = 0;
+            while ( iter.hasNext() )
+            {
+                RepositoryMetadataResult result = (RepositoryMetadataResult) iter.next();
+                ctr++;
+            }
+            System.out.println( "[REMOTE] REPORT METADATA Number of sucess --- " + ctr );
+
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test deletion of the test directories created.
+     */
+    public void testDeleteTestDirectory()
+    {
+        String[] split = super.repository.getUrl().split( "file:/" );
+        assertTrue( deleteTestDirectory( new File( split[1] + "checksumTest" ) ) );
+    }
 
 }

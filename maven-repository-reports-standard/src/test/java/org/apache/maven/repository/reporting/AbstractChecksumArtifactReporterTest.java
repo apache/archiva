@@ -48,7 +48,7 @@ public class AbstractChecksumArtifactReporterTest
 
     protected static final String[] invalidArtifactChecksumJars = { "invalidArtifact-1.0" };
 
-    protected static final String metadataChecksumFilename = "maven-metadata";
+    protected static final String metadataChecksumFilename = "maven-metadata-repository";
 
     public AbstractChecksumArtifactReporterTest()
     {
@@ -228,17 +228,10 @@ public class AbstractChecksumArtifactReporterTest
         {
             //create checksum for the metadata file..
             String repoUrl = repository.getBasedir();
-            //System.out.println("repoUrl ---->>> " + repoUrl);
-
-            System.out.println( "REPO URL :::: " + repoUrl );
-           // String[] split1 = repoUrl.split( "file:/" );
-           // split1[1] = split1[1] + "/";
-
             String url = repository.getBasedir() + "/" + filename + "." + type;
 
             //boolean copied = copyFile( url, repoUrl + relativePath + filename + "." + type );
             FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
-            //System.out.println( "META FILE COPIED ---->>> " + copied );
 
             //Create md5 and sha-1 checksum files..
             byte[] md5chk = createChecksum( repoUrl + relativePath + filename + "." + type, "MD5" );
