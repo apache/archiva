@@ -35,9 +35,6 @@ import java.util.jar.JarOutputStream;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
- * @TODO
- *  - Create more valid and invalid artifacts & metadata files for further testing.
- *
  * This class creates the artifact and metadata files used for testing the ChecksumArtifactReporter.
  * It is extended by ChecksumArtifactReporterTest class.
  */
@@ -115,6 +112,8 @@ public class AbstractChecksumArtifactReporterTest
         if ( type.equals( "VALID" ) )
         {
             writeMetadataFile( "checksumTest/validArtifact/1.0/", metadataChecksumFilename, "xml", true );
+            writeMetadataFile( "checksumTest/validArtifact/", metadataChecksumFilename, "xml", true );
+            writeMetadataFile( "checksumTest/", metadataChecksumFilename, "xml", true );
 
         }
         else if ( type.equals( "INVALID" ) )
@@ -135,8 +134,8 @@ public class AbstractChecksumArtifactReporterTest
      */
     private boolean writeChecksumFile( String relativePath, String filename, String type, boolean isValid )
     {
-        System.out.println( " " );
-        System.out.println( "========================= ARTIFACT CHECKSUM ==================================" );
+        //System.out.println( " " );
+        //System.out.println( "========================= ARTIFACT CHECKSUM ==================================" );
 
         //Initialize variables for creating jar files
         FileOutputStream f = null;
@@ -145,9 +144,6 @@ public class AbstractChecksumArtifactReporterTest
         try
         {
             String dirs = filename.replace( '-', '/' );
-            //String[] split1 = repoUrl.split( "file:/" );
-            //split1[1] = split1[1] + "/";
-
             //create the group level directory of the artifact    
             File dirFiles = new File( repoUrl + relativePath + dirs );
 
@@ -175,8 +171,8 @@ public class AbstractChecksumArtifactReporterTest
                 //Create md5 and sha-1 checksum files..
                 byte[] md5chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "MD5" );
                 byte[] sha1chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "SHA-1" );
-                System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
-                System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
+                //System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
+                //System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
 
                 File file = null;
 
@@ -222,22 +218,21 @@ public class AbstractChecksumArtifactReporterTest
      */
     private boolean writeMetadataFile( String relativePath, String filename, String type, boolean isValid )
     {
-        System.out.println( " " );
-        System.out.println( "========================= METADATA CHECKSUM ==================================" );
+        // System.out.println( " " );
+        // System.out.println( "========================= METADATA CHECKSUM ==================================" );
         try
         {
             //create checksum for the metadata file..
             String repoUrl = repository.getBasedir();
             String url = repository.getBasedir() + "/" + filename + "." + type;
 
-            //boolean copied = copyFile( url, repoUrl + relativePath + filename + "." + type );
             FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
 
             //Create md5 and sha-1 checksum files..
             byte[] md5chk = createChecksum( repoUrl + relativePath + filename + "." + type, "MD5" );
             byte[] sha1chk = createChecksum( repoUrl + relativePath + filename + "." + type, "SHA-1" );
-            System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
-            System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
+            //System.out.println( "----- CREATED MD5 checksum ::: " + byteArrayToHexStr( md5chk ) );
+            //System.out.println( "----- CREATED SHA-1 checksum ::: " + byteArrayToHexStr( sha1chk ) );
 
             File file = null;
 
@@ -372,6 +367,51 @@ public class AbstractChecksumArtifactReporterTest
             ioe.printStackTrace();
         }
 
+        return b;
+    }
+
+    private boolean deleteFile( String filename )
+    {
+        File f = new File( filename );
+        return f.delete();
+    }
+
+    /**
+     * 
+     * @return
+     */
+    protected boolean deleteChecksumFiles( String type )
+    {
+
+        boolean b = true;
+
+        //delete valid checksum files of artifacts created
+        for ( int i = 0; i < validArtifactChecksumJars.length; i++ )
+        {
+            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
+                + "/" + validArtifactChecksumJars[i] + "." + type + ".md5" );
+            if ( b == false )
+                return b;
+
+            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
+                + "/" + validArtifactChecksumJars[i] + "." + type + ".sha1" );
+            if ( b == false )
+                return b;
+        }
+
+        //delete valid checksum files of metadata file
+        for ( int i = 0; i < validArtifactChecksumJars.length; i++ )
+        {
+            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
+                + "/" + metadataChecksumFilename + ".xml.md5" );
+            if ( b == false )
+                return b;
+
+            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
+                + "/" + metadataChecksumFilename + ".xml.sha1" );
+            if ( b == false )
+                return b;
+        }
         return b;
     }
 

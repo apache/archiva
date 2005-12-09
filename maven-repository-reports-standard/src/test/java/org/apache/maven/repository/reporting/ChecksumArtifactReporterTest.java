@@ -26,15 +26,13 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.versioning.VersionRange;
 
-/**
- * @TODO 
- *  - Test with multiple success and multiple failures
- *  - Test using remote repository
- * 
+/** 
  * This class tests the ChecksumArtifactReporter. 
  * It extends the AbstractChecksumArtifactReporterTest class.
  */
@@ -72,19 +70,12 @@ public class ChecksumArtifactReporterTest
         super.setUp();
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "default" );
         metadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "checksum-metadata" );
-
-        // boolean b = createChecksumFile( "VALID" );
-        // b = createChecksumFile( "INVALID" );
-        // b = createMetadataFile( "VALID" );
-        // b = createMetadataFile( "INVALID" );
     }
 
     public void tearDown()
         throws Exception
     {
         super.tearDown();
-        //String[] split = super.repository.getUrl().split("file:/");
-        //boolean b = deleteTestDirectory(new File(split[1] + "checksumTest") );
     }
 
     /**
@@ -96,6 +87,9 @@ public class ChecksumArtifactReporterTest
         assertTrue( createChecksumFile( "INVALID" ) );
     }
 
+    /**
+     * Test creation of metadata file together with its checksums.
+     */
     public void testCreateMetadataFile()
     {
         assertTrue( createMetadataFile( "VALID" ) );
@@ -124,7 +118,7 @@ public class ChecksumArtifactReporterTest
                 ArtifactResult result = (ArtifactResult) iter.next();
                 ctr++;
             }
-            System.out.println( "ARTIFACT Number of success --- " + ctr );
+            //System.out.println( "ARTIFACT Number of success --- " + ctr );
 
         }
         catch ( Exception e )
@@ -157,7 +151,7 @@ public class ChecksumArtifactReporterTest
                 ArtifactResult result = (ArtifactResult) iter.next();
                 ctr++;
             }
-            System.out.println( "ARTIFACT Number of failures --- " + ctr );
+            //System.out.println( "ARTIFACT Number of failures --- " + ctr );
 
         }
         catch ( Exception e )
@@ -182,9 +176,19 @@ public class ChecksumArtifactReporterTest
             Artifact artifact = new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "",
                                                      handler );
 
+        //Version level metadata
             RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+            metadataReportProcessor.processMetadata( metadata, repository, reporter );            
+            
+       //Artifact level metadata
+            metadata = new ArtifactRepositoryMetadata( artifact );
             metadataReportProcessor.processMetadata( metadata, repository, reporter );
+            
+            
+       //Group level metadata
+            metadata = new GroupRepositoryMetadata( "checksumTest" );
 
+            metadataReportProcessor.processMetadata( metadata, repository, reporter );
             Iterator iter = reporter.getRepositoryMetadataSuccessIterator();
             int ctr = 0;
             while ( iter.hasNext() )
@@ -192,8 +196,8 @@ public class ChecksumArtifactReporterTest
                 RepositoryMetadataResult result = (RepositoryMetadataResult) iter.next();
                 ctr++;
             }
-            System.out.println( "REPORT METADATA Number of success --- " + ctr );
-
+            //System.out.println( "METADATA Number of success --- " + ctr );
+            
         }
         catch ( Exception e )
         {
@@ -227,7 +231,7 @@ public class ChecksumArtifactReporterTest
                 RepositoryMetadataResult result = (RepositoryMetadataResult) iter.next();
                 ctr++;
             }
-            System.out.println( "REPORT METADATA Number of failures --- " + ctr );
+            //System.out.println( "METADATA Number of failures --- " + ctr );
 
         }
         catch ( Exception e )
@@ -256,7 +260,7 @@ public class ChecksumArtifactReporterTest
             ArtifactResult result = (ArtifactResult) iter.next();
             ctr++;
         }
-        System.out.println( "[REMOTE] ARTIFACT Number of success --- " + ctr );
+        //System.out.println( "[REMOTE] ARTIFACT Number of success --- " + ctr );
     }
 
     /**
@@ -273,6 +277,7 @@ public class ChecksumArtifactReporterTest
                                                      remoteArtifactScope, remoteArtifactType, "", handler );
             ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
                                                                            new DefaultRepositoryLayout() );
+       
             RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
 
             metadataReportProcessor.processMetadata( metadata, repository, reporter );
@@ -283,8 +288,8 @@ public class ChecksumArtifactReporterTest
                 RepositoryMetadataResult result = (RepositoryMetadataResult) iter.next();
                 ctr++;
             }
-            System.out.println( "[REMOTE] REPORT METADATA Number of sucess --- " + ctr );
-
+            //System.out.println( "[REMOTE] METADATA in version directory, Number of sucess --- " + ctr );
+      
         }
         catch ( Exception e )
         {
@@ -295,10 +300,65 @@ public class ChecksumArtifactReporterTest
     /**
      * Test deletion of the test directories created.
      */
-    public void testDeleteTestDirectory()
+    public void testDeleteChecksumFiles()
     {
-        String[] split = super.repository.getUrl().split( "file:/" );
-        assertTrue( deleteTestDirectory( new File( split[1] + "checksumTest" ) ) );
+        //System.out.println("TESTDELETE CHECKSUM FILES....." + deleteChecksumFiles("jar"));
+        
+        assertTrue( deleteChecksumFiles("jar"));
+    }
+    
+    /**
+     * Test deletion of the test directories created.
+     */
+    public void testDeleteTestDirectory()
+    {   
+        assertTrue( deleteTestDirectory( new File( repository.getBasedir() + "checksumTest" ) ) );
     }
 
+    /**
+     * Test the conditional when the checksum files of the artifact & metadata do not exist.
+     */
+    public void testChecksumFilesDoNotExist(){
+        createChecksumFile("VALID");
+        createMetadataFile("VALID");
+        boolean b = deleteChecksumFiles("jar");   
+        
+        try
+        {
+            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+            VersionRange version = VersionRange.createFromVersion( "1.0" );
+            Artifact artifact = new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "",
+                                                     handler );
+            ArtifactRepository repository = new DefaultArtifactRepository( "repository", "file:/"
+                + System.getProperty( "basedir" ) + "/src/test/repository/", new DefaultRepositoryLayout() );
+
+            artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+            Iterator iter = reporter.getArtifactFailureIterator();
+            int ctr = 0;
+            while ( iter.hasNext() )
+            {
+                ArtifactResult result = (ArtifactResult) iter.next();
+                ctr++;
+            }
+            //System.out.println( "[FILE DOES NOT EXIST] ARTIFACT Number of failures --- " + ctr );
+           
+            RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+            metadataReportProcessor.processMetadata( metadata, repository, reporter );
+
+            iter = reporter.getRepositoryMetadataFailureIterator();
+            ctr = 0;
+            while ( iter.hasNext() )
+            {
+                RepositoryMetadataResult result = (RepositoryMetadataResult) iter.next();
+                ctr++;
+            }
+            //System.out.println( "[FILE DOES NOT EXIST] METADATA Number of failures --- " + ctr );
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+        }        
+        
+        b = deleteTestDirectory( new File( repository.getBasedir() + "checksumTest" ) );
+    }
 }

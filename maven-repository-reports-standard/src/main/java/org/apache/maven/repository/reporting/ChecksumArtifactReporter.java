@@ -34,10 +34,7 @@ import org.apache.maven.artifact.repository.*;
 
 /**
  * This class reports invalid and mismatched checksums of artifacts and metadata files. 
- * It validates MD5 and SHA-1 chacksums.
- * 
- * @TODO 
- *  - Validate using remote repository.
+ * It validates MD5 and SHA-1 checksums.
  */
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor, MetadataReportProcessor
@@ -60,9 +57,9 @@ public class ChecksumArtifactReporter
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                 ArtifactRepository repository )
     {
-        System.out.println( " " );
-        System.out
-            .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
+        //System.out.println( " " );
+        //System.out
+        //   .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
 
         String artifactUrl = "";
         String repositoryUrl = "";
@@ -96,6 +93,10 @@ public class ChecksumArtifactReporter
                 reporter.addFailure( artifact, "MD5 checksum does not match." );
             }
         }
+        else
+        {
+            reporter.addFailure( artifact, "MD5 checksum file does not exist." );
+        }
 
         if ( sha1Exists )
         {
@@ -108,6 +109,10 @@ public class ChecksumArtifactReporter
                 reporter.addFailure( artifact, "SHA-1 checksum does not match." );
             }
         }
+        else
+        {
+            reporter.addFailure( artifact, "SHA-1 checksum file does not exist." );
+        }
     }
 
     /**
@@ -116,9 +121,9 @@ public class ChecksumArtifactReporter
      */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
     {
-        System.out.println( " " );
-        System.out
-            .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
+        // System.out.println( " " );
+        // System.out
+        //   .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
 
         String metadataUrl = "", repositoryUrl = "", filename = "";
         if ( !repository.getProtocol().equals( "file" ) )
@@ -133,20 +138,20 @@ public class ChecksumArtifactReporter
             filename = metadata.getLocalFilename( repository );
         }
 
-        //version metadata
         if ( metadata.storedInArtifactVersionDirectory() == true && metadata.storedInGroupDirectory() == false )
         {
+            //version metadata
             metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/"
                 + metadata.getBaseVersion() + "/";
-            //group metadata
         }
         else if ( metadata.storedInArtifactVersionDirectory() == false && metadata.storedInGroupDirectory() == true )
         {
+            //group metadata
             metadataUrl = repositoryUrl + metadata.getGroupId() + "/";
-            //artifact metadata
         }
         else
         {
+            //artifact metadata
             metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/";
         }
 
@@ -168,6 +173,10 @@ public class ChecksumArtifactReporter
                 reporter.addFailure( metadata, "MD5 checksum does not match." );
             }
         }
+        else
+        {
+            reporter.addFailure( metadata, "MD5 checksum file does not exist." );
+        }
 
         if ( sha1Exists )
         {
@@ -179,6 +188,10 @@ public class ChecksumArtifactReporter
             {
                 reporter.addFailure( metadata, "SHA-1 checksum does not match." );
             }
+        }
+        else
+        {
+            reporter.addFailure( metadata, "SHA-1 checksum file does not exist." );
         }
 
     }
@@ -281,10 +294,10 @@ public class ChecksumArtifactReporter
                 isr.close();
 
                 String chk2Str = new String( chars );
-                System.out.println( "-----" + algo + " Checksum value (CHK1 - created checksum for jar file) ::::: "
-                    + byteArrayToHexStr( chk1 ) );
-                System.out.println( "-----" + algo + " Checksum value (CHK2 - content of CHECKSUM file) ::::: "
-                    + chk2Str );
+                //System.out.println( "-----" + algo + " Checksum value (CHK1 - created checksum for jar file) ::::: "
+                //   + byteArrayToHexStr( chk1 ) );
+                // System.out.println( "-----" + algo + " Checksum value (CHK2 - content of CHECKSUM file) ::::: "
+                //     + chk2Str );
 
                 if ( chk2Str.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() ) )
                 {
@@ -300,7 +313,7 @@ public class ChecksumArtifactReporter
         }
         catch ( Exception e )
         {
-            e.printStackTrace();
+            //e.printStackTrace();
             return valid;
         }
     }
