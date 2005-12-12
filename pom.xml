@@ -213,13 +213,8 @@
     <plugins>
       <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clover-plugin</artifactId>
-        <!-- TODO: why are these needed? -->
-        <configuration>
-          <flushPolicy>threaded</flushPolicy>
-          <flushInterval>100</flushInterval>
-        </configuration>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
       </plugin>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
