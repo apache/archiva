@@ -35,19 +35,19 @@ import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
  *
  */
 public class CachedRepositoryQueryLayer
-    implements RepositoryQueryLayer
+    extends AbstractRepositoryQueryLayer
 {
-    // plexus components
-    private ArtifactRepository repository;
-
-    
+    //@todo caches should expire    
     //cache for metadata
     private Map cacheMetadata;
 
     //cache for repository files, all types
-    //@todo should also cache missing files???
+    //@todo ???should also cache missing files
     private Map cacheFile;
     
+    //@todo ???should a listener be required???
+    private long cacheHits = 0;
+
     public CachedRepositoryQueryLayer( ArtifactRepository repository )
     {
         this.repository = repository;
@@ -56,83 +56,92 @@ public class CachedRepositoryQueryLayer
         
         cacheFile = new HashMap();
     }
+    
+    public long getCacheHits()
+    {
+        return cacheHits;
+    }
 
     public boolean containsArtifact( Artifact artifact )
     {
+        boolean artifactFound = true;
+        
         // @todo should check for snapshot artifacts
         File artifactFile = new File( repository.pathOf( artifact ) );
-        
-        return fileExists( artifactFile );
+
+        if ( !checkFileCache( artifactFile ) )
+        {
+            artifactFound = super.containsArtifact( artifact );
+            if ( artifactFound )
+            {
+                addToFileCache( artifactFile );
+            }
+        }
+
+        return artifactFound;
     }
 
     public boolean containsArtifact( Artifact artifact, Snapshot snapshot )
     {
-        return false;
-    }
+        boolean artifactFound = true;
 
-    private List getArtifactVersions( Artifact artifact )
-    {
-        Metadata metadata = getMetadata( artifact );
-        
-        return metadata.getVersioning().getVersions();
+        String path = getSnapshotArtifactRepositoryPath( artifact, snapshot );
+
+        if ( !checkFileCache( path ) )
+        {
+            artifactFound = super.containsArtifact( artifact, snapshot );
+            if ( artifactFound )
+            {
+                addToFileCache( new File( repository.getBasedir(), path ) );
+            }
+        }
+
+        return artifactFound;
     }
 
     /**
      * Method to utilize the cache
      */
-    private boolean fileExists( File file )
+    private boolean checkFileCache( File file )
     {
-        boolean existing = true;
-        
-        String path = file.getAbsolutePath();
-        if ( !cacheFile.containsKey( path ) )
+        boolean existing = false;
+
+        if ( cacheFile.containsKey( file ) )
         {
-            if ( file.exists() )
-            {
-                cacheFile.put( path, file );
-            }
-            else
-            {
-                existing = false;
-            }
+            cacheHits++;
+            existing = true;
         }
-        
+
         return existing;
     }
 
-    private boolean fileExists( String repositoryPath )
+    private boolean checkFileCache( String repositoryPath )
     {
-        return fileExists(  new File( repository.getBasedir(), repositoryPath ) );
+        return checkFileCache(  new File( repository.getBasedir(), repositoryPath ) );
+    }
+    
+    private void addToFileCache( File file )
+    {
+        cacheFile.put( file, file );
     }
 
     /**
-     * Method to utilize the cache
+     * Override method to utilize the cache
      */
-    private Metadata getMetadata( Artifact artifact )
+    protected Metadata getMetadata( Artifact artifact )
+        throws RepositoryQueryLayerException
     {
         Metadata metadata = null;
         
         if ( cacheMetadata.containsKey( artifact.getId() ) )
         {
+            cacheHits++;
             metadata = (Metadata) cacheMetadata.get( artifact.getId() );
         }
         else
         {
-            ArtifactRepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
-            String path = repository.pathOfRemoteRepositoryMetadata( repositoryMetadata );
-            if ( fileExists( new File( path ) ) )
-            {
-                MetadataXpp3Reader reader = new MetadataXpp3Reader();
-                try
-                {
-                    metadata = reader.read( new FileReader( path ) );
-                    cacheMetadata.put( path, metadata );
-                }
-                catch ( Exception e )
-                {
-                    //@todo should throw something
-                }
-            }
+            metadata = super.getMetadata( artifact );
+            cacheMetadata.put( artifact.getId(), metadata );
         }
         
         return metadata;

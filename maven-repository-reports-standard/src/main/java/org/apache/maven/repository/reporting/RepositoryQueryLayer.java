@@ -17,6 +17,7 @@ package org.apache.maven.repository.reporting;
  * limitations under the License. 
  */
 
+import java.util.List;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 
@@ -33,4 +34,6 @@ public interface RepositoryQueryLayer
     boolean containsArtifact( Artifact artifact );
 
     boolean containsArtifact( Artifact artifact, Snapshot snapshot );
+    
+    List getVersions( Artifact artifact ) throws RepositoryQueryLayerException;
 }

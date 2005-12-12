@@ -70,4 +70,14 @@ public class MockRepositoryQueryLayer
         // TODO
         return containsArtifact( artifact );
     }
+
+    public boolean containsArtifactVersion(Artifact artifact, String version)
+    {
+        return false;
+    }
+    
+    public List getVersions( Artifact artifact )
+    {
+        return null;
+    }
 }

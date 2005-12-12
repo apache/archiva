@@ -8,6 +8,7 @@ package org.apache.maven.repository.reporting;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
+ 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,26 +17,19 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.Snapshot;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-
 /**
- * 
+ *
  */
-public class DefaultRepositoryQueryLayer
-    extends AbstractRepositoryQueryLayer
+public class RepositoryQueryLayerException
+    extends Exception
 {
-    public DefaultRepositoryQueryLayer( ArtifactRepository repository )
+    public RepositoryQueryLayerException( String message, Throwable cause )
     {
-        this.repository = repository;
+        super( message, cause );
+    }
+    
+    public RepositoryQueryLayerException( String message )
+    {
+        super( message );
     }
 }
