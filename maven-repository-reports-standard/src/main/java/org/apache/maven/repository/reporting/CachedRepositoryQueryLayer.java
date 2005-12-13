@@ -30,7 +30,7 @@ import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 
 /**
- *
+ * 
  */
 public class CachedRepositoryQueryLayer
     extends AbstractRepositoryQueryLayer
@@ -102,11 +102,5 @@ public class CachedRepositoryQueryLayer
         }
         
         return metadata;
-    }
-
-    private class DblLinkedList {
-        DblLinkedList prev;
-        Object cacheObject;
-        DblLinkedList next;
     }
 }

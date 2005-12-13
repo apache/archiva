@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Class to implement caching
  *
  */
 public class Cache
@@ -34,11 +35,26 @@ public class Cache
     private long cacheHits = 0;
     private long cacheMiss = 0;
 
+    /**
+     * Caches all data and expires only the oldest data when the specified cache hit rate is reached.
+     */
     public Cache( double cacheHitRatio )
     {
         this( cacheHitRatio, 0 );
     }
 
+    /**
+     * Caches all data and expires only the oldest data when the maximum cache size is reached
+     */
+    public Cache( long cacheMaxSize )
+    {
+        this( (double) 1, cacheMaxSize );
+    }
+
+    /**
+     * Caches all data and expires only the oldest data when either the specified cache hit rate is reached
+     *     or the maximum cache size is reached.
+     */
     public Cache( double cacheHitRatio, long cacheMaxSize )
     {
         this.cacheHitRatio = cacheHitRatio;
@@ -46,7 +62,37 @@ public class Cache
         
         cache = new HashMap();
     }
-
+    
+    /**
+     * Check if the specified key is already mapped to an object.
+     *
+     * @param key the key used to map the cached object
+     *
+     * @returns true if the cache contains an object associated with the given key
+     */
+    public boolean containsKey( Object key )
+    {
+        boolean contains = cache.containsKey( key );
+        
+        if ( contains )
+        {
+            cacheHits++;
+        }
+        else
+        {
+            cacheMiss++;
+        }
+        
+        return contains;
+    }
+    
+    /**
+     * Check for a cached object and return it if it exists. Returns null when the keyed object is not found
+     *
+     * @param key the key used to map the cached object
+     *
+     * @returns the object mapped to the given key, or null if no cache object is mapped to the given key
+     */
     public Object get( Object key )
     {
         Object retValue = null;
@@ -69,6 +115,12 @@ public class Cache
         return retValue;
     }
 
+    /**
+     * Cache the given value and map it using the given key
+     *
+     * @param key   the object to map the valued object
+     * @param value the object to cache
+     */
     public void put( Object key, Object value )
     {
         DblLinkedList entry;
@@ -86,16 +138,27 @@ public class Cache
         makeMostRecent( entry );
     }
 
+    /**
+     * Compute for the efficiency of this cache.
+     *
+     * @returns the ratio of cache hits to the cache misses to queries for cache objects
+     */
     public double getHitRate()
     {
         return ( cacheHits == 0 && cacheMiss == 0 ) ? 0 : ( (double) cacheHits ) / (double) ( cacheHits + cacheMiss );
     }
     
+    /**
+     * Get the total number of cache objects currently cached.
+     */
     public long size()
     {
         return cache.size();
     }
     
+    /**
+     * Empty the cache and reset the cache hit rate
+     */
     public void flush()
     {
         while ( cache.size() > 0 )
@@ -135,7 +198,7 @@ public class Cache
     {
         if ( cacheMaxSize == 0 )
         {
-            //if desired HitRatio is reached, we can trim the cache to conserve memory
+            //desired HitRatio is reached, we can trim the cache to conserve memory
             if ( cacheHitRatio <= getHitRate() )
             {
                 trimCache();
@@ -143,8 +206,17 @@ public class Cache
         }
         else if ( cache.size() > cacheMaxSize )
         {
-            //trim cache regardless of cacheHitRatio
+            // maximum cache size is reached
             while( cache.size() > cacheMaxSize )
+            {
+                trimCache();
+            }
+        }
+        else
+        {
+            //even though the max has not been reached, the desired HitRatio is already reached,
+            //    so we can trim the cache to conserve memory
+            if ( cacheHitRatio <= getHitRate() )
             {
                 trimCache();
             }

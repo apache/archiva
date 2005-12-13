@@ -49,7 +49,7 @@ public class CacheTest
 
     public void testCacheManagementBasedOnCacheSize()
     {
-        cache = new Cache( 0.5, 9 );
+        cache = new Cache( 9 );
         newCacheObjectTests();
         
         String key = "key";
@@ -61,6 +61,41 @@ public class CacheTest
         
         cache.put( "key10", "value10");
         assertNull( "first key must be expired", cache.get( "key1" ) );
+        assertEquals( "check cache size to be max size", 9, cache.size() );
+    }
+
+    public void testCacheManagementBasedOnCacheSizeAndHitRate()
+    {
+        cache = new Cache( 0.5, 9 );
+        newCacheObjectTests();
+        
+        String key = "key";
+        String value = "value";
+        for( int ctr=1; ctr<5; ctr++ )
+        {
+            cache.put( key + ctr, value + ctr );
+        }
+
+        while ( cache.getHitRate() < 0.5 )
+        {
+            cache.get( "key3" );
+        }
+        
+        cache.put( "key10", "value10");
+        assertNull( "first key must be expired", cache.get( "key1" ) );
+
+        while ( cache.getHitRate() >= 0.5 )
+        {
+            cache.get( "key11" );
+        }
+        
+        for( int ctr=5; ctr<10; ctr++ )
+        {
+            cache.put( key + ctr, value + ctr );
+        }
+        
+        cache.put( "key11", "value11");
+        assertNull( "second key must be expired", cache.get( "key2" ) );
         assertEquals( "check cache size to be max size", 9, cache.size() );
     }
 
