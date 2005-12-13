@@ -60,7 +60,7 @@ public abstract class AbstractRepositoryQueryLayer
     protected String getSnapshotArtifactRepositoryPath( Artifact artifact, Snapshot snapshot )
     {
         File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
-        String snapshotInfo = artifact.getVersion().replaceAll( "SNAPSHOT", snapshot.getTimestamp() + "-" + 
+        String snapshotInfo = artifact.getVersion().replaceFirst( "SNAPSHOT", snapshot.getTimestamp() + "-" + 
                                                                             snapshot.getBuildNumber() + ".pom" );
         File snapshotFile = new File( f.getParentFile(), artifact.getArtifactId() + "-" + snapshotInfo );
         return snapshotFile.getAbsolutePath();

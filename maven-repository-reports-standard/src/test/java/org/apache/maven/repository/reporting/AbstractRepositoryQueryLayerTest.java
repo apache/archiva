@@ -129,7 +129,6 @@ public abstract class AbstractRepositoryQueryLayerTest
 
     protected Artifact getArtifact( String groupId, String artifactId, String version )
     {
-        if ( artifactFactory == null ) System.out.println("NULL");
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" );
     }
 

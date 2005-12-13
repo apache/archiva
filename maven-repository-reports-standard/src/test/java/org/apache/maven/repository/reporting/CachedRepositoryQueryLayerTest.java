@@ -33,25 +33,25 @@ public class CachedRepositoryQueryLayerTest
     public void testUseFileCache()
     {
         testContainsArtifactTrue();
-        assertEquals( "check cache usage", 0, queryLayer.getCacheHits() );
+        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testContainsArtifactTrue();
-        assertEquals( "check cache usage", 1, queryLayer.getCacheHits() );
+        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
     }
     
     public void testUseMetadataCache()
         throws Exception
     {
         testArtifactVersionsTrue();
-        assertEquals( "check cache usage", 0, queryLayer.getCacheHits() );
+        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testArtifactVersionsTrue();
-        assertEquals( "check cache usage", 1, queryLayer.getCacheHits() );
+        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
     }
     
     public void testUseFileCacheOnSnapshot()
     {
         testContainsSnapshotArtifactTrue();
-        assertEquals( "check cache usage", 0, queryLayer.getCacheHits() );
+        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testContainsSnapshotArtifactTrue();
-        assertEquals( "check cache usage", 1, queryLayer.getCacheHits() );
+        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
     }
 }

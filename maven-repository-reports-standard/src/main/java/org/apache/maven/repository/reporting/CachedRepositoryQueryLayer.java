@@ -18,17 +18,15 @@ package org.apache.maven.repository.reporting;
  */
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+
 
 
 /**
@@ -37,44 +35,34 @@ import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 public class CachedRepositoryQueryLayer
     extends AbstractRepositoryQueryLayer
 {
-    //@todo caches should expire    
-    //cache for metadata
-    private Map cacheMetadata;
+    private Cache cache;
 
-    //cache for repository files, all types
-    //@todo ???should also cache missing files
-    private Map cacheFile;
     
-    //@todo ???should a listener be required???
-    private long cacheHits = 0;
-
     public CachedRepositoryQueryLayer( ArtifactRepository repository )
     {
         this.repository = repository;
         
-        cacheMetadata = new HashMap();
-        
-        cacheFile = new HashMap();
+        cache = new Cache( 0.5 );
     }
     
-    public long getCacheHits()
+    public double getCacheHitRate()
     {
-        return cacheHits;
+        return cache.getHitRate();
     }
-
+    
     public boolean containsArtifact( Artifact artifact )
     {
         boolean artifactFound = true;
         
         // @todo should check for snapshot artifacts
-        File artifactFile = new File( repository.pathOf( artifact ) );
+        String artifactPath = repository.getBasedir() + "/" + repository.pathOf( artifact );
 
-        if ( !checkFileCache( artifactFile ) )
+        if ( cache.get( artifactPath ) == null )
         {
             artifactFound = super.containsArtifact( artifact );
             if ( artifactFound )
             {
-                addToFileCache( artifactFile );
+                cache.put( artifactPath, artifactPath );
             }
         }
 
@@ -87,42 +75,16 @@ public class CachedRepositoryQueryLayer
 
         String path = getSnapshotArtifactRepositoryPath( artifact, snapshot );
 
-        if ( !checkFileCache( path ) )
+        if ( cache.get( path ) == null )
         {
             artifactFound = super.containsArtifact( artifact, snapshot );
             if ( artifactFound )
             {
-                addToFileCache( new File( repository.getBasedir(), path ) );
+                cache.put( path, path );
             }
         }
 
         return artifactFound;
-    }
-
-    /**
-     * Method to utilize the cache
-     */
-    private boolean checkFileCache( File file )
-    {
-        boolean existing = false;
-
-        if ( cacheFile.containsKey( file ) )
-        {
-            cacheHits++;
-            existing = true;
-        }
-
-        return existing;
-    }
-
-    private boolean checkFileCache( String repositoryPath )
-    {
-        return checkFileCache(  new File( repository.getBasedir(), repositoryPath ) );
-    }
-    
-    private void addToFileCache( File file )
-    {
-        cacheFile.put( file, file );
     }
 
     /**
@@ -131,19 +93,20 @@ public class CachedRepositoryQueryLayer
     protected Metadata getMetadata( Artifact artifact )
         throws RepositoryQueryLayerException
     {
-        Metadata metadata = null;
+        Metadata metadata = (Metadata) cache.get( artifact.getId() );
         
-        if ( cacheMetadata.containsKey( artifact.getId() ) )
-        {
-            cacheHits++;
-            metadata = (Metadata) cacheMetadata.get( artifact.getId() );
-        }
-        else
+        if ( metadata == null )
         {
             metadata = super.getMetadata( artifact );
-            cacheMetadata.put( artifact.getId(), metadata );
+            cache.put( artifact.getId(), metadata );
         }
         
         return metadata;
+    }
+
+    private class DblLinkedList {
+        DblLinkedList prev;
+        Object cacheObject;
+        DblLinkedList next;
     }
 }
