@@ -19,7 +19,7 @@
     </component>
     <component>
     	<role>org.apache.maven.repository.reporting.ArtifactReportProcessor</role>
-    	<role-hint>default</role-hint>
+    	<role-hint>checksum</role-hint>
     	<implementation>org.apache.maven.repository.reporting.ChecksumArtifactReporter</implementation>
     	<instantiation-strategy>per-lookup</instantiation-strategy>
     </component>
@@ -29,5 +29,11 @@
     	<implementation>org.apache.maven.repository.reporting.ChecksumArtifactReporter</implementation>
     	<instantiation-strategy>per-lookup</instantiation-strategy>
     </component>
+    <component>
+    	<role>org.apache.maven.repository.reporting.ArtifactReportProcessor</role>
+    	<role-hint>artifact-location</role-hint>
+    	<implementation>org.apache.maven.repository.reporting.LocationArtifactReportProcessor</implementation>
+    	<instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>    
   </components>
 </component-set>

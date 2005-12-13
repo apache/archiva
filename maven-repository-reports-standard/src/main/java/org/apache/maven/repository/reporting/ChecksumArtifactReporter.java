@@ -129,12 +129,12 @@ public class ChecksumArtifactReporter
         if ( !repository.getProtocol().equals( "file" ) )
         {
             isLocal = false;
-            repositoryUrl = repository.getUrl();
+            repositoryUrl = repository.getUrl() + "/";
             filename = metadata.getRemoteFilename();
         }
         else
         {
-            repositoryUrl = repository.getBasedir();
+            repositoryUrl = repository.getBasedir() + "/";
             filename = metadata.getLocalFilename( repository );
         }
 

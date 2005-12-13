@@ -35,6 +35,20 @@ public abstract class AbstractRepositoryReportsTestCase
      */
     protected ArtifactRepository repository;
 
+    protected static final String remoteRepoUrl = "http://public.planetmirror.com/pub/maven2/";
+
+    protected static final String remoteArtifactGroup = "HTTPClient";
+
+    protected static final String remoteArtifactId = "HTTPClient";
+
+    protected static final String remoteArtifactVersion = "0.3-3";
+
+    protected static final String remoteArtifactScope = "compile";
+
+    protected static final String remoteArtifactType = "jar";
+
+    protected static final String remoteRepoId = "remote-repo";
+    
     protected void setUp()
         throws Exception
     {
@@ -45,7 +59,7 @@ public abstract class AbstractRepositoryReportsTestCase
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         repository =
-            factory.createArtifactRepository( "test", repositoryDirectory.toURL().toString(), layout, null, null );
+            factory.createArtifactRepository( "repository", repositoryDirectory.toURL().toString(), layout, null, null );
     }
 
 }
