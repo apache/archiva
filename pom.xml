@@ -233,10 +233,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jdepend-maven-plugin</artifactId>
-      </plugin>
       <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
