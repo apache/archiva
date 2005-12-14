@@ -1,0 +1,9 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven</groupId>
+  <artifactId>artifactId</artifactId>
+  <version>1.0-alpha-3</version>
+  <build>
+  	<plugins>
+  </build>
+</project>

@@ -35,5 +35,11 @@
     	<implementation>org.apache.maven.repository.reporting.LocationArtifactReportProcessor</implementation>
     	<instantiation-strategy>per-lookup</instantiation-strategy>
     </component>    
+    <component>
+    	<role>org.apache.maven.repository.reporting.ArtifactReportProcessor</role>
+    	<role-hint>invalid-pom</role-hint>
+    	<implementation>org.apache.maven.repository.reporting.InvalidPomArtifactReportProcessor</implementation>
+    	<instantiation-strategy>per-lookup</instantiation-strategy>
+    </component> 
   </components>
 </component-set>

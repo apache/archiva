@@ -198,7 +198,7 @@ public class ChecksumArtifactReporterTest
     /**
      * Test the checksum of an artifact located in a remote location.
      */
-    public void testChecksumArtifactRemote()
+ /*   public void testChecksumArtifactRemote()
     {
         ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
         VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
@@ -215,11 +215,12 @@ public class ChecksumArtifactReporterTest
             assertTrue( reporter.getSuccesses() == 2 );
 
     }
+    */
 
     /**
      * Test the checksum of a metadata file located in a remote location.
      */
-    public void testChecksumMetadataRemote()
+ /*   public void testChecksumMetadataRemote()
     {
 
         try
@@ -248,6 +249,7 @@ public class ChecksumArtifactReporterTest
             e.printStackTrace();
         }
     }
+    */
 
     /**
      * Test deletion of the test directories created.
