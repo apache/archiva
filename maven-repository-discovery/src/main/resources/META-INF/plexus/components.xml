@@ -1,6 +1,12 @@
 <component-set>
   <components>
     <component>
+    	<role>org.apache.maven.repository.discovery.MetadataDiscoverer</role>
+    	<role-hint>default</role-hint>
+    	<implementation>org.apache.maven.repository.discovery.DefaultMetadataDiscoverer</implementation>
+    	<instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>    
+    <component>
       <role>org.apache.maven.repository.discovery.ArtifactDiscoverer</role>
       <role-hint>legacy</role-hint>
       <implementation>org.apache.maven.repository.discovery.LegacyArtifactDiscoverer</implementation>
@@ -11,7 +17,6 @@
         </requirement>
       </requirements>
     </component>
-
     <component>
       <role>org.apache.maven.repository.discovery.ArtifactDiscoverer</role>
       <role-hint>default</role-hint>

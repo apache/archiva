@@ -276,7 +276,7 @@ public class DefaultArtifactDiscovererTest
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included",
-                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "java-source" ) ) );
+                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ) ) );
     }
 
     public void testDistributionInclusion()
