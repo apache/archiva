@@ -101,6 +101,7 @@
   <modules>
     <module>maven-repository-discovery</module>
     <module>maven-repository-reports-standard</module>
+    <module>maven-repository-indexer</module>
   </modules>
   <repositories>
     <repository>
