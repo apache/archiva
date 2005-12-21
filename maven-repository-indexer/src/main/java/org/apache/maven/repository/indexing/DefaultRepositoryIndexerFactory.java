@@ -31,7 +31,7 @@ public class DefaultRepositoryIndexerFactory
 {
     Map indexerMap = new HashMap();
     
-    public RepositoryIndexer getRepositoryIndexer( ArtifactRepository repository, Class indexType )
+    public RepositoryIndexer getRepositoryIndexer( String indexPath, ArtifactRepository repository, Class indexType )
     {
         if ( !indexerMap.containsKey( indexType ) )
         {
@@ -39,7 +39,7 @@ public class DefaultRepositoryIndexerFactory
             
             if ( Artifact.class == indexType )
             {
-                indexer = new ArtifactRepositoryIndexer(  );
+                indexer = new ArtifactRepositoryIndexer( repository, indexPath );
             }
             else
             {
