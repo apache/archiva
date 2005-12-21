@@ -31,24 +31,18 @@ public class DefaultRepositoryIndexerFactory
 {
     Map indexerMap = new HashMap();
     
-    public RepositoryIndexer getRepositoryIndexer( String indexPath, ArtifactRepository repository, Class indexType )
+    public RepositoryIndexer getArtifactRepositoryIndexer( String indexPath, ArtifactRepository repository )
+        throws RepositoryIndexerException
     {
-        if ( !indexerMap.containsKey( indexType ) )
+        RepositoryIndexer indexer;
+
+        if ( !indexerMap.containsKey( "Artifact" ) )
         {
-            RepositoryIndexer indexer;
+            indexer = new ArtifactRepositoryIndexer( repository, indexPath );
             
-            if ( Artifact.class == indexType )
-            {
-                indexer = new ArtifactRepositoryIndexer( repository, indexPath );
-            }
-            else
-            {
-                indexer = null;
-            }
-            
-            indexerMap.put( indexType, indexer );
+            indexerMap.put( "Artifact", indexer );
         }
 
-        return (RepositoryIndexer) indexerMap.get( indexType );
+        return (RepositoryIndexer) indexerMap.get( "Artifact" );
     }
 }

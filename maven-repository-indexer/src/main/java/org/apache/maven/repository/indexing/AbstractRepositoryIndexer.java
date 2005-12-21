@@ -17,6 +17,13 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import java.io.IOException;
+import org.apache.lucene.analysis.Analyzer;
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+
 /**
  *
  * @author Edwin Punzalan
@@ -24,9 +31,30 @@ package org.apache.maven.repository.indexing;
 public abstract class AbstractRepositoryIndexer
     implements RepositoryIndexer
 {
-    
-    protected void addDocument( Object obj )
+    protected String indexPath;
+    protected IndexReader indexReader;
+    protected IndexWriter indexWriter;
+
+    protected void getIndexWriter()
+        throws IOException
     {
-        
+        if ( indexWriter == null )
+        {
+            indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+        }
+    }
+
+    protected void getIndexReader()
+        throws IOException
+    {
+        if ( indexReader == null )
+        {
+            indexReader = IndexReader.open( indexPath );
+        }
+    }
+
+    protected Analyzer getAnalyzer()
+    {
+        return new StandardAnalyzer();
     }
 }

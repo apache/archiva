@@ -27,5 +27,6 @@ public interface RepositoryIndexerFactory
 {
     String ROLE = RepositoryIndexerFactory.class.getName();
     
-    RepositoryIndexer getRepositoryIndexer( String indexPath, ArtifactRepository repository, Class indexType );
+    RepositoryIndexer getArtifactRepositoryIndexer( String indexPath, ArtifactRepository repository )
+        throws RepositoryIndexerException;
 }

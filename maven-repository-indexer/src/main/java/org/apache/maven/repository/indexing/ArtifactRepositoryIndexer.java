@@ -24,12 +24,17 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
@@ -51,39 +56,51 @@ public class ArtifactRepositoryIndexer
     
     private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES };
     
-    String indexPath;
     ArtifactRepository repository;
-    IndexReader indexReader;
-    IndexWriter indexWriter;
     
     public ArtifactRepositoryIndexer( ArtifactRepository repository, String path )
+        throws RepositoryIndexerException
     {
-        try
-        {
-            this.repository = repository;
-            validateIndex();
-        }
-        catch ( IOException e )
-        {
-            
-        }
+        this.repository = repository;
+        indexPath = path;
+        validateIndex();
     }
 
     public void addArtifactIndex( Artifact artifact )
-        throws IOException, NoSuchAlgorithmException
+        throws RepositoryIndexerException
     {
-        getIndexWriter();
+        try
+        {
+            getIndexWriter();
 
-        Document doc = new Document();
-        doc.add( Field.Text( NAME, repository.pathOf( artifact ) ) );
-        doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
-        doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
-        doc.add( Field.Text( VERSION, artifact.getVersion() ) );
-        doc.add( Field.Text( SHA1, getSha1( artifact ) ) );
-        doc.add( Field.Text( MD5, getMd5( artifact ) ) );
-        doc.add( Field.Text( CLASSES, getClasses( artifact ) ) );
-        doc.add( Field.Text( PACKAGES, getPackages( artifact ) ) );
-        indexWriter.addDocument( doc );
+            Document doc = new Document();
+            doc.add( Field.Text( NAME, repository.pathOf( artifact ) ) );
+            doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
+            doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
+            doc.add( Field.Text( VERSION, artifact.getVersion() ) );
+            doc.add( Field.Text( SHA1, getSha1( artifact ) ) );
+            doc.add( Field.Text( MD5, getMd5( artifact ) ) );
+            doc.add( Field.Text( CLASSES, getClasses( artifact ) ) );
+            doc.add( Field.Text( PACKAGES, getPackages( artifact ) ) );
+            indexWriter.addDocument( doc );
+        }
+        catch( Exception e )
+        {
+            throw new RepositoryIndexerException( e );
+        }
+    }
+
+    public void optimize()
+        throws RepositoryIndexerException
+    {
+        try
+        {
+            indexWriter.optimize();
+        }
+        catch ( IOException ioe )
+        {
+            throw new RepositoryIndexerException( "Failed to optimize index", ioe );
+        }
     }
 
     private String getSha1( Artifact artifact )
@@ -121,44 +138,78 @@ public class ArtifactRepositoryIndexer
     }
 
     private String getClasses( Artifact artifact )
+        throws IOException, ZipException
     {
-        return null;
+        StringBuffer sb = new StringBuffer();
+
+        ZipFile jar = new ZipFile( artifact.getFile() );
+        for( Enumeration en = jar.entries(); en.hasMoreElements(); )
+        {
+            ZipEntry e = ( ZipEntry ) en.nextElement();
+            String name = e.getName();
+            if( name.endsWith( ".class") )
+            {
+                // TODO verify if class is public or protected
+                // TODO skipp all inner classes for now
+                if( name.lastIndexOf( "$" ) == -1)
+                {
+                    int idx = name.lastIndexOf( '/' );
+                    if ( idx < 0 ) idx = 0;
+                    sb.append( name.substring( idx, name.length() - 6 ) ).append( "\n" );
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
     private String getPackages( Artifact artifact )
+        throws IOException, ZipException
     {
-        return null;
+        StringBuffer sb = new StringBuffer();
+
+        ZipFile jar = new ZipFile( artifact.getFile() );
+        for( Enumeration en = jar.entries(); en.hasMoreElements(); )
+        {
+            ZipEntry e = ( ZipEntry ) en.nextElement();
+            String name = e.getName();
+            //only include packages with accompanying classes
+            if ( name.endsWith( ".class" ) )
+            {
+                int idx = name.lastIndexOf( '/' );
+                if ( idx > 0 )
+                {
+                    String packageName = name.substring( 0, idx ).replace( '/', '.' ) + "\n";
+                    if ( sb.indexOf( packageName ) < 0 )
+                    {
+                        sb.append( packageName ).append( "\n" );
+                    }
+                }
+            }
+        }
+
+        return sb.toString();
     }
 
-    private void getIndexWriter() 
-        throws IOException
-    {
-        if ( indexWriter == null )
-        {
-            indexWriter = new IndexWriter( indexPath, new StandardAnalyzer(), true );
-        }
-    }
-    
-    private void getIndexReader()
-        throws IOException
-    {
-        if ( indexReader == null )
-        {
-            indexReader = IndexReader.open( indexPath );
-        }
-    }
-    
     private void validateIndex()
-        throws IOException
+        throws RepositoryIndexerException
     {
-        getIndexReader();
-        Collection fields = indexReader.getFieldNames();
-        for( int idx=0; idx<FIELDS.length; idx++ )
+        try
         {
-            if ( !fields.contains( FIELDS[ idx ] ) )
+            getIndexReader();
+            Collection fields = indexReader.getFieldNames();
+            for( int idx=0; idx<FIELDS.length; idx++ )
             {
-                //should throw something
+                if ( !fields.contains( FIELDS[ idx ] ) )
+                {
+                    throw new RepositoryIndexerException( "The Field " + FIELDS[ idx ] + " does not exist in index path " +
+                            indexPath + "." );
+                }
             }
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexerException( e );
         }
     }
 }

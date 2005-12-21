@@ -17,15 +17,25 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import java.io.IOException;
-
 /**
  *
  * @author Edwin Punzalan
  */
-public interface RepositoryIndexer
+public class RepositoryIndexerException
+    extends Exception
 {
-    String ROLE = RepositoryIndexer.class.getName();
-
-    void optimize() throws RepositoryIndexerException;
+    public RepositoryIndexerException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+    
+    public RepositoryIndexerException( Throwable cause )
+    {
+        super( cause );
+    }
+    
+    public RepositoryIndexerException( String message )
+    {
+        super( message );
+    }
 }
