@@ -18,8 +18,8 @@ package org.apache.maven.repository.indexing;
  */
 
 import java.io.IOException;
-import org.apache.lucene.analysis.Analyzer;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;

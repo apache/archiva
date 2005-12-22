@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,11 +30,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -53,10 +51,15 @@ public class ArtifactRepositoryIndexer
     private static final String MD5 = "md5";
     private static final String CLASSES = "classes";
     private static final String PACKAGES = "packages";
+    private static final String FILES = "files";
     
-    private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES };
+    private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES, FILES };
     
-    ArtifactRepository repository;
+    private ArtifactRepository repository;
+
+    private StringBuffer classes;
+    private StringBuffer packages;
+    private StringBuffer files;
     
     public ArtifactRepositoryIndexer( ArtifactRepository repository, String path )
         throws RepositoryIndexerException
@@ -73,6 +76,8 @@ public class ArtifactRepositoryIndexer
         {
             getIndexWriter();
 
+            processArtifactContents( artifact.getFile() );
+            
             Document doc = new Document();
             doc.add( Field.Text( NAME, repository.pathOf( artifact ) ) );
             doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
@@ -80,8 +85,9 @@ public class ArtifactRepositoryIndexer
             doc.add( Field.Text( VERSION, artifact.getVersion() ) );
             doc.add( Field.Text( SHA1, getSha1( artifact ) ) );
             doc.add( Field.Text( MD5, getMd5( artifact ) ) );
-            doc.add( Field.Text( CLASSES, getClasses( artifact ) ) );
-            doc.add( Field.Text( PACKAGES, getPackages( artifact ) ) );
+            doc.add( Field.Text( CLASSES, classes.toString() ) );
+            doc.add( Field.Text( PACKAGES, packages.toString() ) );
+            doc.add( Field.Text( FILES, files.toString() ) );
             indexWriter.addDocument( doc );
         }
         catch( Exception e )
@@ -137,58 +143,82 @@ public class ArtifactRepositoryIndexer
         return complete.digest();
     }
 
-    private String getClasses( Artifact artifact )
+    private void processArtifactContents( File artifact )
         throws IOException, ZipException
     {
-        StringBuffer sb = new StringBuffer();
-
-        ZipFile jar = new ZipFile( artifact.getFile() );
-        for( Enumeration en = jar.entries(); en.hasMoreElements(); )
+        classes = new StringBuffer();
+        packages = new StringBuffer();
+        files = new StringBuffer();
+        
+        ZipFile jar = new ZipFile( artifact );
+        for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
         {
-            ZipEntry e = ( ZipEntry ) en.nextElement();
-            String name = e.getName();
-            if( name.endsWith( ".class") )
+            ZipEntry entry = (ZipEntry) entries.nextElement();
+            if ( addIfClassEntry( entry ) )
             {
-                // TODO verify if class is public or protected
-                // TODO skipp all inner classes for now
-                if( name.lastIndexOf( "$" ) == -1)
-                {
-                    int idx = name.lastIndexOf( '/' );
-                    if ( idx < 0 ) idx = 0;
-                    sb.append( name.substring( idx, name.length() - 6 ) ).append( "\n" );
-                }
+                addClassPackage( entry.getName() );
             }
+            addFile( entry );
         }
-
-        return sb.toString();
     }
 
-    private String getPackages( Artifact artifact )
-        throws IOException, ZipException
+    private boolean addIfClassEntry( ZipEntry entry )
     {
-        StringBuffer sb = new StringBuffer();
-
-        ZipFile jar = new ZipFile( artifact.getFile() );
-        for( Enumeration en = jar.entries(); en.hasMoreElements(); )
+        boolean isAdded = false;
+        
+        String name = entry.getName();
+        if( name.endsWith( ".class") )
         {
-            ZipEntry e = ( ZipEntry ) en.nextElement();
-            String name = e.getName();
-            //only include packages with accompanying classes
-            if ( name.endsWith( ".class" ) )
+            // TODO verify if class is public or protected
+            if( name.lastIndexOf( "$" ) == -1)
             {
                 int idx = name.lastIndexOf( '/' );
-                if ( idx > 0 )
-                {
-                    String packageName = name.substring( 0, idx ).replace( '/', '.' ) + "\n";
-                    if ( sb.indexOf( packageName ) < 0 )
-                    {
-                        sb.append( packageName ).append( "\n" );
-                    }
-                }
+                if ( idx < 0 ) idx = 0;
+                String classname = name.substring( idx, name.length() - 6 );
+                classes.append( classname ).append( "\n" );
+                isAdded = true;
             }
         }
+        
+        return isAdded;
+    }
 
-        return sb.toString();
+    private boolean addClassPackage( String name )
+    {
+        boolean isAdded = false;
+
+        int idx = name.lastIndexOf( '/' );
+        if ( idx > 0 )
+        {
+            String packageName = name.substring( 0, idx ).replace( '/', '.' ) + "\n";
+            if ( packages.indexOf( packageName ) < 0 )
+            {
+                packages.append( packageName ).append( "\n" );
+            }
+            isAdded = true;
+        }
+        
+        return isAdded;
+    }
+
+    private boolean addFile( ZipEntry entry )
+    {
+        boolean isAdded = false;
+
+        String name = entry.getName();
+        int idx = name.lastIndexOf( '/' );
+        if ( idx >= 0 )
+        {
+            name = name.substring( idx + 1 );
+        }
+
+        if ( files.indexOf( name + "\n" ) < 0 )
+        {
+            files.append( name ).append( "\n" );
+            isAdded = true;
+        }
+        
+        return isAdded;
     }
 
     private void validateIndex()
@@ -202,8 +232,8 @@ public class ArtifactRepositoryIndexer
             {
                 if ( !fields.contains( FIELDS[ idx ] ) )
                 {
-                    throw new RepositoryIndexerException( "The Field " + FIELDS[ idx ] + " does not exist in index path " +
-                            indexPath + "." );
+                    throw new RepositoryIndexerException( "The Field " + FIELDS[ idx ] + " does not exist in index" +
+                            " path " + indexPath + "." );
                 }
             }
         }
