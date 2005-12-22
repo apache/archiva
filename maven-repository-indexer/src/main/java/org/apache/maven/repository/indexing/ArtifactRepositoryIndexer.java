@@ -180,7 +180,6 @@ public class ArtifactRepositoryIndexer
         for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
         {
             ZipEntry entry = (ZipEntry) entries.nextElement();
-            System.out.println( entry.getName() );
             if ( addIfClassEntry( entry ) )
             {
                 addClassPackage( entry.getName() );

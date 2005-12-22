@@ -67,6 +67,24 @@ public class ArtifactRepositoryIndexingTest
         indexer.close();
     }
 
+    public void testIndexerExceptions()
+        throws Exception
+    {
+        //test closed index
+        try
+        {
+            indexer.close();
+            Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
+            artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+            indexer.addArtifactIndex( artifact );
+            fail( "Must throw exception on closed index." );
+        }
+        catch( RepositoryIndexerException e )
+        {
+            //expected
+        }
+    }
+
     protected Artifact getArtifact( String groupId, String artifactId, String version )
     {
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "jar" );

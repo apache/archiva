@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -110,7 +111,7 @@ public abstract class AbstractRepositoryIndexer
     {
         if ( indexWriter == null )
         {
-            indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+            indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
         }
     }
 
@@ -131,26 +132,56 @@ public abstract class AbstractRepositoryIndexer
     protected void validateIndex()
         throws RepositoryIndexerException
     {
-        indexOpen = true;
-        if ( true ) return;
-        try
+        File indexDir = new File( indexPath );
+        if ( indexDir.exists() )
         {
-            getIndexReader();
-            Collection fields = indexReader.getFieldNames();
-            String[] indexFields = getIndexFields();
-            for( int idx=0; idx<indexFields.length; idx++ )
+            if ( indexDir.isDirectory() )
             {
-                if ( !fields.contains( indexFields[ idx ] ) )
+                if ( indexDir.listFiles().length > 1 )
                 {
-                    throw new RepositoryIndexerException( "The Field " + indexFields[ idx ] + " does not exist in " +
-                            "index path " + indexPath + "." );
+                    try
+                    {
+                        getIndexReader();
+                        Collection fields = indexReader.getFieldNames();
+                        String[] indexFields = getIndexFields();
+                        for( int idx=0; idx<indexFields.length; idx++ )
+                        {
+                            if ( !fields.contains( indexFields[ idx ] ) )
+                            {
+                                throw new RepositoryIndexerException( "The Field " + indexFields[ idx ] + " does not exist in " +
+                                        "index path " + indexPath + "." );
+                            }
+                        }
+                    }
+                    catch ( IOException e )
+                    {
+                        throw new RepositoryIndexerException( e );
+                    }
+                }
+                else
+                {
+                    System.out.println( "Skipping validation of an empty index in: " + indexDir.getAbsolutePath() );
                 }
             }
-            indexOpen = true;
+            else
+            {
+                throw new RepositoryIndexerException( "Specified index path is not a directory: " + 
+                                                      indexDir.getAbsolutePath() );
+            }
         }
-        catch ( IOException e )
+        else
         {
-            throw new RepositoryIndexerException( e );
+            try
+            {
+                indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+                System.out.println( "New index directory created in: " + indexDir.getAbsolutePath() );
+            }
+            catch( Exception e )
+            {
+                throw new RepositoryIndexerException( e );
+            }
         }
+
+        indexOpen = true;
     }
 }
