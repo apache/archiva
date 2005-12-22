@@ -131,6 +131,8 @@ public abstract class AbstractRepositoryIndexer
     protected void validateIndex()
         throws RepositoryIndexerException
     {
+        indexOpen = true;
+        if ( true ) return;
         try
         {
             getIndexReader();

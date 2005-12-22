@@ -1,0 +1,8 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.repository.indexing.RepositoryIndexerFactory</role>
+      <implementation>org.apache.maven.repository.indexing.DefaultRepositoryIndexerFactory</implementation>
+    </component>
+  </components>
+</component-set>
