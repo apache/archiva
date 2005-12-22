@@ -26,6 +26,16 @@ import java.io.IOException;
 public interface RepositoryIndexer
 {
     String ROLE = RepositoryIndexer.class.getName();
+    
+    String[] getIndexFields();
+    
+    boolean isOpen();
+
+    void addObjectIndex( Object obj ) throws RepositoryIndexerException;
+
+    void close() throws RepositoryIndexerException;
+    
+    void open() throws RepositoryIndexerException;
 
     void optimize() throws RepositoryIndexerException;
 }

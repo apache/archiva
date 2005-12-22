@@ -53,7 +53,8 @@ public class ArtifactRepositoryIndexer
     private static final String PACKAGES = "packages";
     private static final String FILES = "files";
     
-    private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES, FILES };
+    private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5,
+                                               CLASSES, PACKAGES, FILES };
     
     private ArtifactRepository repository;
 
@@ -68,16 +69,42 @@ public class ArtifactRepositoryIndexer
         indexPath = path;
         validateIndex();
     }
+    
+    public String[] getIndexFields()
+    {
+        return FIELDS;
+    }
+
+    public void addObjectIndex(Object obj) 
+        throws RepositoryIndexerException
+    {
+        if ( obj instanceof Artifact )
+        {
+            addArtifactIndex( (Artifact) obj );
+        }
+        else
+        {
+            throw new RepositoryIndexerException( "This instance of indexer cannot index instances of " + 
+                    obj.getClass().getName() );
+        }
+    }
 
     public void addArtifactIndex( Artifact artifact )
         throws RepositoryIndexerException
     {
+        if ( !isOpen() )
+        {
+            throw new RepositoryIndexerException( "Unable to add artifact index on a closed index" );
+        }
+
         try
         {
             getIndexWriter();
 
+            initBuffers();
             processArtifactContents( artifact.getFile() );
             
+            //@todo should some of these fields be Keyword instead of Text ?
             Document doc = new Document();
             doc.add( Field.Text( NAME, repository.pathOf( artifact ) ) );
             doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
@@ -89,23 +116,12 @@ public class ArtifactRepositoryIndexer
             doc.add( Field.Text( PACKAGES, packages.toString() ) );
             doc.add( Field.Text( FILES, files.toString() ) );
             indexWriter.addDocument( doc );
+
+            removeBuffers();
         }
         catch( Exception e )
         {
             throw new RepositoryIndexerException( e );
-        }
-    }
-
-    public void optimize()
-        throws RepositoryIndexerException
-    {
-        try
-        {
-            indexWriter.optimize();
-        }
-        catch ( IOException ioe )
-        {
-            throw new RepositoryIndexerException( "Failed to optimize index", ioe );
         }
     }
 
@@ -143,13 +159,23 @@ public class ArtifactRepositoryIndexer
         return complete.digest();
     }
 
-    private void processArtifactContents( File artifact )
-        throws IOException, ZipException
+    private void initBuffers()
     {
         classes = new StringBuffer();
         packages = new StringBuffer();
         files = new StringBuffer();
-        
+    }
+
+    private void removeBuffers()
+    {
+        classes = null;
+        packages = null;
+        files = null;
+    }
+
+    private void processArtifactContents( File artifact )
+        throws IOException, ZipException
+    {
         ZipFile jar = new ZipFile( artifact );
         for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
         {
@@ -219,27 +245,5 @@ public class ArtifactRepositoryIndexer
         }
         
         return isAdded;
-    }
-
-    private void validateIndex()
-        throws RepositoryIndexerException
-    {
-        try
-        {
-            getIndexReader();
-            Collection fields = indexReader.getFieldNames();
-            for( int idx=0; idx<FIELDS.length; idx++ )
-            {
-                if ( !fields.contains( FIELDS[ idx ] ) )
-                {
-                    throw new RepositoryIndexerException( "The Field " + FIELDS[ idx ] + " does not exist in index" +
-                            " path " + indexPath + "." );
-                }
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexerException( e );
-        }
     }
 }

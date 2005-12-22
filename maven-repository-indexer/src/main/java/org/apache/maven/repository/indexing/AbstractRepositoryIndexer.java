@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
  */
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -32,8 +33,77 @@ public abstract class AbstractRepositoryIndexer
     implements RepositoryIndexer
 {
     protected String indexPath;
+    protected boolean indexOpen;
     protected IndexReader indexReader;
     protected IndexWriter indexWriter;
+    
+    public void optimize()
+        throws RepositoryIndexerException
+    {
+        if ( !isOpen() )
+        {
+            throw new RepositoryIndexerException( "Unable to optimize index on a closed index" );
+        }
+
+        try
+        {
+            indexWriter.optimize();
+        }
+        catch ( IOException ioe )
+        {
+            throw new RepositoryIndexerException( "Failed to optimize index", ioe );
+        }
+    }
+
+    public boolean isOpen()
+    {
+        return indexOpen;
+    }
+    
+    public void close() 
+        throws RepositoryIndexerException
+    {
+        if ( indexOpen )
+        {
+            try
+            {
+                if ( indexWriter != null )
+                {
+                    indexWriter.close();
+                    indexWriter = null;
+                }
+
+                if ( indexReader != null )
+                {
+                    indexReader.close();
+                    indexReader = null;
+                }
+                
+                indexOpen = false;
+            }
+            catch ( Exception e )
+            {
+                throw new RepositoryIndexerException( e );
+            }
+        }
+    }
+
+    public void open()
+        throws RepositoryIndexerException
+    {
+        try
+        {
+            if ( !indexOpen )
+            {
+                validateIndex();
+            }
+        }
+        catch ( Exception e )
+        {
+            throw new RepositoryIndexerException( e );
+        }
+    }
+
 
     protected void getIndexWriter()
         throws IOException
@@ -56,5 +126,29 @@ public abstract class AbstractRepositoryIndexer
     protected Analyzer getAnalyzer()
     {
         return new StandardAnalyzer();
+    }
+
+    protected void validateIndex()
+        throws RepositoryIndexerException
+    {
+        try
+        {
+            getIndexReader();
+            Collection fields = indexReader.getFieldNames();
+            String[] indexFields = getIndexFields();
+            for( int idx=0; idx<indexFields.length; idx++ )
+            {
+                if ( !fields.contains( indexFields[ idx ] ) )
+                {
+                    throw new RepositoryIndexerException( "The Field " + indexFields[ idx ] + " does not exist in " +
+                            "index path " + indexPath + "." );
+                }
+            }
+            indexOpen = true;
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexerException( e );
+        }
     }
 }
