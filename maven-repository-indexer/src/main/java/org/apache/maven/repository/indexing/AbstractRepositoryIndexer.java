@@ -64,28 +64,25 @@ public abstract class AbstractRepositoryIndexer
     public void close() 
         throws RepositoryIndexerException
     {
-        if ( indexOpen )
+        try
         {
-            try
+            if ( indexWriter != null )
             {
-                if ( indexWriter != null )
-                {
-                    indexWriter.close();
-                    indexWriter = null;
-                }
+                indexWriter.close();
+                indexWriter = null;
+            }
 
-                if ( indexReader != null )
-                {
-                    indexReader.close();
-                    indexReader = null;
-                }
-                
-                indexOpen = false;
-            }
-            catch ( Exception e )
+            if ( indexReader != null )
             {
-                throw new RepositoryIndexerException( e );
+                indexReader.close();
+                indexReader = null;
             }
+
+            indexOpen = false;
+        }
+        catch ( Exception e )
+        {
+            throw new RepositoryIndexerException( e );
         }
     }
 
@@ -94,10 +91,7 @@ public abstract class AbstractRepositoryIndexer
     {
         try
         {
-            if ( !indexOpen )
-            {
-                validateIndex();
-            }
+            validateIndex();
         }
         catch ( Exception e )
         {
@@ -123,7 +117,7 @@ public abstract class AbstractRepositoryIndexer
             indexReader = IndexReader.open( indexPath );
         }
     }
-
+    
     protected Analyzer getAnalyzer()
     {
         return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );

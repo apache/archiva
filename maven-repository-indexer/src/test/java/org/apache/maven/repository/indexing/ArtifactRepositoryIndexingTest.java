@@ -18,6 +18,9 @@ package org.apache.maven.repository.indexing;
  */
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -29,7 +32,7 @@ import org.codehaus.plexus.PlexusTestCase;
 
 /**
  *
- * @author Edwin Punzalan
+ * @author Edwin Punzalan/Maria Odea Ching
  */
 public class ArtifactRepositoryIndexingTest
     extends PlexusTestCase
@@ -38,6 +41,15 @@ public class ArtifactRepositoryIndexingTest
     protected ArtifactFactory artifactFactory;
     protected ArtifactRepository repository;
     protected String indexPath;
+    private RepositorySearcher repoSearcher;
+    private static final String GROUPID = "groupId";
+    private static final String ARTIFACTID = "artifactId";
+	private static final String VERSION = "version";
+	private static final String SHA1 = "sha1";
+    private static final String MD5 = "md5";
+    private static final String CLASSES = "classes";
+    private static final String PACKAGES = "packages";
+    private static final String FILES = "files";
 
     protected void setUp()
         throws Exception
@@ -55,36 +67,112 @@ public class ArtifactRepositoryIndexingTest
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
         indexer = (ArtifactRepositoryIndexer) factory.getArtifactRepositoryIndexer( indexPath, repository );
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+        
+        repoSearcher = new ArtifactRepositorySearcher(indexPath, repository);
     }
-
+    
     public void testIndex()
         throws Exception
     {
-        Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.addArtifactIndex( artifact );
-        //indexer.optimize();
+        
+        artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        indexer.addArtifactIndex( artifact );
+        
+        indexer.optimize();
         indexer.close();
+
+        indexer.open();
+        artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        indexer.addObjectIndex( artifact );
+        indexer.close();
+    }
+  
+    public void testSearch() throws Exception{
+    	
+        //test the search GROUPID
+        List artifacts = repoSearcher.searchArtifact("test", GROUPID);
+        assertEquals( 1, artifacts.size() );
+                        
+        artifacts = repoSearcher.searchArtifact("test", ARTIFACTID);
+        assertEquals( 1, artifacts.size() );
+                
+        artifacts = repoSearcher.searchArtifact("1.0", VERSION);
+        assertEquals( 1, artifacts.size() );
+        
+        artifacts = repoSearcher.searchArtifact("App", CLASSES);
+        assertEquals( 1, artifacts.size() );
+        
+        artifacts = repoSearcher.searchArtifact("groupId", PACKAGES);
+        assertEquals( 1, artifacts.size() );
+        
+        artifacts = repoSearcher.searchArtifact("pom.xml", FILES);
+        assertEquals( 3, artifacts.size() );
+
+        for( Iterator iter = artifacts.iterator(); iter.hasNext(); )
+        {
+        	Artifact artifact = (Artifact) iter.next();
+        	File f = artifact.getFile();
+            assertNotNull( f );
+        	assertTrue( f.exists() );
+        }
+        
+        //search org.apache.maven jars
+        artifacts = repoSearcher.searchArtifact("org.apache.maven", GROUPID);
+        assertEquals( 2, artifacts.size() );
+        
+        artifacts = repoSearcher.searchArtifact("maven-artifact", ARTIFACTID);
+        assertEquals( 1, artifacts.size() );
+                
+        artifacts = repoSearcher.searchArtifact("2", VERSION);
+        assertEquals( 2, artifacts.size() );
+   
     }
 
     public void testIndexerExceptions()
         throws Exception
     {
-        //test closed index
+        indexer.close();
+        Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+
         try
         {
-            indexer.close();
-            Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
-            artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
             indexer.addArtifactIndex( artifact );
-            fail( "Must throw exception on closed index." );
+            fail( "Must throw exception on add index with closed index." );
+        }
+        catch( RepositoryIndexerException e )
+        {
+            //expected
+        }
+        
+        try
+        {
+            indexer.optimize();
+            fail( "Must throw exception on optimize index with closed index." );
+        }
+        catch( RepositoryIndexerException e )
+        {
+            //expected
+        }
+        
+        indexer.open();
+        
+        try
+        {
+            indexer.addObjectIndex( "should fail" );
+            fail( "Must throw exception on add non-Artifact object." );
         }
         catch( RepositoryIndexerException e )
         {
             //expected
         }
     }
-
+    
     protected Artifact getArtifact( String groupId, String artifactId, String version )
     {
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "jar" );

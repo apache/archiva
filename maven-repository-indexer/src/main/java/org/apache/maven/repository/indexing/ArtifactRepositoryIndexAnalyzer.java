@@ -18,6 +18,8 @@ package org.apache.maven.repository.indexing;
  */
 
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
@@ -51,7 +53,7 @@ public class ArtifactRepositoryIndexAnalyzer
 
         return tokenStream;
     }
-
+    
     private class VersionTokenizer
         extends CharTokenizer
     {
@@ -60,14 +62,15 @@ public class ArtifactRepositoryIndexAnalyzer
             super( reader );
         }
 
-        protected boolean isTokenChar(char param)
+        protected boolean isTokenChar( char param )
         {
             boolean token;
 
             switch( param )
             {
-                case '.': token = false; break;
-                case '-': token = false; break;
+                case '.': 
+                case '-': 
+                    token = false; break;
                 default:
                     token = true;
             }

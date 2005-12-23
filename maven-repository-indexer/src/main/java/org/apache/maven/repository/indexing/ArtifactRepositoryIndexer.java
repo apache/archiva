@@ -101,7 +101,6 @@ public class ArtifactRepositoryIndexer
         {
             getIndexWriter();
 
-            initBuffers();
             processArtifactContents( artifact.getFile() );
             
             //@todo should some of these fields be Keyword instead of Text ?
@@ -176,6 +175,7 @@ public class ArtifactRepositoryIndexer
     private void processArtifactContents( File artifact )
         throws IOException, ZipException
     {
+        initBuffers();
         ZipFile jar = new ZipFile( artifact );
         for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
         {
