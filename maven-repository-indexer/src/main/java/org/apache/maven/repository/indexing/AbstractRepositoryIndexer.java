@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
@@ -126,7 +126,7 @@ public abstract class AbstractRepositoryIndexer
 
     protected Analyzer getAnalyzer()
     {
-        return new StandardAnalyzer();
+        return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
     }
 
     protected void validateIndex()
