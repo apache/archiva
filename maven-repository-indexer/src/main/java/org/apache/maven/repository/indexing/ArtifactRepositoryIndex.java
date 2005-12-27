@@ -24,25 +24,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+
 
 /**
  * Class used to index Artifact objects in a specified repository
  *
  * @author Edwin Punzalan
  */
-public class ArtifactRepositoryIndexer
-    extends AbstractRepositoryIndexer
+public class ArtifactRepositoryIndex
+    extends AbstractRepositoryIndex
 {
     private static final String NAME = "name";
     private static final String GROUPID = "groupId";
@@ -57,28 +57,26 @@ public class ArtifactRepositoryIndexer
     private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5,
                                                CLASSES, PACKAGES, FILES };
     
-    private ArtifactRepository repository;
-
+    private Analyzer analyzer;
     private StringBuffer classes;
     private StringBuffer packages;
     private StringBuffer files;
     
     /**
-     * Constructor
-     * @todo change repository to layout ???
+     * method to get the Analyzer used to create indices
      *
-     * @param repository the repository where the indexed artifacts are located.  This is necessary only to distinguish
-     *                   between default and legacy directory structure of the artifact location.
-     * @param path the directory where the index is located or will be created.
+     * @return the Analyzer object used to create the artifact indices
      */
-    public ArtifactRepositoryIndexer( ArtifactRepository repository, String path )
-        throws RepositoryIndexerException
+    public Analyzer getAnalyzer()
     {
-        this.repository = repository;
-        indexPath = path;
-        validateIndex();
+        if ( analyzer == null )
+        {
+            analyzer = new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
+        }
+        
+        return analyzer;
     }
-    
+
     /**
      * method for collecting the available index fields usable for searching
      *
@@ -94,16 +92,16 @@ public class ArtifactRepositoryIndexer
      *
      * @param obj the object to be indexed by this indexer
      */
-    public void addObjectIndex(Object obj) 
-        throws RepositoryIndexerException
+    public void index(Object obj) 
+        throws RepositoryIndexException
     {
         if ( obj instanceof Artifact )
         {
-            addArtifactIndex( (Artifact) obj );
+            indexArtifact( (Artifact) obj );
         }
         else
         {
-            throw new RepositoryIndexerException( "This instance of indexer cannot index instances of " + 
+            throw new RepositoryIndexException( "This instance of indexer cannot index instances of " + 
                     obj.getClass().getName() );
         }
     }
@@ -113,12 +111,12 @@ public class ArtifactRepositoryIndexer
      *
      * @param artifact the Artifact object to be indexed
      */
-    public void addArtifactIndex( Artifact artifact )
-        throws RepositoryIndexerException
+    public void indexArtifact( Artifact artifact )
+        throws RepositoryIndexException
     {
         if ( !isOpen() )
         {
-            throw new RepositoryIndexerException( "Unable to add artifact index on a closed index" );
+            throw new RepositoryIndexException( "Unable to add artifact index on a closed index" );
         }
 
         try
@@ -129,7 +127,7 @@ public class ArtifactRepositoryIndexer
             
             //@todo should some of these fields be Keyword instead of Text ?
             Document doc = new Document();
-            doc.add( Field.Text( NAME, repository.pathOf( artifact ) ) );
+            doc.add( Field.Text( NAME, artifact.getFile().getName() ) );
             doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
             doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
             doc.add( Field.Text( VERSION, artifact.getVersion() ) );
@@ -144,7 +142,7 @@ public class ArtifactRepositoryIndexer
         }
         catch( Exception e )
         {
-            throw new RepositoryIndexerException( e );
+            throw new RepositoryIndexException( e );
         }
     }
 

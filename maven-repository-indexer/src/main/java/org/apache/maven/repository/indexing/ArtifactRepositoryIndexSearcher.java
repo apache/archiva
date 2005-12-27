@@ -54,39 +54,11 @@ public class ArtifactRepositoryIndexSearcher
 	private static final String GROUPID = "groupId";
 	private static final String ARTIFACTID = "artifactId";
 	private static final String VERSION = "version";
-	private static final String JAR_TYPE = "jar";
-	private static final String XML_TYPE = "xml";
-	private static final String POM_TYPE = "pom";
 
 	private IndexSearcher searcher;
 	private ArtifactRepository repository;
 	private ArtifactFactory factory;
 	
-	/**
-	 * Constructor
-	 * 
-	 * @param indexPath
-	 * @param repository
-	 */
-	public ArtifactRepositoryIndexSearcher( String indexPath, ArtifactRepository repository )
-    {
-		this.repository = repository;
-
-		try
-        {
-			searcher = new IndexSearcher( indexPath );
-        }
-        catch ( IOException ie )
-        {
-			ie.printStackTrace();
-		}
-	}
-	
-	protected Analyzer getAnalyzer()
-    {
-        return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
-    }
-
 	/**
 	 * Search the artifact that contains the query string in the specified
 	 * search field.
@@ -95,12 +67,13 @@ public class ArtifactRepositoryIndexSearcher
 	 * @param searchField
 	 * @return
 	 */
-	public List searchArtifact( String queryString, String searchField )
+	public List search( RepositoryIndex index, String queryString, String searchField )
     {
-		List artifactList = new ArrayList();
+        List artifactList = new ArrayList();
 
 		try {
-            QueryParser parser = new QueryParser( searchField, getAnalyzer() );
+            searcher = new IndexSearcher( index.getIndexPath() );
+            QueryParser parser = new QueryParser( searchField, index.getAnalyzer() );
             Query qry = parser.parse( queryString );
             Hits hits = searcher.search( qry );
 			 //System.out.println("HITS SIZE --> " + hits.length());
@@ -108,53 +81,15 @@ public class ArtifactRepositoryIndexSearcher
 			for ( int i = 0; i < hits.length(); i++ )
             {
 				Document doc = hits.doc( i );
-				// System.out.println("===========================");
-				// System.out.println("NAME :: " + (String) doc.get(NAME));
-				// System.out.println("GROUP ID :: " + (String)
-				// doc.get(GROUPID));
-				// System.out.println("ARTIFACT ID :: " + (String)
-				// doc.get(ARTIFACTID));
-				//System.out.println("VERSION :: " + (String)
-				// doc.get(VERSION));
-				// System.out.println("SHA! :: " + (String) doc.get(SHA1));
-				// System.out.println("MD5 :: " + (String) doc.get(MD5));
-				// System.out.println("CLASSES :: " + (String)
-				// doc.get(CLASSES));
-				// System.out.println("PACKAGES :: " + (String)
-				// doc.get(PACKAGES));
-				// System.out.println("FILES :: " + (String) doc.get(FILES));
-				// System.out.println("===========================");
 
-				String name = (String) doc.get( NAME );
-				String type = "";
-				if ( ( name.substring( name.length() - 3 ).toLowerCase() ).equals( JAR_TYPE ) )
-                {
-					type = JAR_TYPE;
-                }
-				else if ( ( name.substring( name.length() - 3 ).toLowerCase() ).equals( XML_TYPE ) ||
-                          ( name.substring( name.length() - 3 ).toLowerCase() ).equals( POM_TYPE ) )
-                {
-					type = POM_TYPE;
-                }
-
-				if ( type != null && type.length() > 0 )
-                {
-					ArtifactHandler handler = new DefaultArtifactHandler( type );
-					VersionRange version = VersionRange.createFromVersion( (String) doc.get( VERSION ) );
-
-					Artifact artifact = new DefaultArtifact((String) doc.get( GROUPID ), (String) doc.get( ARTIFACTID ),
-							version, "compile", type, "", handler );
-
-					/*
-					 * Artifact artifact = factory.createArtifact((String)
-					 * doc.get(GROUPID), (String) doc.get(ARTIFACTID), (String)
-					 * doc.get(VERSION), "", type);
-					 */
-					artifact.setRepository( repository );
-					artifact.setFile( new File( repository.getBasedir() + "/" + (String) doc.get( NAME ) ) );
-
-					artifactList.add( artifact );
-				}
+                String groupId = doc.get( GROUPID );
+                String artifactId = doc.get( ARTIFACTID );
+                String version = doc.get( VERSION );
+                String name = doc.get( NAME);
+                String packaging = name.substring( name.lastIndexOf( '.' ) + 1 );
+                Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
+                
+                artifactList.add( artifact );
 			}
 		}
         catch ( Exception e )

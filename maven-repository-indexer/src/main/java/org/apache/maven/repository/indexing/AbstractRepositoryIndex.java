@@ -21,8 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
@@ -31,8 +29,8 @@ import org.apache.lucene.index.IndexWriter;
  *
  * @author Edwin Punzalan
  */
-public abstract class AbstractRepositoryIndexer
-    implements RepositoryIndexer
+public abstract class AbstractRepositoryIndex
+    implements RepositoryIndex
 {
     protected String indexPath;
     protected boolean indexOpen;
@@ -43,11 +41,11 @@ public abstract class AbstractRepositoryIndexer
      * method to encapsulate the optimize() method for lucene
      */
     public void optimize()
-        throws RepositoryIndexerException
+        throws RepositoryIndexException
     {
         if ( !isOpen() )
         {
-            throw new RepositoryIndexerException( "Unable to optimize index on a closed index" );
+            throw new RepositoryIndexException( "Unable to optimize index on a closed index" );
         }
 
         try
@@ -56,7 +54,7 @@ public abstract class AbstractRepositoryIndexer
         }
         catch ( IOException ioe )
         {
-            throw new RepositoryIndexerException( "Failed to optimize index", ioe );
+            throw new RepositoryIndexException( "Failed to optimize index", ioe );
         }
     }
 
@@ -74,7 +72,7 @@ public abstract class AbstractRepositoryIndexer
      * method used to close all open streams to the index directory
      */
     public void close() 
-        throws RepositoryIndexerException
+        throws RepositoryIndexException
     {
         try
         {
@@ -94,24 +92,30 @@ public abstract class AbstractRepositoryIndexer
         }
         catch ( Exception e )
         {
-            throw new RepositoryIndexerException( e );
+            throw new RepositoryIndexException( e );
         }
     }
 
     /**
      * method for opening the index directory for indexing operations
      */
-    public void open()
-        throws RepositoryIndexerException
+    public void open( String indexPath )
+        throws RepositoryIndexException
     {
         try
         {
+            this.indexPath = indexPath;
             validateIndex();
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            throw new RepositoryIndexerException( e );
+            throw new RepositoryIndexException( e );
         }
+    }
+    
+    public String getIndexPath()
+    {
+        return indexPath;
     }
 
     protected void getIndexWriter()
@@ -132,67 +136,48 @@ public abstract class AbstractRepositoryIndexer
         }
     }
     
-    protected Analyzer getAnalyzer()
-    {
-        return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
-    }
-
     /**
      * method for validating an index directory
-     *
-     * @throws RepositoryIndexerException if the given indexPath is not valid for this type of RepositoryIndexer
+     * 
+     * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
      */
     protected void validateIndex()
-        throws RepositoryIndexerException
+        throws RepositoryIndexException, IOException
     {
         File indexDir = new File( indexPath );
-        if ( indexDir.exists() )
+        if ( IndexReader.indexExists( indexDir ) )
         {
-            if ( indexDir.isDirectory() )
+            getIndexReader();
+            if ( indexReader.numDocs() > 0 )
             {
-                if ( indexDir.listFiles().length > 1 )
+                Collection fields = indexReader.getFieldNames();
+                String[] indexFields = getIndexFields();
+                for( int idx=0; idx<indexFields.length; idx++ )
                 {
-                    try
+                    if ( !fields.contains( indexFields[ idx ] ) )
                     {
-                        getIndexReader();
-                        Collection fields = indexReader.getFieldNames();
-                        String[] indexFields = getIndexFields();
-                        for( int idx=0; idx<indexFields.length; idx++ )
-                        {
-                            if ( !fields.contains( indexFields[ idx ] ) )
-                            {
-                                throw new RepositoryIndexerException( "The Field " + indexFields[ idx ] + " does not exist in " +
-                                        "index path " + indexPath + "." );
-                            }
-                        }
+                        throw new RepositoryIndexException( "The Field " + indexFields[ idx ] + " does not exist in " +
+                                "index path " + indexPath + "." );
                     }
-                    catch ( IOException e )
-                    {
-                        throw new RepositoryIndexerException( e );
-                    }
-                }
-                else
-                {
-                    System.out.println( "Skipping validation of an empty index in: " + indexDir.getAbsolutePath() );
                 }
             }
             else
             {
-                throw new RepositoryIndexerException( "Specified index path is not a directory: " + 
-                                                      indexDir.getAbsolutePath() );
+                System.out.println("Skipping index field validations for empty index." );
             }
+        }
+        else if ( !indexDir.exists() )
+        {
+            indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+            System.out.println( "New index directory created in: " + indexDir.getAbsolutePath() );
+        }
+        else if ( indexDir.isDirectory() )
+        {
+            throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
         }
         else
         {
-            try
-            {
-                indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
-                System.out.println( "New index directory created in: " + indexDir.getAbsolutePath() );
-            }
-            catch( Exception e )
-            {
-                throw new RepositoryIndexerException( e );
-            }
+            throw new RepositoryIndexException( indexPath + " is not a directory." );
         }
 
         indexOpen = true;

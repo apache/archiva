@@ -24,16 +24,16 @@ import java.util.List;
  */
 public interface RepositoryIndexSearcher {
 
-	String ROLE = RepositoryIndexer.class.getName();
+	String ROLE = RepositoryIndexSearcher.class.getName();
 	
 	/**
 	 * Search the artifact that contains the query string in the specified
 	 * search field.
 	 * 
+     * @param index
 	 * @param queryString
 	 * @param searchField
 	 * @return
 	 */
-	public List searchArtifact( String queryString, String searchField );
-	
+	public List search( RepositoryIndex index, String queryString, String searchField );
 }
