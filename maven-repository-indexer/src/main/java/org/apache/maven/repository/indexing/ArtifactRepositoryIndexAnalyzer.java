@@ -18,8 +18,7 @@ package org.apache.maven.repository.indexing;
  */
 
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
