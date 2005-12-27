@@ -40,7 +40,7 @@ public class ArtifactRepositoryIndexingTest
     protected ArtifactFactory artifactFactory;
     protected ArtifactRepository repository;
     protected String indexPath;
-    private RepositorySearcher repoSearcher;
+    private RepositoryIndexSearcher repoSearcher;
     private static final String GROUPID = "groupId";
     private static final String ARTIFACTID = "artifactId";
 	private static final String VERSION = "version";
@@ -67,7 +67,7 @@ public class ArtifactRepositoryIndexingTest
         indexer = (ArtifactRepositoryIndexer) factory.getArtifactRepositoryIndexer( indexPath, repository );
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         
-        repoSearcher = new ArtifactRepositorySearcher(indexPath, repository);
+        repoSearcher = new ArtifactRepositoryIndexSearcher(indexPath, repository);
     }
     
     public void testIndex()

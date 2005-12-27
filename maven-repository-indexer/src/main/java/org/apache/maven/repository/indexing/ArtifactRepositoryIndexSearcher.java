@@ -47,13 +47,9 @@ import org.apache.maven.artifact.versioning.VersionRange;
  * specified query string.
  * 
  */
-public class ArtifactRepositorySearcher
-    implements RepositorySearcher
+public class ArtifactRepositoryIndexSearcher
+    implements RepositoryIndexSearcher
 {
-
-	private IndexSearcher searcher;
-	private ArtifactRepository repository;
-	private ArtifactFactory factory;
 	private static final String NAME = "name";
 	private static final String GROUPID = "groupId";
 	private static final String ARTIFACTID = "artifactId";
@@ -61,6 +57,10 @@ public class ArtifactRepositorySearcher
 	private static final String JAR_TYPE = "jar";
 	private static final String XML_TYPE = "xml";
 	private static final String POM_TYPE = "pom";
+
+	private IndexSearcher searcher;
+	private ArtifactRepository repository;
+	private ArtifactFactory factory;
 	
 	/**
 	 * Constructor
@@ -68,11 +68,9 @@ public class ArtifactRepositorySearcher
 	 * @param indexPath
 	 * @param repository
 	 */
-	public ArtifactRepositorySearcher( String indexPath,
-			ArtifactRepository repository )
+	public ArtifactRepositoryIndexSearcher( String indexPath, ArtifactRepository repository )
     {
 		this.repository = repository;
-		factory = new DefaultArtifactFactory();
 
 		try
         {

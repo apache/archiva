@@ -22,7 +22,7 @@ import java.util.List;
 /**
  *
  */
-public interface RepositorySearcher {
+public interface RepositoryIndexSearcher {
 
 	String ROLE = RepositoryIndexer.class.getName();
 	
