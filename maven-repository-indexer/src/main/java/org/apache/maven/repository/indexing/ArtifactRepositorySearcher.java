@@ -47,7 +47,9 @@ import org.apache.maven.artifact.versioning.VersionRange;
  * specified query string.
  * 
  */
-public class ArtifactRepositorySearcher implements RepositorySearcher {
+public class ArtifactRepositorySearcher
+    implements RepositorySearcher
+{
 
 	private IndexSearcher searcher;
 	private ArtifactRepository repository;
@@ -66,26 +68,25 @@ public class ArtifactRepositorySearcher implements RepositorySearcher {
 	 * @param indexPath
 	 * @param repository
 	 */
-	public ArtifactRepositorySearcher(String indexPath,
-			ArtifactRepository repository) {
-
+	public ArtifactRepositorySearcher( String indexPath,
+			ArtifactRepository repository )
+    {
 		this.repository = repository;
 		factory = new DefaultArtifactFactory();
 
-		try {
-			searcher = new IndexSearcher(indexPath);
-		} catch (IOException ie) {
+		try
+        {
+			searcher = new IndexSearcher( indexPath );
+        }
+        catch ( IOException ie )
+        {
 			ie.printStackTrace();
 		}
 	}
 	
 	protected Analyzer getAnalyzer()
     {
-        //PerFieldAnalyzerWrapper wrapper = new PerFieldAnalyzerWrapper(new SimpleAnalyzer());
-        //wrapper.addAnalyzer(VERSION, new StandardAnalyzer());
-        
-		//return wrapper;
-        return new ArtifactRepositoryIndexAnalyzer(new SimpleAnalyzer());
+        return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
     }
 
 	/**
@@ -96,27 +97,19 @@ public class ArtifactRepositorySearcher implements RepositorySearcher {
 	 * @param searchField
 	 * @return
 	 */
-	public List searchArtifact(String queryString, String searchField) {
-
-		
-		QueryParser parser = new QueryParser(searchField,
-				getAnalyzer());
-		Query qry = null;
+	public List searchArtifact( String queryString, String searchField )
+    {
 		List artifactList = new ArrayList();
 
 		try {
-			qry = parser.parse(queryString);
-		} catch (ParseException pe) {
-			pe.printStackTrace();
-			return artifactList;
-		}
-
-		try {
-			Hits hits = searcher.search(qry);
+            QueryParser parser = new QueryParser( searchField, getAnalyzer() );
+            Query qry = parser.parse( queryString );
+            Hits hits = searcher.search( qry );
 			 //System.out.println("HITS SIZE --> " + hits.length());
 
-			for (int i = 0; i < hits.length(); i++) {
-				Document doc = hits.doc(i);
+			for ( int i = 0; i < hits.length(); i++ )
+            {
+				Document doc = hits.doc( i );
 				// System.out.println("===========================");
 				// System.out.println("NAME :: " + (String) doc.get(NAME));
 				// System.out.println("GROUP ID :: " + (String)
@@ -134,42 +127,41 @@ public class ArtifactRepositorySearcher implements RepositorySearcher {
 				// System.out.println("FILES :: " + (String) doc.get(FILES));
 				// System.out.println("===========================");
 
-				String name = (String) doc.get(NAME);
+				String name = (String) doc.get( NAME );
 				String type = "";
-				if ((name.substring(name.length() - 3).toLowerCase())
-						.equals(JAR_TYPE))
+				if ( ( name.substring( name.length() - 3 ).toLowerCase() ).equals( JAR_TYPE ) )
+                {
 					type = JAR_TYPE;
-				else if ((name.substring(name.length() - 3).toLowerCase())
-						.equals(XML_TYPE)
-						|| (name.substring(name.length() - 3).toLowerCase())
-								.equals(POM_TYPE))
+                }
+				else if ( ( name.substring( name.length() - 3 ).toLowerCase() ).equals( XML_TYPE ) ||
+                          ( name.substring( name.length() - 3 ).toLowerCase() ).equals( POM_TYPE ) )
+                {
 					type = POM_TYPE;
+                }
 
-				if (!type.equals("") && type != null) {
-					ArtifactHandler handler = new DefaultArtifactHandler(type);
-					VersionRange version = VersionRange
-							.createFromVersion((String) doc.get(VERSION));
+				if ( type != null && type.length() > 0 )
+                {
+					ArtifactHandler handler = new DefaultArtifactHandler( type );
+					VersionRange version = VersionRange.createFromVersion( (String) doc.get( VERSION ) );
 
-					Artifact artifact = new DefaultArtifact((String) doc
-							.get(GROUPID), (String) doc.get(ARTIFACTID),
-							version, "compile", type, "", handler);
+					Artifact artifact = new DefaultArtifact((String) doc.get( GROUPID ), (String) doc.get( ARTIFACTID ),
+							version, "compile", type, "", handler );
 
 					/*
 					 * Artifact artifact = factory.createArtifact((String)
 					 * doc.get(GROUPID), (String) doc.get(ARTIFACTID), (String)
 					 * doc.get(VERSION), "", type);
 					 */
-					artifact.setRepository(repository);
-					artifact.setFile(new File(repository.getBasedir() + "/"
-							+ (String) doc.get(NAME)));
+					artifact.setRepository( repository );
+					artifact.setFile( new File( repository.getBasedir() + "/" + (String) doc.get( NAME ) ) );
 
-					artifactList.add(artifact);
+					artifactList.add( artifact );
 				}
 			}
-
-		} catch (IOException ie) {
-			ie.printStackTrace();
-			return artifactList;
+		}
+        catch ( Exception e )
+        {
+			e.printStackTrace();
 		}
 
 		return artifactList;

@@ -34,6 +34,6 @@ public interface RepositorySearcher {
 	 * @param searchField
 	 * @return
 	 */
-	public List searchArtifact(String queryString, String searchField);
+	public List searchArtifact( String queryString, String searchField );
 	
 }
