@@ -20,7 +20,7 @@ package org.apache.maven.repository.indexing;
 import java.util.List;
 
 /**
- * @author Maria Odea Ching
+ *
  */
 public interface RepositorySearcher {
 

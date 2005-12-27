@@ -32,7 +32,6 @@ import org.codehaus.plexus.PlexusTestCase;
 
 /**
  *
- * @author Edwin Punzalan/Maria Odea Ching
  */
 public class ArtifactRepositoryIndexingTest
     extends PlexusTestCase

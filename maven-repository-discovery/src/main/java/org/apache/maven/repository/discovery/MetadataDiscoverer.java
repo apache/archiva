@@ -23,7 +23,6 @@ import java.util.List;
 /**
  * Interface for discovering metadata files.
  * 
- * @author Maria Odea Ching
  */
 public interface MetadataDiscoverer {
 	String ROLE = MetadataDiscoverer.class.getName();

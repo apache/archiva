@@ -48,7 +48,6 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 /**
  * This class gets all the paths that contain the metadata files.
  * 
- * @author Maria Odea Ching
  */
 public class DefaultMetadataDiscoverer implements MetadataDiscoverer {
 

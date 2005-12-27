@@ -46,7 +46,6 @@ import org.apache.maven.artifact.versioning.VersionRange;
  * This class searches the index for existing artifacts that contains the
  * specified query string.
  * 
- * @author Maria Odea Ching
  */
 public class ArtifactRepositorySearcher implements RepositorySearcher {
 
