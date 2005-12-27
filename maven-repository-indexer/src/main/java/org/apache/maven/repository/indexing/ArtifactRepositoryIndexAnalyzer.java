@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
 
 /**
+ * Class created specifically to index artifacts
  *
  * @author Edwin Punzalan
  */
@@ -33,12 +34,25 @@ public class ArtifactRepositoryIndexAnalyzer
 {
     private Analyzer defaultAnalyzer;
 
+    /**
+     * constructor to for this analyzer
+     * 
+     * @character defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
+     */
     public ArtifactRepositoryIndexAnalyzer( Analyzer defaultAnalyzer )
     {
         this.defaultAnalyzer = defaultAnalyzer;
     }
 
-    public TokenStream tokenStream(String fieldName, Reader reader)
+    /**
+     * Method called by lucence during indexing operations
+     * 
+     * @character fieldName the field name that the lucene object is currently processing
+     * @character reader a Reader object to the index stream
+     * 
+     * @return an analyzer to specific to the field name or the default analyzer if none is present
+     */
+    public TokenStream tokenStream( String fieldName, Reader reader )
     {
         TokenStream tokenStream;
 
@@ -54,19 +68,34 @@ public class ArtifactRepositoryIndexAnalyzer
         return tokenStream;
     }
     
+    /**
+     * Class used to tokenize an artifact's version.
+     */
     private class VersionTokenizer
         extends CharTokenizer
     {
+        /**
+         * Constructor with the required reader to the index stream
+         *
+         * @reader the Reader object of the index stream
+         */
         public VersionTokenizer( Reader reader )
         {
             super( reader );
         }
 
-        protected boolean isTokenChar( char param )
+        /**
+         * method that lucene calls to check tokenization of a stream character
+         * 
+         * @param character char currently being processed
+         *
+         * @return true if the char is a token, false if the char is a stop char
+         */
+        protected boolean isTokenChar( char character )
         {
             boolean token;
 
-            switch( param )
+            switch( character )
             {
                 case '.': 
                 case '-': 

@@ -37,6 +37,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 /**
+ * Class used to index Artifact objects in a specified repository
  *
  * @author Edwin Punzalan
  */
@@ -62,6 +63,14 @@ public class ArtifactRepositoryIndexer
     private StringBuffer packages;
     private StringBuffer files;
     
+    /**
+     * Constructor
+     * @todo change repository to layout ???
+     *
+     * @param repository the repository where the indexed artifacts are located.  This is necessary only to distinguish
+     *                   between default and legacy directory structure of the artifact location.
+     * @param path the directory where the index is located or will be created.
+     */
     public ArtifactRepositoryIndexer( ArtifactRepository repository, String path )
         throws RepositoryIndexerException
     {
@@ -70,11 +79,21 @@ public class ArtifactRepositoryIndexer
         validateIndex();
     }
     
+    /**
+     * method for collecting the available index fields usable for searching
+     *
+     * @return index field names
+     */
     public String[] getIndexFields()
     {
         return FIELDS;
     }
 
+    /**
+     * generic method for indexing
+     *
+     * @param obj the object to be indexed by this indexer
+     */
     public void addObjectIndex(Object obj) 
         throws RepositoryIndexerException
     {
@@ -89,6 +108,11 @@ public class ArtifactRepositoryIndexer
         }
     }
 
+    /**
+     * method to index a given artifact
+     *
+     * @param artifact the Artifact object to be indexed
+     */
     public void addArtifactIndex( Artifact artifact )
         throws RepositoryIndexerException
     {

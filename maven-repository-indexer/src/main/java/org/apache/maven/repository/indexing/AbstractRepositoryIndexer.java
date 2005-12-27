@@ -27,6 +27,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 
 /**
+ * Abstract class for RepositoryIndexers
  *
  * @author Edwin Punzalan
  */
@@ -38,6 +39,9 @@ public abstract class AbstractRepositoryIndexer
     protected IndexReader indexReader;
     protected IndexWriter indexWriter;
     
+    /**
+     * method to encapsulate the optimize() method for lucene
+     */
     public void optimize()
         throws RepositoryIndexerException
     {
@@ -56,11 +60,19 @@ public abstract class AbstractRepositoryIndexer
         }
     }
 
+    /**
+     * method used to query the index status
+     *
+     * @param true if the index is open.
+     */
     public boolean isOpen()
     {
         return indexOpen;
     }
     
+    /**
+     * method used to close all open streams to the index directory
+     */
     public void close() 
         throws RepositoryIndexerException
     {
@@ -86,6 +98,9 @@ public abstract class AbstractRepositoryIndexer
         }
     }
 
+    /**
+     * method for opening the index directory for indexing operations
+     */
     public void open()
         throws RepositoryIndexerException
     {
@@ -98,7 +113,6 @@ public abstract class AbstractRepositoryIndexer
             throw new RepositoryIndexerException( e );
         }
     }
-
 
     protected void getIndexWriter()
         throws IOException
@@ -123,6 +137,11 @@ public abstract class AbstractRepositoryIndexer
         return new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
     }
 
+    /**
+     * method for validating an index directory
+     *
+     * @throws RepositoryIndexerException if the given indexPath is not valid for this type of RepositoryIndexer
+     */
     protected void validateIndex()
         throws RepositoryIndexerException
     {
