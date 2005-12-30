@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
  */
 public class LegacyArtifactDiscoverer
     extends AbstractArtifactDiscoverer
+    implements ArtifactDiscoverer
 {
     private ArtifactFactory artifactFactory;
 

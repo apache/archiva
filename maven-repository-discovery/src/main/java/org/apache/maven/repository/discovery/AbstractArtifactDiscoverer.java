@@ -34,7 +34,6 @@ import java.util.List;
  */
 public abstract class AbstractArtifactDiscoverer
     extends AbstractLogEnabled
-    implements ArtifactDiscoverer
 {
     /**
      * Standard patterns to exclude from discovery as they are not artifacts.
@@ -56,9 +55,23 @@ public abstract class AbstractArtifactDiscoverer
      */
     protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
     {
+        return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
+    }
+
+    /**
+     * Scan the repository for artifact paths.
+     *
+     * @todo replace blacklisted patterns by an artifact filter
+     */
+    protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
+                                             String[] excludes )
+    {
         List allExcludes = new ArrayList();
         allExcludes.addAll( FileUtils.getDefaultExcludesAsList() );
-        allExcludes.addAll( Arrays.asList( STANDARD_DISCOVERY_EXCLUDES ) );
+        if ( excludes != null )
+        {
+            allExcludes.addAll( Arrays.asList( excludes ) );
+        }
 
         if ( blacklistedPatterns != null && blacklistedPatterns.length() > 0 )
         {
@@ -67,6 +80,10 @@ public abstract class AbstractArtifactDiscoverer
 
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setBasedir( repositoryBase );
+        if ( includes != null )
+        {
+            scanner.setIncludes( includes );
+        }
         scanner.setExcludes( (String[]) allExcludes.toArray( EMPTY_STRING_ARRAY ) );
 
         scanner.scan();

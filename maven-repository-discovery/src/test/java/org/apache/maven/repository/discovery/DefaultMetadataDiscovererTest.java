@@ -61,7 +61,7 @@ public class DefaultMetadataDiscovererTest
     {
         List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
         assertNotNull( "Check metadata not null", metadataPaths );
-        assertTrue( metadataPaths.size() == 3 );
+        assertEquals( 3, metadataPaths.size() );
     }
 
     /**

@@ -27,8 +27,6 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -39,7 +37,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -49,27 +46,14 @@ import java.util.StringTokenizer;
  * This class gets all the paths that contain the metadata files.
  */
 public class DefaultMetadataDiscoverer
+    extends AbstractArtifactDiscoverer
     implements MetadataDiscoverer
 {
-
-    /**
-     * Standard patterns to exclude from discovery as they are not artifacts.
-     */
-    private static final String[] STANDARD_DISCOVERY_EXCLUDES = {"bin/**", "reports/**", ".maven/**", "**/*.md5",
-        "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
-        "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
-
     /**
      * Standard patterns to include in discovery of metadata files.
      */
     private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml", "**/*/*-metadata.xml",
         "**/*/*/*-metadata.xml", "**/*-metadata-*.xml", "**/*/*-metadata-*.xml", "**/*/*/*-metadata-*.xml"};
-
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-    private List excludedPaths = new ArrayList();
-
-    private List kickedOutPaths = new ArrayList();
 
     /**
      * Search the repository for metadata files.
@@ -80,7 +64,8 @@ public class DefaultMetadataDiscoverer
     public List discoverMetadata( File repositoryBase, String blacklistedPatterns )
     {
         List metadataFiles = new ArrayList();
-        String[] metadataPaths = scanForMetadataPaths( repositoryBase, blacklistedPatterns );
+        String[] metadataPaths =
+            scanForArtifactPaths( repositoryBase, blacklistedPatterns, STANDARD_DISCOVERY_INCLUDES, null );
 
         for ( int i = 0; i < metadataPaths.length; i++ )
         {
@@ -93,7 +78,7 @@ public class DefaultMetadataDiscoverer
             }
             else
             {
-                kickedOutPaths.add( metadataPaths[i] );
+                addKickedOutPath( metadataPaths[i] );
             }
         }
 
@@ -105,11 +90,10 @@ public class DefaultMetadataDiscoverer
      *
      * @param repo         The path to the repository.
      * @param metadataPath The path to the metadata file.
-     * @return
+     * @return the metadata
      */
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
     {
-
         RepositoryMetadata metadata = null;
 
         try
@@ -183,59 +167,17 @@ public class DefaultMetadataDiscoverer
         }
         catch ( FileNotFoundException fe )
         {
-            return null;
+            // TODO: log ignored metadata
         }
         catch ( XmlPullParserException xe )
         {
-            return null;
+            // TODO: log ignored metadata
         }
         catch ( IOException ie )
         {
-            return null;
+            // TODO: log ignored metadata
         }
 
         return metadata;
     }
-
-    /**
-     * Scan or search for metadata files.
-     *
-     * @param repositoryBase      The repository directory.
-     * @param blacklistedPatterns The patterns to be exluded from the search.
-     * @return
-     */
-    private String[] scanForMetadataPaths( File repositoryBase, String blacklistedPatterns )
-    {
-
-        List allExcludes = new ArrayList();
-        allExcludes.addAll( FileUtils.getDefaultExcludesAsList() );
-        allExcludes.addAll( Arrays.asList( STANDARD_DISCOVERY_EXCLUDES ) );
-
-        if ( blacklistedPatterns != null && blacklistedPatterns.length() > 0 )
-        {
-            allExcludes.addAll( Arrays.asList( blacklistedPatterns.split( "," ) ) );
-        }
-
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( repositoryBase );
-        scanner.setIncludes( STANDARD_DISCOVERY_INCLUDES );
-        scanner.setExcludes( (String[]) allExcludes.toArray( EMPTY_STRING_ARRAY ) );
-        scanner.scan();
-
-        excludedPaths.addAll( Arrays.asList( scanner.getExcludedFiles() ) );
-
-        return scanner.getIncludedFiles();
-
-    }
-
-    public Iterator getExcludedPathsIterator()
-    {
-        return excludedPaths.iterator();
-    }
-
-    public Iterator getKickedOutPathsIterator()
-    {
-        return kickedOutPaths.iterator();
-    }
-
 }
