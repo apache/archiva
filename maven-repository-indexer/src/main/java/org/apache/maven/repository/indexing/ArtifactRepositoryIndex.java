@@ -39,6 +39,8 @@ import java.util.zip.ZipFile;
  * Class used to index Artifact objects in a specified repository
  *
  * @author Edwin Punzalan
+ *
+ * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndex" role-hint="artifact" instantiation-strategy="per-lookup"
  */
 public class ArtifactRepositoryIndex
     extends AbstractRepositoryIndex

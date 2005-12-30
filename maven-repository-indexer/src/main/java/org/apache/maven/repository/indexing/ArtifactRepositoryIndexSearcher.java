@@ -24,7 +24,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,6 +33,8 @@ import java.util.List;
 /**
  * This class searches the index for existing artifacts that contains the
  * specified query string.
+ *
+ * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexSearcher" role-hint="artifact"
  */
 public class ArtifactRepositoryIndexSearcher
     implements RepositoryIndexSearcher
@@ -46,8 +47,7 @@ public class ArtifactRepositoryIndexSearcher
 
     private static final String VERSION = "version";
 
-    private ArtifactRepository repository;
-
+    /** @plexus.requirement */
     private ArtifactFactory factory;
 
     /**
