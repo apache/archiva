@@ -25,74 +25,83 @@ import org.codehaus.plexus.PlexusTestCase;
 /**
  * This class tests the DefaultMetadataDiscoverer class.
  */
-public class DefaultMetadataDiscovererTest extends PlexusTestCase {
-	private MetadataDiscoverer discoverer;
+public class DefaultMetadataDiscovererTest
+    extends PlexusTestCase
+{
+    private MetadataDiscoverer discoverer;
 
-	private File repositoryLocation;
+    private File repositoryLocation;
 
-	/**
-	 * 
-	 */
-	public void setUp() throws Exception {
-		super.setUp();
+    /**
+     *
+     */
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
 
-		discoverer = (MetadataDiscoverer) lookup(MetadataDiscoverer.ROLE,
-				"default");
-		repositoryLocation = getTestFile("src/test/repository");
-	}
+        discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE, "default" );
+        repositoryLocation = getTestFile( "src/test/repository" );
+    }
 
-	/**
-	 * 
-	 */
-	public void tearDown() throws Exception {
-		super.tearDown();
-		discoverer = null;
-	}
+    /**
+     *
+     */
+    public void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        discoverer = null;
+    }
 
-	/**
-	 * Test DefaultMetadataDiscoverer when the all metadata paths are valid.
-	 * 
-	 */
-	public void testMetadataDiscovererSuccess() {
-		List metadataPaths = discoverer.discoverMetadata(repositoryLocation,
-				null);
-		assertNotNull("Check metadata not null", metadataPaths);
-		assertTrue(metadataPaths.size() == 3);
-	}
+    /**
+     * Test DefaultMetadataDiscoverer when the all metadata paths are valid.
+     */
+    public void testMetadataDiscovererSuccess()
+    {
+        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        assertNotNull( "Check metadata not null", metadataPaths );
+        assertTrue( metadataPaths.size() == 3 );
+    }
 
-	/**
-	 * Test if metadata file in wrong directory was added to the kickedOutPaths.
-	 */
-	public void testKickoutWrongDirectory() {
-		List metadataPaths = discoverer.discoverMetadata(repositoryLocation,
-				null);
-		Iterator iter = discoverer.getKickedOutPathsIterator();
-		boolean found = false;
-		while (iter.hasNext() && !found) {
-			String dir = (String) iter.next();
-			if (dir.equals("javax\\maven-metadata-repository.xml")) {
-				found = true;
-			}
-		}
-		assertTrue(found);
-	}
+    /**
+     * Test if metadata file in wrong directory was added to the kickedOutPaths.
+     */
+    public void testKickoutWrongDirectory()
+    {
+        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        Iterator iter = discoverer.getKickedOutPathsIterator();
+        boolean found = false;
+        while ( iter.hasNext() && !found )
+        {
+            String dir = (String) iter.next();
+            String normalizedDir = dir.replace( '\\', '/' );
+            if ( "javax/maven-metadata-repository.xml".equals( normalizedDir ) )
+            {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
 
-	/**
-	 * Test if blank metadata file was added to the kickedOutPaths.
-	 */
-	public void testKickoutBlankMetadata() {
-		List metadataPaths = discoverer.discoverMetadata(repositoryLocation,
-				null);
-		Iterator iter = discoverer.getKickedOutPathsIterator();
-		boolean found = false;
-		while (iter.hasNext() && !found) {
-			String dir = (String) iter.next();
-			if (dir
-					.equals("org\\apache\\maven\\some-ejb\\1.0\\maven-metadata-repository.xml")) {
-				found = true;
-			}
-		}
-		assertTrue(found);
-	}
+    /**
+     * Test if blank metadata file was added to the kickedOutPaths.
+     */
+    public void testKickoutBlankMetadata()
+    {
+        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        Iterator iter = discoverer.getKickedOutPathsIterator();
+        boolean found = false;
+        while ( iter.hasNext() && !found )
+        {
+            String dir = (String) iter.next();
+            String normalizedDir = dir.replace( '\\', '/' );
+            if ( "org/apache/maven/some-ejb/1.0/maven-metadata-repository.xml".equals( normalizedDir ) )
+            {
+                found = true;
+            }
+        }
+        assertTrue( found );
+    }
 
 }
