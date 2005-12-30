@@ -23,6 +23,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id$
+ * @plexus.component role="org.apache.maven.repository.reporting.RepositoryQueryLayerFactory"
  */
 public class DefaultRepositoryQueryLayerFactory
     implements RepositoryQueryLayerFactory

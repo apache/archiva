@@ -37,15 +37,17 @@ import java.util.Map;
 /**
  * This class will report on bad metadata files.  These include invalid version declarations and incomplete version
  * information inside the metadata file.  Plugin metadata will be checked for validity of the latest plugin artifacts.
+ *
+ * @plexus.component role="org.apache.maven.repository.reporting.MetadataReportProcessor" role-hint="bad-metadata"
  */
 public class BadMetadataReportProcessor
     implements MetadataReportProcessor
 {
-    // plexus components
+    /** @plexus.requirement */
     private ArtifactFactory artifactFactory;
 
+    /** @plexus.requirement */
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
-
 
     /**
      * Process the metadata encountered in the repository and report all errors found, if any.

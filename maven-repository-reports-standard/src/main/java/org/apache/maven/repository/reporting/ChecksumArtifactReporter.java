@@ -34,9 +34,12 @@ import java.security.NoSuchAlgorithmException;
 /**
  * This class reports invalid and mismatched checksums of artifacts and metadata files.
  * It validates MD5 and SHA-1 checksums.
+ *
+ * @todo remove stateful parts, change to singleton instantiation
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="checksum" instantiation-strategy="per-lookup"
  */
 public class ChecksumArtifactReporter
-    implements ArtifactReportProcessor, MetadataReportProcessor
+    implements ArtifactReportProcessor
 {
     protected InputStream md5InputStream;
 

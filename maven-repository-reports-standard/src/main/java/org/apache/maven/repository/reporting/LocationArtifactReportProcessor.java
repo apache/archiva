@@ -36,10 +36,12 @@ import java.util.jar.JarFile;
  * Validate the location of the artifact based on the values indicated
  * in its pom (both the pom packaged with the artifact & the pom in the
  * file system).
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="artifact-location"
  */
 public class LocationArtifactReportProcessor
     implements ArtifactReportProcessor
 {
+    /** @plexus.requirement */
     private ArtifactFactory artifactFactory;
 
     /**

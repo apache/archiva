@@ -33,11 +33,11 @@ import java.net.URL;
 
 /**
  * This class validates well-formedness of pom xml file.
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="invalid-pom"
  */
 public class InvalidPomArtifactReportProcessor
     implements ArtifactReportProcessor
 {
-
     /**
      * @param model
      * @param artifact   The pom xml file to be validated, passed as an artifact object.
