@@ -28,6 +28,7 @@ public interface ArtifactReportProcessor
 {
     String ROLE = ArtifactReportProcessor.class.getName();
 
-    void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository );
+    void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository repository )
+        throws ReportProcessorException;
 
 }

@@ -38,7 +38,7 @@ import java.util.jar.JarOutputStream;
  * This class creates the artifact and metadata files used for testing the ChecksumArtifactReporter.
  * It is extended by ChecksumArtifactReporterTest class.
  */
-public class AbstractChecksumArtifactReporterTest
+public abstract class AbstractChecksumArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
     protected static final String[] validArtifactChecksumJars = {"validArtifact-1.0"};

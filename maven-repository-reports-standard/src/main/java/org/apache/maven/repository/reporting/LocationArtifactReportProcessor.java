@@ -20,11 +20,10 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,6 +59,7 @@ public class LocationArtifactReportProcessor
      */
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
+        throws ReportProcessorException
     {
         boolean fsPomLocation = false, pkgPomLocation = false;
         String repositoryUrl = "", modelArtifactLocation = "";
@@ -87,8 +87,7 @@ public class LocationArtifactReportProcessor
 
         //unpack the artifact (using the groupId, artifactId & version specified in the artifact object itself
         //check if the pom is included in the package
-        Model extractedModel =
-            unpackArtifact( artifactLocation, artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+        Model extractedModel = readArtifactModel( artifactLocation, artifact.getGroupId(), artifact.getArtifactId() );
 
         if ( extractedModel != null )
         {
@@ -142,7 +141,6 @@ public class LocationArtifactReportProcessor
      * Validate the if the artifact exists in the specified location.
      *
      * @param filename
-     * @return
      */
     private boolean validateArtifactLocation( String filename )
     {
@@ -173,98 +171,61 @@ public class LocationArtifactReportProcessor
      * @param filename
      * @param groupId
      * @param artifactId
-     * @param version
      */
-    private Model unpackArtifact( String filename, String groupId, String artifactId, String version )
+    private Model readArtifactModel( String filename, String groupId, String artifactId )
+        throws ReportProcessorException
     {
-        String basedir = "";
         Model modelObj = null;
 
-        basedir = System.getProperty( "basedir" );
-        File f = new File( basedir + "/" + "temp" );
-        boolean b = f.mkdirs();
-
+        JarFile jar = null;
         try
         {
-            JarFile jar = new JarFile( filename );
+            jar = new JarFile( filename );
 
-            try
+            //Get the entry and its input stream.
+            JarEntry entry = jar.getJarEntry( "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml" );
+
+            // If the entry is not null, extract it.
+            if ( entry != null )
             {
-                //Get the entry and its input stream.
-                JarEntry entry = jar.getJarEntry( "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml" );
+                InputStream entryStream = jar.getInputStream( entry );
 
-                // If the entry is not null, extract it.
-                if ( entry != null )
+                Reader isReader = new InputStreamReader( entryStream );
+
+                try
                 {
-                    InputStream entryStream = jar.getInputStream( entry );
-
-                    try
-                    {
-
-                        //Create the output file (clobbering the file if it exists).
-                        FileOutputStream file = new FileOutputStream( basedir + "/temp/pom.xml" );
-
-                        try
-                        {
-                            byte[] buffer = new byte[1024];
-                            int bytesRead;
-
-                            while ( ( bytesRead = entryStream.read( buffer ) ) != -1 )
-                            {
-                                file.write( buffer, 0, bytesRead );
-                            }
-
-                        }
-                        finally
-                        {
-                            file.close();
-                        }
-                        InputStream inputStream = new FileInputStream( basedir + "/temp/pom.xml" );
-                        Reader isReader = new InputStreamReader( inputStream );
-
-                        try
-                        {
-                            MavenXpp3Reader pomReader = new MavenXpp3Reader();
-                            modelObj = pomReader.read( isReader );
-                        }
-                        finally
-                        {
-                            isReader.close();
-                            inputStream.close();
-                        }
-
-                    }
-                    finally
-                    {
-                        entryStream.close();
-                    }
+                    MavenXpp3Reader pomReader = new MavenXpp3Reader();
+                    modelObj = pomReader.read( isReader );
                 }
-                else
+                finally
                 {
-                    return modelObj;
+                    IOUtil.close( isReader );
                 }
-
             }
-            finally
-            {
-                jar.close();
-            }
-
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            return modelObj;
-
+            // TODO: should just warn and continue?
+            throw new ReportProcessorException( "Unable to read artifact to extract model", e );
+        }
+        catch ( XmlPullParserException e )
+        {
+            // TODO: should just warn and continue?
+            throw new ReportProcessorException( "Unable to read artifact to extract model", e );
         }
         finally
         {
-            try
+            if ( jar != null )
             {
-                FileUtils.deleteDirectory( new File( basedir + "/temp" ) );
-            }
-            catch ( IOException ie )
-            {
-                return modelObj;
+                //noinspection UnusedCatchParameter
+                try
+                {
+                    jar.close();
+                }
+                catch ( IOException e )
+                {
+                    // ignore
+                }
             }
         }
         return modelObj;
