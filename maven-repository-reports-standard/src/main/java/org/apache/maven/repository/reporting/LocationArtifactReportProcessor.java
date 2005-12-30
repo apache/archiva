@@ -107,16 +107,14 @@ public class LocationArtifactReportProcessor
             }
             else if ( fsPomLocation == false && pkgPomLocation == true )
             {
-                reporter
-                    .addFailure( artifact,
-                                 "The artifact is out of place. It does not match the specified location in the file system pom." );
+                reporter.addFailure( artifact,
+                                     "The artifact is out of place. It does not match the specified location in the file system pom." );
 
             }
             else if ( fsPomLocation == true && pkgPomLocation == false )
             {
-                reporter
-                    .addFailure( artifact,
-                                 "The artifact is out of place. It does not match the specified location in the packaged pom." );
+                reporter.addFailure( artifact,
+                                     "The artifact is out of place. It does not match the specified location in the packaged pom." );
 
             }
             else if ( fsPomLocation == false && pkgPomLocation == false )

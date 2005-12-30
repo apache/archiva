@@ -69,8 +69,7 @@ public class DefaultMetadataDiscoverer
 
         for ( int i = 0; i < metadataPaths.length; i++ )
         {
-            RepositoryMetadata metadata = buildMetadata( repositoryBase
-                .getPath(), metadataPaths[i] );
+            RepositoryMetadata metadata = buildMetadata( repositoryBase.getPath(), metadataPaths[i] );
 
             if ( metadata != null )
             {
