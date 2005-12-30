@@ -31,11 +31,14 @@ import java.util.StringTokenizer;
  *
  * @author John Casey
  * @author Brett Porter
+ *
+ * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="default" instantiation-strategy="per-lookup"
  */
 public class DefaultArtifactDiscoverer
     extends AbstractArtifactDiscoverer
     implements ArtifactDiscoverer
 {
+    /** @plexus.requirement */
     private ArtifactFactory artifactFactory;
 
     public List discoverArtifacts( File repositoryBase, String blacklistedPatterns, boolean includeSnapshots )
