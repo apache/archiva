@@ -70,7 +70,7 @@ public class BadMetadataReportProcessor
         {
             try
             {
-                checkPluginMetadata( metadata, repository, reporter );
+                hasFailures = checkPluginMetadata( metadata, repository, reporter );
             }
             catch ( IOException e )
             {
@@ -88,7 +88,7 @@ public class BadMetadataReportProcessor
 
             if ( metadata.storedInArtifactVersionDirectory() )
             {
-                checkSnapshotMetadata( metadata, repository, reporter );
+                hasFailures |= checkSnapshotMetadata( metadata, repository, reporter );
             }
             else
             {

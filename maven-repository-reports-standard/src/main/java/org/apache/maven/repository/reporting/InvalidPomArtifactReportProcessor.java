@@ -20,19 +20,18 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * This class validates well-formedness of pom xml file.
+ *
  * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="invalid-pom"
  */
 public class InvalidPomArtifactReportProcessor
@@ -48,60 +47,51 @@ public class InvalidPomArtifactReportProcessor
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
     {
+        if ( !"file".equals( repository.getProtocol() ) )
+        {
+            // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
+            throw new UnsupportedOperationException(
+                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+        }
+
         if ( "pom".equals( artifact.getType().toLowerCase() ) )
         {
-            InputStream is = null;
+            File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
 
-            if ( "file".equals( repository.getProtocol() ) )
+            if ( !f.exists() )
             {
-                try
-                {
-                    is = new FileInputStream( repository.getBasedir() + artifact.getGroupId() + "/" +
-                        artifact.getArtifactId() + "/" + artifact.getBaseVersion() + "/" + artifact.getArtifactId() +
-                        "-" + artifact.getBaseVersion() + "." + artifact.getType() );
-                }
-                catch ( FileNotFoundException fe )
-                {
-                    reporter.addFailure( artifact, "Artifact not found." );
-                }
+                reporter.addFailure( artifact, "Artifact not found." );
             }
             else
             {
+                Reader reader = null;
+
+                MavenXpp3Reader pomReader = new MavenXpp3Reader();
+
                 try
                 {
-                    URL url = new URL( repository.getUrl() + artifact.getGroupId() + "/" + artifact.getArtifactId() +
-                        "/" + artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" +
-                        artifact.getBaseVersion() + "." + artifact.getType() );
-                    is = url.openStream();
-
+                    reader = new FileReader( f );
+                    pomReader.read( reader );
+                    reporter.addSuccess( artifact );
                 }
-                catch ( MalformedURLException me )
+                catch ( XmlPullParserException e )
                 {
-                    reporter.addFailure( artifact, "Error retrieving artifact from remote repository." );
+                    reporter.addFailure( artifact, "The pom xml file is not well-formed. Error while parsing: " +
+                        e.getMessage() );
                 }
-                catch ( IOException ie )
+                catch ( FileNotFoundException e )
                 {
-                    reporter.addFailure( artifact, "Error retrieving artifact from remote repository." );
+                    reporter.addFailure( artifact, "Error while reading the pom xml file: " + e.getMessage() );
+                }
+                catch ( IOException e )
+                {
+                    reporter.addFailure( artifact, "Error while reading the pom xml file: " + e.getMessage() );
+                }
+                finally
+                {
+                    IOUtil.close( reader );
                 }
             }
-
-            Reader reader = new InputStreamReader( is );
-            MavenXpp3Reader pomReader = new MavenXpp3Reader();
-
-            try
-            {
-                pomReader.read( reader );
-                reporter.addSuccess( artifact );
-            }
-            catch ( XmlPullParserException xe )
-            {
-                reporter.addFailure( artifact, "The pom xml file is not well-formed. Error while parsing." );
-            }
-            catch ( IOException oe )
-            {
-                reporter.addFailure( artifact, "Error while reading the pom xml file." );
-            }
-
         }
         else
         {

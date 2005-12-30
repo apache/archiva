@@ -46,7 +46,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
 
     private static final String[] invalidArtifactChecksumJars = {"invalidArtifact-1.0"};
 
-    private static final String metadataChecksumFilename = "maven-metadata-repository";
+    private static final String metadataChecksumFilename = "maven-metadata";
 
     private static final int CHECKSUM_BUFFER_SIZE = 256;
 
@@ -54,12 +54,6 @@ public abstract class AbstractChecksumArtifactReporterTestCase
         throws Exception
     {
         super.setUp();
-    }
-
-    public void tearDown()
-        throws Exception
-    {
-        super.tearDown();
     }
 
     /**
@@ -290,21 +284,16 @@ public abstract class AbstractChecksumArtifactReporterTestCase
      *
      * @param dir The directory to be deleted.
      */
-    protected boolean deleteTestDirectory( File dir )
+    protected void deleteTestDirectory( File dir )
     {
-        boolean b;
-
         try
         {
             FileUtils.deleteDirectory( dir );
-            b = true;
         }
-        catch ( IOException ioe )
+        catch ( IOException e )
         {
-            b = false;
+            // ignore
         }
-
-        return b;
     }
 
     private void deleteFile( String filename )

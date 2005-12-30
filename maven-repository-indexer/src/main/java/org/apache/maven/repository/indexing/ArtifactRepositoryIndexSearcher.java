@@ -47,7 +47,9 @@ public class ArtifactRepositoryIndexSearcher
 
     private static final String VERSION = "version";
 
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory factory;
 
     /**
@@ -56,7 +58,6 @@ public class ArtifactRepositoryIndexSearcher
      *
      * @param queryString
      * @param searchField
-     * @return
      */
     public List search( RepositoryIndex index, String queryString, String searchField )
         throws RepositoryIndexSearchException

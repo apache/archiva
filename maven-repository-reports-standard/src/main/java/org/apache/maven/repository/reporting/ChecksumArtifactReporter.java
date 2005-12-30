@@ -20,14 +20,13 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.model.Model;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -36,17 +35,11 @@ import java.security.NoSuchAlgorithmException;
  * It validates MD5 and SHA-1 checksums.
  *
  * @todo remove stateful parts, change to singleton instantiation
- * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="checksum" instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="checksum"
  */
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor
 {
-    private InputStream md5InputStream;
-
-    private InputStream sha1InputStream;
-
-    private boolean isLocal = true;
-
     private static final int BYTE_MASK = 0xFF;
 
     private static final int CHECKSUM_BUFFER_SIZE = 256;
@@ -58,40 +51,42 @@ public class ChecksumArtifactReporter
      * @param artifact
      * @param reporter
      * @param repository
-     * @todo fix repo paths
      */
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
     {
-        String repositoryUrl;
-
         if ( !"file".equals( repository.getProtocol() ) )
         {
-            isLocal = false;
-            repositoryUrl = repository.getUrl();
+            // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
+            throw new UnsupportedOperationException(
+                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
         }
-        else
-        {
-            repositoryUrl = repository.getBasedir();
-        }
-
-        String artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/" +
-            artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getBaseVersion() + "." +
-            artifact.getType();
 
         //check if checksum files exist
-        boolean md5Exists = getMD5File( artifactUrl );
-        boolean sha1Exists = getSHA1File( artifactUrl );
+        String path = repository.pathOf( artifact );
+        File file = new File( repository.getBasedir(), path );
 
-        if ( md5Exists )
+        File md5File = new File( repository.getBasedir(), path + ".md5" );
+        if ( md5File.exists() )
         {
-            if ( validateChecksum( artifactUrl, "MD5" ) )
+            try
             {
-                reporter.addSuccess( artifact );
+                if ( validateChecksum( file, md5File, "MD5" ) )
+                {
+                    reporter.addSuccess( artifact );
+                }
+                else
+                {
+                    reporter.addFailure( artifact, "MD5 checksum does not match." );
+                }
             }
-            else
+            catch ( NoSuchAlgorithmException e )
             {
-                reporter.addFailure( artifact, "MD5 checksum does not match." );
+                reporter.addFailure( artifact, "Unable to read MD5: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( artifact, "Unable to read MD5: " + e.getMessage() );
             }
         }
         else
@@ -99,15 +94,27 @@ public class ChecksumArtifactReporter
             reporter.addFailure( artifact, "MD5 checksum file does not exist." );
         }
 
-        if ( sha1Exists )
+        File sha1File = new File( repository.getBasedir(), path + ".sha1" );
+        if ( sha1File.exists() )
         {
-            if ( validateChecksum( artifactUrl, "SHA-1" ) )
+            try
             {
-                reporter.addSuccess( artifact );
+                if ( validateChecksum( file, sha1File, "SHA-1" ) )
+                {
+                    reporter.addSuccess( artifact );
+                }
+                else
+                {
+                    reporter.addFailure( artifact, "SHA-1 checksum does not match." );
+                }
             }
-            else
+            catch ( NoSuchAlgorithmException e )
             {
-                reporter.addFailure( artifact, "SHA-1 checksum does not match." );
+                reporter.addFailure( artifact, "Unable to read SHA-1: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( artifact, "Unable to read SHA-1: " + e.getMessage() );
             }
         }
         else
@@ -119,59 +126,41 @@ public class ChecksumArtifactReporter
     /**
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
-     *
-     * @todo fix repo paths
      */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
     {
-        String repositoryUrl;
-        String filename;
         if ( !"file".equals( repository.getProtocol() ) )
         {
-            isLocal = false;
-            repositoryUrl = repository.getUrl() + "/";
-            filename = metadata.getRemoteFilename();
+            // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
+            throw new UnsupportedOperationException(
+                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
         }
-        else
-        {
-            repositoryUrl = repository.getBasedir() + "/";
-            filename = metadata.getLocalFilename( repository );
-        }
-        String metadataUrl;
-
-        if ( metadata.storedInArtifactVersionDirectory() && !metadata.storedInGroupDirectory() )
-        {
-            //version metadata
-            metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/" +
-                metadata.getBaseVersion() + "/";
-        }
-        else if ( !metadata.storedInArtifactVersionDirectory() && metadata.storedInGroupDirectory() )
-        {
-            //group metadata
-            metadataUrl = repositoryUrl + metadata.getGroupId() + "/";
-        }
-        else
-        {
-            //artifact metadata
-            metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/";
-        }
-
-        //add the file name of the metadata
-        metadataUrl = metadataUrl + filename;
 
         //check if checksum files exist
-        boolean md5Exists = getMD5File( metadataUrl );
-        boolean sha1Exists = getSHA1File( metadataUrl );
+        String path = repository.pathOfRemoteRepositoryMetadata( metadata );
+        File file = new File( repository.getBasedir(), path );
 
-        if ( md5Exists )
+        File md5File = new File( repository.getBasedir(), path + ".md5" );
+        if ( md5File.exists() )
         {
-            if ( validateChecksum( metadataUrl, "MD5" ) )
+            try
             {
-                reporter.addSuccess( metadata );
+                if ( validateChecksum( file, md5File, "MD5" ) )
+                {
+                    reporter.addSuccess( metadata );
+                }
+                else
+                {
+                    reporter.addFailure( metadata, "MD5 checksum does not match." );
+                }
             }
-            else
+            catch ( NoSuchAlgorithmException e )
             {
-                reporter.addFailure( metadata, "MD5 checksum does not match." );
+                reporter.addFailure( metadata, "Unable to read MD5: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( metadata, "Unable to read MD5: " + e.getMessage() );
             }
         }
         else
@@ -179,15 +168,27 @@ public class ChecksumArtifactReporter
             reporter.addFailure( metadata, "MD5 checksum file does not exist." );
         }
 
-        if ( sha1Exists )
+        File sha1File = new File( repository.getBasedir(), path + ".sha1" );
+        if ( sha1File.exists() )
         {
-            if ( validateChecksum( metadataUrl, "SHA-1" ) )
+            try
             {
-                reporter.addSuccess( metadata );
+                if ( validateChecksum( file, sha1File, "SHA-1" ) )
+                {
+                    reporter.addSuccess( metadata );
+                }
+                else
+                {
+                    reporter.addFailure( metadata, "SHA-1 checksum does not match." );
+                }
             }
-            else
+            catch ( NoSuchAlgorithmException e )
             {
-                reporter.addFailure( metadata, "SHA-1 checksum does not match." );
+                reporter.addFailure( metadata, "Unable to read SHA1: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( metadata, "Unable to read SHA1: " + e.getMessage() );
             }
         }
         else
@@ -198,112 +199,24 @@ public class ChecksumArtifactReporter
     }
 
     /**
-     * Get the MD5 Checksum file. If not found, return false.
-     *
-     * @param filename The name of the artifact whose MD5 Checksum file will be retrieved.
-     * @todo fix this erroneous object state
-     */
-    private boolean getMD5File( String filename )
-    {
-        try
-        {
-            if ( isLocal )
-            {
-                md5InputStream = new FileInputStream( filename + ".md5" );
-            }
-            else
-            {
-                URL url = new URL( filename );
-                md5InputStream = url.openStream();
-            }
-
-            md5InputStream.close();
-        }
-        catch ( Exception e )
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Get the SHA1 Checksum file. If not found, return false.
-     *
-     * @param filename The name of the artifact whose SHA-1 Checksum file will be retrieved.
-     * @todo fix this erroneous object state
-     */
-    private boolean getSHA1File( String filename )
-    {
-        try
-        {
-            if ( isLocal )
-            {
-                sha1InputStream = new FileInputStream( filename + ".sha1" );
-            }
-            else
-            {
-                URL url = new URL( filename );
-                sha1InputStream = url.openStream();
-            }
-            sha1InputStream.close();
-        }
-        catch ( Exception e )
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Validate the checksum of the file.
      *
-     * @param fileUrl The file to be validated.
-     * @param algo    The checksum algorithm used.
+     * @param file         The file to be validated.
+     * @param checksumFile the checksum to validate against
+     * @param algo         The checksum algorithm used.
      */
-    private boolean validateChecksum( String fileUrl, String algo )
+    private boolean validateChecksum( File file, File checksumFile, String algo )
+        throws NoSuchAlgorithmException, IOException
     {
         boolean valid = false;
 
-        try
+        //Create checksum for jar file
+        byte[] chk1 = createChecksum( file, algo );
+        if ( chk1 != null )
         {
-            //Create checksum for jar file
-            String ext = ".md5";
-            if ( "SHA-1".equals( algo ) )
-            {
-                ext = ".sha1";
-            }
-            byte[] chk1 = createChecksum( fileUrl, algo );
-            if ( chk1 != null )
-            {
-
-                //read the md5 file
-                File f = new File( fileUrl + ext );
-                InputStream is;
-
-                //check whether the file is located locally or remotely
-                if ( isLocal )
-                {
-                    is = new FileInputStream( f );
-                }
-                else
-                {
-                    URL url = new URL( fileUrl + ext );
-                    is = url.openStream();
-                }
-
-                char[] chars = new char[is.available()];
-                InputStreamReader isr = new InputStreamReader( is );
-                isr.read( chars );
-                isr.close();
-
-                String chk2Str = new String( chars );
-
-                valid = chk2Str.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() );
-            }
-        }
-        catch ( Exception e )
-        {
-            // TODO: fix this error handling
+            //read the checksum file
+            String checksum = FileUtils.fileRead( checksumFile );
+            valid = checksum.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() );
         }
         return valid;
     }
@@ -311,45 +224,40 @@ public class ChecksumArtifactReporter
     /**
      * Create a checksum from the specified metadata file.
      *
-     * @param filename The file that will be created a checksum.
-     * @param algo     The algorithm to be used (MD5, SHA-1)
+     * @param file The file that will be created a checksum.
+     * @param algo The algorithm to be used (MD5, SHA-1)
      * @return
      * @throws FileNotFoundException
      * @throws NoSuchAlgorithmException
      * @throws IOException
      * @todo move to utility class
      */
-    private byte[] createChecksum( String filename, String algo )
+    private byte[] createChecksum( File file, String algo )
         throws FileNotFoundException, NoSuchAlgorithmException, IOException
     {
-        InputStream fis;
+        MessageDigest digest = MessageDigest.getInstance( algo );
 
-        //check whether file is located locally or remotely
-        if ( isLocal )
+        InputStream fis = new FileInputStream( file );
+        try
         {
-            fis = new FileInputStream( filename );
-        }
-        else
-        {
-            URL url = new URL( filename );
-            fis = url.openStream();
-        }
-        byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
-
-        MessageDigest complete = MessageDigest.getInstance( algo );
-        int numRead;
-        do
-        {
-            numRead = fis.read( buffer );
-            if ( numRead > 0 )
+            byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
+            int numRead;
+            do
             {
-                complete.update( buffer, 0, numRead );
+                numRead = fis.read( buffer );
+                if ( numRead > 0 )
+                {
+                    digest.update( buffer, 0, numRead );
+                }
             }
+            while ( numRead != -1 );
         }
-        while ( numRead != -1 );
-        fis.close();
+        finally
+        {
+            fis.close();
+        }
 
-        return complete.digest();
+        return digest.digest();
     }
 
     /**

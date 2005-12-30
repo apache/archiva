@@ -20,6 +20,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -72,13 +73,8 @@ public class MockRepositoryQueryLayer
         return containsArtifact( artifact );
     }
 
-    public boolean containsArtifactVersion( Artifact artifact, String version )
-    {
-        return false;
-    }
-
     public List getVersions( Artifact artifact )
     {
-        return null;
+        return Collections.EMPTY_LIST;
     }
 }

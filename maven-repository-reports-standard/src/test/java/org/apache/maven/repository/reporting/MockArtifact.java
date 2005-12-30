@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 
+ * @noinspection ReturnOfNull
  */
 public class MockArtifact
     implements Artifact

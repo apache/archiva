@@ -21,7 +21,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
- * 
+ * @noinspection ReturnOfNull
  */
 public class MockArtifactFactory
     implements ArtifactFactory

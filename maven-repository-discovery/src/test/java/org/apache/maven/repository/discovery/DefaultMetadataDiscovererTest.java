@@ -69,7 +69,7 @@ public class DefaultMetadataDiscovererTest
      */
     public void testKickoutWrongDirectory()
     {
-        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        discoverer.discoverMetadata( repositoryLocation, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )
@@ -89,7 +89,7 @@ public class DefaultMetadataDiscovererTest
      */
     public void testKickoutBlankMetadata()
     {
-        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        discoverer.discoverMetadata( repositoryLocation, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )

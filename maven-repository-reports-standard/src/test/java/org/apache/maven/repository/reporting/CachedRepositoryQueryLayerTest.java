@@ -20,7 +20,7 @@ package org.apache.maven.repository.reporting;
  *
  */
 public class CachedRepositoryQueryLayerTest
-    extends AbstractRepositoryQueryLayerTest
+    extends AbstractRepositoryQueryLayerTestCase
 {
     // TODO: share
     private static final double CACHE_HIT_RATIO = 0.5;

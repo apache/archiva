@@ -39,34 +39,19 @@ public class InvalidPomArtifactReportProcessorTest
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "invalid-pom" );
     }
 
-    public void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-    }
-
     /**
      * Test the InvalidPomArtifactReportProcessor when the artifact is an invalid pom.
      */
     public void testInvalidPomArtifactReportProcessorFailure()
+        throws ReportProcessorException
     {
+        ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
+        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-3" );
+        Artifact artifact =
+            new DefaultArtifact( "org.apache.maven", "artifactId", version, "compile", "pom", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
-            VersionRange version = VersionRange.createFromVersion( "1.0-alpha-3" );
-            Artifact artifact =
-                new DefaultArtifact( "org.apache.maven", "artifactId", version, "compile", "pom", "", handler );
-
-            artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-            assertTrue( reporter.getFailures() == 1 );
-            //System.out.println("INVALID POM ARTIFACT FAILURES --->> " + reporter.getFailures());
-
-        }
-        catch ( Exception e )
-        {
-
-        }
+        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        assertEquals( 1, reporter.getFailures() );
     }
 
 
@@ -74,23 +59,14 @@ public class InvalidPomArtifactReportProcessorTest
      * Test the InvalidPomArtifactReportProcessor when the artifact is a valid pom.
      */
     public void testInvalidPomArtifactReportProcessorSuccess()
+        throws ReportProcessorException
     {
+        ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
+        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
+        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "pom", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
-            VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
-            Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "pom", "", handler );
-
-            artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-            assertTrue( reporter.getSuccesses() == 1 );
-            //System.out.println("VALID POM ARTIFACT SUCCESS --->> " + reporter.getSuccesses());
-
-        }
-        catch ( Exception e )
-        {
-
-        }
+        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        assertEquals( 1, reporter.getSuccesses() );
     }
 
 
@@ -98,23 +74,14 @@ public class InvalidPomArtifactReportProcessorTest
      * Test the InvalidPomArtifactReportProcessor when the artifact is not a pom.
      */
     public void testNotAPomArtifactReportProcessorSuccess()
+        throws ReportProcessorException
     {
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
+        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
-            Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
-
-            artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-            assertTrue( reporter.getWarnings() == 1 );
-            //System.out.println("NOT A POM ARTIFACT WARNINGS --->> " + reporter.getWarnings());
-
-        }
-        catch ( Exception e )
-        {
-
-        }
+        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        assertEquals( 1, reporter.getWarnings() );
     }
 
     /**
@@ -134,7 +101,6 @@ public class InvalidPomArtifactReportProcessorTest
             if(reporter.getSuccesses() == 1)
                 assertTrue(reporter.getSuccesses() == 1);
                         
-            //System.out.println("Remote pom SUCCESS --> " + reporter.getSuccesses());
         }catch(Exception e){
             
         }

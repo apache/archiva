@@ -20,9 +20,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.artifact.Artifact;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,7 +31,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 
@@ -39,7 +38,6 @@ import java.util.zip.ZipFile;
  * Class used to index Artifact objects in a specified repository
  *
  * @author Edwin Punzalan
- *
  * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndex" role-hint="artifact" instantiation-strategy="per-lookup"
  */
 public class ArtifactRepositoryIndex
@@ -66,12 +64,6 @@ public class ArtifactRepositoryIndex
     private static final String[] FIELDS = {NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES, FILES};
 
     private Analyzer analyzer;
-
-    private StringBuffer classes;
-
-    private StringBuffer packages;
-
-    private StringBuffer files;
 
     private static final int CHEKCSUM_BUFFER_SIZE = 256;
 
@@ -134,9 +126,21 @@ public class ArtifactRepositoryIndex
 
         try
         {
-            getIndexWriter();
+            IndexWriter indexWriter = getIndexWriter();
 
-            processArtifactContents( artifact.getFile() );
+            StringBuffer classes = new StringBuffer();
+            StringBuffer packages = new StringBuffer();
+            StringBuffer files = new StringBuffer();
+            ZipFile jar = new ZipFile( artifact.getFile() );
+            for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
+            {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+                if ( addIfClassEntry( entry, classes ) )
+                {
+                    addClassPackage( entry.getName(), packages );
+                }
+                addFile( entry, files );
+            }
 
             //@todo should some of these fields be Keyword instead of Text ?
             Document doc = new Document();
@@ -150,8 +154,6 @@ public class ArtifactRepositoryIndex
             doc.add( Field.Text( PACKAGES, packages.toString() ) );
             doc.add( Field.Text( FILES, files.toString() ) );
             indexWriter.addDocument( doc );
-
-            removeBuffers();
         }
         catch ( Exception e )
         {
@@ -193,37 +195,7 @@ public class ArtifactRepositoryIndex
         return complete.digest();
     }
 
-    private void initBuffers()
-    {
-        classes = new StringBuffer();
-        packages = new StringBuffer();
-        files = new StringBuffer();
-    }
-
-    private void removeBuffers()
-    {
-        classes = null;
-        packages = null;
-        files = null;
-    }
-
-    private void processArtifactContents( File artifact )
-        throws IOException, ZipException
-    {
-        initBuffers();
-        ZipFile jar = new ZipFile( artifact );
-        for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
-        {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
-            if ( addIfClassEntry( entry ) )
-            {
-                addClassPackage( entry.getName() );
-            }
-            addFile( entry );
-        }
-    }
-
-    private boolean addIfClassEntry( ZipEntry entry )
+    private boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )
     {
         boolean isAdded = false;
 
@@ -247,7 +219,7 @@ public class ArtifactRepositoryIndex
         return isAdded;
     }
 
-    private boolean addClassPackage( String name )
+    private boolean addClassPackage( String name, StringBuffer packages )
     {
         boolean isAdded = false;
 
@@ -265,7 +237,7 @@ public class ArtifactRepositoryIndex
         return isAdded;
     }
 
-    private boolean addFile( ZipEntry entry )
+    private boolean addFile( ZipEntry entry, StringBuffer files )
     {
         String name = entry.getName();
         int idx = name.lastIndexOf( '/' );

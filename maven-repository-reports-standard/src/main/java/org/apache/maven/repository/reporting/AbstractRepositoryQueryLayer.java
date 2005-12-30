@@ -68,7 +68,7 @@ public abstract class AbstractRepositoryQueryLayer
     protected Metadata getMetadata( Artifact artifact )
         throws RepositoryQueryLayerException
     {
-        Metadata metadata = null;
+        Metadata metadata;
 
         ArtifactRepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
         String path = repository.pathOfRemoteRepositoryMetadata( repositoryMetadata );

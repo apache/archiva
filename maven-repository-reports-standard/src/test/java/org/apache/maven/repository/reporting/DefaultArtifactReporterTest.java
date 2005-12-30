@@ -171,7 +171,6 @@ public class DefaultArtifactReporterTest
         Versioning versioning = new Versioning();
         versioning.addVersion( "1.0-alpha-1" );
         versioning.addVersion( "1.0-alpha-2" );
-        RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
     }
 
     protected void tearDown()

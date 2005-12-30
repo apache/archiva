@@ -39,7 +39,7 @@ public abstract class AbstractRepositoryIndex
 
     private IndexReader indexReader;
 
-    protected IndexWriter indexWriter;
+    private IndexWriter indexWriter;
 
     /**
      * method to encapsulate the optimize() method for lucene
@@ -122,22 +122,24 @@ public abstract class AbstractRepositoryIndex
         return indexPath;
     }
 
-    protected void getIndexWriter()
+    protected IndexWriter getIndexWriter()
         throws IOException
     {
         if ( indexWriter == null )
         {
             indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
         }
+        return indexWriter;
     }
 
-    private void getIndexReader()
+    private IndexReader getIndexReader()
         throws IOException
     {
         if ( indexReader == null )
         {
             indexReader = IndexReader.open( indexPath );
         }
+        return indexReader;
     }
 
     /**
@@ -151,7 +153,7 @@ public abstract class AbstractRepositoryIndex
         File indexDir = new File( indexPath );
         if ( IndexReader.indexExists( indexDir ) )
         {
-            getIndexReader();
+            IndexReader indexReader = getIndexReader();
             if ( indexReader.numDocs() > 0 )
             {
                 Collection fields = indexReader.getFieldNames();

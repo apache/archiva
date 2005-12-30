@@ -30,7 +30,7 @@ import java.util.List;
 /**
  *
  */
-public abstract class AbstractRepositoryQueryLayerTest
+public abstract class AbstractRepositoryQueryLayerTestCase
     extends PlexusTestCase
 {
     private ArtifactFactory artifactFactory;

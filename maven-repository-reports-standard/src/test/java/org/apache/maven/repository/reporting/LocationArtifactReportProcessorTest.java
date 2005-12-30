@@ -214,8 +214,6 @@ public class LocationArtifactReportProcessorTest
             if ( reporter.getSuccesses() > 0 )
                 assertTrue( reporter.getSuccesses() == 1 );
 
-            //    System.out.println("REMOTE ARTIFACT MATCH SUCCESSES ---> " + reporter.getSuccesses());
-
         }
         catch ( Exception e )
         {

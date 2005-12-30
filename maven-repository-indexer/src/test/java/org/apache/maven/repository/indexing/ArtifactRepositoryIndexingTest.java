@@ -25,7 +25,6 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,17 +39,11 @@ public class ArtifactRepositoryIndexingTest
 
     private static final String VERSION = "version";
 
-    private static final String SHA1 = "sha1";
-
-    private static final String MD5 = "md5";
-
     private static final String CLASSES = "classes";
 
     private static final String PACKAGES = "packages";
 
     private static final String FILES = "files";
-
-    private ArtifactRepositoryIndex indexer;
 
     private ArtifactFactory artifactFactory;
 
@@ -77,6 +70,7 @@ public class ArtifactRepositoryIndexingTest
     public void testIndexerExceptions()
         throws Exception
     {
+        ArtifactRepositoryIndex indexer;
         try
         {
             String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
@@ -146,7 +140,7 @@ public class ArtifactRepositoryIndexingTest
         throws Exception
     {
         //indexer = (ArtifactRepositoryIndex) factory.getArtifactRepositoryIndexer( indexPath, repository );
-        indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
+        ArtifactRepositoryIndex indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
         indexer.open( indexPath );
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
@@ -165,15 +159,16 @@ public class ArtifactRepositoryIndexingTest
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.index( artifact );
         indexer.close();
+
+        // TODO: assert something!
     }
 
     public void testSearch()
         throws Exception
     {
-        indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
+        ArtifactRepositoryIndex indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
         indexer.open( getTestPath( "src/test/index" ) );
 
-        //repoSearcher = new ArtifactRepositoryIndexSearcher( indexer, indexPath, repository );
         RepositoryIndexSearcher repoSearcher =
             (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE, "artifact" );
 
@@ -194,14 +189,6 @@ public class ArtifactRepositoryIndexingTest
 
         artifacts = repoSearcher.search( indexer, "pom.xml", FILES );
         assertEquals( 3, artifacts.size() );
-
-        for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
-        {
-            Artifact artifact = (Artifact) iter.next();
-            File f = artifact.getFile();
-            //assertNotNull( f );
-            //assertTrue( f.exists() );
-        }
 
         artifacts = repoSearcher.search( indexer, "org.apache.maven", GROUPID );
         assertEquals( 2, artifacts.size() );
