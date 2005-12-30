@@ -17,18 +17,18 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -40,9 +40,7 @@ import java.util.jar.JarFile;
 public class LocationArtifactReportProcessor
     implements ArtifactReportProcessor
 {
-    private boolean isLocal = true;
-
-    private InputStream is;
+    private ArtifactFactory artifactFactory;
 
     /**
      * Check whether the artifact is in its proper location. The location of the artifact
@@ -61,79 +59,63 @@ public class LocationArtifactReportProcessor
                                  ArtifactRepository repository )
         throws ReportProcessorException
     {
-        boolean fsPomLocation = false, pkgPomLocation = false;
-        String repositoryUrl = "", modelArtifactLocation = "";
-
-        if ( !repository.getProtocol().equals( "file" ) )
+        if ( !"file".equals( repository.getProtocol() ) )
         {
-            isLocal = false;
-            repositoryUrl = repository.getUrl();
-        }
-        else
-        {
-            repositoryUrl = repository.getBasedir();
+            // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
+            throw new UnsupportedOperationException(
+                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
         }
 
         //check if the artifact is located in its proper location based on the info
         //specified in the model object/pom
-        modelArtifactLocation = repositoryUrl + model.getGroupId() + "/" + model.getArtifactId() + "/" +
-            model.getVersion() + "/" + model.getArtifactId() + "-" + model.getVersion() + "." + model.getPackaging();
-        fsPomLocation = validateArtifactLocation( modelArtifactLocation );
+        Artifact modelArtifact = artifactFactory.createBuildArtifact( model.getGroupId(), model.getArtifactId(),
+                                                                      model.getVersion(), model.getPackaging() );
 
-        //get the location of the artifact itself
-        String artifactLocation = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/" +
-            artifact.getVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getVersion() + "." +
-            artifact.getType();
-
-        //unpack the artifact (using the groupId, artifactId & version specified in the artifact object itself
-        //check if the pom is included in the package
-        Model extractedModel = readArtifactModel( artifactLocation, artifact.getGroupId(), artifact.getArtifactId() );
-
-        if ( extractedModel != null )
+        boolean failed = false;
+        String modelPath = repository.pathOf( modelArtifact );
+        String artifactPath = repository.pathOf( artifact );
+        if ( modelPath.equals( artifactPath ) )
         {
+            //get the location of the artifact itself
+            File file = new File( repository.getBasedir(), artifactPath );
 
-            String pkgPomArtifactLocation = repositoryUrl + extractedModel.getGroupId() + "/" +
-                extractedModel.getArtifactId() + "/" + extractedModel.getVersion() + "/" +
-                extractedModel.getArtifactId() + "-" + extractedModel.getVersion() + "." +
-                extractedModel.getPackaging();
-            pkgPomLocation = validateArtifactLocation( pkgPomArtifactLocation );
-
-            //check the conditions
-            if ( fsPomLocation == true && pkgPomLocation == true )
+            if ( file.exists() )
             {
-                reporter.addSuccess( artifact );
+                //unpack the artifact (using the groupId, artifactId & version specified in the artifact object itself
+                //check if the pom is included in the package
+                Model extractedModel = readArtifactModel( file, artifact.getGroupId(), artifact.getArtifactId() );
 
-            }
-            else if ( fsPomLocation == false && pkgPomLocation == true )
-            {
-                reporter.addFailure( artifact,
-                                     "The artifact is out of place. It does not match the specified location in the file system pom." );
-
-            }
-            else if ( fsPomLocation == true && pkgPomLocation == false )
-            {
-                reporter.addFailure( artifact,
-                                     "The artifact is out of place. It does not match the specified location in the packaged pom." );
-
-            }
-            else if ( fsPomLocation == false && pkgPomLocation == false )
-            {
-                reporter.addFailure( artifact, "The artifact is out of place." );
-            }
-
-        }
-        else
-        {
-
-            if ( fsPomLocation )
-            {
-                reporter.addSuccess( artifact );
-
+                if ( extractedModel != null )
+                {
+                    Artifact extractedArtifact = artifactFactory.createBuildArtifact( extractedModel.getGroupId(),
+                                                                                      extractedModel.getArtifactId(),
+                                                                                      extractedModel.getVersion(),
+                                                                                      extractedModel.getPackaging() );
+                    if ( !repository.pathOf( extractedArtifact ).equals( artifactPath ) )
+                    {
+                        reporter.addFailure( artifact,
+                                             "The artifact is out of place. It does not match the specified location in the packaged pom." );
+                        failed = true;
+                    }
+                }
             }
             else
             {
-                reporter.addFailure( artifact, "The artifact is out of place." );
+                reporter.addFailure( artifact,
+                                     "The artifact is out of place. It does not exist at the specified location in the repository pom." );
+                failed = true;
             }
+        }
+        else
+        {
+            reporter.addFailure( artifact,
+                                 "The artifact is out of place. It does not match the specified location in the repository pom." );
+            failed = true;
+        }
+
+        if ( !failed )
+        {
+            reporter.addSuccess( artifact );
         }
     }
 
@@ -144,43 +126,25 @@ public class LocationArtifactReportProcessor
      */
     private boolean validateArtifactLocation( String filename )
     {
-        try
-        {
-            if ( isLocal )
-            {
-                is = new FileInputStream( filename );
-            }
-            else
-            {
-                URL url = new URL( filename );
-                is = url.openStream();
-            }
-
-            is.close();
-        }
-        catch ( Exception e )
-        {
-            return false;
-        }
-        return true;
+        return new File( filename ).exists();
     }
 
     /**
      * Extract the contents of the artifact/jar file.
      *
-     * @param filename
+     * @param file
      * @param groupId
      * @param artifactId
      */
-    private Model readArtifactModel( String filename, String groupId, String artifactId )
+    private Model readArtifactModel( File file, String groupId, String artifactId )
         throws ReportProcessorException
     {
-        Model modelObj = null;
+        Model model = null;
 
         JarFile jar = null;
         try
         {
-            jar = new JarFile( filename );
+            jar = new JarFile( file );
 
             //Get the entry and its input stream.
             JarEntry entry = jar.getJarEntry( "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml" );
@@ -188,19 +152,7 @@ public class LocationArtifactReportProcessor
             // If the entry is not null, extract it.
             if ( entry != null )
             {
-                InputStream entryStream = jar.getInputStream( entry );
-
-                Reader isReader = new InputStreamReader( entryStream );
-
-                try
-                {
-                    MavenXpp3Reader pomReader = new MavenXpp3Reader();
-                    modelObj = pomReader.read( isReader );
-                }
-                finally
-                {
-                    IOUtil.close( isReader );
-                }
+                model = readModel( jar.getInputStream( entry ) );
             }
         }
         catch ( IOException e )
@@ -228,7 +180,25 @@ public class LocationArtifactReportProcessor
                 }
             }
         }
-        return modelObj;
+        return model;
+    }
+
+    private Model readModel( InputStream entryStream )
+        throws IOException, XmlPullParserException
+    {
+        Reader isReader = new InputStreamReader( entryStream );
+
+        Model model;
+        try
+        {
+            MavenXpp3Reader pomReader = new MavenXpp3Reader();
+            model = pomReader.read( isReader );
+        }
+        finally
+        {
+            IOUtil.close( isReader );
+        }
+        return model;
     }
 
 }

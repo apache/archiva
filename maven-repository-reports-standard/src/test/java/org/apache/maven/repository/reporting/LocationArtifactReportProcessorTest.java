@@ -23,10 +23,11 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 
 /**
@@ -62,29 +63,18 @@ public class LocationArtifactReportProcessorTest
      * both in the file system pom and in the pom included in the package.
      */
     public void testPackagedPomLocationArtifactReporterSuccess()
+        throws ReportProcessorException, IOException, XmlPullParserException
     {
-        //System.out.println("");
-        //System.out.println("====================== PACKAGED POM TEST [SUCCESS] ========================");
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "2.0" );
-            Artifact artifact =
-                new DefaultArtifact( "org.apache.maven", "maven-model", version, "compile", "jar", "", handler );
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "2.0" );
+        Artifact artifact =
+            new DefaultArtifact( "org.apache.maven", "maven-model", version, "compile", "jar", "", handler );
 
-            InputStream is =
-                new FileInputStream( repository.getBasedir() + "org.apache.maven/maven-model/2.0/maven-model-2.0.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
+        String path = "org/apache/maven/maven-model/2.0/maven-model-2.0.pom";
+        Model model = readPom( path );
 
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            //System.out.println("PACKAGED POM SUCCESSES ---> " + reporter.getSuccesses());
-            assertTrue( reporter.getSuccesses() == 1 );
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getSuccesses() );
     }
 
     /**
@@ -92,29 +82,17 @@ public class LocationArtifactReportProcessorTest
      * file system pom (but the jar file does not have a pom included in its package).
      */
     public void testLocationArtifactReporterSuccess()
+        throws ReportProcessorException, IOException, XmlPullParserException
     {
-        //  System.out.println("");
-        //   System.out.println("====================== FILE SYSTEM POM TEST [SUCCESS] ========================");
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
+        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
-            Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
+        String path = "groupId/artifactId/1.0-alpha-1/artifactId-1.0-alpha-1.pom";
+        Model model = readPom( path );
 
-            InputStream is = new FileInputStream(
-                repository.getBasedir() + "groupId/artifactId/1.0-alpha-1/artifactId-1.0-alpha-1.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            assertTrue( reporter.getSuccesses() == 1 );
-            //    System.out.println("FILE SYSTEM POM SUCCESSES ---> " + reporter.getSuccesses());
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getSuccesses() );
     }
 
     /**
@@ -122,29 +100,17 @@ public class LocationArtifactReportProcessorTest
      * in the file system pom.
      */
     public void testLocationArtifactReporterFailure()
+        throws IOException, XmlPullParserException, ReportProcessorException
     {
-        //  System.out.println("");
-        //  System.out.println("====================== FILE SYSTEM POM TEST [FAILURE] ========================");
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
+        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
-            Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
+        String path = "groupId/artifactId/1.0-alpha-2/artifactId-1.0-alpha-2.pom";
+        Model model = readPom( path );
 
-            InputStream is = new FileInputStream(
-                repository.getBasedir() + "groupId/artifactId/1.0-alpha-2/artifactId-1.0-alpha-2.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            assertTrue( reporter.getFailures() == 1 );
-            //  System.out.println("FILE SYSTEM POM FAILURES ---> " + reporter.getFailures());
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getFailures() );
     }
 
     /**
@@ -152,31 +118,35 @@ public class LocationArtifactReportProcessorTest
      * location in the file system pom but instead matches the specified location in the packaged pom.
      */
     public void testFsPomArtifactMatchFailure()
+        throws IOException, ReportProcessorException, XmlPullParserException
     {
-        // System.out.println("");
-        //  System.out.println("====================== FILE SYSTEM POM MATCH TEST [FAILURE] ========================");
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "2.0" );
+        Artifact artifact =
+            new DefaultArtifact( "org.apache.maven", "maven-archiver", version, "compile", "jar", "", handler );
 
-        try
+        String path = "org/apache/maven/maven-archiver/2.0/maven-archiver-2.0.pom";
+        Model model = readPom( path );
+
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getFailures() );
+    }
+
+    private Model readPom( String path )
+        throws IOException, XmlPullParserException
+    {
+        Reader reader = new FileReader( new File( repository.getBasedir(), path ) );
+        Model model = pomReader.read( reader );
+        // hokey inheritence to avoid some errors right now
+        if ( model.getGroupId() == null )
         {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "2.0" );
-            Artifact artifact =
-                new DefaultArtifact( "org.apache.maven", "maven-archiver", version, "compile", "jar", "", handler );
-
-            InputStream is = new FileInputStream(
-                repository.getBasedir() + "org.apache.maven/maven-archiver/2.0/maven-archiver-2.0.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            assertTrue( reporter.getFailures() == 1 );
-            //   System.out.println("FILE SYSTEM POM MATCH FAILURES ---> " + reporter.getFailures());
-            //System.out.println("FILE SYSTEM POM MATCH SUCCESS ---> " + reporter.getSuccesses());
+            model.setGroupId( model.getParent().getGroupId() );
         }
-        catch ( Exception e )
+        if ( model.getVersion() == null )
         {
-            e.printStackTrace();
+            model.setVersion( model.getParent().getVersion() );
         }
+        return model;
     }
 
     /**
@@ -184,30 +154,18 @@ public class LocationArtifactReportProcessorTest
      * location specified in the packaged pom but matches the location specified in the file system pom.
      */
     public void testPkgPomArtifactMatchFailure()
+        throws IOException, XmlPullParserException, ReportProcessorException
     {
-        //    System.out.println("");
-        //    System.out.println("====================== PACKAGED POM MATCH TEST [FAILURE] ========================");
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "2.1" );
+        Artifact artifact =
+            new DefaultArtifact( "org.apache.maven", "maven-monitor", version, "compile", "jar", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "2.1" );
-            Artifact artifact =
-                new DefaultArtifact( "org.apache.maven", "maven-monitor", version, "compile", "jar", "", handler );
+        String path = "org/apache/maven/maven-monitor/2.1/maven-monitor-2.1.pom";
+        Model model = readPom( path );
 
-            InputStream is = new FileInputStream(
-                repository.getBasedir() + "org.apache.maven/maven-monitor/2.1/maven-monitor-2.1.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            assertTrue( reporter.getFailures() == 1 );
-            //     System.out.println("PACKAGED POM MATCH FAILURES ---> " + reporter.getFailures());
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getFailures() );
     }
 
     /**
@@ -215,30 +173,18 @@ public class LocationArtifactReportProcessorTest
      * location specified in the packaged pom and the location specified in the file system pom.
      */
     public void testBothPomArtifactMatchFailure()
+        throws IOException, XmlPullParserException, ReportProcessorException
     {
-        //   System.out.println("");
-        //  System.out.println("====================== BOTH POMS MATCH TEST [FAILURE] ========================");
+        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        VersionRange version = VersionRange.createFromVersion( "2.1" );
+        Artifact artifact =
+            new DefaultArtifact( "org.apache.maven", "maven-project", version, "compile", "jar", "", handler );
 
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( "2.1" );
-            Artifact artifact =
-                new DefaultArtifact( "org.apache.maven", "maven-project", version, "compile", "jar", "", handler );
+        String path = "org/apache/maven/maven-project/2.1/maven-project-2.1.pom";
+        Model model = readPom( path );
 
-            InputStream is = new FileInputStream(
-                repository.getBasedir() + "org.apache.maven/maven-project/2.1/maven-project-2.1.pom" );
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            assertTrue( reporter.getFailures() == 1 );
-            //    System.out.println("BOTH POMS MATCH FAILURES ---> " + reporter.getFailures());
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
+        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        assertEquals( 1, reporter.getFailures() );
     }
 
     /**
