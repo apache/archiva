@@ -81,14 +81,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.equals( "KEYS" );
+            found = "KEYS".equals( path );
         }
         assertTrue( "Check exclusion was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not KEYS", a.getFile().getName().equals( "KEYS" ) );
+            assertFalse( "Check not KEYS", "KEYS".equals( a.getFile().getName() ) );
         }
     }
 
@@ -101,7 +101,7 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "javax.sql/jars/jdbc-2.0.jar" );
+            found = "javax.sql/jars/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -117,14 +117,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/invalid-1.0.jar" );
+            found = "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not invalid-1.0.jar", a.getFile().getName().equals( "invalid-1.0.jar" ) );
+            assertFalse( "Check not invalid-1.0.jar", "invalid-1.0.jar".equals( a.getFile().getName() ) );
         }
     }
 
@@ -137,14 +137,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/jars/1.0/invalid-1.0.jar" );
+            found = "invalid/jars/1.0/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not invalid-1.0.jar", a.getFile().getName().equals( "invalid-1.0.jar" ) );
+            assertFalse( "Check not invalid-1.0.jar", "invalid-1.0.jar".equals( a.getFile().getName() ) );
         }
     }
 
@@ -157,14 +157,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/foo/invalid-1.0.foo" );
+            found = "invalid/foo/invalid-1.0.foo".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not invalid-1.0.foo", a.getFile().getName().equals( "invalid-1.0.foo" ) );
+            assertFalse( "Check not invalid-1.0.foo", "invalid-1.0.foo".equals( a.getFile().getName() ) );
         }
     }
 
@@ -177,14 +177,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/jars/no-extension" );
+            found = "invalid/jars/no-extension".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not 'no-extension'", a.getFile().getName().equals( "no-extension" ) );
+            assertFalse( "Check not 'no-extension'", "no-extension".equals( a.getFile().getName() ) );
         }
     }
 
@@ -197,14 +197,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/jars/invalid-1.0.rar" );
+            found = "invalid/jars/invalid-1.0.rar".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not 'invalid-1.0.rar'", a.getFile().getName().equals( "invalid-1.0.rar" ) );
+            assertFalse( "Check not 'invalid-1.0.rar'", "invalid-1.0.rar".equals( a.getFile().getName() ) );
         }
     }
 
@@ -217,14 +217,14 @@ public class LegacyArtifactDiscovererTest
         {
             String path = (String) i.next();
 
-            found = path.replace( '\\', '/' ).equals( "invalid/jars/invalid.jar" );
+            found = "invalid/jars/invalid.jar".equals( path.replace( '\\', '/' ) );
         }
         assertTrue( "Check kickout was found", found );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
-            assertFalse( "Check not 'invalid.jar'", a.getFile().getName().equals( "invalid.jar" ) );
+            assertFalse( "Check not 'invalid.jar'", "invalid.jar".equals( a.getFile().getName() ) );
         }
     }
 

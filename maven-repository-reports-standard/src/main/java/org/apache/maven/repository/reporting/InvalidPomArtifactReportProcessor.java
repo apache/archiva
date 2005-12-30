@@ -49,10 +49,10 @@ public class InvalidPomArtifactReportProcessor
     {
         InputStream is = null;
 
-        if ( ( artifact.getType().toLowerCase() ).equals( "pom" ) )
+        if ( "pom".equals( artifact.getType().toLowerCase() ) )
         {
 
-            if ( repository.getProtocol().equals( "file" ) )
+            if ( "file".equals( repository.getProtocol() ) )
             {
                 try
                 {

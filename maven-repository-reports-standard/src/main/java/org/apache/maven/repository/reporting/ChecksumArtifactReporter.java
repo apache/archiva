@@ -64,7 +64,7 @@ public class ChecksumArtifactReporter
         String artifactUrl = "";
         String repositoryUrl = "";
 
-        if ( !repository.getProtocol().equals( "file" ) )
+        if ( !"file".equals( repository.getProtocol() ) )
         {
             isLocal = false;
             repositoryUrl = repository.getUrl();
@@ -126,7 +126,7 @@ public class ChecksumArtifactReporter
         //   .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
 
         String metadataUrl = "", repositoryUrl = "", filename = "";
-        if ( !repository.getProtocol().equals( "file" ) )
+        if ( !"file".equals( repository.getProtocol() ) )
         {
             isLocal = false;
             repositoryUrl = repository.getUrl() + "/";
@@ -269,7 +269,7 @@ public class ChecksumArtifactReporter
         {
             //Create checksum for jar file
             String ext = ".md5";
-            if ( algo.equals( "SHA-1" ) )
+            if ( "SHA-1".equals( algo ) )
             {
                 ext = ".sha1";
             }

@@ -74,7 +74,7 @@ public abstract class AbstractChecksumArtifactReporterTest
         boolean written = true;
 
         //loop through the valid artifact names..
-        if ( type.equals( "VALID" ) )
+        if ( "VALID".equals( type ) )
         {
             for ( int i = 0; i < validArtifactChecksumJars.length; i++ )
             {
@@ -85,7 +85,7 @@ public abstract class AbstractChecksumArtifactReporterTest
                 }
             }
         }
-        else if ( type.equals( "INVALID" ) )
+        else if ( "INVALID".equals( type ) )
         {
             for ( int i = 0; i < invalidArtifactChecksumJars.length; i++ )
             {
@@ -111,14 +111,14 @@ public abstract class AbstractChecksumArtifactReporterTest
         boolean written = true;
 
         //loop through the valid artifact names..
-        if ( type.equals( "VALID" ) )
+        if ( "VALID".equals( type ) )
         {
             writeMetadataFile( "checksumTest/validArtifact/1.0/", metadataChecksumFilename, "xml", true );
             writeMetadataFile( "checksumTest/validArtifact/", metadataChecksumFilename, "xml", true );
             writeMetadataFile( "checksumTest/", metadataChecksumFilename, "xml", true );
 
         }
-        else if ( type.equals( "INVALID" ) )
+        else if ( "INVALID".equals( type ) )
         {
             writeMetadataFile( "checksumTest/invalidArtifact/1.0/", metadataChecksumFilename, "xml", false );
         }
