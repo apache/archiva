@@ -203,7 +203,7 @@ public class ChecksumArtifactReporter
      * @param filename The name of the artifact whose MD5 Checksum file will be retrieved.
      * @todo fix this erroneous object state
      */
-    public boolean getMD5File( String filename )
+    private boolean getMD5File( String filename )
     {
         try
         {
@@ -232,7 +232,7 @@ public class ChecksumArtifactReporter
      * @param filename The name of the artifact whose SHA-1 Checksum file will be retrieved.
      * @todo fix this erroneous object state
      */
-    public boolean getSHA1File( String filename )
+    private boolean getSHA1File( String filename )
     {
         try
         {
@@ -278,7 +278,7 @@ public class ChecksumArtifactReporter
 
                 //read the md5 file
                 File f = new File( fileUrl + ext );
-                InputStream is = null;
+                InputStream is;
 
                 //check whether the file is located locally or remotely
                 if ( isLocal )
@@ -319,7 +319,7 @@ public class ChecksumArtifactReporter
      * @throws IOException
      * @todo move to utility class
      */
-    protected byte[] createChecksum( String filename, String algo )
+    private byte[] createChecksum( String filename, String algo )
         throws FileNotFoundException, NoSuchAlgorithmException, IOException
     {
         InputStream fis;
@@ -362,16 +362,14 @@ public class ChecksumArtifactReporter
     public static String byteArrayToHexStr( byte[] data )
     {
         String output = "";
-        String tempStr = "";
-        int tempInt = 0;
 
         for ( int cnt = 0; cnt < data.length; cnt++ )
         {
             //Deposit a byte into the 8 lsb of an int.
-            tempInt = data[cnt] & BYTE_MASK;
+            int tempInt = data[cnt] & BYTE_MASK;
 
             //Get hex representation of the int as a string.
-            tempStr = Integer.toHexString( tempInt );
+            String tempStr = Integer.toHexString( tempInt );
 
             //Append a leading 0 if necessary so that each hex string will contain 2 characters.
             if ( tempStr.length() == 1 )
