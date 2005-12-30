@@ -202,6 +202,10 @@ public class DefaultArtifactDiscoverer
                                                                                         type, classifier );
                         }
                     }
+                    else
+                    {
+                        finalResult = result;
+                    }
                 }
             }
         }
