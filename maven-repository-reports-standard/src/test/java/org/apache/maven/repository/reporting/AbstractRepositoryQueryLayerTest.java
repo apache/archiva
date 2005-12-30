@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +16,16 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.util.List;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
-
 import org.codehaus.plexus.PlexusTestCase;
+
+import java.io.File;
+import java.util.List;
 
 /**
  *
@@ -36,12 +34,13 @@ public abstract class AbstractRepositoryQueryLayerTest
     extends PlexusTestCase
 {
     protected ArtifactFactory artifactFactory;
-    
+
     protected ArtifactRepository repository;
-    
+
     protected CachedRepositoryQueryLayer queryLayer;
-    
-    protected void setUp() throws Exception
+
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
         File repositoryDirectory = getTestFile( "src/test/repository" );
@@ -57,14 +56,14 @@ public abstract class AbstractRepositoryQueryLayerTest
     public void testContainsArtifactTrue()
     {
         Artifact artifact = getArtifact( "groupId", "artifactId", "1.0-alpha-1" );
-        
+
         assertTrue( "check artifact", queryLayer.containsArtifact( artifact ) );
     }
 
     public void testContainsArtifactFalse()
     {
         Artifact artifact = getArtifact( "groupId", "artifactId", "1.0-beta-1" );
-        
+
         assertFalse( "check non-existent artifact", queryLayer.containsArtifact( artifact ) );
     }
 
@@ -73,7 +72,7 @@ public abstract class AbstractRepositoryQueryLayerTest
         Snapshot snapshot = new Snapshot();
         snapshot.setTimestamp( "20050611.202024" );
         snapshot.setBuildNumber( 1 );
-        
+
         Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT" );
         assertTrue( "check for snapshot artifact", queryLayer.containsArtifact( artifact, snapshot ) );
     }
@@ -83,18 +82,18 @@ public abstract class AbstractRepositoryQueryLayerTest
         Snapshot snapshot = new Snapshot();
         snapshot.setTimestamp( "20050611.202024" );
         snapshot.setBuildNumber( 2 );
-        
+
         Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT" );
         assertFalse( "check for non-existent snapshot artifact", queryLayer.containsArtifact( artifact, snapshot ) );
     }
-    
+
     public void testArtifactVersionsTrue()
         throws Exception
     {
         Artifact artifact = getArtifact( "groupId", "artifactId", "ignored" );
-        
+
         List versions = queryLayer.getVersions( artifact );
-        
+
         assertTrue( "check version 1.0-alpha-1", versions.contains( "1.0-alpha-1" ) );
         assertTrue( "check version 1.0-alpha-2", versions.contains( "1.0-alpha-2" ) );
         assertFalse( "check version 1.0-alpha-3", versions.contains( "1.0-alpha-3" ) );
@@ -104,18 +103,18 @@ public abstract class AbstractRepositoryQueryLayerTest
         throws Exception
     {
         Artifact artifact = getArtifact( "groupId", "artifactId", "ignored" );
-        
+
         List versions = queryLayer.getVersions( artifact );
-        
+
         assertTrue( "check version 1.0-alpha-1", versions.contains( "1.0-alpha-1" ) );
         assertTrue( "check version 1.0-alpha-2", versions.contains( "1.0-alpha-2" ) );
         assertFalse( "check version 1.0-alpha-3", versions.contains( "1.0-alpha-3" ) );
     }
-    
+
     public void testArtifactVersionsError()
     {
         Artifact artifact = getArtifact( "groupId", "none", "ignored" );
-        
+
         try
         {
             queryLayer.getVersions( artifact );
@@ -132,7 +131,8 @@ public abstract class AbstractRepositoryQueryLayerTest
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" );
     }
 
-    protected void tearDown() throws Exception
+    protected void tearDown()
+        throws Exception
     {
         release( artifactFactory );
         super.tearDown();

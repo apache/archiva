@@ -1,7 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.maven.artifact.metadata.ArtifactMetadata;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.ArtifactVersion;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.metadata.ArtifactMetadata;
+import org.apache.maven.artifact.versioning.VersionRange;
 
 import java.io.File;
 import java.util.Collection;
@@ -36,7 +36,9 @@ public class MockArtifact
     implements Artifact
 {
     private String groupId;
+
     private String artifactId;
+
     private String version;
 
     public String getGroupId()

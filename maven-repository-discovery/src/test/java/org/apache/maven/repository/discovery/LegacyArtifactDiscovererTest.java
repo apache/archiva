@@ -1,7 +1,7 @@
 package org.apache.maven.repository.discovery;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -260,8 +260,8 @@ public class LegacyArtifactDiscovererTest
         List artifacts = discoverer.discoverArtifacts( repositoryLocation, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
-        assertTrue( "Check normal included",
-                    artifacts.contains( createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ) ) );
+        assertTrue( "Check normal included", artifacts.contains(
+            createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ) ) );
     }
 
     public void testDistributionInclusion()

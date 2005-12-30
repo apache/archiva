@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +26,7 @@ public class RepositoryQueryLayerException
     {
         super( message, cause );
     }
-    
+
     public RepositoryQueryLayerException( String message )
     {
         super( message );

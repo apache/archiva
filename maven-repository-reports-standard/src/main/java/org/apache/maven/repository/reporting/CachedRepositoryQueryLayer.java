@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +16,10 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
-
 
 
 /**
@@ -37,23 +30,23 @@ public class CachedRepositoryQueryLayer
 {
     private Cache cache;
 
-    
+
     public CachedRepositoryQueryLayer( ArtifactRepository repository )
     {
         this.repository = repository;
-        
+
         cache = new Cache( 0.5 );
     }
-    
+
     public double getCacheHitRate()
     {
         return cache.getHitRate();
     }
-    
+
     public boolean containsArtifact( Artifact artifact )
     {
         boolean artifactFound = true;
-        
+
         // @todo should check for snapshot artifacts
         String artifactPath = repository.getBasedir() + "/" + repository.pathOf( artifact );
 
@@ -94,13 +87,13 @@ public class CachedRepositoryQueryLayer
         throws RepositoryQueryLayerException
     {
         Metadata metadata = (Metadata) cache.get( artifact.getId() );
-        
+
         if ( metadata == null )
         {
             metadata = super.getMetadata( artifact );
             cache.put( artifact.getId(), metadata );
         }
-        
+
         return metadata;
     }
 }

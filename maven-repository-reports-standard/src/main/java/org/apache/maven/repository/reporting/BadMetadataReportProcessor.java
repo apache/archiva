@@ -1,7 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,13 @@ public class BadMetadataReportProcessor
 
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
-    
+
     /**
      * Process the metadata encountered in the repository and report all errors found, if any.
      *
      * @param metadata   the metadata to be processed.
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ArtifactReporter to receive processing results
-     *
      * @throws ReportProcessorException if an error was occurred while processing the metadata
      */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
@@ -105,7 +104,7 @@ public class BadMetadataReportProcessor
                 }
             }
         }
-        
+
         if ( !hasFailures )
         {
             reporter.addSuccess( metadata );
@@ -120,7 +119,7 @@ public class BadMetadataReportProcessor
      * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                        ArtifactReporter reporter )
+                                           ArtifactReporter reporter )
         throws IOException
     {
         boolean hasFailures = false;
@@ -144,7 +143,7 @@ public class BadMetadataReportProcessor
             String prefix = plugin.getPrefix();
             if ( prefix == null || prefix.length() == 0 )
             {
-                reporter.addFailure( metadata, "Missing or empty plugin prefix for artifactId " + artifactId + ".");
+                reporter.addFailure( metadata, "Missing or empty plugin prefix for artifactId " + artifactId + "." );
                 hasFailures = true;
             }
             else
@@ -174,10 +173,10 @@ public class BadMetadataReportProcessor
                 }
             }
         }
-        
+
         if ( pluginDirs.size() > 0 )
         {
-            for( Iterator plugins = pluginDirs.iterator(); plugins.hasNext(); )
+            for ( Iterator plugins = pluginDirs.iterator(); plugins.hasNext(); )
             {
                 File plugin = (File) plugins.next();
                 reporter.addFailure( metadata, "Plugin " + plugin.getName() + " is present in the repository but " +
@@ -197,7 +196,7 @@ public class BadMetadataReportProcessor
      * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                           ArtifactReporter reporter )
+                                             ArtifactReporter reporter )
     {
         RepositoryQueryLayer repositoryQueryLayer =
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
@@ -226,7 +225,7 @@ public class BadMetadataReportProcessor
      * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                           ArtifactReporter reporter )
+                                             ArtifactReporter reporter )
     {
         RepositoryQueryLayer repositoryQueryLayer =
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
@@ -258,7 +257,7 @@ public class BadMetadataReportProcessor
      * @param reporter   the ArtifactReporter to receive processing results
      */
     protected boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                             ArtifactReporter reporter )
+                                               ArtifactReporter reporter )
         throws IOException
     {
         boolean hasFailures = false;
@@ -297,7 +296,7 @@ public class BadMetadataReportProcessor
     {
         return artifactFactory.createBuildArtifact( metadata.getGroupId(), metadata.getArtifactId(), version, "pom" );
     }
-    
+
     /**
      * Used to gather artifactIds from a groupId directory
      */
@@ -305,12 +304,12 @@ public class BadMetadataReportProcessor
         throws IOException
     {
         List artifactIdFiles = new ArrayList();
-        
+
         List fileArray = new ArrayList( Arrays.asList( groupIdDir.listFiles() ) );
-        for( Iterator files=fileArray.iterator(); files.hasNext(); )
+        for ( Iterator files = fileArray.iterator(); files.hasNext(); )
         {
             File artifactDir = (File) files.next();
-            
+
             if ( artifactDir.isDirectory() )
             {
                 List versions = FileUtils.getFileNames( artifactDir, "*/*.pom", null, false );
@@ -320,7 +319,7 @@ public class BadMetadataReportProcessor
                 }
             }
         }
-        
+
         return artifactIdFiles;
     }
 }

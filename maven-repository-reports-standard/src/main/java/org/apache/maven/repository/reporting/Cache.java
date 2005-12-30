@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,17 +21,19 @@ import java.util.Map;
 
 /**
  * Class to implement caching
- *
  */
 public class Cache
 {
     private Map cache;
 
     private DblLinkedList mostRecent;
+
     private double cacheHitRatio = 0;
+
     private long cacheMaxSize = 0;
-    
+
     private long cacheHits = 0;
+
     private long cacheMiss = 0;
 
     /**
@@ -53,27 +54,26 @@ public class Cache
 
     /**
      * Caches all data and expires only the oldest data when either the specified cache hit rate is reached
-     *     or the maximum cache size is reached.
+     * or the maximum cache size is reached.
      */
     public Cache( double cacheHitRatio, long cacheMaxSize )
     {
         this.cacheHitRatio = cacheHitRatio;
         this.cacheMaxSize = cacheMaxSize;
-        
+
         cache = new HashMap();
     }
-    
+
     /**
      * Check if the specified key is already mapped to an object.
      *
      * @param key the key used to map the cached object
-     *
      * @returns true if the cache contains an object associated with the given key
      */
     public boolean containsKey( Object key )
     {
         boolean contains = cache.containsKey( key );
-        
+
         if ( contains )
         {
             cacheHits++;
@@ -82,29 +82,28 @@ public class Cache
         {
             cacheMiss++;
         }
-        
+
         return contains;
     }
-    
+
     /**
      * Check for a cached object and return it if it exists. Returns null when the keyed object is not found
      *
      * @param key the key used to map the cached object
-     *
      * @returns the object mapped to the given key, or null if no cache object is mapped to the given key
      */
     public Object get( Object key )
     {
         Object retValue = null;
-        
+
         if ( cache.containsKey( key ) )
         {
             DblLinkedList cacheEntry = (DblLinkedList) cache.get( key );
-            
+
             makeMostRecent( cacheEntry );
-            
+
             retValue = cacheEntry.cacheValue;
-            
+
             cacheHits++;
         }
         else
@@ -147,7 +146,7 @@ public class Cache
     {
         return ( cacheHits == 0 && cacheMiss == 0 ) ? 0 : ( (double) cacheHits ) / (double) ( cacheHits + cacheMiss );
     }
-    
+
     /**
      * Get the total number of cache objects currently cached.
      */
@@ -155,14 +154,16 @@ public class Cache
     {
         return cache.size();
     }
-    
+
     /**
      * Empty the cache and reset the cache hit rate
      */
     public void flush()
     {
         while ( cache.size() > 0 )
+        {
             trimCache();
+        }
         cacheHits = 0;
         cacheMiss = 0;
         cache = new HashMap();
@@ -186,10 +187,14 @@ public class Cache
     private void removeFromLinks( DblLinkedList list )
     {
         if ( list.prev != null )
+        {
             list.prev.next = list.next;
+        }
         if ( list.next != null )
+        {
             list.next.prev = list.prev;
-        
+        }
+
         list.prev = null;
         list.next = null;
     }
@@ -207,7 +212,7 @@ public class Cache
         else if ( cache.size() > cacheMaxSize )
         {
             // maximum cache size is reached
-            while( cache.size() > cacheMaxSize )
+            while ( cache.size() > cacheMaxSize )
             {
                 trimCache();
             }
@@ -236,23 +241,29 @@ public class Cache
             mostRecent = null;
         }
     }
-    
+
     private DblLinkedList getLeastRecent()
     {
         DblLinkedList trail = mostRecent;
 
-        while( trail.next != null )
+        while ( trail.next != null )
+        {
             trail = trail.next;
+        }
 
         return trail;
     }
 
-    private class DblLinkedList {
+    private class DblLinkedList
+    {
         Object cacheKey;
+
         Object cacheValue;
+
         DblLinkedList prev;
+
         DblLinkedList next;
-        
+
         public DblLinkedList( Object key, Object value )
         {
             this.cacheKey = key;

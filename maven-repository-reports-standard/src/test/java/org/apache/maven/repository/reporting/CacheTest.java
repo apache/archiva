@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,19 +30,19 @@ public class CacheTest
     {
         cache = new Cache( 0.5 );
         newCacheObjectTests();
-        
+
         String key = "key";
         String value = "value";
-        for( int ctr=1; ctr<10; ctr++ )
+        for ( int ctr = 1; ctr < 10; ctr++ )
         {
             cache.put( key + ctr, value + ctr );
         }
-        
+
         while ( cache.getHitRate() < 0.75 )
         {
             cache.get( "key2" );
         }
-        cache.put( "key10", "value10");
+        cache.put( "key10", "value10" );
         assertNull( "first key must be expired", cache.get( "key1" ) );
     }
 
@@ -51,15 +50,15 @@ public class CacheTest
     {
         cache = new Cache( 9 );
         newCacheObjectTests();
-        
+
         String key = "key";
         String value = "value";
-        for( int ctr=1; ctr<10; ctr++ )
+        for ( int ctr = 1; ctr < 10; ctr++ )
         {
             cache.put( key + ctr, value + ctr );
         }
-        
-        cache.put( "key10", "value10");
+
+        cache.put( "key10", "value10" );
         assertNull( "first key must be expired", cache.get( "key1" ) );
         assertEquals( "check cache size to be max size", 9, cache.size() );
     }
@@ -68,10 +67,10 @@ public class CacheTest
     {
         cache = new Cache( 0.5, 9 );
         newCacheObjectTests();
-        
+
         String key = "key";
         String value = "value";
-        for( int ctr=1; ctr<5; ctr++ )
+        for ( int ctr = 1; ctr < 5; ctr++ )
         {
             cache.put( key + ctr, value + ctr );
         }
@@ -80,21 +79,21 @@ public class CacheTest
         {
             cache.get( "key3" );
         }
-        
-        cache.put( "key10", "value10");
+
+        cache.put( "key10", "value10" );
         assertNull( "first key must be expired", cache.get( "key1" ) );
 
         while ( cache.getHitRate() >= 0.5 )
         {
             cache.get( "key11" );
         }
-        
-        for( int ctr=5; ctr<10; ctr++ )
+
+        for ( int ctr = 5; ctr < 10; ctr++ )
         {
             cache.put( key + ctr, value + ctr );
         }
-        
-        cache.put( "key11", "value11");
+
+        cache.put( "key11", "value11" );
         assertNull( "second key must be expired", cache.get( "key2" ) );
         assertEquals( "check cache size to be max size", 9, cache.size() );
     }
@@ -103,16 +102,16 @@ public class CacheTest
     {
         cache = new Cache( 0.5, 9 );
         newCacheObjectTests();
-        
+
         String key = "key";
         String value = "value";
-        for( int ctr=1; ctr<10; ctr++ )
+        for ( int ctr = 1; ctr < 10; ctr++ )
         {
             cache.put( key + ctr, value + ctr );
         }
-        
-        cache.put( "key1", "value1");
-        cache.put( "key10", "value10");
+
+        cache.put( "key1", "value1" );
+        cache.put( "key10", "value10" );
         assertNull( "second key must be gone", cache.get( "key2" ) );
         assertEquals( "check cache size to be max size", 9, cache.size() );
     }

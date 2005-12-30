@@ -1,21 +1,22 @@
 package org.apache.maven.repository.reporting;
 
-/* 
- * Copyright 2001-2005 The Apache Software Foundation. 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
-
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -32,7 +33,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
-import org.codehaus.plexus.util.FileUtils;
 
 /**
  * This class creates the artifact and metadata files used for testing the ChecksumArtifactReporter.
@@ -41,9 +41,9 @@ import org.codehaus.plexus.util.FileUtils;
 public class AbstractChecksumArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
-    protected static final String[] validArtifactChecksumJars = { "validArtifact-1.0" };
+    protected static final String[] validArtifactChecksumJars = {"validArtifact-1.0"};
 
-    protected static final String[] invalidArtifactChecksumJars = { "invalidArtifact-1.0" };
+    protected static final String[] invalidArtifactChecksumJars = {"invalidArtifact-1.0"};
 
     protected static final String metadataChecksumFilename = "maven-metadata-repository";
 
@@ -65,6 +65,7 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create checksum files.
+     *
      * @param type The type of checksum file to be created.
      * @return
      */
@@ -101,6 +102,7 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create checksum files for metadata.
+     *
      * @param type The type of checksum to be created. (Valid or invalid)
      * @return
      */
@@ -126,10 +128,11 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create artifact together with its checksums.
+     *
      * @param relativePath The groupId
-     * @param filename The filename of the artifact to be created.
-     * @param type The file type (JAR)
-     * @param isValid Indicates whether the checksum to be created is valid or not.
+     * @param filename     The filename of the artifact to be created.
+     * @param type         The file type (JAR)
+     * @param isValid      Indicates whether the checksum to be created is valid or not.
      * @return
      */
     private boolean writeChecksumFile( String relativePath, String filename, String type, boolean isValid )
@@ -182,9 +185,13 @@ public class AbstractChecksumArtifactReporterTest
                     OutputStream os = new FileOutputStream( file );
                     OutputStreamWriter osw = new OutputStreamWriter( os );
                     if ( !isValid )
+                    {
                         osw.write( byteArrayToHexStr( md5chk ) + "1" );
+                    }
                     else
+                    {
                         osw.write( byteArrayToHexStr( md5chk ) );
+                    }
                     osw.close();
                 }
 
@@ -194,9 +201,13 @@ public class AbstractChecksumArtifactReporterTest
                     OutputStream os = new FileOutputStream( file );
                     OutputStreamWriter osw = new OutputStreamWriter( os );
                     if ( !isValid )
+                    {
                         osw.write( byteArrayToHexStr( sha1chk ) + "2" );
+                    }
                     else
+                    {
                         osw.write( byteArrayToHexStr( sha1chk ) );
+                    }
                     osw.close();
                 }
             }
@@ -210,10 +221,11 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create metadata file together with its checksums.
+     *
      * @param relativePath The groupId
-     * @param filename The filename of the artifact to be created.
-     * @param type The file type (JAR)
-     * @param isValid Indicates whether the checksum to be created is valid or not.
+     * @param filename     The filename of the artifact to be created.
+     * @param type         The file type (JAR)
+     * @param isValid      Indicates whether the checksum to be created is valid or not.
      * @return
      */
     private boolean writeMetadataFile( String relativePath, String filename, String type, boolean isValid )
@@ -242,9 +254,13 @@ public class AbstractChecksumArtifactReporterTest
                 OutputStream os = new FileOutputStream( file );
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 if ( !isValid )
+                {
                     osw.write( byteArrayToHexStr( md5chk ) + "1" );
+                }
                 else
+                {
                     osw.write( byteArrayToHexStr( md5chk ) );
+                }
                 osw.close();
             }
 
@@ -254,9 +270,13 @@ public class AbstractChecksumArtifactReporterTest
                 OutputStream os = new FileOutputStream( file );
                 OutputStreamWriter osw = new OutputStreamWriter( os );
                 if ( !isValid )
+                {
                     osw.write( byteArrayToHexStr( sha1chk ) + "2" );
+                }
                 else
+                {
                     osw.write( byteArrayToHexStr( sha1chk ) );
+                }
                 osw.close();
             }
         }
@@ -271,6 +291,7 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create the sample file that will be included in the jar.
+     *
      * @param filename
      * @return
      */
@@ -293,7 +314,7 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Create a checksum from the specified metadata file.
-     * 
+     *
      * @param metadataUrl
      * @return
      * @throws FileNotFoundException
@@ -326,6 +347,7 @@ public class AbstractChecksumArtifactReporterTest
     /**
      * Convert an incoming array of bytes into a string that represents each of
      * the bytes as two hex characters.
+     *
      * @param data
      * @return
      */
@@ -341,7 +363,9 @@ public class AbstractChecksumArtifactReporterTest
             tempStr = Integer.toHexString( tempInt );
 
             if ( tempStr.length() == 1 )
+            {
                 tempStr = "0" + tempStr;
+            }
             output = output + tempStr;
         }
 
@@ -350,6 +374,7 @@ public class AbstractChecksumArtifactReporterTest
 
     /**
      * Delete the test directory created in the repository.
+     *
      * @param dirname The directory to be deleted.
      * @return
      */
@@ -377,7 +402,6 @@ public class AbstractChecksumArtifactReporterTest
     }
 
     /**
-     * 
      * @return
      */
     protected boolean deleteChecksumFiles( String type )
@@ -388,29 +412,39 @@ public class AbstractChecksumArtifactReporterTest
         //delete valid checksum files of artifacts created
         for ( int i = 0; i < validArtifactChecksumJars.length; i++ )
         {
-            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
-                + "/" + validArtifactChecksumJars[i] + "." + type + ".md5" );
+            b = deleteFile( repository.getBasedir() + "checksumTest/" +
+                validArtifactChecksumJars[i].replace( '-', '/' ) + "/" + validArtifactChecksumJars[i] + "." + type +
+                ".md5" );
             if ( b == false )
+            {
                 return b;
+            }
 
-            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
-                + "/" + validArtifactChecksumJars[i] + "." + type + ".sha1" );
+            b = deleteFile( repository.getBasedir() + "checksumTest/" +
+                validArtifactChecksumJars[i].replace( '-', '/' ) + "/" + validArtifactChecksumJars[i] + "." + type +
+                ".sha1" );
             if ( b == false )
+            {
                 return b;
+            }
         }
 
         //delete valid checksum files of metadata file
         for ( int i = 0; i < validArtifactChecksumJars.length; i++ )
         {
-            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
-                + "/" + metadataChecksumFilename + ".xml.md5" );
+            b = deleteFile( repository.getBasedir() + "checksumTest/" +
+                validArtifactChecksumJars[i].replace( '-', '/' ) + "/" + metadataChecksumFilename + ".xml.md5" );
             if ( b == false )
+            {
                 return b;
+            }
 
-            b = deleteFile( repository.getBasedir() + "checksumTest/" + validArtifactChecksumJars[i].replace( '-', '/' )
-                + "/" + metadataChecksumFilename + ".xml.sha1" );
+            b = deleteFile( repository.getBasedir() + "checksumTest/" +
+                validArtifactChecksumJars[i].replace( '-', '/' ) + "/" + metadataChecksumFilename + ".xml.sha1" );
             if ( b == false )
+            {
                 return b;
+            }
         }
         return b;
     }

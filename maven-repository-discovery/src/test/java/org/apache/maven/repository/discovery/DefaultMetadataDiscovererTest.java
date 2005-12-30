@@ -1,7 +1,7 @@
 package org.apache.maven.repository.discovery;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
+import org.codehaus.plexus.PlexusTestCase;
+
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-
-import org.codehaus.plexus.PlexusTestCase;
 
 /**
  * This class tests the DefaultMetadataDiscoverer class.

@@ -1,41 +1,36 @@
 package org.apache.maven.repository.reporting;
 
-/* 
- * Copyright 2001-2005 The Apache Software Foundation. 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
-
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.DefaultArtifactRepository;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 /**
  * This class tests the LocationArtifactReportProcessor.
- *
  */
 public class LocationArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase
@@ -74,11 +69,11 @@ public class LocationArtifactReportProcessorTest
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
             VersionRange version = VersionRange.createFromVersion( "2.0" );
-            Artifact artifact = new DefaultArtifact( "org.apache.maven", "maven-model", version, "compile", "jar", "",
-                                                     handler );
+            Artifact artifact =
+                new DefaultArtifact( "org.apache.maven", "maven-model", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "org.apache.maven/maven-model/2.0/maven-model-2.0.pom" );
+            InputStream is =
+                new FileInputStream( repository.getBasedir() + "org.apache.maven/maven-model/2.0/maven-model-2.0.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -107,8 +102,8 @@ public class LocationArtifactReportProcessorTest
             VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
             Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "groupId/artifactId/1.0-alpha-1/artifactId-1.0-alpha-1.pom" );
+            InputStream is = new FileInputStream(
+                repository.getBasedir() + "groupId/artifactId/1.0-alpha-1/artifactId-1.0-alpha-1.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -124,7 +119,7 @@ public class LocationArtifactReportProcessorTest
 
     /**
      * Test the LocationArtifactReporter when the artifact is not in the location specified
-     * in the file system pom.  
+     * in the file system pom.
      */
     public void testLocationArtifactReporterFailure()
     {
@@ -137,8 +132,8 @@ public class LocationArtifactReportProcessorTest
             VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
             Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "groupId/artifactId/1.0-alpha-2/artifactId-1.0-alpha-2.pom" );
+            InputStream is = new FileInputStream(
+                repository.getBasedir() + "groupId/artifactId/1.0-alpha-2/artifactId-1.0-alpha-2.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -165,11 +160,11 @@ public class LocationArtifactReportProcessorTest
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
             VersionRange version = VersionRange.createFromVersion( "2.0" );
-            Artifact artifact = new DefaultArtifact( "org.apache.maven", "maven-archiver", version, "compile", "jar",
-                                                     "", handler );
+            Artifact artifact =
+                new DefaultArtifact( "org.apache.maven", "maven-archiver", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "org.apache.maven/maven-archiver/2.0/maven-archiver-2.0.pom" );
+            InputStream is = new FileInputStream(
+                repository.getBasedir() + "org.apache.maven/maven-archiver/2.0/maven-archiver-2.0.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -197,11 +192,11 @@ public class LocationArtifactReportProcessorTest
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
             VersionRange version = VersionRange.createFromVersion( "2.1" );
-            Artifact artifact = new DefaultArtifact( "org.apache.maven", "maven-monitor", version, "compile", "jar",
-                                                     "", handler );
+            Artifact artifact =
+                new DefaultArtifact( "org.apache.maven", "maven-monitor", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "org.apache.maven/maven-monitor/2.1/maven-monitor-2.1.pom" );
+            InputStream is = new FileInputStream(
+                repository.getBasedir() + "org.apache.maven/maven-monitor/2.1/maven-monitor-2.1.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -228,11 +223,11 @@ public class LocationArtifactReportProcessorTest
         {
             ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
             VersionRange version = VersionRange.createFromVersion( "2.1" );
-            Artifact artifact = new DefaultArtifact( "org.apache.maven", "maven-project", version, "compile", "jar",
-                                                     "", handler );
+            Artifact artifact =
+                new DefaultArtifact( "org.apache.maven", "maven-project", version, "compile", "jar", "", handler );
 
-            InputStream is = new FileInputStream( repository.getBasedir()
-                + "org.apache.maven/maven-project/2.1/maven-project-2.1.pom" );
+            InputStream is = new FileInputStream(
+                repository.getBasedir() + "org.apache.maven/maven-project/2.1/maven-project-2.1.pom" );
             Reader reader = new InputStreamReader( is );
             Model model = pomReader.read( reader );
 
@@ -249,7 +244,7 @@ public class LocationArtifactReportProcessorTest
     /**
      * Test the LocationArtifactReportProcessor when the artifact is located in the remote repository.
      */
-  /*  public void testRemoteArtifactReportProcessorFailure()
+    /*  public void testRemoteArtifactReportProcessorFailure()
     {
 
         ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );

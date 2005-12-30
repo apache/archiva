@@ -1,7 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * 

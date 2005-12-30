@@ -1,19 +1,19 @@
 package org.apache.maven.repository.reporting;
 
-/* 
- * Copyright 2001-2005 The Apache Software Foundation. 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import org.apache.maven.artifact.Artifact;
@@ -33,15 +33,25 @@ public interface ArtifactReporter
     String ROLE = ArtifactReporter.class.getName();
 
     public static String NULL_MODEL = "Provided model was null";
+
     public static String NULL_ARTIFACT = "Provided artifact was null";
+
     public static String EMPTY_GROUP_ID = "Group id was empty or null";
+
     public static String EMPTY_ARTIFACT_ID = "Artifact id was empty or null";
+
     public static String EMPTY_VERSION = "Version was empty or null";
+
     public static String EMPTY_DEPENDENCY_GROUP_ID = "Group id was empty or null";
+
     public static String EMPTY_DEPENDENCY_ARTIFACT_ID = "Artifact id was empty or null";
+
     public static String EMPTY_DEPENDENCY_VERSION = "Version was empty or null";
+
     public static String NO_DEPENDENCIES = "Artifact has no dependencies";
+
     public static String ARTIFACT_NOT_FOUND = "Artifact does not exist in the repository";
+
     public static String DEPENDENCY_NOT_FOUND = "Artifact's dependency does not exist in the repository";
 
     void addFailure( Artifact artifact, String reason );

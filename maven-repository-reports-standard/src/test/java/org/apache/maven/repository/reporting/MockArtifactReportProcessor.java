@@ -1,7 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 
@@ -39,7 +39,8 @@ public class MockArtifactReportProcessor
         reportConditions = new ArrayList();
     }
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter, ArtifactRepository artifactRepository )
+    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
+                                 ArtifactRepository artifactRepository )
     {
         if ( iterator == null || !iterator.hasNext() ) // not initialized or reached end of the list. start again
         {
@@ -47,26 +48,26 @@ public class MockArtifactReportProcessor
         }
         if ( !reportConditions.isEmpty() )
         {
-            while(iterator.hasNext())
+            while ( iterator.hasNext() )
             {
                 ReportCondition reportCondition = (ReportCondition) iterator.next();
                 switch ( reportCondition.getResult() )
                 {
                     case ReportCondition.SUCCESS:
-                        {
-                            reporter.addSuccess( reportCondition.getArtifact() );
-                            break;
-                        }
+                    {
+                        reporter.addSuccess( reportCondition.getArtifact() );
+                        break;
+                    }
                     case ReportCondition.WARNING:
-                        {
-                            reporter.addWarning( reportCondition.getArtifact(), reportCondition.getReason() );
-                            break;
-                        }
+                    {
+                        reporter.addWarning( reportCondition.getArtifact(), reportCondition.getReason() );
+                        break;
+                    }
                     case ReportCondition.FAILURE:
-                        {
-                            reporter.addFailure( reportCondition.getArtifact(), reportCondition.getReason() );
-                            break;
-                        }
+                    {
+                        reporter.addFailure( reportCondition.getArtifact(), reportCondition.getReason() );
+                        break;
+                    }
                 }
             }
         }

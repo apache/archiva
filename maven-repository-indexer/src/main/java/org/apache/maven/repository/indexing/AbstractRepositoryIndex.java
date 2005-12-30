@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +16,12 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 
 /**
  * Abstract class for RepositoryIndexers
@@ -33,10 +32,13 @@ public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
     protected String indexPath;
+
     protected boolean indexOpen;
+
     protected IndexReader indexReader;
+
     protected IndexWriter indexWriter;
-    
+
     /**
      * method to encapsulate the optimize() method for lucene
      */
@@ -67,11 +69,11 @@ public abstract class AbstractRepositoryIndex
     {
         return indexOpen;
     }
-    
+
     /**
      * method used to close all open streams to the index directory
      */
-    public void close() 
+    public void close()
         throws RepositoryIndexException
     {
         try
@@ -112,7 +114,7 @@ public abstract class AbstractRepositoryIndex
             throw new RepositoryIndexException( e );
         }
     }
-    
+
     public String getIndexPath()
     {
         return indexPath;
@@ -135,10 +137,10 @@ public abstract class AbstractRepositoryIndex
             indexReader = IndexReader.open( indexPath );
         }
     }
-    
+
     /**
      * method for validating an index directory
-     * 
+     *
      * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
      */
     protected void validateIndex()
@@ -152,18 +154,18 @@ public abstract class AbstractRepositoryIndex
             {
                 Collection fields = indexReader.getFieldNames();
                 String[] indexFields = getIndexFields();
-                for( int idx=0; idx<indexFields.length; idx++ )
+                for ( int idx = 0; idx < indexFields.length; idx++ )
                 {
-                    if ( !fields.contains( indexFields[ idx ] ) )
+                    if ( !fields.contains( indexFields[idx] ) )
                     {
-                        throw new RepositoryIndexException( "The Field " + indexFields[ idx ] + " does not exist in " +
-                                "index path " + indexPath + "." );
+                        throw new RepositoryIndexException(
+                            "The Field " + indexFields[idx] + " does not exist in " + "index path " + indexPath + "." );
                     }
                 }
             }
             else
             {
-                System.out.println("Skipping index field validations for empty index." );
+                System.out.println( "Skipping index field validations for empty index." );
             }
         }
         else if ( !indexDir.exists() )

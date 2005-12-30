@@ -1,14 +1,13 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,16 +16,16 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.List;
-
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+
+import java.io.File;
+import java.io.FileReader;
+import java.util.List;
 
 /**
  *
@@ -53,15 +52,15 @@ public abstract class AbstractRepositoryQueryLayer
         throws RepositoryQueryLayerException
     {
         Metadata metadata = getMetadata( artifact );
-        
+
         return metadata.getVersioning().getVersions();
     }
 
     protected String getSnapshotArtifactRepositoryPath( Artifact artifact, Snapshot snapshot )
     {
         File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
-        String snapshotInfo = artifact.getVersion().replaceFirst( "SNAPSHOT", snapshot.getTimestamp() + "-" + 
-                                                                            snapshot.getBuildNumber() + ".pom" );
+        String snapshotInfo = artifact.getVersion().replaceFirst( "SNAPSHOT", snapshot.getTimestamp() + "-" +
+            snapshot.getBuildNumber() + ".pom" );
         File snapshotFile = new File( f.getParentFile(), artifact.getArtifactId() + "-" + snapshotInfo );
         return snapshotFile.getAbsolutePath();
     }

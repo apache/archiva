@@ -1,7 +1,7 @@
 package org.apache.maven.repository.reporting;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,14 @@ import java.util.Iterator;
  *
  */
 public class DefaultArtifactReporterTest
-        extends AbstractRepositoryReportsTestCase
+    extends AbstractRepositoryReportsTestCase
 {
     private ArtifactReporter reporter;
-    
+
     private Artifact artifact;
-    
+
     private RepositoryMetadata metadata;
-    
+
     public void testEmptyArtifactReporter()
     {
         assertEquals( "No failures", 0, reporter.getFailures() );
@@ -48,7 +48,7 @@ public class DefaultArtifactReporterTest
         assertFalse( "No metadata warnings", reporter.getRepositoryMetadataWarningIterator().hasNext() );
         assertFalse( "No metadata successes", reporter.getRepositoryMetadataSuccessIterator().hasNext() );
     }
-    
+
     public void testMetadataSingleFailure()
     {
         reporter.addFailure( metadata, "Single Failure Reason" );
@@ -63,7 +63,7 @@ public class DefaultArtifactReporterTest
         assertEquals( "check failure reason", "Single Failure Reason", result.getReason() );
         assertFalse( "no more failures", results.hasNext() );
     }
-    
+
     public void testMetadataMultipleFailures()
     {
         reporter.addFailure( metadata, "First Failure Reason" );
@@ -98,7 +98,7 @@ public class DefaultArtifactReporterTest
         assertEquals( "check failure reason", "Single Warning Message", result.getReason() );
         assertFalse( "no more failures", results.hasNext() );
     }
-    
+
     public void testMetadataMultipleWarnings()
     {
         reporter.addWarning( metadata, "First Warning" );
@@ -133,14 +133,14 @@ public class DefaultArtifactReporterTest
         assertNull( "check no reason", result.getReason() );
         assertFalse( "no more failures", results.hasNext() );
     }
-    
+
     public void testMetadataMultipleSuccesses()
     {
         Versioning versioning = new Versioning();
         versioning.addVersion( "1.0-beta-1" );
-        versioning.addVersion( "1.0-beta-2" );        
+        versioning.addVersion( "1.0-beta-2" );
         RepositoryMetadata metadata2 = new ArtifactRepositoryMetadata( artifact, versioning );
-        
+
         reporter.addSuccess( metadata );
         reporter.addSuccess( metadata2 );
         assertEquals( "failures count", 0, reporter.getFailures() );
@@ -159,24 +159,26 @@ public class DefaultArtifactReporterTest
         assertFalse( "no more successes", results.hasNext() );
     }
 
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
-        
+
         reporter = new DefaultArtifactReporter();
         ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
         versioning.addVersion( "1.0-alpha-1" );
-        versioning.addVersion( "1.0-alpha-2" );        
+        versioning.addVersion( "1.0-alpha-2" );
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
     }
 
-    protected void tearDown() throws Exception
+    protected void tearDown()
+        throws Exception
     {
         super.tearDown();
-        
+
         reporter = null;
         metadata = null;
     }

@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +15,12 @@ package org.apache.maven.repository.indexing;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.maven.artifact.Artifact;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,12 +34,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.maven.artifact.Artifact;
-
 
 /**
  * Class used to index Artifact objects in a specified repository
@@ -45,23 +44,33 @@ public class ArtifactRepositoryIndex
     extends AbstractRepositoryIndex
 {
     private static final String NAME = "name";
+
     private static final String GROUPID = "groupId";
+
     private static final String ARTIFACTID = "artifactId";
+
     private static final String VERSION = "version";
+
     private static final String SHA1 = "sha1";
+
     private static final String MD5 = "md5";
+
     private static final String CLASSES = "classes";
+
     private static final String PACKAGES = "packages";
+
     private static final String FILES = "files";
-    
-    private static final String[] FIELDS = { NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5,
-                                               CLASSES, PACKAGES, FILES };
-    
+
+    private static final String[] FIELDS = {NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES, FILES};
+
     private Analyzer analyzer;
+
     private StringBuffer classes;
+
     private StringBuffer packages;
+
     private StringBuffer files;
-    
+
     /**
      * method to get the Analyzer used to create indices
      *
@@ -73,7 +82,7 @@ public class ArtifactRepositoryIndex
         {
             analyzer = new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
         }
-        
+
         return analyzer;
     }
 
@@ -92,7 +101,7 @@ public class ArtifactRepositoryIndex
      *
      * @param obj the object to be indexed by this indexer
      */
-    public void index(Object obj) 
+    public void index( Object obj )
         throws RepositoryIndexException
     {
         if ( obj instanceof Artifact )
@@ -101,8 +110,8 @@ public class ArtifactRepositoryIndex
         }
         else
         {
-            throw new RepositoryIndexException( "This instance of indexer cannot index instances of " + 
-                    obj.getClass().getName() );
+            throw new RepositoryIndexException(
+                "This instance of indexer cannot index instances of " + obj.getClass().getName() );
         }
     }
 
@@ -124,7 +133,7 @@ public class ArtifactRepositoryIndex
             getIndexWriter();
 
             processArtifactContents( artifact.getFile() );
-            
+
             //@todo should some of these fields be Keyword instead of Text ?
             Document doc = new Document();
             doc.add( Field.Text( NAME, artifact.getFile().getName() ) );
@@ -140,7 +149,7 @@ public class ArtifactRepositoryIndex
 
             removeBuffers();
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
             throw new RepositoryIndexException( e );
         }
@@ -152,7 +161,7 @@ public class ArtifactRepositoryIndex
         FileInputStream fIn = new FileInputStream( artifact.getFile() );
         return new String( getChecksum( fIn, "SHA-1" ) );
     }
-    
+
     private String getMd5( Artifact artifact )
         throws FileNotFoundException, IOException, NoSuchAlgorithmException
     {
@@ -213,21 +222,24 @@ public class ArtifactRepositoryIndex
     private boolean addIfClassEntry( ZipEntry entry )
     {
         boolean isAdded = false;
-        
+
         String name = entry.getName();
-        if( name.endsWith( ".class") )
+        if ( name.endsWith( ".class" ) )
         {
             // TODO verify if class is public or protected
-            if( name.lastIndexOf( "$" ) == -1)
+            if ( name.lastIndexOf( "$" ) == -1 )
             {
                 int idx = name.lastIndexOf( '/' );
-                if ( idx < 0 ) idx = 0;
+                if ( idx < 0 )
+                {
+                    idx = 0;
+                }
                 String classname = name.substring( idx, name.length() - 6 );
                 classes.append( classname ).append( "\n" );
                 isAdded = true;
             }
         }
-        
+
         return isAdded;
     }
 
@@ -245,7 +257,7 @@ public class ArtifactRepositoryIndex
             }
             isAdded = true;
         }
-        
+
         return isAdded;
     }
 
@@ -265,7 +277,7 @@ public class ArtifactRepositoryIndex
             files.append( name ).append( "\n" );
             isAdded = true;
         }
-        
+
         return isAdded;
     }
 }
