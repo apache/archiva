@@ -28,9 +28,9 @@ import java.util.Iterator;
 public class ArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
-    private final static String EMPTY_STRING = "";
+    private static final String EMPTY_STRING = "";
 
-    private final static String VALID = "temp";
+    private static final String VALID = "temp";
 
     protected MockArtifactReporter reporter;
 
@@ -53,12 +53,12 @@ public class ArtifactReportProcessorTest
     public void testNullArtifact()
     {
         processor.processArtifact( model, null, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.NULL_ARTIFACT.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.NULL_ARTIFACT, result.getReason() );
     }
 
     public void testNoProjectDescriptor()
@@ -68,12 +68,12 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( null, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.NULL_MODEL.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.NULL_MODEL, result.getReason() );
     }
 
     public void testArtifactFoundButNoDirectDependencies()
@@ -83,9 +83,9 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 0 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 0, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
     }
 
     public void testArtifactNotFound()
@@ -95,12 +95,12 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.ARTIFACT_NOT_FOUND.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.ARTIFACT_NOT_FOUND, result.getReason() );
     }
 
     public void testValidArtifactWithNullDependency()
@@ -119,9 +119,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 2 );
-        assertTrue( reporter.getFailures() == 0 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 2, reporter.getSuccesses() );
+        assertEquals( 0, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
     }
 
     public void testValidArtifactWithValidSingleDependency()
@@ -140,9 +140,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 2 );
-        assertTrue( reporter.getFailures() == 0 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 2, reporter.getSuccesses() );
+        assertEquals( 0, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
     }
 
     public void testValidArtifactWithValidMultipleDependencies()
@@ -169,9 +169,9 @@ public class ArtifactReportProcessorTest
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 6 );
-        assertTrue( reporter.getFailures() == 0 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 6, reporter.getSuccesses() );
+        assertEquals( 0, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
     }
 
     public void testValidArtifactWithAnInvalidDependency()
@@ -198,13 +198,13 @@ public class ArtifactReportProcessorTest
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 5 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 5, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.DEPENDENCY_NOT_FOUND.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.DEPENDENCY_NOT_FOUND, result.getReason() );
     }
 
     public void testEmptyGroupId()
@@ -215,13 +215,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, EMPTY_STRING, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_GROUP_ID, result.getReason() );
     }
 
     public void testEmptyArtifactId()
@@ -232,13 +232,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, EMPTY_STRING, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_ARTIFACT_ID, result.getReason() );
     }
 
     public void testEmptyVersion()
@@ -249,13 +249,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, EMPTY_STRING );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_VERSION, result.getReason() );
     }
 
     public void testNullGroupId()
@@ -266,13 +266,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, null, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_GROUP_ID, result.getReason() );
     }
 
     public void testNullArtifactId()
@@ -283,13 +283,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, null, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_ARTIFACT_ID, result.getReason() );
     }
 
     public void testNullVersion()
@@ -300,13 +300,13 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, null );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_VERSION, result.getReason() );
     }
 
     public void testMultipleFailures()
@@ -317,17 +317,17 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, null, null, null );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 0 );
-        assertTrue( reporter.getFailures() == 3 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 0, reporter.getSuccesses() );
+        assertEquals( 3, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_GROUP_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_GROUP_ID, result.getReason() );
         result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_ARTIFACT_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_ARTIFACT_ID, result.getReason() );
         result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_VERSION.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_VERSION, result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyGroupId()
@@ -346,13 +346,13 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID, result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyArtifactId()
@@ -371,13 +371,13 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID, result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyVersion()
@@ -396,13 +396,13 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 1 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_VERSION.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_VERSION, result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyRequiredElements()
@@ -421,17 +421,17 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertTrue( reporter.getSuccesses() == 1 );
-        assertTrue( reporter.getFailures() == 3 );
-        assertTrue( reporter.getWarnings() == 0 );
+        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 3, reporter.getFailures() );
+        assertEquals( 0, reporter.getWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID, result.getReason() );
         result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID, result.getReason() );
         result = (ArtifactResult) failures.next();
-        assertTrue( ArtifactReporter.EMPTY_DEPENDENCY_VERSION.equals( result.getReason() ) );
+        assertEquals( ArtifactReporter.EMPTY_DEPENDENCY_VERSION, result.getReason() );
     }
 
     protected void tearDown()

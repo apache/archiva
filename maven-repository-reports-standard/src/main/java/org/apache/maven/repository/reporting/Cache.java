@@ -28,13 +28,13 @@ public class Cache
 
     private DblLinkedList mostRecent;
 
-    private double cacheHitRatio = 0;
+    private double cacheHitRatio;
 
-    private long cacheMaxSize = 0;
+    private long cacheMaxSize;
 
-    private long cacheHits = 0;
+    private long cacheHits;
 
-    private long cacheMiss = 0;
+    private long cacheMiss;
 
     /**
      * Caches all data and expires only the oldest data when the specified cache hit rate is reached.
@@ -68,7 +68,7 @@ public class Cache
      * Check if the specified key is already mapped to an object.
      *
      * @param key the key used to map the cached object
-     * @returns true if the cache contains an object associated with the given key
+     * @return true if the cache contains an object associated with the given key
      */
     public boolean containsKey( Object key )
     {
@@ -90,7 +90,7 @@ public class Cache
      * Check for a cached object and return it if it exists. Returns null when the keyed object is not found
      *
      * @param key the key used to map the cached object
-     * @returns the object mapped to the given key, or null if no cache object is mapped to the given key
+     * @return the object mapped to the given key, or null if no cache object is mapped to the given key
      */
     public Object get( Object key )
     {
@@ -102,7 +102,7 @@ public class Cache
 
             makeMostRecent( cacheEntry );
 
-            retValue = cacheEntry.cacheValue;
+            retValue = cacheEntry.getCacheValue();
 
             cacheHits++;
         }
@@ -140,11 +140,11 @@ public class Cache
     /**
      * Compute for the efficiency of this cache.
      *
-     * @returns the ratio of cache hits to the cache misses to queries for cache objects
+     * @return the ratio of cache hits to the cache misses to queries for cache objects
      */
     public double getHitRate()
     {
-        return ( cacheHits == 0 && cacheMiss == 0 ) ? 0 : ( (double) cacheHits ) / (double) ( cacheHits + cacheMiss );
+        return cacheHits == 0 && cacheMiss == 0 ? 0 : (double) cacheHits / (double) ( cacheHits + cacheMiss );
     }
 
     /**
@@ -171,32 +171,39 @@ public class Cache
 
     private void makeMostRecent( DblLinkedList list )
     {
-        if ( mostRecent != list )
+        if ( mostRecent != null )
+        {
+            if ( !mostRecent.equals( list ) )
+            {
+                removeFromLinks( list );
+
+                list.setNext( mostRecent );
+                mostRecent.setPrev( list );
+
+                mostRecent = list;
+            }
+        }
+        else if ( list != null )
         {
             removeFromLinks( list );
 
-            if ( mostRecent != null )
-            {
-                list.next = mostRecent;
-                mostRecent.prev = list;
-            }
             mostRecent = list;
         }
     }
 
     private void removeFromLinks( DblLinkedList list )
     {
-        if ( list.prev != null )
+        if ( list.getPrev() != null )
         {
-            list.prev.next = list.next;
+            list.getPrev().setNext( list.getNext() );
         }
-        if ( list.next != null )
+        if ( list.getNext() != null )
         {
-            list.next.prev = list.prev;
+            list.getNext().setPrev( list.getPrev() );
         }
 
-        list.prev = null;
-        list.next = null;
+        list.setPrev( null );
+        list.setNext( null );
     }
 
     private void manageCache()
@@ -231,7 +238,7 @@ public class Cache
     private void trimCache()
     {
         DblLinkedList leastRecent = getLeastRecent();
-        cache.remove( leastRecent.cacheKey );
+        cache.remove( leastRecent.getCacheKey() );
         if ( cache.size() > 0 )
         {
             removeFromLinks( leastRecent );
@@ -246,28 +253,61 @@ public class Cache
     {
         DblLinkedList trail = mostRecent;
 
-        while ( trail.next != null )
+        while ( trail.getNext() != null )
         {
-            trail = trail.next;
+            trail = trail.getNext();
         }
 
         return trail;
     }
 
-    private class DblLinkedList
+    /**
+     * @todo replace with standard collection (commons-collections?)
+     */
+    private static class DblLinkedList
     {
-        Object cacheKey;
+        private Object cacheKey;
 
-        Object cacheValue;
+        private Object cacheValue;
 
-        DblLinkedList prev;
+        private DblLinkedList prev;
 
-        DblLinkedList next;
+        private DblLinkedList next;
 
-        public DblLinkedList( Object key, Object value )
+        DblLinkedList( Object key, Object value )
         {
             this.cacheKey = key;
             this.cacheValue = value;
+        }
+
+        public DblLinkedList getNext()
+        {
+            return next;
+        }
+
+        public Object getCacheValue()
+        {
+            return cacheValue;
+        }
+
+        public void setPrev( DblLinkedList prev )
+        {
+            this.prev = prev;
+        }
+
+        public void setNext( DblLinkedList next )
+        {
+            this.next = next;
+        }
+
+        public Object getCacheKey()
+        {
+            return cacheKey;
+        }
+
+        public DblLinkedList getPrev()
+        {
+            return prev;
         }
     }
 }

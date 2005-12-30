@@ -44,20 +44,21 @@ public class MockRepositoryQueryLayer
         {
             iterator = queryConditions.iterator();
         }
+        boolean b;
         if ( queryConditions.isEmpty() )
         {
-            return false;
+            b = false;
         }
         else
         {
-            boolean temp = ( (Boolean) iterator.next() ).booleanValue();
-            return temp;
+            b = ( (Boolean) iterator.next() ).booleanValue();
         }
+        return b;
     }
 
     public void addReturnValue( boolean queryCondition )
     {
-        queryConditions.add( new Boolean( queryCondition ) );
+        queryConditions.add( Boolean.valueOf( queryCondition ) );
     }
 
     public void clearList()

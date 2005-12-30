@@ -28,7 +28,7 @@ import java.util.Map;
 public class GenericMockObject
     implements InvocationHandler
 {
-    Map invocations = new HashMap();
+    private Map invocations = new HashMap();
 
     public GenericMockObject()
     {
@@ -37,7 +37,7 @@ public class GenericMockObject
 
     public GenericMockObject( Map returnMap )
     {
-        invocations = returnMap;
+        invocations = new HashMap( returnMap );
     }
 
     public void setExpectedReturns( Method method, List returnList )
@@ -46,7 +46,6 @@ public class GenericMockObject
     }
 
     public Object invoke( Object proxy, Method method, Object[] args )
-        throws Throwable
     {
         if ( !invocations.containsKey( method ) )
         {

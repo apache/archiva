@@ -35,7 +35,7 @@ public class ArtifactRepositoryIndexAnalyzer
     /**
      * constructor to for this analyzer
      *
-     * @character defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
+     * @param defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
      */
     public ArtifactRepositoryIndexAnalyzer( Analyzer defaultAnalyzer )
     {
@@ -45,9 +45,9 @@ public class ArtifactRepositoryIndexAnalyzer
     /**
      * Method called by lucence during indexing operations
      *
+     * @param fieldName the field name that the lucene object is currently processing
+     * @param reader    a Reader object to the index stream
      * @return an analyzer to specific to the field name or the default analyzer if none is present
-     * @character fieldName the field name that the lucene object is currently processing
-     * @character reader a Reader object to the index stream
      */
     public TokenStream tokenStream( String fieldName, Reader reader )
     {
@@ -68,15 +68,15 @@ public class ArtifactRepositoryIndexAnalyzer
     /**
      * Class used to tokenize an artifact's version.
      */
-    private class VersionTokenizer
+    private static class VersionTokenizer
         extends CharTokenizer
     {
         /**
          * Constructor with the required reader to the index stream
          *
-         * @reader the Reader object of the index stream
+         * @param reader the Reader object of the index stream
          */
-        public VersionTokenizer( Reader reader )
+        VersionTokenizer( Reader reader )
         {
             super( reader );
         }
@@ -89,19 +89,7 @@ public class ArtifactRepositoryIndexAnalyzer
          */
         protected boolean isTokenChar( char character )
         {
-            boolean token;
-
-            switch ( character )
-            {
-                case '.':
-                case '-':
-                    token = false;
-                    break;
-                default:
-                    token = true;
-            }
-
-            return token;
+            return character != '.' && character != '-';
         }
     }
 }

@@ -62,6 +62,9 @@ public class LegacyArtifactDiscoverer
         return artifacts;
     }
 
+    /**
+     * @noinspection CollectionDeclaredAsConcreteClass
+     */
     private Artifact buildArtifact( String path )
     {
         StringTokenizer tokens = new StringTokenizer( path, "/\\" );
@@ -154,6 +157,11 @@ public class LegacyArtifactDiscoverer
             }
         }
 
+        // let's discover the version, and whatever's leftover will be either
+        // a classifier, or part of the artifactId, depending on position.
+        // Since version is at the end, we have to move in from the back.
+        Collections.reverse( avceTokenList );
+
         // TODO: this is obscene - surely a better way?
         String validVersionParts = "([Dd][Ee][Vv][_.0-9]*)|" + "([Ss][Nn][Aa][Pp][Ss][Hh][Oo][Tt])|" +
             "([0-9][_.0-9a-zA-Z]*)|" + "([Gg]?[_.0-9ab]*([Pp][Rr][Ee]|[Rr][Cc]|[Gg]|[Mm])[_.0-9]*)|" +
@@ -162,11 +170,6 @@ public class LegacyArtifactDiscoverer
             "([Uu][Nn][Oo][Ff][Ff][Ii][Cc][Ii][Aa][Ll][_.0-9]*)|" + "([Cc][Uu][Rr][Rr][Ee][Nn][Tt])|" +
             "([Ll][Aa][Tt][Ee][Ss][Tt])|" + "([Ff][Cc][Ss])|" + "([Rr][Ee][Ll][Ee][Aa][Ss][Ee][_.0-9]*)|" +
             "([Nn][Ii][Gg][Hh][Tt][Ll][Yy])|" + "([AaBb][_.0-9]*)";
-
-        // let's discover the version, and whatever's leftover will be either
-        // a classifier, or part of the artifactId, depending on position.
-        // Since version is at the end, we have to move in from the back.
-        Collections.reverse( avceTokenList );
 
         StringBuffer classifierBuffer = new StringBuffer();
         StringBuffer versionBuffer = new StringBuffer();
@@ -190,6 +193,7 @@ public class LegacyArtifactDiscoverer
             {
                 if ( firstVersionTokenEncountered )
                 {
+                    //noinspection BreakStatement
                     break;
                 }
                 else

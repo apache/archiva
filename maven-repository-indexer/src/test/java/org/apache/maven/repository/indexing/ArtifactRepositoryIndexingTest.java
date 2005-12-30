@@ -58,8 +58,6 @@ public class ArtifactRepositoryIndexingTest
 
     protected String indexPath;
 
-    private RepositoryIndexSearcher repoSearcher;
-
     protected void setUp()
         throws Exception
     {
@@ -176,7 +174,8 @@ public class ArtifactRepositoryIndexingTest
         indexer.open( getTestPath( "src/test/index" ) );
 
         //repoSearcher = new ArtifactRepositoryIndexSearcher( indexer, indexPath, repository );
-        repoSearcher = (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE, "artifact" );
+        RepositoryIndexSearcher repoSearcher =
+            (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE, "artifact" );
 
         List artifacts = repoSearcher.search( indexer, "test", GROUPID );
         assertEquals( 1, artifacts.size() );

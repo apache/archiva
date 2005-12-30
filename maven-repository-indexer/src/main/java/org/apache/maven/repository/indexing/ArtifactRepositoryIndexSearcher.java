@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -25,6 +26,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +46,6 @@ public class ArtifactRepositoryIndexSearcher
 
     private static final String VERSION = "version";
 
-    private IndexSearcher searcher;
-
     private ArtifactRepository repository;
 
     private ArtifactFactory factory;
@@ -59,16 +59,16 @@ public class ArtifactRepositoryIndexSearcher
      * @return
      */
     public List search( RepositoryIndex index, String queryString, String searchField )
+        throws RepositoryIndexSearchException
     {
         List artifactList = new ArrayList();
 
         try
         {
-            searcher = new IndexSearcher( index.getIndexPath() );
+            IndexSearcher searcher = new IndexSearcher( index.getIndexPath() );
             QueryParser parser = new QueryParser( searchField, index.getAnalyzer() );
             Query qry = parser.parse( queryString );
             Hits hits = searcher.search( qry );
-            //System.out.println("HITS SIZE --> " + hits.length());
 
             for ( int i = 0; i < hits.length(); i++ )
             {
@@ -84,9 +84,13 @@ public class ArtifactRepositoryIndexSearcher
                 artifactList.add( artifact );
             }
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            e.printStackTrace();
+            throw new RepositoryIndexSearchException( e.getMessage(), e );
+        }
+        catch ( ParseException e )
+        {
+            throw new RepositoryIndexSearchException( "Error parsing query: " + e.getMessage() );
         }
 
         return artifactList;

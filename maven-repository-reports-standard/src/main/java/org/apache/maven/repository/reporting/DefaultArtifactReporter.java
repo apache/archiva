@@ -51,9 +51,9 @@ public class DefaultArtifactReporter
         artifactSuccesses.add( new ArtifactResult( artifact ) );
     }
 
-    public void addWarning( Artifact artifact, String reason )
+    public void addWarning( Artifact artifact, String message )
     {
-        artifactWarnings.add( new ArtifactResult( artifact, reason ) );
+        artifactWarnings.add( new ArtifactResult( artifact, message ) );
     }
 
     public void addFailure( RepositoryMetadata metadata, String reason )
@@ -66,9 +66,9 @@ public class DefaultArtifactReporter
         metadataSuccesses.add( new RepositoryMetadataResult( metadata ) );
     }
 
-    public void addWarning( RepositoryMetadata metadata, String reason )
+    public void addWarning( RepositoryMetadata metadata, String message )
     {
-        metadataWarnings.add( new RepositoryMetadataResult( metadata, reason ) );
+        metadataWarnings.add( new RepositoryMetadataResult( metadata, message ) );
     }
 
     public Iterator getArtifactFailureIterator()

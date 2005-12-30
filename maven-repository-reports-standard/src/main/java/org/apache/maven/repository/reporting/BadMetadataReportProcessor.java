@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * This class will report on bad metadata files.  These include invalid version declarations and incomplete version
@@ -128,7 +128,7 @@ public class BadMetadataReportProcessor
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
         List pluginDirs = getArtifactIdFiles( metadataDir );
 
-        HashMap prefixes = new HashMap();
+        Map prefixes = new HashMap();
         for ( Iterator plugins = metadata.getMetadata().getPlugins().iterator(); plugins.hasNext(); )
         {
             Plugin plugin = (Plugin) plugins.next();

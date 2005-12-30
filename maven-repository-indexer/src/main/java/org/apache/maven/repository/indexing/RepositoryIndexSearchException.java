@@ -16,23 +16,24 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import java.util.List;
-
 /**
- *
+ * @author Brett Porter
  */
-public interface RepositoryIndexSearcher
+public class RepositoryIndexSearchException
+    extends Exception
 {
-    String ROLE = RepositoryIndexSearcher.class.getName();
+    public RepositoryIndexSearchException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-    /**
-     * Search the artifact that contains the query string in the specified
-     * search field.
-     *
-     * @param index
-     * @param queryString
-     * @param searchField
-     */
-    List search( RepositoryIndex index, String queryString, String searchField )
-        throws RepositoryIndexSearchException;
+    public RepositoryIndexSearchException( Throwable cause )
+    {
+        super( cause );
+    }
+
+    public RepositoryIndexSearchException( String message )
+    {
+        super( message );
+    }
 }

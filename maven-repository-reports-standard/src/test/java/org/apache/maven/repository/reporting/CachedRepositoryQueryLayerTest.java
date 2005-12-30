@@ -22,6 +22,9 @@ package org.apache.maven.repository.reporting;
 public class CachedRepositoryQueryLayerTest
     extends AbstractRepositoryQueryLayerTest
 {
+    // TODO: share
+    private static final double CACHE_HIT_RATIO = 0.5;
+
     protected void setUp()
         throws Exception
     {
@@ -35,7 +38,7 @@ public class CachedRepositoryQueryLayerTest
         testContainsArtifactTrue();
         assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testContainsArtifactTrue();
-        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
     }
 
     public void testUseMetadataCache()
@@ -44,7 +47,7 @@ public class CachedRepositoryQueryLayerTest
         testArtifactVersionsTrue();
         assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testArtifactVersionsTrue();
-        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
     }
 
     public void testUseFileCacheOnSnapshot()
@@ -52,6 +55,6 @@ public class CachedRepositoryQueryLayerTest
         testContainsSnapshotArtifactTrue();
         assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
         testContainsSnapshotArtifactTrue();
-        assertEquals( 0.50, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
     }
 }

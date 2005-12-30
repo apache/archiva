@@ -38,13 +38,15 @@ import java.security.NoSuchAlgorithmException;
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor, MetadataReportProcessor
 {
-    String ROLE = ChecksumArtifactReporter.class.getName();
-
     protected InputStream md5InputStream;
 
     protected InputStream sha1InputStream;
 
     private boolean isLocal = true;
+
+    private static final int BYTE_MASK = 0xFF;
+
+    private static final int CHECKSUM_BUFFER_SIZE = 256;
 
     /**
      * Validate the checksum of the specified artifact.
@@ -53,16 +55,12 @@ public class ChecksumArtifactReporter
      * @param artifact
      * @param reporter
      * @param repository
+     * @todo fix repo paths
      */
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
     {
-        //System.out.println( " " );
-        //System.out
-        //   .println( "===================================== +++++  PROCESS ARTIFACT +++++ ====================================" );
-
-        String artifactUrl = "";
-        String repositoryUrl = "";
+        String repositoryUrl;
 
         if ( !"file".equals( repository.getProtocol() ) )
         {
@@ -74,7 +72,7 @@ public class ChecksumArtifactReporter
             repositoryUrl = repository.getBasedir();
         }
 
-        artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/" +
+        String artifactUrl = repositoryUrl + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/" +
             artifact.getBaseVersion() + "/" + artifact.getArtifactId() + "-" + artifact.getBaseVersion() + "." +
             artifact.getType();
 
@@ -118,14 +116,13 @@ public class ChecksumArtifactReporter
     /**
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
+     *
+     * @todo fix repo paths
      */
     public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
     {
-        // System.out.println( " " );
-        // System.out
-        //   .println( "====================================== +++++  PROCESS METADATA +++++ ==============================" );
-
-        String metadataUrl = "", repositoryUrl = "", filename = "";
+        String repositoryUrl;
+        String filename;
         if ( !"file".equals( repository.getProtocol() ) )
         {
             isLocal = false;
@@ -137,14 +134,15 @@ public class ChecksumArtifactReporter
             repositoryUrl = repository.getBasedir() + "/";
             filename = metadata.getLocalFilename( repository );
         }
+        String metadataUrl;
 
-        if ( metadata.storedInArtifactVersionDirectory() == true && metadata.storedInGroupDirectory() == false )
+        if ( metadata.storedInArtifactVersionDirectory() && !metadata.storedInGroupDirectory() )
         {
             //version metadata
             metadataUrl = repositoryUrl + metadata.getGroupId() + "/" + metadata.getArtifactId() + "/" +
                 metadata.getBaseVersion() + "/";
         }
-        else if ( metadata.storedInArtifactVersionDirectory() == false && metadata.storedInGroupDirectory() == true )
+        else if ( !metadata.storedInArtifactVersionDirectory() && metadata.storedInGroupDirectory() )
         {
             //group metadata
             metadataUrl = repositoryUrl + metadata.getGroupId() + "/";
@@ -200,7 +198,7 @@ public class ChecksumArtifactReporter
      * Get the MD5 Checksum file. If not found, return false.
      *
      * @param filename The name of the artifact whose MD5 Checksum file will be retrieved.
-     * @return
+     * @todo fix this erroneous object state
      */
     public boolean getMD5File( String filename )
     {
@@ -229,7 +227,7 @@ public class ChecksumArtifactReporter
      * Get the SHA1 Checksum file. If not found, return false.
      *
      * @param filename The name of the artifact whose SHA-1 Checksum file will be retrieved.
-     * @return
+     * @todo fix this erroneous object state
      */
     public boolean getSHA1File( String filename )
     {
@@ -258,12 +256,10 @@ public class ChecksumArtifactReporter
      *
      * @param fileUrl The file to be validated.
      * @param algo    The checksum algorithm used.
-     * @return
      */
     protected boolean validateChecksum( String fileUrl, String algo )
     {
         boolean valid = false;
-        byte[] chk1 = null, chk2 = null;
 
         try
         {
@@ -273,12 +269,11 @@ public class ChecksumArtifactReporter
             {
                 ext = ".sha1";
             }
-            chk1 = createChecksum( fileUrl, algo );
+            byte[] chk1 = createChecksum( fileUrl, algo );
             if ( chk1 != null )
             {
 
                 //read the md5 file
-                chk2 = new byte[chk1.length];
                 File f = new File( fileUrl + ext );
                 InputStream is = null;
 
@@ -299,28 +294,15 @@ public class ChecksumArtifactReporter
                 isr.close();
 
                 String chk2Str = new String( chars );
-                //System.out.println( "-----" + algo + " Checksum value (CHK1 - created checksum for jar file) ::::: "
-                //   + byteArrayToHexStr( chk1 ) );
-                // System.out.println( "-----" + algo + " Checksum value (CHK2 - content of CHECKSUM file) ::::: "
-                //     + chk2Str );
 
-                if ( chk2Str.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() ) )
-                {
-                    valid = true;
-                }
-                else
-                {
-                    valid = false;
-                }
+                valid = chk2Str.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() );
             }
-            return valid;
-
         }
         catch ( Exception e )
         {
-            //e.printStackTrace();
-            return valid;
+            // TODO: fix this error handling
         }
+        return valid;
     }
 
     /**
@@ -332,13 +314,12 @@ public class ChecksumArtifactReporter
      * @throws FileNotFoundException
      * @throws NoSuchAlgorithmException
      * @throws IOException
+     * @todo move to utility class
      */
     protected byte[] createChecksum( String filename, String algo )
         throws FileNotFoundException, NoSuchAlgorithmException, IOException
     {
-
-        InputStream fis = null;
-        byte[] buffer = new byte[1024];
+        InputStream fis;
 
         //check whether file is located locally or remotely
         if ( isLocal )
@@ -350,6 +331,7 @@ public class ChecksumArtifactReporter
             URL url = new URL( filename );
             fis = url.openStream();
         }
+        byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
 
         MessageDigest complete = MessageDigest.getInstance( algo );
         int numRead;
@@ -372,9 +354,9 @@ public class ChecksumArtifactReporter
      * the bytes as two hex characters.
      *
      * @param data
-     * @return
+     * @todo move to utilities
      */
-    public String byteArrayToHexStr( byte[] data )
+    public static String byteArrayToHexStr( byte[] data )
     {
         String output = "";
         String tempStr = "";
@@ -383,7 +365,7 @@ public class ChecksumArtifactReporter
         for ( int cnt = 0; cnt < data.length; cnt++ )
         {
             //Deposit a byte into the 8 lsb of an int.
-            tempInt = data[cnt] & 0xFF;
+            tempInt = data[cnt] & BYTE_MASK;
 
             //Get hex representation of the int as a string.
             tempStr = Integer.toHexString( tempInt );

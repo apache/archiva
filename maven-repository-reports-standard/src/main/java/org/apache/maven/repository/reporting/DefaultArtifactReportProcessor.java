@@ -31,7 +31,7 @@ import java.util.List;
 public class DefaultArtifactReportProcessor
     implements ArtifactReportProcessor
 {
-    private final static String EMPTY_STRING = "";
+    private static final String EMPTY_STRING = "";
 
     // plexus components
     private ArtifactFactory artifactFactory;

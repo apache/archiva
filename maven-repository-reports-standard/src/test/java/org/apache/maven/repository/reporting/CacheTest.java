@@ -26,9 +26,13 @@ public class CacheTest
 {
     private Cache cache;
 
+    private static final double CACHE_HIT_RATIO = 0.5;
+
+    private static final double CACHE_HIT_RATIO_THRESHOLD = 0.75;
+
     public void testCacheManagementBasedOnHitsRatio()
     {
-        cache = new Cache( 0.5 );
+        cache = new Cache( CACHE_HIT_RATIO );
         newCacheObjectTests();
 
         String key = "key";
@@ -38,7 +42,7 @@ public class CacheTest
             cache.put( key + ctr, value + ctr );
         }
 
-        while ( cache.getHitRate() < 0.75 )
+        while ( cache.getHitRate() < CACHE_HIT_RATIO_THRESHOLD )
         {
             cache.get( "key2" );
         }
@@ -65,7 +69,7 @@ public class CacheTest
 
     public void testCacheManagementBasedOnCacheSizeAndHitRate()
     {
-        cache = new Cache( 0.5, 9 );
+        cache = new Cache( CACHE_HIT_RATIO, 9 );
         newCacheObjectTests();
 
         String key = "key";
@@ -75,7 +79,7 @@ public class CacheTest
             cache.put( key + ctr, value + ctr );
         }
 
-        while ( cache.getHitRate() < 0.5 )
+        while ( cache.getHitRate() < CACHE_HIT_RATIO )
         {
             cache.get( "key3" );
         }
@@ -83,7 +87,7 @@ public class CacheTest
         cache.put( "key10", "value10" );
         assertNull( "first key must be expired", cache.get( "key1" ) );
 
-        while ( cache.getHitRate() >= 0.5 )
+        while ( cache.getHitRate() >= CACHE_HIT_RATIO )
         {
             cache.get( "key11" );
         }
@@ -100,7 +104,7 @@ public class CacheTest
 
     public void testCacheOnRedundantData()
     {
-        cache = new Cache( 0.5, 9 );
+        cache = new Cache( CACHE_HIT_RATIO, 9 );
         newCacheObjectTests();
 
         String key = "key";
@@ -129,7 +133,7 @@ public class CacheTest
         assertEquals( (double) 1, cache.getHitRate(), 0 );
         assertEquals( "check cache size", 1, cache.size() );
         assertNull( "check cache miss", cache.get( "none" ) );
-        assertEquals( (double) 0.5, cache.getHitRate(), 0 );
+        assertEquals( CACHE_HIT_RATIO, cache.getHitRate(), 0 );
         cache.flush();
         assertNull( "check flushed object", cache.get( "key" ) );
         assertEquals( (double) 0, cache.getHitRate(), 0 );

@@ -145,13 +145,14 @@ public class DefaultMetadataDiscoverer
                 int ctr = 0;
                 for ( it = pathParts.iterator(); it.hasNext(); )
                 {
+                    String path = (String) it.next();
                     if ( ctr == 0 )
                     {
-                        groupDir = (String) it.next();
+                        groupDir = path;
                     }
                     else
                     {
-                        groupDir = (String) it.next() + "." + groupDir;
+                        groupDir = path + "." + groupDir;
                     }
                     ctr++;
                 }

@@ -71,6 +71,8 @@ public class ArtifactRepositoryIndex
 
     private StringBuffer files;
 
+    private static final int CHEKCSUM_BUFFER_SIZE = 256;
+
     /**
      * method to get the Analyzer used to create indices
      *
@@ -172,7 +174,7 @@ public class ArtifactRepositoryIndex
     private byte[] getChecksum( InputStream inStream, String algorithm )
         throws IOException, NoSuchAlgorithmException
     {
-        byte[] buffer = new byte[ 256 ];
+        byte[] buffer = new byte[ CHEKCSUM_BUFFER_SIZE ];
         MessageDigest complete = MessageDigest.getInstance( algorithm );
         int numRead;
         do
@@ -263,14 +265,14 @@ public class ArtifactRepositoryIndex
 
     private boolean addFile( ZipEntry entry )
     {
-        boolean isAdded = false;
-
         String name = entry.getName();
         int idx = name.lastIndexOf( '/' );
         if ( idx >= 0 )
         {
             name = name.substring( idx + 1 );
         }
+
+        boolean isAdded = false;
 
         if ( files.indexOf( name + "\n" ) < 0 )
         {

@@ -23,11 +23,11 @@ import org.apache.maven.artifact.Artifact;
  */
 public class ReportCondition
 {
-    public final static int SUCCESS = 0;
+    public static final int SUCCESS = 0;
 
-    public final static int FAILURE = -1;
+    public static final int FAILURE = -1;
 
-    public final static int WARNING = 1;
+    public static final int WARNING = 1;
 
     private int result;
 
