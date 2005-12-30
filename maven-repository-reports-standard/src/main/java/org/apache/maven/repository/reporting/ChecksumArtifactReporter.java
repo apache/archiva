@@ -208,17 +208,12 @@ public class ChecksumArtifactReporter
     private boolean validateChecksum( File file, File checksumFile, String algo )
         throws NoSuchAlgorithmException, IOException
     {
-        boolean valid = false;
-
         //Create checksum for jar file
         byte[] chk1 = createChecksum( file, algo );
-        if ( chk1 != null )
-        {
-            //read the checksum file
-            String checksum = FileUtils.fileRead( checksumFile );
-            valid = checksum.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() );
-        }
-        return valid;
+        //read the checksum file
+        String checksum = FileUtils.fileRead( checksumFile );
+
+        return checksum.toUpperCase().equals( byteArrayToHexStr( chk1 ).toUpperCase() );
     }
 
     /**
