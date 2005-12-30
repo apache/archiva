@@ -120,16 +120,6 @@ public class LocationArtifactReportProcessor
     }
 
     /**
-     * Validate the if the artifact exists in the specified location.
-     *
-     * @param filename
-     */
-    private boolean validateArtifactLocation( String filename )
-    {
-        return new File( filename ).exists();
-    }
-
-    /**
      * Extract the contents of the artifact/jar file.
      *
      * @param file
