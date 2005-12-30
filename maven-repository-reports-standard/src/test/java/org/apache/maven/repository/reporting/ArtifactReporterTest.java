@@ -29,17 +29,17 @@ import java.util.Iterator;
 public class ArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
-    protected ArtifactReporter reporter;
+    private ArtifactReporter reporter;
 
-    protected ArtifactFactory artifactFactory;
+    private ArtifactFactory artifactFactory;
 
-    protected Artifact artifact;
+    private Artifact artifact;
 
-    protected MockArtifactReportProcessor processor;
+    private MockArtifactReportProcessor processor;
 
-    protected Versioning versioning;
+    private Versioning versioning;
 
-    protected Model model;
+    private Model model;
 
     protected void setUp()
         throws Exception

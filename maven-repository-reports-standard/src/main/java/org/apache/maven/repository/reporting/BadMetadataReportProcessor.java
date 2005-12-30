@@ -43,10 +43,14 @@ import java.util.Map;
 public class BadMetadataReportProcessor
     implements MetadataReportProcessor
 {
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory artifactFactory;
 
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
     /**
@@ -120,8 +124,8 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ArtifactReporter to receive processing results
      */
-    protected boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                           ArtifactReporter reporter )
+    private boolean checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
+                                         ArtifactReporter reporter )
         throws IOException
     {
         boolean hasFailures = false;
@@ -197,8 +201,8 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ArtifactReporter to receive processing results
      */
-    protected boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                             ArtifactReporter reporter )
+    private boolean checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
+                                           ArtifactReporter reporter )
     {
         RepositoryQueryLayer repositoryQueryLayer =
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
@@ -226,8 +230,8 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ArtifactReporter to receive processing results
      */
-    protected boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                             ArtifactReporter reporter )
+    private boolean checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
+                                           ArtifactReporter reporter )
     {
         RepositoryQueryLayer repositoryQueryLayer =
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
@@ -258,8 +262,8 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ArtifactReporter to receive processing results
      */
-    protected boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                               ArtifactReporter reporter )
+    private boolean checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
+                                             ArtifactReporter reporter )
         throws IOException
     {
         boolean hasFailures = false;

@@ -50,13 +50,13 @@ public class ArtifactRepositoryIndexingTest
 
     private static final String FILES = "files";
 
-    protected ArtifactRepositoryIndex indexer;
+    private ArtifactRepositoryIndex indexer;
 
-    protected ArtifactFactory artifactFactory;
+    private ArtifactFactory artifactFactory;
 
-    protected ArtifactRepository repository;
+    private ArtifactRepository repository;
 
-    protected String indexPath;
+    private String indexPath;
 
     protected void setUp()
         throws Exception
@@ -213,7 +213,7 @@ public class ArtifactRepositoryIndexingTest
         assertEquals( 2, artifacts.size() );
     }
 
-    protected Artifact getArtifact( String groupId, String artifactId, String version )
+    private Artifact getArtifact( String groupId, String artifactId, String version )
         throws Exception
     {
         if ( artifactFactory == null )

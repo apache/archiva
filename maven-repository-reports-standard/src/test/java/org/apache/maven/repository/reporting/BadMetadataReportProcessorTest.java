@@ -34,7 +34,7 @@ import java.util.Iterator;
 public class BadMetadataReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
-    protected ArtifactFactory artifactFactory;
+    private ArtifactFactory artifactFactory;
 
     private MetadataReportProcessor badMetadataReportProcessor;
 

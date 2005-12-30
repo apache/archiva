@@ -33,7 +33,7 @@ import java.util.List;
 public abstract class AbstractRepositoryQueryLayerTest
     extends PlexusTestCase
 {
-    protected ArtifactFactory artifactFactory;
+    private ArtifactFactory artifactFactory;
 
     protected ArtifactRepository repository;
 
@@ -126,7 +126,7 @@ public abstract class AbstractRepositoryQueryLayerTest
         }
     }
 
-    protected Artifact getArtifact( String groupId, String artifactId, String version )
+    private Artifact getArtifact( String groupId, String artifactId, String version )
     {
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" );
     }

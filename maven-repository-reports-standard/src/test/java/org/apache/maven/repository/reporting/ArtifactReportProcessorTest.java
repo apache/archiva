@@ -32,13 +32,13 @@ public class ArtifactReportProcessorTest
 
     private static final String VALID = "temp";
 
-    protected MockArtifactReporter reporter;
+    private MockArtifactReporter reporter;
 
-    protected Artifact artifact;
+    private Artifact artifact;
 
-    protected Model model;
+    private Model model;
 
-    protected DefaultArtifactReportProcessor processor;
+    private DefaultArtifactReportProcessor processor;
 
     protected void setUp()
         throws Exception
@@ -443,14 +443,14 @@ public class ArtifactReportProcessorTest
         super.tearDown();
     }
 
-    protected void setRequiredElements( Artifact artifact, String groupId, String artifactId, String version )
+    private void setRequiredElements( Artifact artifact, String groupId, String artifactId, String version )
     {
         artifact.setGroupId( groupId );
         artifact.setArtifactId( artifactId );
         artifact.setVersion( version );
     }
 
-    protected void setRequiredElements( Dependency dependency, String groupId, String artifactId, String version )
+    private void setRequiredElements( Dependency dependency, String groupId, String artifactId, String version )
     {
         dependency.setGroupId( groupId );
         dependency.setArtifactId( artifactId );

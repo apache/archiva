@@ -42,11 +42,11 @@ import java.util.jar.JarOutputStream;
 public abstract class AbstractChecksumArtifactReporterTestCase
     extends AbstractRepositoryReportsTestCase
 {
-    protected static final String[] validArtifactChecksumJars = {"validArtifact-1.0"};
+    private static final String[] validArtifactChecksumJars = {"validArtifact-1.0"};
 
-    protected static final String[] invalidArtifactChecksumJars = {"invalidArtifact-1.0"};
+    private static final String[] invalidArtifactChecksumJars = {"invalidArtifact-1.0"};
 
-    protected static final String metadataChecksumFilename = "maven-metadata-repository";
+    private static final String metadataChecksumFilename = "maven-metadata-repository";
 
     private static final int CHECKSUM_BUFFER_SIZE = 256;
 

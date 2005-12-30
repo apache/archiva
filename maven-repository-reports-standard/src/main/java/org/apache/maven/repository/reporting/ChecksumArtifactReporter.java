@@ -41,9 +41,9 @@ import java.security.NoSuchAlgorithmException;
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor
 {
-    protected InputStream md5InputStream;
+    private InputStream md5InputStream;
 
-    protected InputStream sha1InputStream;
+    private InputStream sha1InputStream;
 
     private boolean isLocal = true;
 
@@ -260,7 +260,7 @@ public class ChecksumArtifactReporter
      * @param fileUrl The file to be validated.
      * @param algo    The checksum algorithm used.
      */
-    protected boolean validateChecksum( String fileUrl, String algo )
+    private boolean validateChecksum( String fileUrl, String algo )
     {
         boolean valid = false;
 

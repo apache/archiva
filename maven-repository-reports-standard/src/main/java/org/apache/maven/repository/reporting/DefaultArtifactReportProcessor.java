@@ -61,7 +61,7 @@ public class DefaultArtifactReportProcessor
         }
     }
 
-    protected void processArtifact( Artifact artifact, ArtifactReporter reporter )
+    private void processArtifact( Artifact artifact, ArtifactReporter reporter )
     {
         boolean hasFailed = false;
         if ( EMPTY_STRING.equals( artifact.getGroupId() ) || artifact.getGroupId() == null )
@@ -92,7 +92,7 @@ public class DefaultArtifactReportProcessor
         }
     }
 
-    protected void processDependencies( List dependencies, ArtifactReporter reporter )
+    private void processDependencies( List dependencies, ArtifactReporter reporter )
     {
         if ( dependencies.size() > 0 )
         {

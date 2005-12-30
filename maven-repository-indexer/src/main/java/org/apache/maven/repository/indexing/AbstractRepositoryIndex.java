@@ -33,11 +33,11 @@ public abstract class AbstractRepositoryIndex
     extends AbstractLogEnabled
     implements RepositoryIndex
 {
-    protected String indexPath;
+    private String indexPath;
 
-    protected boolean indexOpen;
+    private boolean indexOpen;
 
-    protected IndexReader indexReader;
+    private IndexReader indexReader;
 
     protected IndexWriter indexWriter;
 
@@ -131,7 +131,7 @@ public abstract class AbstractRepositoryIndex
         }
     }
 
-    protected void getIndexReader()
+    private void getIndexReader()
         throws IOException
     {
         if ( indexReader == null )
@@ -145,7 +145,7 @@ public abstract class AbstractRepositoryIndex
      *
      * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
      */
-    protected void validateIndex()
+    private void validateIndex()
         throws RepositoryIndexException, IOException
     {
         File indexDir = new File( indexPath );
