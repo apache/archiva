@@ -94,9 +94,9 @@ public abstract class AbstractRepositoryIndex
 
             indexOpen = false;
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            throw new RepositoryIndexException( e );
+            throw new RepositoryIndexException( e.getMessage(), e );
         }
     }
 

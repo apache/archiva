@@ -42,7 +42,7 @@ public class ChecksumArtifactReporter
 {
     private static final int BYTE_MASK = 0xFF;
 
-    private static final int CHECKSUM_BUFFER_SIZE = 256;
+    private static final int CHECKSUM_BUFFER_SIZE = 16384;
 
     /**
      * Validate the checksum of the specified artifact.
@@ -232,7 +232,7 @@ public class ChecksumArtifactReporter
      * @throws IOException
      * @todo move to utility class
      */
-    private byte[] createChecksum( File file, String algo )
+    private static byte[] createChecksum( File file, String algo )
         throws FileNotFoundException, NoSuchAlgorithmException, IOException
     {
         MessageDigest digest = MessageDigest.getInstance( algo );

@@ -20,9 +20,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.artifact.Artifact;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 
@@ -65,7 +66,9 @@ public class ArtifactRepositoryIndex
 
     private Analyzer analyzer;
 
-    private static final int CHEKCSUM_BUFFER_SIZE = 256;
+    private static final int CHECKSUM_BUFFER_SIZE = 16384;
+
+    private static final int BYTE_MASK = 0xFF;
 
     /**
      * method to get the Analyzer used to create indices
@@ -124,75 +127,137 @@ public class ArtifactRepositoryIndex
             throw new RepositoryIndexException( "Unable to add artifact index on a closed index" );
         }
 
+        StringBuffer classes = new StringBuffer();
+        StringBuffer packages = new StringBuffer();
+        StringBuffer files = new StringBuffer();
+
+        String sha1sum;
+        String md5sum;
+        ZipFile jar;
         try
         {
-            IndexWriter indexWriter = getIndexWriter();
+            sha1sum = byteArrayToHexStr( createChecksum( artifact.getFile(), "SHA-1" ) );
+            md5sum = byteArrayToHexStr( createChecksum( artifact.getFile(), "MD5" ) );
+            jar = new ZipFile( artifact.getFile() );
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            throw new RepositoryIndexException( "Unable to create a checksum", e );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new RepositoryIndexException( "Error reading from artifact file", e );
+        }
+        catch ( ZipException e )
+        {
+            throw new RepositoryIndexException( "Error reading from artifact file", e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Error reading from artifact file", e );
+        }
 
-            StringBuffer classes = new StringBuffer();
-            StringBuffer packages = new StringBuffer();
-            StringBuffer files = new StringBuffer();
-            ZipFile jar = new ZipFile( artifact.getFile() );
-            for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
+        for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
+        {
+            ZipEntry entry = (ZipEntry) entries.nextElement();
+            if ( addIfClassEntry( entry, classes ) )
             {
-                ZipEntry entry = (ZipEntry) entries.nextElement();
-                if ( addIfClassEntry( entry, classes ) )
+                addClassPackage( entry.getName(), packages );
+            }
+            addFile( entry, files );
+        }
+
+        //@todo should some of these fields be Keyword instead of Text ?
+        Document doc = new Document();
+        doc.add( Field.Text( NAME, artifact.getFile().getName() ) );
+        doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
+        doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
+        doc.add( Field.Text( VERSION, artifact.getVersion() ) );
+        doc.add( Field.Text( SHA1, sha1sum ) );
+        doc.add( Field.Text( MD5, md5sum ) );
+        doc.add( Field.Text( CLASSES, classes.toString() ) );
+        doc.add( Field.Text( PACKAGES, packages.toString() ) );
+        doc.add( Field.Text( FILES, files.toString() ) );
+
+        try
+        {
+            getIndexWriter().addDocument( doc );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Error opening index", e );
+        }
+    }
+
+    /**
+     * Convert an incoming array of bytes into a string that represents each of
+     * the bytes as two hex characters.
+     *
+     * @param data
+     * @todo move to utilities
+     */
+    private static String byteArrayToHexStr( byte[] data )
+    {
+        String output = "";
+
+        for ( int cnt = 0; cnt < data.length; cnt++ )
+        {
+            //Deposit a byte into the 8 lsb of an int.
+            int tempInt = data[cnt] & BYTE_MASK;
+
+            //Get hex representation of the int as a string.
+            String tempStr = Integer.toHexString( tempInt );
+
+            //Append a leading 0 if necessary so that each hex string will contain 2 characters.
+            if ( tempStr.length() == 1 )
+            {
+                tempStr = "0" + tempStr;
+            }
+
+            //Concatenate the two characters to the output string.
+            output = output + tempStr;
+        }
+
+        return output.toUpperCase();
+    }
+
+    /**
+     * Create a checksum from the specified metadata file.
+     *
+     * @param file The file that will be created a checksum.
+     * @param algo The algorithm to be used (MD5, SHA-1)
+     * @return
+     * @throws FileNotFoundException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @todo move to utility class
+     */
+    private static byte[] createChecksum( File file, String algo )
+        throws FileNotFoundException, NoSuchAlgorithmException, IOException
+    {
+        MessageDigest digest = MessageDigest.getInstance( algo );
+
+        InputStream fis = new FileInputStream( file );
+        try
+        {
+            byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
+            int numRead;
+            do
+            {
+                numRead = fis.read( buffer );
+                if ( numRead > 0 )
                 {
-                    addClassPackage( entry.getName(), packages );
+                    digest.update( buffer, 0, numRead );
                 }
-                addFile( entry, files );
             }
-
-            //@todo should some of these fields be Keyword instead of Text ?
-            Document doc = new Document();
-            doc.add( Field.Text( NAME, artifact.getFile().getName() ) );
-            doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
-            doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
-            doc.add( Field.Text( VERSION, artifact.getVersion() ) );
-            doc.add( Field.Text( SHA1, getSha1( artifact ) ) );
-            doc.add( Field.Text( MD5, getMd5( artifact ) ) );
-            doc.add( Field.Text( CLASSES, classes.toString() ) );
-            doc.add( Field.Text( PACKAGES, packages.toString() ) );
-            doc.add( Field.Text( FILES, files.toString() ) );
-            indexWriter.addDocument( doc );
+            while ( numRead != -1 );
         }
-        catch ( Exception e )
+        finally
         {
-            throw new RepositoryIndexException( e );
+            fis.close();
         }
-    }
 
-    private String getSha1( Artifact artifact )
-        throws FileNotFoundException, IOException, NoSuchAlgorithmException
-    {
-        FileInputStream fIn = new FileInputStream( artifact.getFile() );
-        return new String( getChecksum( fIn, "SHA-1" ) );
-    }
-
-    private String getMd5( Artifact artifact )
-        throws FileNotFoundException, IOException, NoSuchAlgorithmException
-    {
-        FileInputStream fIn = new FileInputStream( artifact.getFile() );
-        return new String( getChecksum( fIn, "MD5" ) );
-    }
-
-    private byte[] getChecksum( InputStream inStream, String algorithm )
-        throws IOException, NoSuchAlgorithmException
-    {
-        byte[] buffer = new byte[ CHEKCSUM_BUFFER_SIZE ];
-        MessageDigest complete = MessageDigest.getInstance( algorithm );
-        int numRead;
-        do
-        {
-            numRead = inStream.read( buffer );
-            if ( numRead > 0 )
-            {
-                complete.update( buffer, 0, numRead );
-            }
-        }
-        while ( numRead != -1 );
-        inStream.close();
-
-        return complete.digest();
+        return digest.digest();
     }
 
     private boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )

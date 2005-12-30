@@ -22,9 +22,12 @@ import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -80,7 +83,15 @@ public abstract class AbstractRepositoryQueryLayer
             {
                 metadata = reader.read( new FileReader( metadataFile ) );
             }
-            catch ( Exception e )
+            catch ( FileNotFoundException e )
+            {
+                throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
+            }
+            catch ( XmlPullParserException e )
             {
                 throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
             }

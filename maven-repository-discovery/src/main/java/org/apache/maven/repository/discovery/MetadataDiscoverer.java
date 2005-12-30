@@ -32,7 +32,6 @@ public interface MetadataDiscoverer
      *
      * @param repositoryBase      The repository directory.
      * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
-     * @return
      */
     List discoverMetadata( File repositoryBase, String blacklistedPatterns );
 
