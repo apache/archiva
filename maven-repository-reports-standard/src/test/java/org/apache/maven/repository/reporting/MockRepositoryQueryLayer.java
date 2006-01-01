@@ -69,7 +69,6 @@ public class MockRepositoryQueryLayer
 
     public boolean containsArtifact( Artifact artifact, Snapshot snapshot )
     {
-        // TODO
         return containsArtifact( artifact );
     }
 

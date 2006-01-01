@@ -16,21 +16,20 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Class to implement caching
+ * Class to implement caching.
  */
 public class Cache
 {
-    private Map cache;
+    private final Map cache;
 
-    private DblLinkedList mostRecent;
+    private final double cacheHitRatio;
 
-    private double cacheHitRatio;
-
-    private long cacheMaxSize;
+    private final int cacheMaxSize;
 
     private long cacheHits;
 
@@ -47,7 +46,7 @@ public class Cache
     /**
      * Caches all data and expires only the oldest data when the maximum cache size is reached
      */
-    public Cache( long cacheMaxSize )
+    public Cache( int cacheMaxSize )
     {
         this( (double) 1, cacheMaxSize );
     }
@@ -56,12 +55,19 @@ public class Cache
      * Caches all data and expires only the oldest data when either the specified cache hit rate is reached
      * or the maximum cache size is reached.
      */
-    public Cache( double cacheHitRatio, long cacheMaxSize )
+    public Cache( double cacheHitRatio, int cacheMaxSize )
     {
         this.cacheHitRatio = cacheHitRatio;
         this.cacheMaxSize = cacheMaxSize;
 
-        cache = new HashMap();
+        if ( cacheMaxSize > 0 )
+        {
+            cache = new LinkedHashMap( cacheMaxSize );
+        }
+        else
+        {
+            cache = new LinkedHashMap();
+        }
     }
 
     /**
@@ -72,15 +78,19 @@ public class Cache
      */
     public boolean containsKey( Object key )
     {
-        boolean contains = cache.containsKey( key );
+        boolean contains;
+        synchronized ( cache )
+        {
+            contains = cache.containsKey( key );
 
-        if ( contains )
-        {
-            cacheHits++;
-        }
-        else
-        {
-            cacheMiss++;
+            if ( contains )
+            {
+                cacheHits++;
+            }
+            else
+            {
+                cacheMiss++;
+            }
         }
 
         return contains;
@@ -96,19 +106,21 @@ public class Cache
     {
         Object retValue = null;
 
-        if ( cache.containsKey( key ) )
+        synchronized ( cache )
         {
-            DblLinkedList cacheEntry = (DblLinkedList) cache.get( key );
+            if ( cache.containsKey( key ) )
+            {
+                // remove and put: this promotes it to the top since we use a linked hash map
+                retValue = cache.remove( key );
 
-            makeMostRecent( cacheEntry );
+                cache.put( key, retValue );
 
-            retValue = cacheEntry.getCacheValue();
-
-            cacheHits++;
-        }
-        else
-        {
-            cacheMiss++;
+                cacheHits++;
+            }
+            else
+            {
+                cacheMiss++;
+            }
         }
 
         return retValue;
@@ -120,21 +132,24 @@ public class Cache
      * @param key   the object to map the valued object
      * @param value the object to cache
      */
-    public void put( Object key, Object value )
+    public Object put( Object key, Object value )
     {
-        DblLinkedList entry;
-        if ( !cache.containsKey( key ) )
+        Object old = null;
+
+        // remove and put: this promotes it to the top since we use a linked hash map
+        synchronized ( cache )
         {
-            entry = new DblLinkedList( key, value );
-            cache.put( key, entry );
-            manageCache();
-        }
-        else
-        {
-            entry = (DblLinkedList) cache.get( key );
+            if ( cache.containsKey( key ) )
+            {
+                old = cache.remove( key );
+            }
+
+            cache.put( key, value );
         }
 
-        makeMostRecent( entry );
+        manageCache();
+
+        return old;
     }
 
     /**
@@ -144,13 +159,16 @@ public class Cache
      */
     public double getHitRate()
     {
-        return cacheHits == 0 && cacheMiss == 0 ? 0 : (double) cacheHits / (double) ( cacheHits + cacheMiss );
+        synchronized ( cache )
+        {
+            return cacheHits == 0 && cacheMiss == 0 ? 0 : (double) cacheHits / (double) ( cacheHits + cacheMiss );
+        }
     }
 
     /**
      * Get the total number of cache objects currently cached.
      */
-    public long size()
+    public int size()
     {
         return cache.size();
     }
@@ -158,156 +176,50 @@ public class Cache
     /**
      * Empty the cache and reset the cache hit rate
      */
-    public void flush()
+    public void clear()
     {
-        while ( cache.size() > 0 )
+        synchronized ( cache )
         {
-            trimCache();
+            cacheHits = 0;
+            cacheMiss = 0;
+            cache.clear();
         }
-        cacheHits = 0;
-        cacheMiss = 0;
-        cache = new HashMap();
-    }
-
-    private void makeMostRecent( DblLinkedList list )
-    {
-        if ( mostRecent != null )
-        {
-            if ( !mostRecent.equals( list ) )
-            {
-                removeFromLinks( list );
-
-                list.setNext( mostRecent );
-                mostRecent.setPrev( list );
-
-                mostRecent = list;
-            }
-        }
-        else if ( list != null )
-        {
-            removeFromLinks( list );
-
-            mostRecent = list;
-        }
-    }
-
-    private void removeFromLinks( DblLinkedList list )
-    {
-        if ( list.getPrev() != null )
-        {
-            list.getPrev().setNext( list.getNext() );
-        }
-        if ( list.getNext() != null )
-        {
-            list.getNext().setPrev( list.getPrev() );
-        }
-
-        list.setPrev( null );
-        list.setNext( null );
     }
 
     private void manageCache()
     {
-        if ( cacheMaxSize == 0 )
+        synchronized ( cache )
         {
-            //desired HitRatio is reached, we can trim the cache to conserve memory
-            if ( cacheHitRatio <= getHitRate() )
+            Iterator iterator = cache.entrySet().iterator();
+            if ( cacheMaxSize == 0 )
             {
-                trimCache();
+                //desired HitRatio is reached, we can trim the cache to conserve memory
+                if ( cacheHitRatio <= getHitRate() )
+                {
+                    iterator.next();
+                    iterator.remove();
+                }
+            }
+            else if ( cache.size() > cacheMaxSize )
+            {
+                // maximum cache size is reached
+                while ( cache.size() > cacheMaxSize )
+                {
+                    iterator.next();
+                    iterator.remove();
+                }
+            }
+            else
+            {
+                //even though the max has not been reached, the desired HitRatio is already reached,
+                //    so we can trim the cache to conserve memory
+                if ( cacheHitRatio <= getHitRate() )
+                {
+                    iterator.next();
+                    iterator.remove();
+                }
             }
         }
-        else if ( cache.size() > cacheMaxSize )
-        {
-            // maximum cache size is reached
-            while ( cache.size() > cacheMaxSize )
-            {
-                trimCache();
-            }
-        }
-        else
-        {
-            //even though the max has not been reached, the desired HitRatio is already reached,
-            //    so we can trim the cache to conserve memory
-            if ( cacheHitRatio <= getHitRate() )
-            {
-                trimCache();
-            }
-        }
     }
 
-    private void trimCache()
-    {
-        DblLinkedList leastRecent = getLeastRecent();
-        cache.remove( leastRecent.getCacheKey() );
-        if ( cache.size() > 0 )
-        {
-            removeFromLinks( leastRecent );
-        }
-        else
-        {
-            mostRecent = null;
-        }
-    }
-
-    private DblLinkedList getLeastRecent()
-    {
-        DblLinkedList trail = mostRecent;
-
-        while ( trail.getNext() != null )
-        {
-            trail = trail.getNext();
-        }
-
-        return trail;
-    }
-
-    /**
-     * @todo replace with standard collection (commons-collections?)
-     */
-    private static class DblLinkedList
-    {
-        private Object cacheKey;
-
-        private Object cacheValue;
-
-        private DblLinkedList prev;
-
-        private DblLinkedList next;
-
-        DblLinkedList( Object key, Object value )
-        {
-            this.cacheKey = key;
-            this.cacheValue = value;
-        }
-
-        public DblLinkedList getNext()
-        {
-            return next;
-        }
-
-        public Object getCacheValue()
-        {
-            return cacheValue;
-        }
-
-        public void setPrev( DblLinkedList prev )
-        {
-            this.prev = prev;
-        }
-
-        public void setNext( DblLinkedList next )
-        {
-            this.next = next;
-        }
-
-        public Object getCacheKey()
-        {
-            return cacheKey;
-        }
-
-        public DblLinkedList getPrev()
-        {
-            return prev;
-        }
-    }
 }

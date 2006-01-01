@@ -16,30 +16,100 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.model.Model;
+import org.apache.maven.repository.digest.Digester;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * This class reports invalid and mismatched checksums of artifacts and metadata files.
  * It validates MD5 and SHA-1 checksums.
  *
- * @todo remove this duplicate class for the parent using one role
- * @plexus.component role="org.apache.maven.repository.reporting.MetadataReportProcessor" role-hint="checksum-metadata" instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.repository.reporting.MetadataReportProcessor" role-hint="checksum-metadata"
  */
 public class ChecksumMetadataReporter
-    extends ChecksumArtifactReporter
     implements MetadataReportProcessor
 {
+    /** @plexus.requirement */
+    private Digester digester;
+
+    /**
+     * Validate the checksums of the metadata. Get the metadata file from the
+     * repository then validate the checksum.
+     */
+    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
+    {
+        if ( !"file".equals( repository.getProtocol() ) )
+        {
+            // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
+            throw new UnsupportedOperationException(
+                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+        }
+
+        //check if checksum files exist
+        String path = repository.pathOfRemoteRepositoryMetadata( metadata );
+        File file = new File( repository.getBasedir(), path );
+
+        File md5File = new File( repository.getBasedir(), path + ".md5" );
+        if ( md5File.exists() )
+        {
+            try
+            {
+                if ( digester.verifyChecksum( file, FileUtils.fileRead( md5File ), Digester.MD5 ) )
+                {
+                    reporter.addSuccess( metadata );
+                }
+                else
+                {
+                    reporter.addFailure( metadata, "MD5 checksum does not match." );
+                }
+            }
+            catch ( NoSuchAlgorithmException e )
+            {
+                reporter.addFailure( metadata, "Unable to read MD5: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( metadata, "Unable to read MD5: " + e.getMessage() );
+            }
+        }
+        else
+        {
+            reporter.addFailure( metadata, "MD5 checksum file does not exist." );
+        }
+
+        File sha1File = new File( repository.getBasedir(), path + ".sha1" );
+        if ( sha1File.exists() )
+        {
+            try
+            {
+                if ( digester.verifyChecksum( file, FileUtils.fileRead( sha1File ), Digester.SHA1 ) )
+                {
+                    reporter.addSuccess( metadata );
+                }
+                else
+                {
+                    reporter.addFailure( metadata, "SHA-1 checksum does not match." );
+                }
+            }
+            catch ( NoSuchAlgorithmException e )
+            {
+                reporter.addFailure( metadata, "Unable to read SHA1: " + e.getMessage() );
+            }
+            catch ( IOException e )
+            {
+                reporter.addFailure( metadata, "Unable to read SHA1: " + e.getMessage() );
+            }
+        }
+        else
+        {
+            reporter.addFailure( metadata, "SHA-1 checksum file does not exist." );
+        }
+
+    }
+
 }

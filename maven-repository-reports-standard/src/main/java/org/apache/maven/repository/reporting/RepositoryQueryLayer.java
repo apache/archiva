@@ -28,12 +28,9 @@ public interface RepositoryQueryLayer
 {
     String ROLE = RepositoryQueryLayer.class.getName();
 
-    boolean ARTIFACT_FOUND = true;
-
-    boolean ARTIFACT_NOT_FOUND = false;
-
     boolean containsArtifact( Artifact artifact );
 
+    /** @todo I believe we can remove this [BP] - artifact should contain all the necessary version info */
     boolean containsArtifact( Artifact artifact, Snapshot snapshot );
 
     List getVersions( Artifact artifact )

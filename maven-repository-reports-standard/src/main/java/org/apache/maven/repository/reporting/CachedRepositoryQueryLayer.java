@@ -49,7 +49,6 @@ public class CachedRepositoryQueryLayer
     {
         boolean artifactFound = true;
 
-        // @todo should check for snapshot artifacts
         String artifactPath = repository.getBasedir() + "/" + repository.pathOf( artifact );
 
         if ( cache.get( artifactPath ) == null )

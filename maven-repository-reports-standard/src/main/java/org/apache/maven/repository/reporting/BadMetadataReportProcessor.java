@@ -268,7 +268,6 @@ public class BadMetadataReportProcessor
     {
         boolean hasFailures = false;
         Versioning versioning = metadata.getMetadata().getVersioning();
-        // TODO: change this to look for repository artifacts. It needs to centre around that I think, currently this is hardwired to the default layout
         File versionsDir =
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
         List versions = FileUtils.getFileNames( versionsDir, "*/*.pom", null, false );

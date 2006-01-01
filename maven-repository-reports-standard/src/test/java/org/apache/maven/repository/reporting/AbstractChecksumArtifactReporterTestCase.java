@@ -16,21 +16,18 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.repository.digest.Digester;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -48,12 +45,14 @@ public abstract class AbstractChecksumArtifactReporterTestCase
 
     private static final String metadataChecksumFilename = "maven-metadata";
 
-    private static final int CHECKSUM_BUFFER_SIZE = 256;
+    private Digester digester;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
+
+        digester = (Digester) lookup( Digester.ROLE );
     }
 
     /**
@@ -122,9 +121,9 @@ public abstract class AbstractChecksumArtifactReporterTestCase
 
         if ( dirFiles.mkdirs() )
         {
-
             // create a jar file
-            FileOutputStream f = new FileOutputStream( repoUrl + relativePath + dirs + "/" + filename + "." + type );
+            String path = repoUrl + relativePath + dirs + "/" + filename + "." + type;
+            FileOutputStream f = new FileOutputStream( path );
             JarOutputStream out = new JarOutputStream( new BufferedOutputStream( f ) );
 
             // jar sample.txt
@@ -138,42 +137,34 @@ public abstract class AbstractChecksumArtifactReporterTestCase
             out.close();
 
             //Create md5 and sha-1 checksum files..
-            byte[] md5chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "MD5" );
-            byte[] sha1chk = createChecksum( repoUrl + relativePath + dirs + "/" + filename + "." + type, "SHA-1" );
 
-            File file;
-
-            if ( md5chk != null )
+            File file = new File( path + ".md5" );
+            OutputStream os = new FileOutputStream( file );
+            OutputStreamWriter osw = new OutputStreamWriter( os );
+            String sum = digester.createChecksum( new File( path ), Digester.MD5 );
+            if ( !isValid )
             {
-                file = new File( repoUrl + relativePath + dirs + "/" + filename + "." + type + ".md5" );
-                OutputStream os = new FileOutputStream( file );
-                OutputStreamWriter osw = new OutputStreamWriter( os );
-                if ( !isValid )
-                {
-                    osw.write( ChecksumArtifactReporter.byteArrayToHexStr( md5chk ) + "1" );
-                }
-                else
-                {
-                    osw.write( ChecksumArtifactReporter.byteArrayToHexStr( md5chk ) );
-                }
-                osw.close();
+                osw.write( sum + "1" );
             }
-
-            if ( sha1chk != null )
+            else
             {
-                file = new File( repoUrl + relativePath + dirs + "/" + filename + "." + type + ".sha1" );
-                OutputStream os = new FileOutputStream( file );
-                OutputStreamWriter osw = new OutputStreamWriter( os );
-                if ( !isValid )
-                {
-                    osw.write( ChecksumArtifactReporter.byteArrayToHexStr( sha1chk ) + "2" );
-                }
-                else
-                {
-                    osw.write( ChecksumArtifactReporter.byteArrayToHexStr( sha1chk ) );
-                }
-                osw.close();
+                osw.write( sum );
             }
+            osw.close();
+
+            file = new File( path + ".sha1" );
+            os = new FileOutputStream( file );
+            osw = new OutputStreamWriter( os );
+            String sha1sum = digester.createChecksum( new File( path ), Digester.SHA1 );
+            if ( !isValid )
+            {
+                osw.write( sha1sum + "2" );
+            }
+            else
+            {
+                osw.write( sha1sum );
+            }
+            osw.close();
         }
     }
 
@@ -192,45 +183,38 @@ public abstract class AbstractChecksumArtifactReporterTestCase
         String repoUrl = repository.getBasedir();
         String url = repository.getBasedir() + "/" + filename + "." + type;
 
-        FileUtils.copyFile( new File( url ), new File( repoUrl + relativePath + filename + "." + type ) );
+        String path = repoUrl + relativePath + filename + "." + type;
+        FileUtils.copyFile( new File( url ), new File( path ) );
 
         //Create md5 and sha-1 checksum files..
-        byte[] md5chk = createChecksum( repoUrl + relativePath + filename + "." + type, "MD5" );
-        byte[] sha1chk = createChecksum( repoUrl + relativePath + filename + "." + type, "SHA-1" );
 
-        File file;
-
-        if ( md5chk != null )
+        File file = new File( path + ".md5" );
+        OutputStream os = new FileOutputStream( file );
+        OutputStreamWriter osw = new OutputStreamWriter( os );
+        String md5sum = digester.createChecksum( new File( path ), Digester.MD5 );
+        if ( !isValid )
         {
-            file = new File( repoUrl + relativePath + filename + "." + type + ".md5" );
-            OutputStream os = new FileOutputStream( file );
-            OutputStreamWriter osw = new OutputStreamWriter( os );
-            if ( !isValid )
-            {
-                osw.write( ChecksumArtifactReporter.byteArrayToHexStr( md5chk ) + "1" );
-            }
-            else
-            {
-                osw.write( ChecksumArtifactReporter.byteArrayToHexStr( md5chk ) );
-            }
-            osw.close();
+            osw.write( md5sum + "1" );
         }
-
-        if ( sha1chk != null )
+        else
         {
-            file = new File( repoUrl + relativePath + filename + "." + type + ".sha1" );
-            OutputStream os = new FileOutputStream( file );
-            OutputStreamWriter osw = new OutputStreamWriter( os );
-            if ( !isValid )
-            {
-                osw.write( ChecksumArtifactReporter.byteArrayToHexStr( sha1chk ) + "2" );
-            }
-            else
-            {
-                osw.write( ChecksumArtifactReporter.byteArrayToHexStr( sha1chk ) );
-            }
-            osw.close();
+            osw.write( md5sum );
         }
+        osw.close();
+
+        file = new File( path + ".sha1" );
+        os = new FileOutputStream( file );
+        osw = new OutputStreamWriter( os );
+        String sha1sum = digester.createChecksum( new File( path ), Digester.SHA1 );
+        if ( !isValid )
+        {
+            osw.write( sha1sum + "2" );
+        }
+        else
+        {
+            osw.write( sha1sum );
+        }
+        osw.close();
     }
 
     /**
@@ -246,37 +230,6 @@ public abstract class AbstractChecksumArtifactReporterTestCase
         OutputStreamWriter osw = new OutputStreamWriter( os );
         osw.write( "This is the content of the sample file that will be included in the jar file." );
         osw.close();
-    }
-
-    /**
-     * Create a checksum from the specified metadata file.
-     *
-     * @throws FileNotFoundException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     */
-    private byte[] createChecksum( String filename, String algo )
-        throws FileNotFoundException, NoSuchAlgorithmException, IOException
-    {
-
-        // TODO: share with ArtifactRepositoryIndex.getChecksum(), ChecksumArtifactReporter.getChecksum()
-        InputStream fis = new FileInputStream( filename );
-        byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
-
-        MessageDigest complete = MessageDigest.getInstance( algo );
-        int numRead;
-        do
-        {
-            numRead = fis.read( buffer );
-            if ( numRead > 0 )
-            {
-                complete.update( buffer, 0, numRead );
-            }
-        }
-        while ( numRead != -1 );
-        fis.close();
-
-        return complete.digest();
     }
 
     /**

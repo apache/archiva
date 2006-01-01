@@ -134,10 +134,10 @@ public class CacheTest
         assertEquals( "check cache size", 1, cache.size() );
         assertNull( "check cache miss", cache.get( "none" ) );
         assertEquals( CACHE_HIT_RATIO, cache.getHitRate(), 0 );
-        cache.flush();
+        cache.clear();
         assertNull( "check flushed object", cache.get( "key" ) );
         assertEquals( (double) 0, cache.getHitRate(), 0 );
         assertEquals( "check flushed cache size", 0, cache.size() );
-        cache.flush();
+        cache.clear();
     }
 }

@@ -40,6 +40,10 @@ public class ArtifactReportProcessorTest
 
     private DefaultArtifactReportProcessor processor;
 
+    private static final boolean ARTIFACT_FOUND = true;
+
+    private static final boolean ARTIFACT_NOT_FOUND = false;
+
     protected void setUp()
         throws Exception
     {
@@ -64,7 +68,7 @@ public class ArtifactReportProcessorTest
     public void testNoProjectDescriptor()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( null, artifact, reporter, null );
@@ -79,7 +83,7 @@ public class ArtifactReportProcessorTest
     public void testArtifactFoundButNoDirectDependencies()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
@@ -91,7 +95,7 @@ public class ArtifactReportProcessorTest
     public void testArtifactNotFound()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_NOT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_NOT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
@@ -110,12 +114,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
@@ -131,12 +135,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
@@ -151,20 +155,20 @@ public class ArtifactReportProcessorTest
         processor.setArtifactFactory( artifactFactory );
 
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
@@ -180,20 +184,20 @@ public class ArtifactReportProcessorTest
         processor.setArtifactFactory( artifactFactory );
 
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, VALID, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_NOT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_NOT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
@@ -210,7 +214,7 @@ public class ArtifactReportProcessorTest
     public void testEmptyGroupId()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, EMPTY_STRING, VALID, VALID );
@@ -227,7 +231,7 @@ public class ArtifactReportProcessorTest
     public void testEmptyArtifactId()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, VALID, EMPTY_STRING, VALID );
@@ -244,7 +248,7 @@ public class ArtifactReportProcessorTest
     public void testEmptyVersion()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, VALID, VALID, EMPTY_STRING );
@@ -261,7 +265,7 @@ public class ArtifactReportProcessorTest
     public void testNullGroupId()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, null, VALID, VALID );
@@ -278,7 +282,7 @@ public class ArtifactReportProcessorTest
     public void testNullArtifactId()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, VALID, null, VALID );
@@ -295,7 +299,7 @@ public class ArtifactReportProcessorTest
     public void testNullVersion()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, VALID, VALID, null );
@@ -312,7 +316,7 @@ public class ArtifactReportProcessorTest
     public void testMultipleFailures()
     {
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
         processor.setRepositoryQueryLayer( queryLayer );
 
         setRequiredElements( artifact, null, null, null );
@@ -337,12 +341,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, null, VALID, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
@@ -362,12 +366,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, null, VALID );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
@@ -387,12 +391,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, VALID, VALID, null );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
@@ -412,12 +416,12 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, VALID );
         MockRepositoryQueryLayer queryLayer = new MockRepositoryQueryLayer();
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         Dependency dependency = new Dependency();
         setRequiredElements( dependency, null, null, null );
         model.addDependency( dependency );
-        queryLayer.addReturnValue( RepositoryQueryLayer.ARTIFACT_FOUND );
+        queryLayer.addReturnValue( ARTIFACT_FOUND );
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );

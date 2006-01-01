@@ -42,7 +42,6 @@ public class InvalidPomArtifactReportProcessor
      * @param artifact   The pom xml file to be validated, passed as an artifact object.
      * @param reporter   The artifact reporter object.
      * @param repository the repository where the artifact is located.
-     * @todo fix repo paths
      */
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
