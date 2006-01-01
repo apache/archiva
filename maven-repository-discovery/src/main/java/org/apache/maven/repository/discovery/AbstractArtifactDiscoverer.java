@@ -50,8 +50,6 @@ public abstract class AbstractArtifactDiscoverer
 
     /**
      * Scan the repository for artifact paths.
-     *
-     * @todo replace blacklisted patterns by an artifact filter
      */
     protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
     {
@@ -60,8 +58,6 @@ public abstract class AbstractArtifactDiscoverer
 
     /**
      * Scan the repository for artifact paths.
-     *
-     * @todo replace blacklisted patterns by an artifact filter
      */
     protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
                                              String[] excludes )
