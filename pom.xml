@@ -132,6 +132,7 @@
     <module>maven-repository-discovery</module>
     <module>maven-repository-reports-standard</module>
     <module>maven-repository-indexer</module>
+    <module>maven-repository-utils</module>
   </modules>
   <repositories>
     <repository>
@@ -218,6 +219,11 @@
       <dependency>
         <groupId>org.apache.maven.repository</groupId>
         <artifactId>maven-repository-discovery</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-utils</artifactId>
         <version>${pom.version}</version>
       </dependency>
     </dependencies>
