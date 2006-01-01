@@ -21,13 +21,10 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.repository.digest.Digester;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -66,9 +63,8 @@ public class ArtifactRepositoryIndex
 
     private Analyzer analyzer;
 
-    private static final int CHECKSUM_BUFFER_SIZE = 16384;
-
-    private static final int BYTE_MASK = 0xFF;
+    /** @plexus.requirement */
+    private Digester digester;
 
     /**
      * method to get the Analyzer used to create indices
@@ -136,8 +132,8 @@ public class ArtifactRepositoryIndex
         ZipFile jar;
         try
         {
-            sha1sum = byteArrayToHexStr( createChecksum( artifact.getFile(), "SHA-1" ) );
-            md5sum = byteArrayToHexStr( createChecksum( artifact.getFile(), "MD5" ) );
+            sha1sum = digester.createChecksum( artifact.getFile(), Digester.SHA1 );
+            md5sum = digester.createChecksum( artifact.getFile(), Digester.MD5 );
             jar = new ZipFile( artifact.getFile() );
         }
         catch ( NoSuchAlgorithmException e )
@@ -187,77 +183,6 @@ public class ArtifactRepositoryIndex
         {
             throw new RepositoryIndexException( "Error opening index", e );
         }
-    }
-
-    /**
-     * Convert an incoming array of bytes into a string that represents each of
-     * the bytes as two hex characters.
-     *
-     * @param data
-     * @todo move to utilities
-     */
-    private static String byteArrayToHexStr( byte[] data )
-    {
-        String output = "";
-
-        for ( int cnt = 0; cnt < data.length; cnt++ )
-        {
-            //Deposit a byte into the 8 lsb of an int.
-            int tempInt = data[cnt] & BYTE_MASK;
-
-            //Get hex representation of the int as a string.
-            String tempStr = Integer.toHexString( tempInt );
-
-            //Append a leading 0 if necessary so that each hex string will contain 2 characters.
-            if ( tempStr.length() == 1 )
-            {
-                tempStr = "0" + tempStr;
-            }
-
-            //Concatenate the two characters to the output string.
-            output = output + tempStr;
-        }
-
-        return output.toUpperCase();
-    }
-
-    /**
-     * Create a checksum from the specified metadata file.
-     *
-     * @param file The file that will be created a checksum.
-     * @param algo The algorithm to be used (MD5, SHA-1)
-     * @return
-     * @throws FileNotFoundException
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
-     * @todo move to utility class
-     */
-    private static byte[] createChecksum( File file, String algo )
-        throws FileNotFoundException, NoSuchAlgorithmException, IOException
-    {
-        MessageDigest digest = MessageDigest.getInstance( algo );
-
-        InputStream fis = new FileInputStream( file );
-        try
-        {
-            byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
-            int numRead;
-            do
-            {
-                numRead = fis.read( buffer );
-                if ( numRead > 0 )
-                {
-                    digest.update( buffer, 0, numRead );
-                }
-            }
-            while ( numRead != -1 );
-        }
-        finally
-        {
-            fis.close();
-        }
-
-        return digest.digest();
     }
 
     private boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )
