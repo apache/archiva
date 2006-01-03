@@ -18,7 +18,7 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.repository.digest.Digester;
+
 
 /**
  *
