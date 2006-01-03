@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 
@@ -31,9 +32,12 @@ public class DefaultRepositoryIndexingFactory
     /** @plexus.requirement */
     private Digester digester;
     
-    public ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher(ArtifactRepositoryIndex index)
+    /** @plexus.requirement */
+    private ArtifactFactory artifactFactory;
+    
+    public ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index )
     {
-        return null;
+        return new ArtifactRepositoryIndexSearcher( index, artifactFactory );
     }
 
     public ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )

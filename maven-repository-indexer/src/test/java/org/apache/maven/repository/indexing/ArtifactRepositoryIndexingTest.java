@@ -162,36 +162,34 @@ public class ArtifactRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
-        ArtifactRepositoryIndex indexer = indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+        RepositoryIndexSearcher repoSearcher = factory.createArtifactRepositoryIndexSearcher( indexer );
 
-        RepositoryIndexSearcher repoSearcher =
-            (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE, "artifact" );
-
-        List artifacts = repoSearcher.search( indexer, "test", GROUPID );
+        List artifacts = repoSearcher.search( "test", GROUPID );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "test", ARTIFACTID );
+        artifacts = repoSearcher.search( "test", ARTIFACTID );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "1.0", VERSION );
+        artifacts = repoSearcher.search( "1.0", VERSION );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "App", CLASSES );
+        artifacts = repoSearcher.search( "App", CLASSES );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "groupId", PACKAGES );
+        artifacts = repoSearcher.search( "groupId", PACKAGES );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "pom.xml", FILES );
+        artifacts = repoSearcher.search( "pom.xml", FILES );
         assertEquals( 3, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "org.apache.maven", GROUPID );
+        artifacts = repoSearcher.search( "org.apache.maven", GROUPID );
         assertEquals( 2, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "maven-artifact", ARTIFACTID );
+        artifacts = repoSearcher.search( "maven-artifact", ARTIFACTID );
         assertEquals( 1, artifacts.size() );
 
-        artifacts = repoSearcher.search( indexer, "2", VERSION );
+        artifacts = repoSearcher.search( "2", VERSION );
         assertEquals( 2, artifacts.size() );
 
         indexer.close();

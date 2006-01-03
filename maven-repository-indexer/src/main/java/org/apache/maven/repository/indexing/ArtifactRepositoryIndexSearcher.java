@@ -33,8 +33,6 @@ import java.util.List;
 /**
  * This class searches the index for existing artifacts that contains the
  * specified query string.
- *
- * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexSearcher" role-hint="artifact"
  */
 public class ArtifactRepositoryIndexSearcher
     implements RepositoryIndexSearcher
@@ -47,10 +45,15 @@ public class ArtifactRepositoryIndexSearcher
 
     private static final String VERSION = "version";
 
-    /**
-     * @plexus.requirement
-     */
     private ArtifactFactory factory;
+    
+    private ArtifactRepositoryIndex index;
+
+    public ArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index, ArtifactFactory factory )
+    {
+        this.factory = factory;
+        this.index = index;
+    }
 
     /**
      * Search the artifact that contains the query string in the specified
@@ -59,7 +62,7 @@ public class ArtifactRepositoryIndexSearcher
      * @param queryString
      * @param searchField
      */
-    public List search( RepositoryIndex index, String queryString, String searchField )
+    public List search( String queryString, String searchField )
         throws RepositoryIndexSearchException
     {
         List artifactList = new ArrayList();

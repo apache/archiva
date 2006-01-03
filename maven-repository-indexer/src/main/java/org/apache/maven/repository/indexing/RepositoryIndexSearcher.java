@@ -23,8 +23,6 @@ import java.util.List;
  */
 public interface RepositoryIndexSearcher
 {
-    String ROLE = RepositoryIndexSearcher.class.getName();
-
     /**
      * Search the artifact that contains the query string in the specified
      * search field.
@@ -33,6 +31,6 @@ public interface RepositoryIndexSearcher
      * @param queryString
      * @param searchField
      */
-    List search( RepositoryIndex index, String queryString, String searchField )
+    List search( String queryString, String searchField )
         throws RepositoryIndexSearchException;
 }
