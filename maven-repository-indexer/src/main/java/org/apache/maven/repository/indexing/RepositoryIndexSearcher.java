@@ -32,7 +32,24 @@ public interface RepositoryIndexSearcher
      * @param index
      * @param queryString
      * @param searchField
-     */
+     
     List search( RepositoryIndex index, String queryString, String searchField )
+        throws RepositoryIndexSearchException;
+    */
+
+    /**
+     *
+     */
+    void addQuery( String queryField, String queryText );
+    
+    /**
+     *
+     */
+    void addQuery( String queryField, String queryText, boolean required );
+    
+    /**
+     * 
+     */
+    List search( RepositoryIndex index )
         throws RepositoryIndexSearchException;
 }
