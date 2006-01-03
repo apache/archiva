@@ -84,6 +84,8 @@ public class ArtifactRepositoryIndexSearcher
 
                 artifactList.add( artifact );
             }
+
+            searcher.close();
         }
         catch ( IOException e )
         {

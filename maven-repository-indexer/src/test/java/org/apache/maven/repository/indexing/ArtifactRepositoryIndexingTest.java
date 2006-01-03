@@ -63,19 +63,18 @@ public class ArtifactRepositoryIndexingTest
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
 
         indexPath = "target/index";
-
-        FileUtils.deleteDirectory( indexPath );
     }
 
     public void testIndexerExceptions()
         throws Exception
     {
         ArtifactRepositoryIndex indexer;
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+
         try
         {
             String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
-            indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
-            indexer.open( notIndexDir );
+            indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
             fail( "Must throw exception on non-directory index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -86,8 +85,7 @@ public class ArtifactRepositoryIndexingTest
         try
         {
             String notIndexDir = new File( "" ).getAbsolutePath();
-            indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
-            indexer.open( notIndexDir );
+            indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
             fail( "Must throw an exception on a non-index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -95,12 +93,12 @@ public class ArtifactRepositoryIndexingTest
             //expected
         }
 
-        //indexer = (ArtifactRepositoryIndex) factory.getArtifactRepositoryIndexer( indexPath, repository );
-        //indexer.close();
-        indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
         Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
 
+        indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+        indexer.close();
+        
         try
         {
             indexer.indexArtifact( artifact );
@@ -121,7 +119,7 @@ public class ArtifactRepositoryIndexingTest
             //expected
         }
 
-        indexer.open( indexPath );
+        indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         try
         {
@@ -136,12 +134,11 @@ public class ArtifactRepositoryIndexingTest
         indexer.close();
     }
 
-    public void testIndex()
+    public void createTestIndex()
         throws Exception
     {
-        //indexer = (ArtifactRepositoryIndex) factory.getArtifactRepositoryIndexer( indexPath, repository );
-        ArtifactRepositoryIndex indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
-        indexer.open( indexPath );
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
@@ -151,23 +148,21 @@ public class ArtifactRepositoryIndexingTest
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
 
-        indexer.optimize();
-        indexer.close();
-
-        indexer.open( indexPath );
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.index( artifact );
-        indexer.close();
 
-        // TODO: assert something!
+        indexer.optimize();
+        indexer.close();
     }
 
     public void testSearch()
         throws Exception
     {
-        ArtifactRepositoryIndex indexer = (ArtifactRepositoryIndex) lookup( RepositoryIndex.ROLE, "artifact" );
-        indexer.open( getTestPath( "src/test/index" ) );
+        createTestIndex();
+
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        ArtifactRepositoryIndex indexer = indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         RepositoryIndexSearcher repoSearcher =
             (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE, "artifact" );
@@ -198,6 +193,8 @@ public class ArtifactRepositoryIndexingTest
 
         artifacts = repoSearcher.search( indexer, "2", VERSION );
         assertEquals( 2, artifacts.size() );
+
+        indexer.close();
     }
 
     private Artifact getArtifact( String groupId, String artifactId, String version )
@@ -209,5 +206,14 @@ public class ArtifactRepositoryIndexingTest
         }
 
         return artifactFactory.createBuildArtifact( groupId, artifactId, version, "jar" );
+    }
+
+    protected void tearDown()
+        throws Exception
+    {
+        repository = null;
+        FileUtils.deleteDirectory( indexPath );
+
+        super.tearDown();
     }
 }

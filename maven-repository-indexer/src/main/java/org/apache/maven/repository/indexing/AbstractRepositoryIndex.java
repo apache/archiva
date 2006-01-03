@@ -18,7 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,16 +30,17 @@ import java.util.Collection;
  * @author Edwin Punzalan
  */
 public abstract class AbstractRepositoryIndex
-    extends AbstractLogEnabled
     implements RepositoryIndex
 {
     private String indexPath;
-
+    
     private boolean indexOpen;
 
     private IndexReader indexReader;
 
     private IndexWriter indexWriter;
+
+    protected ArtifactRepository repository;
 
     /**
      * method to encapsulate the optimize() method for lucene
@@ -103,7 +104,7 @@ public abstract class AbstractRepositoryIndex
     /**
      * method for opening the index directory for indexing operations
      */
-    public void open( String indexPath )
+    protected void open( String indexPath )
         throws RepositoryIndexException
     {
         try
@@ -169,13 +170,13 @@ public abstract class AbstractRepositoryIndex
             }
             else
             {
-                getLogger().info( "Skipping index field validations for empty index." );
+                //getLogger().info( "Skipping index field validations for empty index." );
             }
         }
         else if ( !indexDir.exists() )
         {
             indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
-            getLogger().info( "New index directory created in: " + indexDir.getAbsolutePath() );
+            //getLogger().info( "New index directory created in: " + indexDir.getAbsolutePath() );
         }
         else if ( indexDir.isDirectory() )
         {

@@ -35,9 +35,9 @@ public interface RepositoryIndex
     void close()
         throws RepositoryIndexException;
 
-    void open( String indexPath )
+/*    void open( String indexPath )
         throws RepositoryIndexException;
-
+*/
     void optimize()
         throws RepositoryIndexException;
 

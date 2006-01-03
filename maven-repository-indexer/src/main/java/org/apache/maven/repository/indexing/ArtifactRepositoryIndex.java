@@ -30,13 +30,13 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 
 
 /**
  * Class used to index Artifact objects in a specified repository
  *
  * @author Edwin Punzalan
- * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndex" role-hint="artifact" instantiation-strategy="per-lookup"
  * @todo I think we should merge with Abstract*. Don't see that there'd be multiple implementations based on this
  * @todo I think we should instantiate this based on a repository from a factory instead of making it a component of its own
  */
@@ -65,8 +65,16 @@ public class ArtifactRepositoryIndex
 
     private Analyzer analyzer;
 
-    /** @plexus.requirement */
     private Digester digester;
+
+    public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
+        throws RepositoryIndexException
+    {
+        this.repository = repository;
+        this.digester = digester;
+        
+        open( indexPath );
+    }
 
     /**
      * method to get the Analyzer used to create indices
