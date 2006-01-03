@@ -38,6 +38,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
  *
  * @author Edwin Punzalan
  * @todo I think we should merge with Abstract*. Don't see that there'd be multiple implementations based on this
+ *   --> the methods in Abstract are all lucene index methods/validations which can be used by pom and metadata indices
  * @todo I think we should instantiate this based on a repository from a factory instead of making it a component of its own
  */
 public class ArtifactRepositoryIndex
@@ -66,6 +67,8 @@ public class ArtifactRepositoryIndex
     private Analyzer analyzer;
 
     private Digester digester;
+    
+    private ArtifactRepository repository;
 
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
@@ -255,5 +258,10 @@ public class ArtifactRepositoryIndex
         }
 
         return isAdded;
+    }
+
+    public ArtifactRepository getRepository()
+    {
+        return repository;
     }
 }

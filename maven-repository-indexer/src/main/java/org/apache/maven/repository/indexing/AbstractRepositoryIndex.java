@@ -40,8 +40,6 @@ public abstract class AbstractRepositoryIndex
 
     private IndexWriter indexWriter;
 
-    protected ArtifactRepository repository;
-
     /**
      * method to encapsulate the optimize() method for lucene
      */
