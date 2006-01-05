@@ -17,25 +17,20 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.io.File;
 
 /**
  * This class searches the index for existing artifacts that contains the
  * specified query string.
+ *
+ * @author Maria Odea Ching
  */
 public class ArtifactRepositoryIndexSearcher
-    implements RepositoryIndexSearcher
+    extends AbstractRepositoryIndexSearcher
 {
     private static final String NAME = "name";
 
@@ -46,59 +41,37 @@ public class ArtifactRepositoryIndexSearcher
     private static final String VERSION = "version";
 
     private ArtifactFactory factory;
-    
-    private ArtifactRepositoryIndex index;
 
-    public ArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index, ArtifactFactory factory )
-    {
-        this.factory = factory;
-        this.index = index;
-    }
+    private BooleanQuery bQry;
+
+    private BooleanQuery mainQry;
+
+    private boolean isRequired = true;
 
     /**
-     * Search the artifact that contains the query string in the specified
-     * search field.
+     * Constructor
      *
-     * @param queryString
-     * @param searchField
+     * @param index   the index object
+     * @param factory ArtifactFactory object
      */
-    public List search( String queryString, String searchField )
-        throws RepositoryIndexSearchException
+    public ArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index, ArtifactFactory factory )
     {
-        List artifactList = new ArrayList();
+        super( index );
+        this.factory = factory;
+    }
 
-        try
-        {
-            IndexSearcher searcher = new IndexSearcher( index.getIndexPath() );
-            QueryParser parser = new QueryParser( searchField, index.getAnalyzer() );
-            Query qry = parser.parse( queryString );
-            Hits hits = searcher.search( qry );
+    protected Object createSearchedObjectFromIndexDocument( Document doc )
+    {
+        String groupId = doc.get( GROUPID );
+        String artifactId = doc.get( ARTIFACTID );
+        String version = doc.get( VERSION );
+        String name = doc.get( NAME );
+        String packaging = name.substring( name.lastIndexOf( '.' ) + 1 );
+        Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
+        String groupIdTemp = groupId.replace( '.', '/' );
+        artifact.setFile( new File(
+            index.getRepository().getBasedir() + groupIdTemp + "/" + artifactId + "/" + version + "/" + name ) );
 
-            for ( int i = 0; i < hits.length(); i++ )
-            {
-                Document doc = hits.doc( i );
-
-                String groupId = doc.get( GROUPID );
-                String artifactId = doc.get( ARTIFACTID );
-                String version = doc.get( VERSION );
-                String name = doc.get( NAME );
-                String packaging = name.substring( name.lastIndexOf( '.' ) + 1 );
-                Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
-
-                artifactList.add( artifact );
-            }
-
-            searcher.close();
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexSearchException( e.getMessage(), e );
-        }
-        catch ( ParseException e )
-        {
-            throw new RepositoryIndexSearchException( "Error parsing query: " + e.getMessage() );
-        }
-
-        return artifactList;
+        return artifact;
     }
 }
