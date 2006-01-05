@@ -153,7 +153,7 @@ public class ArtifactRepositoryIndexingTest
 
     /**
      * Create an index that will be used for testing.
-     * 
+     *
      * @throws Exception
      */
     public void createTestIndex()
@@ -180,7 +180,7 @@ public class ArtifactRepositoryIndexingTest
 
     /**
      * Test the ArtifactRepositoryIndexSearcher using a single-phrase search.
-     * 
+     *
      * @throws Exception
      */
     public void testSearchSingle()
@@ -297,7 +297,7 @@ public class ArtifactRepositoryIndexingTest
 
     /**
      * Test the ArtifactRepositoryIndexSearcher using compound search (AND, OR).
-     * 
+     *
      * @throws Exception
      */
     public void testSearchCompound()

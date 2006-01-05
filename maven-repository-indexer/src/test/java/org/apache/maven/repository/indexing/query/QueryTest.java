@@ -1,6 +1,6 @@
 package org.apache.maven.repository.indexing.query;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
@@ -20,10 +20,10 @@ import junit.framework.*;
  */
 
 /**
- *
  * @author Edwin Punzalan
  */
-public class QueryTest extends TestCase
+public class QueryTest
+    extends TestCase
 {
     public void testSinglePhraseQueryObject()
     {
@@ -32,23 +32,23 @@ public class QueryTest extends TestCase
         assertEquals( "Field", query.getField() );
         assertEquals( "Value", query.getValue() );
     }
-    
+
     public void testCompoundQueries()
     {
         RequiredQuery rQuery = new RequiredQuery();
         assertTrue( rQuery instanceof Query );
         rQuery.add( new SinglePhraseQuery( "r1Field", "r1Value" ) );
         rQuery.add( new SinglePhraseQuery( "r2Field", "r2Value" ) );
-        
+
         OptionalQuery oQuery = new OptionalQuery();
         oQuery.add( new SinglePhraseQuery( "oField", "oValue" ) );
-        
+
         RequiredQuery all = new RequiredQuery();
         all.add( rQuery );
         all.add( oQuery );
         assertEquals( 2, all.getQueryList().size() );
-        
-        for( int ctr = 0; ctr < all.getQueryList().size(); ctr++ )
+
+        for ( int ctr = 0; ctr < all.getQueryList().size(); ctr++ )
         {
             Query query = (Query) all.getQueryList().get( ctr );
             switch ( ctr )

@@ -21,6 +21,7 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 
 import java.io.FileNotFoundException;
@@ -30,7 +31,6 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 
 
 /**
@@ -64,7 +64,7 @@ public class ArtifactRepositoryIndex
     private Analyzer analyzer;
 
     private Digester digester;
-    
+
     private ArtifactRepository repository;
 
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
@@ -72,7 +72,7 @@ public class ArtifactRepositoryIndex
     {
         this.repository = repository;
         this.digester = digester;
-        
+
         open( indexPath );
     }
 

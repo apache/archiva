@@ -16,22 +16,22 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Hits;
-import org.apache.lucene.document.Document;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.maven.repository.indexing.query.AbstractCompoundQuery;
 import org.apache.maven.repository.indexing.query.OptionalQuery;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.RequiredQuery;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
-import org.apache.maven.repository.indexing.query.AbstractCompoundQuery;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -50,7 +50,7 @@ public abstract class AbstractRepositoryIndexSearcher
     /**
      * Constructor
      *
-     * @param index   the index object
+     * @param index the index object
      */
     public AbstractRepositoryIndexSearcher( ArtifactRepositoryIndex index )
     {

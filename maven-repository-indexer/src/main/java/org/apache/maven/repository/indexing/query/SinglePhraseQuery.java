@@ -18,13 +18,13 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
- *
  * @author Edwin Punzalan
  */
 public class SinglePhraseQuery
     implements Query
 {
     private String field;
+
     private String value;
 
     public SinglePhraseQuery( String field, String value )
@@ -37,7 +37,7 @@ public class SinglePhraseQuery
     {
         return field;
     }
-    
+
     public String getValue()
     {
         return value;

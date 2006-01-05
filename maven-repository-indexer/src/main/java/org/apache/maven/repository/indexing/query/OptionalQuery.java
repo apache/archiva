@@ -17,11 +17,7 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- *
  * @author Edwin Punzalan
  */
 public class OptionalQuery

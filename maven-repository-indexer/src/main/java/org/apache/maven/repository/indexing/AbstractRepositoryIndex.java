@@ -32,7 +32,7 @@ public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
     private String indexPath;
-    
+
     private boolean indexOpen;
 
     private IndexReader indexReader;

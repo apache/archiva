@@ -21,24 +21,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Edwin Punzalan
  */
 public abstract class AbstractCompoundQuery
     implements Query
 {
     protected List queries;
-    
+
     public AbstractCompoundQuery()
     {
         queries = new ArrayList();
     }
-    
+
     public void add( Query query )
     {
         queries.add( query );
     }
-    
+
     public List getQueryList()
     {
         return queries;

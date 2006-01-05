@@ -38,6 +38,7 @@ public interface RepositoryIndex
 /*    void open( String indexPath )
         throws RepositoryIndexException;
 */
+
     void optimize()
         throws RepositoryIndexException;
 

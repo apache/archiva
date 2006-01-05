@@ -22,19 +22,22 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 
 /**
- *
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexingFactory"
  */
 public class DefaultRepositoryIndexingFactory
     implements RepositoryIndexingFactory
 {
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private Digester digester;
-    
-    /** @plexus.requirement */
+
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory artifactFactory;
-    
+
     public ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index )
     {
         return new ArtifactRepositoryIndexSearcher( index, artifactFactory );

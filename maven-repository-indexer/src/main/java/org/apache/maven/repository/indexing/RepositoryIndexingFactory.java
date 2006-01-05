@@ -21,7 +21,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 
 
 /**
- *
  * @author Edwin Punzalan
  */
 public interface RepositoryIndexingFactory
@@ -29,6 +28,7 @@ public interface RepositoryIndexingFactory
     String ROLE = RepositoryIndexingFactory.class.getName();
 
     ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index );
+
     ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 }

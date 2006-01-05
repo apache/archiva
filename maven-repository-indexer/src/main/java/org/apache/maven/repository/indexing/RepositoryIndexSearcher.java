@@ -16,11 +16,9 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import java.util.List;
-
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.artifact.Artifact;
-import org.apache.lucene.document.Document;
+
+import java.util.List;
 
 /**
  * @author Maria Odea Ching
@@ -29,10 +27,12 @@ public interface RepositoryIndexSearcher
 {
     /**
      * Search the artifact based on the search criteria specified in the query object. Returns a list of
-     * artifact objects. 
+     * artifact objects.
+     *
      * @param query The query object that contains the search criteria.
      * @return List
-     * @exception RepositoryIndexSearchException
+     * @throws RepositoryIndexSearchException
      */
-    List search(Query query) throws RepositoryIndexSearchException;
+    List search( Query query )
+        throws RepositoryIndexSearchException;
 }

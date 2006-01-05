@@ -18,7 +18,6 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
- *
  * @author Edwin Punzalan
  */
 public class RequiredQuery
