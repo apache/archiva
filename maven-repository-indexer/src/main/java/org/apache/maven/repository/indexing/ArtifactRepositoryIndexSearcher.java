@@ -32,14 +32,6 @@ import java.io.File;
 public class ArtifactRepositoryIndexSearcher
     extends AbstractRepositoryIndexSearcher
 {
-    private static final String NAME = "name";
-
-    private static final String GROUPID = "groupId";
-
-    private static final String ARTIFACTID = "artifactId";
-
-    private static final String VERSION = "version";
-
     private ArtifactFactory factory;
 
     private BooleanQuery bQry;
@@ -62,10 +54,10 @@ public class ArtifactRepositoryIndexSearcher
 
     protected Object createSearchedObjectFromIndexDocument( Document doc )
     {
-        String groupId = doc.get( GROUPID );
-        String artifactId = doc.get( ARTIFACTID );
-        String version = doc.get( VERSION );
-        String name = doc.get( NAME );
+        String groupId = doc.get( ArtifactRepositoryIndex.FLD_GROUPID );
+        String artifactId = doc.get( ArtifactRepositoryIndex.FLD_ARTIFACTID );
+        String version = doc.get( ArtifactRepositoryIndex.FLD_VERSION );
+        String name = doc.get( ArtifactRepositoryIndex.FLD_NAME );
         String packaging = name.substring( name.lastIndexOf( '.' ) + 1 );
         Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
         String groupIdTemp = groupId.replace( '.', '/' );

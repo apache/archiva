@@ -41,39 +41,36 @@ import java.util.zip.ZipFile;
 public class ArtifactRepositoryIndex
     extends AbstractRepositoryIndex
 {
-    private static final String NAME = "name";
+    protected static final String FLD_NAME = "name";
 
-    private static final String GROUPID = "groupId";
+    protected static final String FLD_GROUPID = "groupId";
 
-    private static final String ARTIFACTID = "artifactId";
+    protected static final String FLD_ARTIFACTID = "artifactId";
 
-    private static final String VERSION = "version";
+    protected static final String FLD_VERSION = "version";
 
-    private static final String SHA1 = "sha1";
+    protected static final String FLD_SHA1 = "sha1";
 
-    private static final String MD5 = "md5";
+    protected static final String FLD_MD5 = "md5";
 
-    private static final String CLASSES = "classes";
+    protected static final String FLD_CLASSES = "classes";
 
-    private static final String PACKAGES = "packages";
+    protected static final String FLD_PACKAGES = "packages";
 
-    private static final String FILES = "files";
+    protected static final String FLD_FILES = "files";
 
-    private static final String[] FIELDS = {NAME, GROUPID, ARTIFACTID, VERSION, SHA1, MD5, CLASSES, PACKAGES, FILES};
+    private static final String[] FIELDS =
+        {FLD_NAME, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_SHA1, FLD_MD5, FLD_CLASSES, FLD_PACKAGES, FLD_FILES};
 
     private Analyzer analyzer;
 
     private Digester digester;
 
-    private ArtifactRepository repository;
-
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
     {
-        this.repository = repository;
+        super( repository, indexPath );
         this.digester = digester;
-
-        open( indexPath );
     }
 
     /**
@@ -175,15 +172,15 @@ public class ArtifactRepositoryIndex
 
         //@todo should some of these fields be Keyword instead of Text ?
         Document doc = new Document();
-        doc.add( Field.Text( NAME, artifact.getFile().getName() ) );
-        doc.add( Field.Text( GROUPID, artifact.getGroupId() ) );
-        doc.add( Field.Text( ARTIFACTID, artifact.getArtifactId() ) );
-        doc.add( Field.Text( VERSION, artifact.getVersion() ) );
-        doc.add( Field.Text( SHA1, sha1sum ) );
-        doc.add( Field.Text( MD5, md5sum ) );
-        doc.add( Field.Text( CLASSES, classes.toString() ) );
-        doc.add( Field.Text( PACKAGES, packages.toString() ) );
-        doc.add( Field.Text( FILES, files.toString() ) );
+        doc.add( Field.Text( FLD_NAME, artifact.getFile().getName() ) );
+        doc.add( Field.Text( FLD_GROUPID, artifact.getGroupId() ) );
+        doc.add( Field.Text( FLD_ARTIFACTID, artifact.getArtifactId() ) );
+        doc.add( Field.Text( FLD_VERSION, artifact.getVersion() ) );
+        doc.add( Field.Text( FLD_SHA1, sha1sum ) );
+        doc.add( Field.Text( FLD_MD5, md5sum ) );
+        doc.add( Field.Text( FLD_CLASSES, classes.toString() ) );
+        doc.add( Field.Text( FLD_PACKAGES, packages.toString() ) );
+        doc.add( Field.Text( FLD_FILES, files.toString() ) );
 
         try
         {
@@ -255,10 +252,5 @@ public class ArtifactRepositoryIndex
         }
 
         return isAdded;
-    }
-
-    public ArtifactRepository getRepository()
-    {
-        return repository;
     }
 }

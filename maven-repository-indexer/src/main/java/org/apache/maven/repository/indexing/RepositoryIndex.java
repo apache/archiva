@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 
 /**
  * @author Edwin Punzalan
@@ -35,9 +36,7 @@ public interface RepositoryIndex
     void close()
         throws RepositoryIndexException;
 
-/*    void open( String indexPath )
-        throws RepositoryIndexException;
-*/
+    ArtifactRepository getRepository();
 
     void optimize()
         throws RepositoryIndexException;

@@ -39,7 +39,7 @@ import java.util.List;
 public abstract class AbstractRepositoryIndexSearcher
     implements RepositoryIndexSearcher
 {
-    protected ArtifactRepositoryIndex index;
+    protected RepositoryIndex index;
 
     private BooleanQuery bQry;
 
@@ -52,7 +52,7 @@ public abstract class AbstractRepositoryIndexSearcher
      *
      * @param index the index object
      */
-    public AbstractRepositoryIndexSearcher( ArtifactRepositoryIndex index )
+    public AbstractRepositoryIndexSearcher( RepositoryIndex index )
     {
         this.index = index;
     }

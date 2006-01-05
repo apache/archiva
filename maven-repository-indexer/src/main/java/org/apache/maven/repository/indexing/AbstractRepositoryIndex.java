@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +39,17 @@ public abstract class AbstractRepositoryIndex
     private IndexReader indexReader;
 
     private IndexWriter indexWriter;
+
+    private ArtifactRepository repository;
+
+    public AbstractRepositoryIndex( ArtifactRepository repository, String indexPath )
+        throws RepositoryIndexException
+    {
+        this.repository = repository;
+        this.indexPath = indexPath;
+
+        open( indexPath );
+    }
 
     /**
      * method to encapsulate the optimize() method for lucene
@@ -185,5 +197,10 @@ public abstract class AbstractRepositoryIndex
         }
 
         indexOpen = true;
+    }
+
+    public ArtifactRepository getRepository()
+    {
+        return repository;
     }
 }
