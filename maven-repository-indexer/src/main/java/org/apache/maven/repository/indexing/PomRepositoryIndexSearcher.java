@@ -43,7 +43,7 @@ public class PomRepositoryIndexSearcher
 
     protected Object createSearchedObjectFromIndexDocument( Document doc )
     {
-        String groupId = doc.get( PomRepositoryIndex.FLD_GROUPID ) ;
+        String groupId = doc.get( PomRepositoryIndex.FLD_GROUPID );
         String artifactId = doc.get( PomRepositoryIndex.FLD_ARTIFACTID );
         String version = doc.get( PomRepositoryIndex.FLD_VERSION );
         String packaging = doc.get( PomRepositoryIndex.FLD_PACKAGING );

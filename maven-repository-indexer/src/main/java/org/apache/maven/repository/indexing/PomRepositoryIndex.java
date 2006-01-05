@@ -21,11 +21,11 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class PomRepositoryIndex
 
     protected static final String FLD_PLUGINS_ALL = "plugins_all";
 
-    private static final String[] FIELDS = {FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
-        FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
+    private static final String[] FIELDS = {FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_LICENSE_URLS,
+        FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
 
     private Analyzer analyzer;
 
