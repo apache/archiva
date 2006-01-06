@@ -40,9 +40,9 @@ public abstract class AbstractRepositoryIndex
 
     private IndexWriter indexWriter;
 
-    private ArtifactRepository repository;
+    protected ArtifactRepository repository;
 
-    public AbstractRepositoryIndex( ArtifactRepository repository, String indexPath )
+    public AbstractRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         this.repository = repository;

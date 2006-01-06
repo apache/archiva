@@ -69,7 +69,7 @@ public class ArtifactRepositoryIndex
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
     {
-        super( repository, indexPath );
+        super( indexPath, repository );
         this.digester = digester;
     }
 
@@ -190,6 +190,11 @@ public class ArtifactRepositoryIndex
         {
             throw new RepositoryIndexException( "Error opening index", e );
         }
+    }
+
+    public boolean isKeywordField( String field )
+    {
+        return false;
     }
 
     private boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )

@@ -17,11 +17,13 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.repository.indexing.query.AbstractCompoundQuery;
 import org.apache.maven.repository.indexing.query.OptionalQuery;
 import org.apache.maven.repository.indexing.query.Query;
@@ -125,7 +127,6 @@ public abstract class AbstractRepositoryIndexSearcher
         }
         catch ( IOException ie )
         {
-            ie.printStackTrace();
             throw new RepositoryIndexSearchException( ie.getMessage(), ie );
         }
 
@@ -172,8 +173,17 @@ public abstract class AbstractRepositoryIndexSearcher
     private void addQuery( String field, String value, boolean required, boolean prohibited )
         throws ParseException
     {
-        QueryParser parser = new QueryParser( field, index.getAnalyzer() );
-        org.apache.lucene.search.Query qry = parser.parse( value );
+        org.apache.lucene.search.Query qry;
+        if ( index.isKeywordField( field ) )
+        {
+            Term term = new Term( field, value );
+            qry = new TermQuery( term );
+        }
+        else
+        {
+            QueryParser parser = new QueryParser( field, index.getAnalyzer() );
+            qry = parser.parse( value );
+        }
         bQry.add( qry, required, prohibited );
     }
 

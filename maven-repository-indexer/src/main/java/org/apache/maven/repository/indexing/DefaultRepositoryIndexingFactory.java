@@ -48,4 +48,15 @@ public class DefaultRepositoryIndexingFactory
     {
         return new ArtifactRepositoryIndex( indexPath, repository, digester );
     }
+
+    public PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
+        throws RepositoryIndexException
+    {
+        return new PomRepositoryIndex( indexPath, repository, digester, artifactFactory );
+    }
+
+    public PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index )
+    {
+        return new PomRepositoryIndexSearcher( index, artifactFactory );
+    }
 }

@@ -44,4 +44,6 @@ public interface RepositoryIndex
     Analyzer getAnalyzer();
 
     String getIndexPath();
+
+    boolean isKeywordField( String field );
 }
