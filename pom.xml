@@ -129,6 +129,7 @@
     </pluginManagement>
   </build>
   <modules>
+    <module>maven-repository-application</module>
     <module>maven-repository-discovery</module>
     <module>maven-repository-reports-standard</module>
     <module>maven-repository-indexer</module>
@@ -219,6 +220,11 @@
       <dependency>
         <groupId>org.apache.maven.repository</groupId>
         <artifactId>maven-repository-discovery</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-indexer</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
