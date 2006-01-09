@@ -15,5 +15,22 @@
       <artifactId>plexus-xwork-integration</artifactId>
       <version>1.0-alpha-1-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-indexer</artifactId>
+    </dependency>
   </dependencies>
+  <build>
+    <finalName>maven-repository-webapp</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty6-plugin</artifactId>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <contextPath>/</contextPath>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
