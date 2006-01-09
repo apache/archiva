@@ -134,6 +134,7 @@
     <module>maven-repository-reports-standard</module>
     <module>maven-repository-indexer</module>
     <module>maven-repository-utils</module>
+    <module>maven-repository-webapp</module>
   </modules>
   <repositories>
     <repository>
