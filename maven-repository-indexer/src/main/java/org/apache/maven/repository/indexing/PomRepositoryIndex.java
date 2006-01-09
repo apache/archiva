@@ -79,7 +79,7 @@ public class PomRepositoryIndex
                                ArtifactFactory artifactFactory )
         throws RepositoryIndexException
     {
-        super( indexPath, repository );
+        super( indexPath, repository, FIELDS );
         this.digester = digester;
         this.artifactFactory = artifactFactory;
     }
@@ -106,11 +106,6 @@ public class PomRepositoryIndex
             throw new RepositoryIndexException(
                 "This instance of indexer cannot index instances of " + obj.getClass().getName() );
         }
-    }
-
-    public String[] getIndexFields()
-    {
-        return FIELDS;
     }
 
     public void indexPom( Model pom )

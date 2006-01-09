@@ -69,7 +69,7 @@ public class ArtifactRepositoryIndex
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
     {
-        super( indexPath, repository );
+        super( indexPath, repository, FIELDS );
         this.digester = digester;
     }
 
@@ -86,16 +86,6 @@ public class ArtifactRepositoryIndex
         }
 
         return analyzer;
-    }
-
-    /**
-     * method for collecting the available index fields usable for searching
-     *
-     * @return index field names
-     */
-    public String[] getIndexFields()
-    {
-        return FIELDS;
     }
 
     /**

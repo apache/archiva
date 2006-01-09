@@ -28,6 +28,7 @@ import org.apache.maven.repository.indexing.query.CompoundQuery;
 import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.List;
  *
  */
 public abstract class AbstractRepositoryIndexSearcher
+    extends AbstractLogEnabled
     implements RepositoryIndexSearcher
 {
     protected RepositoryIndex index;
@@ -63,43 +65,50 @@ public abstract class AbstractRepositoryIndexSearcher
     public List search( Query query )
         throws RepositoryIndexSearchException
     {
-        IndexSearcher searcher;
 
+        org.apache.lucene.search.Query luceneQuery;
+        try
+        {
+            luceneQuery = createLuceneQuery( query );
+        }
+        catch ( ParseException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to construct query: " + e.getMessage(), e );
+        }
+
+        IndexSearcher searcher;
         try
         {
             searcher = new IndexSearcher( index.getIndexPath() );
         }
         catch ( IOException e )
         {
-            throw new RepositoryIndexSearchException( e.getMessage(), e );
+            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
         }
 
-        Hits hits;
+        List docs;
         try
         {
-            hits = searcher.search( createLuceneQuery( query ) );
+            Hits hits = searcher.search( luceneQuery );
+            docs = buildList( hits );
         }
         catch ( IOException e )
         {
-            throw new RepositoryIndexSearchException( e.getMessage(), e );
+            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
         }
-        catch ( ParseException e )
+        finally
         {
-            throw new RepositoryIndexSearchException( e.getMessage(), e );
+            try
+            {
+                searcher.close();
+            }
+            catch ( IOException e )
+            {
+                getLogger().error( "Unable to close index searcher", e );
+            }
         }
 
-        List artifactList;
-        try
-        {
-            artifactList = buildList( hits );
-            searcher.close();
-        }
-        catch ( IOException ie )
-        {
-            throw new RepositoryIndexSearchException( ie.getMessage(), ie );
-        }
-
-        return artifactList;
+        return docs;
     }
 
     private org.apache.lucene.search.Query createLuceneQuery( String field, String value )

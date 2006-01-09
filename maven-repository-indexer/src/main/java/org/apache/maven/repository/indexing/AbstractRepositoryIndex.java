@@ -36,19 +36,24 @@ public abstract class AbstractRepositoryIndex
 
     private boolean indexOpen;
 
-    private IndexReader indexReader;
-
     private IndexWriter indexWriter;
 
     protected ArtifactRepository repository;
 
-    public AbstractRepositoryIndex( String indexPath, ArtifactRepository repository )
+    protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository, String[] indexFields )
         throws RepositoryIndexException
     {
         this.repository = repository;
         this.indexPath = indexPath;
 
-        open( indexPath );
+        try
+        {
+            validateIndex( indexFields );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( e );
+        }
     }
 
     /**
@@ -96,34 +101,11 @@ public abstract class AbstractRepositoryIndex
                 indexWriter = null;
             }
 
-            if ( indexReader != null )
-            {
-                indexReader.close();
-                indexReader = null;
-            }
-
             indexOpen = false;
         }
         catch ( IOException e )
         {
             throw new RepositoryIndexException( e.getMessage(), e );
-        }
-    }
-
-    /**
-     * method for opening the index directory for indexing operations
-     */
-    protected void open( String indexPath )
-        throws RepositoryIndexException
-    {
-        try
-        {
-            this.indexPath = indexPath;
-            validateIndex();
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( e );
         }
     }
 
@@ -142,50 +124,42 @@ public abstract class AbstractRepositoryIndex
         return indexWriter;
     }
 
-    private IndexReader getIndexReader()
-        throws IOException
-    {
-        if ( indexReader == null )
-        {
-            indexReader = IndexReader.open( indexPath );
-        }
-        return indexReader;
-    }
-
     /**
      * method for validating an index directory
      *
+     * @param indexFields
      * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
      */
-    private void validateIndex()
+    private void validateIndex( String[] indexFields )
         throws RepositoryIndexException, IOException
     {
         File indexDir = new File( indexPath );
         if ( IndexReader.indexExists( indexDir ) )
         {
-            IndexReader indexReader = getIndexReader();
-            if ( indexReader.numDocs() > 0 )
+            IndexReader indexReader = IndexReader.open( indexPath );
+            try
             {
-                Collection fields = indexReader.getFieldNames();
-                String[] indexFields = getIndexFields();
-                for ( int idx = 0; idx < indexFields.length; idx++ )
+                if ( indexReader.numDocs() > 0 )
                 {
-                    if ( !fields.contains( indexFields[idx] ) )
+                    Collection fields = indexReader.getFieldNames();
+                    for ( int idx = 0; idx < indexFields.length; idx++ )
                     {
-                        throw new RepositoryIndexException(
-                            "The Field " + indexFields[idx] + " does not exist in " + "index path " + indexPath + "." );
+                        if ( !fields.contains( indexFields[idx] ) )
+                        {
+                            throw new RepositoryIndexException(
+                                "The Field " + indexFields[idx] + " does not exist in index " + indexPath + "." );
+                        }
                     }
                 }
             }
-            else
+            finally
             {
-                //getLogger().info( "Skipping index field validations for empty index." );
+                indexReader.close();
             }
         }
         else if ( !indexDir.exists() )
         {
             indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
-            //getLogger().info( "New index directory created in: " + indexDir.getAbsolutePath() );
         }
         else if ( indexDir.isDirectory() )
         {

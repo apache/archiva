@@ -26,8 +26,6 @@ public interface RepositoryIndex
 {
     String ROLE = RepositoryIndex.class.getName();
 
-    String[] getIndexFields();
-
     boolean isOpen();
 
     void index( Object obj )
