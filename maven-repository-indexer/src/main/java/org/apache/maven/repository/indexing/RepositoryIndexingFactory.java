@@ -35,5 +35,5 @@ public interface RepositoryIndexingFactory
     PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
-    public PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
+    PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
 }

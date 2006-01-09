@@ -17,7 +17,6 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 
@@ -33,12 +32,6 @@ public class ArtifactRepositoryIndexSearcher
     extends AbstractRepositoryIndexSearcher
 {
     private ArtifactFactory factory;
-
-    private BooleanQuery bQry;
-
-    private BooleanQuery mainQry;
-
-    private boolean isRequired = true;
 
     /**
      * Constructor

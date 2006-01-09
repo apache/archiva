@@ -84,7 +84,6 @@ public class ArtifactRepositoryIndexingTest
     public void testIndexerExceptions()
         throws Exception
     {
-        ArtifactRepositoryIndex indexer;
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
 
         try
@@ -112,7 +111,7 @@ public class ArtifactRepositoryIndexingTest
         Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
 
-        indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
         indexer.close();
 
         try

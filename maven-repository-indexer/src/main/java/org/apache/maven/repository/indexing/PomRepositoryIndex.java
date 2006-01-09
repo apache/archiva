@@ -35,6 +35,7 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -74,6 +75,9 @@ public class PomRepositoryIndex
     private Digester digester;
 
     private ArtifactFactory artifactFactory;
+
+    private static final List KEYWORD_FIELDS = Arrays.asList(
+        new String[]{FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
 
     public PomRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester,
                                ArtifactFactory artifactFactory )
@@ -172,34 +176,7 @@ public class PomRepositoryIndex
 
     public boolean isKeywordField( String field )
     {
-        boolean keyword;
-
-        if ( field.equals( PomRepositoryIndex.FLD_LICENSE_URLS ) )
-        {
-            keyword = true;
-        }
-        else if ( field.equals( PomRepositoryIndex.FLD_DEPENDENCIES ) )
-        {
-            keyword = true;
-        }
-        else if ( field.equals( PomRepositoryIndex.FLD_PLUGINS_BUILD ) )
-        {
-            keyword = true;
-        }
-        else if ( field.equals( PomRepositoryIndex.FLD_PLUGINS_REPORT ) )
-        {
-            keyword = true;
-        }
-        else if ( field.equals( PomRepositoryIndex.FLD_PLUGINS_ALL ) )
-        {
-            keyword = true;
-        }
-        else
-        {
-            keyword = false;
-        }
-
-        return keyword;
+        return KEYWORD_FIELDS.contains( field );
     }
 
     private void indexLicenseUrls( Document doc, Model pom )
