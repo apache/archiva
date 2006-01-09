@@ -98,20 +98,6 @@ public class PomRepositoryIndex
         return analyzer;
     }
 
-    public void index( Object obj )
-        throws RepositoryIndexException
-    {
-        if ( obj instanceof Model )
-        {
-            indexPom( (Model) obj );
-        }
-        else
-        {
-            throw new RepositoryIndexException(
-                "This instance of indexer cannot index instances of " + obj.getClass().getName() );
-        }
-    }
-
     public void indexPom( Model pom )
         throws RepositoryIndexException
     {

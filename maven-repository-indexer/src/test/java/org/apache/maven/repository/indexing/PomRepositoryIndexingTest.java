@@ -124,16 +124,6 @@ public class PomRepositoryIndexingTest
 
         indexer = factory.createPomRepositoryIndex( indexPath, repository );
 
-        try
-        {
-            indexer.index( "should fail" );
-            fail( "Must throw exception on add non-Artifact object." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            // expected
-        }
-
         indexer.close();
     }
 
@@ -454,7 +444,7 @@ public class PomRepositoryIndexingTest
         indexer.indexPom( pom );
 
         pom = getPom( "test", "test-artifactId", "1.0" );
-        indexer.index( pom );
+        indexer.indexPom( pom );
 
         indexer.optimize();
         indexer.close();
