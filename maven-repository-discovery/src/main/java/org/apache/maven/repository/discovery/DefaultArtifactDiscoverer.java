@@ -31,14 +31,15 @@ import java.util.StringTokenizer;
  *
  * @author John Casey
  * @author Brett Porter
- *
  * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="default" instantiation-strategy="per-lookup"
  */
 public class DefaultArtifactDiscoverer
     extends AbstractArtifactDiscoverer
     implements ArtifactDiscoverer
 {
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory artifactFactory;
 
     public List discoverArtifacts( File repositoryBase, String blacklistedPatterns, boolean includeSnapshots )
@@ -51,7 +52,7 @@ public class DefaultArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
-            Artifact artifact = buildArtifact( path );
+            Artifact artifact = buildArtifact( repositoryBase, path );
 
             if ( artifact != null )
             {
@@ -65,7 +66,7 @@ public class DefaultArtifactDiscoverer
         return artifacts;
     }
 
-    private Artifact buildArtifact( String path )
+    private Artifact buildArtifact( File repositoryBase, String path )
     {
         List pathParts = new ArrayList();
         StringTokenizer st = new StringTokenizer( path, "/\\" );
@@ -215,7 +216,7 @@ public class DefaultArtifactDiscoverer
 
         if ( finalResult != null )
         {
-            finalResult.setFile( new File( path ) );
+            finalResult.setFile( new File( repositoryBase, path ) );
         }
 
         return finalResult;

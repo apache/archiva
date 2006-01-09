@@ -53,7 +53,7 @@ public class LegacyArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
-            Artifact artifact = buildArtifact( path );
+            Artifact artifact = buildArtifact( repositoryBase, path );
             if ( artifact != null )
             {
                 if ( includeSnapshots || !artifact.isSnapshot() )
@@ -69,7 +69,7 @@ public class LegacyArtifactDiscoverer
     /**
      * @noinspection CollectionDeclaredAsConcreteClass
      */
-    private Artifact buildArtifact( String path )
+    private Artifact buildArtifact( File repositoryBase, String path )
     {
         StringTokenizer tokens = new StringTokenizer( path, "/\\" );
 
@@ -326,7 +326,7 @@ public class LegacyArtifactDiscoverer
                                                                      Artifact.SCOPE_RUNTIME, type );
                         }
 
-                        result.setFile( new File( path ) );
+                        result.setFile( new File( repositoryBase, path ) );
                     }
                 }
             }
