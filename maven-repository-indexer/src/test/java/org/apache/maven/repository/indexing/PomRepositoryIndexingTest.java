@@ -29,9 +29,8 @@ import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.digest.DefaultDigester;
 import org.apache.maven.repository.digest.Digester;
-import org.apache.maven.repository.indexing.query.OptionalQuery;
+import org.apache.maven.repository.indexing.query.CompoundQuery;
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.RequiredQuery;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -74,7 +73,6 @@ public class PomRepositoryIndexingTest
     public void testIndexerExceptions()
         throws Exception
     {
-        PomRepositoryIndex indexer;
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
 
         try
@@ -101,7 +99,7 @@ public class PomRepositoryIndexingTest
 
         Model pom = getPom( "test", "test-artifactId", "1.0" );
 
-        indexer = factory.createPomRepositoryIndex( indexPath, repository );
+        PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
         indexer.close();
 
         try
@@ -228,8 +226,8 @@ public class PomRepositoryIndexingTest
             while ( dependencies.hasNext() )
             {
                 Dependency dep = (Dependency) dependencies.next();
-                if ( ( dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion() ).equals(
-                    "org.codehaus.plexus:plexus-utils:1.0.5" ) )
+                if ( "org.codehaus.plexus:plexus-utils:1.0.5".equals(
+                    dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion() ) )
                 {
                     depFound = true;
                     break;
@@ -251,8 +249,8 @@ public class PomRepositoryIndexingTest
             while ( plugins.hasNext() )
             {
                 Plugin plugin = (Plugin) plugins.next();
-                if ( ( plugin.getKey() + ":" + plugin.getVersion() ).equals(
-                    "org.codehaus.modello:modello-maven-plugin:2.0" ) )
+                if ( "org.codehaus.modello:modello-maven-plugin:2.0".equals(
+                    plugin.getKey() + ":" + plugin.getVersion() ) )
                 {
                     found = true;
                     break;
@@ -274,8 +272,8 @@ public class PomRepositoryIndexingTest
             while ( plugins.hasNext() )
             {
                 ReportPlugin plugin = (ReportPlugin) plugins.next();
-                if ( ( plugin.getKey() + ":" + plugin.getVersion() ).equals(
-                    "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" ) )
+                if ( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0".equals(
+                    plugin.getKey() + ":" + plugin.getVersion() ) )
                 {
                     found = true;
                     break;
@@ -295,7 +293,7 @@ public class PomRepositoryIndexingTest
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
             Artifact artifact2 = (Artifact) artifacts.next();
-            String sha1Tmp = digester.createChecksum( getPomFile( artifact ), Digester.SHA1 );
+            String sha1Tmp = digester.createChecksum( getPomFile( artifact2 ), Digester.SHA1 );
             assertEquals( sha1, sha1Tmp );
         }
 
@@ -332,9 +330,9 @@ public class PomRepositoryIndexingTest
         // ex. artifactId=maven-artifact AND groupId=org.apache.maven
         Query qry1 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
         Query qry2 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "org.apache.maven" );
-        RequiredQuery rQry = new RequiredQuery();
-        rQry.add( qry1 );
-        rQry.add( qry2 );
+        CompoundQuery rQry = new CompoundQuery();
+        rQry.and( qry1 );
+        rQry.and( qry2 );
 
         List artifacts = repoSearcher.search( rQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -348,9 +346,9 @@ public class PomRepositoryIndexingTest
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) OR
         // version=2.0.3
         Query qry3 = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "2.0.3" );
-        OptionalQuery oQry = new OptionalQuery();
-        oQry.add( rQry );
-        oQry.add( qry3 );
+        CompoundQuery oQry = new CompoundQuery();
+        oQry.and( rQry );
+        oQry.or( qry3 );
 
         artifacts = repoSearcher.search( oQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -365,22 +363,22 @@ public class PomRepositoryIndexingTest
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)
         Query qry4 = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "2.0.1" );
-        oQry = new OptionalQuery();
-        oQry.add( qry3 );
-        oQry.add( qry4 );
+        oQry = new CompoundQuery();
+        oQry.or( qry3 );
+        oQry.or( qry4 );
 
-        OptionalQuery oQry5 = new OptionalQuery();
+        CompoundQuery oQry5 = new CompoundQuery();
         Query qry9 =
             new SinglePhraseQuery( PomRepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
         Query qry10 = new SinglePhraseQuery( PomRepositoryIndex.FLD_DEPENDENCIES,
                                              "org.codehaus.plexus:plexus-container-defualt:1.0-alpha-9" );
-        oQry5.add( qry9 );
-        oQry5.add( qry10 );
+        oQry5.or( qry9 );
+        oQry5.or( qry10 );
 
-        RequiredQuery rQry2 = new RequiredQuery();
-        rQry2.add( oQry );
-        rQry2.add( rQry );
-        rQry2.add( oQry5 );
+        CompoundQuery rQry2 = new CompoundQuery();
+        rQry2.or( oQry );
+        rQry2.and( rQry );
+        rQry2.and( oQry5 );
 
         artifacts = repoSearcher.search( rQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -396,14 +394,14 @@ public class PomRepositoryIndexingTest
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)]
         // OR [(artifactId=sample AND groupId=test)]
-        RequiredQuery rQry3 = new RequiredQuery();
+        CompoundQuery rQry3 = new CompoundQuery();
         Query qry5 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "sample" );
         Query qry6 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "test" );
-        rQry3.add( qry5 );
-        rQry3.add( qry6 );
-        OptionalQuery oQry2 = new OptionalQuery();
-        oQry2.add( rQry2 );
-        oQry2.add( rQry3 );
+        rQry3.and( qry5 );
+        rQry3.and( qry6 );
+        CompoundQuery oQry2 = new CompoundQuery();
+        oQry2.and( rQry2 );
+        oQry2.and( rQry3 );
 
         artifacts = repoSearcher.search( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -420,12 +418,12 @@ public class PomRepositoryIndexingTest
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)] OR
         // [(artifactId=sample AND groupId=test)] OR
         // [(artifactId=sample2 AND groupId=test)]
-        RequiredQuery rQry4 = new RequiredQuery();
+        CompoundQuery rQry4 = new CompoundQuery();
         Query qry7 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "sample2" );
         Query qry8 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "test" );
-        rQry4.add( qry7 );
-        rQry4.add( qry8 );
-        oQry2.add( rQry4 );
+        rQry4.and( qry7 );
+        rQry4.and( qry8 );
+        oQry2.and( rQry4 );
 
         artifacts = repoSearcher.search( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )

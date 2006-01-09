@@ -25,14 +25,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 public class PomRepositoryIndexSearcher
     extends AbstractRepositoryIndexSearcher
 {
-    private static final String GROUPID = "groupId";
-
-    private static final String ARTIFACTID = "artifactId";
-
-    private static final String VERSION = "version";
-
-    private static final String PACKAGING = "packaging";
-
     private ArtifactFactory factory;
 
     public PomRepositoryIndexSearcher( RepositoryIndex index, ArtifactFactory artifactFactory )

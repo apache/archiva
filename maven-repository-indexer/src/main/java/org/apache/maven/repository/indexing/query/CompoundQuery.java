@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing.query;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,10 +16,39 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Edwin Punzalan
  */
-public class OptionalQuery
-    extends AbstractCompoundQuery
+public class CompoundQuery
+    implements Query
 {
+    protected List queries;
+
+    public CompoundQuery()
+    {
+        queries = new ArrayList();
+    }
+
+    public void and( Query query )
+    {
+        queries.add( new AndQueryTerm( query ) );
+    }
+
+    public void or( Query query )
+    {
+        queries.add( new OrQueryTerm( query ) );
+    }
+
+    public void not( Query query )
+    {
+        queries.add( new NotQueryTerm( query ) );
+    }
+
+    public List getQueries()
+    {
+        return queries;
+    }
 }

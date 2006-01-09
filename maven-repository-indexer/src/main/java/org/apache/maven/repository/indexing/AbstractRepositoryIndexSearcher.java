@@ -24,10 +24,9 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.maven.repository.indexing.query.AbstractCompoundQuery;
-import org.apache.maven.repository.indexing.query.OptionalQuery;
+import org.apache.maven.repository.indexing.query.CompoundQuery;
+import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.RequiredQuery;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 
 import java.io.IOException;
@@ -43,18 +42,12 @@ public abstract class AbstractRepositoryIndexSearcher
 {
     protected RepositoryIndex index;
 
-    private BooleanQuery bQry;
-
-    private BooleanQuery mainQry;
-
-    private boolean isRequired = true;
-
     /**
      * Constructor
      *
      * @param index the index object
      */
-    public AbstractRepositoryIndexSearcher( RepositoryIndex index )
+    protected AbstractRepositoryIndexSearcher( RepositoryIndex index )
     {
         this.index = index;
     }
@@ -70,9 +63,7 @@ public abstract class AbstractRepositoryIndexSearcher
     public List search( Query query )
         throws RepositoryIndexSearchException
     {
-        List artifactList = null;
-        IndexSearcher searcher = null;
-        Hits hits = null;
+        IndexSearcher searcher;
 
         try
         {
@@ -83,43 +74,21 @@ public abstract class AbstractRepositoryIndexSearcher
             throw new RepositoryIndexSearchException( e.getMessage(), e );
         }
 
-        if ( query instanceof SinglePhraseQuery )
+        Hits hits;
+        try
         {
-            SinglePhraseQuery singleQry = (SinglePhraseQuery) query;
-            createSubQuery();
-            try
-            {
-                addQuery( singleQry.getField(), singleQry.getValue(), true, false );
-                hits = searcher.search( bQry );
-            }
-            catch ( IOException ie )
-            {
-                throw new RepositoryIndexSearchException( ie.getMessage(), ie );
-            }
-            catch ( ParseException pe )
-            {
-                throw new RepositoryIndexSearchException( pe.getMessage(), pe );
-            }
-
+            hits = searcher.search( createLuceneQuery( query ) );
         }
-        else if ( query instanceof RequiredQuery || query instanceof OptionalQuery )
+        catch ( IOException e )
         {
-            createMainQuery();
-            try
-            {
-                buildCompoundQuery( query );
-                hits = searcher.search( mainQry );
-            }
-            catch ( IOException ie )
-            {
-                throw new RepositoryIndexSearchException( ie.getMessage(), ie );
-            }
-            catch ( ParseException pe )
-            {
-                throw new RepositoryIndexSearchException( pe.getMessage(), pe );
-            }
+            throw new RepositoryIndexSearchException( e.getMessage(), e );
+        }
+        catch ( ParseException e )
+        {
+            throw new RepositoryIndexSearchException( e.getMessage(), e );
         }
 
+        List artifactList;
         try
         {
             artifactList = buildList( hits );
@@ -133,44 +102,7 @@ public abstract class AbstractRepositoryIndexSearcher
         return artifactList;
     }
 
-    /**
-     * Create a main BooleanQuery object that will contain the other
-     * BooleanQuery objects.
-     */
-    private void createMainQuery()
-    {
-        mainQry = new BooleanQuery();
-    }
-
-    /**
-     * Add the other BooleanQuery objects to the main BooleanQuery object
-     *
-     * @param required   specifies if the search is AND or OR
-     * @param prohibited specifies if NOT will be used in the search
-     */
-    private void addToMainQuery( boolean required, boolean prohibited )
-    {
-        mainQry.add( bQry, required, prohibited );
-    }
-
-    /**
-     * Create a new BooleanQuery object for nested search
-     */
-    private void createSubQuery()
-    {
-        bQry = new BooleanQuery();
-    }
-
-    /**
-     * Add query to the globally declared BooleanQuery object
-     *
-     * @param field      the name of the field in the index where the value is to be searched
-     * @param value      the value to be searched in the index
-     * @param required   specifies if the search is AND or OR
-     * @param prohibited specifies if NOT will be used in the search
-     * @throws ParseException
-     */
-    private void addQuery( String field, String value, boolean required, boolean prohibited )
+    private org.apache.lucene.search.Query createLuceneQuery( String field, String value )
         throws ParseException
     {
         org.apache.lucene.search.Query qry;
@@ -184,62 +116,35 @@ public abstract class AbstractRepositoryIndexSearcher
             QueryParser parser = new QueryParser( field, index.getAnalyzer() );
             qry = parser.parse( value );
         }
-        bQry.add( qry, required, prohibited );
+        return qry;
     }
 
-    /**
-     * Build or construct the query that will be used by the searcher
-     *
-     * @param query the query object that contains the search criteria
-     * @throws ParseException
-     */
-    private void buildCompoundQuery( Query query )
+    private org.apache.lucene.search.Query createLuceneQuery( Query query )
         throws ParseException
     {
-        AbstractCompoundQuery cQry = null;
-        boolean required = false;
+        org.apache.lucene.search.Query retVal;
 
-        if ( query instanceof RequiredQuery )
+        if ( query instanceof CompoundQuery )
         {
-            cQry = (RequiredQuery) query;
-            required = true;
+            BooleanQuery booleanQuery = new BooleanQuery();
+            CompoundQuery compoundQuery = (CompoundQuery) query;
+            List queries = compoundQuery.getQueries();
+            for ( Iterator i = queries.iterator(); i.hasNext(); )
+            {
+                CompoundQueryTerm subquery = (CompoundQueryTerm) i.next();
+
+                org.apache.lucene.search.Query luceneQuery = createLuceneQuery( subquery.getQuery() );
+
+                booleanQuery.add( luceneQuery, subquery.isRequired(), subquery.isProhibited() );
+            }
+            retVal = booleanQuery;
         }
         else
         {
-            cQry = (OptionalQuery) query;
-            required = false;
+            SinglePhraseQuery singlePhraseQuery = (SinglePhraseQuery) query;
+            retVal = createLuceneQuery( singlePhraseQuery.getField(), singlePhraseQuery.getValue() );
         }
-
-        boolean reset = true;
-
-        // get the query list and iterate through each
-        List queries = cQry.getQueryList();
-        for ( Iterator iter = queries.iterator(); iter.hasNext(); )
-        {
-            Query query2 = (Query) iter.next();
-
-            if ( query2 instanceof SinglePhraseQuery )
-            {
-                SinglePhraseQuery sQry = (SinglePhraseQuery) query2;
-                if ( reset )
-                {
-                    createSubQuery();
-                }
-                addQuery( sQry.getField(), sQry.getValue(), required, false );
-                reset = false;
-
-                if ( !iter.hasNext() )
-                {
-                    addToMainQuery( isRequired, false );
-                }
-
-            }
-            else if ( query2 instanceof RequiredQuery || query2 instanceof OptionalQuery )
-            {
-                isRequired = required;
-                buildCompoundQuery( query2 );
-            }
-        }
+        return retVal;
     }
 
     /**

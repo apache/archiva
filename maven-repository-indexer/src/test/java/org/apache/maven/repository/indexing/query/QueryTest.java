@@ -28,57 +28,49 @@ public class QueryTest
     public void testSinglePhraseQueryObject()
     {
         SinglePhraseQuery query = new SinglePhraseQuery( "Field", "Value" );
-        assertTrue( query instanceof Query );
         assertEquals( "Field", query.getField() );
         assertEquals( "Value", query.getValue() );
     }
 
     public void testCompoundQueries()
     {
-        RequiredQuery rQuery = new RequiredQuery();
-        assertTrue( rQuery instanceof Query );
-        rQuery.add( new SinglePhraseQuery( "r1Field", "r1Value" ) );
-        rQuery.add( new SinglePhraseQuery( "r2Field", "r2Value" ) );
+        CompoundQuery rQuery = new CompoundQuery();
+        rQuery.and( new SinglePhraseQuery( "r1Field", "r1Value" ) );
+        rQuery.and( new SinglePhraseQuery( "r2Field", "r2Value" ) );
 
-        OptionalQuery oQuery = new OptionalQuery();
-        oQuery.add( new SinglePhraseQuery( "oField", "oValue" ) );
+        CompoundQuery oQuery = new CompoundQuery();
+        oQuery.or( new SinglePhraseQuery( "oField", "oValue" ) );
 
-        RequiredQuery all = new RequiredQuery();
-        all.add( rQuery );
-        all.add( oQuery );
-        assertEquals( 2, all.getQueryList().size() );
+        CompoundQuery all = new CompoundQuery();
+        all.and( rQuery );
+        all.or( oQuery );
+        assertEquals( 2, all.getQueries().size() );
 
-        for ( int ctr = 0; ctr < all.getQueryList().size(); ctr++ )
-        {
-            Query query = (Query) all.getQueryList().get( ctr );
-            switch ( ctr )
-            {
-                case 0:
-                    assertTrue( query instanceof RequiredQuery );
-                    rQuery = (RequiredQuery) query;
-                    assertEquals( 2, rQuery.getQueryList().size() );
-                    query = (Query) rQuery.getQueryList().get( 0 );
-                    assertTrue( query instanceof SinglePhraseQuery );
-                    SinglePhraseQuery sQuery = (SinglePhraseQuery) query;
-                    assertEquals( "r1Field", sQuery.getField() );
-                    assertEquals( "r1Value", sQuery.getValue() );
-                    query = (Query) rQuery.getQueryList().get( 1 );
-                    assertTrue( query instanceof SinglePhraseQuery );
-                    sQuery = (SinglePhraseQuery) query;
-                    assertEquals( "r2Field", sQuery.getField() );
-                    assertEquals( "r2Value", sQuery.getValue() );
-                    break;
-                case 1:
-                    assertTrue( query instanceof OptionalQuery );
-                    oQuery = (OptionalQuery) query;
-                    assertEquals( 1, oQuery.getQueryList().size() );
-                    query = (Query) oQuery.getQueryList().get( 0 );
-                    assertTrue( query instanceof SinglePhraseQuery );
-                    sQuery = (SinglePhraseQuery) query;
-                    assertEquals( "oField", sQuery.getField() );
-                    assertEquals( "oValue", sQuery.getValue() );
-                    break;
-            }
-        }
+        CompoundQueryTerm queryTerm = (CompoundQueryTerm) all.getQueries().get( 0 );
+        assertTrue( queryTerm.getQuery() instanceof CompoundQuery );
+        rQuery = (CompoundQuery) queryTerm.getQuery();
+        assertEquals( 2, rQuery.getQueries().size() );
+        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 0 );
+        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
+        SinglePhraseQuery sQuery = (SinglePhraseQuery) queryTerm.getQuery();
+        assertEquals( "r1Field", sQuery.getField() );
+        assertEquals( "r1Value", sQuery.getValue() );
+        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 1 );
+        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
+        sQuery = (SinglePhraseQuery) queryTerm.getQuery();
+        assertEquals( "r2Field", sQuery.getField() );
+        assertEquals( "r2Value", sQuery.getValue() );
+
+        queryTerm = (CompoundQueryTerm) all.getQueries().get( 1 );
+        assertTrue( queryTerm.getQuery() instanceof CompoundQuery );
+        rQuery = (CompoundQuery) queryTerm.getQuery();
+        assertEquals( 1, rQuery.getQueries().size() );
+        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 0 );
+        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
+        sQuery = (SinglePhraseQuery) queryTerm.getQuery();
+        assertEquals( "oField", sQuery.getField() );
+        assertEquals( "oValue", sQuery.getValue() );
+
     }
 }
+

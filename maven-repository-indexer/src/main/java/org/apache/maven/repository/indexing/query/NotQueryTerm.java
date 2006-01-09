@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing.query;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,29 +16,21 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * @author Edwin Punzalan
+ * A boolean NOT query term.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public abstract class AbstractCompoundQuery
-    implements Query
+public class NotQueryTerm
+    extends AbstractCompoundQueryTerm
 {
-    protected List queries;
-
-    public AbstractCompoundQuery()
+    public NotQueryTerm( Query query )
     {
-        queries = new ArrayList();
+        super( query );
     }
 
-    public void add( Query query )
+    public boolean isProhibited()
     {
-        queries.add( query );
-    }
-
-    public List getQueryList()
-    {
-        return queries;
+        return true;
     }
 }

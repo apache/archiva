@@ -23,9 +23,8 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.digest.DefaultDigester;
 import org.apache.maven.repository.digest.Digester;
-import org.apache.maven.repository.indexing.query.OptionalQuery;
+import org.apache.maven.repository.indexing.query.CompoundQuery;
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.RequiredQuery;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -314,9 +313,9 @@ public class ArtifactRepositoryIndexingTest
         // ex. artifactId=maven-artifact AND groupId=org.apache.maven
         Query qry1 = new SinglePhraseQuery( ARTIFACTID, "maven-artifact" );
         Query qry2 = new SinglePhraseQuery( GROUPID, "org.apache.maven" );
-        RequiredQuery rQry = new RequiredQuery();
-        rQry.add( qry1 );
-        rQry.add( qry2 );
+        CompoundQuery rQry = new CompoundQuery();
+        rQry.and( qry1 );
+        rQry.and( qry2 );
 
         List artifacts = repoSearcher.search( rQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -330,9 +329,9 @@ public class ArtifactRepositoryIndexingTest
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) OR
         // version=2.0.3
         Query qry3 = new SinglePhraseQuery( VERSION, "2.0.3" );
-        OptionalQuery oQry = new OptionalQuery();
-        oQry.add( rQry );
-        oQry.add( qry3 );
+        CompoundQuery oQry = new CompoundQuery();
+        oQry.or( rQry );
+        oQry.or( qry3 );
 
         artifacts = repoSearcher.search( oQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -347,20 +346,20 @@ public class ArtifactRepositoryIndexingTest
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)
         Query qry4 = new SinglePhraseQuery( VERSION, "2.0.1" );
-        oQry = new OptionalQuery();
-        oQry.add( qry3 );
-        oQry.add( qry4 );
+        oQry = new CompoundQuery();
+        oQry.or( qry3 );
+        oQry.or( qry4 );
 
-        OptionalQuery oQry5 = new OptionalQuery();
+        CompoundQuery oQry5 = new CompoundQuery();
         Query qry9 = new SinglePhraseQuery( NAME, "maven-artifact-2.0.1.jar" );
         Query qry10 = new SinglePhraseQuery( NAME, "maven-artifact" );
-        oQry5.add( qry9 );
-        oQry5.add( qry10 );
+        oQry5.or( qry9 );
+        oQry5.or( qry10 );
 
-        RequiredQuery rQry2 = new RequiredQuery();
-        rQry2.add( oQry );
-        rQry2.add( rQry );
-        rQry2.add( oQry5 );
+        CompoundQuery rQry2 = new CompoundQuery();
+        rQry2.or( oQry );
+        rQry2.and( rQry );
+        rQry2.or( oQry5 );
 
         artifacts = repoSearcher.search( rQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -376,14 +375,14 @@ public class ArtifactRepositoryIndexingTest
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)]
         // OR [(artifactId=sample AND groupId=test)]
-        RequiredQuery rQry3 = new RequiredQuery();
+        CompoundQuery rQry3 = new CompoundQuery();
         Query qry5 = new SinglePhraseQuery( ARTIFACTID, "sample" );
         Query qry6 = new SinglePhraseQuery( GROUPID, "test" );
-        rQry3.add( qry5 );
-        rQry3.add( qry6 );
-        OptionalQuery oQry2 = new OptionalQuery();
-        oQry2.add( rQry2 );
-        oQry2.add( rQry3 );
+        rQry3.and( qry5 );
+        rQry3.and( qry6 );
+        CompoundQuery oQry2 = new CompoundQuery();
+        oQry2.and( rQry2 );
+        oQry2.and( rQry3 );
 
         artifacts = repoSearcher.search( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
@@ -400,12 +399,12 @@ public class ArtifactRepositoryIndexingTest
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)] OR
         // [(artifactId=sample AND groupId=test)] OR
         // [(artifactId=sample2 AND groupId=test)]
-        RequiredQuery rQry4 = new RequiredQuery();
+        CompoundQuery rQry4 = new CompoundQuery();
         Query qry7 = new SinglePhraseQuery( ARTIFACTID, "sample2" );
         Query qry8 = new SinglePhraseQuery( GROUPID, "test" );
-        rQry4.add( qry7 );
-        rQry4.add( qry8 );
-        oQry2.add( rQry4 );
+        rQry4.and( qry7 );
+        rQry4.and( qry8 );
+        oQry2.and( rQry4 );
 
         artifacts = repoSearcher.search( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )

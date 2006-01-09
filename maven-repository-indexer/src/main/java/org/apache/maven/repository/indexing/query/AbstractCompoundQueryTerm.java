@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing.query;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +17,35 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
- * @author Edwin Punzalan
+ * Base of all query terms.
+ *
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public class RequiredQuery
-    extends AbstractCompoundQuery
+public abstract class AbstractCompoundQueryTerm
+    implements CompoundQueryTerm
 {
+    /**
+     * The query being added.
+     */
+    private Query query;
+
+    protected AbstractCompoundQueryTerm( Query query )
+    {
+        this.query = query;
+    }
+
+    public boolean isRequired()
+    {
+        return false;
+    }
+
+    public boolean isProhibited()
+    {
+        return false;
+    }
+
+    public Query getQuery()
+    {
+        return query;
+    }
 }
