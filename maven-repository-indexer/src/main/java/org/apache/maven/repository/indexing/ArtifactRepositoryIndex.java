@@ -89,25 +89,6 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * generic method for indexing
-     *
-     * @param obj the object to be indexed by this indexer
-     */
-    public void index( Object obj )
-        throws RepositoryIndexException
-    {
-        if ( obj instanceof Artifact )
-        {
-            indexArtifact( (Artifact) obj );
-        }
-        else
-        {
-            throw new RepositoryIndexException(
-                "This instance of indexer cannot index instances of " + obj.getClass().getName() );
-        }
-    }
-
-    /**
      * method to index a given artifact
      *
      * @param artifact the Artifact object to be indexed
@@ -126,12 +107,10 @@ public class ArtifactRepositoryIndex
 
         String sha1sum;
         String md5sum;
-        ZipFile jar;
         try
         {
             sha1sum = digester.createChecksum( artifact.getFile(), Digester.SHA1 );
             md5sum = digester.createChecksum( artifact.getFile(), Digester.MD5 );
-            jar = new ZipFile( artifact.getFile() );
         }
         catch ( NoSuchAlgorithmException e )
         {
@@ -141,23 +120,36 @@ public class ArtifactRepositoryIndex
         {
             throw new RepositoryIndexException( "Error reading from artifact file", e );
         }
-        catch ( ZipException e )
-        {
-            throw new RepositoryIndexException( "Error reading from artifact file", e );
-        }
         catch ( IOException e )
         {
             throw new RepositoryIndexException( "Error reading from artifact file", e );
         }
 
-        for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
+        try
         {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
-            if ( addIfClassEntry( entry, classes ) )
+            // TODO: improve
+            if ( "jar".equals( artifact.getType() ) )
             {
-                addClassPackage( entry.getName(), packages );
+                ZipFile jar = new ZipFile( artifact.getFile() );
+
+                for ( Enumeration entries = jar.entries(); entries.hasMoreElements(); )
+                {
+                    ZipEntry entry = (ZipEntry) entries.nextElement();
+                    if ( addIfClassEntry( entry, classes ) )
+                    {
+                        addClassPackage( entry.getName(), packages );
+                    }
+                    addFile( entry, files );
+                }
             }
-            addFile( entry, files );
+        }
+        catch ( ZipException e )
+        {
+            throw new RepositoryIndexException( "Error reading from artifact file: " + artifact.getFile(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Error reading from artifact file", e );
         }
 
         //@todo should some of these fields be Keyword instead of Text ?

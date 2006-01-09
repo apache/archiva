@@ -24,12 +24,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
  */
 public interface RepositoryIndex
 {
-    String ROLE = RepositoryIndex.class.getName();
-
     boolean isOpen();
-
-    void index( Object obj )
-        throws RepositoryIndexException;
 
     void close()
         throws RepositoryIndexException;

@@ -136,16 +136,6 @@ public class ArtifactRepositoryIndexingTest
 
         indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
-        try
-        {
-            indexer.index( "should fail" );
-            fail( "Must throw exception on add non-Artifact object." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            // expected
-        }
-
         indexer.close();
     }
 
@@ -170,7 +160,7 @@ public class ArtifactRepositoryIndexingTest
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        indexer.index( artifact );
+        indexer.indexArtifact( artifact );
 
         indexer.optimize();
         indexer.close();
