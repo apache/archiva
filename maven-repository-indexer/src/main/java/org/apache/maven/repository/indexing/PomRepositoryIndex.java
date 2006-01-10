@@ -84,9 +84,9 @@ public class PomRepositoryIndex
     /**
      * Class Constructor
      *
-     * @param indexPath the path where the index is available or will be made available
-     * @param repository the repository where objects indexed by this class resides
-     * @param digester the digester to be used for generating checksums
+     * @param indexPath       the path where the index is available or will be made available
+     * @param repository      the repository where objects indexed by this class resides
+     * @param digester        the digester to be used for generating checksums
      * @param artifactFactory the factory for building artifact objects
      * @throws RepositoryIndexException
      */
@@ -181,7 +181,7 @@ public class PomRepositoryIndex
     }
 
     /**
-     * @see RepositoryIndex#isKeywordField(String) 
+     * @see RepositoryIndex#isKeywordField(String)
      */
     public boolean isKeywordField( String field )
     {
@@ -244,8 +244,8 @@ public class PomRepositoryIndex
     /**
      * Method to index plugins to a specified index field
      *
-     * @param doc the index object to create the fields for the plugins
-     * @param field the index field to store the passed plugin
+     * @param doc     the index object to create the fields for the plugins
+     * @param field   the index field to store the passed plugin
      * @param plugins the iterator to the list of plugins to be indexed
      */
     private void indexPlugins( Document doc, String field, Iterator plugins )
@@ -261,8 +261,8 @@ public class PomRepositoryIndex
     /**
      * Method to index report plugins to a specified index field
      *
-     * @param doc the index object to create the fields for the report plugins
-     * @param field the index field to store the passed report plugin
+     * @param doc     the index object to create the fields for the report plugins
+     * @param field   the index field to store the passed report plugin
      * @param plugins the iterator to the list of report plugins to be indexed
      */
     private void indexReportPlugins( Document doc, String field, Iterator plugins )
@@ -279,7 +279,7 @@ public class PomRepositoryIndex
      * Method to generate the computed checksum of an existing file using the specified algorithm.
      *
      * @param algorithm the algorithm to be used to generate the checksum
-     * @param file the file to match the generated checksum
+     * @param file      the file to match the generated checksum
      * @return a string representing the checksum
      * @throws RepositoryIndexException
      */
@@ -303,9 +303,9 @@ public class PomRepositoryIndex
     /**
      * Method to create the unique artifact id to represent the artifact in the repository
      *
-     * @param groupId the artifact groupId
+     * @param groupId    the artifact groupId
      * @param artifactId the artifact artifactId
-     * @param version the artifact version
+     * @param version    the artifact version
      * @return the String id to uniquely represent the artifact
      */
     private String getId( String groupId, String artifactId, String version )

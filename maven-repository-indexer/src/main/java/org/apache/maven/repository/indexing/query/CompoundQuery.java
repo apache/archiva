@@ -39,7 +39,7 @@ public class CompoundQuery
 
     /**
      * Appends a required Query object to this Query object. The Query object will be encapsulated inside an
-     *     AndQueryTerm object.
+     * AndQueryTerm object.
      *
      * @param query the Query object to be appended to this Query object
      */
@@ -50,7 +50,7 @@ public class CompoundQuery
 
     /**
      * Appends an optional Query object to this Query object. The Query object will be encapsulated inside an
-     *     OrQueryTerm object.
+     * OrQueryTerm object.
      *
      * @param query the Query object to be appended to this Query object
      */
@@ -61,7 +61,7 @@ public class CompoundQuery
 
     /**
      * Appends a prohibited Query object to this Query object. The Query object will be encapsulated inside an
-     *     NotQueryTerm object.
+     * NotQueryTerm object.
      *
      * @param query the Query object to be appended to this Query object
      */

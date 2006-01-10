@@ -25,7 +25,6 @@ import java.io.File;
 /**
  * This class searches the index for existing artifacts that contains the
  * specified query string.
- *
  */
 public class ArtifactRepositoryIndexSearcher
     extends AbstractRepositoryIndexSearcher

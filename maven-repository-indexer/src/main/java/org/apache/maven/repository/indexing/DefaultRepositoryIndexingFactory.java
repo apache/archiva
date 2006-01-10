@@ -65,7 +65,7 @@ public class DefaultRepositoryIndexingFactory
     }
 
     /**
-     * @see RepositoryIndexingFactory#createPomRepositoryIndexSearcher(PomRepositoryIndex) 
+     * @see RepositoryIndexingFactory#createPomRepositoryIndexSearcher(PomRepositoryIndex)
      */
     public PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index )
     {

@@ -38,7 +38,7 @@ public interface RepositoryIndexingFactory
     /**
      * Method to create an instance of the ArtifactRepositoryIndex
      *
-     * @param indexPath the path where the index will be created/updated
+     * @param indexPath  the path where the index will be created/updated
      * @param repository the repository where the indexed artifacts are located
      * @return the ArtifactRepositoryIndex instance
      * @throws RepositoryIndexException
@@ -49,7 +49,7 @@ public interface RepositoryIndexingFactory
     /**
      * Method to create an instance of the PomRepositoryIndex
      *
-     * @param indexPath the path where the index will be created/updated
+     * @param indexPath  the path where the index will be created/updated
      * @param repository the repository where the indexed poms are located
      * @return the PomRepositoryIndex instance
      * @throws RepositoryIndexException

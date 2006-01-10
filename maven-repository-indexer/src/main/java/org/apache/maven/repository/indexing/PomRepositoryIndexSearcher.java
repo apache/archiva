@@ -30,8 +30,7 @@ public class PomRepositoryIndexSearcher
     private ArtifactFactory factory;
 
     /**
-     *
-     * @param index the PomRepositoryIndex
+     * @param index           the PomRepositoryIndex
      * @param artifactFactory
      */
     public PomRepositoryIndexSearcher( RepositoryIndex index, ArtifactFactory artifactFactory )
@@ -41,7 +40,7 @@ public class PomRepositoryIndexSearcher
     }
 
     /**
-     * @see AbstractRepositoryIndexSearcher#createSearchedObjectFromIndexDocument(org.apache.lucene.document.Document) 
+     * @see AbstractRepositoryIndexSearcher#createSearchedObjectFromIndexDocument(org.apache.lucene.document.Document)
      */
     protected Object createSearchedObjectFromIndexDocument( Document doc )
     {

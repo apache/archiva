@@ -56,7 +56,7 @@ public abstract class AbstractCompoundQueryTerm
     }
 
     /**
-     * @see CompoundQueryTerm#getQuery() 
+     * @see CompoundQueryTerm#getQuery()
      */
     public Query getQuery()
     {
