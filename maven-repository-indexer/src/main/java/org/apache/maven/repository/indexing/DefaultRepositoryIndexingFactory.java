@@ -38,23 +38,35 @@ public class DefaultRepositoryIndexingFactory
      */
     private ArtifactFactory artifactFactory;
 
+    /**
+     * @see RepositoryIndexingFactory#createArtifactRepositoryIndexSearcher(ArtifactRepositoryIndex)
+     */
     public ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index )
     {
         return new ArtifactRepositoryIndexSearcher( index, artifactFactory );
     }
 
+    /**
+     * @see RepositoryIndexingFactory#createArtifactRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
+     */
     public ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new ArtifactRepositoryIndex( indexPath, repository, digester );
     }
 
+    /**
+     * @see RepositoryIndexingFactory#createPomRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
+     */
     public PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new PomRepositoryIndex( indexPath, repository, digester, artifactFactory );
     }
 
+    /**
+     * @see RepositoryIndexingFactory#createPomRepositoryIndexSearcher(PomRepositoryIndex) 
+     */
     public PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index )
     {
         return new PomRepositoryIndexSearcher( index, artifactFactory );

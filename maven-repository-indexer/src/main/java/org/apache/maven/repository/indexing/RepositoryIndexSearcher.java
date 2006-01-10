@@ -21,7 +21,7 @@ import org.apache.maven.repository.indexing.query.Query;
 import java.util.List;
 
 /**
- * @author Maria Odea Ching
+ * 
  */
 public interface RepositoryIndexSearcher
 {

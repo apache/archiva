@@ -18,6 +18,8 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
+ * Interface to label the query classes
+ *
  * @author Edwin Punzalan
  */
 public interface Query

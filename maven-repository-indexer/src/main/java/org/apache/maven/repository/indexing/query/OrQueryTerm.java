@@ -24,6 +24,11 @@ package org.apache.maven.repository.indexing.query;
 public class OrQueryTerm
     extends AbstractCompoundQueryTerm
 {
+    /**
+     * Class constructor
+     *
+     * @param query the Query object represented by this Query object
+     */
     public OrQueryTerm( Query query )
     {
         super( query );

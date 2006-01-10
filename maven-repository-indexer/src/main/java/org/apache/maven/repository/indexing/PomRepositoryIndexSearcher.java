@@ -20,6 +20,8 @@ import org.apache.lucene.document.Document;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 
 /**
+ * The PomRepositoryIndexSearcher is used to search for artifacts in the index created by a PomRepositoryIndex class.
+ *
  * @author Edwin Punzalan
  */
 public class PomRepositoryIndexSearcher
@@ -27,12 +29,20 @@ public class PomRepositoryIndexSearcher
 {
     private ArtifactFactory factory;
 
+    /**
+     *
+     * @param index the PomRepositoryIndex
+     * @param artifactFactory
+     */
     public PomRepositoryIndexSearcher( RepositoryIndex index, ArtifactFactory artifactFactory )
     {
         super( index );
         this.factory = artifactFactory;
     }
 
+    /**
+     * @see AbstractRepositoryIndexSearcher#createSearchedObjectFromIndexDocument(org.apache.lucene.document.Document) 
+     */
     protected Object createSearchedObjectFromIndexDocument( Document doc )
     {
         String groupId = doc.get( PomRepositoryIndex.FLD_GROUPID );

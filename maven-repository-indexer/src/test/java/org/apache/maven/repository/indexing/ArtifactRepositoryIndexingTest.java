@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @author Edwin Punzalan/Maria Odea Ching
+ * @author Edwin Punzalan
  */
 public class ArtifactRepositoryIndexingTest
     extends PlexusTestCase

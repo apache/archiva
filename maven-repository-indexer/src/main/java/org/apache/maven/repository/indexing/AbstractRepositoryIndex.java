@@ -40,6 +40,14 @@ public abstract class AbstractRepositoryIndex
 
     protected ArtifactRepository repository;
 
+    /**
+     * Class constructor
+     *
+     * @param indexPath
+     * @param repository
+     * @param indexFields
+     * @throws RepositoryIndexException
+     */
     protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository, String[] indexFields )
         throws RepositoryIndexException
     {
@@ -57,7 +65,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * method to encapsulate the optimize() method for lucene
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#optimize()
      */
     public void optimize()
         throws RepositoryIndexException
@@ -78,9 +86,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * method used to query the index status
-     *
-     * @return true if the index is open.
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#isOpen()
      */
     public boolean isOpen()
     {
@@ -88,7 +94,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * method used to close all open streams to the index directory
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#close()
      */
     public void close()
         throws RepositoryIndexException
@@ -109,11 +115,20 @@ public abstract class AbstractRepositoryIndex
         }
     }
 
+    /**
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#getIndexPath()
+     */
     public String getIndexPath()
     {
         return indexPath;
     }
 
+    /**
+     * Method to retrieve the lucene IndexWriter used in creating/updating the index
+     *
+     * @return the lucene IndexWriter object used to update the index
+     * @throws IOException
+     */
     protected IndexWriter getIndexWriter()
         throws IOException
     {
@@ -173,6 +188,9 @@ public abstract class AbstractRepositoryIndex
         indexOpen = true;
     }
 
+    /**
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#getRepository()
+     */
     public ArtifactRepository getRepository()
     {
         return repository;

@@ -24,11 +24,19 @@ package org.apache.maven.repository.indexing.query;
 public class NotQueryTerm
     extends AbstractCompoundQueryTerm
 {
+    /**
+     * Class constructor
+     *
+     * @param query the Query object represented by this Query object
+     */
     public NotQueryTerm( Query query )
     {
         super( query );
     }
 
+    /**
+     * @see CompoundQueryTerm#isProhibited()
+     */
     public boolean isProhibited()
     {
         return true;

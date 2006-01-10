@@ -26,7 +26,6 @@ import java.io.File;
  * This class searches the index for existing artifacts that contains the
  * specified query string.
  *
- * @author Maria Odea Ching
  */
 public class ArtifactRepositoryIndexSearcher
     extends AbstractRepositoryIndexSearcher
@@ -45,6 +44,9 @@ public class ArtifactRepositoryIndexSearcher
         this.factory = factory;
     }
 
+    /**
+     * @see AbstractRepositoryIndexSearcher#createSearchedObjectFromIndexDocument(org.apache.lucene.document.Document)
+     */
     protected Object createSearchedObjectFromIndexDocument( Document doc )
     {
         String groupId = doc.get( ArtifactRepositoryIndex.FLD_GROUPID );

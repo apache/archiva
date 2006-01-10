@@ -18,6 +18,8 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
+ * Class to hold a single field search condition
+ *
  * @author Edwin Punzalan
  */
 public class SinglePhraseQuery
@@ -27,17 +29,33 @@ public class SinglePhraseQuery
 
     private String value;
 
+    /**
+     * Class constructor
+     *
+     * @param field the index field to search
+     * @param value the index value requirement
+     */
     public SinglePhraseQuery( String field, String value )
     {
         this.field = field;
         this.value = value;
     }
 
+    /**
+     * Method to retrieve the name of the index field searched
+     *
+     * @return the name of the index field
+     */
     public String getField()
     {
         return field;
     }
 
+    /**
+     * Method to retrieve the value used in searching the index field
+     *
+     * @return the value to corresspond the index field
+     */
     public String getValue()
     {
         return value;

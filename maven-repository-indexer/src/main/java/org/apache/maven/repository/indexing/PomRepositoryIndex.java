@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Class to create index entries for a given pom in a repository
+ *
  * @author Edwin Punzalan
  */
 public class PomRepositoryIndex
@@ -79,6 +81,15 @@ public class PomRepositoryIndex
     private static final List KEYWORD_FIELDS = Arrays.asList(
         new String[]{FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
 
+    /**
+     * Class Constructor
+     *
+     * @param indexPath the path where the index is available or will be made available
+     * @param repository the repository where objects indexed by this class resides
+     * @param digester the digester to be used for generating checksums
+     * @param artifactFactory the factory for building artifact objects
+     * @throws RepositoryIndexException
+     */
     public PomRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester,
                                ArtifactFactory artifactFactory )
         throws RepositoryIndexException
@@ -88,6 +99,9 @@ public class PomRepositoryIndex
         this.artifactFactory = artifactFactory;
     }
 
+    /**
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
+     */
     public Analyzer getAnalyzer()
     {
         if ( analyzer == null )
@@ -98,6 +112,12 @@ public class PomRepositoryIndex
         return analyzer;
     }
 
+    /**
+     * Method to create the index fields for a Model object into the index
+     *
+     * @param pom the Model object to be indexed
+     * @throws RepositoryIndexException
+     */
     public void indexPom( Model pom )
         throws RepositoryIndexException
     {
@@ -160,11 +180,20 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * @see RepositoryIndex#isKeywordField(String) 
+     */
     public boolean isKeywordField( String field )
     {
         return KEYWORD_FIELDS.contains( field );
     }
 
+    /**
+     * Method to index license urls found inside the passed pom
+     *
+     * @param doc the index object to create the fields for the license urls
+     * @param pom the Model object to be indexed
+     */
     private void indexLicenseUrls( Document doc, Model pom )
     {
         List licenseList = pom.getLicenses();
@@ -187,6 +216,12 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * Method to index declared dependencies found inside the passed pom
+     *
+     * @param doc the index object to create the fields for the dependencies
+     * @param pom the Model object to be indexed
+     */
     private void indexDependencies( Document doc, Model pom )
     {
         List dependencyList = pom.getDependencies();
@@ -206,6 +241,13 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * Method to index plugins to a specified index field
+     *
+     * @param doc the index object to create the fields for the plugins
+     * @param field the index field to store the passed plugin
+     * @param plugins the iterator to the list of plugins to be indexed
+     */
     private void indexPlugins( Document doc, String field, Iterator plugins )
     {
         while ( plugins.hasNext() )
@@ -216,6 +258,13 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * Method to index report plugins to a specified index field
+     *
+     * @param doc the index object to create the fields for the report plugins
+     * @param field the index field to store the passed report plugin
+     * @param plugins the iterator to the list of report plugins to be indexed
+     */
     private void indexReportPlugins( Document doc, String field, Iterator plugins )
     {
         while ( plugins.hasNext() )
@@ -226,6 +275,14 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * Method to generate the computed checksum of an existing file using the specified algorithm.
+     *
+     * @param algorithm the algorithm to be used to generate the checksum
+     * @param file the file to match the generated checksum
+     * @return a string representing the checksum
+     * @throws RepositoryIndexException
+     */
     private String getChecksum( String algorithm, String file )
         throws RepositoryIndexException
     {
@@ -243,6 +300,14 @@ public class PomRepositoryIndex
         }
     }
 
+    /**
+     * Method to create the unique artifact id to represent the artifact in the repository
+     *
+     * @param groupId the artifact groupId
+     * @param artifactId the artifact artifactId
+     * @param version the artifact version
+     * @return the String id to uniquely represent the artifact
+     */
     private String getId( String groupId, String artifactId, String version )
     {
         return groupId + ":" + artifactId + ":" + version;

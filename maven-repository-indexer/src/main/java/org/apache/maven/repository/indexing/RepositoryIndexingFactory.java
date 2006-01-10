@@ -27,13 +27,41 @@ public interface RepositoryIndexingFactory
 {
     String ROLE = RepositoryIndexingFactory.class.getName();
 
+    /**
+     * Method to create an instance of the ArtifactRepositoryIndexSearcher
+     *
+     * @param index the ArtifactRepositoryIndex instance that the returned searcher will be searching into
+     * @return the ArtifactRepositoryIndexSearcher instance
+     */
     ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index );
 
+    /**
+     * Method to create an instance of the ArtifactRepositoryIndex
+     *
+     * @param indexPath the path where the index will be created/updated
+     * @param repository the repository where the indexed artifacts are located
+     * @return the ArtifactRepositoryIndex instance
+     * @throws RepositoryIndexException
+     */
     ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
+    /**
+     * Method to create an instance of the PomRepositoryIndex
+     *
+     * @param indexPath the path where the index will be created/updated
+     * @param repository the repository where the indexed poms are located
+     * @return the PomRepositoryIndex instance
+     * @throws RepositoryIndexException
+     */
     PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
+    /**
+     * Method to create an instance of the PomRepositoryIndexSearcher
+     *
+     * @param index the PomRepositoryIndex instance that the returned searcher will be searching into
+     * @return the PomRepositoryIndexSearcher instance
+     */
     PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
 }

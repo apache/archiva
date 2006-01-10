@@ -29,21 +29,35 @@ public abstract class AbstractCompoundQueryTerm
      */
     private Query query;
 
+    /**
+     * Class constructor
+     *
+     * @param query the query represented by this object
+     */
     protected AbstractCompoundQueryTerm( Query query )
     {
         this.query = query;
     }
 
+    /**
+     * @see CompoundQueryTerm#isRequired()
+     */
     public boolean isRequired()
     {
         return false;
     }
 
+    /**
+     * @see CompoundQueryTerm#isProhibited()
+     */
     public boolean isProhibited()
     {
         return false;
     }
 
+    /**
+     * @see CompoundQueryTerm#getQuery() 
+     */
     public Query getQuery()
     {
         return query;

@@ -34,7 +34,7 @@ import java.util.zip.ZipFile;
 
 
 /**
- * Class used to index Artifact objects in a specified repository
+ * Class used to index Artifact objects in a specific repository
  *
  * @author Edwin Punzalan
  */
@@ -66,6 +66,14 @@ public class ArtifactRepositoryIndex
 
     private Digester digester;
 
+    /**
+     * Class constructor
+     *
+     * @param indexPath the path where the lucene index will be created/updated.
+     * @param repository the repository where the indexed artifacts are located
+     * @param digester the digester object to generate the checksum strings
+     * @throws RepositoryIndexException
+     */
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
     {
@@ -74,9 +82,7 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * method to get the Analyzer used to create indices
-     *
-     * @return the Analyzer object used to create the artifact indices
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
      */
     public Analyzer getAnalyzer()
     {
@@ -89,9 +95,10 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * method to index a given artifact
+     * Method to index a given artifact
      *
      * @param artifact the Artifact object to be indexed
+     * @throws RepositoryIndexException
      */
     public void indexArtifact( Artifact artifact )
         throws RepositoryIndexException
@@ -174,11 +181,21 @@ public class ArtifactRepositoryIndex
         }
     }
 
+    /**
+     * @see RepositoryIndex#isKeywordField(String)
+     */
     public boolean isKeywordField( String field )
     {
         return false;
     }
 
+    /**
+     * Method to test a zip entry if it is a java class, and adds it to the classes buffer
+     *
+     * @param entry the zip entry to test for java class
+     * @param classes the String buffer to add the java class if the test result as true
+     * @return true if the zip entry is a java class and was successfully added to the buffer
+     */
     private boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )
     {
         boolean isAdded = false;
@@ -203,6 +220,13 @@ public class ArtifactRepositoryIndex
         return isAdded;
     }
 
+    /**
+     * Method to add a class package to the buffer of packages
+     *
+     * @param name the complete path name of the class
+     * @param packages the packages buffer
+     * @return true if the package is successfully added
+     */
     private boolean addClassPackage( String name, StringBuffer packages )
     {
         boolean isAdded = false;
@@ -221,6 +245,13 @@ public class ArtifactRepositoryIndex
         return isAdded;
     }
 
+    /**
+     * Method to add the zip entry as a file list
+     *
+     * @param entry the zip entry to be added
+     * @param files the buffer of files to update
+     * @return true if the file was successfully added
+     */
     private boolean addFile( ZipEntry entry, StringBuffer files )
     {
         String name = entry.getName();

@@ -24,11 +24,19 @@ package org.apache.maven.repository.indexing.query;
 public class AndQueryTerm
     extends AbstractCompoundQueryTerm
 {
+    /**
+     * Class constructor
+     *
+     * @param query the Query object represented by this object
+     */
     public AndQueryTerm( Query query )
     {
         super( query );
     }
 
+    /**
+     * @see AbstractCompoundQueryTerm#isRequired()
+     */
     public boolean isRequired()
     {
         return true;

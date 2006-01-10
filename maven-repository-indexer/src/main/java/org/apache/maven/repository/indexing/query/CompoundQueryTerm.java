@@ -23,9 +23,24 @@ package org.apache.maven.repository.indexing.query;
  */
 public interface CompoundQueryTerm
 {
+    /**
+     * Method to test if the Query is a search requirement
+     *
+     * @return true if this Query is a search requirement, otherwise returns false
+     */
     boolean isRequired();
 
+    /**
+     * Method to test if the Query is prohibited in the search result
+     *
+     * @return true if this Query is prohibited in the search result
+     */
     boolean isProhibited();
 
+    /**
+     * Method to get the Query object represented by this object
+     *
+     * @return the Query object represented by this object
+     */
     Query getQuery();
 }

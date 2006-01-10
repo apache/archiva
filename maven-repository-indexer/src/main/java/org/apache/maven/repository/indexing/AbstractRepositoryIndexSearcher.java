@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
+ * Abstract Class to hold common codes for the different RepositoryIndexSearcher
  */
 public abstract class AbstractRepositoryIndexSearcher
     extends AbstractLogEnabled
@@ -55,12 +55,7 @@ public abstract class AbstractRepositoryIndexSearcher
     }
 
     /**
-     * Search the artifact based on the search criteria specified in the query
-     * object. Returns a list of artifact objects
-     *
-     * @param query the query object that contains the search criteria
-     * @return List
-     * @throws RepositoryIndexSearchException
+     * @see RepositoryIndexSearcher#search(org.apache.maven.repository.indexing.query.Query)
      */
     public List search( Query query )
         throws RepositoryIndexSearchException
@@ -111,6 +106,14 @@ public abstract class AbstractRepositoryIndexSearcher
         return docs;
     }
 
+    /**
+     * Method to create a lucene Query object from a single query phrase
+     *
+     * @param field the index field name to search into
+     * @param value the index field value to match the field with
+     * @return a lucene Query object representing the query phrase field = value
+     * @throws ParseException
+     */
     private org.apache.lucene.search.Query createLuceneQuery( String field, String value )
         throws ParseException
     {
@@ -128,6 +131,13 @@ public abstract class AbstractRepositoryIndexSearcher
         return qry;
     }
 
+    /**
+     * Method to create a lucene Query object by converting a prepared Query object
+     *
+     * @param query the prepared Query object to be converted into a lucene Query object
+     * @return a lucene Query object to represent the passed Query object
+     * @throws ParseException
+     */
     private org.apache.lucene.search.Query createLuceneQuery( Query query )
         throws ParseException
     {
