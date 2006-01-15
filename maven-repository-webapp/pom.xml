@@ -33,4 +33,11 @@
       </plugin>
     </plugins>
   </build>
+  <!-- For plexus xwork -->
+  <repositories>
+    <repository>
+      <id>snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </repository>
+  </repositories>
 </project>
