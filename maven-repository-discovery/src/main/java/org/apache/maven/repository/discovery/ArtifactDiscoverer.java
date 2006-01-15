@@ -16,7 +16,8 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
-import java.io.File;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface ArtifactDiscoverer
     /**
      * Discover artifacts in the repository.
      *
-     * @param repositoryBase      the base directory of the repository on the local filesystem
+     * @param repository          the location of the repository
      * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
      * @param includeSnapshots    whether to discover snapshots
      * @return the list of artifacts discovered
@@ -42,7 +43,7 @@ public interface ArtifactDiscoverer
      * @todo should includeSnapshots be configuration on the component?
      * @todo instead of a returned list, should a listener be passed in?
      */
-    List discoverArtifacts( File repositoryBase, String blacklistedPatterns, boolean includeSnapshots );
+    List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
 
     /**
      * Get the list of paths kicked out during the discovery process.

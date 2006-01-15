@@ -17,6 +17,7 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 
 import java.io.File;
@@ -43,17 +44,18 @@ public class LegacyArtifactDiscoverer
      */
     private ArtifactFactory artifactFactory;
 
-    public List discoverArtifacts( File repositoryBase, String blacklistedPatterns, boolean includeSnapshots )
+    public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
     {
         List artifacts = new ArrayList();
 
+        File repositoryBase = new File( repository.getBasedir() );
         String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
 
         for ( int i = 0; i < artifactPaths.length; i++ )
         {
             String path = artifactPaths[i];
 
-            Artifact artifact = buildArtifact( repositoryBase, path );
+            Artifact artifact = buildArtifact( repositoryBase, path, repository );
             if ( artifact != null )
             {
                 if ( includeSnapshots || !artifact.isSnapshot() )
@@ -69,7 +71,7 @@ public class LegacyArtifactDiscoverer
     /**
      * @noinspection CollectionDeclaredAsConcreteClass
      */
-    private Artifact buildArtifact( File repositoryBase, String path )
+    private Artifact buildArtifact( File repositoryBase, String path, ArtifactRepository repository )
     {
         StringTokenizer tokens = new StringTokenizer( path, "/\\" );
 
@@ -326,6 +328,7 @@ public class LegacyArtifactDiscoverer
                                                                      Artifact.SCOPE_RUNTIME, type );
                         }
 
+                        result.setRepository( repository );
                         result.setFile( new File( repositoryBase, path ) );
                     }
                 }

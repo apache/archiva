@@ -18,6 +18,8 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -42,8 +44,15 @@ public class DefaultArtifactDiscoverer
      */
     private ArtifactFactory artifactFactory;
 
-    public List discoverArtifacts( File repositoryBase, String blacklistedPatterns, boolean includeSnapshots )
+    public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
     {
+        if ( !"file".equals( repository.getProtocol() ) )
+        {
+            throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
+        }
+
+        File repositoryBase = new File( repository.getBasedir() );
+
         List artifacts = new ArrayList();
 
         String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
@@ -52,7 +61,7 @@ public class DefaultArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
-            Artifact artifact = buildArtifact( repositoryBase, path );
+            Artifact artifact = buildArtifact( repositoryBase, path, repository );
 
             if ( artifact != null )
             {
@@ -66,7 +75,7 @@ public class DefaultArtifactDiscoverer
         return artifacts;
     }
 
-    private Artifact buildArtifact( File repositoryBase, String path )
+    private Artifact buildArtifact( File repositoryBase, String path, ArtifactRepository repository )
     {
         List pathParts = new ArrayList();
         StringTokenizer st = new StringTokenizer( path, "/\\" );
@@ -216,6 +225,7 @@ public class DefaultArtifactDiscoverer
 
         if ( finalResult != null )
         {
+            finalResult.setRepository( repository );
             finalResult.setFile( new File( repositoryBase, path ) );
         }
 
