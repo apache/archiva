@@ -41,6 +41,10 @@ import java.util.List;
  */
 public class IndexCli
 {
+    private IndexCli()
+    {
+    }
+
     public static void main( String[] args )
         throws PlexusContainerException, ComponentLookupException, RepositoryIndexException, MalformedURLException
     {
@@ -62,7 +66,7 @@ public class IndexCli
 
         ArtifactDiscoverer discoverer = (ArtifactDiscoverer) embedder.lookup( ArtifactDiscoverer.ROLE, "legacy" );
 
-        List artifacts = discoverer.discoverArtifacts( new File( repository.getBasedir() ), null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, null, false );
 
         ArtifactRepositoryIndex index =
             indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ).getAbsolutePath(), repository );
