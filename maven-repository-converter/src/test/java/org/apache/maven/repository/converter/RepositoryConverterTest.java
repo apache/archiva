@@ -49,6 +49,8 @@ public class RepositoryConverterTest
 
     private ArtifactFactory artifactFactory;
 
+    private static final int SLEEP_MILLIS = 100;
+
     protected void setUp()
         throws Exception
     {
@@ -114,11 +116,22 @@ public class RepositoryConverterTest
         File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3.pom" );
         assertTrue( "Check POM created", pomFile.exists() );
 
-        String expectedContent = FileUtils.fileRead( expectedPomFile ).trim();
-        String targetContent = FileUtils.fileRead( pomFile ).trim();
-        assertEquals( "Check POM was converted", expectedContent, targetContent );
+        compareFiles( expectedPomFile, pomFile );
 
         // TODO: test warnings (separate test?)
+    }
+
+    private static void compareFiles( File expectedPomFile, File pomFile )
+        throws IOException
+    {
+        String expectedContent = normalizeString( FileUtils.fileRead( expectedPomFile ) );
+        String targetContent = normalizeString( FileUtils.fileRead( pomFile ) );
+        assertEquals( "Check POM was converted", expectedContent, targetContent );
+    }
+
+    private static String normalizeString( String path )
+    {
+        return path.trim().replace( "\r\n", "\n" ).replace( '\r', '\n' );
     }
 
     public void testNoPomConvert()
@@ -174,7 +187,7 @@ public class RepositoryConverterTest
     }
 
     public void testUnmodifiedArtifact()
-        throws RepositoryConversionException, IOException
+        throws RepositoryConversionException, IOException, InterruptedException
     {
         // test the unmodified artifact is untouched
 
@@ -194,6 +207,9 @@ public class RepositoryConverterTest
 
         long origTime = targetFile.lastModified();
         long origPomTime = targetPomFile.lastModified();
+
+        // Need to guarantee last modified is not equal
+        Thread.sleep( SLEEP_MILLIS );
 
         repositoryConverter.convert( artifact, targetRepository );
 
@@ -237,6 +253,9 @@ public class RepositoryConverterTest
 
         sourceFile.setLastModified( System.currentTimeMillis() );
         sourcePomFile.setLastModified( System.currentTimeMillis() );
+
+        // Need to guarantee last modified is not equal
+        Thread.sleep( SLEEP_MILLIS );
 
         repositoryConverter.convert( artifact, targetRepository );
 
@@ -336,9 +355,7 @@ public class RepositoryConverterTest
                 getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId() + ".pom" );
             assertTrue( "Check POM created", pomFile.exists() );
 
-            String expectedContent = FileUtils.fileRead( expectedPomFile ).trim();
-            String targetContent = FileUtils.fileRead( pomFile ).trim();
-            assertEquals( "Check POM was converted", expectedContent, targetContent );
+            compareFiles( expectedPomFile, pomFile );
         }
     }
 
