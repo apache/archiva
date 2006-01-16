@@ -18,18 +18,29 @@ package org.apache.maven.repository.converter;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
+import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.model.converter.ArtifactPomRewriter;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * Implementation of repository conversion class.
@@ -66,6 +77,99 @@ public class DefaultRepositoryConverter
         copyArtifact( artifact, targetRepository );
 
         copyPom( artifact, targetRepository );
+
+        Metadata metadata = createBaseMetadata( artifact );
+        Versioning versioning = new Versioning();
+        versioning.addVersion( artifact.getBaseVersion() );
+        metadata.setVersioning( versioning );
+        updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
+
+        metadata = createBaseMetadata( artifact );
+        metadata.setVersion( artifact.getBaseVersion() );
+        versioning = new Versioning();
+
+        Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
+        if ( matcher.matches() )
+        {
+            Snapshot snapshot = new Snapshot();
+            snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
+            snapshot.setTimestamp( matcher.group( 2 ) );
+            versioning.setSnapshot( snapshot );
+        }
+
+        // TODO: merge latest/release/snapshot from source instead
+        metadata.setVersioning( versioning );
+        updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
+    }
+
+    private static Metadata createBaseMetadata( Artifact artifact )
+    {
+        Metadata metadata = new Metadata();
+        metadata.setArtifactId( artifact.getArtifactId() );
+        metadata.setGroupId( artifact.getGroupId() );
+        return metadata;
+    }
+
+    private void updateMetadata( ArtifactMetadata artifactMetadata, ArtifactRepository targetRepository,
+                                 Metadata newMetadata )
+        throws RepositoryConversionException
+    {
+        File file = new File( targetRepository.getBasedir(),
+                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+
+        Metadata metadata;
+        boolean changed;
+
+        if ( file.exists() )
+        {
+            MetadataXpp3Reader reader = new MetadataXpp3Reader();
+            FileReader fileReader = null;
+            try
+            {
+                fileReader = new FileReader( file );
+                metadata = reader.read( fileReader );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryConversionException( "Error reading target metadata", e );
+            }
+            catch ( XmlPullParserException e )
+            {
+                throw new RepositoryConversionException( "Error reading target metadata", e );
+            }
+            finally
+            {
+                IOUtil.close( fileReader );
+            }
+            changed = metadata.merge( newMetadata );
+        }
+        else
+        {
+            changed = true;
+            metadata = newMetadata;
+        }
+
+        if ( changed )
+        {
+            Writer writer = null;
+            try
+            {
+                file.getParentFile().mkdirs();
+                writer = new FileWriter( file );
+
+                MetadataXpp3Writer mappingWriter = new MetadataXpp3Writer();
+
+                mappingWriter.write( writer, metadata );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryConversionException( "Error writing target metadata", e );
+            }
+            finally
+            {
+                IOUtil.close( writer );
+            }
+        }
     }
 
     private void copyPom( Artifact artifact, ArtifactRepository targetRepository )
@@ -73,6 +177,7 @@ public class DefaultRepositoryConverter
     {
         Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                                               artifact.getVersion() );
+        pom.setBaseVersion( artifact.getBaseVersion() );
         ArtifactRepository repository = artifact.getRepository();
         File file = new File( repository.getBasedir(), repository.pathOf( pom ) );
 

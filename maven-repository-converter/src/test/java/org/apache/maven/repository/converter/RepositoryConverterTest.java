@@ -18,9 +18,12 @@ package org.apache.maven.repository.converter;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -29,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
 
 /**
  * Test the repository converter.
@@ -37,6 +41,8 @@ import java.util.List;
  * @todo what about deletions from the source repository?
  * @todo use artifact-test instead
  * @todo should reject if dependencies are missing - rely on reporting?
+ * @todo group metadata
+ * @todo write timestamp into the metadata
  */
 public class RepositoryConverterTest
     extends PlexusTestCase
@@ -94,9 +100,9 @@ public class RepositoryConverterTest
         File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
         assertTrue( "Check POM created", pomFile.exists() );
 
-        String sourceContent = FileUtils.fileRead( sourcePomFile ).trim();
-        String targetContent = FileUtils.fileRead( pomFile ).trim();
-        assertEquals( "Check POM matches", sourceContent, targetContent );
+        compareFiles( sourcePomFile, pomFile );
+
+        // TODO: metadata
     }
 
     public void testV3PomConvert()
@@ -118,20 +124,182 @@ public class RepositoryConverterTest
 
         compareFiles( expectedPomFile, pomFile );
 
-        // TODO: test warnings (separate test?)
+        // TODO: metadata
     }
 
-    private static void compareFiles( File expectedPomFile, File pomFile )
-        throws IOException
+    public void testV3PomWarningsOnConvert()
     {
-        String expectedContent = normalizeString( FileUtils.fileRead( expectedPomFile ) );
-        String targetContent = normalizeString( FileUtils.fileRead( pomFile ) );
-        assertEquals( "Check POM was converted", expectedContent, targetContent );
+        // test that the pom is converted but that warnings are reported
+
+        // TODO
     }
 
-    private static String normalizeString( String path )
+    public void testV4SnapshotPomConvert()
+        throws IOException, RepositoryConversionException
     {
-        return path.trim().replace( "\r\n", "\n" ).replace( '\r', '\n' );
+        // test that it is copied as is
+
+        Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0-SNAPSHOT" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        snapshotMetadataFile.delete();
+
+        repositoryConverter.convert( artifact, targetRepository );
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( sourcePomFile, pomFile );
+
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, snapshotMetadataFile );
+    }
+
+    public void testV3SnapshotPomConvert()
+        throws IOException, RepositoryConversionException
+    {
+        // test that the pom is coverted
+
+        Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-SNAPSHOT" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        snapshotMetadataFile.delete();
+
+        repositoryConverter.convert( artifact, targetRepository );
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-snapshot.pom" );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( expectedPomFile, pomFile );
+
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, snapshotMetadataFile );
+    }
+
+    public void testV4TimestampedSnapshotPomConvert()
+        throws IOException, RepositoryConversionException
+    {
+        // test that it is copied as is
+
+        Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0-20060111.120115-1" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        snapshotMetadataFile.delete();
+
+        repositoryConverter.convert( artifact, targetRepository );
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( sourcePomFile, pomFile );
+
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v4-timestamped-snapshot-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, snapshotMetadataFile );
+    }
+
+    public void testV3TimestampedSnapshotPomConvert()
+        throws IOException, RepositoryConversionException
+    {
+        // test that the pom is coverted
+
+        Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-20060105.130101-3" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        snapshotMetadataFile.delete();
+
+        repositoryConverter.convert( artifact, targetRepository );
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-timestamped-snapshot.pom" );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( expectedPomFile, pomFile );
+
+        assertTrue( "Check artifact snapshotMetadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot snapshotMetadata created", snapshotMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v3-timestamped-snapshot-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
 
     public void testNoPomConvert()
@@ -213,13 +381,8 @@ public class RepositoryConverterTest
 
         repositoryConverter.convert( artifact, targetRepository );
 
-        String expectedContent = FileUtils.fileRead( sourceFile ).trim();
-        String targetContent = FileUtils.fileRead( targetFile ).trim();
-        assertEquals( "Check file matches", expectedContent, targetContent );
-
-        expectedContent = FileUtils.fileRead( sourcePomFile ).trim();
-        targetContent = FileUtils.fileRead( targetPomFile ).trim();
-        assertEquals( "Check POM matches", expectedContent, targetContent );
+        compareFiles( sourceFile, targetFile );
+        compareFiles( sourcePomFile, targetPomFile );
 
         assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
@@ -259,13 +422,8 @@ public class RepositoryConverterTest
 
         repositoryConverter.convert( artifact, targetRepository );
 
-        String expectedContent = FileUtils.fileRead( sourceFile ).trim();
-        String targetContent = FileUtils.fileRead( targetFile ).trim();
-        assertEquals( "Check file matches", expectedContent, targetContent );
-
-        expectedContent = FileUtils.fileRead( sourcePomFile ).trim();
-        targetContent = FileUtils.fileRead( targetPomFile ).trim();
-        assertEquals( "Check POM matches", expectedContent, targetContent );
+        compareFiles( sourceFile, targetFile );
+        compareFiles( sourcePomFile, targetPomFile );
 
         assertFalse( "Check modified", origTime == targetFile.lastModified() );
         assertFalse( "Check modified", origPomTime == targetPomFile.lastModified() );
@@ -366,30 +524,9 @@ public class RepositoryConverterTest
         // TODO
     }
 
-    public void testSnapshotArtifact()
-    {
-        // test snapshot artifact is converted
-
-        // TODO
-    }
-
     public void testInvalidSourceSnapshotMetadata()
     {
         // test artifact is not converted when source snapshot metadata is invalid and returns failure
-
-        // TODO
-    }
-
-    public void testCreateArtifactMetadata()
-    {
-        // test artifact level metadata is created when it doesn't exist on successful conversion
-
-        // TODO
-    }
-
-    public void testCreateSnapshotMetadata()
-    {
-        // test snapshot metadata is created when it doesn't exist on successful conversion
 
         // TODO
     }
@@ -417,12 +554,24 @@ public class RepositoryConverterTest
 
     private Artifact createArtifact( String groupId, String artifactId, String version )
     {
-        return createArtifact( groupId, artifactId, version, "jar" );
+        Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( version );
+        String baseVersion;
+        if ( matcher.matches() )
+        {
+            baseVersion = matcher.group( 1 ) + "-SNAPSHOT";
+        }
+        else
+        {
+            baseVersion = version;
+        }
+        return createArtifact( groupId, artifactId, baseVersion, version, "jar" );
     }
 
-    private Artifact createArtifact( String groupId, String artifactId, String version, String type )
+    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,
+                                     String type )
     {
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );
+        artifact.setBaseVersion( baseVersion );
         artifact.setRepository( sourceRepository );
         artifact.setFile( new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) ) );
         return artifact;
@@ -430,7 +579,21 @@ public class RepositoryConverterTest
 
     private Artifact createPomArtifact( Artifact artifact )
     {
-        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "pom" );
+        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(),
+                               artifact.getVersion(), "pom" );
+    }
+
+    private static void compareFiles( File expectedPomFile, File pomFile )
+        throws IOException
+    {
+        String expectedContent = normalizeString( FileUtils.fileRead( expectedPomFile ) );
+        String targetContent = normalizeString( FileUtils.fileRead( pomFile ) );
+        assertEquals( "Check file match", expectedContent, targetContent );
+    }
+
+    private static String normalizeString( String path )
+    {
+        return path.trim().replace( "\r\n", "\n" ).replace( '\r', '\n' );
     }
 
 }
