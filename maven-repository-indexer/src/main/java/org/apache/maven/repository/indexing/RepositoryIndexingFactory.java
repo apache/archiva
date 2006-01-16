@@ -64,4 +64,10 @@ public interface RepositoryIndexingFactory
      * @return the PomRepositoryIndexSearcher instance
      */
     PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
+
+    MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository)
+            throws RepositoryIndexException;
+
+    MetadataRepositoryIndexSearcher createMetadataRepositoryIndexSearcher( MetadataRepositoryIndex index );
+
 }

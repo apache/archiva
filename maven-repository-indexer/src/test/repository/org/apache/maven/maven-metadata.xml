@@ -1,0 +1,9 @@
+<metadata>
+<groupId>org.apache.maven</groupId>
+<plugins>
+  <plugin>
+    <prefix>org.apache.maven</prefix>
+    <artifactId>org.apache.maven-maven-plugin</artifactId>
+  </plugin>
+</plugins>
+</metadata>

@@ -71,4 +71,14 @@ public class DefaultRepositoryIndexingFactory
     {
         return new PomRepositoryIndexSearcher( index, artifactFactory );
     }
+
+    public MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository)
+        throws RepositoryIndexException{
+        return new MetadataRepositoryIndex(indexPath, repository);
+    }
+
+    public MetadataRepositoryIndexSearcher createMetadataRepositoryIndexSearcher( MetadataRepositoryIndex index )
+    {
+        return new MetadataRepositoryIndexSearcher( index, artifactFactory );
+    }
 }

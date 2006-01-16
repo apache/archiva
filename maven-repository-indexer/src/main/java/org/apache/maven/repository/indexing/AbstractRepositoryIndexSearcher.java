@@ -28,6 +28,7 @@ import org.apache.maven.repository.indexing.query.CompoundQuery;
 import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.RangeQuery;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.IOException;
@@ -157,6 +158,21 @@ public abstract class AbstractRepositoryIndexSearcher
                 booleanQuery.add( luceneQuery, subquery.isRequired(), subquery.isProhibited() );
             }
             retVal = booleanQuery;
+        }
+        else if( query instanceof RangeQuery )
+        {
+            RangeQuery rq = (RangeQuery) query;
+            List queries = rq.getQueries();
+            Iterator iter = queries.iterator();
+            Term begin = null, end = null;
+            if(queries.size() == 2)
+            {
+                SinglePhraseQuery qry = (SinglePhraseQuery) iter.next();
+                begin = new Term( qry.getField(), qry.getValue() );
+                qry = ( SinglePhraseQuery ) iter.next();
+                end = new Term( qry.getField(), qry.getValue() );
+            }            
+            retVal = new org.apache.lucene.search.RangeQuery( begin, end, rq.isInclusive() );
         }
         else
         {
