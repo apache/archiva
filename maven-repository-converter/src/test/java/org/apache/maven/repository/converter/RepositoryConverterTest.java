@@ -89,6 +89,16 @@ public class RepositoryConverterTest
         // test that it is copied as is
 
         Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        versionMetadataFile.delete();
+
         repositoryConverter.convert( artifact, targetRepository );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -102,7 +112,17 @@ public class RepositoryConverterTest
 
         compareFiles( sourcePomFile, pomFile );
 
-        // TODO: metadata
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot metadata created", versionMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v4-version-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, versionMetadataFile );
     }
 
     public void testV3PomConvert()
@@ -111,6 +131,16 @@ public class RepositoryConverterTest
         // test that the pom is coverted
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        versionMetadataFile.delete();
+
         repositoryConverter.convert( artifact, targetRepository );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -124,7 +154,17 @@ public class RepositoryConverterTest
 
         compareFiles( expectedPomFile, pomFile );
 
-        // TODO: metadata
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+
+        assertTrue( "Check snapshot metadata created", versionMetadataFile.exists() );
+
+        expectedMetadataFile = getTestFile( "src/test/expected-files/v3-version-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, versionMetadataFile );
     }
 
     public void testV3PomWarningsOnConvert()
@@ -165,7 +205,7 @@ public class RepositoryConverterTest
 
         assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
@@ -207,7 +247,7 @@ public class RepositoryConverterTest
 
         assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
@@ -249,7 +289,7 @@ public class RepositoryConverterTest
 
         assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
@@ -291,7 +331,7 @@ public class RepositoryConverterTest
 
         assertTrue( "Check artifact snapshotMetadata created", artifactMetadataFile.exists() );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
