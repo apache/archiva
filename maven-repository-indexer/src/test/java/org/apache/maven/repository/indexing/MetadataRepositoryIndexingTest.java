@@ -114,7 +114,7 @@ public class MetadataRepositoryIndexingTest
      *
      * @throws Exception
      */
-     public void testSearchSingle()
+     public void testSearch()
          throws Exception
      {
         createTestIndex();
@@ -180,6 +180,50 @@ public class MetadataRepositoryIndexingTest
 
         indexer.close();
      }
+
+    public void testExceptions()
+         throws Exception
+    {
+        //test when the object passed in the index(..) method is not a RepositoryMetadat instance
+        RepositoryIndexingFactory factory = ( RepositoryIndexingFactory ) lookup( RepositoryIndexingFactory.ROLE );
+        indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
+        try
+        {
+            Artifact artifact = getArtifact("org.apache.maven", "maven-artifact", "2.0.1");
+            indexer.index( artifact );
+            fail( "Must throw exception when the passed object is not a RepositoryMetadata object." );
+        }
+        catch( Exception e )
+        {
+        }
+        indexer.optimize();
+        indexer.close();
+
+        //test when the plugin prefix is blank
+        factory = ( RepositoryIndexingFactory ) lookup( RepositoryIndexingFactory.ROLE );
+        indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
+        try
+        {
+            RepositoryMetadata repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", GROUP_TYPE );
+            indexer.index( repoMetadata );
+        }
+        catch( Exception e )
+        {
+        }
+        indexer.optimize();
+        indexer.close();
+
+       //test when the index is closed
+        try
+        {
+            RepositoryMetadata repoMetadata = getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+            indexer.index( repoMetadata );
+            fail( "Must throw exception when a metadata is added to the index while the indexer is still closed." );
+        }
+        catch( Exception e )
+        {
+        }
+    }
 
     /**
      * Create RepositoryMetadata object.
