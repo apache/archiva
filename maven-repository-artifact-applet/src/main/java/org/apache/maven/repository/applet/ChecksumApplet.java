@@ -17,7 +17,10 @@ package org.apache.maven.repository.applet;
  *
  */
 
+import javax.swing.*;
 import java.applet.Applet;
+import java.awt.*;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +28,6 @@ import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
-import java.util.Properties;
 
 /**
  * TODO: Description.
@@ -39,14 +41,23 @@ public class ChecksumApplet
 
     private static final int BYTE_MASK = 0xFF;
 
+    private JProgressBar progressBar;
+
     public void init()
     {
-        super.init();
+        setLayout( new BorderLayout() );
+        progressBar = new JProgressBar();
+        progressBar.setStringPainted( true );
+        add( progressBar, BorderLayout.CENTER );
+        JLabel label = new JLabel( "Checksum progress: " );
+        add( label, BorderLayout.WEST );
+        setVisible( false );
     }
 
     public String generateMd5( final String file )
         throws IOException, NoSuchAlgorithmException
     {
+        setVisible( true );
         return (String) AccessController.doPrivileged( new PrivilegedAction()
         {
             public Object run()
@@ -55,6 +66,8 @@ public class ChecksumApplet
                 {
                     MessageDigest digest = MessageDigest.getInstance( "MD5" );
 
+                    long total = new File( file ).length();
+                    long totalRead = 0;
                     InputStream fis = new FileInputStream( file );
                     try
                     {
@@ -66,6 +79,8 @@ public class ChecksumApplet
                             if ( numRead > 0 )
                             {
                                 digest.update( buffer, 0, numRead );
+                                totalRead += numRead;
+                                progressBar.setValue( (int) ( totalRead * progressBar.getMaximum() / total ) );
                             }
                         }
                         while ( numRead != -1 );

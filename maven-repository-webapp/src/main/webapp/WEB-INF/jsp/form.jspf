@@ -23,14 +23,15 @@
 </script>
 
 <p>Search by MD5 (select an artifact):
-  <form action="search.action"
-        onsubmit="this.md5.value = doSomething(this.file.value); this.file.disabled = true;">
-    <input name="md5" type="hidden"/>
-    <input type="file" name="file"/>
-    <input type="submit" value="Search"/>
-  </form>
 
-  <!--"CONVERTED_APPLET"-->
+<form action="search.action"
+      onsubmit="this.md5.value = doSomething(this.file.value); this.file.disabled = true;">
+  <input name="md5" type="hidden"/>
+  <input type="file" name="file"/>
+  <input type="submit" value="Search"/>
+</form>
+
+<!--"CONVERTED_APPLET"-->
 <!-- HTML CONVERTER -->
 <script language="JavaScript" type="text/javascript"><!--
     var _info = navigator.userAgent;
@@ -39,32 +40,33 @@
     var _ie = (_info.indexOf("MSIE") > 0 && _info.indexOf("Win") > 0 && _info.indexOf("Windows 3.1") < 0);
 //--></script>
 
-    <comment>
-        <script language="JavaScript" type="text/javascript"><!--
+<comment>
+  <script language="JavaScript" type="text/javascript"><!--
         var _ns = (navigator.appName.indexOf("Netscape") >= 0 && ((_info.indexOf("Win") > 0 && _info.indexOf("Win16") < 0 && java.lang.System.getProperty("os.version").indexOf("3.5") < 0) || (_info.indexOf("Sun") > 0) || (_info.indexOf("Linux") > 0) || (_info.indexOf("AIX") > 0) || (_info.indexOf("OS/2") > 0) || (_info.indexOf("IRIX") > 0)));
         var _ns6 = ((_ns == true) && (_info.indexOf("Mozilla/5") >= 0));
 //--></script>
-    </comment>
+</comment>
 
 <script language="JavaScript" type="text/javascript"><!--
-    if (_ie == true) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "1" HEIGHT = "1" NAME = "ChecksumApplet"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,5"><noembed><xmp>');
+    if (_ie == true) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "400" HEIGHT = "20" NAME = "ChecksumApplet"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,5"><noembed><xmp>');
     else if (_ns == true && _ns6 == false) document.writeln('<embed ' +
 	    'type="application/x-java-applet;version=1.5" \
             CODE = "org/apache/maven/repository/applet/ChecksumApplet.class" \
             ARCHIVE = "maven-repository-artifact-applet.jar" \
             NAME = "ChecksumApplet" \
-            WIDTH = "1" \
-            HEIGHT = "1" ' +
+            WIDTH = "400" \
+            HEIGHT = "20" ' +
 	    'scriptable=false ' +
 	    'pluginspage="http://java.sun.com/products/plugin/index.html#download"><noembed><xmp>');
 //--></script>
-<applet  CODE = "org/apache/maven/repository/applet/ChecksumApplet.class" ARCHIVE = "maven-repository-artifact-applet.jar" WIDTH = "1" HEIGHT = "1" NAME = "ChecksumApplet"></xmp>
-    <PARAM NAME = CODE VALUE = "org/apache/maven/repository/applet/ChecksumApplet.class" >
-    <PARAM NAME = ARCHIVE VALUE = "maven-repository-artifact-applet.jar" >
-    <PARAM NAME = NAME VALUE = "ChecksumApplet" >
+<applet CODE="org/apache/maven/repository/applet/ChecksumApplet.class" ARCHIVE="maven-repository-artifact-applet.jar"
+        WIDTH="400" HEIGHT="20" NAME="ChecksumApplet"></xmp>
+<PARAM NAME=CODE VALUE="org/apache/maven/repository/applet/ChecksumApplet.class">
+  <PARAM NAME=ARCHIVE VALUE="maven-repository-artifact-applet.jar">
+  <PARAM NAME=NAME VALUE="ChecksumApplet">
 
-    <param name="type" value="application/x-java-applet;version=1.5">
-    <param name="scriptable" value="false">
+  <param name="type" value="application/x-java-applet;version=1.5">
+  <param name="scriptable" value="false">
 
 
 </applet>
@@ -73,7 +75,8 @@
 </object>
 
 <!--
-<APPLET CODE = "org/apache/maven/repository/applet/ChecksumApplet.class" ARCHIVE = "maven-repository-artifact-applet.jar" WIDTH = "1" HEIGHT = "1" NAME = "ChecksumApplet">
+<APPLET CODE = "org/apache/maven/repository/applet/ChecksumApplet.class" ARCHIVE =
+"maven-repository-artifact-applet.jar" WIDTH = "400" HEIGHT = "20" NAME = "ChecksumApplet">
 
 
 </APPLET>
