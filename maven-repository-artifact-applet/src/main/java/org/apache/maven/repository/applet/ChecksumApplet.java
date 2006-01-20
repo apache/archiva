@@ -21,8 +21,11 @@ import java.applet.Applet;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.AccessController;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivilegedAction;
+import java.util.Properties;
 
 /**
  * TODO: Description.
@@ -41,32 +44,49 @@ public class ChecksumApplet
         super.init();
     }
 
-    public String generateMd5( String file )
+    public String generateMd5( final String file )
         throws IOException, NoSuchAlgorithmException
     {
-        MessageDigest digest = MessageDigest.getInstance( "MD5" );
-
-        InputStream fis = new FileInputStream( file );
-        try
+        return (String) AccessController.doPrivileged( new PrivilegedAction()
         {
-            byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
-            int numRead;
-            do
+            public Object run()
             {
-                numRead = fis.read( buffer );
-                if ( numRead > 0 )
+                try
                 {
-                    digest.update( buffer, 0, numRead );
+                    MessageDigest digest = MessageDigest.getInstance( "MD5" );
+
+                    InputStream fis = new FileInputStream( file );
+                    try
+                    {
+                        byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
+                        int numRead;
+                        do
+                        {
+                            numRead = fis.read( buffer );
+                            if ( numRead > 0 )
+                            {
+                                digest.update( buffer, 0, numRead );
+                            }
+                        }
+                        while ( numRead != -1 );
+                    }
+                    finally
+                    {
+                        fis.close();
+                    }
+
+                    return byteArrayToHexStr( digest.digest() );
+                }
+                catch ( NoSuchAlgorithmException e )
+                {
+                    throw new RuntimeException( e );
+                }
+                catch ( IOException e )
+                {
+                    throw new RuntimeException( e );
                 }
             }
-            while ( numRead != -1 );
-        }
-        finally
-        {
-            fis.close();
-        }
-
-        return byteArrayToHexStr( digest.digest() );
+        } );
     }
 
     private static String byteArrayToHexStr( byte[] data )
