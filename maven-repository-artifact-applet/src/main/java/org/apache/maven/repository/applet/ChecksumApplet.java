@@ -51,13 +51,11 @@ public class ChecksumApplet
         add( progressBar, BorderLayout.CENTER );
         JLabel label = new JLabel( "Checksum progress: " );
         add( label, BorderLayout.WEST );
-        setVisible( false );
     }
 
     public String generateMd5( final String file )
         throws IOException, NoSuchAlgorithmException
     {
-        setVisible( true );
         return (String) AccessController.doPrivileged( new PrivilegedAction()
         {
             public Object run()
@@ -67,10 +65,10 @@ public class ChecksumApplet
                     MessageDigest digest = MessageDigest.getInstance( "MD5" );
 
                     long total = new File( file ).length();
-                    long totalRead = 0;
                     InputStream fis = new FileInputStream( file );
                     try
                     {
+                        long totalRead = 0;
                         byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
                         int numRead;
                         do
