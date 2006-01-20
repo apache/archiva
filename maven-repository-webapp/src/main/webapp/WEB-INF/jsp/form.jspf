@@ -1,0 +1,46 @@
+<%--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  --%>
+
+<script type="text/javascript">
+  function doSomething( file )
+  {
+    return document.ChecksumApplet.generateMd5(file);
+  }
+</script>
+
+<p>Search by MD5 (select an artifact):
+  <form action="search.action"
+        onsubmit="this.md5.value = doSomething(this.file.value); this.file.disabled = true;">
+    <input name="md5" type="hidden"/>
+    <input type="file" name="file"/>
+    <input type="submit" value="Search"/>
+  </form>
+
+  <applet name="ChecksumApplet" archive="maven-repository-artifact-applet.jar"
+          width="1" height="1"
+          code="org/apache/maven/repository/applet/ChecksumApplet.class">
+  </applet>
+</p>
+
+<p>Search by Java Package:
+  <form action="search.action">
+    <input name="packageName" type="text"/>
+    <input type="submit" value="Search"/>
+  </form>
+</p>
+
+

@@ -8,9 +8,7 @@
 
 <h1>Maven Repository Manager</h1>
 
-<form action="search.action">
-  <input name="packageName" type="text"/> <input type="submit" value="Search"/>
-</form>
+<%@ include file="form.jspf" %>
 
 </body>
 </html>

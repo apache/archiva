@@ -42,6 +42,8 @@ public class PackageSearchAction
 {
     private String packageName;
 
+    private String md5;
+
     /**
      * @plexus.requirement
      */
@@ -62,7 +64,19 @@ public class PackageSearchAction
     public String execute()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
     {
-        if ( packageName == null || packageName.length() == 0 )
+        String searchTerm;
+        String key;
+        if ( packageName != null && packageName.length() != 0 )
+        {
+            searchTerm = packageName;
+            key = "packages";
+        }
+        else if ( md5 != null && md5.length() != 0 )
+        {
+            searchTerm = md5;
+            key = "md5";
+        }
+        else
         {
             return ERROR;
         }
@@ -78,7 +92,7 @@ public class PackageSearchAction
 
         ArtifactRepositoryIndexSearcher searcher = factory.createArtifactRepositoryIndexSearcher( index );
 
-        artifacts = searcher.search( new SinglePhraseQuery( "packages", packageName ) );
+        artifacts = searcher.search( new SinglePhraseQuery( key, searchTerm ) );
 
         return SUCCESS;
     }
@@ -86,6 +100,11 @@ public class PackageSearchAction
     public void setPackageName( String packageName )
     {
         this.packageName = packageName;
+    }
+
+    public void setMd5( String md5 )
+    {
+        this.md5 = md5;
     }
 
     public List getArtifacts()

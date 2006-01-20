@@ -130,6 +130,7 @@
   </build>
   <modules>
     <module>maven-repository-application</module>
+    <module>maven-repository-artifact-applet</module>
     <module>maven-repository-converter</module>
     <module>maven-repository-discovery</module>
     <module>maven-repository-reports-standard</module>
@@ -242,6 +243,11 @@
       <dependency>
         <groupId>org.apache.maven.repository</groupId>
         <artifactId>maven-repository-utils</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-artifact-applet</artifactId>
         <version>${pom.version}</version>
       </dependency>
     </dependencies>

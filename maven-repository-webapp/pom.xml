@@ -19,6 +19,12 @@
       <groupId>org.apache.maven.repository</groupId>
       <artifactId>maven-repository-indexer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-artifact-applet</artifactId>
+      <!-- TODO: actually, just exclude from WAR plugin -->
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <finalName>maven-repository-webapp</finalName>
@@ -30,6 +36,30 @@
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <contextPath>/</contextPath>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>dependency-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>maven-repository-artifact-applet</artifactId>
+                  <version>${project.version}</version>
+                  <outputDirectory>src/main/webapp</outputDirectory>
+                  <destFileName>maven-repository-artifact-applet.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
