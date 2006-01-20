@@ -633,7 +633,7 @@ public class RepositoryConverterTest
 
     private static String normalizeString( String path )
     {
-        return path.trim().replace( "\r\n", "\n" ).replace( '\r', '\n' );
+        return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' );
     }
 
 }
