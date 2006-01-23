@@ -21,7 +21,13 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.metadata.*;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Plugin;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.RangeQuery;
@@ -40,15 +46,11 @@ import java.util.List;
  * This class tests the MetadataRepositoryIndex.
  */
 public class MetadataRepositoryIndexingTest
-        extends PlexusTestCase
+    extends PlexusTestCase
 {
     private ArtifactRepository repository;
 
     private String indexPath;
-
-    private static final String FLD_LASTUPDATE = "lastUpdate";
-
-    private static final String FLD_PLUGINPREFIX = "pluginPrefix";
 
     private static final String GROUP_TYPE = "GROUP";
 
@@ -62,15 +64,17 @@ public class MetadataRepositoryIndexingTest
 
     /**
      * Set up.
+     *
      * @throws Exception
      */
-    public void setUp() throws Exception
+    public void setUp()
+        throws Exception
     {
         super.setUp();
         File repositoryDirectory = getTestFile( "src/test/repository" );
         String repoDir = repositoryDirectory.toURL().toString();
-        ArtifactRepositoryLayout layout = ( ArtifactRepositoryLayout ) lookup( ArtifactRepositoryLayout.ROLE, "default" );
-        ArtifactRepositoryFactory repoFactory = ( ArtifactRepositoryFactory ) lookup( ArtifactRepositoryFactory.ROLE );
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+        ArtifactRepositoryFactory repoFactory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
 
         indexPath = "target/index/metadata";
@@ -79,9 +83,11 @@ public class MetadataRepositoryIndexingTest
 
     /**
      * Tear down.
+     *
      * @throws Exception
      */
-    public void tearDown() throws Exception
+    public void tearDown()
+        throws Exception
     {
         repository = null;
         super.tearDown();
@@ -89,20 +95,25 @@ public class MetadataRepositoryIndexingTest
 
     /**
      * Create the test index.
+     *
      * @throws Exception
      */
-    private void createTestIndex() throws Exception
+    private void createTestIndex()
+        throws Exception
     {
-        RepositoryIndexingFactory factory = ( RepositoryIndexingFactory ) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
-        RepositoryMetadata repoMetadata = getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+        RepositoryMetadata repoMetadata =
+            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
         indexer.index( repoMetadata );
 
-        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", ARTIFACT_TYPE );
+        repoMetadata =
+            getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", ARTIFACT_TYPE );
         indexer.index( repoMetadata );
 
-        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", SNAPSHOT_TYPE );
+        repoMetadata =
+            getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", SNAPSHOT_TYPE );
         indexer.index( repoMetadata );
 
         indexer.optimize();
@@ -114,9 +125,9 @@ public class MetadataRepositoryIndexingTest
      *
      * @throws Exception
      */
-     public void testSearch()
-         throws Exception
-     {
+    public void testSearch()
+        throws Exception
+    {
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
@@ -124,7 +135,8 @@ public class MetadataRepositoryIndexingTest
         RepositoryIndexSearcher repoSearcher = factory.createMetadataRepositoryIndexSearcher( indexer );
 
         // search last update
-        org.apache.maven.repository.indexing.query.Query qry = new SinglePhraseQuery( FLD_LASTUPDATE, "20051212044643" );
+        org.apache.maven.repository.indexing.query.Query qry =
+            new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
         List metadataList = repoSearcher.search( qry );
         assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
@@ -137,7 +149,7 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search plugin prefix
-        qry = new SinglePhraseQuery( FLD_PLUGINPREFIX, "org.apache.maven" );
+        qry = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
         metadataList = repoSearcher.search( qry );
         assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
@@ -145,7 +157,7 @@ public class MetadataRepositoryIndexingTest
             RepositoryMetadata repoMetadata = (RepositoryMetadata) iter.next();
             Metadata metadata = repoMetadata.getMetadata();
             List plugins = metadata.getPlugins();
-            for( Iterator it = plugins.iterator(); it.hasNext(); )
+            for ( Iterator it = plugins.iterator(); it.hasNext(); )
             {
                 Plugin plugin = (Plugin) it.next();
                 assertEquals( "org.apache.maven", plugin.getPrefix() );
@@ -153,8 +165,8 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using INCLUSIVE Range Query
-        Query qry1 = new SinglePhraseQuery( FLD_LASTUPDATE, "20051212000000" );
-        Query qry2 = new SinglePhraseQuery( FLD_LASTUPDATE, "20051212235959");
+        Query qry1 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        Query qry2 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212235959" );
         RangeQuery rQry = new RangeQuery( true );
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
@@ -169,8 +181,8 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using EXCLUSIVE Range Query
-        qry1 = new SinglePhraseQuery( FLD_LASTUPDATE, "20051212000000" );
-        qry2 = new SinglePhraseQuery( FLD_LASTUPDATE, "20051212044643");
+        qry1 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        qry2 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
         rQry = new RangeQuery( false );
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
@@ -179,64 +191,95 @@ public class MetadataRepositoryIndexingTest
         assertEquals( metadataList.size(), 0 );
 
         indexer.close();
-     }
+    }
 
+    /**
+     * Test the exceptions thrown by MetadataRepositoryIndex.
+     *
+     * @throws Exception
+     */
     public void testExceptions()
-         throws Exception
+        throws Exception
     {
         //test when the object passed in the index(..) method is not a RepositoryMetadat instance
-        RepositoryIndexingFactory factory = ( RepositoryIndexingFactory ) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         try
         {
-            Artifact artifact = getArtifact("org.apache.maven", "maven-artifact", "2.0.1");
+            Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
             indexer.index( artifact );
             fail( "Must throw exception when the passed object is not a RepositoryMetadata object." );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
         }
         indexer.optimize();
         indexer.close();
 
         //test when the plugin prefix is blank
-        factory = ( RepositoryIndexingFactory ) lookup( RepositoryIndexingFactory.ROLE );
+        factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         try
         {
             RepositoryMetadata repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", GROUP_TYPE );
             indexer.index( repoMetadata );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
         }
         indexer.optimize();
         indexer.close();
 
-       //test when the index is closed
+        //test when the index is closed
         try
         {
-            RepositoryMetadata repoMetadata = getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+            RepositoryMetadata repoMetadata =
+                getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
             indexer.index( repoMetadata );
             fail( "Must throw exception when a metadata is added to the index while the indexer is still closed." );
         }
-        catch( Exception e )
+        catch ( Exception e )
         {
         }
     }
 
     /**
+     * Test delete of document from metadata index.
+     *
+     * @throws Exception
+     */
+    public void testDeleteMetadataDocument()
+        throws Exception
+    {
+        createTestIndex();
+
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
+
+        RepositoryMetadata repoMetadata =
+            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+        indexer.deleteDocument( MetadataRepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
+
+        RepositoryIndexSearcher repoSearcher = factory.createMetadataRepositoryIndexSearcher( indexer );
+        org.apache.maven.repository.indexing.query.Query qry =
+            new SinglePhraseQuery( MetadataRepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
+        List metadataList = repoSearcher.search( qry );
+        assertEquals( metadataList.size(), 0 );
+    }
+
+    /**
      * Create RepositoryMetadata object.
      *
-     * @param groupId the groupId to be set
-     * @param artifactId the artifactId to be set
-     * @param version the version to be set
-     * @param filename the name of the metadata file
+     * @param groupId      the groupId to be set
+     * @param artifactId   the artifactId to be set
+     * @param version      the version to be set
+     * @param filename     the name of the metadata file
      * @param metadataType the type of RepositoryMetadata object to be created (GROUP, ARTIFACT or SNAPSHOT)
      * @return RepositoryMetadata
      * @throws Exception
      */
-    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename, String metadataType)
+    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename,
+                                            String metadataType )
         throws Exception
     {
         RepositoryMetadata repoMetadata = null;
@@ -245,25 +288,27 @@ public class MetadataRepositoryIndexingTest
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata
-        if( metadataType.equals( GROUP_TYPE ) )
+        if ( metadataType.equals( GROUP_TYPE ) )
         {
-            url = new File( repository.getBasedir() + groupId.replace('.', '/') + "/" + filename ).toURL();
+            url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ).toURL();
             is = url.openStream();
-            repoMetadata = new GroupRepositoryMetadata(groupId);
+            repoMetadata = new GroupRepositoryMetadata( groupId );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //artifact metadata
-        else if( metadataType.equals( ARTIFACT_TYPE ) )
+        else if ( metadataType.equals( ARTIFACT_TYPE ) )
         {
-            url = new File( repository.getBasedir() + groupId.replace('.', '/') + "/" + artifactId + "/" + filename ).toURL();
+            url = new File(
+                repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + filename ).toURL();
             is = url.openStream();
             repoMetadata = new ArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //snapshot/version metadata
-        else if( metadataType.equals( SNAPSHOT_TYPE ) )
+        else if ( metadataType.equals( SNAPSHOT_TYPE ) )
         {
-            url = new File( repository.getBasedir() + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + filename ).toURL();
+            url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + version +
+                "/" + filename ).toURL();
             is = url.openStream();
             repoMetadata = new SnapshotArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
@@ -275,9 +320,10 @@ public class MetadataRepositoryIndexingTest
 
     /**
      * Create artifact object.
-     * @param groupId the groupId of the artifact
+     *
+     * @param groupId    the groupId of the artifact
      * @param artifactId the artifactId of the artifact
-     * @param version the version of the artifact
+     * @param version    the version of the artifact
      * @return Artifact
      * @throws Exception
      */

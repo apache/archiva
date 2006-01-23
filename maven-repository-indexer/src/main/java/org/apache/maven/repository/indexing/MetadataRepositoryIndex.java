@@ -21,50 +21,54 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.Plugin;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
 
-import java.util.List;
-import java.util.Iterator;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class indexes the metadata in the repository.
  */
 public class MetadataRepositoryIndex
-        extends AbstractRepositoryIndex
+    extends AbstractRepositoryIndex
 {
-    private static final String FLD_LASTUPDATE = "lastUpdate";
+    protected static final String FLD_ID = "id";
 
-    private static final String FLD_PLUGINPREFIX = "pluginPrefix";
+    protected static final String FLD_LASTUPDATE = "lastUpdate";
 
-    private static final String FLD_METADATAPATH = "path";
+    protected static final String FLD_PLUGINPREFIX = "pluginPrefix";
 
-    private static final String FLD_GROUPID = "groupId";
+    protected static final String FLD_METADATAPATH = "path";
 
-    private static final String FLD_ARTIFACTID = "artifactId";
+    protected static final String FLD_GROUPID = "groupId";
 
-    private static final String FLD_VERSION = "version";
+    protected static final String FLD_ARTIFACTID = "artifactId";
 
-    private static final String[] FIELDS = {FLD_METADATAPATH, FLD_PLUGINPREFIX, FLD_LASTUPDATE,
-            FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION};
+    protected static final String FLD_VERSION = "version";
+
+    private static final String[] FIELDS =
+        {FLD_ID, FLD_METADATAPATH, FLD_PLUGINPREFIX, FLD_LASTUPDATE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION};
 
     /**
      * Constructor
-     * @param indexPath the path to the index
+     *
+     * @param indexPath  the path to the index
      * @param repository the repository where the metadata to be indexed is located
      * @throws RepositoryIndexException
      */
     public MetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
-            throws RepositoryIndexException
+        throws RepositoryIndexException
     {
         super( indexPath, repository, FIELDS );
     }
 
     /**
      * Get the field names to be used in the index
+     *
      * @return array of strings
      */
     public String[] getIndexFields()
@@ -74,6 +78,7 @@ public class MetadataRepositoryIndex
 
     /**
      * Returns the analyzer used for indexing
+     *
      * @return Analyzer object
      */
     public Analyzer getAnalyzer()
@@ -83,12 +88,14 @@ public class MetadataRepositoryIndex
 
     /**
      * Index the paramater object
+     *
      * @param obj
      * @throws RepositoryIndexException
      */
-    public void index( Object obj ) throws RepositoryIndexException
+    public void index( Object obj )
+        throws RepositoryIndexException
     {
-         if ( obj instanceof RepositoryMetadata )
+        if ( obj instanceof RepositoryMetadata )
         {
             indexMetadata( (RepositoryMetadata) obj );
         }
@@ -101,12 +108,14 @@ public class MetadataRepositoryIndex
 
     /**
      * Index the contents of the specified RepositoryMetadata paramter object
+     *
      * @param repoMetadata the metadata object to be indexed
      * @throws RepositoryIndexException
      */
-    private void indexMetadata( RepositoryMetadata repoMetadata ) throws RepositoryIndexException
+    private void indexMetadata( RepositoryMetadata repoMetadata )
+        throws RepositoryIndexException
     {
-         if ( !isOpen() )
+        if ( !isOpen() )
         {
             throw new RepositoryIndexException( "Unable to add artifact index on a closed index" );
         }
@@ -116,38 +125,40 @@ public class MetadataRepositoryIndex
         //get the metadatapath: check where metadata is located, then concatenate the groupId,
         // artifactId, version based on its location
         Document doc = new Document();
+        doc.add( Field.Keyword( FLD_ID, (String) repoMetadata.getKey() ) );
         String path = "";
 
-        if( repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory())
+        if ( repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory() )
         {
             path = repoMetadata.getGroupId() + "/";
         }
-        else if(!repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory())
+        else if ( !repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory() )
         {
-           path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/";
+            path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/";
         }
-        else if(!repoMetadata.storedInGroupDirectory() && repoMetadata.storedInArtifactVersionDirectory())
+        else if ( !repoMetadata.storedInGroupDirectory() && repoMetadata.storedInArtifactVersionDirectory() )
         {
-           path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/" + repoMetadata.getBaseVersion() + "/";
+            path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/" +
+                repoMetadata.getBaseVersion() + "/";
         }
 
         //@todo use localfilename or remotefilename to get the path???
         path = path + repoMetadata.getRemoteFilename();
-        doc.add( Field.Text( FLD_METADATAPATH, path) );
+        doc.add( Field.Text( FLD_METADATAPATH, path ) );
 
         Metadata metadata = repoMetadata.getMetadata();
         Versioning versioning = metadata.getVersioning();
-        if( versioning != null )
+        if ( versioning != null )
         {
             doc.add( Field.Text( FLD_LASTUPDATE, versioning.getLastUpdated() ) );
         }
 
         List plugins = metadata.getPlugins();
         String pluginAppended = "";
-        for( Iterator iter = plugins.iterator(); iter.hasNext(); )
+        for ( Iterator iter = plugins.iterator(); iter.hasNext(); )
         {
             Plugin plugin = (Plugin) iter.next();
-            if( plugin.getPrefix() != null && !plugin.getPrefix().equals("") )
+            if ( plugin.getPrefix() != null && !plugin.getPrefix().equals( "" ) )
             {
                 pluginAppended = plugin.getPrefix() + " ";
             }
@@ -155,11 +166,11 @@ public class MetadataRepositoryIndex
         doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );
         doc.add( Field.UnIndexed( FLD_GROUPID, metadata.getGroupId() ) );
 
-        if( metadata.getArtifactId() != null && !metadata.getArtifactId().equals("") )
+        if ( metadata.getArtifactId() != null && !metadata.getArtifactId().equals( "" ) )
         {
             doc.add( Field.UnIndexed( FLD_ARTIFACTID, metadata.getArtifactId() ) );
         }
-        if( metadata.getVersion() != null && !metadata.getVersion().equals("") )
+        if ( metadata.getVersion() != null && !metadata.getVersion().equals( "" ) )
         {
             doc.add( Field.UnIndexed( FLD_VERSION, metadata.getVersion() ) );
         }
@@ -174,7 +185,8 @@ public class MetadataRepositoryIndex
         }
     }
 
-    public boolean isKeywordField( String field ){
-           return false;
+    public boolean isKeywordField( String field )
+    {
+        return false;
     }
 }

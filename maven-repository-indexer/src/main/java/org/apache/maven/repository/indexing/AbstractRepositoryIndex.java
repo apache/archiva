@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
@@ -194,5 +195,27 @@ public abstract class AbstractRepositoryIndex
     public ArtifactRepository getRepository()
     {
         return repository;
+    }
+
+    /**
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#deleteDocument(String, String)
+     */
+    public void deleteDocument( String field, String value )
+        throws RepositoryIndexException, IOException
+    {
+        IndexReader indexReader = null;
+        try
+        {
+            indexReader = IndexReader.open( indexPath );
+            indexReader.delete( new Term( field, value ) );
+        }
+        catch ( IOException ie )
+        {
+            throw new RepositoryIndexException( indexPath + "is not a valid directory." );
+        }
+        finally
+        {
+            indexReader.close();
+        }
     }
 }

@@ -16,11 +16,12 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Query object that handles range queries for dates.
+ *
  * @author Maria Odea Ching
  */
 public class RangeQuery
@@ -30,7 +31,7 @@ public class RangeQuery
 
     private boolean inclusive;
 
-    public RangeQuery( boolean inclusive)
+    public RangeQuery( boolean inclusive )
     {
         this.inclusive = inclusive;
     }

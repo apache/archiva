@@ -450,6 +450,27 @@ public class PomRepositoryIndexingTest
         indexer.close();
     }
 
+    /**
+     * Test delete of pom document from index.
+     *
+     * @throws Exception
+     */
+    public void testDeletePomDocument()
+        throws Exception
+    {
+        createTestIndex();
+
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
+        Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
+        indexer.deleteDocument( PomRepositoryIndex.FLD_ID, PomRepositoryIndex.POM_TYPE + pom.getId() );
+
+        RepositoryIndexSearcher repoSearcher = factory.createPomRepositoryIndexSearcher( indexer );
+        Query qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_ID, PomRepositoryIndex.POM_TYPE + pom.getId() );
+        List artifactList = repoSearcher.search( qry );
+        assertEquals( artifactList.size(), 0 );
+    }
+
     private Model getPom( String groupId, String artifactId, String version )
         throws Exception
     {

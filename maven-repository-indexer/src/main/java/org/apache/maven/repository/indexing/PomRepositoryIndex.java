@@ -8,7 +8,7 @@ package org.apache.maven.repository.indexing;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
+
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,6 +47,8 @@ import java.util.List;
 public class PomRepositoryIndex
     extends AbstractRepositoryIndex
 {
+    protected static final String FLD_ID = "id";
+
     protected static final String FLD_GROUPID = "groupId";
 
     protected static final String FLD_ARTIFACTID = "artifactId";
@@ -69,8 +71,8 @@ public class PomRepositoryIndex
 
     protected static final String FLD_MD5 = "md5";
 
-    private static final String[] FIELDS = {FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_LICENSE_URLS,
-        FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
+    private static final String[] FIELDS = {FLD_ID, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING,
+        FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
 
     private Analyzer analyzer;
 
@@ -78,8 +80,10 @@ public class PomRepositoryIndex
 
     private ArtifactFactory artifactFactory;
 
-    private static final List KEYWORD_FIELDS = Arrays.asList(
-        new String[]{FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
+    private static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
+        FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
+
+    protected static final String POM_TYPE = "POM";
 
     /**
      * Class Constructor
@@ -127,6 +131,7 @@ public class PomRepositoryIndex
         }
 
         Document doc = new Document();
+        doc.add( Field.Keyword( FLD_ID, POM_TYPE + pom.getId() ) );
         doc.add( Field.Text( FLD_GROUPID, pom.getGroupId() ) );
         doc.add( Field.Text( FLD_ARTIFACTID, pom.getArtifactId() ) );
         doc.add( Field.Text( FLD_VERSION, pom.getVersion() ) );

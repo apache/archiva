@@ -41,6 +41,8 @@ import java.util.zip.ZipFile;
 public class ArtifactRepositoryIndex
     extends AbstractRepositoryIndex
 {
+    protected static final String FLD_ID = "id";
+
     protected static final String FLD_NAME = "name";
 
     protected static final String FLD_GROUPID = "groupId";
@@ -59,12 +61,14 @@ public class ArtifactRepositoryIndex
 
     protected static final String FLD_FILES = "files";
 
-    private static final String[] FIELDS =
-        {FLD_NAME, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_SHA1, FLD_MD5, FLD_CLASSES, FLD_PACKAGES, FLD_FILES};
+    private static final String[] FIELDS = {FLD_ID, FLD_NAME, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_SHA1,
+        FLD_MD5, FLD_CLASSES, FLD_PACKAGES, FLD_FILES};
 
     private Analyzer analyzer;
 
     private Digester digester;
+
+    protected static final String ARTIFACT_TYPE = "ARTIFACT";
 
     /**
      * Class constructor
@@ -161,6 +165,7 @@ public class ArtifactRepositoryIndex
 
         //@todo should some of these fields be Keyword instead of Text ?
         Document doc = new Document();
+        doc.add( Field.Keyword( FLD_ID, ARTIFACT_TYPE + artifact.getId() ) );
         doc.add( Field.Text( FLD_NAME, artifact.getFile().getName() ) );
         doc.add( Field.Text( FLD_GROUPID, artifact.getGroupId() ) );
         doc.add( Field.Text( FLD_ARTIFACTID, artifact.getArtifactId() ) );

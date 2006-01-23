@@ -8,7 +8,7 @@ package org.apache.maven.repository.indexing;
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- 
+
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,8 +65,8 @@ public interface RepositoryIndexingFactory
      */
     PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
 
-    MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository)
-            throws RepositoryIndexException;
+    MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
+        throws RepositoryIndexException;
 
     MetadataRepositoryIndexSearcher createMetadataRepositoryIndexSearcher( MetadataRepositoryIndex index );
 

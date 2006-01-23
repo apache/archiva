@@ -17,26 +17,29 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.apache.maven.artifact.Artifact;
 
-import java.net.URL;
-import java.io.InputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This class searches the specified index given the search/query criteria.
- *
  */
 public class MetadataRepositoryIndexSearcher
-        extends AbstractRepositoryIndexSearcher
+    extends AbstractRepositoryIndexSearcher
 {
     private ArtifactFactory artifactFactory;
 
@@ -56,17 +59,19 @@ public class MetadataRepositoryIndexSearcher
 
     /**
      * Constructor
-     * @param index the index object to be set
+     *
+     * @param index   the index object to be set
      * @param factory
      */
-    public MetadataRepositoryIndexSearcher( MetadataRepositoryIndex index, ArtifactFactory factory)
+    public MetadataRepositoryIndexSearcher( MetadataRepositoryIndex index, ArtifactFactory factory )
     {
-        super(index);
+        super( index );
         artifactFactory = factory;
     }
 
     /**
      * Create object to be returned by the search based on the document
+     *
      * @param doc
      * @return Object
      */
@@ -85,11 +90,11 @@ public class MetadataRepositoryIndexSearcher
         String tmpDir = (String) it.next();
 
         String metadataType = "";
-        if( tmpDir.equals( doc.get( FLD_GROUPID ) ) )
+        if ( tmpDir.equals( doc.get( FLD_GROUPID ) ) )
         {
             metadataType = GROUP_TYPE;
         }
-        else if( tmpDir.equals( doc.get( FLD_ARTIFACTID ) ) )
+        else if ( tmpDir.equals( doc.get( FLD_ARTIFACTID ) ) )
         {
             metadataType = ARTIFACT_TYPE;
         }
@@ -100,10 +105,12 @@ public class MetadataRepositoryIndexSearcher
 
         RepositoryMetadata repoMetadata = null;
 
-        try{
-            repoMetadata = getMetadata(doc.get( FLD_GROUPID ), doc.get( FLD_ARTIFACTID ), doc.get( FLD_VERSION ), metadataFile, metadataType );
+        try
+        {
+            repoMetadata = getMetadata( doc.get( FLD_GROUPID ), doc.get( FLD_ARTIFACTID ), doc.get( FLD_VERSION ),
+                                        metadataFile, metadataType );
         }
-        catch(Exception e)
+        catch ( Exception e )
         {
             //@todo
         }
@@ -114,15 +121,16 @@ public class MetadataRepositoryIndexSearcher
     /**
      * Create RepositoryMetadata object.
      *
-     * @param groupId the groupId to be set
-     * @param artifactId the artifactId to be set
-     * @param version the version to be set
-     * @param filename the name of the metadata file
+     * @param groupId      the groupId to be set
+     * @param artifactId   the artifactId to be set
+     * @param version      the version to be set
+     * @param filename     the name of the metadata file
      * @param metadataType the type of RepositoryMetadata object to be created (GROUP, ARTIFACT or SNAPSHOT)
      * @return RepositoryMetadata
      * @throws Exception
      */
-    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename, String metadataType)
+    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename,
+                                            String metadataType )
         throws Exception
     {
         RepositoryMetadata repoMetadata = null;
@@ -131,25 +139,27 @@ public class MetadataRepositoryIndexSearcher
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata
-        if( metadataType.equals( GROUP_TYPE ) )
+        if ( metadataType.equals( GROUP_TYPE ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace('.', '/') + "/" + filename ).toURL();
+            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ).toURL();
             is = url.openStream();
-            repoMetadata = new GroupRepositoryMetadata(groupId);
+            repoMetadata = new GroupRepositoryMetadata( groupId );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //artifact metadata
-        else if( metadataType.equals( ARTIFACT_TYPE ) )
+        else if ( metadataType.equals( ARTIFACT_TYPE ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace('.', '/') + "/" + artifactId + "/" + filename ).toURL();
+            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" +
+                filename ).toURL();
             is = url.openStream();
             repoMetadata = new ArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //snapshot/version metadata
-        else if( metadataType.equals( SNAPSHOT_TYPE ) )
+        else if ( metadataType.equals( SNAPSHOT_TYPE ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace('.', '/') + "/" + artifactId + "/" + version + "/" + filename ).toURL();
+            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" +
+                version + "/" + filename ).toURL();
             is = url.openStream();
             repoMetadata = new SnapshotArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
@@ -160,9 +170,10 @@ public class MetadataRepositoryIndexSearcher
 
     /**
      * Create artifact object.
-     * @param groupId the groupId of the artifact
+     *
+     * @param groupId    the groupId of the artifact
      * @param artifactId the artifactId of the artifact
-     * @param version the version of the artifact
+     * @param version    the version of the artifact
      * @return Artifact
      * @throws Exception
      */
