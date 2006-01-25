@@ -98,7 +98,7 @@ public class PomRepositoryIndex
                                ArtifactFactory artifactFactory )
         throws RepositoryIndexException
     {
-        super( indexPath, repository, FIELDS );
+        super( indexPath, repository );
         this.digester = digester;
         this.artifactFactory = artifactFactory;
     }
@@ -117,6 +117,29 @@ public class PomRepositoryIndex
     }
 
     /**
+     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
+     */
+    public void isIndexed( Object object )
+        throws RepositoryIndexException, IOException
+    {
+        if ( object instanceof Model )
+        {
+            Model pom = (Model) object;
+            checkIfIndexExists();
+            if ( indexExists )
+            {
+                validateIndex( FIELDS );
+                deleteDocument( FLD_ID, POM_TYPE + pom.getId() );
+            }
+        }
+        else
+        {
+            throw new RepositoryIndexException( "Object is not of type model." );
+        }
+
+    }
+
+    /**
      * Method to create the index fields for a Model object into the index
      *
      * @param pom the Model object to be indexed
@@ -125,11 +148,6 @@ public class PomRepositoryIndex
     public void indexPom( Model pom )
         throws RepositoryIndexException
     {
-        if ( !isOpen() )
-        {
-            throw new RepositoryIndexException( "Unable to add pom index on a closed index" );
-        }
-
         Document doc = new Document();
         doc.add( Field.Keyword( FLD_ID, POM_TYPE + pom.getId() ) );
         doc.add( Field.Text( FLD_GROUPID, pom.getGroupId() ) );
@@ -177,6 +195,11 @@ public class PomRepositoryIndex
 
         try
         {
+            isIndexed( pom );
+            if ( !isOpen() )
+            {
+                open();
+            }
             getIndexWriter().addDocument( doc );
         }
         catch ( IOException e )

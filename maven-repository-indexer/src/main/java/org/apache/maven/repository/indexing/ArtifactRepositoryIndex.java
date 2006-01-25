@@ -27,7 +27,9 @@ import org.apache.maven.repository.digest.Digester;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -70,6 +72,8 @@ public class ArtifactRepositoryIndex
 
     protected static final String ARTIFACT_TYPE = "ARTIFACT";
 
+    private static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID} );
+
     /**
      * Class constructor
      *
@@ -81,7 +85,7 @@ public class ArtifactRepositoryIndex
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
         throws RepositoryIndexException
     {
-        super( indexPath, repository, FIELDS );
+        super( indexPath, repository );
         this.digester = digester;
     }
 
@@ -99,6 +103,28 @@ public class ArtifactRepositoryIndex
     }
 
     /**
+     * @see AbstractRepositoryIndex#isIndexed(Object)
+     */
+    public void isIndexed( Object object )
+        throws RepositoryIndexException, IOException
+    {
+        if ( object instanceof Artifact )
+        {
+            Artifact artifact = (Artifact) object;
+            checkIfIndexExists();
+            if ( indexExists )
+            {
+                validateIndex( FIELDS );
+                deleteDocument( FLD_ID, ARTIFACT_TYPE + artifact.getId() );
+            }
+        }
+        else
+        {
+            throw new RepositoryIndexException( "Object is not of type artifact." );
+        }
+    }
+
+    /**
      * Method to index a given artifact
      *
      * @param artifact the Artifact object to be indexed
@@ -107,11 +133,6 @@ public class ArtifactRepositoryIndex
     public void indexArtifact( Artifact artifact )
         throws RepositoryIndexException
     {
-        if ( !isOpen() )
-        {
-            throw new RepositoryIndexException( "Unable to add artifact index on a closed index" );
-        }
-
         StringBuffer classes = new StringBuffer();
         StringBuffer packages = new StringBuffer();
         StringBuffer files = new StringBuffer();
@@ -178,6 +199,11 @@ public class ArtifactRepositoryIndex
 
         try
         {
+            isIndexed( artifact );
+            if ( !isOpen() )
+            {
+                open();
+            }
             getIndexWriter().addDocument( doc );
         }
         catch ( IOException e )
@@ -191,7 +217,7 @@ public class ArtifactRepositoryIndex
      */
     public boolean isKeywordField( String field )
     {
-        return false;
+        return KEYWORD_FIELDS.contains( field );
     }
 
     /**

@@ -69,11 +69,14 @@ public class ArtifactRepositoryIndexingTest
         throws Exception
     {
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
 
         try
         {
             String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
-            factory.createArtifactRepositoryIndex( notIndexDir, repository );
+            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
+            indexer.indexArtifact( artifact );
             fail( "Must throw exception on non-directory index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -84,7 +87,8 @@ public class ArtifactRepositoryIndexingTest
         try
         {
             String notIndexDir = new File( "" ).getAbsolutePath();
-            factory.createArtifactRepositoryIndex( notIndexDir, repository );
+            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
+            indexer.indexArtifact( artifact );
             fail( "Must throw an exception on a non-index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -92,43 +96,26 @@ public class ArtifactRepositoryIndexingTest
             // expected
         }
 
-        Artifact artifact = getArtifact( "test", "test-artifactId", "1.0" );
-        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        indexer.close();
-
         try
         {
-            indexer.indexArtifact( artifact );
-            fail( "Must throw exception on add index with closed index." );
+            indexer.isIndexed( new Object() );
+            fail( "Must throw exception on object not of type artifact." );
         }
         catch ( RepositoryIndexException e )
         {
             // expected
         }
-
-        try
-        {
-            indexer.optimize();
-            fail( "Must throw exception on optimize index with closed index." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            // expected
-        }
-
-        indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-
-        indexer.close();
     }
 
     /**
      * Create an index that will be used for testing.
+     * Indexing process: check if the object was already indexed [ checkIfIndexed(Object) ], open the index [ open() ],
+     * index the object [ index(Object) ], optimize the index [ optimize() ] and close the index [ close() ].
      *
      * @throws Exception
      */
-    public void createTestIndex()
+    private void createTestIndex()
         throws Exception
     {
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
@@ -137,17 +124,27 @@ public class ArtifactRepositoryIndexingTest
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
+        indexer.optimize();
+        indexer.close();
 
         artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
+        indexer.optimize();
+        indexer.close();
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-
         indexer.optimize();
         indexer.close();
+
+        artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        indexer.indexArtifact( artifact );
+        indexer.optimize();
+        indexer.close();
+
     }
 
     /**
@@ -275,7 +272,6 @@ public class ArtifactRepositoryIndexingTest
     public void testSearchCompound()
         throws Exception
     {
-
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
@@ -390,6 +386,11 @@ public class ArtifactRepositoryIndexingTest
         indexer.close();
     }
 
+    /**
+     * Test delete of document from the artifact index.
+     *
+     * @throws Exception
+     */
     public void testDeleteArtifactDocument()
         throws Exception
     {

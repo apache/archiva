@@ -41,28 +41,42 @@ public abstract class AbstractRepositoryIndex
 
     protected ArtifactRepository repository;
 
+    protected boolean indexExists;
+
     /**
      * Class constructor
      *
      * @param indexPath
      * @param repository
-     * @param indexFields
      * @throws RepositoryIndexException
      */
-    protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository, String[] indexFields )
+    protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         this.repository = repository;
         this.indexPath = indexPath;
+    }
 
+
+    public void open()
+        throws RepositoryIndexException
+    {
         try
         {
-            validateIndex( indexFields );
+            if ( indexExists )
+            {
+                indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
+            }
+            else
+            {
+                indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+            }
         }
-        catch ( IOException e )
+        catch ( IOException ie )
         {
-            throw new RepositoryIndexException( e );
+            throw new RepositoryIndexException( ie );
         }
+        indexOpen = true;
     }
 
     /**
@@ -146,47 +160,29 @@ public abstract class AbstractRepositoryIndex
      * @param indexFields
      * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
      */
-    private void validateIndex( String[] indexFields )
+    protected void validateIndex( String[] indexFields )
         throws RepositoryIndexException, IOException
     {
-        File indexDir = new File( indexPath );
-        if ( IndexReader.indexExists( indexDir ) )
+        IndexReader indexReader = IndexReader.open( indexPath );
+        try
         {
-            IndexReader indexReader = IndexReader.open( indexPath );
-            try
+            if ( indexReader.numDocs() > 0 )
             {
-                if ( indexReader.numDocs() > 0 )
+                Collection fields = indexReader.getFieldNames();
+                for ( int idx = 0; idx < indexFields.length; idx++ )
                 {
-                    Collection fields = indexReader.getFieldNames();
-                    for ( int idx = 0; idx < indexFields.length; idx++ )
+                    if ( !fields.contains( indexFields[idx] ) )
                     {
-                        if ( !fields.contains( indexFields[idx] ) )
-                        {
-                            throw new RepositoryIndexException(
-                                "The Field " + indexFields[idx] + " does not exist in index " + indexPath + "." );
-                        }
+                        throw new RepositoryIndexException(
+                            "The Field " + indexFields[idx] + " does not exist in index " + indexPath + "." );
                     }
                 }
             }
-            finally
-            {
-                indexReader.close();
-            }
         }
-        else if ( !indexDir.exists() )
+        finally
         {
-            indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+            indexReader.close();
         }
-        else if ( indexDir.isDirectory() )
-        {
-            throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
-        }
-        else
-        {
-            throw new RepositoryIndexException( indexPath + " is not a directory." );
-        }
-
-        indexOpen = true;
     }
 
     /**
@@ -198,9 +194,14 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.RepositoryIndex#deleteDocument(String, String)
+     * Delete the document(s) that contains the specified value on the specified field.
+     *
+     * @param field
+     * @param value
+     * @throws RepositoryIndexException
+     * @throws IOException
      */
-    public void deleteDocument( String field, String value )
+    protected void deleteDocument( String field, String value )
         throws RepositoryIndexException, IOException
     {
         IndexReader indexReader = null;
@@ -218,4 +219,44 @@ public abstract class AbstractRepositoryIndex
             indexReader.close();
         }
     }
+
+    /**
+     * Check if the index already exists.
+     *
+     * @throws IOException
+     * @throws RepositoryIndexException
+     */
+    protected void checkIfIndexExists()
+        throws IOException, RepositoryIndexException
+    {
+        File indexDir = new File( indexPath );
+
+        if ( IndexReader.indexExists( indexDir ) )
+        {
+            indexExists = true;
+        }
+        else if ( !indexDir.exists() )
+        {
+            indexExists = false;
+        }
+        else if ( indexDir.isDirectory() )
+        {
+            throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
+        }
+        else
+        {
+            throw new RepositoryIndexException( indexPath + " is not a directory." );
+        }
+    }
+
+    /**
+     * Checks if the object has already been indexed.
+     *
+     * @param object the object to be indexed.
+     * @throws RepositoryIndexException
+     * @throws IOException
+     */
+    abstract void isIndexed( Object object )
+        throws RepositoryIndexException, IOException;
+
 }

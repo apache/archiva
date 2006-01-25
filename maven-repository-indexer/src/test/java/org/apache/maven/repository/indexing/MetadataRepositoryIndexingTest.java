@@ -95,6 +95,8 @@ public class MetadataRepositoryIndexingTest
 
     /**
      * Create the test index.
+     * Indexing process: check if the object was already indexed [ checkIfIndexed(Object) ], open the index [ open() ],
+     * index the object [ index(Object) ], optimize the index [ optimize() ] and close the index [ close() ].
      *
      * @throws Exception
      */
@@ -107,15 +109,23 @@ public class MetadataRepositoryIndexingTest
         RepositoryMetadata repoMetadata =
             getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
         indexer.index( repoMetadata );
+        indexer.optimize();
+        indexer.close();
 
         repoMetadata =
             getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", ARTIFACT_TYPE );
         indexer.index( repoMetadata );
+        indexer.optimize();
+        indexer.close();
 
         repoMetadata =
             getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", SNAPSHOT_TYPE );
         indexer.index( repoMetadata );
+        indexer.optimize();
+        indexer.close();
 
+        repoMetadata = getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+        indexer.index( repoMetadata );
         indexer.optimize();
         indexer.close();
     }
@@ -201,7 +211,7 @@ public class MetadataRepositoryIndexingTest
     public void testExceptions()
         throws Exception
     {
-        //test when the object passed in the index(..) method is not a RepositoryMetadat instance
+        //test when the object passed in the index(..) method is not a RepositoryMetadata instance
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         try
@@ -209,37 +219,22 @@ public class MetadataRepositoryIndexingTest
             Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
             indexer.index( artifact );
             fail( "Must throw exception when the passed object is not a RepositoryMetadata object." );
+            indexer.optimize();
+            indexer.close();
         }
         catch ( Exception e )
         {
+            //expected
         }
-        indexer.optimize();
-        indexer.close();
 
-        //test when the plugin prefix is blank
-        factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
-        indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         try
         {
-            RepositoryMetadata repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", GROUP_TYPE );
-            indexer.index( repoMetadata );
+            indexer.isIndexed( new Object() );
+            fail( "Must throw exception when the passed object is not of type metadata." );
         }
         catch ( Exception e )
         {
-        }
-        indexer.optimize();
-        indexer.close();
-
-        //test when the index is closed
-        try
-        {
-            RepositoryMetadata repoMetadata =
-                getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
-            indexer.index( repoMetadata );
-            fail( "Must throw exception when a metadata is added to the index while the indexer is still closed." );
-        }
-        catch ( Exception e )
-        {
+            //expected
         }
     }
 

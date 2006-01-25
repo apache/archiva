@@ -63,7 +63,7 @@ public class MetadataRepositoryIndex
     public MetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
-        super( indexPath, repository, FIELDS );
+        super( indexPath, repository );
     }
 
     /**
@@ -115,11 +115,6 @@ public class MetadataRepositoryIndex
     private void indexMetadata( RepositoryMetadata repoMetadata )
         throws RepositoryIndexException
     {
-        if ( !isOpen() )
-        {
-            throw new RepositoryIndexException( "Unable to add artifact index on a closed index" );
-        }
-
         //get lastUpdated from Versioning (specified in Metadata object)
         //get pluginPrefixes from Plugin (spcified in Metadata object) -----> concatenate/append???
         //get the metadatapath: check where metadata is located, then concatenate the groupId,
@@ -177,6 +172,11 @@ public class MetadataRepositoryIndex
 
         try
         {
+            isIndexed( repoMetadata );
+            if ( !isOpen() )
+            {
+                open();
+            }
             getIndexWriter().addDocument( doc );
         }
         catch ( IOException e )
@@ -188,5 +188,27 @@ public class MetadataRepositoryIndex
     public boolean isKeywordField( String field )
     {
         return false;
+    }
+
+    /**
+     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
+     */
+    public void isIndexed( Object object )
+        throws RepositoryIndexException, IOException
+    {
+        if ( object instanceof RepositoryMetadata )
+        {
+            RepositoryMetadata repoMetadata = (RepositoryMetadata) object;
+            checkIfIndexExists();
+            if ( indexExists )
+            {
+                //validateIndex( FIELDS );
+                deleteDocument( FLD_ID, (String) repoMetadata.getKey() );
+            }
+        }
+        else
+        {
+            throw new RepositoryIndexException( "Object is not of type metadata." );
+        }
     }
 }

@@ -74,11 +74,13 @@ public class PomRepositoryIndexingTest
         throws Exception
     {
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        Model pom = getPom( "test", "test-artifactId", "1.0" );
 
         try
         {
             String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
-            factory.createPomRepositoryIndex( notIndexDir, repository );
+            PomRepositoryIndex indexer = factory.createPomRepositoryIndex( notIndexDir, repository );
+            indexer.indexPom( pom );
             fail( "Must throw exception on non-directory index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -89,7 +91,8 @@ public class PomRepositoryIndexingTest
         try
         {
             String notIndexDir = new File( "" ).getAbsolutePath();
-            factory.createPomRepositoryIndex( notIndexDir, repository );
+            PomRepositoryIndex indexer = factory.createPomRepositoryIndex( notIndexDir, repository );
+            indexer.indexPom( pom );
             fail( "Must throw an exception on a non-index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -97,34 +100,16 @@ public class PomRepositoryIndexingTest
             // expected
         }
 
-        Model pom = getPom( "test", "test-artifactId", "1.0" );
-
         PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
-        indexer.close();
-
         try
         {
-            indexer.indexPom( pom );
-            fail( "Must throw exception on add index with closed index." );
+            indexer.isIndexed( new Object() );
+            fail( "Must throw exception when the passed object is not of type model." );
         }
-        catch ( RepositoryIndexException e )
+        catch ( Exception e )
         {
-            // expected
+            //expected
         }
-
-        try
-        {
-            indexer.optimize();
-            fail( "Must throw exception on optimize index with closed index." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            // expected
-        }
-
-        indexer = factory.createPomRepositoryIndex( indexPath, repository );
-
-        indexer.close();
     }
 
     /**
@@ -428,6 +413,8 @@ public class PomRepositoryIndexingTest
 
     /**
      * Create an index that will be used for testing.
+     * Indexing process: check if the object was already indexed [ checkIfIndexed(Object) ], open the index [ open() ],
+     * index the object [ index(Object) ], optimize the index [ optimize() ] and close the index [ close() ].
      *
      * @throws Exception
      */
@@ -439,13 +426,21 @@ public class PomRepositoryIndexingTest
 
         Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
         indexer.indexPom( pom );
+        indexer.optimize();
+        indexer.close();
 
         pom = getPom( "org.apache.maven", "maven-model", "2.0" );
         indexer.indexPom( pom );
+        indexer.optimize();
+        indexer.close();
 
         pom = getPom( "test", "test-artifactId", "1.0" );
         indexer.indexPom( pom );
+        indexer.optimize();
+        indexer.close();
 
+        pom = getPom( "test", "test-artifactId", "1.0" );
+        indexer.indexPom( pom );
         indexer.optimize();
         indexer.close();
     }
