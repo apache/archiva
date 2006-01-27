@@ -33,6 +33,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -428,6 +429,11 @@ public class RepositoryConverterTest
         assertEquals( "check failure message", getI18nString( "failure.incorrect.md5" ), getFailure().getReason() );
 
         assertFalse( "Check artifact not created", file.exists() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
     public void testIncorrectSourceChecksumSha1()
@@ -444,6 +450,11 @@ public class RepositoryConverterTest
         assertEquals( "check failure message", getI18nString( "failure.incorrect.sha1" ), getFailure().getReason() );
 
         assertFalse( "Check artifact not created", file.exists() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
     public void testUnmodifiedArtifact()
@@ -692,17 +703,53 @@ public class RepositoryConverterTest
     }
 
     public void testInvalidSourceArtifactMetadata()
+        throws Exception
     {
         // test artifact is not converted when source metadata is invalid, and returns failure
 
-        // TODO
+        createModernSourceRepository();
+
+        Artifact artifact = createArtifact( "test", "incorrectArtifactMetadata", "1.0.0" );
+        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        file.delete();
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        assertEquals( "check failure message", getI18nString( "failure.incorrect.artifactMetadata.versions" ),
+                      getFailure().getReason() );
+
+        assertFalse( "Check artifact not created", file.exists() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
     public void testInvalidSourceSnapshotMetadata()
+        throws Exception, MalformedURLException
     {
         // test artifact is not converted when source snapshot metadata is invalid and returns failure
 
-        // TODO
+/* TODO:
+        createModernSourceRepository();
+
+        Artifact artifact = createArtifact( "test", "incorrectSnapshotMetadata", "1.0.0-20060102.030405-6" );
+        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        file.delete();
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        assertEquals( "check failure message", getI18nString( "failure.incorrect.snapshotMetadata.snapshot" ),
+                      getFailure().getReason() );
+
+        assertFalse( "Check artifact not created", file.exists() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", metadataFile.exists() );
+*/
     }
 
     public void testMergeArtifactMetadata()
@@ -832,6 +879,18 @@ public class RepositoryConverterTest
     private ArtifactResult getWarning()
     {
         return (ArtifactResult) reporter.getArtifactWarningIterator().next();
+    }
+
+    private void createModernSourceRepository()
+        throws Exception
+    {
+        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+
+        File sourceBase = getTestFile( "src/test/source-modern-repository" );
+        sourceRepository =
+            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
     }
 
 }

@@ -18,10 +18,10 @@ package org.apache.maven.repository.converter;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
@@ -94,34 +94,37 @@ public class DefaultRepositoryConverter
             throw new RepositoryConversionException( getI18NString( "exception.repositories.match" ) );
         }
 
-        if ( copyArtifact( artifact, targetRepository, reporter ) )
+        if ( validateMetadata( artifact, reporter ) )
         {
-            copyPom( artifact, targetRepository, reporter );
-
-            Metadata metadata = createBaseMetadata( artifact );
-            Versioning versioning = new Versioning();
-            versioning.addVersion( artifact.getBaseVersion() );
-            metadata.setVersioning( versioning );
-            updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
-
-            metadata = createBaseMetadata( artifact );
-            metadata.setVersion( artifact.getBaseVersion() );
-            versioning = new Versioning();
-
-            Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
-            if ( matcher.matches() )
+            if ( copyArtifact( artifact, targetRepository, reporter ) )
             {
-                Snapshot snapshot = new Snapshot();
-                snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
-                snapshot.setTimestamp( matcher.group( 2 ) );
-                versioning.setSnapshot( snapshot );
+                copyPom( artifact, targetRepository, reporter );
+
+                Metadata metadata = createBaseMetadata( artifact );
+                Versioning versioning = new Versioning();
+                versioning.addVersion( artifact.getBaseVersion() );
+                metadata.setVersioning( versioning );
+                updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
+
+                metadata = createBaseMetadata( artifact );
+                metadata.setVersion( artifact.getBaseVersion() );
+                versioning = new Versioning();
+
+                Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
+                if ( matcher.matches() )
+                {
+                    Snapshot snapshot = new Snapshot();
+                    snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
+                    snapshot.setTimestamp( matcher.group( 2 ) );
+                    versioning.setSnapshot( snapshot );
+                }
+
+                // TODO: merge latest/release/snapshot from source instead
+                metadata.setVersioning( versioning );
+                updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
+
+                reporter.addSuccess( artifact );
             }
-
-            // TODO: merge latest/release/snapshot from source instead
-            metadata.setVersioning( versioning );
-            updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
-
-            reporter.addSuccess( artifact );
         }
     }
 
@@ -133,7 +136,7 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private void updateMetadata( ArtifactMetadata artifactMetadata, ArtifactRepository targetRepository,
+    private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository targetRepository,
                                  Metadata newMetadata )
         throws RepositoryConversionException
     {
@@ -145,25 +148,7 @@ public class DefaultRepositoryConverter
 
         if ( file.exists() )
         {
-            MetadataXpp3Reader reader = new MetadataXpp3Reader();
-            FileReader fileReader = null;
-            try
-            {
-                fileReader = new FileReader( file );
-                metadata = reader.read( fileReader );
-            }
-            catch ( IOException e )
-            {
-                throw new RepositoryConversionException( "Error reading target metadata", e );
-            }
-            catch ( XmlPullParserException e )
-            {
-                throw new RepositoryConversionException( "Error reading target metadata", e );
-            }
-            finally
-            {
-                IOUtil.close( fileReader );
-            }
+            metadata = readMetadata( file );
             changed = metadata.merge( newMetadata );
         }
         else
@@ -193,6 +178,130 @@ public class DefaultRepositoryConverter
                 IOUtil.close( writer );
             }
         }
+    }
+
+    private Metadata readMetadata( File file )
+        throws RepositoryConversionException
+    {
+        Metadata metadata;
+        MetadataXpp3Reader reader = new MetadataXpp3Reader();
+        FileReader fileReader = null;
+        try
+        {
+            fileReader = new FileReader( file );
+            metadata = reader.read( fileReader );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryConversionException( "Error reading target metadata", e );
+        }
+        catch ( XmlPullParserException e )
+        {
+            throw new RepositoryConversionException( "Error reading target metadata", e );
+        }
+        finally
+        {
+            IOUtil.close( fileReader );
+        }
+        return metadata;
+    }
+
+    private boolean validateMetadata( Artifact artifact, ArtifactReporter reporter )
+        throws RepositoryConversionException
+    {
+        ArtifactRepository repository = artifact.getRepository();
+
+        boolean result = true;
+
+        RepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
+        File file =
+            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        if ( file.exists() )
+        {
+            Metadata metadata = readMetadata( file );
+            result = validateMetadata( metadata, repositoryMetadata, artifact, reporter );
+        }
+
+        repositoryMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        if ( file.exists() )
+        {
+            Metadata metadata = readMetadata( file );
+            result |= validateMetadata( metadata, repositoryMetadata, artifact, reporter );
+        }
+
+        return result;
+    }
+
+    private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
+                                      ArtifactReporter reporter )
+    {
+        String key = "failure.incorrect.";
+
+        if ( repositoryMetadata.storedInGroupDirectory() )
+        {
+            key += "groupMetadata.";
+        }
+        else if ( repositoryMetadata.storedInArtifactVersionDirectory() )
+        {
+            key += "snapshotMetadata.";
+        }
+        else
+        {
+            key += "artifactMetadata.";
+        }
+
+        boolean result = true;
+
+        if ( !metadata.getGroupId().equals( artifact.getGroupId() ) )
+        {
+            reporter.addFailure( artifact, getI18NString( key + "groupId" ) );
+            result = false;
+        }
+        if ( !repositoryMetadata.storedInGroupDirectory() )
+        {
+            if ( !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
+            {
+                reporter.addFailure( artifact, getI18NString( key + "artifactId" ) );
+                result = false;
+            }
+            if ( !repositoryMetadata.storedInArtifactVersionDirectory() )
+            {
+                // artifact metadata
+
+                boolean foundVersion = false;
+                if ( metadata.getVersioning() != null )
+                {
+                    for ( Iterator i = metadata.getVersioning().getVersions().iterator();
+                          i.hasNext() && !foundVersion; )
+                    {
+                        String version = (String) i.next();
+                        if ( version.equals( artifact.getVersion() ) )
+                        {
+                            foundVersion = true;
+                        }
+                    }
+                }
+
+                if ( !foundVersion )
+                {
+                    reporter.addFailure( artifact, getI18NString( key + "versions" ) );
+                    result = false;
+                }
+            }
+            else
+            {
+                // snapshot metadata
+                if ( !metadata.getVersion().equals( artifact.getVersion() ) )
+                {
+                    reporter.addFailure( artifact, getI18NString( key + "version" ) );
+                    result = false;
+                }
+
+                // TODO: build number
+            }
+        }
+        return result;
     }
 
     private void copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
