@@ -167,7 +167,7 @@ public class DefaultRepositoryConverter
             metadata = newMetadata;
         }
 
-        if ( changed )
+        if ( changed && !dryrun )
         {
             Writer writer = null;
             try

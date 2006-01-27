@@ -25,12 +25,20 @@
       </configuration>
       <requirements>
         <requirement>
+          <role>org.apache.maven.repository.digest.Digester</role>
+          <field-name>digester</field-name>
+        </requirement>
+        <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
           <field-name>artifactFactory</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.model.converter.ArtifactPomRewriter</role>
           <field-name>rewriter</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.i18n.I18N</role>
+          <field-name>i18n</field-name>
         </requirement>
       </requirements>
     </component>
@@ -43,12 +51,20 @@
       </configuration>
       <requirements>
         <requirement>
+          <role>org.apache.maven.repository.digest.Digester</role>
+          <field-name>digester</field-name>
+        </requirement>
+        <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
           <field-name>artifactFactory</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.model.converter.ArtifactPomRewriter</role>
           <field-name>rewriter</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.i18n.I18N</role>
+          <field-name>i18n</field-name>
         </requirement>
       </requirements>
     </component>
