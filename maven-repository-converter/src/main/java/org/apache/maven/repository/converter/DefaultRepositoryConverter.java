@@ -278,6 +278,15 @@ public class DefaultRepositoryConverter
                 }
             }
         }
+        else
+        {
+            reporter.addWarning( artifact, getI18NString( "warning.missing.pom" ) );
+        }
+    }
+
+    private String getI18NString( String key )
+    {
+        return i18n.getString( getClass().getName(), Locale.getDefault(), key );
     }
 
     private boolean testChecksums( Artifact artifact, File file, ArtifactReporter reporter )
@@ -293,8 +302,7 @@ public class DefaultRepositoryConverter
                 String checksum = FileUtils.fileRead( md5 );
                 if ( !digester.verifyChecksum( file, checksum, Digester.MD5 ) )
                 {
-                    reporter.addFailure( artifact, i18n.getString( getClass().getName(), Locale.getDefault(),
-                                                                   "failure.incorrect.md5" ) );
+                    reporter.addFailure( artifact, getI18NString( "failure.incorrect.md5" ) );
                     result = false;
                 }
             }
@@ -305,8 +313,7 @@ public class DefaultRepositoryConverter
                 String checksum = FileUtils.fileRead( sha1 );
                 if ( !digester.verifyChecksum( file, checksum, Digester.SHA1 ) )
                 {
-                    reporter.addFailure( artifact, i18n.getString( getClass().getName(), Locale.getDefault(),
-                                                                   "failure.incorrect.sha1" ) );
+                    reporter.addFailure( artifact, getI18NString( "failure.incorrect.sha1" ) );
                     result = false;
                 }
             }
