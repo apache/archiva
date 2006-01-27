@@ -731,7 +731,6 @@ public class RepositoryConverterTest
     {
         // test artifact is not converted when source snapshot metadata is invalid and returns failure
 
-/* TODO:
         createModernSourceRepository();
 
         Artifact artifact = createArtifact( "test", "incorrectSnapshotMetadata", "1.0.0-20060102.030405-6" );
@@ -749,7 +748,6 @@ public class RepositoryConverterTest
         File metadataFile =
             new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
-*/
     }
 
     public void testMergeArtifactMetadata()

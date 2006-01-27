@@ -227,7 +227,7 @@ public class DefaultRepositoryConverter
         if ( file.exists() )
         {
             Metadata metadata = readMetadata( file );
-            result |= validateMetadata( metadata, repositoryMetadata, artifact, reporter );
+            result = result && validateMetadata( metadata, repositoryMetadata, artifact, reporter );
         }
 
         return result;
@@ -276,7 +276,7 @@ public class DefaultRepositoryConverter
                           i.hasNext() && !foundVersion; )
                     {
                         String version = (String) i.next();
-                        if ( version.equals( artifact.getVersion() ) )
+                        if ( version.equals( artifact.getBaseVersion() ) )
                         {
                             foundVersion = true;
                         }
@@ -292,13 +292,36 @@ public class DefaultRepositoryConverter
             else
             {
                 // snapshot metadata
-                if ( !metadata.getVersion().equals( artifact.getVersion() ) )
+                if ( !artifact.getBaseVersion().equals( metadata.getVersion() ) )
                 {
                     reporter.addFailure( artifact, getI18NString( key + "version" ) );
                     result = false;
                 }
 
-                // TODO: build number
+                if ( artifact.isSnapshot() )
+                {
+                    Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
+                    if ( matcher.matches() )
+                    {
+                        boolean correct = false;
+                        if ( metadata.getVersioning() != null && metadata.getVersioning().getSnapshot() != null )
+                        {
+                            Snapshot snapshot = metadata.getVersioning().getSnapshot();
+                            int build = Integer.valueOf( matcher.group( 3 ) ).intValue();
+                            String ts = matcher.group( 2 );
+                            if ( build == snapshot.getBuildNumber() && ts.equals( snapshot.getTimestamp() ) )
+                            {
+                                correct = true;
+                            }
+                        }
+
+                        if ( !correct )
+                        {
+                            reporter.addFailure( artifact, getI18NString( key + "snapshot" ) );
+                            result = false;
+                        }
+                    }
+                }
             }
         }
         return result;
