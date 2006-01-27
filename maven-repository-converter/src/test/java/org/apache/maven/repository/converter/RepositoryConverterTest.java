@@ -482,11 +482,43 @@ public class RepositoryConverterTest
     }
 
     public void testModifedArtifactFails()
+        throws InterruptedException, RepositoryConversionException, IOException
     {
         // test that it fails when the source artifact has changed and is different to the existing artifact in the
         // target repository
 
-        // TODO
+        Artifact artifact = createArtifact( "test", "modified-artifact", "1.0.0" );
+        Artifact pomArtifact = createPomArtifact( artifact );
+
+        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+
+        assertTrue( "Check target file exists", targetFile.exists() );
+        assertTrue( "Check target POM exists", targetPomFile.exists() );
+
+        sourceFile.setLastModified( System.currentTimeMillis() );
+        sourcePomFile.setLastModified( System.currentTimeMillis() );
+
+        long origTime = targetFile.lastModified();
+        long origPomTime = targetPomFile.lastModified();
+
+        // Need to guarantee last modified is not equal
+        Thread.sleep( SLEEP_MILLIS );
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        assertEquals( "Check failure message", getI18nString( "failure.target.already.exists" ),
+                      getFailure().getReason() );
+
+        assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
+        assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
     public void testForcedUnmodifiedArtifact()
@@ -521,6 +553,11 @@ public class RepositoryConverterTest
 
         assertFalse( "Check modified", origTime == targetFile.lastModified() );
         assertFalse( "Check modified", origPomTime == targetPomFile.lastModified() );
+
+        ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
+        File metadataFile =
+            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertTrue( "Check metadata created", metadataFile.exists() );
     }
 
     public void testDryRunSuccess()

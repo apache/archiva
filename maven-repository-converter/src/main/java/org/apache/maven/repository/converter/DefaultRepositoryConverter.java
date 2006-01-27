@@ -339,19 +339,27 @@ public class DefaultRepositoryConverter
             if ( !force && targetFile.exists() )
             {
                 matching = FileUtils.contentEquals( sourceFile, targetFile );
-            }
-            if ( force || !matching )
-            {
-                if ( testChecksums( artifact, sourceFile, reporter ) )
+                if ( !matching )
                 {
-                    if ( !dryrun )
-                    {
-                        FileUtils.copyFile( sourceFile, targetFile );
-                    }
-                }
-                else
-                {
+                    reporter.addFailure( artifact, getI18NString( "failure.target.already.exists" ) );
                     result = false;
+                }
+            }
+            if ( result )
+            {
+                if ( force || !matching )
+                {
+                    if ( testChecksums( artifact, sourceFile, reporter ) )
+                    {
+                        if ( !dryrun )
+                        {
+                            FileUtils.copyFile( sourceFile, targetFile );
+                        }
+                    }
+                    else
+                    {
+                        result = false;
+                    }
                 }
             }
         }
