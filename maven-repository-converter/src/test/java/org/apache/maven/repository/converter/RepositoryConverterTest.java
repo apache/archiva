@@ -737,10 +737,28 @@ public class RepositoryConverterTest
     }
 
     public void testSourceAndTargetRepositoriesMatch()
+        throws Exception
     {
-        // test that it fails if the same (initially - later we might allow this with extra checks)
+        // test that it fails if the same
 
-        // TODO
+        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+
+        sourceRepository = factory.createArtifactRepository( "source", targetRepository.getUrl(),
+                                                             targetRepository.getLayout(), null, null );
+
+        Artifact artifact = createArtifact( "test", "repository-artifact", "1.0" );
+
+        try
+        {
+            repositoryConverter.convert( artifact, targetRepository, reporter );
+            fail( "Should have failed trying to convert within the same repository" );
+        }
+        catch ( RepositoryConversionException e )
+        {
+            // expected
+            assertEquals( "check message", getI18nString( "exception.repositories.match" ), e.getMessage() );
+            assertNull( "Check no additional cause", e.getCause() );
+        }
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String version )

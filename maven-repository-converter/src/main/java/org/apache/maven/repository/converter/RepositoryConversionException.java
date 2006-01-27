@@ -24,6 +24,11 @@ package org.apache.maven.repository.converter;
 public class RepositoryConversionException
     extends Exception
 {
+    public RepositoryConversionException( String message )
+    {
+        super( message );
+    }
+
     public RepositoryConversionException( String message, Throwable cause )
     {
         super( message, cause );

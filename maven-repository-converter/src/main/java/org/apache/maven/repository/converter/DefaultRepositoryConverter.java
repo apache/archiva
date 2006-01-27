@@ -89,6 +89,11 @@ public class DefaultRepositoryConverter
     public void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
         throws RepositoryConversionException
     {
+        if ( artifact.getRepository().getUrl().equals( targetRepository.getUrl() ) )
+        {
+            throw new RepositoryConversionException( getI18NString( "exception.repositories.match" ) );
+        }
+
         if ( copyArtifact( artifact, targetRepository, reporter ) )
         {
             copyPom( artifact, targetRepository, reporter );
