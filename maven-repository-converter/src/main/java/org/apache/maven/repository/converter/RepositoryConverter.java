@@ -18,6 +18,7 @@ package org.apache.maven.repository.converter;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.repository.reporting.ArtifactReporter;
 
 import java.util.List;
 
@@ -35,9 +36,9 @@ public interface RepositoryConverter
      *
      * @param artifact         the artifact to convert
      * @param targetRepository the target repository
-     * @return a list of warnings occuring during the conversion
+     * @param reporter         reporter to track the results of the conversion
      */
-    List convert( Artifact artifact, ArtifactRepository targetRepository )
+    void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
         throws RepositoryConversionException;
 
     /**
@@ -45,7 +46,8 @@ public interface RepositoryConverter
      *
      * @param artifacts        the set of artifacts to convert
      * @param targetRepository the target repository
+     * @param reporter         reporter to track the results of the conversions
      */
-    void convert( List artifacts, ArtifactRepository targetRepository )
+    void convert( List artifacts, ArtifactRepository targetRepository, ArtifactReporter reporter )
         throws RepositoryConversionException;
 }

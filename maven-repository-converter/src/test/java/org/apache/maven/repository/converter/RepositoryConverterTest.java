@@ -24,7 +24,11 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
+import org.apache.maven.repository.reporting.ArtifactReporter;
+import org.apache.maven.repository.reporting.ArtifactResult;
+import org.apache.maven.repository.reporting.DefaultArtifactReporter;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -32,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 /**
@@ -54,7 +59,11 @@ public class RepositoryConverterTest
 
     private ArtifactFactory artifactFactory;
 
+    private ArtifactReporter reporter;
+
     private static final int SLEEP_MILLIS = 100;
+
+    private I18N i18n;
 
     protected void setUp()
         throws Exception
@@ -80,6 +89,10 @@ public class RepositoryConverterTest
         repositoryConverter = (RepositoryConverter) lookup( RepositoryConverter.ROLE, "default" );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+
+        i18n = (I18N) lookup( I18N.ROLE );
+
+        reporter = new DefaultArtifactReporter();
     }
 
     public void testV4PomConvert()
@@ -98,7 +111,8 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -140,7 +154,8 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -182,7 +197,10 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        List warnings = repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        assertEquals( "check no errors", 0, reporter.getFailures() );
+        assertEquals( "check number of warnings", 2, reporter.getWarnings() );
+        assertEquals( "check success", 1, reporter.getSuccesses() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -194,8 +212,6 @@ public class RepositoryConverterTest
         assertTrue( "Check POM created", pomFile.exists() );
 
         compareFiles( expectedPomFile, pomFile );
-
-        assertEquals( "check number of warnings", 2, warnings.size() );
 
         // TODO: check 2 warnings (extend and versions) matched on i18n key
     }
@@ -216,7 +232,8 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -258,7 +275,8 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -300,7 +318,8 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -342,7 +361,8 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -374,7 +394,8 @@ public class RepositoryConverterTest
         // test that a POM is created when there was none at the source
 
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -388,36 +409,38 @@ public class RepositoryConverterTest
         assertFalse( "No source POM", sourcePomFile.exists() );
     }
 
-    public void testInvalidSourceChecksumMd5()
-        throws RepositoryConversionException
-    {
-        // test that it fails when the source md5 is not a valid md5
-
-        Artifact artifact = createArtifact( "test", "invalidMd5Artifact", "1.0.0" );
-        repositoryConverter.convert( artifact, targetRepository );
-
-        // TODO: check for failure
-    }
-
-    public void testInvalidSourceChecksumSha1()
-    {
-        // test that it fails when the source sha1 is not a valid sha1
-
-        // TODO: using exceptions at this level, or passing in reporter?
-    }
-
     public void testIncorrectSourceChecksumMd5()
+        throws RepositoryConversionException
     {
         // test that it fails when the source md5 is wrong
 
-        // TODO: using exceptions at this level, or passing in reporter?
+        Artifact artifact = createArtifact( "test", "incorrectMd5Artifact", "1.0.0" );
+        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        file.delete();
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        ArtifactResult failure = (ArtifactResult) reporter.getArtifactFailureIterator().next();
+        assertEquals( "check failure message", getI18nString( "failure.incorrect.md5" ), failure.getReason() );
+
+        assertFalse( "Check artifact not created", file.exists() );
     }
 
     public void testIncorrectSourceChecksumSha1()
+        throws RepositoryConversionException
     {
         // test that it fails when the source sha1 is wrong
 
-        // TODO: using exceptions at this level, or passing in reporter?
+        Artifact artifact = createArtifact( "test", "incorrectSha1Artifact", "1.0.0" );
+        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        file.delete();
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        ArtifactResult failure = (ArtifactResult) reporter.getArtifactFailureIterator().next();
+        assertEquals( "check failure message", getI18nString( "failure.incorrect.sha1" ), failure.getReason() );
+
+        assertFalse( "Check artifact not created", file.exists() );
     }
 
     public void testUnmodifiedArtifact()
@@ -445,7 +468,8 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -486,7 +510,8 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -510,7 +535,8 @@ public class RepositoryConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         assertTrue( "Check source file exists", sourceFile.exists() );
         assertTrue( "Check source POM exists", sourcePomFile.exists() );
@@ -563,7 +589,10 @@ public class RepositoryConverterTest
         artifacts.add( createArtifact( "test", "artifact-one", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-two", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-three", "1.0.0" ) );
-        repositoryConverter.convert( artifacts, targetRepository );
+        repositoryConverter.convert( artifacts, targetRepository, reporter );
+        assertEquals( "check no errors", 0, reporter.getFailures() );
+        assertEquals( "check no warnings", 0, reporter.getWarnings() );
+        assertEquals( "check successes", 3, reporter.getSuccesses() );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -604,7 +633,8 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "newversion-artifact", "1.0.1" );
 
-        repositoryConverter.convert( artifact, targetRepository );
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -676,6 +706,25 @@ public class RepositoryConverterTest
     private static String normalizeString( String path )
     {
         return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' );
+    }
+
+    private void checkSuccess()
+    {
+        assertEquals( "check no errors", 0, reporter.getFailures() );
+        assertEquals( "check no warnings", 0, reporter.getWarnings() );
+        assertEquals( "check success", 1, reporter.getSuccesses() );
+    }
+
+    private void checkFailure()
+    {
+        assertEquals( "check num errors", 1, reporter.getFailures() );
+        assertEquals( "check no warnings", 0, reporter.getWarnings() );
+        assertEquals( "check no success", 0, reporter.getSuccesses() );
+    }
+
+    private String getI18nString( String key )
+    {
+        return i18n.getString( repositoryConverter.getClass().getName(), Locale.getDefault(), key );
     }
 
 }
