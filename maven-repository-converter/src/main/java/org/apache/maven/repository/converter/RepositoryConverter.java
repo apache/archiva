@@ -35,8 +35,9 @@ public interface RepositoryConverter
      *
      * @param artifact         the artifact to convert
      * @param targetRepository the target repository
+     * @return a list of warnings occuring during the conversion
      */
-    void convert( Artifact artifact, ArtifactRepository targetRepository )
+    List convert( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException;
 
     /**

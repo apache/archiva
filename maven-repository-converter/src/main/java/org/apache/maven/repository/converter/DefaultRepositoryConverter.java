@@ -38,6 +38,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -71,12 +72,12 @@ public class DefaultRepositoryConverter
      */
     private boolean dryrun;
 
-    public void convert( Artifact artifact, ArtifactRepository targetRepository )
+    public List convert( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException
     {
         copyArtifact( artifact, targetRepository );
 
-        copyPom( artifact, targetRepository );
+        List warnings = copyPom( artifact, targetRepository );
 
         Metadata metadata = createBaseMetadata( artifact );
         Versioning versioning = new Versioning();
@@ -100,6 +101,8 @@ public class DefaultRepositoryConverter
         // TODO: merge latest/release/snapshot from source instead
         metadata.setVersioning( versioning );
         updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
+
+        return warnings;
     }
 
     private static Metadata createBaseMetadata( Artifact artifact )
@@ -172,9 +175,11 @@ public class DefaultRepositoryConverter
         }
     }
 
-    private void copyPom( Artifact artifact, ArtifactRepository targetRepository )
+    private List copyPom( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException
     {
+        List warnings = new ArrayList();
+
         Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                                               artifact.getVersion() );
         pom.setBaseVersion( artifact.getBaseVersion() );
@@ -234,6 +239,8 @@ public class DefaultRepositoryConverter
                     rewriter.rewrite( stringReader, fileWriter, false, artifact.getGroupId(), artifact.getArtifactId(),
                                       artifact.getVersion(), artifact.getType() );
 
+                    warnings = rewriter.getWarnings();
+
                     IOUtil.close( fileWriter );
                 }
                 catch ( Exception e )
@@ -247,6 +254,7 @@ public class DefaultRepositoryConverter
                 }
             }
         }
+        return warnings;
     }
 
     private void copyArtifact( Artifact artifact, ArtifactRepository targetRepository )

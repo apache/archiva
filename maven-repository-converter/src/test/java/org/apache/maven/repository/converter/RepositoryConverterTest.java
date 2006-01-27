@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
  * @todo use artifact-test instead
  * @todo should reject if dependencies are missing - rely on reporting?
  * @todo group metadata
- * @todo write timestamp into the metadata
  */
 public class RepositoryConverterTest
     extends PlexusTestCase
@@ -96,7 +95,7 @@ public class RepositoryConverterTest
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
         File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
@@ -138,7 +137,7 @@ public class RepositoryConverterTest
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
         File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
@@ -168,10 +167,37 @@ public class RepositoryConverterTest
     }
 
     public void testV3PomWarningsOnConvert()
+        throws RepositoryConversionException, IOException
     {
         // test that the pom is converted but that warnings are reported
 
-        // TODO
+        Artifact artifact = createArtifact( "test", "v3-warnings-artifact", "1.0.0" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        versionMetadataFile.delete();
+
+        List warnings = repositoryConverter.convert( artifact, targetRepository );
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-warnings.pom" );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( expectedPomFile, pomFile );
+
+        assertEquals( "check number of warnings", 2, warnings.size() );
+
+        // TODO: check 2 warnings (extend and versions) matched on i18n key
     }
 
     public void testV4SnapshotPomConvert()
@@ -572,17 +598,33 @@ public class RepositoryConverterTest
     }
 
     public void testMergeArtifactMetadata()
+        throws RepositoryConversionException, IOException
     {
         // test artifact level metadata is merged when it already exists on successful conversion
 
-        // TODO
-    }
+        Artifact artifact = createArtifact( "test", "newversion-artifact", "1.0.1" );
 
-    public void testMergeSnapshotMetadata()
-    {
-        // test snapshot metadata is merged when it already exists on successful conversion
+        repositoryConverter.convert( artifact, targetRepository );
 
-        // TODO
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( sourcePomFile, pomFile );
+
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/newversion-artifact-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
     }
 
     public void testSourceAndTargetRepositoriesMatch()
