@@ -35,10 +35,6 @@ import java.security.NoSuchAlgorithmException;
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor
 {
-    private static final int BYTE_MASK = 0xFF;
-
-    private static final int CHECKSUM_BUFFER_SIZE = 16384;
-
     /** @plexus.requirement */
     private Digester digester;
 
