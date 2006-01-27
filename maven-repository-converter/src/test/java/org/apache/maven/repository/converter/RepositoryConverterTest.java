@@ -111,10 +111,12 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        artifactFile.delete();
+
         repositoryConverter.convert( artifact, targetRepository, reporter );
         checkSuccess();
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
         assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
 

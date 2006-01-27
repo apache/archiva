@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -69,9 +71,46 @@ public class DefaultDigester
     public boolean verifyChecksum( File file, String checksum, String algorithm )
         throws NoSuchAlgorithmException, IOException
     {
-        //Create checksum for jar file
-        String sum = createChecksum( file, algorithm );
-        return checksum.toUpperCase().equals( sum.toUpperCase() );
+        boolean result = true;
+
+        String trimmedChecksum = checksum.replace( '\n', ' ' ).trim();
+        // Free-BSD / openssl
+        Matcher m =
+            Pattern.compile( algorithm.replaceAll( "-", "" ) + "\\s*\\((.*?)\\)\\s*=\\s*([a-zA-Z0-9]+)" ).matcher(
+                trimmedChecksum );
+        if ( m.matches() )
+        {
+            String filename = m.group( 1 );
+            if ( !filename.equals( file.getName() ) )
+            {
+                // TODO: provide better warning
+                result = false;
+            }
+            trimmedChecksum = m.group( 2 );
+        }
+        else
+        {
+            // GNU tools
+            m = Pattern.compile( "([a-zA-Z0-9]+)\\s\\*?(.+)" ).matcher( trimmedChecksum );
+            if ( m.matches() )
+            {
+                String filename = m.group( 2 );
+                if ( !filename.equals( file.getName() ) )
+                {
+                    // TODO: provide better warning
+                    result = false;
+                }
+                trimmedChecksum = m.group( 1 );
+            }
+        }
+
+        if ( result )
+        {
+            //Create checksum for jar file
+            String sum = createChecksum( file, algorithm );
+            result = trimmedChecksum.toUpperCase().equals( sum.toUpperCase() );
+        }
+        return result;
     }
 
     /**
