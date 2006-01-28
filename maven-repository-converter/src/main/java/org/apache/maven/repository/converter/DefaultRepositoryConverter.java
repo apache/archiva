@@ -28,6 +28,7 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.model.converter.ArtifactPomRewriter;
+import org.apache.maven.repository.converter.transaction.FileTransaction;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.reporting.ArtifactReporter;
 import org.codehaus.plexus.i18n.I18N;
@@ -37,10 +38,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.Writer;
+import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
@@ -96,34 +96,43 @@ public class DefaultRepositoryConverter
 
         if ( validateMetadata( artifact, reporter ) )
         {
-            if ( copyArtifact( artifact, targetRepository, reporter ) )
+            FileTransaction transaction = new FileTransaction();
+
+            if ( copyArtifact( artifact, targetRepository, reporter, transaction ) )
             {
-                copyPom( artifact, targetRepository, reporter );
-
-                Metadata metadata = createBaseMetadata( artifact );
-                Versioning versioning = new Versioning();
-                versioning.addVersion( artifact.getBaseVersion() );
-                metadata.setVersioning( versioning );
-                updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
-
-                metadata = createBaseMetadata( artifact );
-                metadata.setVersion( artifact.getBaseVersion() );
-                versioning = new Versioning();
-
-                Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
-                if ( matcher.matches() )
+                if ( copyPom( artifact, targetRepository, reporter, transaction ) )
                 {
-                    Snapshot snapshot = new Snapshot();
-                    snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
-                    snapshot.setTimestamp( matcher.group( 2 ) );
-                    versioning.setSnapshot( snapshot );
+                    Metadata metadata = createBaseMetadata( artifact );
+                    Versioning versioning = new Versioning();
+                    versioning.addVersion( artifact.getBaseVersion() );
+                    metadata.setVersioning( versioning );
+                    updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata,
+                                    transaction );
+
+                    metadata = createBaseMetadata( artifact );
+                    metadata.setVersion( artifact.getBaseVersion() );
+                    versioning = new Versioning();
+
+                    Matcher matcher = Artifact.VERSION_FILE_PATTERN.matcher( artifact.getVersion() );
+                    if ( matcher.matches() )
+                    {
+                        Snapshot snapshot = new Snapshot();
+                        snapshot.setBuildNumber( Integer.valueOf( matcher.group( 3 ) ).intValue() );
+                        snapshot.setTimestamp( matcher.group( 2 ) );
+                        versioning.setSnapshot( snapshot );
+                    }
+
+                    // TODO: merge latest/release/snapshot from source instead
+                    metadata.setVersioning( versioning );
+                    updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata,
+                                    transaction );
+
+                    if ( !dryrun )
+                    {
+                        transaction.commit();
+                    }
+                    reporter.addSuccess( artifact );
                 }
-
-                // TODO: merge latest/release/snapshot from source instead
-                metadata.setVersioning( versioning );
-                updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata );
-
-                reporter.addSuccess( artifact );
             }
         }
     }
@@ -137,7 +146,7 @@ public class DefaultRepositoryConverter
     }
 
     private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository targetRepository,
-                                 Metadata newMetadata )
+                                 Metadata newMetadata, FileTransaction transaction )
         throws RepositoryConversionException
     {
         File file = new File( targetRepository.getBasedir(),
@@ -157,17 +166,18 @@ public class DefaultRepositoryConverter
             metadata = newMetadata;
         }
 
-        if ( changed && !dryrun )
+        if ( changed )
         {
-            Writer writer = null;
+            StringWriter writer = null;
             try
             {
-                file.getParentFile().mkdirs();
-                writer = new FileWriter( file );
+                writer = new StringWriter();
 
                 MetadataXpp3Writer mappingWriter = new MetadataXpp3Writer();
 
                 mappingWriter.write( writer, metadata );
+
+                transaction.createFile( writer.toString(), file );
             }
             catch ( IOException e )
             {
@@ -327,7 +337,8 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private void copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+                             FileTransaction transaction )
         throws RepositoryConversionException
     {
         Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
@@ -336,6 +347,7 @@ public class DefaultRepositoryConverter
         ArtifactRepository repository = artifact.getRepository();
         File file = new File( repository.getBasedir(), repository.pathOf( pom ) );
 
+        boolean result = true;
         if ( file.exists() )
         {
             // TODO: utility methods in the model converter
@@ -369,11 +381,7 @@ public class DefaultRepositoryConverter
                     }
                     if ( force || !matching )
                     {
-                        if ( !dryrun )
-                        {
-                            targetFile.getParentFile().mkdirs();
-                            FileUtils.fileWrite( targetFile.getAbsolutePath(), contents );
-                        }
+                        transaction.createFile( contents, targetFile );
                     }
                 }
                 catch ( IOException e )
@@ -385,14 +393,16 @@ public class DefaultRepositoryConverter
             {
                 // v3 POM
                 StringReader stringReader = new StringReader( contents );
-                Writer fileWriter = null;
+                StringWriter writer = null;
                 try
                 {
-                    fileWriter = new FileWriter( targetFile );
+                    writer = new StringWriter();
 
                     // TODO: this api could be improved - is it worth having or go back to modelConverter?
-                    rewriter.rewrite( stringReader, fileWriter, false, artifact.getGroupId(), artifact.getArtifactId(),
+                    rewriter.rewrite( stringReader, writer, false, artifact.getGroupId(), artifact.getArtifactId(),
                                       artifact.getVersion(), artifact.getType() );
+
+                    transaction.createFile( writer.toString(), targetFile );
 
                     List warnings = rewriter.getWarnings();
 
@@ -401,17 +411,19 @@ public class DefaultRepositoryConverter
                         String message = (String) i.next();
                         reporter.addWarning( artifact, message );
                     }
-
-                    IOUtil.close( fileWriter );
+                }
+                catch ( XmlPullParserException e )
+                {
+                    reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    result = false;
                 }
                 catch ( Exception e )
                 {
-                    if ( fileWriter != null )
-                    {
-                        IOUtil.close( fileWriter );
-                        targetFile.delete();
-                    }
                     throw new RepositoryConversionException( "Unable to write converted POM", e );
+                }
+                finally
+                {
+                    IOUtil.close( writer );
                 }
             }
         }
@@ -419,6 +431,12 @@ public class DefaultRepositoryConverter
         {
             reporter.addWarning( artifact, getI18NString( "warning.missing.pom" ) );
         }
+        return result;
+    }
+
+    private String getI18NString( String key, String arg0 )
+    {
+        return i18n.format( getClass().getName(), Locale.getDefault(), key, arg0 );
     }
 
     private String getI18NString( String key )
@@ -462,7 +480,8 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+                                  FileTransaction transaction )
         throws RepositoryConversionException
     {
         File sourceFile = artifact.getFile();
@@ -488,10 +507,7 @@ public class DefaultRepositoryConverter
                 {
                     if ( testChecksums( artifact, sourceFile, reporter ) )
                     {
-                        if ( !dryrun )
-                        {
-                            FileUtils.copyFile( sourceFile, targetFile );
-                        }
+                        transaction.copyFile( sourceFile, targetFile );
                     }
                     else
                     {

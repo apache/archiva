@@ -643,31 +643,30 @@ public class RepositoryConverterTest
     }
 
     public void testRollbackArtifactCreated()
+        throws RepositoryConversionException, IOException
     {
         // test rollback can remove a created artifact, including checksums
 
-        // TODO
-    }
+        Artifact artifact = createArtifact( "test", "rollback-created-artifact", "1.0.0" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        FileUtils.deleteDirectory( artifactMetadataFile.getParentFile() );
 
-    public void testRollbackArtifactChanged()
-    {
-        // test rollback can undo changes to an artifact, including checksums
+        ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
 
-        // TODO
-    }
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
-    public void testRollbackMetadataCreated()
-    {
-        // test rollback can remove a created artifact's metadata, including checksums
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkFailure();
+        String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replace( "{0}", "(.*?)" ) + "$";
+        assertTrue( "Check failure message", getFailure().getReason().matches( pattern ) );
 
-        // TODO
-    }
-
-    public void testRollbackMetadataChanged()
-    {
-        // test rollback can undo changes to an artifact's metadata, including checksums
-
-        // TODO
+        assertFalse( "check artifact rolled back", artifactFile.exists() );
+        assertFalse( "check metadata rolled back", artifactMetadataFile.exists() );
+        assertFalse( "check metadata rolled back", versionMetadataFile.exists() );
     }
 
     public void testMultipleArtifacts()
