@@ -38,6 +38,7 @@ import org.codehaus.plexus.util.FileUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
@@ -222,9 +223,9 @@ public class MetadataRepositoryIndexingTest
             indexer.optimize();
             indexer.close();
         }
-        catch ( Exception e )
+        catch ( RepositoryIndexException e )
         {
-            //expected
+            assertTrue ( true );
         }
 
         try
@@ -232,9 +233,13 @@ public class MetadataRepositoryIndexingTest
             indexer.isIndexed( new Object() );
             fail( "Must throw exception when the passed object is not of type metadata." );
         }
-        catch ( Exception e )
+        catch ( RepositoryIndexException e )
         {
-            //expected
+            assertTrue ( true );
+        }
+        catch ( IOException ie )
+        {
+            fail ( "Unexpected IOException thrown: + " + ie.getMessage() );
         }
     }
 

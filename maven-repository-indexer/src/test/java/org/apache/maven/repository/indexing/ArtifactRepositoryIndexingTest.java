@@ -81,7 +81,7 @@ public class ArtifactRepositoryIndexingTest
         }
         catch ( RepositoryIndexException e )
         {
-            // expected
+            assertTrue ( true );
         }
 
         try
@@ -93,7 +93,7 @@ public class ArtifactRepositoryIndexingTest
         }
         catch ( RepositoryIndexException e )
         {
-            // expected
+            assertTrue ( true );
         }
 
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
@@ -104,7 +104,7 @@ public class ArtifactRepositoryIndexingTest
         }
         catch ( RepositoryIndexException e )
         {
-            // expected
+            assertTrue ( true );
         }
     }
 

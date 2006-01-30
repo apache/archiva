@@ -216,7 +216,7 @@ public abstract class AbstractRepositoryIndex
         }
         finally
         {
-            indexReader.close();
+            if ( indexReader != null ) indexReader.close();
         }
     }
 
