@@ -37,7 +37,6 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -110,10 +109,6 @@ public class PomRepositoryIndexingTest
         catch ( RepositoryIndexException e )
         {
             assertTrue ( true );
-        }
-        catch ( IOException ie )
-        {
-            fail ( "Unexpected IOException thrown: " + ie.getMessage() );
         }
     }
 
