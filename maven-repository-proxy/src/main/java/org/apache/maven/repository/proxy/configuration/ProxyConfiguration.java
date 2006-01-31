@@ -43,8 +43,7 @@ public class ProxyConfiguration
     private boolean browsable;
 
     private ArtifactRepository repoCache;
-
-    private ArrayList repositories = new ArrayList();
+    private List repositories = new ArrayList();
 
     public void setBrowsable( boolean browsable )
     {
@@ -56,7 +55,7 @@ public class ProxyConfiguration
         return browsable;
     }
 
-    public void setRepositoryCachePath( String repoCachePath )
+    public void setRepositoryCachePath( String repoCacheURL )
     {
         ArtifactRepositoryPolicy standardPolicy;
         standardPolicy = new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS,
@@ -64,7 +63,7 @@ public class ProxyConfiguration
 
         ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
 
-        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache", repoCachePath, layout,
+        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache", repoCacheURL, layout,
                                                                         standardPolicy, standardPolicy );
     }
 
@@ -88,7 +87,7 @@ public class ProxyConfiguration
         return Collections.unmodifiableList( repositories );
     }
 
-    public void setRepositories( ArrayList repositories )
+    public void setRepositories( List repositories )
     {
         this.repositories = repositories;
     }
