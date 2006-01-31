@@ -26,6 +26,10 @@
   <name>Maven Repository Artifact Discovery</name>
   <dependencies>
     <dependency>
+      <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-utils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
