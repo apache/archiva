@@ -137,6 +137,7 @@
     <module>maven-repository-indexer</module>
     <module>maven-repository-utils</module>
     <module>maven-repository-webapp</module>
+    <module>maven-repository-proxy</module>
   </modules>
   <repositories>
     <repository>
