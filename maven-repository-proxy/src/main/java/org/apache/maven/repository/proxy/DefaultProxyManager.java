@@ -1,12 +1,28 @@
 package org.apache.maven.repository.proxy;
 
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
-import org.apache.maven.repository.proxy.files.DefaultRepositoryFileManager;
 import org.apache.maven.repository.proxy.files.Checksum;
+import org.apache.maven.repository.proxy.files.DefaultRepositoryFileManager;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -91,11 +107,11 @@ public class DefaultProxyManager
                 }
             }
         }
-        catch( TransferFailedException e )
+        catch ( TransferFailedException e )
         {
             throw new ProxyException( e.getMessage(), e );
         }
-        catch( ResourceDoesNotExistException e)
+        catch ( ResourceDoesNotExistException e )
         {
             throw new ProxyException( e.getMessage(), e );
         }
@@ -129,7 +145,7 @@ public class DefaultProxyManager
         ArtifactRepository cache = config.getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
 
-        for( Iterator repositories = config.getRepositories().iterator(); repositories.hasNext(); )
+        for ( Iterator repositories = config.getRepositories().iterator(); repositories.hasNext(); )
         {
             ProxyRepository repository = (ProxyRepository) repositories.next();
 
@@ -151,8 +167,8 @@ public class DefaultProxyManager
                 }
                 catch ( NoSuchAlgorithmException e )
                 {
-                    System.out.println( "Skipping checksum validation for unsupported algorithm: "
-                        + repository.getChecksum() );
+                    System.out.println(
+                        "Skipping checksum validation for unsupported algorithm: " + repository.getChecksum() );
                 }
 
                 if ( connectToRepository( wagon, repository ) )
@@ -163,7 +179,7 @@ public class DefaultProxyManager
                     int tries = 0;
                     boolean success = false;
 
-                    while( !success )
+                    while ( !success )
                     {
                         tries++;
 
@@ -191,8 +207,7 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                System.out.println( "Skipping repository " + repository.getUrl() +
-                    ": " + e.getMessage() );
+                System.out.println( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
             }
             catch ( ResourceDoesNotExistException e )
             {
@@ -200,8 +215,7 @@ public class DefaultProxyManager
             }
             catch ( AuthorizationException e )
             {
-                System.out.println( "Skipping repository " + repository.getUrl() +
-                    ": " + e.getMessage() );
+                System.out.println( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
             }
             catch ( UnsupportedProtocolException e )
             {
@@ -234,7 +248,7 @@ public class DefaultProxyManager
     }
 
     private boolean doChecksumCheck( ChecksumObserver listener, ProxyRepository repository, String path, Wagon wagon )
-        //throws ChecksumFailedException
+    //throws ChecksumFailedException
     {
         boolean success = false;
 
@@ -297,7 +311,10 @@ public class DefaultProxyManager
             if ( expectedChecksum.equals( actualChecksum ) )
             {
                 File checksumFile = new File( destination + checksumFileExtension );
-                if ( checksumFile.exists() ) checksumFile.delete();
+                if ( checksumFile.exists() )
+                {
+                    checksumFile.delete();
+                }
                 FileUtils.copyFile( tempChecksumFile, checksumFile );
             }
             else
