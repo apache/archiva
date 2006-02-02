@@ -35,6 +35,19 @@ public class ArtifactUtils
     public static Artifact buildArtifact( File repositoryBase, String path, ArtifactRepository repository,
                                           ArtifactFactory artifactFactory )
     {
+        Artifact artifact = buildArtifact( path, artifactFactory );
+
+        if ( artifact != null )
+        {
+            artifact.setRepository( repository );
+            artifact.setFile( new File( repositoryBase, path ) );
+        }
+
+        return artifact;
+    }
+
+    public static Artifact buildArtifact( String path, ArtifactFactory artifactFactory )
+    {
         List pathParts = new ArrayList();
         StringTokenizer st = new StringTokenizer( path, "/\\" );
         while ( st.hasMoreTokens() )
@@ -175,12 +188,6 @@ public class ArtifactUtils
                     }
                 }
             }
-        }
-
-        if ( finalResult != null )
-        {
-            finalResult.setRepository( repository );
-            finalResult.setFile( new File( repositoryBase, path ) );
         }
 
         return finalResult;
