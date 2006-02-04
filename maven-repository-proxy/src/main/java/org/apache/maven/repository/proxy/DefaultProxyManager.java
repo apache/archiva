@@ -133,13 +133,13 @@ public class DefaultProxyManager
     }
 
     private File getRepositoryFile( String path )
-        throws ProxyException
+        throws ResourceDoesNotExistException, ProxyException
     {
         return getRepositoryFile( path, true );
     }
 
     private File getRepositoryFile( String path, boolean useChecksum )
-        throws ProxyException
+        throws ResourceDoesNotExistException, ProxyException
     {
         ArtifactRepository cache = config.getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
@@ -214,7 +214,7 @@ public class DefaultProxyManager
             }
         }
 
-        throw new ProxyException( "Could not find " + path + " in any of the repositories." );
+        throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
     }
 
     private Map prepareChecksums( Wagon wagon )
