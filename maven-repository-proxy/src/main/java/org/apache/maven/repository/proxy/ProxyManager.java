@@ -21,13 +21,34 @@ import org.apache.maven.wagon.ResourceDoesNotExistException;
 import java.io.File;
 
 /**
+ * Class used to bridge the servlet to the repository proxy implementation.
+ *
  * @author Edwin Punzalan
  */
 public interface ProxyManager
 {
+    /**
+     * Used to retrieve a cached path or retrieve one if the cache does not contain it yet.
+     *
+     * @param path the expected repository path
+     * @return File object referencing the requested path in the cache
+     * @throws ProxyException when an exception occurred during the retrieval of the requested path
+     * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
+     *      configured repositories
+     */
     public File get( String path )
         throws ProxyException, ResourceDoesNotExistException;
 
+    /**
+     * Used to force remote download of the requested path from any the configured repositories.  This method will
+     *      only bypass the cache for searching but the requested path will still be cached.
+     *
+     * @param path the expected repository path
+     * @return File object referencing the requested path in the cache
+     * @throws ProxyException when an exception occurred during the retrieval of the requested path
+     * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
+     *      configured repositories
+     */
     public File getRemoteFile( String path )
         throws ProxyException, ResourceDoesNotExistException;
 }

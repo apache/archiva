@@ -63,11 +63,19 @@ public class DefaultProxyManager
 
     private ProxyConfiguration config;
 
+    /**
+     * Constructor.
+     *
+     * @param configuration the configuration object to base the behavior of this instance
+     */
     public DefaultProxyManager( ProxyConfiguration configuration )
     {
         config = configuration;
     }
 
+    /**
+     * @see org.apache.maven.repository.proxy.ProxyManager#get(String)
+     */
     public File get( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
@@ -81,38 +89,43 @@ public class DefaultProxyManager
         return cachedFile;
     }
 
+    /**
+     * @see org.apache.maven.repository.proxy.ProxyManager#getRemoteFile(String)
+     */
     public File getRemoteFile( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
-        try
-        {
-            Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
+        Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
 
-            File remoteFile;
-            if ( artifact != null )
-            {
-                remoteFile = getArtifactFile( artifact );
-            }
-            else if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
-            {
-                remoteFile = getRepositoryFile( path, false );
-            }
-            else
-            {
-                // as of now, only metadata fits here
-                remoteFile = getRepositoryFile( path );
-            }
-
-            return remoteFile;
-        }
-        catch ( TransferFailedException e )
+        File remoteFile;
+        if ( artifact != null )
         {
-            throw new ProxyException( e.getMessage(), e );
+            remoteFile = getArtifactFile( artifact );
         }
+        else if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
+        {
+            remoteFile = getRepositoryFile( path, false );
+        }
+        else
+        {
+            // as of now, only metadata fits here
+            remoteFile = getRepositoryFile( path );
+        }
+
+        return remoteFile;
     }
 
+    /**
+     * Used to download an artifact object from the remote repositories.
+     *
+     * @param artifact the artifact object to be downloaded from a remote repository
+     * @return File object representing the remote artifact in the repository cache
+     * @throws ProxyException when an error occurred during retrieval of the requested artifact
+     * @throws ResourceDoesNotExistException when the requested artifact cannot be found in any of the
+     *      configured repositories
+     */
     private File getArtifactFile( Artifact artifact )
-        throws TransferFailedException, ResourceDoesNotExistException
+        throws ResourceDoesNotExistException, ProxyException
     {
         ArtifactRepository repoCache = config.getRepositoryCache();
 
@@ -120,22 +133,54 @@ public class DefaultProxyManager
 
         if ( !artifactFile.exists() )
         {
-            wagon.getArtifact( artifact, config.getRepositories() );
+            try
+            {
+                wagon.getArtifact( artifact, config.getRepositories() );
+            }
+            catch ( TransferFailedException e )
+            {
+                throw new ProxyException( e.getMessage(), e );
+            }
             artifactFile = artifact.getFile();
         }
 
         return artifactFile;
     }
 
+    /**
+     * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
+     *      path cannot be resolved into a repository object, for example, an Artifact.
+     *
+     * @param path the remote path to use to search for the requested file
+     * @return File object representing the remote file in the repository cache
+     * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
+     *      repositories.
+     * @throws ProxyException when an error occurred during the retrieval of the requested path
+     */
     private File getRepositoryFile( String path )
         throws ResourceDoesNotExistException, ProxyException
     {
         return getRepositoryFile( path, true );
     }
 
+    /**
+     * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
+     *      path cannot be resolved into a repository object, for example, an Artifact.
+     *
+     * @param path the remote path to use to search for the requested file
+     * @param useChecksum forces the download to whether use a checksum (if present in the remote repository) or not
+     * @return File object representing the remote file in the repository cache
+     * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
+     *      repositories.
+     * @throws ProxyException when an error occurred during the retrieval of the requested path
+     */
     private File getRepositoryFile( String path, boolean useChecksum )
         throws ResourceDoesNotExistException, ProxyException
     {
+        Map checksums = null;
+        Wagon wagon = null;
+        boolean connected = false;
+
         ArtifactRepository cache = config.getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
 
@@ -145,17 +190,17 @@ public class DefaultProxyManager
 
             try
             {
-                Wagon wagon = this.wagon.getWagon( repository.getProtocol() );
+                wagon = this.wagon.getWagon( repository.getProtocol() );
 
                 //@todo configure wagon
 
-                Map checksums = null;
                 if ( useChecksum )
                 {
                     checksums = prepareChecksums( wagon );
                 }
 
-                if ( connectToRepository( wagon, repository ) )
+                connected = connectToRepository( wagon, repository );
+                if ( connected )
                 {
                     File temp = new File( target.getAbsolutePath() + ".tmp" );
                     temp.deleteOnExit();
@@ -207,11 +252,29 @@ public class DefaultProxyManager
                 getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagon configured for protocol " +
                     repository.getProtocol() );
             }
+            finally
+            {
+                if ( wagon != null && checksums != null )
+                {
+                    releaseChecksums( wagon, checksums );
+                }
+
+                if ( connected )
+                {
+                    disconnectWagon( wagon );
+                }
+            }
         }
 
         throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
     }
 
+    /**
+     * Used to add checksum observers as transfer listeners to the wagon object
+     *
+     * @param wagon the wagon object to use the checksum with
+     * @return map of ChecksumObservers added into the wagon transfer listeners
+     */
     private Map prepareChecksums( Wagon wagon )
     {
         Map checksums = new HashMap();
@@ -232,6 +295,12 @@ public class DefaultProxyManager
         return checksums;
     }
 
+    /**
+     * Used to remove the ChecksumObservers from the wagon object
+     *
+     * @param wagon the wagon object to remote the ChecksumObservers from
+     * @param checksumMap the map representing the list of ChecksumObservers added to the wagon object
+     */
     private void releaseChecksums( Wagon wagon, Map checksumMap )
     {
         for ( Iterator checksums = checksumMap.values().iterator(); checksums.hasNext(); )
@@ -241,6 +310,13 @@ public class DefaultProxyManager
         }
     }
 
+    /**
+     * Used to request the wagon object to connect to a repository
+     *
+     * @param wagon the wagon object that will be used to connect to the repository
+     * @param repository the repository object to connect the wagon to
+     * @return true when the wagon is able to connect to the repository
+     */
     private boolean connectToRepository( Wagon wagon, ProxyRepository repository )
     {
         boolean connected = false;
@@ -261,6 +337,14 @@ public class DefaultProxyManager
         return connected;
     }
 
+    /**
+     * Used to verify the checksum during a wagon download
+     *
+     * @param checksumMap the map of ChecksumObservers present in the wagon as transferlisteners
+     * @param path path of the remote object whose checksum is to be verified
+     * @param wagon the wagon object used to download the requested path
+     * @return true when the checksum succeeds and false when the checksum failed.
+     */
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
     {
         for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
@@ -329,6 +413,11 @@ public class DefaultProxyManager
         return true;
     }
 
+    /**
+     * Used to disconnect the wagon from its repository
+     *
+     * @param wagon the connected wagon object
+     */
     private void disconnectWagon( Wagon wagon )
     {
         try

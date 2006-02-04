@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Class to represent the configuration file for the proxy
+ *
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.proxy.configuration.ProxyConfiguration"
  */
@@ -45,16 +47,31 @@ public class ProxyConfiguration
     private ArtifactRepository repoCache;
     private List repositories = new ArrayList();
 
+    /**
+     * Method to set/unset the web-view of the repository cache
+     *
+     * @param browsable set to true to enable the web-view of the proxy repository cache
+     */
     public void setBrowsable( boolean browsable )
     {
         this.browsable = browsable;
     }
 
+    /**
+     * Used to determine if the repsented configuration allows web view of the repository cache
+     *
+     * @return true if the repository cache is configured for web view.
+     */
     public boolean isBrowsable()
     {
         return browsable;
     }
 
+    /**
+     * Used to set the location where the proxy should cache the configured repositories
+     *
+     * @param repoCacheURL
+     */
     public void setRepositoryCachePath( String repoCacheURL )
     {
         ArtifactRepositoryPolicy standardPolicy;
@@ -67,26 +84,53 @@ public class ProxyConfiguration
                                                                         standardPolicy, standardPolicy );
     }
 
+    /**
+     * Used to retrieve an ArtifactRepository Object of the proxy cache
+     *
+     * @return the ArtifactRepository representation of the proxy cache
+     */
     public ArtifactRepository getRepositoryCache()
     {
         return repoCache;
     }
 
+    /**
+     * Used to retrieved the absolute path of the repository cache
+     *
+     * @return path to the proxy cache
+     */
     public String getRepositoryCachePath()
     {
         return repoCache.getBasedir();
     }
 
+    /**
+     * Used to add proxied repositories.
+     *
+     * @param repository the repository to be proxied
+     */
     public void addRepository( ProxyRepository repository )
     {
         repositories.add( repository );
     }
 
+    /**
+     * Used to retrieve an unmodifyable list of proxied repositories. They returned list determines the search sequence
+     * for retrieving artifacts.
+     *
+     * @return a list of ProxyRepository objects representing proxied repositories
+     */
     public List getRepositories()
     {
         return Collections.unmodifiableList( repositories );
     }
 
+    /**
+     * Used to set the list of repositories to be proxied.  This replaces any repositories already added to this
+     * configuraion instance.  Useful for re-arranging an existing proxied list.
+     *
+     * @param repositories
+     */
     public void setRepositories( List repositories )
     {
         this.repositories = repositories;
