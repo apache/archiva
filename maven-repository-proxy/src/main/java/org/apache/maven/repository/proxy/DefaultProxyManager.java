@@ -35,7 +35,6 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -177,7 +176,7 @@ public class DefaultProxyManager
                         if ( useChecksum )
                         {
                             releaseChecksums( wagon, checksums );
-                            success = doChecksumCheck( checksums, repository, path, wagon );
+                            success = doChecksumCheck( checksums, path, wagon );
                         }
                         else
                         {
@@ -266,7 +265,7 @@ public class DefaultProxyManager
         return connected;
     }
 
-    private boolean doChecksumCheck( Map checksumMap, ProxyRepository repository, String path, Wagon wagon )
+    private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
     {
         for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
         {
@@ -332,63 +331,6 @@ public class DefaultProxyManager
         getLogger().info( "Skipping checksum validation for " + path + ": No remote checksums available." );
 
         return true;
-    }
-
-    private void verifyChecksum( String actualChecksum, File destination, String remotePath,
-                                 String checksumFileExtension, Wagon wagon )
-        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
-    {
-        try
-        {
-            File tempDestination = new File( destination.getAbsolutePath() + ".tmp" );
-            tempDestination.deleteOnExit();
-
-            File tempChecksumFile = new File( tempDestination + checksumFileExtension + ".tmp" );
-            tempChecksumFile.deleteOnExit();
-
-            wagon.get( remotePath + checksumFileExtension, tempChecksumFile );
-
-            String expectedChecksum = FileUtils.fileRead( tempChecksumFile );
-
-            // remove whitespaces at the end
-            expectedChecksum = expectedChecksum.trim();
-
-            // check for 'MD5 (name) = CHECKSUM'
-            if ( expectedChecksum.startsWith( "MD5" ) )
-            {
-                int lastSpacePos = expectedChecksum.lastIndexOf( ' ' );
-                expectedChecksum = expectedChecksum.substring( lastSpacePos + 1 );
-            }
-            else
-            {
-                // remove everything after the first space (if available)
-                int spacePos = expectedChecksum.indexOf( ' ' );
-
-                if ( spacePos != -1 )
-                {
-                    expectedChecksum = expectedChecksum.substring( 0, spacePos );
-                }
-            }
-
-            if ( expectedChecksum.equals( actualChecksum ) )
-            {
-                File checksumFile = new File( destination + checksumFileExtension );
-                if ( checksumFile.exists() )
-                {
-                    checksumFile.delete();
-                }
-                FileUtils.copyFile( tempChecksumFile, checksumFile );
-            }
-            else
-            {
-                throw new ChecksumFailedException( "Checksum failed on download: local = '" + actualChecksum +
-                    "'; remote = '" + expectedChecksum + "'" );
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new ChecksumFailedException( "Invalid checksum file", e );
-        }
     }
 
     private void disconnectWagon( Wagon wagon )
