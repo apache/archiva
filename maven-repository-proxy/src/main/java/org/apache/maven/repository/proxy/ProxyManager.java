@@ -16,22 +16,16 @@ package org.apache.maven.repository.proxy;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.wagon.TransferFailedException;
-
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author Edwin Punzalan
  */
 public interface ProxyManager
 {
-    File getArtifactFile( Artifact artifact )
-        throws TransferFailedException, ResourceDoesNotExistException, IOException;
+    public File get( String path )
+        throws ProxyException;
 
-    InputStream getArtifactAsStream( Artifact artifact )
-        throws TransferFailedException, ResourceDoesNotExistException, IOException;
+    public File getRemoteFile( String path )
+        throws ProxyException;
 }

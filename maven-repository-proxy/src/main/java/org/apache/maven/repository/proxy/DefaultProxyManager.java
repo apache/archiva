@@ -17,12 +17,14 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.repository.ArtifactUtils;
+import org.apache.maven.repository.digest.DefaultDigester;
+import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
-import org.apache.maven.repository.proxy.files.Checksum;
-import org.apache.maven.repository.proxy.files.DefaultRepositoryFileManager;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -32,21 +34,33 @@ import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Edwin Punzalan
+ * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
  */
 public class DefaultProxyManager
-    //implements ProxyManager
+    extends AbstractLogEnabled
+    implements ProxyManager
 {
-    /* @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private WagonManager wagon;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactFactory artifactFactory;
 
     private ProxyConfiguration config;
 
@@ -58,6 +72,7 @@ public class DefaultProxyManager
     public File get( String path )
         throws ProxyException
     {
+        //@todo use wagon for cache use file:// as URL
         String cachePath = config.getRepositoryCachePath();
         File cachedFile = new File( cachePath, path );
         if ( !cachedFile.exists() )
@@ -72,40 +87,24 @@ public class DefaultProxyManager
     {
         try
         {
-            if ( path.indexOf( "/jars/" ) >= 0 )
+            Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
+
+            File remoteFile;
+            if ( artifact != null )
             {
-                //@todo maven 1 repo request
-                throw new ProxyException( "Maven 1 repository requests not yet supported." );
+                remoteFile = getArtifactFile( artifact );
             }
-            else if ( path.indexOf( "/poms/" ) >= 0 )
+            else if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
             {
-                //@todo maven 1 repo request
-                throw new ProxyException( "Maven 1 repository requests not yet supported." );
+                remoteFile = getRepositoryFile( path, false );
             }
             else
             {
-                //maven 2 repo request
-                Object obj = new DefaultRepositoryFileManager().getRequestedObjectFromPath( path );
-
-                if ( obj == null )
-                {
-                    //right now, only metadata is known to fit here
-                    return getRepositoryFile( path );
-                }
-                else if ( obj instanceof Checksum )
-                {
-                    return getRepositoryFile( path, false );
-                }
-                else if ( obj instanceof Artifact )
-                {
-                    Artifact artifact = (Artifact) obj;
-                    return getArtifactFile( artifact );
-                }
-                else
-                {
-                    throw new ProxyException( "Could not hande repository object: " + obj.getClass() );
-                }
+                // as of now, only metadata fits here
+                remoteFile = getRepositoryFile( path );
             }
+
+            return remoteFile;
         }
         catch ( TransferFailedException e )
         {
@@ -155,20 +154,10 @@ public class DefaultProxyManager
 
                 //@todo configure wagon
 
-                ChecksumObserver listener = null;
-                try
+                Map checksums = null;
+                if ( useChecksum )
                 {
-                    listener = repository.getChecksumObserver();
-
-                    if ( listener != null )
-                    {
-                        wagon.addTransferListener( listener );
-                    }
-                }
-                catch ( NoSuchAlgorithmException e )
-                {
-                    System.out.println(
-                        "Skipping checksum validation for unsupported algorithm: " + repository.getChecksum() );
+                    checksums = prepareChecksums( wagon );
                 }
 
                 if ( connectToRepository( wagon, repository ) )
@@ -187,7 +176,8 @@ public class DefaultProxyManager
 
                         if ( useChecksum )
                         {
-                            success = doChecksumCheck( listener, repository, path, wagon );
+                            releaseChecksums( wagon, checksums );
+                            success = doChecksumCheck( checksums, repository, path, wagon );
                         }
                         else
                         {
@@ -207,7 +197,7 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                System.out.println( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
+                getLogger().info( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
             }
             catch ( ResourceDoesNotExistException e )
             {
@@ -215,16 +205,45 @@ public class DefaultProxyManager
             }
             catch ( AuthorizationException e )
             {
-                System.out.println( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
+                getLogger().info( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
             }
             catch ( UnsupportedProtocolException e )
             {
-                System.out.println( "Skipping repository " + repository.getUrl() +
-                    ": no wagon configured for protocol " + repository.getProtocol() );
+                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagon configured for protocol " +
+                    repository.getProtocol() );
             }
         }
 
         throw new ProxyException( "Could not find " + path + " in any of the repositories." );
+    }
+
+    private Map prepareChecksums( Wagon wagon )
+    {
+        Map checksums = new HashMap();
+        try
+        {
+            ChecksumObserver checksum = new ChecksumObserver( "SHA-1" );
+            wagon.addTransferListener( checksum );
+            checksums.put( "sha1", checksum );
+
+            checksum = new ChecksumObserver( "MD5" );
+            wagon.addTransferListener( checksum );
+            checksums.put( "md5", checksum );
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            getLogger().info( "An error occurred while preparing checksum observers", e );
+        }
+        return checksums;
+    }
+
+    private void releaseChecksums( Wagon wagon, Map checksumMap )
+    {
+        for ( Iterator checksums = checksumMap.values().iterator(); checksums.hasNext(); )
+        {
+            ChecksumObserver listener = (ChecksumObserver) checksums.next();
+            wagon.removeTransferListener( listener );
+        }
     }
 
     private boolean connectToRepository( Wagon wagon, ProxyRepository repository )
@@ -237,44 +256,87 @@ public class DefaultProxyManager
         }
         catch ( ConnectionException e )
         {
-            System.out.println( "Could not connect to " + repository.getId() + ": " + e.getMessage() );
+            getLogger().info( "Could not connect to " + repository.getId() + ": " + e.getMessage() );
         }
         catch ( AuthenticationException e )
         {
-            System.out.println( "Could not connect to " + repository.getId() + ": " + e.getMessage() );
+            getLogger().info( "Could not connect to " + repository.getId() + ": " + e.getMessage() );
         }
 
         return connected;
     }
 
-    private boolean doChecksumCheck( ChecksumObserver listener, ProxyRepository repository, String path, Wagon wagon )
-    //throws ChecksumFailedException
+    private boolean doChecksumCheck( Map checksumMap, ProxyRepository repository, String path, Wagon wagon )
     {
-        boolean success = false;
-
-        try
+        for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
         {
-            String checksumExt = repository.getChecksum().getFileExtension();
+            String checksumExt = (String) checksums.next();
+            ChecksumObserver checksum = (ChecksumObserver) checksumMap.get( checksumExt );
             String remotePath = path + "." + checksumExt;
             File checksumFile = new File( config.getRepositoryCache().getBasedir(), remotePath );
 
-            verifyChecksum( listener.getActualChecksum(), checksumFile, remotePath, checksumExt, wagon );
+            try
+            {
+                File tempChecksumFile = new File( checksumFile.getAbsolutePath() + "." + checksumExt );
 
-            wagon.removeTransferListener( listener );
+                wagon.get( remotePath + "." + checksumExt, tempChecksumFile );
 
-            success = true;
+                String algorithm;
+                if ( "md5".equals( checksumExt ) )
+                {
+                    algorithm = "MD5";
+                }
+                else
+                {
+                    algorithm = "SHA-1";
+                }
+
+                Digester digester = new DefaultDigester();
+                try
+                {
+                    return digester.verifyChecksum( tempChecksumFile, checksum.getActualChecksum(), algorithm );
+                }
+                catch ( NoSuchAlgorithmException e )
+                {
+                    getLogger().info( "Failed to initialize checksum: " + algorithm + "\n  " + e.getMessage() );
+                    return false;
+                }
+                catch ( IOException e )
+                {
+                    getLogger().info( "Failed to verify checksum: " + algorithm + "\n  " + e.getMessage() );
+                    return false;
+                }
+
+            }
+            catch ( ChecksumFailedException e )
+            {
+                return false;
+            }
+            catch ( TransferFailedException e )
+            {
+                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                // do nothing try the next checksum
+            }
+            catch ( ResourceDoesNotExistException e )
+            {
+                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                // do nothing try the next checksum
+            }
+            catch ( AuthorizationException e )
+            {
+                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                // do nothing try the next checksum
+            }
         }
-        catch ( ChecksumFailedException e )
-        {
-            System.out.println( "*** CHECKSUM FAILED - " + e.getMessage() + " - RETRYING" );
-        }
 
-        return success;
+        getLogger().info( "Skipping checksum validation for " + path + ": No remote checksums available." );
+
+        return true;
     }
 
     private void verifyChecksum( String actualChecksum, File destination, String remotePath,
                                  String checksumFileExtension, Wagon wagon )
-        throws ChecksumFailedException
+        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         try
         {
@@ -323,18 +385,6 @@ public class DefaultProxyManager
                     "'; remote = '" + expectedChecksum + "'" );
             }
         }
-        catch ( TransferFailedException e )
-        {
-            System.out.println( "Skipping checksum validation for " + remotePath + ": " + e.getMessage() );
-        }
-        catch ( ResourceDoesNotExistException e )
-        {
-            System.out.println( "Skipping checksum validation for " + remotePath + ": " + e.getMessage() );
-        }
-        catch ( AuthorizationException e )
-        {
-            System.out.println( "Skipping checksum validation for " + remotePath + ": " + e.getMessage() );
-        }
         catch ( IOException e )
         {
             throw new ChecksumFailedException( "Invalid checksum file", e );
@@ -349,7 +399,7 @@ public class DefaultProxyManager
         }
         catch ( ConnectionException e )
         {
-            System.err.println( "Problem disconnecting from wagon - ignoring: " + e.getMessage() );
+            getLogger().error( "Problem disconnecting from wagon - ignoring: " + e.getMessage() );
         }
     }
 }
