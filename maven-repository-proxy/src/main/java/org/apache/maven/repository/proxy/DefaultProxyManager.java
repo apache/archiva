@@ -69,7 +69,7 @@ public class DefaultProxyManager
     }
 
     public File get( String path )
-        throws ProxyException
+        throws ProxyException, ResourceDoesNotExistException
     {
         //@todo use wagon for cache use file:// as URL
         String cachePath = config.getRepositoryCachePath();
@@ -82,7 +82,7 @@ public class DefaultProxyManager
     }
 
     public File getRemoteFile( String path )
-        throws ProxyException
+        throws ProxyException, ResourceDoesNotExistException
     {
         try
         {
@@ -106,10 +106,6 @@ public class DefaultProxyManager
             return remoteFile;
         }
         catch ( TransferFailedException e )
-        {
-            throw new ProxyException( e.getMessage(), e );
-        }
-        catch ( ResourceDoesNotExistException e )
         {
             throw new ProxyException( e.getMessage(), e );
         }

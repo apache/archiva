@@ -16,6 +16,8 @@ package org.apache.maven.repository.proxy;
  * limitations under the License.
  */
 
+import org.apache.maven.wagon.ResourceDoesNotExistException;
+
 import java.io.File;
 
 /**
@@ -24,8 +26,8 @@ import java.io.File;
 public interface ProxyManager
 {
     public File get( String path )
-        throws ProxyException;
+        throws ProxyException, ResourceDoesNotExistException;
 
     public File getRemoteFile( String path )
-        throws ProxyException;
+        throws ProxyException, ResourceDoesNotExistException;
 }
