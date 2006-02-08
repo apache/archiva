@@ -50,7 +50,7 @@ public class ProxyConfigurationTest
     public void testRepositoryCache()
     {
         File cacheFile = new File( "target/proxy-cache" );
-        config.setRepositoryCachePath( "file://" + cacheFile.getAbsolutePath() );
+        config.setRepositoryCachePath( cacheFile.getAbsolutePath() );
         ArtifactRepository cache = config.getRepositoryCache();
         assertEquals( cacheFile.getAbsolutePath(), cache.getBasedir() );
         assertEquals( config.getRepositoryCachePath(), cache.getBasedir() );

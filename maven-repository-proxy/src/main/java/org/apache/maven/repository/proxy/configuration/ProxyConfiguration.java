@@ -26,6 +26,7 @@ import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.File;
 
 /**
  * Class to represent the configuration file for the proxy
@@ -70,9 +71,9 @@ public class ProxyConfiguration
     /**
      * Used to set the location where the proxy should cache the configured repositories
      *
-     * @param repoCacheURL
+     * @param path
      */
-    public void setRepositoryCachePath( String repoCacheURL )
+    public void setRepositoryCachePath( String path )
     {
         ArtifactRepositoryPolicy standardPolicy;
         standardPolicy = new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS,
@@ -80,7 +81,8 @@ public class ProxyConfiguration
 
         ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
 
-        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache", repoCacheURL, layout,
+        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache", "file://" + 
+                                                                        new File( path ).getAbsolutePath(), layout,
                                                                         standardPolicy, standardPolicy );
     }
 
