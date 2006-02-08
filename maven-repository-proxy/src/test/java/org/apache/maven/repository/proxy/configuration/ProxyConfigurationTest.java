@@ -52,7 +52,6 @@ public class ProxyConfigurationTest
         File cacheFile = new File( "target/proxy-cache" );
         config.setRepositoryCachePath( "file://" + cacheFile.getAbsolutePath() );
         ArtifactRepository cache = config.getRepositoryCache();
-        System.out.println( cache.getUrl() );
         assertEquals( cacheFile.getAbsolutePath(), cache.getBasedir() );
         assertEquals( config.getRepositoryCachePath(), cache.getBasedir() );
     }

@@ -17,6 +17,7 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 
 import java.io.File;
 
@@ -27,6 +28,8 @@ import java.io.File;
  */
 public interface ProxyManager
 {
+    static String ROLE = ProxyManager.class.getName();
+
     /**
      * Used to retrieve a cached path or retrieve one if the cache does not contain it yet.
      *
@@ -36,7 +39,7 @@ public interface ProxyManager
      * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
      *      configured repositories
      */
-    public File get( String path )
+    File get( String path )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
@@ -49,6 +52,20 @@ public interface ProxyManager
      * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
      *      configured repositories
      */
-    public File getRemoteFile( String path )
+    File getRemoteFile( String path )
         throws ProxyException, ResourceDoesNotExistException;
+
+    /**
+     * Used by the factory to set the configuration of the proxy
+     *
+     * @param config the ProxyConfiguration to set the behavior of the proxy
+     */
+    void setConfiguration( ProxyConfiguration config );
+
+    /**
+     * Used to retrieve the configuration describing the behavior of the proxy
+     *
+     * @return the ProxyConfiguration of this proxy
+     */
+    ProxyConfiguration getConfiguration();
 }

@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * @author Edwin Punzalan
- * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
+ * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager" role-hint="default"
  */
 public class DefaultProxyManager
     extends AbstractLogEnabled
@@ -54,7 +54,7 @@ public class DefaultProxyManager
     /**
      * @plexus.requirement
      */
-    private WagonManager wagon;
+    private WagonManager wagonManager;
 
     /**
      * @plexus.requirement
@@ -63,14 +63,14 @@ public class DefaultProxyManager
 
     private ProxyConfiguration config;
 
-    /**
-     * Constructor.
-     *
-     * @param configuration the configuration object to base the behavior of this instance
-     */
-    public DefaultProxyManager( ProxyConfiguration configuration )
+    public void setConfiguration( ProxyConfiguration config )
     {
-        config = configuration;
+        this.config = config;
+    }
+
+    public ProxyConfiguration getConfiguration()
+    {
+        return config;
     }
 
     /**
@@ -79,7 +79,9 @@ public class DefaultProxyManager
     public File get( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
-        //@todo use wagon for cache use file:// as URL
+        checkConfiguration();
+
+        //@todo use wagonManager for cache use file:// as URL
         String cachePath = config.getRepositoryCachePath();
         File cachedFile = new File( cachePath, path );
         if ( !cachedFile.exists() )
@@ -95,6 +97,8 @@ public class DefaultProxyManager
     public File getRemoteFile( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
+        checkConfiguration();
+
         Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
 
         File remoteFile;
@@ -135,7 +139,7 @@ public class DefaultProxyManager
         {
             try
             {
-                wagon.getArtifact( artifact, config.getRepositories() );
+                wagonManager.getArtifact( artifact, config.getRepositories() );
             }
             catch ( TransferFailedException e )
             {
@@ -190,9 +194,9 @@ public class DefaultProxyManager
 
             try
             {
-                wagon = this.wagon.getWagon( repository.getProtocol() );
+                wagon = wagonManager.getWagon( repository.getProtocol() );
 
-                //@todo configure wagon
+                //@todo configure wagonManager
 
                 if ( useChecksum )
                 {
@@ -249,7 +253,7 @@ public class DefaultProxyManager
             }
             catch ( UnsupportedProtocolException e )
             {
-                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagon configured for protocol " +
+                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagonManager configured for protocol " +
                     repository.getProtocol() );
             }
             finally
@@ -270,10 +274,10 @@ public class DefaultProxyManager
     }
 
     /**
-     * Used to add checksum observers as transfer listeners to the wagon object
+     * Used to add checksum observers as transfer listeners to the wagonManager object
      *
-     * @param wagon the wagon object to use the checksum with
-     * @return map of ChecksumObservers added into the wagon transfer listeners
+     * @param wagon the wagonManager object to use the checksum with
+     * @return map of ChecksumObservers added into the wagonManager transfer listeners
      */
     private Map prepareChecksums( Wagon wagon )
     {
@@ -296,10 +300,10 @@ public class DefaultProxyManager
     }
 
     /**
-     * Used to remove the ChecksumObservers from the wagon object
+     * Used to remove the ChecksumObservers from the wagonManager object
      *
-     * @param wagon the wagon object to remote the ChecksumObservers from
-     * @param checksumMap the map representing the list of ChecksumObservers added to the wagon object
+     * @param wagon the wagonManager object to remote the ChecksumObservers from
+     * @param checksumMap the map representing the list of ChecksumObservers added to the wagonManager object
      */
     private void releaseChecksums( Wagon wagon, Map checksumMap )
     {
@@ -311,11 +315,11 @@ public class DefaultProxyManager
     }
 
     /**
-     * Used to request the wagon object to connect to a repository
+     * Used to request the wagonManager object to connect to a repository
      *
-     * @param wagon the wagon object that will be used to connect to the repository
-     * @param repository the repository object to connect the wagon to
-     * @return true when the wagon is able to connect to the repository
+     * @param wagon the wagonManager object that will be used to connect to the repository
+     * @param repository the repository object to connect the wagonManager to
+     * @return true when the wagonManager is able to connect to the repository
      */
     private boolean connectToRepository( Wagon wagon, ProxyRepository repository )
     {
@@ -338,11 +342,11 @@ public class DefaultProxyManager
     }
 
     /**
-     * Used to verify the checksum during a wagon download
+     * Used to verify the checksum during a wagonManager download
      *
-     * @param checksumMap the map of ChecksumObservers present in the wagon as transferlisteners
+     * @param checksumMap the map of ChecksumObservers present in the wagonManager as transferlisteners
      * @param path path of the remote object whose checksum is to be verified
-     * @param wagon the wagon object used to download the requested path
+     * @param wagon the wagonManager object used to download the requested path
      * @return true when the checksum succeeds and false when the checksum failed.
      */
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
@@ -413,10 +417,19 @@ public class DefaultProxyManager
         return true;
     }
 
+    private void checkConfiguration()
+        throws ProxyException
+    {
+        if ( config == null )
+        {
+            throw new ProxyException( "No proxy configuration defined." );
+        }
+    }
+
     /**
-     * Used to disconnect the wagon from its repository
+     * Used to disconnect the wagonManager from its repository
      *
-     * @param wagon the connected wagon object
+     * @param wagon the connected wagonManager object
      */
     private void disconnectWagon( Wagon wagon )
     {
@@ -426,7 +439,7 @@ public class DefaultProxyManager
         }
         catch ( ConnectionException e )
         {
-            getLogger().error( "Problem disconnecting from wagon - ignoring: " + e.getMessage() );
+            getLogger().error( "Problem disconnecting from wagonManager - ignoring: " + e.getMessage() );
         }
     }
 }
