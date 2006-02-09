@@ -25,6 +25,9 @@ import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 
 /**
+ * Factory class for creating ProxyManager instances.  The usage of a factory ensures that the created instance will
+ * have the necessary configuration
+ *
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.proxy.ProxyManagerFactory"
  */
@@ -35,6 +38,14 @@ public class ProxyManagerFactory
 
     private PlexusContainer container;
 
+    /**
+     * Used to create a ProxyManager instance of a certain type with a configuration to base its behavior
+     *
+     * @param proxy_type The ProxyManager repository type
+     * @param config     The ProxyConfiguration to describe the behavior of the proxy instance
+     * @return The ProxyManager instance of type proxy_type with ProxyConfiguration config
+     * @throws ComponentLookupException when the factory fails to create the ProxyManager instance
+     */
     public ProxyManager getProxyManager( String proxy_type, ProxyConfiguration config )
         throws ComponentLookupException
     {
@@ -43,6 +54,9 @@ public class ProxyManagerFactory
         return proxy;
     }
 
+    /**
+     * @see org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable#contextualize(org.codehaus.plexus.context.Context)
+     */
     public void contextualize( Context context )
         throws ContextException
     {
