@@ -16,8 +16,8 @@ package org.apache.maven.repository.proxy;
  * limitations under the License.
  */
 
-import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 
 import java.io.File;
 
@@ -35,22 +35,22 @@ public interface ProxyManager
      *
      * @param path the expected repository path
      * @return File object referencing the requested path in the cache
-     * @throws ProxyException when an exception occurred during the retrieval of the requested path
+     * @throws ProxyException                when an exception occurred during the retrieval of the requested path
      * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
-     *      configured repositories
+     *                                       configured repositories
      */
     File get( String path )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
      * Used to force remote download of the requested path from any the configured repositories.  This method will
-     *      only bypass the cache for searching but the requested path will still be cached.
+     * only bypass the cache for searching but the requested path will still be cached.
      *
      * @param path the expected repository path
      * @return File object referencing the requested path in the cache
-     * @throws ProxyException when an exception occurred during the retrieval of the requested path
+     * @throws ProxyException                when an exception occurred during the retrieval of the requested path
      * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
-     *      configured repositories
+     *                                       configured repositories
      */
     File getRemoteFile( String path )
         throws ProxyException, ResourceDoesNotExistException;

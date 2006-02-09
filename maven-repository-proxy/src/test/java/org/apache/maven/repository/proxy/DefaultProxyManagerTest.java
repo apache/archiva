@@ -1,12 +1,12 @@
 package org.apache.maven.repository.proxy;
 
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
 

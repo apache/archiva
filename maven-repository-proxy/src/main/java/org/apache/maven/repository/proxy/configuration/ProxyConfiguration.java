@@ -23,10 +23,10 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.io.File;
 
 /**
  * Class to represent the configuration file for the proxy
@@ -46,6 +46,7 @@ public class ProxyConfiguration
     private boolean browsable;
 
     private ArtifactRepository repoCache;
+
     private List repositories = new ArrayList();
 
     /**
@@ -81,9 +82,9 @@ public class ProxyConfiguration
 
         ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
 
-        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache", "file://" + 
-                                                                        new File( path ).getAbsolutePath(), layout,
-                                                                        standardPolicy, standardPolicy );
+        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache",
+                                                                        "file://" + new File( path ).getAbsolutePath(),
+                                                                        layout, standardPolicy, standardPolicy );
     }
 
     /**

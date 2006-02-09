@@ -33,8 +33,8 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -126,9 +126,9 @@ public class DefaultProxyManager
      *
      * @param artifact the artifact object to be downloaded from a remote repository
      * @return File object representing the remote artifact in the repository cache
-     * @throws ProxyException when an error occurred during retrieval of the requested artifact
+     * @throws ProxyException                when an error occurred during retrieval of the requested artifact
      * @throws ResourceDoesNotExistException when the requested artifact cannot be found in any of the
-     *      configured repositories
+     *                                       configured repositories
      */
     private File getArtifactFile( Artifact artifact )
         throws ResourceDoesNotExistException, ProxyException
@@ -156,13 +156,13 @@ public class DefaultProxyManager
 
     /**
      * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
-     *      path cannot be resolved into a repository object, for example, an Artifact.
+     * path cannot be resolved into a repository object, for example, an Artifact.
      *
      * @param path the remote path to use to search for the requested file
      * @return File object representing the remote file in the repository cache
      * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
-     *      repositories.
-     * @throws ProxyException when an error occurred during the retrieval of the requested path
+     *                                       repositories.
+     * @throws ProxyException                when an error occurred during the retrieval of the requested path
      */
     private File getRepositoryFile( String path )
         throws ResourceDoesNotExistException, ProxyException
@@ -172,14 +172,14 @@ public class DefaultProxyManager
 
     /**
      * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
-     *      path cannot be resolved into a repository object, for example, an Artifact.
+     * path cannot be resolved into a repository object, for example, an Artifact.
      *
-     * @param path the remote path to use to search for the requested file
+     * @param path        the remote path to use to search for the requested file
      * @param useChecksum forces the download to whether use a checksum (if present in the remote repository) or not
      * @return File object representing the remote file in the repository cache
      * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
-     *      repositories.
-     * @throws ProxyException when an error occurred during the retrieval of the requested path
+     *                                       repositories.
+     * @throws ProxyException                when an error occurred during the retrieval of the requested path
      */
     private File getRepositoryFile( String path, boolean useChecksum )
         throws ResourceDoesNotExistException, ProxyException
@@ -218,7 +218,7 @@ public class DefaultProxyManager
                     {
                         tries++;
 
-                        getLogger().info( "Trying " + path + " from " + repository.getId() + "...");
+                        getLogger().info( "Trying " + path + " from " + repository.getId() + "..." );
 
                         wagon.get( path, temp );
 
@@ -307,7 +307,7 @@ public class DefaultProxyManager
     /**
      * Used to remove the ChecksumObservers from the wagonManager object
      *
-     * @param wagon the wagonManager object to remote the ChecksumObservers from
+     * @param wagon       the wagonManager object to remote the ChecksumObservers from
      * @param checksumMap the map representing the list of ChecksumObservers added to the wagonManager object
      */
     private void releaseChecksums( Wagon wagon, Map checksumMap )
@@ -322,7 +322,7 @@ public class DefaultProxyManager
     /**
      * Used to request the wagonManager object to connect to a repository
      *
-     * @param wagon the wagonManager object that will be used to connect to the repository
+     * @param wagon      the wagonManager object that will be used to connect to the repository
      * @param repository the repository object to connect the wagonManager to
      * @return true when the wagonManager is able to connect to the repository
      */
@@ -350,8 +350,8 @@ public class DefaultProxyManager
      * Used to verify the checksum during a wagonManager download
      *
      * @param checksumMap the map of ChecksumObservers present in the wagonManager as transferlisteners
-     * @param path path of the remote object whose checksum is to be verified
-     * @param wagon the wagonManager object used to download the requested path
+     * @param path        path of the remote object whose checksum is to be verified
+     * @param wagon       the wagonManager object used to download the requested path
      * @return true when the checksum succeeds and false when the checksum failed.
      */
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
@@ -392,17 +392,20 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
+                                   e );
                 // do nothing try the next checksum
             }
             catch ( ResourceDoesNotExistException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
+                                   e );
                 // do nothing try the next checksum
             }
             catch ( AuthorizationException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
+                                   e );
                 // do nothing try the next checksum
             }
             catch ( IOException e )

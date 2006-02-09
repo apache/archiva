@@ -17,16 +17,15 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 
 /**
  * @author Edwin Punzalan
- *
  * @plexus.component role="org.apache.maven.repository.proxy.ProxyManagerFactory"
  */
 public class ProxyManagerFactory

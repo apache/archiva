@@ -24,8 +24,8 @@ import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProxyConfigurationTest
     extends PlexusTestCase
