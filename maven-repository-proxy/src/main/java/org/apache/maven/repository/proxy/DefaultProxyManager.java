@@ -22,8 +22,6 @@ import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.ArtifactUtils;
-import org.apache.maven.repository.digest.DefaultDigester;
-import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ConnectionException;
@@ -35,9 +33,13 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,6 +136,7 @@ public class DefaultProxyManager
         ArtifactRepository repoCache = config.getRepositoryCache();
 
         File artifactFile = new File( repoCache.getBasedir(), repoCache.pathOf( artifact ) );
+        artifact.setFile( artifactFile );
 
         if ( !artifactFile.exists() )
         {
@@ -207,7 +210,6 @@ public class DefaultProxyManager
                 if ( connected )
                 {
                     File temp = new File( target.getAbsolutePath() + ".tmp" );
-                    temp.deleteOnExit();
 
                     int tries = 0;
                     boolean success = false;
@@ -216,11 +218,12 @@ public class DefaultProxyManager
                     {
                         tries++;
 
+                        getLogger().info( "trying " + path + " from " + repository.getId() );
+
                         wagon.get( path, temp );
 
                         if ( useChecksum )
                         {
-                            releaseChecksums( wagon, checksums );
                             success = doChecksumCheck( checksums, path, wagon );
                         }
                         else
@@ -234,6 +237,24 @@ public class DefaultProxyManager
                         }
                     }
                     disconnectWagon( wagon );
+
+                    if ( !temp.renameTo( target ) )
+                    {
+                        getLogger().warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+
+                        try
+                        {
+                            FileUtils.copyFile( temp, target );
+                        }
+                        catch ( IOException e )
+                        {
+                            throw new ProxyException( "Cannot copy tmp file to its final location", e );
+                        }
+                        finally
+                        {
+                            temp.delete();
+                        }
+                    }
 
                     return target;
                 }
@@ -253,8 +274,8 @@ public class DefaultProxyManager
             }
             catch ( UnsupportedProtocolException e )
             {
-                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagonManager configured for protocol " +
-                    repository.getProtocol() );
+                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagonManager configured " +
+                    "for protocol " + repository.getProtocol() );
             }
             finally
             {
@@ -351,45 +372,26 @@ public class DefaultProxyManager
      */
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
     {
+        releaseChecksums( wagon, checksumMap );
         for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
         {
             String checksumExt = (String) checksums.next();
             ChecksumObserver checksum = (ChecksumObserver) checksumMap.get( checksumExt );
-            String remotePath = path + "." + checksumExt;
-            File checksumFile = new File( config.getRepositoryCache().getBasedir(), remotePath );
+            String checksumPath = path + "." + checksumExt;
+            File checksumFile = new File( config.getRepositoryCache().getBasedir(), checksumPath );
 
             try
             {
                 File tempChecksumFile = new File( checksumFile.getAbsolutePath() + "." + checksumExt );
 
-                wagon.get( remotePath + "." + checksumExt, tempChecksumFile );
+                wagon.get( checksumPath, tempChecksumFile );
 
-                String algorithm;
-                if ( "md5".equals( checksumExt ) )
+                String remoteChecksum = readTextFile( tempChecksumFile ).trim();
+                if ( remoteChecksum.indexOf( ' ' ) > 0 )
                 {
-                    algorithm = "MD5";
+                    remoteChecksum = remoteChecksum.substring( 0, remoteChecksum.indexOf( ' ' ) );
                 }
-                else
-                {
-                    algorithm = "SHA-1";
-                }
-
-                Digester digester = new DefaultDigester();
-                try
-                {
-                    return digester.verifyChecksum( tempChecksumFile, checksum.getActualChecksum(), algorithm );
-                }
-                catch ( NoSuchAlgorithmException e )
-                {
-                    getLogger().info( "Failed to initialize checksum: " + algorithm + "\n  " + e.getMessage() );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().info( "Failed to verify checksum: " + algorithm + "\n  " + e.getMessage() );
-                    return false;
-                }
-
+                return remoteChecksum.toUpperCase().equals( checksum.getActualChecksum().toUpperCase() );
             }
             catch ( ChecksumFailedException e )
             {
@@ -397,18 +399,23 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
             }
             catch ( ResourceDoesNotExistException e )
             {
-                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
             }
             catch ( AuthorizationException e )
             {
-                getLogger().warn( "An error occurred during the download of " + remotePath + ": " + e.getMessage() );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
+            }
+            catch ( IOException e )
+            {
+                getLogger().info( "An error occurred while reading the temporary checksum file." );
+                return false;
             }
         }
 
@@ -424,6 +431,34 @@ public class DefaultProxyManager
         {
             throw new ProxyException( "No proxy configuration defined." );
         }
+    }
+
+    private String readTextFile( File file )
+        throws IOException
+    {
+        String text = "";
+
+        InputStream fis = new FileInputStream( file );
+        try
+        {
+            byte[] buffer = new byte[ 64 ];
+            int numRead;
+            do
+            {
+                numRead = fis.read( buffer );
+                if ( numRead > 0 )
+                {
+                    text += new String( buffer );
+                }
+            }
+            while ( numRead != -1 );
+        }
+        finally
+        {
+            IOUtil.close( fis );
+        }
+
+        return text;
     }
 
     /**
