@@ -16,8 +16,6 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
@@ -27,9 +25,7 @@ import org.apache.maven.repository.digest.Digester;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -43,36 +39,7 @@ import java.util.zip.ZipFile;
 public class ArtifactRepositoryIndex
     extends AbstractRepositoryIndex
 {
-    protected static final String FLD_ID = "id";
-
-    protected static final String FLD_NAME = "name";
-
-    protected static final String FLD_GROUPID = "groupId";
-
-    protected static final String FLD_ARTIFACTID = "artifactId";
-
-    protected static final String FLD_VERSION = "version";
-
-    protected static final String FLD_SHA1 = "sha1";
-
-    protected static final String FLD_MD5 = "md5";
-
-    protected static final String FLD_CLASSES = "classes";
-
-    protected static final String FLD_PACKAGES = "packages";
-
-    protected static final String FLD_FILES = "files";
-
-    private static final String[] FIELDS = {FLD_ID, FLD_NAME, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_SHA1,
-        FLD_MD5, FLD_CLASSES, FLD_PACKAGES, FLD_FILES};
-
-    private Analyzer analyzer;
-
     private Digester digester;
-
-    protected static final String ARTIFACT_TYPE = "ARTIFACT";
-
-    private static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID} );
 
     /**
      * Class constructor
@@ -90,19 +57,6 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
-     */
-    public Analyzer getAnalyzer()
-    {
-        if ( analyzer == null )
-        {
-            analyzer = new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
-        }
-
-        return analyzer;
-    }
-
-    /**
      * @see AbstractRepositoryIndex#isIndexed(Object)
      */
     public void isIndexed( Object object )
@@ -115,7 +69,7 @@ public class ArtifactRepositoryIndex
             if ( indexExists )
             {
                 validateIndex( FIELDS );
-                deleteDocument( FLD_ID, ARTIFACT_TYPE + artifact.getId() );
+                deleteDocument( FLD_ID, ARTIFACT + ":" + artifact.getId() );
             }
         }
         else
@@ -184,9 +138,8 @@ public class ArtifactRepositoryIndex
             throw new RepositoryIndexException( "Error reading from artifact file", e );
         }
 
-        //@todo should some of these fields be Keyword instead of Text ?
         Document doc = new Document();
-        doc.add( Field.Keyword( FLD_ID, ARTIFACT_TYPE + artifact.getId() ) );
+        doc.add( Field.Keyword( FLD_ID, ARTIFACT + ":" + artifact.getId() ) );
         doc.add( Field.Text( FLD_NAME, artifact.getFile().getName() ) );
         doc.add( Field.Text( FLD_GROUPID, artifact.getGroupId() ) );
         doc.add( Field.Text( FLD_ARTIFACTID, artifact.getArtifactId() ) );
@@ -196,6 +149,16 @@ public class ArtifactRepositoryIndex
         doc.add( Field.Text( FLD_CLASSES, classes.toString() ) );
         doc.add( Field.Text( FLD_PACKAGES, packages.toString() ) );
         doc.add( Field.Text( FLD_FILES, files.toString() ) );
+        doc.add( Field.UnIndexed( FLD_DOCTYPE, ARTIFACT ) );
+        doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
+        doc.add( Field.Text( FLD_PLUGINPREFIX, "" ) );
+        doc.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
+        doc.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_BUILD, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
+        int i = artifact.getFile().getName().lastIndexOf( '.' );
+        doc.add( Field.Text( FLD_PACKAGING, artifact.getFile().getName().substring( i + 1 ) ) );
 
         try
         {
@@ -210,14 +173,6 @@ public class ArtifactRepositoryIndex
         {
             throw new RepositoryIndexException( "Error opening index", e );
         }
-    }
-
-    /**
-     * @see RepositoryIndex#isKeywordField(String)
-     */
-    public boolean isKeywordField( String field )
-    {
-        return KEYWORD_FIELDS.contains( field );
     }
 
     /**

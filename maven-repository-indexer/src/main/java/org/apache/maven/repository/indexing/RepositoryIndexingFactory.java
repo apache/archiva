@@ -28,14 +28,6 @@ public interface RepositoryIndexingFactory
     String ROLE = RepositoryIndexingFactory.class.getName();
 
     /**
-     * Method to create an instance of the ArtifactRepositoryIndexSearcher
-     *
-     * @param index the ArtifactRepositoryIndex instance that the returned searcher will be searching into
-     * @return the ArtifactRepositoryIndexSearcher instance
-     */
-    ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index );
-
-    /**
      * Method to create an instance of the ArtifactRepositoryIndex
      *
      * @param indexPath  the path where the index will be created/updated
@@ -58,16 +50,29 @@ public interface RepositoryIndexingFactory
         throws RepositoryIndexException;
 
     /**
-     * Method to create an instance of the PomRepositoryIndexSearcher
+     * Method to create instance of the MetadataRepositoryIndex
      *
-     * @param index the PomRepositoryIndex instance that the returned searcher will be searching into
-     * @return the PomRepositoryIndexSearcher instance
+     * @param indexPath  the path where the index will be created/updated
+     * @param repository the repository where the indexed metadata are located
+     * @return the MetadataRepositoryIndex instance
+     * @throws RepositoryIndexException
      */
-    PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index );
-
     MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
-    MetadataRepositoryIndexSearcher createMetadataRepositoryIndexSearcher( MetadataRepositoryIndex index );
+    /**
+     * Method to create an instance of GeneralRepositoryIndexSearcher
+     *
+     * @param index the RepositoryIndex object where the query string will be searched
+     * @return the GeneralRepositoryIndexSearcher instance
+     */
+    GeneralRepositoryIndexSearcher createGeneralRepositoryIndexSearcher( RepositoryIndex index );
 
+    /**
+     * Method to create an instance of DefaultRepositoryIndexSearcher
+     *
+     * @param index the RepositoryIndex object where the query string will be searched
+     * @return the DefaultRepositoryIndexSearcher instance
+     */
+    DefaultRepositoryIndexSearcher createDefaultRepositoryIndexSearcher( RepositoryIndex index );
 }

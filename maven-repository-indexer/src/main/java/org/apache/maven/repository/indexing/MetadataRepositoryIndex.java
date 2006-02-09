@@ -16,8 +16,6 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -36,25 +34,14 @@ import java.util.List;
 public class MetadataRepositoryIndex
     extends AbstractRepositoryIndex
 {
-    protected static final String FLD_ID = "id";
+    protected static final String GROUP_METADATA = "GROUP_METADATA";
 
-    protected static final String FLD_LASTUPDATE = "lastUpdate";
+    protected static final String ARTIFACT_METADATA = "ARTIFACT_METADATA";
 
-    protected static final String FLD_PLUGINPREFIX = "pluginPrefix";
-
-    protected static final String FLD_METADATAPATH = "path";
-
-    protected static final String FLD_GROUPID = "groupId";
-
-    protected static final String FLD_ARTIFACTID = "artifactId";
-
-    protected static final String FLD_VERSION = "version";
-
-    private static final String[] FIELDS =
-        {FLD_ID, FLD_METADATAPATH, FLD_PLUGINPREFIX, FLD_LASTUPDATE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION};
+    protected static final String SNAPSHOT_METADATA = "SNAPSHOT_METADATA";
 
     /**
-     * Constructor
+     * Class Constructor
      *
      * @param indexPath  the path to the index
      * @param repository the repository where the metadata to be indexed is located
@@ -64,26 +51,6 @@ public class MetadataRepositoryIndex
         throws RepositoryIndexException
     {
         super( indexPath, repository );
-    }
-
-    /**
-     * Get the field names to be used in the index
-     *
-     * @return array of strings
-     */
-    public String[] getIndexFields()
-    {
-        return FIELDS;
-    }
-
-    /**
-     * Returns the analyzer used for indexing
-     *
-     * @return Analyzer object
-     */
-    public Analyzer getAnalyzer()
-    {
-        return new StandardAnalyzer();
     }
 
     /**
@@ -122,6 +89,7 @@ public class MetadataRepositoryIndex
         Document doc = new Document();
         doc.add( Field.Keyword( FLD_ID, (String) repoMetadata.getKey() ) );
         String path = "";
+        Metadata metadata = repoMetadata.getMetadata();
 
         if ( repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory() )
         {
@@ -137,15 +105,24 @@ public class MetadataRepositoryIndex
                 repoMetadata.getBaseVersion() + "/";
         }
 
-        //@todo use localfilename or remotefilename to get the path???
-        path = path + repoMetadata.getRemoteFilename();
-        doc.add( Field.Text( FLD_METADATAPATH, path ) );
+        if ( !repoMetadata.getRemoteFilename().equals( "" ) && repoMetadata.getRemoteFilename() != null )
+        {
+            path = path + repoMetadata.getRemoteFilename();
+        }
+        else
+        {
+            path = path + repoMetadata.getLocalFilename( repository );
+        }
+        doc.add( Field.Text( FLD_NAME, path ) );
 
-        Metadata metadata = repoMetadata.getMetadata();
         Versioning versioning = metadata.getVersioning();
         if ( versioning != null )
         {
             doc.add( Field.Text( FLD_LASTUPDATE, versioning.getLastUpdated() ) );
+        }
+        else
+        {
+            doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
         }
 
         List plugins = metadata.getPlugins();
@@ -159,16 +136,37 @@ public class MetadataRepositoryIndex
             }
         }
         doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );
-        doc.add( Field.UnIndexed( FLD_GROUPID, metadata.getGroupId() ) );
+        doc.add( Field.Text( FLD_GROUPID, metadata.getGroupId() ) );
 
         if ( metadata.getArtifactId() != null && !metadata.getArtifactId().equals( "" ) )
         {
-            doc.add( Field.UnIndexed( FLD_ARTIFACTID, metadata.getArtifactId() ) );
+            doc.add( Field.Text( FLD_ARTIFACTID, metadata.getArtifactId() ) );
         }
+        else
+        {
+            doc.add( Field.Text( FLD_ARTIFACTID, "" ) );
+        }
+
         if ( metadata.getVersion() != null && !metadata.getVersion().equals( "" ) )
         {
-            doc.add( Field.UnIndexed( FLD_VERSION, metadata.getVersion() ) );
+            doc.add( Field.Text( FLD_VERSION, metadata.getVersion() ) );
         }
+        else
+        {
+            doc.add( Field.Text( FLD_VERSION, "" ) );
+        }
+        doc.add( Field.Text( FLD_DOCTYPE, METADATA ) );
+        doc.add( Field.Keyword( FLD_PACKAGING, "" ) );
+        doc.add( Field.Text( FLD_SHA1, "" ) );
+        doc.add( Field.Text( FLD_MD5, "" ) );
+        doc.add( Field.Text( FLD_CLASSES, "" ) );
+        doc.add( Field.Text( FLD_PACKAGES, "" ) );
+        doc.add( Field.Text( FLD_FILES, "" ) );
+        doc.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
+        doc.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_BUILD, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
+        doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
 
         try
         {
@@ -185,11 +183,6 @@ public class MetadataRepositoryIndex
         }
     }
 
-    public boolean isKeywordField( String field )
-    {
-        return false;
-    }
-
     /**
      * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
      */
@@ -202,7 +195,7 @@ public class MetadataRepositoryIndex
             checkIfIndexExists();
             if ( indexExists )
             {
-                //validateIndex( FIELDS );
+                validateIndex( FIELDS );
                 deleteDocument( FLD_ID, (String) repoMetadata.getKey() );
             }
         }

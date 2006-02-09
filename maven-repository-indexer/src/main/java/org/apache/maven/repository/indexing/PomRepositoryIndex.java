@@ -17,8 +17,6 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
@@ -35,7 +33,6 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,43 +44,9 @@ import java.util.List;
 public class PomRepositoryIndex
     extends AbstractRepositoryIndex
 {
-    protected static final String FLD_ID = "id";
-
-    protected static final String FLD_GROUPID = "groupId";
-
-    protected static final String FLD_ARTIFACTID = "artifactId";
-
-    protected static final String FLD_VERSION = "version";
-
-    protected static final String FLD_PACKAGING = "packaging";
-
-    protected static final String FLD_LICENSE_URLS = "license_urls";
-
-    protected static final String FLD_DEPENDENCIES = "dependencies";
-
-    protected static final String FLD_PLUGINS_BUILD = "plugins_build";
-
-    protected static final String FLD_PLUGINS_REPORT = "plugins_report";
-
-    protected static final String FLD_PLUGINS_ALL = "plugins_all";
-
-    protected static final String FLD_SHA1 = "sha1";
-
-    protected static final String FLD_MD5 = "md5";
-
-    private static final String[] FIELDS = {FLD_ID, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING,
-        FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
-
-    private Analyzer analyzer;
-
     private Digester digester;
 
     private ArtifactFactory artifactFactory;
-
-    private static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
-        FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
-
-    protected static final String POM_TYPE = "POM";
 
     /**
      * Class Constructor
@@ -104,19 +67,6 @@ public class PomRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
-     */
-    public Analyzer getAnalyzer()
-    {
-        if ( analyzer == null )
-        {
-            analyzer = new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
-        }
-
-        return analyzer;
-    }
-
-    /**
      * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
      */
     public void isIndexed( Object object )
@@ -129,7 +79,7 @@ public class PomRepositoryIndex
             if ( indexExists )
             {
                 validateIndex( FIELDS );
-                deleteDocument( FLD_ID, POM_TYPE + pom.getId() );
+                deleteDocument( FLD_ID, POM + ":" + pom.getId() );
             }
         }
         else
@@ -149,7 +99,7 @@ public class PomRepositoryIndex
         throws RepositoryIndexException
     {
         Document doc = new Document();
-        doc.add( Field.Keyword( FLD_ID, POM_TYPE + pom.getId() ) );
+        doc.add( Field.Keyword( FLD_ID, POM + ":" + pom.getId() ) );
         doc.add( Field.Text( FLD_GROUPID, pom.getGroupId() ) );
         doc.add( Field.Text( FLD_ARTIFACTID, pom.getArtifactId() ) );
         doc.add( Field.Text( FLD_VERSION, pom.getVersion() ) );
@@ -192,6 +142,13 @@ public class PomRepositoryIndex
         {
             doc.add( Field.Text( FLD_PLUGINS_ALL, "" ) );
         }
+        doc.add( Field.UnIndexed( FLD_DOCTYPE, POM ) );
+        doc.add( Field.Text( FLD_PLUGINPREFIX, "" ) );
+        doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
+        doc.add( Field.Text( FLD_NAME, "" ) );
+        doc.add( Field.Text( FLD_CLASSES, "" ) );
+        doc.add( Field.Keyword( FLD_PACKAGES, "" ) );
+        doc.add( Field.Text( FLD_FILES, "" ) );
 
         try
         {
@@ -206,14 +163,6 @@ public class PomRepositoryIndex
         {
             throw new RepositoryIndexException( "Error opening index", e );
         }
-    }
-
-    /**
-     * @see RepositoryIndex#isKeywordField(String)
-     */
-    public boolean isKeywordField( String field )
-    {
-        return KEYWORD_FIELDS.contains( field );
     }
 
     /**

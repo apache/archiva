@@ -53,7 +53,7 @@ public class ArtifactRepositoryIndexAnalyzer
     {
         TokenStream tokenStream;
 
-        if ( "version".equals( fieldName ) )
+        if ( RepositoryIndex.FLD_VERSION.equals( fieldName ) || RepositoryIndex.FLD_LASTUPDATE.equals( fieldName ) )
         {
             tokenStream = new VersionTokenizer( reader );
         }

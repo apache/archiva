@@ -39,14 +39,6 @@ public class DefaultRepositoryIndexingFactory
     private ArtifactFactory artifactFactory;
 
     /**
-     * @see RepositoryIndexingFactory#createArtifactRepositoryIndexSearcher(ArtifactRepositoryIndex)
-     */
-    public ArtifactRepositoryIndexSearcher createArtifactRepositoryIndexSearcher( ArtifactRepositoryIndex index )
-    {
-        return new ArtifactRepositoryIndexSearcher( index, artifactFactory );
-    }
-
-    /**
      * @see RepositoryIndexingFactory#createArtifactRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
      */
     public ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
@@ -65,21 +57,28 @@ public class DefaultRepositoryIndexingFactory
     }
 
     /**
-     * @see RepositoryIndexingFactory#createPomRepositoryIndexSearcher(PomRepositoryIndex)
+     * @see RepositoryIndexingFactory#createMetadataRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
      */
-    public PomRepositoryIndexSearcher createPomRepositoryIndexSearcher( PomRepositoryIndex index )
-    {
-        return new PomRepositoryIndexSearcher( index, artifactFactory );
-    }
-
     public MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new MetadataRepositoryIndex( indexPath, repository );
     }
 
-    public MetadataRepositoryIndexSearcher createMetadataRepositoryIndexSearcher( MetadataRepositoryIndex index )
+    /*
+     * @see RepositoryIndexingFactory#createGeneralRepositoryIndexSearcher(RepositoryIndex)
+     */
+    public GeneralRepositoryIndexSearcher createGeneralRepositoryIndexSearcher( RepositoryIndex index )
     {
-        return new MetadataRepositoryIndexSearcher( index, artifactFactory );
+        return new GeneralRepositoryIndexSearcher( index, artifactFactory );
     }
+
+    /**
+     * @see RepositoryIndexingFactory#createDefaultRepositoryIndexSearcher(RepositoryIndex)
+     */
+    public DefaultRepositoryIndexSearcher createDefaultRepositoryIndexSearcher( RepositoryIndex index )
+    {
+        return new DefaultRepositoryIndexSearcher( index, artifactFactory );
+    }
+
 }

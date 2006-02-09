@@ -19,6 +19,8 @@ package org.apache.maven.repository.indexing;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
@@ -43,6 +45,8 @@ public abstract class AbstractRepositoryIndex
 
     protected boolean indexExists;
 
+    private Analyzer analyzer;
+
     /**
      * Class constructor
      *
@@ -57,7 +61,11 @@ public abstract class AbstractRepositoryIndex
         this.indexPath = indexPath;
     }
 
-
+    /**
+     * Method to open the IndexWriter
+     *
+     * @throws RepositoryIndexException
+     */
     public void open()
         throws RepositoryIndexException
     {
@@ -262,4 +270,24 @@ public abstract class AbstractRepositoryIndex
     abstract void isIndexed( Object object )
         throws RepositoryIndexException, IOException;
 
+    /**
+     * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
+     */
+    public Analyzer getAnalyzer()
+    {
+        if ( analyzer == null )
+        {
+            analyzer = new ArtifactRepositoryIndexAnalyzer( new SimpleAnalyzer() );
+        }
+
+        return analyzer;
+    }
+
+    /**
+     * @see RepositoryIndex#isKeywordField(String)
+     */
+    public boolean isKeywordField( String field )
+    {
+        return KEYWORD_FIELDS.contains( field );
+    }
 }

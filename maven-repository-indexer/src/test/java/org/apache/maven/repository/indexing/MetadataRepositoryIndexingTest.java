@@ -23,15 +23,15 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.RangeQuery;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -39,8 +39,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * This class tests the MetadataRepositoryIndex.
@@ -51,12 +51,6 @@ public class MetadataRepositoryIndexingTest
     private ArtifactRepository repository;
 
     private String indexPath;
-
-    private static final String GROUP_TYPE = "GROUP";
-
-    private static final String ARTIFACT_TYPE = "ARTIFACT";
-
-    private static final String SNAPSHOT_TYPE = "SNAPSHOT";
 
     private MetadataRepositoryIndex indexer;
 
@@ -77,7 +71,7 @@ public class MetadataRepositoryIndexingTest
         ArtifactRepositoryFactory repoFactory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
 
-        indexPath = "target/index/metadata";
+        indexPath = "target/index";
         FileUtils.deleteDirectory( indexPath );
     }
 
@@ -107,31 +101,31 @@ public class MetadataRepositoryIndexingTest
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
         RepositoryMetadata repoMetadata =
-            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
         indexer.index( repoMetadata );
         indexer.optimize();
         indexer.close();
 
-        repoMetadata =
-            getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", ARTIFACT_TYPE );
+        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
+                                    MetadataRepositoryIndex.ARTIFACT_METADATA );
         indexer.index( repoMetadata );
         indexer.optimize();
         indexer.close();
 
-        repoMetadata =
-            getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml", SNAPSHOT_TYPE );
+        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
+                                    MetadataRepositoryIndex.SNAPSHOT_METADATA );
         indexer.index( repoMetadata );
         indexer.optimize();
         indexer.close();
 
-        repoMetadata = getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
+        repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
         indexer.index( repoMetadata );
         indexer.optimize();
         indexer.close();
     }
 
     /**
-     * Test the ArtifactRepositoryIndexSearcher using a single-phrase search.
+     * Test the ArtifactRepositoryIndex using a single-phrase search.
      *
      * @throws Exception
      */
@@ -142,11 +136,11 @@ public class MetadataRepositoryIndexingTest
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
-        RepositoryIndexSearcher repoSearcher = factory.createMetadataRepositoryIndexSearcher( indexer );
+        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
 
         // search last update
         org.apache.maven.repository.indexing.query.Query qry =
-            new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
+            new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
         List metadataList = repoSearcher.search( qry );
         assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
@@ -159,7 +153,7 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search plugin prefix
-        qry = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
         metadataList = repoSearcher.search( qry );
         assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
@@ -175,8 +169,8 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using INCLUSIVE Range Query
-        Query qry1 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
-        Query qry2 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212235959" );
+        Query qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        Query qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212235959" );
         RangeQuery rQry = new RangeQuery( true );
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
@@ -191,8 +185,8 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using EXCLUSIVE Range Query
-        qry1 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
-        qry2 = new SinglePhraseQuery( MetadataRepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
+        qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
         rQry = new RangeQuery( false );
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
@@ -224,7 +218,7 @@ public class MetadataRepositoryIndexingTest
         }
         catch ( RepositoryIndexException e )
         {
-            assertTrue ( true );
+            assertTrue( true );
         }
 
         try
@@ -234,7 +228,7 @@ public class MetadataRepositoryIndexingTest
         }
         catch ( RepositoryIndexException e )
         {
-            assertTrue ( true );
+            assertTrue( true );
         }
     }
 
@@ -252,12 +246,12 @@ public class MetadataRepositoryIndexingTest
         indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
         RepositoryMetadata repoMetadata =
-            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", GROUP_TYPE );
-        indexer.deleteDocument( MetadataRepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
+            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
+        indexer.deleteDocument( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
 
-        RepositoryIndexSearcher repoSearcher = factory.createMetadataRepositoryIndexSearcher( indexer );
+        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
         org.apache.maven.repository.indexing.query.Query qry =
-            new SinglePhraseQuery( MetadataRepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
+            new SinglePhraseQuery( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
         List metadataList = repoSearcher.search( qry );
         assertEquals( metadataList.size(), 0 );
     }
@@ -283,7 +277,7 @@ public class MetadataRepositoryIndexingTest
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata
-        if ( metadataType.equals( GROUP_TYPE ) )
+        if ( metadataType.equals( MetadataRepositoryIndex.GROUP_METADATA ) )
         {
             url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ).toURL();
             is = url.openStream();
@@ -291,7 +285,7 @@ public class MetadataRepositoryIndexingTest
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //artifact metadata
-        else if ( metadataType.equals( ARTIFACT_TYPE ) )
+        else if ( metadataType.equals( MetadataRepositoryIndex.ARTIFACT_METADATA ) )
         {
             url = new File(
                 repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + filename ).toURL();
@@ -300,7 +294,7 @@ public class MetadataRepositoryIndexingTest
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //snapshot/version metadata
-        else if ( metadataType.equals( SNAPSHOT_TYPE ) )
+        else if ( metadataType.equals( MetadataRepositoryIndex.SNAPSHOT_METADATA ) )
         {
             url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + version +
                 "/" + filename ).toURL();
