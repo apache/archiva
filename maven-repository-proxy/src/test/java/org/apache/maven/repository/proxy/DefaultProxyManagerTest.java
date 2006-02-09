@@ -62,22 +62,61 @@ public class DefaultProxyManagerTest
         }
     }
 
-    public void testCache()
+    public void testArtifactDownload()
         throws Exception
     {
+        //test download
         File file = proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
 
+        //test cache
         file = proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
 
-        file = proxy.get( "/not-standard/repository/file.txt" );
+        try
+        {
+            file = proxy.get( "/commons-logging/commons-logging/2.0/commons-logging-2.0.jar" );
+            fail( "Expected ResourceDoesNotExistException exception not thrown" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            assertTrue( true );
+        }
+    }
+
+    public void testArtifactChecksum()
+        throws Exception
+    {
+        //force the downlod from the remote repository, use getRemoteFile()
+        File file = proxy.getRemoteFile( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar.md5" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+    }
 
-        file = proxy.get( "/checksumed-md5/repository/file.txt" );
+    public void testNonArtifactWithNoChecksum()
+        throws Exception
+    {
+        File file = proxy.get( "/not-standard/repository/file.txt" );
+        assertTrue( "File must be downloaded.", file.exists() );
+        assertTrue( "Downloaded file should be present in the cache.",
+                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+    }
+
+    public void testNonArtifactWithMD5Checksum()
+        throws Exception
+    {
+        File file = proxy.get( "/checksumed-md5/repository/file.txt" );
+        assertTrue( "File must be downloaded.", file.exists() );
+        assertTrue( "Downloaded file should be present in the cache.",
+                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+    }
+
+    public void testNonArtifactWithSHA1Checksum()
+        throws Exception
+    {
+        File file = proxy.get( "/checksumed-sha1/repository/file.txt" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );

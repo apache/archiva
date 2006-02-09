@@ -33,8 +33,8 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -218,7 +218,7 @@ public class DefaultProxyManager
                     {
                         tries++;
 
-                        getLogger().info( "trying " + path + " from " + repository.getId() );
+                        getLogger().info( "Trying " + path + " from " + repository.getId() + "...");
 
                         wagon.get( path, temp );
 
@@ -238,23 +238,7 @@ public class DefaultProxyManager
                     }
                     disconnectWagon( wagon );
 
-                    if ( !temp.renameTo( target ) )
-                    {
-                        getLogger().warn( "Unable to rename tmp file to its final name... resorting to copy command." );
-
-                        try
-                        {
-                            FileUtils.copyFile( temp, target );
-                        }
-                        catch ( IOException e )
-                        {
-                            throw new ProxyException( "Cannot copy tmp file to its final location", e );
-                        }
-                        finally
-                        {
-                            temp.delete();
-                        }
-                    }
+                    copyTempToTarget( temp, target );
 
                     return target;
                 }
@@ -371,6 +355,7 @@ public class DefaultProxyManager
      * @return true when the checksum succeeds and false when the checksum failed.
      */
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
+        throws ProxyException
     {
         releaseChecksums( wagon, checksumMap );
         for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
@@ -382,7 +367,7 @@ public class DefaultProxyManager
 
             try
             {
-                File tempChecksumFile = new File( checksumFile.getAbsolutePath() + "." + checksumExt );
+                File tempChecksumFile = new File( checksumFile.getAbsolutePath() + ".tmp" );
 
                 wagon.get( checksumPath, tempChecksumFile );
 
@@ -391,7 +376,15 @@ public class DefaultProxyManager
                 {
                     remoteChecksum = remoteChecksum.substring( 0, remoteChecksum.indexOf( ' ' ) );
                 }
-                return remoteChecksum.toUpperCase().equals( checksum.getActualChecksum().toUpperCase() );
+
+                boolean checksumCheck = false;
+                if ( remoteChecksum.toUpperCase().equals( checksum.getActualChecksum().toUpperCase() ) )
+                {
+                    copyTempToTarget( tempChecksumFile, checksumFile );
+
+                    checksumCheck = true;
+                }
+                return checksumCheck;
             }
             catch ( ChecksumFailedException e )
             {
@@ -399,27 +392,27 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
                 // do nothing try the next checksum
             }
             catch ( ResourceDoesNotExistException e )
             {
-                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
                 // do nothing try the next checksum
             }
             catch ( AuthorizationException e )
             {
-                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
+                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(), e );
                 // do nothing try the next checksum
             }
             catch ( IOException e )
             {
-                getLogger().info( "An error occurred while reading the temporary checksum file." );
+                getLogger().debug( "An error occurred while reading the temporary checksum file.", e );
                 return false;
             }
         }
 
-        getLogger().info( "Skipping checksum validation for " + path + ": No remote checksums available." );
+        getLogger().debug( "Skipping checksum validation for " + path + ": No remote checksums available." );
 
         return true;
     }
@@ -459,6 +452,33 @@ public class DefaultProxyManager
         }
 
         return text;
+    }
+
+    private void copyTempToTarget( File temp, File target )
+        throws ProxyException
+    {
+        if ( target.exists() && !target.delete() )
+        {
+            throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
+        }
+
+        if ( !temp.renameTo( target ) )
+        {
+            getLogger().warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+
+            try
+            {
+                FileUtils.copyFile( temp, target );
+            }
+            catch ( IOException e )
+            {
+                throw new ProxyException( "Cannot copy tmp file to its final location", e );
+            }
+            finally
+            {
+                temp.delete();
+            }
+        }
     }
 
     /**
