@@ -24,8 +24,11 @@ import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -137,5 +140,39 @@ public class ProxyConfiguration
     public void setRepositories( List repositories )
     {
         this.repositories = repositories;
+    }
+
+    /**
+     * Uses maven-proxy classes to read a maven-proxy properties configuration
+     *
+     * @param mavenProxyConfigurationFile The location of the maven-proxy configuration file
+     * @throws ValidationException When a problem occured while processing the properties file
+     * @throws IOException         When a problem occured while reading the property file
+     */
+    public void loadMavenProxyConfiguration( File mavenProxyConfigurationFile )
+        throws ValidationException, IOException
+    {
+        MavenProxyPropertyLoader loader = new MavenProxyPropertyLoader();
+        RetrievalComponentConfiguration rcc = loader.load( new FileInputStream( mavenProxyConfigurationFile ) );
+
+        this.setRepositoryCachePath( rcc.getLocalStore() );
+        this.setBrowsable( rcc.isBrowsable() );
+
+        List repoList = new ArrayList();
+        ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
+        for ( Iterator repos = rcc.getRepos().iterator(); repos.hasNext(); )
+        {
+            RepoConfiguration repoConfig = (RepoConfiguration) repos.next();
+
+            //skip local store repo
+            if ( !repoConfig.getKey().equals( "global" ) )
+            {
+                ProxyRepository repo = new ProxyRepository( repoConfig.getKey(), repoConfig.getUrl(), layout );
+
+                repoList.add( repo );
+            }
+        }
+
+        this.setRepositories( repoList );
     }
 }

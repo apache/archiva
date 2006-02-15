@@ -24,7 +24,9 @@ import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ProxyConfigurationTest
@@ -90,6 +92,40 @@ public class ProxyConfigurationTest
         repositories.add( repo2 );
         config.setRepositories( repositories );
         assertEquals( repositories, config.getRepositories() );
+    }
+
+    public void testLoadValidMavenProxyConfiguration()
+        throws ValidationException, IOException
+    {
+        File confFile = new File( "src/test/conf/maven-proxy-complete.conf" );
+
+        config.loadMavenProxyConfiguration( confFile );
+
+        assertTrue( config.getRepositoryCachePath().endsWith( "target" ) );
+
+        assertEquals( "Count repositories", 4, config.getRepositories().size() );
+
+        for ( Iterator repos = config.getRepositories().iterator(); repos.hasNext(); )
+        {
+            ProxyRepository repo = (ProxyRepository) repos.next();
+
+            if ( "local-repo".equals( repo.getKey() ) )
+            {
+                assertEquals( "file:///./src/test/remote-repo1", repo.getUrl() );
+            }
+            else if ( "www-ibiblio-org".equals( repo.getKey() ) )
+            {
+                assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
+            }
+            else if ( "dist-codehaus-org".equals( repo.getKey() ) )
+            {
+                assertEquals( "http://dist.codehaus.org", repo.getUrl() );
+            }
+            else if ( "private-example-com".equals( repo.getKey() ) )
+            {
+                assertEquals( "http://private.example.com/internal", repo.getUrl() );
+            }
+        }
     }
 
     protected void tearDown()
