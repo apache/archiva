@@ -22,6 +22,7 @@ import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,34 +98,45 @@ public class ProxyConfigurationTest
     public void testLoadValidMavenProxyConfiguration()
         throws ValidationException, IOException
     {
-        File confFile = new File( "src/test/conf/maven-proxy-complete.conf" );
+        //must create the test directory bec configuration is using relative path which varies
+        FileUtils.mkdir( "target/remote-repo1" );
 
-        config.loadMavenProxyConfiguration( confFile );
-
-        assertTrue( config.getRepositoryCachePath().endsWith( "target" ) );
-
-        assertEquals( "Count repositories", 4, config.getRepositories().size() );
-
-        for ( Iterator repos = config.getRepositories().iterator(); repos.hasNext(); )
+        try
         {
-            ProxyRepository repo = (ProxyRepository) repos.next();
+            File confFile = getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
-            if ( "local-repo".equals( repo.getKey() ) )
+            config.loadMavenProxyConfiguration( confFile );
+
+            assertTrue( config.getRepositoryCachePath().endsWith( "target" ) );
+
+            assertEquals( "Count repositories", 4, config.getRepositories().size() );
+
+            for ( Iterator repos = config.getRepositories().iterator(); repos.hasNext(); )
             {
-                assertEquals( "file:///./src/test/remote-repo1", repo.getUrl() );
+                ProxyRepository repo = (ProxyRepository) repos.next();
+
+                if ( "local-repo".equals( repo.getKey() ) )
+                {
+                    assertEquals( "file:///./target/remote-repo1", repo.getUrl() );
+                }
+                else if ( "www-ibiblio-org".equals( repo.getKey() ) )
+                {
+                    assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
+                }
+                else if ( "dist-codehaus-org".equals( repo.getKey() ) )
+                {
+                    assertEquals( "http://dist.codehaus.org", repo.getUrl() );
+                }
+                else if ( "private-example-com".equals( repo.getKey() ) )
+                {
+                    assertEquals( "http://private.example.com/internal", repo.getUrl() );
+                }
             }
-            else if ( "www-ibiblio-org".equals( repo.getKey() ) )
-            {
-                assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
-            }
-            else if ( "dist-codehaus-org".equals( repo.getKey() ) )
-            {
-                assertEquals( "http://dist.codehaus.org", repo.getUrl() );
-            }
-            else if ( "private-example-com".equals( repo.getKey() ) )
-            {
-                assertEquals( "http://private.example.com/internal", repo.getUrl() );
-            }
+        }
+        //make sure to delete the test directory after tests
+        finally
+        {
+            FileUtils.deleteDirectory( "target/remote-repo1" );
         }
     }
 

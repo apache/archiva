@@ -139,7 +139,7 @@ public class DefaultProxyManagerTest
 
         ArtifactRepositoryLayout defLayout = new DefaultRepositoryLayout();
 
-        File repo1File = new File( "src/test/remote-repo1" );
+        File repo1File = getTestFile( "src/test/remote-repo1" );
 
         ProxyRepository repo1 = new ProxyRepository( "test-repo", "file://" + repo1File.getAbsolutePath(), defLayout );
 
