@@ -20,10 +20,10 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.plexus.PlexusContainerException;
@@ -62,8 +62,8 @@ public class IndexSearcherCli
 
         ArtifactRepositoryIndex index =
             indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ).getAbsolutePath(), repository );
-
-        ArtifactRepositoryIndexSearcher searcher = indexFactory.createArtifactRepositoryIndexSearcher( index );
+              
+        DefaultRepositoryIndexSearcher searcher = indexFactory.createDefaultRepositoryIndexSearcher( index );
 
         try
         {
