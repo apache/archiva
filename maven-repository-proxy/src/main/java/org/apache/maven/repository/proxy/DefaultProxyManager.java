@@ -41,8 +41,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,6 +92,23 @@ public class DefaultProxyManager
         {
             getRemoteFile( path );
         }
+        else
+        {
+            List repos = new ArrayList();
+            for ( Iterator confRepos = config.getRepositories().iterator(); confRepos.hasNext(); )
+            {
+                ProxyRepository repo = (ProxyRepository) confRepos.next();
+                if ( repo.getCachePeriod() > 0 &&
+                    ( repo.getCachePeriod() * 1000 ) + cachedFile.lastModified() < System.currentTimeMillis() )
+                {
+                    repos.add( repo );
+                }
+            }
+            if ( repos.size() > 0 )
+            {
+                getRemoteFile( path, repos );
+            }
+        }
         return cachedFile;
     }
 
@@ -101,21 +120,29 @@ public class DefaultProxyManager
     {
         checkConfiguration();
 
+        return getRemoteFile( path, config.getRepositories() );
+    }
+
+    private File getRemoteFile( String path, List repositories )
+        throws ProxyException, ResourceDoesNotExistException
+    {
+        checkConfiguration();
+
         Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
 
         File remoteFile;
         if ( artifact != null )
         {
-            remoteFile = getArtifactFile( artifact );
+            remoteFile = getArtifactFile( artifact, repositories );
         }
         else if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
         {
-            remoteFile = getRepositoryFile( path, false );
+            remoteFile = getRepositoryFile( path, repositories, false );
         }
         else
         {
             // as of now, only metadata fits here
-            remoteFile = getRepositoryFile( path );
+            remoteFile = getRepositoryFile( path, repositories );
         }
 
         return remoteFile;
@@ -124,13 +151,14 @@ public class DefaultProxyManager
     /**
      * Used to download an artifact object from the remote repositories.
      *
-     * @param artifact the artifact object to be downloaded from a remote repository
+     * @param artifact     the artifact object to be downloaded from a remote repository
+     * @param repositories the list of ProxyRepositories to retrieve the artifact from
      * @return File object representing the remote artifact in the repository cache
      * @throws ProxyException                when an error occurred during retrieval of the requested artifact
      * @throws ResourceDoesNotExistException when the requested artifact cannot be found in any of the
      *                                       configured repositories
      */
-    private File getArtifactFile( Artifact artifact )
+    private File getArtifactFile( Artifact artifact, List repositories )
         throws ResourceDoesNotExistException, ProxyException
     {
         ArtifactRepository repoCache = config.getRepositoryCache();
@@ -142,7 +170,8 @@ public class DefaultProxyManager
         {
             try
             {
-                wagonManager.getArtifact( artifact, config.getRepositories() );
+                //@todo usage of repository cache period
+                wagonManager.getArtifact( artifact, repositories );
             }
             catch ( TransferFailedException e )
             {
@@ -158,30 +187,32 @@ public class DefaultProxyManager
      * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
      * path cannot be resolved into a repository object, for example, an Artifact.
      *
-     * @param path the remote path to use to search for the requested file
+     * @param path         the remote path to use to search for the requested file
+     * @param repositories the list of repositories to retrieve the file from
      * @return File object representing the remote file in the repository cache
      * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
      *                                       repositories.
      * @throws ProxyException                when an error occurred during the retrieval of the requested path
      */
-    private File getRepositoryFile( String path )
+    private File getRepositoryFile( String path, List repositories )
         throws ResourceDoesNotExistException, ProxyException
     {
-        return getRepositoryFile( path, true );
+        return getRepositoryFile( path, repositories, true );
     }
 
     /**
      * Used to retrieve a remote file from the remote repositories.  This method is used only when the requested
      * path cannot be resolved into a repository object, for example, an Artifact.
      *
-     * @param path        the remote path to use to search for the requested file
-     * @param useChecksum forces the download to whether use a checksum (if present in the remote repository) or not
+     * @param path         the remote path to use to search for the requested file
+     * @param repositories the list of repositories to retrieve the file from
+     * @param useChecksum  forces the download to whether use a checksum (if present in the remote repository) or not
      * @return File object representing the remote file in the repository cache
      * @throws ResourceDoesNotExistException when the requested path cannot be found in any of the configured
      *                                       repositories.
      * @throws ProxyException                when an error occurred during the retrieval of the requested path
      */
-    private File getRepositoryFile( String path, boolean useChecksum )
+    private File getRepositoryFile( String path, List repositories, boolean useChecksum )
         throws ResourceDoesNotExistException, ProxyException
     {
         Map checksums = null;
@@ -191,9 +222,9 @@ public class DefaultProxyManager
         ArtifactRepository cache = config.getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
 
-        for ( Iterator repositories = config.getRepositories().iterator(); repositories.hasNext(); )
+        for ( Iterator repos = repositories.iterator(); repos.hasNext(); )
         {
-            ProxyRepository repository = (ProxyRepository) repositories.next();
+            ProxyRepository repository = (ProxyRepository) repos.next();
 
             try
             {
@@ -212,23 +243,27 @@ public class DefaultProxyManager
                     File temp = new File( target.getAbsolutePath() + ".tmp" );
 
                     int tries = 0;
-                    boolean success = false;
+                    boolean success = true;
 
-                    while ( !success )
+                    do
                     {
                         tries++;
 
                         getLogger().info( "Trying " + path + " from " + repository.getId() + "..." );
 
-                        wagon.get( path, temp );
+                        if ( !target.exists() )
+                        {
+                            wagon.get( path, temp );
+                        }
+                        else
+                        {
+                            long repoTimestamp = target.lastModified() + repository.getCachePeriod() * 1000;
+                            wagon.getIfNewer( path, temp, repoTimestamp );
+                        }
 
                         if ( useChecksum )
                         {
                             success = doChecksumCheck( checksums, path, wagon );
-                        }
-                        else
-                        {
-                            success = true;
                         }
 
                         if ( tries > 1 && !success )
@@ -236,6 +271,8 @@ public class DefaultProxyManager
                             throw new ProxyException( "Checksum failures occurred while downloading " + path );
                         }
                     }
+                    while ( !success );
+
                     disconnectWagon( wagon );
 
                     copyTempToTarget( temp, target );
@@ -250,6 +287,7 @@ public class DefaultProxyManager
             }
             catch ( ResourceDoesNotExistException e )
             {
+                //@todo usage for cacheFailure 
                 //do nothing, file not found in this repository
             }
             catch ( AuthorizationException e )

@@ -168,6 +168,8 @@ public class ProxyConfiguration
             if ( !repoConfig.getKey().equals( "global" ) )
             {
                 ProxyRepository repo = new ProxyRepository( repoConfig.getKey(), repoConfig.getUrl(), layout );
+                repo.setCacheFailures( repoConfig.getCacheFailures() );
+                repo.setCachePeriod( repoConfig.getCachePeriod() );
 
                 repoList.add( repo );
             }

@@ -63,19 +63,31 @@ public class ProxyConfigurationTest
     {
         ArtifactRepositoryLayout defLayout = new DefaultRepositoryLayout();
         ProxyRepository repo1 = new ProxyRepository( "repo1", "http://www.ibiblio.org/maven2", defLayout );
+        repo1.setCacheFailures( true );
+        repo1.setCachePeriod( 0 );
         config.addRepository( repo1 );
         assertEquals( 1, config.getRepositories().size() );
 
         ArtifactRepositoryLayout legacyLayout = new LegacyRepositoryLayout();
         ProxyRepository repo2 = new ProxyRepository( "repo2", "http://www.ibiblio.org/maven", legacyLayout );
+        repo2.setCacheFailures( false );
+        repo2.setCachePeriod( 3600 );
         config.addRepository( repo2 );
         assertEquals( 2, config.getRepositories().size() );
 
         List repositories = config.getRepositories();
         ProxyRepository repo = (ProxyRepository) repositories.get( 0 );
+        assertEquals( "repo1", repo.getId() );
+        assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
+        assertTrue( repo.isCacheFailures() );
+        assertEquals( 0, repo.getCachePeriod() );
         assertEquals( repo1, repo );
 
         repo = (ProxyRepository) repositories.get( 1 );
+        assertEquals( "repo2", repo.getId() );
+        assertEquals( "http://www.ibiblio.org/maven", repo.getUrl() );
+        assertFalse( repo.isCacheFailures() );
+        assertEquals( 3600, repo.getCachePeriod() );
         assertEquals( repo2, repo );
 
         try
@@ -107,29 +119,50 @@ public class ProxyConfigurationTest
 
             config.loadMavenProxyConfiguration( confFile );
 
-            assertTrue( config.getRepositoryCachePath().endsWith( "target" ) );
+            assertTrue( "cache path changed", config.getRepositoryCachePath().endsWith( "target" ) );
 
             assertEquals( "Count repositories", 4, config.getRepositories().size() );
 
+            int idx = 0;
             for ( Iterator repos = config.getRepositories().iterator(); repos.hasNext(); )
             {
+                idx++;
+
                 ProxyRepository repo = (ProxyRepository) repos.next();
 
-                if ( "local-repo".equals( repo.getKey() ) )
+                //switch is made to check for ordering
+                switch ( idx )
                 {
-                    assertEquals( "file:///./target/remote-repo1", repo.getUrl() );
-                }
-                else if ( "www-ibiblio-org".equals( repo.getKey() ) )
-                {
-                    assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
-                }
-                else if ( "dist-codehaus-org".equals( repo.getKey() ) )
-                {
-                    assertEquals( "http://dist.codehaus.org", repo.getUrl() );
-                }
-                else if ( "private-example-com".equals( repo.getKey() ) )
-                {
-                    assertEquals( "http://private.example.com/internal", repo.getUrl() );
+                    case 1:
+                        assertEquals( "Repository name not as expected", "local-repo", repo.getKey() );
+                        assertEquals( "Repository url does not match its name", "file:///./target/remote-repo1",
+                                      repo.getUrl() );
+                        assertEquals( "Repository cache period check failed", 0, repo.getCachePeriod() );
+                        assertFalse( "Repository failure caching check failed", repo.isCacheFailures() );
+                        break;
+                    case 2:
+                        assertEquals( "Repository name not as expected", "www-ibiblio-org", repo.getKey() );
+                        assertEquals( "Repository url does not match its name", "http://www.ibiblio.org/maven2",
+                                      repo.getUrl() );
+                        assertEquals( "Repository cache period check failed", 3600, repo.getCachePeriod() );
+                        assertTrue( "Repository failure caching check failed", repo.isCacheFailures() );
+                        break;
+                    case 3:
+                        assertEquals( "Repository name not as expected", "dist-codehaus-org", repo.getKey() );
+                        assertEquals( "Repository url does not match its name", "http://dist.codehaus.org",
+                                      repo.getUrl() );
+                        assertEquals( "Repository cache period check failed", 3600, repo.getCachePeriod() );
+                        assertTrue( "Repository failure caching check failed", repo.isCacheFailures() );
+                        break;
+                    case 4:
+                        assertEquals( "Repository name not as expected", "private-example-com", repo.getKey() );
+                        assertEquals( "Repository url does not match its name", "http://private.example.com/internal",
+                                      repo.getUrl() );
+                        assertEquals( "Repository cache period check failed", 3600, repo.getCachePeriod() );
+                        assertFalse( "Repository failure caching check failed", repo.isCacheFailures() );
+                        break;
+                    default:
+                        fail( "Unexpected order count" );
                 }
             }
         }

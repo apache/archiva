@@ -28,8 +28,43 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 public class ProxyRepository
     extends DefaultArtifactRepository
 {
+    // zero does not cache
+    private long cachePeriod = 0;
+
+    private boolean cacheFailures = false;
+
+    public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout, boolean cacheFailures,
+                            long cachePeriod )
+    {
+        this( id, url, layout );
+
+        setCacheFailures( cacheFailures );
+
+        setCachePeriod( cachePeriod );
+    }
+
     public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout )
     {
         super( id, url, layout );
+    }
+
+    public long getCachePeriod()
+    {
+        return cachePeriod;
+    }
+
+    public void setCachePeriod( long cachePeriod )
+    {
+        this.cachePeriod = cachePeriod;
+    }
+
+    public boolean isCacheFailures()
+    {
+        return cacheFailures;
+    }
+
+    public void setCacheFailures( boolean cacheFailures )
+    {
+        this.cacheFailures = cacheFailures;
     }
 }
