@@ -171,6 +171,14 @@ public class ProxyConfiguration
                 repo.setCacheFailures( repoConfig.getCacheFailures() );
                 repo.setCachePeriod( repoConfig.getCachePeriod() );
 
+                if ( repoConfig instanceof HttpRepoConfiguration )
+                {
+                    HttpRepoConfiguration httpRepo = (HttpRepoConfiguration) repoConfig;
+                    MavenProxyConfiguration httpProxy = httpRepo.getProxy();
+                    repo.setProxy( httpProxy.getHost(), httpProxy.getPort(),
+                                   httpProxy.getUsername(), httpProxy.getPassword() );
+                }
+
                 repoList.add( repo );
             }
         }

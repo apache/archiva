@@ -287,7 +287,7 @@ public class DefaultProxyManager
             }
             catch ( ResourceDoesNotExistException e )
             {
-                //@todo usage for cacheFailure 
+                //@todo usage for cacheFailure
                 //do nothing, file not found in this repository
             }
             catch ( AuthorizationException e )
@@ -369,7 +369,7 @@ public class DefaultProxyManager
         boolean connected = false;
         try
         {
-            wagon.connect( repository );
+            wagon.connect( repository, repository.getProxy() );
             connected = true;
         }
         catch ( ConnectionException e )

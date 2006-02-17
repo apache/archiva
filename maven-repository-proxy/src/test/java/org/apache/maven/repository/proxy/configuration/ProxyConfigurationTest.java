@@ -21,6 +21,7 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
+import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -72,6 +73,7 @@ public class ProxyConfigurationTest
         ProxyRepository repo2 = new ProxyRepository( "repo2", "http://www.ibiblio.org/maven", legacyLayout );
         repo2.setCacheFailures( false );
         repo2.setCachePeriod( 3600 );
+        repo2.setProxy( "some.local.proxy", 80, "username", "password" );
         config.addRepository( repo2 );
         assertEquals( 2, config.getRepositories().size() );
 
@@ -89,6 +91,13 @@ public class ProxyConfigurationTest
         assertFalse( repo.isCacheFailures() );
         assertEquals( 3600, repo.getCachePeriod() );
         assertEquals( repo2, repo );
+        assertTrue( repo.isProxied() );
+        ProxyInfo proxyInfo = repo.getProxy();
+        assertNotNull( proxyInfo );
+        assertEquals( "some.local.proxy", proxyInfo.getHost() );
+        assertEquals( 80, proxyInfo.getPort() );
+        assertEquals( "username", proxyInfo.getUserName() );
+        assertEquals( "password", proxyInfo.getPassword() );
 
         try
         {
