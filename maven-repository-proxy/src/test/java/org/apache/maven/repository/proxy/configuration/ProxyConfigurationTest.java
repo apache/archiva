@@ -66,6 +66,7 @@ public class ProxyConfigurationTest
         ProxyRepository repo1 = new ProxyRepository( "repo1", "http://www.ibiblio.org/maven2", defLayout );
         repo1.setCacheFailures( true );
         repo1.setCachePeriod( 0 );
+        repo1.setHardfail( true );
         config.addRepository( repo1 );
         assertEquals( 1, config.getRepositories().size() );
 
@@ -82,6 +83,7 @@ public class ProxyConfigurationTest
         assertEquals( "repo1", repo.getId() );
         assertEquals( "http://www.ibiblio.org/maven2", repo.getUrl() );
         assertTrue( repo.isCacheFailures() );
+        assertTrue( repo.isHardfail() );
         assertEquals( 0, repo.getCachePeriod() );
         assertEquals( repo1, repo );
 
@@ -89,9 +91,11 @@ public class ProxyConfigurationTest
         assertEquals( "repo2", repo.getId() );
         assertEquals( "http://www.ibiblio.org/maven", repo.getUrl() );
         assertFalse( repo.isCacheFailures() );
+        assertFalse( repo.isHardfail() );
         assertEquals( 3600, repo.getCachePeriod() );
         assertEquals( repo2, repo );
         assertTrue( repo.isProxied() );
+
         ProxyInfo proxyInfo = repo.getProxy();
         assertNotNull( proxyInfo );
         assertEquals( "some.local.proxy", proxyInfo.getHost() );
