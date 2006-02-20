@@ -34,6 +34,8 @@ public class ProxyRepository
 
     private boolean cacheFailures = false;
 
+    private boolean hardfail = false;
+
     private ProxyInfo proxy;
 
     public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout, boolean cacheFailures,
@@ -117,5 +119,26 @@ public class ProxyRepository
     public void setProxy( ProxyInfo proxy )
     {
         this.proxy = proxy;
+    }
+
+    /**
+     * Checks the repository hardfail setting.
+     *
+     * @return true if the hardfail is enabled, otherwise, returns false.
+     */
+    public boolean isHardfail()
+    {
+        return hardfail;
+    }
+
+    /**
+     * If hardfail is set to true, then any unexpected errors from retrieving files from this repository
+     * will cause the download to fail.
+     *
+     * @param hardfail set to true to enable hard failures
+     */
+    public void setHardfail( boolean hardfail )
+    {
+        this.hardfail = hardfail;
     }
 }

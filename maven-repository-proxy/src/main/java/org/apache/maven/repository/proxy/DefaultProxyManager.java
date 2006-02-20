@@ -283,7 +283,8 @@ public class DefaultProxyManager
             }
             catch ( TransferFailedException e )
             {
-                getLogger().info( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
+                String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
+                processRepositoryFailure( repository, message, e );
             }
             catch ( ResourceDoesNotExistException e )
             {
@@ -292,12 +293,14 @@ public class DefaultProxyManager
             }
             catch ( AuthorizationException e )
             {
-                getLogger().info( "Skipping repository " + repository.getUrl() + ": " + e.getMessage() );
+                String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
+                processRepositoryFailure( repository, message, e );
             }
             catch ( UnsupportedProtocolException e )
             {
-                getLogger().info( "Skipping repository " + repository.getUrl() + ": no wagonManager configured " +
-                    "for protocol " + repository.getProtocol() );
+                String message = "Skipping repository " + repository.getUrl() + ": no wagonManager configured " +
+                    "for protocol " + repository.getProtocol();
+                processRepositoryFailure( repository, message, e );
             }
             finally
             {
@@ -556,6 +559,20 @@ public class DefaultProxyManager
         catch ( ConnectionException e )
         {
             getLogger().error( "Problem disconnecting from wagonManager - ignoring: " + e.getMessage() );
+        }
+    }
+
+    private void processRepositoryFailure( ProxyRepository repository, String message, Throwable t )
+        throws ProxyException
+    {
+        if ( repository.isHardfail() )
+        {
+            throw new ProxyException(
+                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + message, t );
+        }
+        else
+        {
+            getLogger().debug( message, t );
         }
     }
 }
