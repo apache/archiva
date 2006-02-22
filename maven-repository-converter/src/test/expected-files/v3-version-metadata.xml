@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<metadata>
+<?xml version="1.0" encoding="UTF-8"?><metadata>
   <groupId>test</groupId>
   <artifactId>v3artifact</artifactId>
   <version>1.0.0</version>
-  <versioning/>
+  <versioning />
 </metadata>
