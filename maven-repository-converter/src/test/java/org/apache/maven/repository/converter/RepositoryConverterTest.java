@@ -841,7 +841,8 @@ public class RepositoryConverterTest
     {
         String expectedContent = normalizeString( FileUtils.fileRead( expectedPomFile ) );
         String targetContent = normalizeString( FileUtils.fileRead( pomFile ) );
-        assertEquals( "Check file match", expectedContent, targetContent );
+        assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
+                      targetContent );
     }
 
     private static String normalizeString( String path )

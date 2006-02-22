@@ -251,4 +251,8 @@ public class MockArtifact
     {
         return 0;
     }
+
+    public void setOptional( boolean b )
+    {
+    }
 }

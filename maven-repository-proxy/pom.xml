@@ -40,7 +40,6 @@
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-file</artifactId>
-      <version>1.0-alpha-7</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

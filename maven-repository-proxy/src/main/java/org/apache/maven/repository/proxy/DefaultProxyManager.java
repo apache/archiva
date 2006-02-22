@@ -275,7 +275,10 @@ public class DefaultProxyManager
 
                     disconnectWagon( wagon );
 
-                    copyTempToTarget( temp, target );
+                    if ( temp.exists() )
+                    {
+                        copyTempToTarget( temp, target );
+                    }
 
                     return target;
                 }

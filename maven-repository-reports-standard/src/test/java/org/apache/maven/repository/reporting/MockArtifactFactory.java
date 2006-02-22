@@ -83,4 +83,10 @@ public class MockArtifactFactory
     {
         return null;
     }
+
+    public Artifact createDependencyArtifact( String string, String string1, VersionRange versionRange, String string2,
+                                              String string3, String string4, boolean b )
+    {
+        return null;
+    }
 }
