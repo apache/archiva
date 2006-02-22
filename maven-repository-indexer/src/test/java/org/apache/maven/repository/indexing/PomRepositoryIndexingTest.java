@@ -22,23 +22,21 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.License;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Plugin;
-import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.digest.DefaultDigester;
 import org.apache.maven.repository.digest.Digester;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
-import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.CompoundQuery;
+import org.apache.maven.repository.indexing.query.Query;
+import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Edwin Punzalan
@@ -125,85 +123,100 @@ public class PomRepositoryIndexingTest
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
-        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
+        //RepositoryIndexSearcher repoSearchLayer = factory.createDefaultRepositoryIndexSearcher( indexer );
+        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         // search version
-        Query qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "1.0" );
-        List artifactList = repoSearcher.search( qry );
-        //assertEquals( 1, artifactList.size() );
+        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
+        List artifactList = repoSearchLayer.searchAdvanced( qry );
+        assertEquals( 1, artifactList.size() );
         for ( Iterator iter = artifactList.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "1.0", artifact.getVersion() );
         }
 
         // search group id
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "org.apache.maven" );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 2, artifactList.size() );
         Iterator artifacts = artifactList.iterator();
         if ( artifacts.hasNext() )
         {
-            Artifact artifact = (Artifact) artifacts.next();
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
 
         // search artifact id
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 1, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
         }
 
         // search version
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "2" );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 2, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact = result.getArtifact();
             assertTrue( artifact.getVersion().indexOf( "2" ) != -1 );
         }
 
         // search packaging
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_PACKAGING, "jar" );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PACKAGING, "jar" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 3, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
-            assertEquals( "jar", artifact.getType() );
+            SearchResult result = (SearchResult) artifacts.next();
+            Map map = result.getFieldMatches();
+            Set mapEntry = map.entrySet();
+            for ( Iterator it = mapEntry.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+            }
+            assertEquals( "jar", (String) map.get( RepositoryIndex.FLD_PACKAGING ) );
         }
 
         //search license url
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_LICENSE_URLS,
-                                     "http://www.apache.org/licenses/LICENSE-2.0.txt" );
-        artifactList = repoSearcher.search( qry );
+        qry =
+            new SinglePhraseQuery( RepositoryIndex.FLD_LICENSE_URLS, "http://www.apache.org/licenses/LICENSE-2.0.txt" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 2, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
-            License license = (License) getPom( artifact ).getLicenses().get( 0 );
-            assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", license.getUrl() );
+            SearchResult result = (SearchResult) artifacts.next();
+            Map map = result.getFieldMatches();
+            List matches = (List) map.get( RepositoryIndex.FLD_LICENSE_URLS );
+            for ( Iterator it = matches.iterator(); it.hasNext(); )
+            {
+                assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", (String) it.next() );
+            }
         }
 
         //search dependencies
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 2, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
-            Iterator dependencies = getPom( artifact ).getDependencies().iterator();
+            SearchResult result = (SearchResult) artifacts.next();
+            Map map = result.getFieldMatches();
             boolean depFound = false;
+            Iterator dependencies = ( (List) map.get( RepositoryIndex.FLD_DEPENDENCIES ) ).iterator();
             while ( dependencies.hasNext() )
             {
-                Dependency dep = (Dependency) dependencies.next();
-                if ( "org.codehaus.plexus:plexus-utils:1.0.5".equals(
-                    dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion() ) )
+                String dep = (String) dependencies.next();
+                if ( "org.codehaus.plexus:plexus-utils:1.0.5".equals( dep ) )
                 {
                     depFound = true;
                     break;
@@ -213,20 +226,20 @@ public class PomRepositoryIndexingTest
         }
 
         //search build plugin
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_PLUGINS_BUILD,
-                                     "org.codehaus.modello:modello-maven-plugin:2.0" );
-        artifactList = repoSearcher.search( qry );
+        qry =
+            new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINS_BUILD, "org.codehaus.modello:modello-maven-plugin:2.0" );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 1, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
-            Iterator plugins = getPom( artifact ).getBuild().getPlugins().iterator();
+            SearchResult result = (SearchResult) artifacts.next();
+            Map map = result.getFieldMatches();
+            Iterator plugins = ( (List) map.get( RepositoryIndex.FLD_PLUGINS_BUILD ) ).iterator();
             boolean found = false;
             while ( plugins.hasNext() )
             {
-                Plugin plugin = (Plugin) plugins.next();
-                if ( "org.codehaus.modello:modello-maven-plugin:2.0".equals(
-                    plugin.getKey() + ":" + plugin.getVersion() ) )
+                String plugin = (String) plugins.next();
+                if ( "org.codehaus.modello:modello-maven-plugin:2.0".equals( plugin ) )
                 {
                     found = true;
                     break;
@@ -236,20 +249,20 @@ public class PomRepositoryIndexingTest
         }
 
         //search reporting plugin
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_PLUGINS_REPORT,
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINS_REPORT,
                                      "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" );
-        artifactList = repoSearcher.search( qry );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 1, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact = (Artifact) artifacts.next();
-            Iterator plugins = getPom( artifact ).getReporting().getPlugins().iterator();
+            SearchResult result = (SearchResult) artifacts.next();
+            Map map = result.getFieldMatches();
+            Iterator plugins = ( (List) map.get( RepositoryIndex.FLD_PLUGINS_REPORT ) ).iterator();
             boolean found = false;
             while ( plugins.hasNext() )
             {
-                ReportPlugin plugin = (ReportPlugin) plugins.next();
-                if ( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0".equals(
-                    plugin.getKey() + ":" + plugin.getVersion() ) )
+                String plugin = (String) plugins.next();
+                if ( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0".equals( plugin ) )
                 {
                     found = true;
                     break;
@@ -263,24 +276,26 @@ public class PomRepositoryIndexingTest
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         String sha1 = digester.createChecksum( artifact.getFile(), Digester.SHA1 );
 
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_SHA1, sha1.trim() );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_SHA1, sha1.trim() );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 1, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact2 = (Artifact) artifacts.next();
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact2 = result.getArtifact();
             String sha1Tmp = digester.createChecksum( getPomFile( artifact2 ), Digester.SHA1 );
             assertEquals( sha1, sha1Tmp );
         }
 
         // search md5 checksum
         String md5 = digester.createChecksum( getPomFile( artifact ), Digester.MD5 );
-        qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_MD5, md5.trim() );
-        artifactList = repoSearcher.search( qry );
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_MD5, md5.trim() );
+        artifactList = repoSearchLayer.searchAdvanced( qry );
         assertEquals( 1, artifactList.size() );
         for ( artifacts = artifactList.iterator(); artifacts.hasNext(); )
         {
-            Artifact artifact2 = (Artifact) artifacts.next();
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact2 = result.getArtifact();
             String md5Tmp = digester.createChecksum( getPomFile( artifact2 ), Digester.MD5 );
             assertEquals( md5, md5Tmp );
         }
@@ -300,20 +315,22 @@ public class PomRepositoryIndexingTest
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
-        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
+        //RepositoryIndexSearcher repoSearchLayer = factory.createDefaultRepositoryIndexSearcher( indexer );
+        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         // Criteria 1: required query
         // ex. artifactId=maven-artifact AND groupId=org.apache.maven
-        Query qry1 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
-        Query qry2 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "org.apache.maven" );
+        Query qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
+        Query qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
         CompoundQuery rQry = new CompoundQuery();
         rQry.and( qry1 );
         rQry.and( qry2 );
 
-        List artifacts = repoSearcher.search( rQry );
+        List artifacts = repoSearchLayer.searchAdvanced( rQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
@@ -321,15 +338,16 @@ public class PomRepositoryIndexingTest
         // Criteria 2: nested required query
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) OR
         // version=2.0.3
-        Query qry3 = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "2.0.3" );
+        Query qry3 = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2.0.3" );
         CompoundQuery oQry = new CompoundQuery();
         oQry.and( rQry );
         oQry.or( qry3 );
 
-        artifacts = repoSearcher.search( oQry );
+        artifacts = repoSearchLayer.searchAdvanced( oQry );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
@@ -338,15 +356,15 @@ public class PomRepositoryIndexingTest
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) AND
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)
-        Query qry4 = new SinglePhraseQuery( PomRepositoryIndex.FLD_VERSION, "2.0.1" );
+        Query qry4 = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2.0.1" );
         oQry = new CompoundQuery();
         oQry.or( qry3 );
         oQry.or( qry4 );
 
         CompoundQuery oQry5 = new CompoundQuery();
         Query qry9 =
-            new SinglePhraseQuery( PomRepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
-        Query qry10 = new SinglePhraseQuery( PomRepositoryIndex.FLD_DEPENDENCIES,
+            new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
+        Query qry10 = new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES,
                                              "org.codehaus.plexus:plexus-container-defualt:1.0-alpha-9" );
         oQry5.or( qry9 );
         oQry5.or( qry10 );
@@ -356,10 +374,11 @@ public class PomRepositoryIndexingTest
         rQry2.and( rQry );
         rQry2.and( oQry5 );
 
-        artifacts = repoSearcher.search( rQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( rQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
             assertEquals( "2.0.1", artifact.getVersion() );
@@ -371,18 +390,19 @@ public class PomRepositoryIndexingTest
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)]
         // OR [(artifactId=sample AND groupId=test)]
         CompoundQuery rQry3 = new CompoundQuery();
-        Query qry5 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "sample" );
-        Query qry6 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "test" );
+        Query qry5 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "sample" );
+        Query qry6 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test" );
         rQry3.and( qry5 );
         rQry3.and( qry6 );
         CompoundQuery oQry2 = new CompoundQuery();
         oQry2.and( rQry2 );
         oQry2.and( rQry3 );
 
-        artifacts = repoSearcher.search( oQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
             assertEquals( "2.0.1", artifact.getVersion() );
@@ -395,16 +415,17 @@ public class PomRepositoryIndexingTest
         // [(artifactId=sample AND groupId=test)] OR
         // [(artifactId=sample2 AND groupId=test)]
         CompoundQuery rQry4 = new CompoundQuery();
-        Query qry7 = new SinglePhraseQuery( PomRepositoryIndex.FLD_ARTIFACTID, "sample2" );
-        Query qry8 = new SinglePhraseQuery( PomRepositoryIndex.FLD_GROUPID, "test" );
+        Query qry7 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "sample2" );
+        Query qry8 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test" );
         rQry4.and( qry7 );
         rQry4.and( qry8 );
         oQry2.and( rQry4 );
 
-        artifacts = repoSearcher.search( oQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( oQry2 );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
-            Artifact artifact = (Artifact) iter.next();
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
@@ -459,10 +480,10 @@ public class PomRepositoryIndexingTest
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
         Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
-        indexer.deleteDocument( PomRepositoryIndex.FLD_ID, PomRepositoryIndex.POM + pom.getId() );
+        indexer.deleteDocument( RepositoryIndex.FLD_ID, RepositoryIndex.POM + pom.getId() );
 
         RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
-        Query qry = new SinglePhraseQuery( PomRepositoryIndex.FLD_ID, PomRepositoryIndex.POM + pom.getId() );
+        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.POM + pom.getId() );
         List artifactList = repoSearcher.search( qry );
         assertEquals( artifactList.size(), 0 );
     }

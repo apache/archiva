@@ -132,7 +132,7 @@ public class MetadataRepositoryIndex
             Plugin plugin = (Plugin) iter.next();
             if ( plugin.getPrefix() != null && !plugin.getPrefix().equals( "" ) )
             {
-                pluginAppended = plugin.getPrefix() + " ";
+                pluginAppended = plugin.getPrefix() + "\n";
             }
         }
         doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );

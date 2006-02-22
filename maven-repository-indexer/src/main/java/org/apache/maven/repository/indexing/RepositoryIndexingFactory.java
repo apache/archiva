@@ -61,12 +61,12 @@ public interface RepositoryIndexingFactory
         throws RepositoryIndexException;
 
     /**
-     * Method to create an instance of GeneralRepositoryIndexSearcher
+     * Method to create an instance of RepositoryIndexSearchLayer
      *
      * @param index the RepositoryIndex object where the query string will be searched
-     * @return the GeneralRepositoryIndexSearcher instance
+     * @return the RepositoryIndexSearchLayer instance
      */
-    GeneralRepositoryIndexSearcher createGeneralRepositoryIndexSearcher( RepositoryIndex index );
+    RepositoryIndexSearchLayer createRepositoryIndexSearchLayer( RepositoryIndex index );
 
     /**
      * Method to create an instance of DefaultRepositoryIndexSearcher

@@ -24,35 +24,38 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.indexing.query.CompoundQuery;
 import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.RangeQuery;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.IOException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Collections;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
- * Abstract Class to hold common codes for the different RepositoryIndexSearcher
+ * Implementation Class for searching through the index
  */
 public class DefaultRepositoryIndexSearcher
     extends AbstractLogEnabled
@@ -61,6 +64,8 @@ public class DefaultRepositoryIndexSearcher
     protected RepositoryIndex index;
 
     private ArtifactFactory factory;
+
+    private List artifactList;
 
     /**
      * Constructor
@@ -79,7 +84,7 @@ public class DefaultRepositoryIndexSearcher
     public List search( Query query )
         throws RepositoryIndexSearchException
     {
-
+        artifactList = new ArrayList();
         org.apache.lucene.search.Query luceneQuery;
         try
         {
@@ -215,12 +220,9 @@ public class DefaultRepositoryIndexSearcher
     private List buildList( Hits hits )
         throws MalformedURLException, IOException, XmlPullParserException
     {
-        List artifactList = new ArrayList();
-
         for ( int i = 0; i < hits.length(); i++ )
         {
             Document doc = hits.doc( i );
-
             artifactList.add( createSearchedObjectFromIndexDocument( doc ) );
         }
 
@@ -233,38 +235,55 @@ public class DefaultRepositoryIndexSearcher
      * @param doc the index document where the object field values will be retrieved from
      * @return Object
      */
-    protected Object createSearchedObjectFromIndexDocument( Document doc )
+    protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc )
         throws MalformedURLException, IOException, XmlPullParserException
     {
         String groupId, artifactId, version, name, packaging;
+        RepositoryIndexSearchHit searchHit = null;
 
-        if ( doc.get( index.FLD_DOCTYPE ).equals( index.ARTIFACT ) )
+        // the document is of type artifact
+        if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.ARTIFACT ) )
         {
-            groupId = doc.get( ArtifactRepositoryIndex.FLD_GROUPID );
-            artifactId = doc.get( ArtifactRepositoryIndex.FLD_ARTIFACTID );
-            version = doc.get( ArtifactRepositoryIndex.FLD_VERSION );
-            name = doc.get( ArtifactRepositoryIndex.FLD_NAME );
-            packaging = name.substring( name.lastIndexOf( '.' ) + 1 );
+            groupId = doc.get( RepositoryIndex.FLD_GROUPID );
+            artifactId = doc.get( RepositoryIndex.FLD_ARTIFACTID );
+            version = doc.get( RepositoryIndex.FLD_VERSION );
+            name = doc.get( RepositoryIndex.FLD_NAME );
+            packaging = doc.get( RepositoryIndex.FLD_PACKAGING );
             Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
-            String groupIdTemp = groupId.replace( '.', '/' );
-            artifact.setFile( new File(
-                index.getRepository().getBasedir() + groupIdTemp + "/" + artifactId + "/" + version + "/" + name ) );
 
-            return artifact;
+            artifact.setFile(
+                new File( index.getRepository().getBasedir(), index.getRepository().pathOf( artifact ) ) );
+
+            Map map = new HashMap();
+            map.put( RepositoryIndex.ARTIFACT, artifact );
+            map.put( RepositoryIndex.FLD_CLASSES, doc.get( RepositoryIndex.FLD_CLASSES ) );
+            map.put( RepositoryIndex.FLD_PACKAGES, doc.get( RepositoryIndex.FLD_PACKAGES ) );
+            map.put( RepositoryIndex.FLD_FILES, doc.get( RepositoryIndex.FLD_FILES ) );
+            map.put( RepositoryIndex.FLD_MD5, doc.get( RepositoryIndex.FLD_MD5 ) );
+            map.put( RepositoryIndex.FLD_SHA1, doc.get( RepositoryIndex.FLD_SHA1 ) );
+            map.put( RepositoryIndex.FLD_PACKAGING, doc.get( RepositoryIndex.FLD_PACKAGING ) );
+
+            searchHit = new RepositoryIndexSearchHit( true, false, false );
+            searchHit.setObject( map );
         }
-        else if ( doc.get( index.FLD_DOCTYPE ).equals( index.POM ) )
+        // the document is of type model
+        else if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.POM ) )
         {
-            groupId = doc.get( PomRepositoryIndex.FLD_GROUPID );
-            artifactId = doc.get( PomRepositoryIndex.FLD_ARTIFACTID );
-            version = doc.get( PomRepositoryIndex.FLD_VERSION );
-            packaging = doc.get( PomRepositoryIndex.FLD_PACKAGING );
+            InputStream is = new FileInputStream( new File( index.getRepository().getBasedir() +
+                doc.get( RepositoryIndex.FLD_GROUPID ).replace( '.', '/' ) + "/" +
+                doc.get( RepositoryIndex.FLD_ARTIFACTID ) + "/" + doc.get( RepositoryIndex.FLD_VERSION ) + "/" +
+                doc.get( RepositoryIndex.FLD_ARTIFACTID ) + "-" + doc.get( RepositoryIndex.FLD_VERSION ) + ".pom" ) );
+            MavenXpp3Reader reader = new MavenXpp3Reader();
 
-            return factory.createBuildArtifact( groupId, artifactId, version, packaging );
+            searchHit = new RepositoryIndexSearchHit( false, false, true );
+            searchHit.setObject( reader.read( new InputStreamReader( is ) ) );
+
         }
-        else if ( doc.get( index.FLD_DOCTYPE ).equals( index.METADATA ) )
+        // the document is of type metadata
+        else if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.METADATA ) )
         {
             List pathParts = new ArrayList();
-            StringTokenizer st = new StringTokenizer( doc.get( MetadataRepositoryIndex.FLD_NAME ), "/\\" );
+            StringTokenizer st = new StringTokenizer( doc.get( RepositoryIndex.FLD_NAME ), "/\\" );
             while ( st.hasMoreTokens() )
             {
                 pathParts.add( st.nextToken() );
@@ -276,28 +295,28 @@ public class DefaultRepositoryIndexSearcher
             String tmpDir = (String) it.next();
 
             String metadataType = "";
-            if ( tmpDir.equals( doc.get( MetadataRepositoryIndex.FLD_GROUPID ) ) )
+            if ( tmpDir.equals( doc.get( RepositoryIndex.FLD_VERSION ) ) )
             {
-                metadataType = MetadataRepositoryIndex.GROUP_METADATA;
+                metadataType = MetadataRepositoryIndex.SNAPSHOT_METADATA;
             }
-            else if ( tmpDir.equals( doc.get( MetadataRepositoryIndex.FLD_ARTIFACTID ) ) )
+            else if ( tmpDir.equals( doc.get( RepositoryIndex.FLD_ARTIFACTID ) ) )
             {
                 metadataType = MetadataRepositoryIndex.ARTIFACT_METADATA;
             }
             else
             {
-                metadataType = MetadataRepositoryIndex.SNAPSHOT_METADATA;
+                metadataType = MetadataRepositoryIndex.GROUP_METADATA;
             }
 
-            RepositoryMetadata repoMetadata = null;
-            repoMetadata = getMetadata( doc.get( MetadataRepositoryIndex.FLD_GROUPID ),
-                                        doc.get( MetadataRepositoryIndex.FLD_ARTIFACTID ),
-                                        doc.get( MetadataRepositoryIndex.FLD_VERSION ), metadataFile, metadataType );
-
-            return repoMetadata;
+            RepositoryMetadata repoMetadata = getMetadata( doc.get( RepositoryIndex.FLD_GROUPID ),
+                                                           doc.get( RepositoryIndex.FLD_ARTIFACTID ),
+                                                           doc.get( RepositoryIndex.FLD_VERSION ), metadataFile,
+                                                           metadataType );
+            searchHit = new RepositoryIndexSearchHit( false, true, false );
+            searchHit.setObject( repoMetadata );
         }
 
-        return null;
+        return searchHit;
     }
 
     /**
@@ -318,24 +337,22 @@ public class DefaultRepositoryIndexSearcher
         throws MalformedURLException, IOException, XmlPullParserException
     {
         RepositoryMetadata repoMetadata = null;
-        URL url;
         InputStream is = null;
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata
         if ( metadataType.equals( MetadataRepositoryIndex.GROUP_METADATA ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ).toURL();
-            is = url.openStream();
+            is = new FileInputStream(
+                new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ) );
             repoMetadata = new GroupRepositoryMetadata( groupId );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
         }
         //artifact metadata
         else if ( metadataType.equals( MetadataRepositoryIndex.ARTIFACT_METADATA ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" +
-                filename ).toURL();
-            is = url.openStream();
+            is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
+                artifactId + "/" + filename ) );
             repoMetadata =
                 new ArtifactRepositoryMetadata( factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
@@ -343,9 +360,8 @@ public class DefaultRepositoryIndexSearcher
         //snapshot/version metadata
         else if ( metadataType.equals( MetadataRepositoryIndex.SNAPSHOT_METADATA ) )
         {
-            url = new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" +
-                version + "/" + filename ).toURL();
-            is = url.openStream();
+            is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
+                artifactId + "/" + version + "/" + filename ) );
             repoMetadata = new SnapshotArtifactRepositoryMetadata(
                 factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
             repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );

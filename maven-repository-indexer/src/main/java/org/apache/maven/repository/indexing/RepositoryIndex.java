@@ -33,43 +33,43 @@ public interface RepositoryIndex
 
     static final String ARTIFACT = "ARTIFACT";
 
-    static final String FLD_ID = "ID";
+    static final String FLD_ID = "id";
 
-    static final String FLD_NAME = "NAME";
+    static final String FLD_NAME = "name";
 
-    static final String FLD_DOCTYPE = "DOCTYPE";
+    static final String FLD_DOCTYPE = "doctype";
 
-    static final String FLD_GROUPID = "GROUPID";
+    static final String FLD_GROUPID = "groupId";
 
-    static final String FLD_ARTIFACTID = "ARTIFACTID";
+    static final String FLD_ARTIFACTID = "artifactId";
 
-    static final String FLD_VERSION = "VERSION";
+    static final String FLD_VERSION = "version";
 
-    static final String FLD_PACKAGING = "PACKAGING";
+    static final String FLD_PACKAGING = "packaging";
 
-    static final String FLD_SHA1 = "SHA1";
+    static final String FLD_SHA1 = "sha1";
 
-    static final String FLD_MD5 = "MD5";
+    static final String FLD_MD5 = "md5";
 
-    static final String FLD_LASTUPDATE = "LASTUPDATE";
+    static final String FLD_LASTUPDATE = "last update";
 
-    static final String FLD_PLUGINPREFIX = "PLUGINPREFIX";
+    static final String FLD_PLUGINPREFIX = "plugin prefix";
 
-    static final String FLD_CLASSES = "CLASSES";
+    static final String FLD_CLASSES = "class";
 
-    static final String FLD_PACKAGES = "PACKAGES";
+    static final String FLD_PACKAGES = "package";
 
-    static final String FLD_FILES = "FILES";
+    static final String FLD_FILES = "file";
 
-    static final String FLD_LICENSE_URLS = "LICENSE_URLS";
+    static final String FLD_LICENSE_URLS = "license url";
 
-    static final String FLD_DEPENDENCIES = "DEPENDENCIES";
+    static final String FLD_DEPENDENCIES = "dependency";
 
-    static final String FLD_PLUGINS_BUILD = "PLUGINS_BUILD";
+    static final String FLD_PLUGINS_BUILD = "build plugin";
 
-    static final String FLD_PLUGINS_REPORT = "PLUGINS_REPORT";
+    static final String FLD_PLUGINS_REPORT = "report plugin";
 
-    static final String FLD_PLUGINS_ALL = "PLUGINS_ALL";
+    static final String FLD_PLUGINS_ALL = "plugins_all";
 
     static final String[] FIELDS = {FLD_ID, FLD_NAME, FLD_DOCTYPE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION,
         FLD_PACKAGING, FLD_SHA1, FLD_MD5, FLD_LASTUPDATE, FLD_PLUGINPREFIX, FLD_CLASSES, FLD_PACKAGES, FLD_FILES,
@@ -77,6 +77,9 @@ public interface RepositoryIndex
 
     static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_PACKAGING, FLD_LICENSE_URLS,
         FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
+
+    static final String[] MODEL_FIELDS =
+        {FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT};
 
     /**
      * Method used to query the index status

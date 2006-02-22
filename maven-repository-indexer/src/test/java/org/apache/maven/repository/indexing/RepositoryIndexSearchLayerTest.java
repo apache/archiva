@@ -39,14 +39,15 @@ import java.io.InputStreamReader;
 import java.io.FileReader;
 import java.util.List;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.net.URL;
 
 /**
- * @author Maria Odea Ching
- *         <p/>
- *         This class tests the GeneralRepositoryIndexSearcher.
+ * <p/>
+ * This class tests the RepositoryIndexSearchLayer.
  */
-public class GeneralRepositoryIndexSearcherTest
+public class RepositoryIndexSearchLayerTest
     extends PlexusTestCase
 {
     private ArtifactRepository repository;
@@ -181,59 +182,181 @@ public class GeneralRepositoryIndexSearcherTest
         createTestIndex();
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        GeneralRepositoryIndexSearcher searcher = factory.createGeneralRepositoryIndexSearcher( indexer );
+        RepositoryIndexSearchLayer searchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
-        List returnList = searcher.search( "org.apache.maven" );
-        assertEquals( returnList.size(), 7 );
+        List returnList = searchLayer.searchGeneral( "org.apache.maven" );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
-            Object obj = (Object) iter.next();
-            if ( obj instanceof Artifact )
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
             {
-                Artifact artifact = (Artifact) obj;
-                assertEquals( artifact.getGroupId(), "org.apache.maven" );
-            }
-            else if ( obj instanceof RepositoryMetadata )
-            {
-                RepositoryMetadata repoMetadata = (RepositoryMetadata) obj;
-                assertEquals( repoMetadata.getGroupId(), "org.apache.maven" );
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_PACKAGES ) )
+                {
+                    List packages = (List) entry.getValue();
+                    for ( Iterator iterator = packages.iterator(); iterator.hasNext(); )
+                    {
+                        assertTrue( ( (String) iterator.next() ).indexOf( "org.apache.maven" ) != -1 );
+                    }
+                }
             }
         }
 
-        returnList = searcher.search( "test" );
-        assertEquals( returnList.size(), 3 );
+        //POM license urls
+        returnList = searchLayer.searchGeneral( "http://www.apache.org/licenses/LICENSE-2.0.txt" );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
-            Object obj = (Object) iter.next();
-            if ( obj instanceof Artifact )
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
             {
-                Artifact artifact = (Artifact) obj;
-                assertEquals( artifact.getGroupId(), "test" );
-            }
-            else if ( obj instanceof RepositoryMetadata )
-            {
-                RepositoryMetadata repoMetadata = (RepositoryMetadata) obj;
-                assertEquals( repoMetadata.getGroupId(), "test" );
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_LICENSE_URLS ) )
+                {
+                    List packages = (List) entry.getValue();
+                    for ( Iterator iterator = packages.iterator(); iterator.hasNext(); )
+                    {
+                        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", (String) iterator.next() );
+                    }
+                }
             }
         }
 
-        returnList = searcher.search( "artifact" );
-        assertEquals( returnList.size(), 4 );
+        //POM dependency
+        returnList = searchLayer.searchGeneral( "org.codehaus.plexus:plexus-utils:1.0.5" );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
-            Object obj = (Object) iter.next();
-            if ( obj instanceof Artifact )
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
             {
-                Artifact artifact = (Artifact) obj;
-                assertEquals( artifact.getArtifactId(), "maven-artifact" );
-            }
-            else if ( obj instanceof RepositoryMetadata )
-            {
-                RepositoryMetadata repoMetadata = (RepositoryMetadata) obj;
-                assertEquals( repoMetadata.getArtifactId(), "maven-artifact" );
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_DEPENDENCIES ) )
+                {
+                    List packages = (List) entry.getValue();
+                    for ( Iterator iterator = packages.iterator(); iterator.hasNext(); )
+                    {
+                        assertEquals( "org.codehaus.plexus:plexus-utils:1.0.5", (String) iterator.next() );
+                    }
+                }
             }
         }
+
+        // POM reporting plugin
+        returnList = searchLayer.searchGeneral( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_PLUGINS_REPORT ) )
+                {
+                    List packages = (List) entry.getValue();
+                    for ( Iterator iterator = packages.iterator(); iterator.hasNext(); )
+                    {
+                        assertEquals( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0",
+                                      (String) iterator.next() );
+                    }
+                }
+            }
+        }
+
+        // POM build plugin
+        returnList = searchLayer.searchGeneral( "org.codehaus.modello:modello-maven-plugin:2.0" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_PLUGINS_BUILD ) )
+                {
+                    List packages = (List) entry.getValue();
+                    for ( Iterator iterator = packages.iterator(); iterator.hasNext(); )
+                    {
+                        assertEquals( "org.codehaus.modello:modello-maven-plugin:2.0", (String) iterator.next() );
+                    }
+                }
+            }
+        }
+
+        //maven-artifact-2.0.1.jar MD5 checksum
+        returnList = searchLayer.searchGeneral( "F5A934ABBBC70A33136D89A996B9D5C09F652766" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_MD5 ) )
+                {
+                    assertTrue(
+                        ( (String) entry.getValue() ).indexOf( "F5A934ABBBC70A33136D89A996B9D5C09F652766" ) != -1 );
+                }
+            }
+        }
+
+        //maven-artifact-2.0.1.jar SHA1 checksum
+        returnList = searchLayer.searchGeneral( "AE55D9B5720E11B6CF19FE1E31A42E51" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_SHA1 ) )
+                {
+                    assertTrue( ( (String) entry.getValue() ).indexOf( "AE55D9B5720E11B6CF19FE1E31A42E516" ) != -1 );
+                }
+            }
+        }
+
+        //packaging jar
+        returnList = searchLayer.searchGeneral( "jar" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Map map = result.getFieldMatches();
+            Set entries = map.entrySet();
+            for ( Iterator it = entries.iterator(); it.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) it.next();
+                if ( entry.getKey().equals( RepositoryIndex.FLD_PACKAGING ) )
+                {
+                    assertEquals( "jar", (String) entry.getValue() );
+                }
+            }
+        }
+
+        returnList = searchLayer.searchGeneral( "test" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            assertEquals( result.getArtifact().getGroupId(), "test" );
+        }
+
+        returnList = searchLayer.searchGeneral( "test-artifactId" );
+        for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            assertEquals( result.getArtifact().getArtifactId(), "test-artifactId" );
+        }
+
     }
+
 
     /**
      * Method for creating RepositoryMetadata object

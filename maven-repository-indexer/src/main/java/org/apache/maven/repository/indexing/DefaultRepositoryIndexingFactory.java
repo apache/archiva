@@ -66,11 +66,11 @@ public class DefaultRepositoryIndexingFactory
     }
 
     /*
-     * @see RepositoryIndexingFactory#createGeneralRepositoryIndexSearcher(RepositoryIndex)
+     * @see RepositoryIndexingFactory#createRepositoryIndexSearchLayer(RepositoryIndex)
      */
-    public GeneralRepositoryIndexSearcher createGeneralRepositoryIndexSearcher( RepositoryIndex index )
+    public RepositoryIndexSearchLayer createRepositoryIndexSearchLayer( RepositoryIndex index )
     {
-        return new GeneralRepositoryIndexSearcher( index, artifactFactory );
+        return new RepositoryIndexSearchLayer( index, artifactFactory );
     }
 
     /**
