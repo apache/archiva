@@ -27,7 +27,13 @@ import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryM
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ArtifactPomRewriter;
+import org.apache.maven.model.converter.ModelConverter;
+import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.converter.transaction.FileTransaction;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.reporting.ArtifactReporter;
@@ -45,6 +51,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.regex.Matcher;
 
 /**
@@ -70,6 +77,11 @@ public class DefaultRepositoryConverter
      * @plexus.requirement
      */
     private ArtifactPomRewriter rewriter;
+
+    /**
+     * @plexus.requirement
+     */
+    private ModelConverter translator;
 
     /**
      * @plexus.configuration default-value="false"
@@ -98,9 +110,9 @@ public class DefaultRepositoryConverter
         {
             FileTransaction transaction = new FileTransaction();
 
-            if ( copyArtifact( artifact, targetRepository, reporter, transaction ) )
+            if ( copyPom( artifact, targetRepository, reporter, transaction ) )
             {
-                if ( copyPom( artifact, targetRepository, reporter, transaction ) )
+                if ( copyArtifact( artifact, targetRepository, reporter, transaction ) )
                 {
                     Metadata metadata = createBaseMetadata( artifact );
                     Versioning versioning = new Versioning();
@@ -396,15 +408,29 @@ public class DefaultRepositoryConverter
                 StringWriter writer = null;
                 try
                 {
-                    writer = new StringWriter();
+                    MavenXpp3Reader v3Reader = new MavenXpp3Reader();
+                    org.apache.maven.model.v3_0_0.Model v3Model = v3Reader.read( stringReader );
 
-                    // TODO: this api could be improved - is it worth having or go back to modelConverter?
-                    rewriter.rewrite( stringReader, writer, false, artifact.getGroupId(), artifact.getArtifactId(),
-                                      artifact.getVersion(), artifact.getType() );
+                    if ( doRelocation( artifact, v3Model, targetRepository, transaction ) )
+                    {
+                        Artifact relocatedPom = artifactFactory.createProjectArtifact( artifact.getGroupId(),
+                                                                                       artifact.getArtifactId(),
+                                                                                       artifact.getVersion() );
+                        targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
+                    }
+
+                    Model v4Model = translator.translate( v3Model );
+
+                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(),
+                                                 v3Model.getVersion(), v3Model.getPackage() );
+
+                    writer = new StringWriter();
+                    MavenXpp3Writer Xpp3Writer = new MavenXpp3Writer();
+                    Xpp3Writer.write( writer, v4Model );
 
                     transaction.createFile( writer.toString(), targetFile );
 
-                    List warnings = rewriter.getWarnings();
+                    List warnings = translator.getWarnings();
 
                     for ( Iterator i = warnings.iterator(); i.hasNext(); )
                     {
@@ -432,6 +458,101 @@ public class DefaultRepositoryConverter
             reporter.addWarning( artifact, getI18NString( "warning.missing.pom" ) );
         }
         return result;
+    }
+
+    private boolean doRelocation( Artifact artifact, org.apache.maven.model.v3_0_0.Model v3Model,
+                                  ArtifactRepository repository, FileTransaction transaction )
+        throws IOException
+    {
+        Properties properties = v3Model.getProperties();
+        if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" ) ||
+            properties.containsKey( "relocated.version" ) )
+        {
+            String newGroupId = v3Model.getGroupId();
+            if ( properties.containsKey( "relocated.groupId" ) )
+            {
+                newGroupId = properties.getProperty( "relocated.groupId" );
+                properties.remove( "relocated.groupId" );
+            }
+
+            String newArtifactId = v3Model.getArtifactId();
+            if ( properties.containsKey( "relocated.artifactId" ) )
+            {
+                newArtifactId = properties.getProperty( "relocated.artifactId" );
+                properties.remove( "relocated.artifactId" );
+            }
+
+            String newVersion = v3Model.getVersion();
+            if ( properties.containsKey( "relocated.version" ) )
+            {
+                newVersion = properties.getProperty( "relocated.version" );
+                properties.remove( "relocated.version" );
+            }
+
+            String message = "";
+            if ( properties.containsKey( "relocated.message" ) )
+            {
+                message = properties.getProperty( "relocated.message" );
+                properties.remove( "relocated.message" );
+            }
+
+            if ( properties.isEmpty() )
+            {
+                v3Model.setProperties( null );
+            }
+
+            writeRelocationPom( v3Model.getGroupId(), v3Model.getArtifactId(), v3Model.getVersion(), newGroupId,
+                                newArtifactId, newVersion, message, repository, transaction );
+
+            v3Model.setGroupId( newGroupId );
+            v3Model.setArtifactId( newArtifactId );
+            v3Model.setVersion( newVersion );
+
+            artifact.setGroupId( newGroupId );
+            artifact.setArtifactId( newArtifactId );
+            artifact.setVersion( newVersion );
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void writeRelocationPom( String groupId, String artifactId, String version, String newGroupId,
+                                     String newArtifactId, String newVersion, String message,
+                                     ArtifactRepository repository, FileTransaction transaction )
+        throws IOException
+    {
+        Model pom = new Model();
+        pom.setGroupId( groupId );
+        pom.setArtifactId( artifactId );
+        pom.setVersion( version );
+
+        DistributionManagement dMngt = new DistributionManagement();
+
+        Relocation relocation = new Relocation();
+        relocation.setGroupId( newGroupId );
+        relocation.setArtifactId( newArtifactId );
+        relocation.setVersion( newVersion );
+        if ( message != null && message.length() > 0 )
+        {
+            relocation.setMessage( message );
+        }
+
+        dMngt.setRelocation( relocation );
+
+        pom.setDistributionManagement( dMngt );
+
+        Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" );
+        File pomFile = new File( repository.getBasedir(), repository.pathOf( artifact ) );
+
+        StringWriter strWriter = new StringWriter();
+        MavenXpp3Writer pomWriter = new MavenXpp3Writer();
+        pomWriter.write( strWriter, pom );
+
+        transaction.createFile( strWriter.toString(), pomFile );
     }
 
     private String getI18NString( String key, String arg0 )

@@ -82,7 +82,7 @@ public class RepositoryConverterTest
         layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         File targetBase = getTestFile( "target/test-target-repository" );
-        FileUtils.copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
+        copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
         targetRepository =
             factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null, null );
@@ -182,6 +182,39 @@ public class RepositoryConverterTest
         expectedMetadataFile = getTestFile( "src/test/expected-files/v3-version-metadata.xml" );
 
         compareFiles( expectedMetadataFile, versionMetadataFile );
+    }
+
+    public void testV3PomConvertWithRelocation()
+        throws RepositoryConversionException, IOException
+    {
+        Artifact artifact = createArtifact( "test", "relocated-v3artifact", "1.0.0" );
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        artifactMetadataFile.delete();
+
+        ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
+        File versionMetadataFile = new File( targetRepository.getBasedir(),
+                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        versionMetadataFile.delete();
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        //checkSuccess();  --> commented until MNG-2100 is fixed
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check if relocated artifact created", artifactFile.exists() );
+        assertTrue( "Check if relocated artifact matches",
+                    FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Artifact pomArtifact = createArtifact( "relocated-test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
+        File pomFile = getTestFile( "src/test/target-repository/" + targetRepository.pathOf( pomArtifact ) );
+        File testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
+        assertTrue( "Check if expected relocated pom matches", FileUtils.contentEquals( pomFile, testFile ) );
+
+        Artifact orig = createArtifact( "test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
+        artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( orig ) );
+        assertTrue( "Check if relocation artifact pom is created", artifactFile.exists() );
+        testFile = getTestFile( "src/test/target-repository/" + targetRepository.pathOf( orig ) );
+        assertTrue( "Check if expected artifact matches", FileUtils.contentEquals( artifactFile, testFile ) );
     }
 
     public void testV3PomWarningsOnConvert()
@@ -661,7 +694,7 @@ public class RepositoryConverterTest
 
         repositoryConverter.convert( artifact, targetRepository, reporter );
         checkFailure();
-        String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replace( "{0}", "(.*?)" ) + "$";
+        String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replaceFirst( "\\{0\\}", ".*" ) + "$";
         assertTrue( "Check failure message", getFailure().getReason().matches( pattern ) );
 
         assertFalse( "check artifact rolled back", artifactFile.exists() );
@@ -891,4 +924,51 @@ public class RepositoryConverterTest
             factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
     }
 
+    private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
+        throws IOException
+    {
+        if ( !sourceDirectory.exists() )
+        {
+            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.getAbsolutePath() + ")." );
+        }
+
+        File[] files = sourceDirectory.listFiles();
+
+        String sourcePath = sourceDirectory.getAbsolutePath();
+
+        for ( int i = 0; i < files.length; i++ )
+        {
+            File file = files[i];
+
+            String dest = file.getAbsolutePath();
+
+            dest = dest.substring( sourcePath.length() + 1 );
+
+            File destination = new File( destinationDirectory, dest );
+
+            if ( file.isFile() )
+            {
+                destination = destination.getParentFile();
+
+                FileUtils.copyFileToDirectory( file, destination );
+            }
+            else if ( file.isDirectory() )
+            {
+                if ( !file.getName().equals( ".svn" ) )
+                {
+                    if ( !destination.exists() && !destination.mkdirs() )
+                    {
+                        throw new IOException(
+                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                    }
+
+                    copyDirectoryStructure( file, destination );
+                }
+            }
+            else
+            {
+                throw new IOException( "Unknown file type: " + file.getAbsolutePath() );
+            }
+        }
+    }
 }
