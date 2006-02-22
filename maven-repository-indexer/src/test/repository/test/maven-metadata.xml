@@ -1,9 +1,9 @@
 <metadata>
-<groupId>test</groupId>
-<plugins>
-  <plugin>
-    <prefix></prefix>
-    <artifactId>test-test-plugin</artifactId>
-  </plugin>
-</plugins>
+  <groupId>test</groupId>
+  <plugins>
+    <plugin>
+      <prefix></prefix>
+      <artifactId>test-test-plugin</artifactId>
+    </plugin>
+  </plugins>
 </metadata>

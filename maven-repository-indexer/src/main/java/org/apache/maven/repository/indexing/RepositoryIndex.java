@@ -19,8 +19,8 @@ package org.apache.maven.repository.indexing;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Edwin Punzalan

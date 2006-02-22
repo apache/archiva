@@ -18,8 +18,8 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.maven.artifact.Artifact;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the object type contained in the list that will be returned by the
