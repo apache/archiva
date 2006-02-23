@@ -208,13 +208,13 @@ public class RepositoryConverterTest
         Artifact pomArtifact = createArtifact( "relocated-test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
         File pomFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( pomArtifact ) );
         File testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
-        assertTrue( "Check if expected relocated pom matches", FileUtils.contentEquals( pomFile, testFile ) );
+        compareFiles( pomFile, testFile );
 
         Artifact orig = createArtifact( "test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
         artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( orig ) );
         assertTrue( "Check if relocation artifact pom is created", artifactFile.exists() );
         testFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( orig ) );
-        assertTrue( "Check if expected artifact matches", FileUtils.contentEquals( artifactFile, testFile ) );
+        compareFiles( artifactFile, testFile );
     }
 
     public void testV3PomWarningsOnConvert()
