@@ -25,11 +25,6 @@
       <!-- TODO: actually, just exclude from WAR plugin -->
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-quartz</artifactId>
-      <version>1.0-alpha-2-SNAPSHOT</version>
-    </dependency>
   </dependencies>
   <build>
     <finalName>maven-repository-webapp</finalName>
