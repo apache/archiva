@@ -30,4 +30,9 @@
   <welcome-file-list>
     <welcome-file>index.action</welcome-file>
   </welcome-file-list>
+
+  <taglib>
+    <taglib-uri>webwork</taglib-uri>
+    <taglib-location>/WEB-INF/lib/webwork-2.1.7.jar</taglib-location>
+  </taglib>
 </web-app>

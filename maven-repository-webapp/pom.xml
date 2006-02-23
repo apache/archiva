@@ -21,6 +21,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.repository</groupId>
       <artifactId>maven-repository-artifact-applet</artifactId>
       <!-- TODO: actually, just exclude from WAR plugin -->
       <scope>provided</scope>
@@ -38,8 +42,8 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty6-plugin</artifactId>
         <configuration>
+          <webAppSourceDirectory>${basedir}/target/${artifactId}</webAppSourceDirectory >
           <scanIntervalSeconds>10</scanIntervalSeconds>
-          <contextPath>/</contextPath>
         </configuration>
       </plugin>
       <plugin>
