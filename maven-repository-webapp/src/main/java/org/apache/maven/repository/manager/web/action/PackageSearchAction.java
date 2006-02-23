@@ -26,6 +26,8 @@ import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.codehaus.plexus.scheduler.Scheduler;
+import org.codehaus.plexus.scheduler.configuration.SchedulerConfiguration;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,6 +45,11 @@ public class PackageSearchAction
     private String packageName;
 
     private String md5;
+
+    /**
+     * @plexus.requirement
+     */
+    private Scheduler scheduler;
 
     /**
      * @plexus.requirement
