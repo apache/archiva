@@ -21,11 +21,11 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.codehaus.plexus.scheduler.Scheduler;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -43,6 +43,11 @@ public class PackageSearchAction
     private String packageName;
 
     private String md5;
+
+    /**
+     * @plexus.requirement
+     */
+    private Scheduler scheduler;
 
     /**
      * @plexus.requirement
@@ -91,8 +96,6 @@ public class PackageSearchAction
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         DefaultRepositoryIndexSearcher searcher = factory.createDefaultRepositoryIndexSearcher( index );
-
-        artifacts = searcher.search( new SinglePhraseQuery( key, searchTerm ) );
 
         return SUCCESS;
     }
