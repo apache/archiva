@@ -356,6 +356,29 @@ public class DefaultArtifactDiscovererTest
         }
     }
 
+    public void testStandalonePoms()
+    {
+        List artifacts = discoverer.discoverStandalonePoms( repository, null, false );
+        assertEquals( 4, artifacts.size() );
+        Iterator itr = artifacts.iterator();
+        Artifact artifact = (Artifact) itr.next();
+        assertEquals( "org.apache.maven", artifact.getGroupId() );
+        assertEquals( "B", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+        artifact = (Artifact) itr.next();
+        assertEquals( "org.apache.maven", artifact.getGroupId() );
+        assertEquals( "B", artifact.getArtifactId() );
+        assertEquals( "2.0", artifact.getVersion() );
+        artifact = (Artifact) itr.next();
+        assertEquals( "org.apache.maven", artifact.getGroupId() );
+        assertEquals( "discovery", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+        artifact = (Artifact) itr.next();
+        assertEquals( "org.apache.testgroup", artifact.getGroupId() );
+        assertEquals( "discovery", artifact.getArtifactId() );
+        assertEquals( "1.0", artifact.getVersion() );
+    }
+
     private Artifact createArtifact( String groupId, String artifactId, String version )
     {
         return factory.createArtifact( groupId, artifactId, version, null, "jar" );
