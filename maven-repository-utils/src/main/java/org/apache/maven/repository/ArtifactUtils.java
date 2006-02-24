@@ -57,9 +57,11 @@ public class ArtifactUtils
 
         Collections.reverse( pathParts );
 
-        Artifact finalResult = null;
+        Artifact artifact = null;
         if ( pathParts.size() >= 4 )
         {
+            // maven 2.x path
+
             // the actual artifact filename.
             String filename = (String) pathParts.remove( 0 );
 
@@ -162,7 +164,7 @@ public class ArtifactUtils
                         }
                         else
                         {
-                            finalResult = result;
+                            artifact = result;
                         }
                     }
                     else if ( !remainingFilename.startsWith( version ) )
@@ -178,18 +180,41 @@ public class ArtifactUtils
                         else
                         {
                             classifier = remainingFilename.substring( version.length() + 1 );
-                            finalResult = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
+                            artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
                                                                                         type, classifier );
                         }
                     }
                     else
                     {
-                        finalResult = result;
+                        artifact = result;
                     }
                 }
             }
         }
+        else if ( pathParts.size() == 3 )
+        {
+            //maven 1.x path
 
-        return finalResult;
+            String filename = (String) pathParts.remove( 0 );
+
+            int idx = filename.lastIndexOf( '-' );
+            if ( idx > 0 )
+            {
+                String version = filename.substring( idx + 1 );
+
+                String artifactId = filename.substring( 0, idx );
+
+                String types = (String) pathParts.remove( 0 );
+
+                // remove the "s" in types
+                String type = types.substring( 0, types.length() -1 );
+
+                String groupId = (String) pathParts.remove( 0 );
+
+                artifact = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
+            }
+        }
+
+        return artifact;
     }
 }
