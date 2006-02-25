@@ -40,7 +40,7 @@ public class LegacyProxyManagerTest
         super.setUp();
 
         ProxyManagerFactory factory = (ProxyManagerFactory) container.lookup( ProxyManagerFactory.ROLE );
-        proxy = factory.getProxyManager( "default", getTestConfiguration() );
+        proxy = factory.getProxyManager( "legacy", getTestConfiguration() );
     }
 
     public void testExceptions()
@@ -135,7 +135,7 @@ public class LegacyProxyManagerTest
     {
         ProxyConfiguration config = (ProxyConfiguration) container.lookup( ProxyConfiguration.ROLE );
 
-        config.setRepositoryCachePath( "target/proxy-cache" );
+        config.setRepositoryCachePath( "target/m1-proxy-cache" );
 
         ArtifactRepositoryLayout layout = new LegacyRepositoryLayout();
 
