@@ -49,7 +49,8 @@ public class ProxyManagerFactory
     public ProxyManager getProxyManager( String proxy_type, ProxyConfiguration config )
         throws ComponentLookupException
     {
-        ProxyManager proxy = (ProxyManager) container.lookup( ProxyManager.ROLE, proxy_type );
+        ProxyManager proxy = (ProxyManager) container.lookup( ProxyManager.ROLE );
+        config.setLayout( proxy_type );
         proxy.setConfiguration( config );
         return proxy;
     }

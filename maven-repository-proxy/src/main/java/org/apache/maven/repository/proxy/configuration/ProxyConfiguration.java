@@ -21,6 +21,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 
 import java.io.File;
@@ -51,6 +52,8 @@ public class ProxyConfiguration
     private ArtifactRepository repoCache;
 
     private List repositories = new ArrayList();
+
+    private ArtifactRepositoryLayout layout;
 
     /**
      * Method to set/unset the web-view of the repository cache
@@ -83,11 +86,9 @@ public class ProxyConfiguration
         standardPolicy = new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS,
                                                        ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE );
 
-        ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
-
         repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache",
                                                                         "file://" + new File( path ).getAbsolutePath(),
-                                                                        layout, standardPolicy, standardPolicy );
+                                                                        getLayout(), standardPolicy, standardPolicy );
     }
 
     /**
@@ -159,7 +160,6 @@ public class ProxyConfiguration
         this.setBrowsable( rcc.isBrowsable() );
 
         List repoList = new ArrayList();
-        ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
         for ( Iterator repos = rcc.getRepos().iterator(); repos.hasNext(); )
         {
             RepoConfiguration repoConfig = (RepoConfiguration) repos.next();
@@ -167,7 +167,7 @@ public class ProxyConfiguration
             //skip local store repo
             if ( !repoConfig.getKey().equals( "global" ) )
             {
-                ProxyRepository repo = new ProxyRepository( repoConfig.getKey(), repoConfig.getUrl(), layout );
+                ProxyRepository repo = new ProxyRepository( repoConfig.getKey(), repoConfig.getUrl(), getLayout() );
                 repo.setCacheFailures( repoConfig.getCacheFailures() );
                 repo.setCachePeriod( repoConfig.getCachePeriod() );
                 repo.setHardfail( repoConfig.getHardFail() );
@@ -185,5 +185,27 @@ public class ProxyConfiguration
         }
 
         this.setRepositories( repoList );
+    }
+
+    public ArtifactRepositoryLayout getLayout()
+    {
+        if ( layout == null )
+        {
+            setLayout( "default" );
+        }
+
+        return layout;
+    }
+
+    public void setLayout( String layout )
+    {
+        if ( "legacy".equalsIgnoreCase( layout ) )
+        {
+            this.layout = new LegacyRepositoryLayout();
+        }
+        else
+        {
+            this.layout = new DefaultRepositoryLayout();
+        }
     }
 }

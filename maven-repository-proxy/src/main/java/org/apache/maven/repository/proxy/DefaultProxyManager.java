@@ -49,7 +49,7 @@ import java.util.Map;
 
 /**
  * @author Edwin Punzalan
- * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager" role-hint="default"
+ * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
  */
 public class DefaultProxyManager
     extends AbstractLogEnabled
