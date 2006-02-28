@@ -102,7 +102,7 @@ public class ArtifactRepositoryIndexingTest
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
         try
         {
-            indexer.isIndexed( new Object() );
+            indexer.deleteIfIndexed( new Object() );
             fail( "Must throw exception on object not of type artifact." );
         }
         catch ( RepositoryIndexException e )

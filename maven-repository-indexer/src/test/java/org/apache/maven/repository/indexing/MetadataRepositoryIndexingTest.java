@@ -235,7 +235,7 @@ public class MetadataRepositoryIndexingTest
 
         try
         {
-            indexer.isIndexed( new Object() );
+            indexer.deleteIfIndexed( new Object() );
             fail( "Must throw exception when the passed object is not of type metadata." );
         }
         catch ( RepositoryIndexException e )

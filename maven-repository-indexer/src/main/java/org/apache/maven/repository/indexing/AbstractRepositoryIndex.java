@@ -43,8 +43,6 @@ public abstract class AbstractRepositoryIndex
 
     protected ArtifactRepository repository;
 
-    protected boolean indexExists;
-
     private Analyzer analyzer;
 
     /**
@@ -71,7 +69,7 @@ public abstract class AbstractRepositoryIndex
     {
         try
         {
-            if ( indexExists )
+            if ( indexExists() )
             {
                 indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
             }
@@ -234,21 +232,22 @@ public abstract class AbstractRepositoryIndex
     /**
      * Check if the index already exists.
      *
+     * @return true if the index already exists
      * @throws IOException
      * @throws RepositoryIndexException
      */
-    protected void checkIfIndexExists()
+    protected boolean indexExists()
         throws IOException, RepositoryIndexException
     {
         File indexDir = new File( indexPath );
 
         if ( IndexReader.indexExists( indexDir ) )
         {
-            indexExists = true;
+            return true;
         }
         else if ( !indexDir.exists() )
         {
-            indexExists = false;
+            return false;
         }
         else if ( indexDir.isDirectory() )
         {
@@ -261,13 +260,13 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * Checks if the object has already been indexed.
+     * Checks if the object has already been indexed and deletes it if it is.
      *
      * @param object the object to be indexed.
      * @throws RepositoryIndexException
      * @throws IOException
      */
-    abstract void isIndexed( Object object )
+    abstract void deleteIfIndexed( Object object )
         throws RepositoryIndexException, IOException;
 
     /**

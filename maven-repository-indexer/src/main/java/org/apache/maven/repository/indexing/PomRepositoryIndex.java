@@ -67,16 +67,15 @@ public class PomRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
+     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#deleteIfIndexed(Object)
      */
-    public void isIndexed( Object object )
+    public void deleteIfIndexed( Object object )
         throws RepositoryIndexException, IOException
     {
         if ( object instanceof Model )
         {
             Model pom = (Model) object;
-            checkIfIndexExists();
-            if ( indexExists )
+            if ( indexExists() )
             {
                 validateIndex( FIELDS );
                 deleteDocument( FLD_ID, POM + ":" + pom.getId() );
@@ -152,7 +151,7 @@ public class PomRepositoryIndex
 
         try
         {
-            isIndexed( pom );
+            deleteIfIndexed( pom );
             if ( !isOpen() )
             {
                 open();

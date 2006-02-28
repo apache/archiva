@@ -170,7 +170,7 @@ public class MetadataRepositoryIndex
 
         try
         {
-            isIndexed( repoMetadata );
+            deleteIfIndexed( repoMetadata );
             if ( !isOpen() )
             {
                 open();
@@ -184,16 +184,15 @@ public class MetadataRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#isIndexed(Object)
+     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#deleteIfIndexed(Object)
      */
-    public void isIndexed( Object object )
+    public void deleteIfIndexed( Object object )
         throws RepositoryIndexException, IOException
     {
         if ( object instanceof RepositoryMetadata )
         {
             RepositoryMetadata repoMetadata = (RepositoryMetadata) object;
-            checkIfIndexExists();
-            if ( indexExists )
+            if ( indexExists() )
             {
                 validateIndex( FIELDS );
                 deleteDocument( FLD_ID, (String) repoMetadata.getKey() );

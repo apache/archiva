@@ -102,7 +102,7 @@ public class PomRepositoryIndexingTest
         PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
         try
         {
-            indexer.isIndexed( new Object() );
+            indexer.deleteIfIndexed( new Object() );
             fail( "Must throw exception when the passed object is not of type model." );
         }
         catch ( RepositoryIndexException e )

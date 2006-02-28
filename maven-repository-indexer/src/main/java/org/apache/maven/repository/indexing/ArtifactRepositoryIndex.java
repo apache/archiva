@@ -57,16 +57,15 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * @see AbstractRepositoryIndex#isIndexed(Object)
+     * @see AbstractRepositoryIndex#deleteIfIndexed(Object)
      */
-    public void isIndexed( Object object )
+    public void deleteIfIndexed( Object object )
         throws RepositoryIndexException, IOException
     {
         if ( object instanceof Artifact )
         {
             Artifact artifact = (Artifact) object;
-            checkIfIndexExists();
-            if ( indexExists )
+            if ( indexExists() )
             {
                 validateIndex( FIELDS );
                 deleteDocument( FLD_ID, ARTIFACT + ":" + artifact.getId() );
@@ -162,7 +161,7 @@ public class ArtifactRepositoryIndex
 
         try
         {
-            isIndexed( artifact );
+            deleteIfIndexed( artifact );
             if ( !isOpen() )
             {
                 open();
@@ -197,7 +196,7 @@ public class ArtifactRepositoryIndex
                 {
                     idx = 0;
                 }
-                String classname = name.substring( idx, name.length() - 6 );
+                String classname = name.substring( idx + 1, name.length() - 6 );
                 classes.append( classname ).append( "\n" );
                 isAdded = true;
             }
