@@ -18,6 +18,8 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -25,6 +27,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 
 /**
@@ -288,5 +291,72 @@ public abstract class AbstractRepositoryIndex
     public boolean isKeywordField( String field )
     {
         return KEYWORD_FIELDS.contains( field );
+    }
+
+    private class ArtifactRepositoryIndexAnalyzer
+        extends Analyzer
+    {
+        private Analyzer defaultAnalyzer;
+
+        /**
+         * constructor to for this analyzer
+         *
+         * @param defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
+         */
+        public ArtifactRepositoryIndexAnalyzer( Analyzer defaultAnalyzer )
+        {
+            this.defaultAnalyzer = defaultAnalyzer;
+        }
+
+        /**
+         * Method called by lucence during indexing operations
+         *
+         * @param fieldName the field name that the lucene object is currently processing
+         * @param reader    a Reader object to the index stream
+         * @return an analyzer to specific to the field name or the default analyzer if none is present
+         */
+        public TokenStream tokenStream( String fieldName, Reader reader )
+        {
+            TokenStream tokenStream;
+
+            if ( RepositoryIndex.FLD_VERSION.equals( fieldName ) || RepositoryIndex.FLD_LASTUPDATE.equals( fieldName ) )
+            {
+                tokenStream = new VersionTokenizer( reader );
+            }
+            else
+            {
+                tokenStream = defaultAnalyzer.tokenStream( fieldName, reader );
+            }
+
+            return tokenStream;
+        }
+
+        /**
+         * Class used to tokenize an artifact's version.
+         */
+        private class VersionTokenizer
+            extends CharTokenizer
+        {
+            /**
+             * Constructor with the required reader to the index stream
+             *
+             * @param reader the Reader object of the index stream
+             */
+            VersionTokenizer( Reader reader )
+            {
+                super( reader );
+            }
+
+            /**
+             * method that lucene calls to check tokenization of a stream character
+             *
+             * @param character char currently being processed
+             * @return true if the char is a token, false if the char is a stop char
+             */
+            protected boolean isTokenChar( char character )
+            {
+                return character != '.' && character != '-';
+            }
+        }
     }
 }
