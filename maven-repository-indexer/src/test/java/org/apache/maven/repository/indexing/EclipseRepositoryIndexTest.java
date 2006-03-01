@@ -76,6 +76,7 @@ public class EclipseRepositoryIndexTest
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.getFile().setLastModified( 1137381114096L );
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
