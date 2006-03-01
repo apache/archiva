@@ -21,13 +21,12 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.scheduler.Scheduler;
-import org.codehaus.plexus.scheduler.configuration.SchedulerConfiguration;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -89,7 +88,7 @@ public class PackageSearchAction
         }
 
         // TODO: better config
-        String indexPath = "c:/home/brett/repository/.index";
+        String indexPath = "C:/0John/java/projects/repository-manager/maven-repository-indexer/target/index";
 
         // TODO: reduce the amount of lookup?
         ArtifactRepository repository = repositoryFactory.createArtifactRepository( "repository", new File(

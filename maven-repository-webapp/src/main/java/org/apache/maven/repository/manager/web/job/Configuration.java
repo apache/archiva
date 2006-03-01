@@ -1,0 +1,83 @@
+package org.apache.maven.repository.manager.web.job;
+
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+
+import java.util.Properties;
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *
+ */
+public class Configuration
+    implements Initializable
+{
+
+    private Properties props;
+
+    public void initialize()
+        throws InitializationException
+    {
+        System.out.println( "Configuration initialized" );
+    }
+
+    public void setProperties( Properties properties )
+    {
+        this.props = properties;
+    }
+
+    public Properties getProperties()
+    {
+        return props;
+    }
+
+    public ArtifactRepositoryLayout getLayout()
+    {
+        ArtifactRepositoryLayout layout;
+        if ( "legacy".equals( props.getProperty( "layout" ) ) )
+        {
+            layout = new LegacyRepositoryLayout();
+        }
+        else
+        {
+            layout = new DefaultRepositoryLayout();
+        }
+        return layout;
+    }
+
+    public String getIndexDirectory()
+    {
+        return props.getProperty( "index.path" );
+    }
+
+    public String getRepositoryDirectory()
+    {
+        String repositoryDir = "";
+        if ( "default".equals( props.getProperty( "layout" ) ) )
+        {
+            repositoryDir = props.getProperty( "default.repository.dir" );
+        }
+        else if ( "legacy".equals( props.getProperty( "layout" ) ) )
+        {
+            repositoryDir = props.getProperty( "legacy.repository.dir" );
+        }
+        return repositoryDir;
+    }
+}

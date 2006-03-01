@@ -84,6 +84,13 @@
 <!--"END_CONVERTED_APPLET"-->
 </p>
 
+<p>Search:
+  <form action="searchg.action">
+    <input name="searchString" type="text"/>
+    <input type="submit" value="Search"/>
+  </form>
+</p>
+
 <p>Search by Java Package:
   <form action="search.action">
     <input name="packageName" type="text"/>

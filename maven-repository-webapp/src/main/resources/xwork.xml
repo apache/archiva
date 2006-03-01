@@ -31,6 +31,11 @@
       <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
 
+    <action name="searchg" class="org.apache.maven.repository.manager.web.action.GeneralSearchAction">
+      <result name="success" type="dispatcher">/WEB-INF/jsp/generalresults.jsp</result>
+      <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+    </action>
+
     <action name="search" class="org.apache.maven.repository.manager.web.action.PackageSearchAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/results.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
