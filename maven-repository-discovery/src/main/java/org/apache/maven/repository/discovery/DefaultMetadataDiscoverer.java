@@ -17,16 +17,13 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -46,12 +43,17 @@ import java.util.StringTokenizer;
 /**
  * This class gets all the paths that contain the metadata files.
  *
- * @plexus.component role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="default" instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultMetadataDiscoverer"
  */
 public class DefaultMetadataDiscoverer
     extends AbstractArtifactDiscoverer
     implements MetadataDiscoverer
 {
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactFactory artifactFactory;
+
     /**
      * Standard patterns to include in discovery of metadata files.
      */
@@ -126,20 +128,33 @@ public class DefaultMetadataDiscoverer
             Iterator it = pathParts.iterator();
             String tmpDir = (String) it.next();
 
-            ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            VersionRange version = VersionRange.createFromVersion( metaVersion );
-            Artifact artifact =
-                new DefaultArtifact( metaGroupId, metaArtifactId, version, "compile", "jar", "", handler );
+            //ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+            //if( metaVersion != null && !metaVersion.equals( "" ) )
+            //{
+            //   VersionRange version = VersionRange.createFromVersion( metaVersion );
+            //}
+
+            Artifact artifact = null;
+            if ( metaVersion != null && !metaVersion.equals( "" ) )
+            {
+                artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
+            }
 
             // snapshotMetadata
-            if ( tmpDir.equals( metaVersion ) )
+            if ( tmpDir != null && tmpDir.equals( metaVersion ) )
             {
-                metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+                if ( artifact != null )
+                {
+                    metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+                }
             }
-            else if ( tmpDir.equals( metaArtifactId ) )
+            else if ( tmpDir != null && tmpDir.equals( metaArtifactId ) )
             {
                 // artifactMetadata
-                metadata = new ArtifactRepositoryMetadata( artifact );
+                if ( artifact != null )
+                {
+                    metadata = new ArtifactRepositoryMetadata( artifact );
+                }
             }
             else
             {
@@ -161,7 +176,7 @@ public class DefaultMetadataDiscoverer
                 }
 
                 // groupMetadata
-                if ( metaGroupId.equals( groupDir ) )
+                if ( metaGroupId != null && metaGroupId.equals( groupDir ) )
                 {
                     metadata = new GroupRepositoryMetadata( metaGroupId );
                 }

@@ -19,9 +19,9 @@ package org.apache.maven.repository.discovery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.repository.ArtifactUtils;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.repository.ArtifactUtils;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
  *
  * @author John Casey
  * @author Brett Porter
- * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="default" instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultArtifactDiscoverer"
  */
 public class DefaultArtifactDiscoverer
     extends AbstractArtifactDiscoverer
@@ -108,13 +108,18 @@ public class DefaultArtifactDiscoverer
                 try
                 {
                     Model model = mavenReader.read( new FileReader( filename ) );
-                    if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
+                    if ( ( model != null ) && ( "pom".equals( model.getPackaging() ) ) )
+                    {
+                        artifacts.add( model );
+                    }
+                    /*if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
                     {
                         if ( convertSnapshots || !pomArtifact.isSnapshot() )
                         {
                             artifacts.add( pomArtifact );
                         }
                     }
+                    */
                 }
                 catch ( Exception e )
                 {

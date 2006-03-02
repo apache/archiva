@@ -17,10 +17,10 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -37,13 +37,14 @@ import java.util.StringTokenizer;
  *
  * @author John Casey
  * @author Brett Porter
- * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="legacy" instantiation-strategy="per-lookup"
+ * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.LegacyArtifactDiscoverer"
  */
 public class LegacyArtifactDiscoverer
     extends AbstractArtifactDiscoverer
     implements ArtifactDiscoverer
 {
     private final static String POM = ".pom";
+
     private final static String DELIM = "\\";
 
     /**
@@ -75,7 +76,8 @@ public class LegacyArtifactDiscoverer
         return artifacts;
     }
 
-    public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns, boolean convertSnapshots )
+    public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns,
+                                        boolean convertSnapshots )
     {
         List artifacts = new ArrayList();
 
@@ -96,7 +98,7 @@ public class LegacyArtifactDiscoverer
                 try
                 {
                     Model model = mavenReader.read( new FileReader( filename ) );
-                    if ( ( pomArtifact != null ) && ( "pom".equals(model.getPackaging()) ) )
+                    if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
                     {
                         if ( convertSnapshots || !pomArtifact.isSnapshot() )
                         {
@@ -104,9 +106,9 @@ public class LegacyArtifactDiscoverer
                         }
                     }
                 }
-                catch (Exception e)
+                catch ( Exception e )
                 {
-                    System.out.println( "error reading file: " +  filename );
+                    System.out.println( "error reading file: " + filename );
                     e.printStackTrace();
                 }
             }

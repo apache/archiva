@@ -17,16 +17,16 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.codehaus.plexus.PlexusTestCase;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
-import java.net.MalformedURLException;
-import java.io.File;
 
 /**
  * Test the legacy artifact discoverer.
@@ -49,7 +49,8 @@ public class LegacyArtifactDiscovererTest
     {
         super.setUp();
 
-        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "legacy" );
+        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE,
+                                                  "org.apache.maven.repository.discovery.LegacyArtifactDiscoverer" );
 
         factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 

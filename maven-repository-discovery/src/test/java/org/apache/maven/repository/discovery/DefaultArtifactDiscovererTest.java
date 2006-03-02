@@ -21,6 +21,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.model.Model;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -49,12 +50,12 @@ public class DefaultArtifactDiscovererTest
     {
         super.setUp();
 
-        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "default" );
+        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE,
+                                                  "org.apache.maven.repository.discovery.DefaultArtifactDiscoverer" );
 
         factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
         File basedir = getTestFile( "src/test/repository" );
-
         ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
@@ -361,19 +362,28 @@ public class DefaultArtifactDiscovererTest
         List artifacts = discoverer.discoverStandalonePoms( repository, null, false );
         assertEquals( 4, artifacts.size() );
         Iterator itr = artifacts.iterator();
-        Artifact artifact = (Artifact) itr.next();
+        //Artifact artifact = (Artifact) itr.next();
+        Model model = (Model) itr.next();
+        Artifact artifact =
+            createArtifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging() );
         assertEquals( "org.apache.maven", artifact.getGroupId() );
         assertEquals( "B", artifact.getArtifactId() );
         assertEquals( "1.0", artifact.getVersion() );
-        artifact = (Artifact) itr.next();
+        model = (Model) itr.next();
+        artifact =
+            createArtifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging() );
         assertEquals( "org.apache.maven", artifact.getGroupId() );
         assertEquals( "B", artifact.getArtifactId() );
         assertEquals( "2.0", artifact.getVersion() );
-        artifact = (Artifact) itr.next();
+        model = (Model) itr.next();
+        artifact =
+            createArtifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging() );
         assertEquals( "org.apache.maven", artifact.getGroupId() );
         assertEquals( "discovery", artifact.getArtifactId() );
         assertEquals( "1.0", artifact.getVersion() );
-        artifact = (Artifact) itr.next();
+        model = (Model) itr.next();
+        artifact =
+            createArtifact( model.getGroupId(), model.getArtifactId(), model.getVersion(), model.getPackaging() );
         assertEquals( "org.apache.testgroup", artifact.getGroupId() );
         assertEquals( "discovery", artifact.getArtifactId() );
         assertEquals( "1.0", artifact.getVersion() );

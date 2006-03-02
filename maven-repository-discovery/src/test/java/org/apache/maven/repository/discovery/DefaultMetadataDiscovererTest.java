@@ -40,7 +40,8 @@ public class DefaultMetadataDiscovererTest
     {
         super.setUp();
 
-        discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE, "default" );
+        discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE,
+                                                  "org.apache.maven.repository.discovery.DefaultMetadataDiscoverer" );
         repositoryLocation = getTestFile( "src/test/repository" );
     }
 
