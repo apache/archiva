@@ -27,8 +27,9 @@
     <default-interceptor-ref name="defaultStack"/>
 
     <!-- Action: Front page -->
-    <action name="index" class="com.opensymphony.xwork.ActionSupport">
+    <action name="index" class="org.apache.maven.repository.manager.web.action.BaseAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+      <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
 
     <action name="searchg" class="org.apache.maven.repository.manager.web.action.GeneralSearchAction">

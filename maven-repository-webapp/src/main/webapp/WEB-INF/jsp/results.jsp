@@ -24,7 +24,7 @@
 
 <h1>Maven Repository Manager</h1>
 
-<%@include file="form.jspf"%>
+<%@ include file="form.jspf" %>
 
 <table>
   <tr>

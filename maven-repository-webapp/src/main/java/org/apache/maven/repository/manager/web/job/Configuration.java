@@ -24,7 +24,7 @@ import java.util.Properties;
  */
 
 /**
- *
+ * This class contains the configuration values to be used by the scheduler
  */
 public class Configuration
     implements Initializable
@@ -32,17 +32,29 @@ public class Configuration
 
     private Properties props;
 
+    /**
+     * @throws InitializationException
+     */
     public void initialize()
         throws InitializationException
     {
-        System.out.println( "Configuration initialized" );
     }
 
+    /**
+     * Set the properties object
+     *
+     * @param properties
+     */
     public void setProperties( Properties properties )
     {
         this.props = properties;
     }
 
+    /**
+     * Returns the properties object
+     *
+     * @return a Properties object that contains the configuration values
+     */
     public Properties getProperties()
     {
         return props;

@@ -24,7 +24,7 @@
 
 <h1>Maven Repository Manager</h1>
 
-<%@include file="form.jspf"%>
+<%@ include file="form.jspf" %>
 
 <table border="1px" cellspacing="0">
   <tr>
@@ -50,8 +50,8 @@
             <tr>
               <td valign="top" width="15%" align="right"><ww:property value="Key"/></td>
               <td valign="top">
-                <ww:iterator value="Value" id="test" status="" >
-                  <ww:property />
+                <ww:iterator value="Value" id="test" status="">
+                  <ww:property/>
                 </ww:iterator>
                 <br/>
               </td>

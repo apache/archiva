@@ -34,30 +34,33 @@
 <!--"CONVERTED_APPLET"-->
 <!-- HTML CONVERTER -->
 <script language="JavaScript" type="text/javascript"><!--
-    var _info = navigator.userAgent;
-    var _ns = false;
-    var _ns6 = false;
-    var _ie = (_info.indexOf("MSIE") > 0 && _info.indexOf("Win") > 0 && _info.indexOf("Windows 3.1") < 0);
+var _info = navigator.userAgent;
+var _ns = false;
+var _ns6 = false;
+var _ie = (_info.indexOf("MSIE") > 0 && _info.indexOf("Win") > 0 && _info.indexOf("Windows 3.1") < 0);
 //--></script>
 
 <comment>
   <script language="JavaScript" type="text/javascript"><!--
-        var _ns = (navigator.appName.indexOf("Netscape") >= 0 && ((_info.indexOf("Win") > 0 && _info.indexOf("Win16") < 0 && java.lang.System.getProperty("os.version").indexOf("3.5") < 0) || (_info.indexOf("Sun") > 0) || (_info.indexOf("Linux") > 0) || (_info.indexOf("AIX") > 0) || (_info.indexOf("OS/2") > 0) || (_info.indexOf("IRIX") > 0)));
-        var _ns6 = ((_ns == true) && (_info.indexOf("Mozilla/5") >= 0));
-//--></script>
+  var _ns = (navigator.appName.indexOf("Netscape") >= 0 && ((_info.indexOf("Win") > 0 && _info.indexOf("Win16") < 0 &&
+                                                             java.lang.System.getProperty("os.version").indexOf("3.5") <
+                                                             0) || (_info.indexOf("Sun") > 0) ||
+                                                            (_info.indexOf("Linux") > 0) ||
+                                                            (_info.indexOf("AIX") > 0) || (_info.indexOf("OS/2") > 0) ||
+                                                            (_info.indexOf("IRIX") > 0)));
+  var _ns6 = ((_ns == true) && (_info.indexOf("Mozilla/5") >= 0));
+  //--></script>
 </comment>
 
 <script language="JavaScript" type="text/javascript"><!--
-    if (_ie == true) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "400" HEIGHT = "20" NAME = "ChecksumApplet"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,5"><noembed><xmp>');
-    else if (_ns == true && _ns6 == false) document.writeln('<embed ' +
-	    'type="application/x-java-applet;version=1.5" \
+if ( _ie ==
+     true ) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "400" HEIGHT = "20" NAME = "ChecksumApplet"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,5"><noembed><xmp>');
+else if ( _ns == true && _ns6 == false ) document.writeln('<embed ' + 'type="application/x-java-applet;version=1.5" \
             CODE = "org/apache/maven/repository/applet/ChecksumApplet.class" \
             ARCHIVE = "maven-repository-artifact-applet.jar" \
             NAME = "ChecksumApplet" \
             WIDTH = "400" \
-            HEIGHT = "20" ' +
-	    'scriptable=false ' +
-	    'pluginspage="http://java.sun.com/products/plugin/index.html#download"><noembed><xmp>');
+            HEIGHT = "20" ' + 'scriptable=false ' + 'pluginspage="http://java.sun.com/products/plugin/index.html#download"><noembed><xmp>');
 //--></script>
 <applet CODE="org/apache/maven/repository/applet/ChecksumApplet.class" ARCHIVE="maven-repository-artifact-applet.jar"
         WIDTH="400" HEIGHT="20" NAME="ChecksumApplet"></xmp>

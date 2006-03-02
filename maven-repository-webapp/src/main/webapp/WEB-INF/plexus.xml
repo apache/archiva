@@ -40,7 +40,7 @@
       <role>com.opensymphony.xwork.ObjectFactory</role>
       <implementation>org.codehaus.plexus.xwork.PlexusObjectFactory</implementation>
     </component>
-                             
+
     <component>
       <role>org.apache.maven.repository.manager.web.job.Configuration</role>
       <implementation>org.apache.maven.repository.manager.web.job.Configuration</implementation>
@@ -52,7 +52,7 @@
           </property>
           <property>
             <name>default.repository.dir</name>
-            <value>C:/TEST_REPOS/repository</value>
+            <value>C:/TEST_REPOS/.m2/repository/</value>
           </property>
           <property>
             <name>legacy.repository.dir</name>
@@ -81,14 +81,6 @@
         </properties>
       </configuration>
     </component>
-
-
-    <!--
-    <component>
-      <role>org.apache.maven.repository.manager.web.job.DiscovererJob</role>
-    </component>
-
-     -->
 
     <!--
      | Logger manager

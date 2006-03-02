@@ -42,7 +42,7 @@
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty6-plugin</artifactId>
         <configuration>
-          <webAppSourceDirectory>${basedir}/target/${artifactId}</webAppSourceDirectory >
+          <webAppSourceDirectory>${basedir}/target/${artifactId}</webAppSourceDirectory>
           <scanIntervalSeconds>10</scanIntervalSeconds>
         </configuration>
       </plugin>
