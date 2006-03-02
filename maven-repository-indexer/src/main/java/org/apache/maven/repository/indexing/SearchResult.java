@@ -20,6 +20,7 @@ import org.apache.maven.artifact.Artifact;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is the object type contained in the list that will be returned by the
@@ -77,5 +78,15 @@ public class SearchResult
     public void setFieldMatches( Map fieldMatches )
     {
         this.fieldMatches = fieldMatches;
+    }
+
+    /**
+     * Getter method for derived value MapEntrySet
+     *
+     * @return Map
+     */
+    public Set getFieldMatchesEntrySet()
+    {
+       return this.fieldMatches.entrySet();
     }
 }
