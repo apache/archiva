@@ -24,9 +24,10 @@ import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.RepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.apache.maven.repository.manager.web.job.Configuration;
+import org.apache.maven.repository.indexing.RepositoryIndex;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -45,6 +46,8 @@ public class PackageSearchAction
 
     private String md5;
 
+    private List searchResult;
+
     /**
      * @plexus.requirement
      */
@@ -59,8 +62,6 @@ public class PackageSearchAction
      * @plexus.requirement
      */
     private Configuration configuration;
-
-    private List artifacts;
 
     public String execute()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -94,9 +95,9 @@ public class PackageSearchAction
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 
-        DefaultRepositoryIndexSearcher searcher = factory.createDefaultRepositoryIndexSearcher( index );
+        RepositoryIndexSearchLayer searchLayer = factory.createRepositoryIndexSearchLayer( index );
 
-        artifacts = searcher.search( new SinglePhraseQuery( key, searchTerm ) );
+        searchResult = searchLayer.searchAdvanced( new SinglePhraseQuery( key, searchTerm ) );
 
         return SUCCESS;
     }
@@ -111,8 +112,8 @@ public class PackageSearchAction
         this.md5 = md5;
     }
 
-    public List getArtifacts()
+    public List getSearchResult()
     {
-        return artifacts;
+        return searchResult;
     }
 }

@@ -26,17 +26,23 @@
 
 <%@ include file="form.jspf" %>
 
-<table>
+<table border="1px" cellspacing="0">
   <tr>
     <th>Group ID</th>
     <th>Artifact ID</th>
     <th>Version</th>
   </tr>
-  <ww:iterator value="artifacts">
+  <ww:iterator value="searchResult">
     <tr>
-      <td><ww:property value="groupId"/></td>
-      <td><ww:property value="artifactId"/></td>
-      <td><ww:property value="version"/></td>
+      <td valign="top">
+        <ww:property value="Artifact.getGroupId()"/>
+      </td>
+      <td valign="top">
+        <ww:property value="Artifact.getArtifactId()"/>
+      </td>
+      <td valign="top">
+        <ww:property value="Artifact.getVersion()"/>
+      </td>
     </tr>
   </ww:iterator>
 </table>
