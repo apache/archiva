@@ -19,14 +19,14 @@ package org.apache.maven.repository.manager.web.action;
 import com.opensymphony.xwork.Action;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
-import org.codehaus.plexus.scheduler.Scheduler;
+import org.apache.maven.repository.manager.web.job.Configuration;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -48,11 +48,6 @@ public class PackageSearchAction
     /**
      * @plexus.requirement
      */
-    private Scheduler scheduler;
-
-    /**
-     * @plexus.requirement
-     */
     private RepositoryIndexingFactory factory;
 
     /**
@@ -61,9 +56,9 @@ public class PackageSearchAction
     private ArtifactRepositoryFactory repositoryFactory;
 
     /**
-     * @plexus.requirement role-hint="legacy"
+     * @plexus.requirement
      */
-    private ArtifactRepositoryLayout layout;
+    private Configuration configuration;
 
     private List artifacts;
 
@@ -75,7 +70,7 @@ public class PackageSearchAction
         if ( packageName != null && packageName.length() != 0 )
         {
             searchTerm = packageName;
-            key = "packages";
+            key = RepositoryIndex.FLD_PACKAGES;
         }
         else if ( md5 != null && md5.length() != 0 )
         {
@@ -88,11 +83,14 @@ public class PackageSearchAction
         }
 
         // TODO: better config
-        String indexPath = "C:/0John/java/projects/repository-manager/maven-repository-indexer/target/index";
+        String indexPath = configuration.getIndexDirectory();
 
         // TODO: reduce the amount of lookup?
-        ArtifactRepository repository = repositoryFactory.createArtifactRepository( "repository", new File(
-            indexPath ).toURL().toString(), layout, null, null );
+        File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
+        String repoDir = repositoryDirectory.toURL().toString();
+
+        ArtifactRepository repository =
+            repositoryFactory.createArtifactRepository( "repository", repoDir, configuration.getLayout(), null, null );
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 

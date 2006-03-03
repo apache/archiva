@@ -50,7 +50,7 @@
             <tr>
               <td valign="top" width="15%" align="right"><ww:property value="Key"/></td>
               <td valign="top">
-                <ww:iterator value="Value" id="test" status="">
+                <ww:iterator value="Value">
                   <ww:property/>
                 </ww:iterator>
                 <br/>
