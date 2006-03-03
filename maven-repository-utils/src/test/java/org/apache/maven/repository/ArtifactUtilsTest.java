@@ -52,7 +52,7 @@ public class ArtifactUtilsTest
 
         Artifact artifact = getArtifactFromPath( testPath );
 
-        assertNull( "Artifact should be null for short paths", artifact );
+        assertNotNull( "Artifact should be null for short paths", artifact );
     }
 
     public void testWrongArtifactId()
@@ -200,7 +200,8 @@ public class ArtifactUtilsTest
 
         assertNotNull( "Artifact path with snapshot and classifier error", artifact );
 
-        assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1", "jar", "javadoc" ), artifact );
+        assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1", "jar", "javadoc" ),
+                      artifact );
     }
 
     private Artifact getArtifactFromPath( String path )
