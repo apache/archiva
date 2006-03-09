@@ -108,7 +108,7 @@ public class LegacyArtifactDiscoverer
                 }
                 catch ( Exception e )
                 {
-                    System.out.println( "error reading file: " + filename );
+                    getLogger().info( "error reading file: " + filename );
                     e.printStackTrace();
                 }
             }

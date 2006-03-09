@@ -98,7 +98,7 @@ public class DiscovererJob
     public void execute( JobExecutionContext context )
         throws JobExecutionException
     {
-        System.out.println( "Start execution of DiscovererJob.." );
+        getLogger().info( "Start execution of DiscovererJob.." );
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
         //configuration values specified in properties file
@@ -149,7 +149,7 @@ public class DiscovererJob
             me.printStackTrace();
         }
 
-        System.out.println( "[DiscovererJob] DiscovererJob has finished executing." );
+        getLogger().info( "[DiscovererJob] DiscovererJob has finished executing." );
     }
 
     /**

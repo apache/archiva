@@ -113,7 +113,7 @@ public class MavenProxyPropertyLoader
 
         if ( rcc.getPrefix().length() == 0 )
         {
-            System.err.println( "Using an empty 'prefix' is deprecated behaviour.  Please set a prefix." );
+            //System.err.println( "Using an empty 'prefix' is deprecated behaviour.  Please set a prefix." );
         }
 
         {
