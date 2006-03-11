@@ -200,7 +200,9 @@ public class ArtifactUtils
             int idx = filename.lastIndexOf( '-' );
             if ( idx > 0 )
             {
-                String version = filename.substring( idx + 1 );
+                String extension = filename.substring( filename.lastIndexOf( '.' ) + 1 );
+
+                String version = filename.substring( idx + 1, filename.lastIndexOf( '.' ) );
 
                 String artifactId = filename.substring( 0, idx );
 
@@ -209,9 +211,12 @@ public class ArtifactUtils
                 // remove the "s" in types
                 String type = types.substring( 0, types.length() -1 );
 
-                String groupId = (String) pathParts.remove( 0 );
+                if ( type.equals( extension ) )
+                {
+                    String groupId = (String) pathParts.remove( 0 );
 
-                artifact = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
+                    artifact = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
+                }
             }
         }
 

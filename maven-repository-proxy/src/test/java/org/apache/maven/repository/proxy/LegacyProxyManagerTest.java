@@ -67,7 +67,7 @@ public class LegacyProxyManagerTest
     {
         //test download
         File file = proxy.get( "/commons-logging/jars/commons-logging-1.0.jar" );
-        assertTrue( "File must be downloaded.", file.exists() );
+        assertTrue( "File must be downloaded: " + file.getAbsolutePath(), file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
 
@@ -135,7 +135,7 @@ public class LegacyProxyManagerTest
     {
         ProxyConfiguration config = (ProxyConfiguration) container.lookup( ProxyConfiguration.ROLE );
 
-        config.setRepositoryCachePath( "target/m1-proxy-cache" );
+        config.setRepositoryCachePath( getTestFile( "target/m1-proxy-cache").getAbsolutePath() );
 
         ArtifactRepositoryLayout layout = new LegacyRepositoryLayout();
 

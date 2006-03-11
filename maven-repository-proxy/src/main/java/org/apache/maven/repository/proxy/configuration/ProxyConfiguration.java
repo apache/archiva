@@ -207,5 +207,10 @@ public class ProxyConfiguration
         {
             this.layout = new DefaultRepositoryLayout();
         }
+
+        if ( repoCache != null )
+        {
+            setRepositoryCachePath( repoCache.getBasedir() );
+        }
     }
 }
