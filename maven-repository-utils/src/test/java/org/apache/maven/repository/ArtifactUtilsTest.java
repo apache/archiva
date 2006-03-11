@@ -52,7 +52,7 @@ public class ArtifactUtilsTest
 
         Artifact artifact = getArtifactFromPath( testPath );
 
-        assertNotNull( "Artifact should be null for short paths", artifact );
+        assertNull( "Artifact should be null for short paths", artifact );
     }
 
     public void testWrongArtifactId()
@@ -205,7 +205,6 @@ public class ArtifactUtilsTest
     }
 
     private Artifact getArtifactFromPath( String path )
-        throws ComponentLookupException
     {
         return ArtifactUtils.buildArtifact( path, factory );
     }
