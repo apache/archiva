@@ -105,6 +105,15 @@ public class DefaultProxyManager
         return getRemoteFile( path, config.getRepositories() );
     }
 
+    /**
+     * Tries to download the path from the list of repositories.
+     *
+     * @param path the request path to download from the proxy or repositories
+     * @param repositories list of ArtifactRepositories to download the path from
+     * @return File object that points to the downloaded file
+     * @throws ProxyException
+     * @throws ResourceDoesNotExistException
+     */
     private File getRemoteFile( String path, List repositories )
         throws ProxyException, ResourceDoesNotExistException
     {
@@ -523,6 +532,14 @@ public class DefaultProxyManager
         }
     }
 
+    /**
+     * Queries the configuration on how to handle a repository download failure
+     *
+     * @param repository the repository object where the failure occurred
+     * @param message the message/reason for the failure
+     * @param t the cause for the exception
+     * @throws ProxyException if hard failure is enabled on the repository causing the failure
+     */
     private void processRepositoryFailure( ProxyRepository repository, String message, Throwable t )
         throws ProxyException
     {
