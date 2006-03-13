@@ -8,10 +8,10 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.LinkedList;
-import java.util.Iterator;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -30,10 +30,21 @@ import java.util.Iterator;
  */
 
 /**
+ * Class used to build an artifact object based on a relative from a repository's basedir.
+ *
  * @author Edwin Punzalan
  */
 public class ArtifactUtils
 {
+    /**
+     * Method used to build an artifact and then set its repository and file fields with the proper values
+     *
+     * @param repositoryBase  the base directory of the repository
+     * @param path            the path of the artifact relative from the repository base directory
+     * @param repository      the repository where the artifact can be found
+     * @param artifactFactory the artifactFactory to build the Artifact object when the given path is a valid artifact path
+     * @return Artifact object if the given path represents an artifact path, otherwise, returns null
+     */
     public static Artifact buildArtifact( File repositoryBase, String path, ArtifactRepository repository,
                                           ArtifactFactory artifactFactory )
     {
@@ -48,6 +59,13 @@ public class ArtifactUtils
         return artifact;
     }
 
+    /**
+     * Method used to build an artifact object using a relative path from a repository base directory.
+     *
+     * @param path            the relative path of the artifact from a "default" ArtifactRepository's base directory
+     * @param artifactFactory the artifactFactory to build the Artifact object when the given path is a valid artifact path
+     * @return Artifact object if the given path represents an artifact path, otherwise, returns null
+     */
     public static Artifact buildArtifact( String path, ArtifactFactory artifactFactory )
     {
         List pathParts = new ArrayList();
@@ -182,8 +200,8 @@ public class ArtifactUtils
                         else
                         {
                             classifier = remainingFilename.substring( version.length() + 1 );
-                            artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
-                                                                                        type, classifier );
+                            artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
+                                                                                     classifier );
                         }
                     }
                     else
@@ -197,6 +215,16 @@ public class ArtifactUtils
         return artifact;
     }
 
+    /**
+     * Method used to build an artifact object using a relative path from a repository base directory.  An artifactId
+     * having the words "DEV", "PRE", "RC", "ALPHA", "BETA", "DEBUG", "UNOFFICIAL", "CURRENT", "LATEST", "FCS",
+     * "RELEASE", "NIGHTLY", "SNAPSHOT" and "TEST" (not case-sensitive) will most likely make this method fail as
+     * they are reserved for version usage.
+     *
+     * @param path            the relative path of the artifact from a "legacy" ArtifactRepository's base directory
+     * @param artifactFactory the artifactFactory to build the Artifact object when the given path is a valid artifact path
+     * @return Artifact object if the given path represents an artifact path, otherwise, returns null
+     */
     public static Artifact buildArtifactFromLegacyPath( String path, ArtifactFactory artifactFactory )
     {
         StringTokenizer tokens = new StringTokenizer( path, "/\\" );
@@ -408,7 +436,8 @@ public class ArtifactUtils
                         {
                             if ( classifierBuffer.length() > 0 )
                             {
-                                result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
+                                result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
+                                                                                       type,
                                                                                        classifierBuffer.toString() );
                             }
                             else
