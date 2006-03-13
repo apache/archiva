@@ -34,14 +34,10 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -65,6 +61,9 @@ public class DefaultProxyManager
      */
     private ArtifactFactory artifactFactory;
 
+    /**
+     * @plexus.requirement
+     */
     private ProxyConfiguration config;
 
     public void setConfiguration( ProxyConfiguration config )
@@ -90,24 +89,7 @@ public class DefaultProxyManager
         File cachedFile = new File( cachePath, path );
         if ( !cachedFile.exists() )
         {
-            getRemoteFile( path );
-        }
-        else
-        {
-            List repos = new ArrayList();
-            for ( Iterator confRepos = config.getRepositories().iterator(); confRepos.hasNext(); )
-            {
-                ProxyRepository repo = (ProxyRepository) confRepos.next();
-                if ( repo.getCachePeriod() > 0 &&
-                    ( repo.getCachePeriod() * 1000 ) + cachedFile.lastModified() < System.currentTimeMillis() )
-                {
-                    repos.add( repo );
-                }
-            }
-            if ( repos.size() > 0 )
-            {
-                getRemoteFile( path, repos );
-            }
+            cachedFile = getRemoteFile( path );
         }
         return cachedFile;
     }
@@ -128,21 +110,36 @@ public class DefaultProxyManager
     {
         checkConfiguration();
 
-        Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
-
-        File remoteFile;
-        if ( artifact != null )
-        {
-            remoteFile = getArtifactFile( artifact, repositories );
-        }
-        else if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
+        File remoteFile = null;
+        if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
         {
             remoteFile = getRepositoryFile( path, repositories, false );
         }
+        else if ( path.endsWith( "maven-metadata.xml" ) )
+        {
+            remoteFile = getRepositoryFile( path, repositories );
+        }
         else
         {
-            // as of now, only metadata fits here
-            remoteFile = getRepositoryFile( path, repositories );
+            Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
+
+            if ( artifact == null )
+            {
+                System.out.println( "Trying legacy path" );
+                artifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
+            }
+
+            if ( artifact != null )
+            {
+                getArtifact( artifact, repositories );
+
+                remoteFile = artifact.getFile();
+            }
+            else
+            {
+                //try downloading non-maven standard files
+                remoteFile = getRepositoryFile( path, repositories );
+            }
         }
 
         return remoteFile;
@@ -153,12 +150,11 @@ public class DefaultProxyManager
      *
      * @param artifact     the artifact object to be downloaded from a remote repository
      * @param repositories the list of ProxyRepositories to retrieve the artifact from
-     * @return File object representing the remote artifact in the repository cache
      * @throws ProxyException                when an error occurred during retrieval of the requested artifact
      * @throws ResourceDoesNotExistException when the requested artifact cannot be found in any of the
      *                                       configured repositories
      */
-    private File getArtifactFile( Artifact artifact, List repositories )
+    private void getArtifact( Artifact artifact, List repositories )
         throws ResourceDoesNotExistException, ProxyException
     {
         ArtifactRepository repoCache = config.getRepositoryCache();
@@ -177,10 +173,7 @@ public class DefaultProxyManager
             {
                 throw new ProxyException( e.getMessage(), e );
             }
-            artifactFile = artifact.getFile();
         }
-
-        return artifactFile;
     }
 
     /**
@@ -234,13 +227,14 @@ public class DefaultProxyManager
 
                 if ( useChecksum )
                 {
-                    checksums = prepareChecksums( wagon );
+                    checksums = prepareChecksumListeners( wagon );
                 }
 
                 connected = connectToRepository( wagon, repository );
                 if ( connected )
                 {
                     File temp = new File( target.getAbsolutePath() + ".tmp" );
+                    temp.deleteOnExit();
 
                     int tries = 0;
                     boolean success = true;
@@ -277,7 +271,7 @@ public class DefaultProxyManager
 
                     if ( temp.exists() )
                     {
-                        copyTempToTarget( temp, target );
+                        moveTempToTarget( temp, target );
                     }
 
                     return target;
@@ -309,7 +303,7 @@ public class DefaultProxyManager
             {
                 if ( wagon != null && checksums != null )
                 {
-                    releaseChecksums( wagon, checksums );
+                    releaseChecksumListeners( wagon, checksums );
                 }
 
                 if ( connected )
@@ -328,7 +322,7 @@ public class DefaultProxyManager
      * @param wagon the wagonManager object to use the checksum with
      * @return map of ChecksumObservers added into the wagonManager transfer listeners
      */
-    private Map prepareChecksums( Wagon wagon )
+    private Map prepareChecksumListeners( Wagon wagon )
     {
         Map checksums = new HashMap();
         try
@@ -354,7 +348,7 @@ public class DefaultProxyManager
      * @param wagon       the wagonManager object to remote the ChecksumObservers from
      * @param checksumMap the map representing the list of ChecksumObservers added to the wagonManager object
      */
-    private void releaseChecksums( Wagon wagon, Map checksumMap )
+    private void releaseChecksumListeners( Wagon wagon, Map checksumMap )
     {
         for ( Iterator checksums = checksumMap.values().iterator(); checksums.hasNext(); )
         {
@@ -401,7 +395,7 @@ public class DefaultProxyManager
     private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon )
         throws ProxyException
     {
-        releaseChecksums( wagon, checksumMap );
+        releaseChecksumListeners( wagon, checksumMap );
         for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
         {
             String checksumExt = (String) checksums.next();
@@ -415,7 +409,7 @@ public class DefaultProxyManager
 
                 wagon.get( checksumPath, tempChecksumFile );
 
-                String remoteChecksum = readTextFile( tempChecksumFile ).trim();
+                String remoteChecksum = FileUtils.fileRead( tempChecksumFile ).trim();
                 if ( remoteChecksum.indexOf( ' ' ) > 0 )
                 {
                     remoteChecksum = remoteChecksum.substring( 0, remoteChecksum.indexOf( ' ' ) );
@@ -424,7 +418,7 @@ public class DefaultProxyManager
                 boolean checksumCheck = false;
                 if ( remoteChecksum.toUpperCase().equals( checksum.getActualChecksum().toUpperCase() ) )
                 {
-                    copyTempToTarget( tempChecksumFile, checksumFile );
+                    moveTempToTarget( tempChecksumFile, checksumFile );
 
                     checksumCheck = true;
                 }
@@ -479,41 +473,6 @@ public class DefaultProxyManager
     }
 
     /**
-     * Used to read text file contents for use with the checksum validation
-     *
-     * @param file The file to be read
-     * @return The String content of the file parameter
-     * @throws IOException when an error occurred while reading the file contents
-     */
-    private String readTextFile( File file )
-        throws IOException
-    {
-        String text = "";
-
-        InputStream fis = new FileInputStream( file );
-        try
-        {
-            byte[] buffer = new byte[ 64 ];
-            int numRead;
-            do
-            {
-                numRead = fis.read( buffer );
-                if ( numRead > 0 )
-                {
-                    text += new String( buffer );
-                }
-            }
-            while ( numRead != -1 );
-        }
-        finally
-        {
-            IOUtil.close( fis );
-        }
-
-        return text;
-    }
-
-    /**
      * Used to move the temporary file to its real destination.  This is patterned from the way WagonManager handles
      * its downloaded files.
      *
@@ -521,7 +480,7 @@ public class DefaultProxyManager
      * @param target The final location of the downloaded file
      * @throws ProxyException when the temp file cannot replace the target file
      */
-    private void copyTempToTarget( File temp, File target )
+    private void moveTempToTarget( File temp, File target )
         throws ProxyException
     {
         if ( target.exists() && !target.delete() )
