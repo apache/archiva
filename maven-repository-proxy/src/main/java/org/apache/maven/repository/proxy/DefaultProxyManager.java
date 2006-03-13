@@ -125,7 +125,6 @@ public class DefaultProxyManager
 
             if ( artifact == null )
             {
-                System.out.println( "Trying legacy path" );
                 artifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
             }
 

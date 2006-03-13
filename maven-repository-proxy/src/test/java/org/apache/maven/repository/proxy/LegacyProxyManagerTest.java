@@ -135,7 +135,7 @@ public class LegacyProxyManagerTest
     {
         ProxyConfiguration config = (ProxyConfiguration) container.lookup( ProxyConfiguration.ROLE );
 
-        config.setRepositoryCachePath( getTestFile( "target/m1-proxy-cache").getAbsolutePath() );
+        config.setRepositoryCachePath( getTestFile( "target/m1-proxy-cache" ).getAbsolutePath() );
 
         ArtifactRepositoryLayout layout = new LegacyRepositoryLayout();
 
