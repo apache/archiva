@@ -16,20 +16,12 @@ package org.apache.maven.repository.proxy.configuration;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
-import org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
+import org.codehaus.plexus.PlexusContainer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -42,38 +34,13 @@ public class ProxyConfiguration
 {
     public static final String ROLE = ProxyConfiguration.class.getName();
 
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactRepositoryFactory artifactRepositoryFactory;
-
-    private boolean browsable;
-
-    private ArtifactRepository repoCache;
+    private PlexusContainer container;
 
     private List repositories = new ArrayList();
 
-    private ArtifactRepositoryLayout layout;
+    private String cachePath;
 
-    /**
-     * Method to set/unset the web-view of the repository cache
-     *
-     * @param browsable set to true to enable the web-view of the proxy repository cache
-     */
-    public void setBrowsable( boolean browsable )
-    {
-        this.browsable = browsable;
-    }
-
-    /**
-     * Used to determine if the repsented configuration allows web view of the repository cache
-     *
-     * @return true if the repository cache is configured for web view.
-     */
-    public boolean isBrowsable()
-    {
-        return browsable;
-    }
+    private String layout;
 
     /**
      * Used to set the location where the proxy should cache the configured repositories
@@ -82,23 +49,7 @@ public class ProxyConfiguration
      */
     public void setRepositoryCachePath( String path )
     {
-        ArtifactRepositoryPolicy standardPolicy;
-        standardPolicy = new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS,
-                                                       ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE );
-
-        repoCache = artifactRepositoryFactory.createArtifactRepository( "localCache",
-                                                                        "file://" + new File( path ).getAbsolutePath(),
-                                                                        getLayout(), standardPolicy, standardPolicy );
-    }
-
-    /**
-     * Used to retrieve an ArtifactRepository Object of the proxy cache
-     *
-     * @return the ArtifactRepository representation of the proxy cache
-     */
-    public ArtifactRepository getRepositoryCache()
-    {
-        return repoCache;
+        cachePath = new File( path ).getAbsolutePath();
     }
 
     /**
@@ -108,7 +59,7 @@ public class ProxyConfiguration
      */
     public String getRepositoryCachePath()
     {
-        return repoCache.getBasedir();
+        return cachePath;
     }
 
     /**
@@ -143,55 +94,11 @@ public class ProxyConfiguration
         this.repositories = repositories;
     }
 
-    /**
-     * Uses maven-proxy classes to read a maven-proxy properties configuration
-     *
-     * @param mavenProxyConfigurationFile The location of the maven-proxy configuration file
-     * @throws ValidationException When a problem occured while processing the properties file
-     * @throws IOException         When a problem occured while reading the property file
-     */
-    public void loadMavenProxyConfiguration( File mavenProxyConfigurationFile )
-        throws ValidationException, IOException
-    {
-        MavenProxyPropertyLoader loader = new MavenProxyPropertyLoader();
-        RetrievalComponentConfiguration rcc = loader.load( new FileInputStream( mavenProxyConfigurationFile ) );
-
-        this.setRepositoryCachePath( rcc.getLocalStore() );
-        this.setBrowsable( rcc.isBrowsable() );
-
-        List repoList = new ArrayList();
-        for ( Iterator repos = rcc.getRepos().iterator(); repos.hasNext(); )
-        {
-            RepoConfiguration repoConfig = (RepoConfiguration) repos.next();
-
-            //skip local store repo
-            if ( !repoConfig.getKey().equals( "global" ) )
-            {
-                ProxyRepository repo = new ProxyRepository( repoConfig.getKey(), repoConfig.getUrl(), getLayout() );
-                repo.setCacheFailures( repoConfig.getCacheFailures() );
-                repo.setCachePeriod( repoConfig.getCachePeriod() );
-                repo.setHardfail( repoConfig.getHardFail() );
-
-                if ( repoConfig instanceof HttpRepoConfiguration )
-                {
-                    HttpRepoConfiguration httpRepo = (HttpRepoConfiguration) repoConfig;
-                    MavenProxyConfiguration httpProxy = httpRepo.getProxy();
-                    repo.setProxy( httpProxy.getHost(), httpProxy.getPort(), httpProxy.getUsername(),
-                                   httpProxy.getPassword() );
-                }
-
-                repoList.add( repo );
-            }
-        }
-
-        this.setRepositories( repoList );
-    }
-
-    public ArtifactRepositoryLayout getLayout()
+    public String getLayout()
     {
         if ( layout == null )
         {
-            setLayout( "default" );
+            layout = "default";
         }
 
         return layout;
@@ -199,18 +106,6 @@ public class ProxyConfiguration
 
     public void setLayout( String layout )
     {
-        if ( "legacy".equalsIgnoreCase( layout ) )
-        {
-            this.layout = new LegacyRepositoryLayout();
-        }
-        else
-        {
-            this.layout = new DefaultRepositoryLayout();
-        }
-
-        if ( repoCache != null )
-        {
-            setRepositoryCachePath( repoCache.getBasedir() );
-        }
+        this.layout = layout;
     }
 }

@@ -21,6 +21,9 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.ArtifactUtils;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
@@ -37,6 +40,8 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,7 +69,17 @@ public class DefaultProxyManager
     /**
      * @plexus.requirement
      */
+    private ArtifactRepositoryFactory repositoryFactory;
+
+    /**
+     * @plexus.requirement
+     */
     private ProxyConfiguration config;
+
+    /**
+     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
+     */
+    private Map repositoryLayoutMap;
 
     public void setConfiguration( ProxyConfiguration config )
     {
@@ -108,7 +123,7 @@ public class DefaultProxyManager
     /**
      * Tries to download the path from the list of repositories.
      *
-     * @param path the request path to download from the proxy or repositories
+     * @param path         the request path to download from the proxy or repositories
      * @param repositories list of ArtifactRepositories to download the path from
      * @return File object that points to the downloaded file
      * @throws ProxyException
@@ -119,7 +134,7 @@ public class DefaultProxyManager
     {
         checkConfiguration();
 
-        File remoteFile = null;
+        File remoteFile;
         if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
         {
             remoteFile = getRepositoryFile( path, repositories, false );
@@ -165,7 +180,7 @@ public class DefaultProxyManager
     private void getArtifact( Artifact artifact, List repositories )
         throws ResourceDoesNotExistException, ProxyException
     {
-        ArtifactRepository repoCache = config.getRepositoryCache();
+        ArtifactRepository repoCache = getRepositoryCache();
 
         File artifactFile = new File( repoCache.getBasedir(), repoCache.pathOf( artifact ) );
         artifact.setFile( artifactFile );
@@ -182,6 +197,59 @@ public class DefaultProxyManager
                 throw new ProxyException( e.getMessage(), e );
             }
         }
+    }
+
+    private ArtifactRepositoryLayout getLayout()
+        throws ProxyException
+    {
+        String configLayout = config.getLayout();
+
+        if ( !repositoryLayoutMap.containsKey( configLayout ) )
+        {
+            throw new ProxyException( "Unable to find a proxy repository layout for " + configLayout );
+        }
+
+        return (ArtifactRepositoryLayout) repositoryLayoutMap.get( configLayout );
+    }
+
+    private ArtifactRepository getRepositoryCache()
+        throws ProxyException
+    {
+        return repositoryFactory.createArtifactRepository( "local-cache", getRepositoryCacheURL().toString(),
+                                                           getLayout(), getSnapshotsPolicy(), getReleasesPolicy() );
+    }
+
+    private ArtifactRepositoryPolicy getReleasesPolicy()
+    {
+        //todo get policy configuration from ProxyConfiguration
+        ArtifactRepositoryPolicy repositoryPolicy = new ArtifactRepositoryPolicy();
+
+        return repositoryPolicy;
+    }
+
+    private ArtifactRepositoryPolicy getSnapshotsPolicy()
+    {
+        //todo get policy configuration from ProxyConfiguration
+        ArtifactRepositoryPolicy repositoryPolicy = new ArtifactRepositoryPolicy();
+
+        return repositoryPolicy;
+    }
+
+    public URL getRepositoryCacheURL()
+        throws ProxyException
+    {
+        URL url;
+
+        try
+        {
+            url = new File( config.getRepositoryCachePath() ).toURL();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new ProxyException( "Unable to create cache URL from: " + config.getRepositoryCachePath(), e );
+        }
+
+        return url;
     }
 
     /**
@@ -220,7 +288,7 @@ public class DefaultProxyManager
         Wagon wagon = null;
         boolean connected = false;
 
-        ArtifactRepository cache = config.getRepositoryCache();
+        ArtifactRepository cache = getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
 
         for ( Iterator repos = repositories.iterator(); repos.hasNext(); )
@@ -409,7 +477,7 @@ public class DefaultProxyManager
             String checksumExt = (String) checksums.next();
             ChecksumObserver checksum = (ChecksumObserver) checksumMap.get( checksumExt );
             String checksumPath = path + "." + checksumExt;
-            File checksumFile = new File( config.getRepositoryCache().getBasedir(), checksumPath );
+            File checksumFile = new File( config.getRepositoryCachePath(), checksumPath );
 
             try
             {
@@ -536,8 +604,8 @@ public class DefaultProxyManager
      * Queries the configuration on how to handle a repository download failure
      *
      * @param repository the repository object where the failure occurred
-     * @param message the message/reason for the failure
-     * @param t the cause for the exception
+     * @param message    the message/reason for the failure
+     * @param t          the cause for the exception
      * @throws ProxyException if hard failure is enabled on the repository causing the failure
      */
     private void processRepositoryFailure( ProxyRepository repository, String message, Throwable t )
