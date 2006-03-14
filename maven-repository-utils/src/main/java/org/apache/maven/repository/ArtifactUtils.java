@@ -1,18 +1,5 @@
 package org.apache.maven.repository;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.codehaus.plexus.util.StringUtils;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -28,6 +15,17 @@ import java.util.StringTokenizer;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.codehaus.plexus.util.StringUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Class used to build an artifact object based on a relative from a repository's basedir.
