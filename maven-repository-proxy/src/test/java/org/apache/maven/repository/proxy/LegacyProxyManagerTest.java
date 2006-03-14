@@ -39,8 +39,9 @@ public class LegacyProxyManagerTest
     {
         super.setUp();
 
-        ProxyManagerFactory factory = (ProxyManagerFactory) container.lookup( ProxyManagerFactory.ROLE );
-        proxy = factory.getProxyManager( "legacy", getTestConfiguration() );
+        proxy = (ProxyManager) container.lookup( ProxyManager.ROLE );
+
+        proxy.setConfiguration( getTestConfiguration() );
     }
 
     public void testExceptions()

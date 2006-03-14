@@ -39,8 +39,9 @@ public class DefaultProxyManagerTest
     {
         super.setUp();
 
-        ProxyManagerFactory factory = (ProxyManagerFactory) container.lookup( ProxyManagerFactory.ROLE );
-        proxy = factory.getProxyManager( "default", getTestConfiguration() );
+        proxy = (ProxyManager) container.lookup( ProxyManager.ROLE );
+
+        proxy.setConfiguration( getTestConfiguration() );
     }
 
     public void testExceptions()
