@@ -445,7 +445,14 @@ public class DefaultProxyManager
         boolean connected = false;
         try
         {
-            wagon.connect( repository, repository.getProxy() );
+            if ( repository.isProxied() )
+            {
+                wagon.connect( repository, config.getHttpProxy() );
+            }
+            else
+            {
+                wagon.connect( repository );
+            }
             connected = true;
         }
         catch ( ConnectionException e )

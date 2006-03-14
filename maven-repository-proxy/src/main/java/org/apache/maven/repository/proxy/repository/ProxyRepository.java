@@ -18,7 +18,6 @@ package org.apache.maven.repository.proxy.repository;
 
 import org.apache.maven.artifact.repository.DefaultArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.wagon.proxy.ProxyInfo;
 
 /**
  * Class to represent the Proxy repository.  Currently does not provide additional methods from
@@ -29,14 +28,14 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 public class ProxyRepository
     extends DefaultArtifactRepository
 {
-    // zero does not cache
+    // zero caches forever
     private long cachePeriod = 0;
 
     private boolean cacheFailures = false;
 
     private boolean hardfail = false;
 
-    private ProxyInfo proxy;
+    private boolean proxied = false;
 
     public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout, boolean cacheFailures,
                             long cachePeriod )
@@ -75,50 +74,12 @@ public class ProxyRepository
 
     public boolean isProxied()
     {
-        return ( proxy != null );
+        return proxied;
     }
 
-    public ProxyInfo getProxy()
+    public void setProxied( boolean proxied )
     {
-        return proxy;
-    }
-
-    public void setProxy( String host, int port )
-    {
-        ProxyInfo proxyInfo = new ProxyInfo();
-        proxyInfo.setHost( host );
-        proxyInfo.setPort( port );
-
-        setProxy( proxyInfo );
-    }
-
-    public void setProxy( String host, int port, String username, String password )
-    {
-        ProxyInfo proxyInfo = new ProxyInfo();
-        proxyInfo.setHost( host );
-        proxyInfo.setPort( port );
-        proxyInfo.setUserName( username );
-        proxyInfo.setPassword( password );
-
-        setProxy( proxyInfo );
-    }
-
-    public void setProxy( String host, int port, String username, String password, String ntlmHost, String ntlmDomain )
-    {
-        ProxyInfo proxyInfo = new ProxyInfo();
-        proxyInfo.setHost( host );
-        proxyInfo.setPort( port );
-        proxyInfo.setUserName( username );
-        proxyInfo.setPassword( password );
-        proxyInfo.setNtlmHost( ntlmHost );
-        proxyInfo.setNtlmDomain( ntlmDomain );
-
-        setProxy( proxyInfo );
-    }
-
-    public void setProxy( ProxyInfo proxy )
-    {
-        this.proxy = proxy;
+        this.proxied = proxied;
     }
 
     /**

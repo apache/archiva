@@ -17,7 +17,7 @@ package org.apache.maven.repository.proxy.configuration;
  */
 
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
-import org.codehaus.plexus.PlexusContainer;
+import org.apache.maven.wagon.proxy.ProxyInfo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,13 +34,13 @@ public class ProxyConfiguration
 {
     public static final String ROLE = ProxyConfiguration.class.getName();
 
-    private PlexusContainer container;
-
     private List repositories = new ArrayList();
 
     private String cachePath;
 
     private String layout;
+
+    private ProxyInfo httpProxy;
 
     /**
      * Used to set the location where the proxy should cache the configured repositories
@@ -60,6 +60,41 @@ public class ProxyConfiguration
     public String getRepositoryCachePath()
     {
         return cachePath;
+    }
+
+    public void setHttpProxy( ProxyInfo httpProxy )
+    {
+        this.httpProxy = httpProxy;
+    }
+
+    public void setHttpProxy( String host, int port )
+    {
+        ProxyInfo proxyInfo = new ProxyInfo();
+        proxyInfo.setHost( host );
+        proxyInfo.setPort( port );
+
+        setHttpProxy( proxyInfo );
+    }
+
+    public void setHttpProxy( String host, int port, String username, String password )
+    {
+        setHttpProxy( host, port );
+        httpProxy.setUserName( username );
+        httpProxy.setPassword( password );
+    }
+
+    public void setHttpProxy( String host, int port, String username, String password, String ntlmHost, String ntlmDomain )
+    {
+        setHttpProxy( host, port );
+        httpProxy.setUserName( username );
+        httpProxy.setPassword( password );
+        httpProxy.setNtlmHost( ntlmHost );
+        httpProxy.setNtlmDomain( ntlmDomain );
+    }
+
+    public ProxyInfo getHttpProxy()
+    {
+        return httpProxy;
     }
 
     /**

@@ -49,8 +49,11 @@ public class MavenProxyConfigurationReader
                 {
                     HttpRepoConfiguration httpRepo = (HttpRepoConfiguration) repoConfig;
                     MavenProxyConfiguration httpProxy = httpRepo.getProxy();
-                    repo.setProxy( httpProxy.getHost(), httpProxy.getPort(), httpProxy.getUsername(),
-                                   httpProxy.getPassword() );
+                    //todo put into the configuration the proxy
+                    if ( httpProxy != null )
+                    {
+                        repo.setProxied( true );
+                    }
                 }
 
                 repoList.add( repo );

@@ -61,7 +61,8 @@ public class ProxyConfigurationTest
         ProxyRepository repo2 = new ProxyRepository( "repo2", "http://www.ibiblio.org/maven", legacyLayout );
         repo2.setCacheFailures( false );
         repo2.setCachePeriod( 3600 );
-        repo2.setProxy( "some.local.proxy", 80, "username", "password" );
+        repo2.setProxied( true );
+        config.setHttpProxy( "some.local.proxy", 80, "username", "password" );
         config.addRepository( repo2 );
         assertEquals( 2, config.getRepositories().size() );
 
@@ -83,7 +84,7 @@ public class ProxyConfigurationTest
         assertEquals( repo2, repo );
         assertTrue( repo.isProxied() );
 
-        ProxyInfo proxyInfo = repo.getProxy();
+        ProxyInfo proxyInfo = config.getHttpProxy();
         assertNotNull( proxyInfo );
         assertEquals( "some.local.proxy", proxyInfo.getHost() );
         assertEquals( 80, proxyInfo.getPort() );
