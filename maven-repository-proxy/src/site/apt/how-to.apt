@@ -7,7 +7,7 @@ Configuration
 
   An instance of a ProxyManager requires a configuration object that will
   define its behavior called ProxyConfiguration.  The ProxyConfiguration is a
-  plexus and can be looked up to get an instance of it.  Below is a sample
+  plexus component and can be looked up to get an instance of it.  Below is a sample
   plexus lookup statement:
 
 ----------
