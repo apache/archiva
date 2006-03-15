@@ -1,5 +1,6 @@
 package org.apache.maven.repository.indexing;
 
+import org.apache.lucene.document.DateField;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
@@ -15,6 +16,7 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.util.Date;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -46,6 +48,8 @@ public class EclipseRepositoryIndexTest
 
     private Digester digester;
 
+    private Date currentDate = new Date();
+
     protected void setUp()
         throws Exception
     {
@@ -76,7 +80,7 @@ public class EclipseRepositoryIndexTest
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        artifact.getFile().setLastModified( 1137381114096L );
+        artifact.getFile().setLastModified( currentDate.getTime() );
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
@@ -177,7 +181,7 @@ public class EclipseRepositoryIndexTest
             assertEquals( "Check jar name", "maven-artifact-2.0.1.jar", doc.get( "j" ) );
 
             parser = new QueryParser( "d", index.getAnalyzer() );
-            hits = searcher.search( parser.parse( "0eii7ckc0" ) );
+            hits = searcher.search( parser.parse( DateField.timeToString( currentDate.getTime() ) ) );
 
             assertEquals( "Total hits", 1, hits.length() );
             doc = hits.doc( 0 );
