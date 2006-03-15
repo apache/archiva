@@ -34,6 +34,7 @@ import org.codehaus.plexus.util.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -583,11 +584,9 @@ public class RepositoryConverterTest
         long origTime = targetFile.lastModified();
         long origPomTime = targetPomFile.lastModified();
 
-        sourceFile.setLastModified( System.currentTimeMillis() );
-        sourcePomFile.setLastModified( System.currentTimeMillis() );
-
-        // Need to guarantee last modified is not equal
-        Thread.sleep( SLEEP_MILLIS );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
+        sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
 
         repositoryConverter.convert( artifact, targetRepository, reporter );
         checkSuccess();
