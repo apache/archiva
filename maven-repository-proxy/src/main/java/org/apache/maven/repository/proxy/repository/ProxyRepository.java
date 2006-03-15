@@ -33,7 +33,7 @@ public class ProxyRepository
 
     private boolean cacheFailures = false;
 
-    private boolean hardfail = false;
+    private boolean hardfail = true;
 
     private boolean proxied = false;
 
