@@ -16,7 +16,6 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.util.Date;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -48,7 +47,7 @@ public class EclipseRepositoryIndexTest
 
     private Digester digester;
 
-    private Date currentDate = new Date();
+    private long artifactFileTime;
 
     protected void setUp()
         throws Exception
@@ -80,7 +79,7 @@ public class EclipseRepositoryIndexTest
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        artifact.getFile().setLastModified( currentDate.getTime() );
+        artifactFileTime = artifact.getFile().lastModified();
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
@@ -181,7 +180,7 @@ public class EclipseRepositoryIndexTest
             assertEquals( "Check jar name", "maven-artifact-2.0.1.jar", doc.get( "j" ) );
 
             parser = new QueryParser( "d", index.getAnalyzer() );
-            hits = searcher.search( parser.parse( DateField.timeToString( currentDate.getTime() ) ) );
+            hits = searcher.search( parser.parse( DateField.timeToString( artifactFileTime ) ) );
 
             assertEquals( "Total hits", 1, hits.length() );
             doc = hits.doc( 0 );
