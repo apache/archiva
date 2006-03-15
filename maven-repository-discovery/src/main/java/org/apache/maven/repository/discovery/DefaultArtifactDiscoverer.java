@@ -41,8 +41,6 @@ public class DefaultArtifactDiscoverer
 {
     private final static String POM = ".pom";
 
-    private final static String DELIM = "\\";
-
     /**
      * @plexus.requirement
      */
@@ -105,7 +103,7 @@ public class DefaultArtifactDiscoverer
                 }
 
                 MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-                String filename = repositoryBase.getAbsolutePath() + DELIM + path;
+                String filename = repositoryBase.getAbsolutePath() + "/" + path;
                 try
                 {
                     Model model = mavenReader.read( new FileReader( filename ) );
