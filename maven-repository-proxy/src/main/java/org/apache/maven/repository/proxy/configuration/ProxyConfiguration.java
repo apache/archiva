@@ -83,7 +83,8 @@ public class ProxyConfiguration
         httpProxy.setPassword( password );
     }
 
-    public void setHttpProxy( String host, int port, String username, String password, String ntlmHost, String ntlmDomain )
+    public void setHttpProxy( String host, int port, String username, String password, String ntlmHost,
+                              String ntlmDomain )
     {
         setHttpProxy( host, port );
         httpProxy.setUserName( username );

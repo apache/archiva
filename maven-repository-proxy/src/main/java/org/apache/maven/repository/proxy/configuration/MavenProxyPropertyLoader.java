@@ -96,7 +96,8 @@ public class MavenProxyPropertyLoader
                 String url = getMandatoryProperty( props, "repo." + key + ".url" );
                 String proxyKey = repoProps.getProperty( "proxy" );
 
-                boolean cacheFailures = Boolean.valueOf( repoProps.getProperty( "cache.failures", "false" ) ).booleanValue();
+                boolean cacheFailures =
+                    Boolean.valueOf( repoProps.getProperty( "cache.failures", "false" ) ).booleanValue();
                 boolean hardFail = Boolean.valueOf( repoProps.getProperty( "hardfail", "true" ) ).booleanValue();
                 long cachePeriod = Long.parseLong( repoProps.getProperty( "cache.period", "0" ) );
 

@@ -43,11 +43,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
 
 /**
  * @author Edwin Punzalan
@@ -200,8 +200,8 @@ public class DefaultProxyManager
                 {
                     if ( checkIfFailureCached( repository.pathOf( artifact ), repository ) )
                     {
-                        getLogger().debug( "Skipping repository " + repository.getKey() +
-                                           " for a cached path failure." );
+                        getLogger().debug(
+                            "Skipping repository " + repository.getKey() + " for a cached path failure." );
                     }
                     else
                     {
@@ -360,8 +360,7 @@ public class DefaultProxyManager
 
             if ( checkIfFailureCached( path, repository ) )
             {
-                getLogger().debug( "Skipping repository " + repository.getKey() +
-                                   " for a cached path failure." );
+                getLogger().debug( "Skipping repository " + repository.getKey() + " for a cached path failure." );
             }
             else
             {

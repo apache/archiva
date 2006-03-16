@@ -62,8 +62,7 @@ public class MavenProxyPropertyLoaderTest
                 {
                     case 1:
                         assertEquals( "Repository name not as expected", "local-repo", repo.getKey() );
-                        assertEquals( "Repository url does not match its name", "file://target",
-                                      repo.getUrl() );
+                        assertEquals( "Repository url does not match its name", "file://target", repo.getUrl() );
                         assertEquals( "Repository cache period check failed", 0, repo.getCachePeriod() );
                         assertFalse( "Repository failure caching check failed", repo.isCacheFailures() );
                         break;
