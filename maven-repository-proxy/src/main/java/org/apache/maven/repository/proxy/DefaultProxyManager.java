@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * @author Edwin Punzalan
@@ -80,6 +81,11 @@ public class DefaultProxyManager
      * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
      */
     private Map repositoryLayoutMap;
+
+    /**
+     * A map
+     */
+    private Map failuresCache = new HashMap();
 
     public void setConfiguration( ProxyConfiguration config )
     {
@@ -187,16 +193,77 @@ public class DefaultProxyManager
 
         if ( !artifactFile.exists() )
         {
-            try
+            for ( Iterator iter = repositories.iterator(); iter.hasNext(); )
             {
-                //@todo usage of repository cache period
-                wagonManager.getArtifact( artifact, repositories );
-            }
-            catch ( TransferFailedException e )
-            {
-                throw new ProxyException( e.getMessage(), e );
+                ProxyRepository repository = (ProxyRepository) iter.next();
+                try
+                {
+                    if ( checkIfFailureCached( repository.pathOf( artifact ), repository ) )
+                    {
+                        getLogger().debug( "Skipping repository " + repository.getKey() +
+                                           " for a cached path failure." );
+                    }
+                    else
+                    {
+                        wagonManager.getArtifact( artifact, repository );
+                    }
+                }
+                catch ( TransferFailedException e )
+                {
+                    if ( repository.isHardfail() )
+                    {
+                        throw new ProxyException( e.getMessage(), e );
+                    }
+                }
+                catch ( ResourceDoesNotExistException e )
+                {
+                    //handle the failure cache then throw exception as expected
+                    doCacheFailure( repository.pathOf( artifact ), repository );
+
+                    throw e;
+                }
             }
         }
+    }
+
+    private void doCacheFailure( String path, ProxyRepository repository )
+    {
+        if ( repository.isCacheFailures() )
+        {
+            String key = repository.getKey();
+            if ( !failuresCache.containsKey( key ) )
+            {
+                failuresCache.put( key, new ArrayList() );
+            }
+
+            List failureCache = (List) failuresCache.get( key );
+            if ( !failureCache.contains( path ) )
+            {
+                failureCache.add( path );
+            }
+        }
+    }
+
+    private boolean checkIfFailureCached( String path, ProxyRepository repository )
+    {
+        boolean pathAlreadyFailed = false;
+
+        if ( repository.isCacheFailures() )
+        {
+            String key = repository.getKey();
+
+            if ( failuresCache.containsKey( key ) )
+            {
+                List failureCache = (List) failuresCache.get( key );
+
+                if ( failureCache.contains( path ) )
+                {
+                    pathAlreadyFailed = true;
+                }
+            }
+        }
+
+        return pathAlreadyFailed;
     }
 
     private ArtifactRepositoryLayout getLayout()
@@ -284,10 +351,6 @@ public class DefaultProxyManager
     private File getRepositoryFile( String path, List repositories, boolean useChecksum )
         throws ResourceDoesNotExistException, ProxyException
     {
-        Map checksums = null;
-        Wagon wagon = null;
-        boolean connected = false;
-
         ArtifactRepository cache = getRepositoryCache();
         File target = new File( cache.getBasedir(), path );
 
@@ -295,101 +358,121 @@ public class DefaultProxyManager
         {
             ProxyRepository repository = (ProxyRepository) repos.next();
 
-            try
+            if ( checkIfFailureCached( path, repository ) )
             {
-                wagon = wagonManager.getWagon( repository.getProtocol() );
-
-                //@todo configure wagonManager
-
-                if ( useChecksum )
-                {
-                    checksums = prepareChecksumListeners( wagon );
-                }
-
-                connected = connectToRepository( wagon, repository );
-                if ( connected )
-                {
-                    File temp = new File( target.getAbsolutePath() + ".tmp" );
-                    temp.deleteOnExit();
-
-                    int tries = 0;
-                    boolean success = true;
-
-                    do
-                    {
-                        tries++;
-
-                        getLogger().info( "Trying " + path + " from " + repository.getId() + "..." );
-
-                        if ( !target.exists() )
-                        {
-                            wagon.get( path, temp );
-                        }
-                        else
-                        {
-                            long repoTimestamp = target.lastModified() + repository.getCachePeriod() * 1000;
-                            wagon.getIfNewer( path, temp, repoTimestamp );
-                        }
-
-                        if ( useChecksum )
-                        {
-                            success = doChecksumCheck( checksums, path, wagon );
-                        }
-
-                        if ( tries > 1 && !success )
-                        {
-                            throw new ProxyException( "Checksum failures occurred while downloading " + path );
-                        }
-                    }
-                    while ( !success );
-
-                    disconnectWagon( wagon );
-
-                    if ( temp.exists() )
-                    {
-                        moveTempToTarget( temp, target );
-                    }
-
-                    return target;
-                }
-                //try next repository
+                getLogger().debug( "Skipping repository " + repository.getKey() +
+                                   " for a cached path failure." );
             }
-            catch ( TransferFailedException e )
+            else
             {
-                String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
-                processRepositoryFailure( repository, message, e );
-            }
-            catch ( ResourceDoesNotExistException e )
-            {
-                //@todo usage for cacheFailure
-                //do nothing, file not found in this repository
-            }
-            catch ( AuthorizationException e )
-            {
-                String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
-                processRepositoryFailure( repository, message, e );
-            }
-            catch ( UnsupportedProtocolException e )
-            {
-                String message = "Skipping repository " + repository.getUrl() + ": no wagonManager configured " +
-                    "for protocol " + repository.getProtocol();
-                processRepositoryFailure( repository, message, e );
-            }
-            finally
-            {
-                if ( wagon != null && checksums != null )
-                {
-                    releaseChecksumListeners( wagon, checksums );
-                }
-
-                if ( connected )
-                {
-                    disconnectWagon( wagon );
-                }
+                getFromRepository( target, path, repository, useChecksum );
             }
         }
 
-        throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
+        if ( !target.exists() )
+        {
+            throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
+        }
+
+        return target;
+    }
+
+    private void getFromRepository( File target, String path, ProxyRepository repository, boolean useChecksum )
+        throws ProxyException
+    {
+        boolean connected = false;
+        Map checksums = null;
+        Wagon wagon = null;
+
+        try
+        {
+            wagon = wagonManager.getWagon( repository.getProtocol() );
+
+            //@todo configure wagonManager
+
+            if ( useChecksum )
+            {
+                checksums = prepareChecksumListeners( wagon );
+            }
+
+            connected = connectToRepository( wagon, repository );
+            if ( connected )
+            {
+                File temp = new File( target.getAbsolutePath() + ".tmp" );
+                temp.deleteOnExit();
+
+                int tries = 0;
+                boolean success = true;
+
+                do
+                {
+                    tries++;
+
+                    getLogger().info( "Trying " + path + " from " + repository.getId() + "..." );
+
+                    if ( !target.exists() )
+                    {
+                        wagon.get( path, temp );
+                    }
+                    else
+                    {
+                        long repoTimestamp = target.lastModified() + repository.getCachePeriod() * 1000;
+                        wagon.getIfNewer( path, temp, repoTimestamp );
+                    }
+
+                    if ( useChecksum )
+                    {
+                        success = doChecksumCheck( checksums, path, wagon );
+                    }
+
+                    if ( tries > 1 && !success )
+                    {
+                        throw new ProxyException( "Checksum failures occurred while downloading " + path );
+                    }
+                }
+                while ( !success );
+
+                disconnectWagon( wagon );
+
+                if ( temp.exists() )
+                {
+                    moveTempToTarget( temp, target );
+                }
+            }
+            //try next repository
+        }
+        catch ( TransferFailedException e )
+        {
+            String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
+            processRepositoryFailure( repository, message, e );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            doCacheFailure( path, repository );
+        }
+        catch ( AuthorizationException e )
+        {
+            String message = "Skipping repository " + repository.getUrl() + ": " + e.getMessage();
+            processRepositoryFailure( repository, message, e );
+        }
+        catch ( UnsupportedProtocolException e )
+        {
+            String message = "Skipping repository " + repository.getUrl() + ": no wagonManager configured " +
+                "for protocol " + repository.getProtocol();
+            processRepositoryFailure( repository, message, e );
+        }
+        finally
+        {
+            if ( wagon != null && checksums != null )
+            {
+                releaseChecksumListeners( wagon, checksums );
+            }
+
+            if ( connected )
+            {
+                disconnectWagon( wagon );
+            }
+        }
     }
 
     /**
