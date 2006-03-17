@@ -16,6 +16,12 @@
 
 <project>
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.maven</groupId>
+    <artifactId>maven-parent</artifactId>
+    <version>1</version>
+    <relativePath>../pom/maven/pom.xml</relativePath>
+  </parent>
   <groupId>org.apache.maven.repository</groupId>
   <artifactId>maven-repository-manager</artifactId>
   <packaging>pom</packaging>
@@ -31,16 +37,6 @@
     <system>jira</system>
     <url>http://jira.codehaus.org/browse/MRM</url>
   </issueManagement>
-  <ciManagement>
-    <system>continuum</system>
-    <notifiers>
-      <notifier>
-        <configuration>
-          <address>commits@maven.apache.org</address>
-        </configuration>
-      </notifier>
-    </notifiers>
-  </ciManagement>
   <mailingLists>
     <mailingList>
       <name>Maven User List</name>
@@ -67,42 +63,12 @@
       <post>commits@maven.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
     </mailingList>
-    <mailingList>
-      <name>Apache Announce List</name>
-      <subscribe>announce-subscribe@apache.org</subscribe>
-      <unsubscribe>announce-unsubscribe@apache.org</unsubscribe>
-      <post>announce@apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/www-announce/</archive>
-    </mailingList>
   </mailingLists>
-  <developers>
-    <developer>
-      <id>brett</id>
-      <name>Brett Porter</name>
-      <email>brett@apache.org</email>
-      <organization>ASF</organization>
-      <roles>
-        <role>PMC Member</role>
-      </roles>
-      <timezone>+10</timezone>
-    </developer>
-  </developers>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/maven/repository-manager/trunk</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/repository-manager/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/maven/repository-manager/trunk</url>
   </scm>
-  <organization>
-    <name>Apache Software Foundation</name>
-    <url>http://www.apache.org/</url>
-  </organization>
   <build>
     <plugins>
       <plugin>
@@ -139,28 +105,6 @@
     <module>maven-repository-webapp</module>
     <module>maven-repository-proxy</module>
   </modules>
-  <repositories>
-    <repository>
-      <!--
-            <releases>
-              <enabled>false</enabled>
-            </releases>
-      -->
-      <id>apache.snapshots</id>
-      <name>Apache Development Repository</name>
-      <url>http://cvs.apache.org/maven-snapshot-repository</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <id>apache.snapshots</id>
-      <name>Apache Development Repository</name>
-      <url>http://cvs.apache.org/maven-snapshot-repository</url>
-    </pluginRepository>
-  </pluginRepositories>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -254,18 +198,6 @@
     </dependencies>
   </dependencyManagement>
   <distributionManagement>
-    <!--
-        <repository>
-          <id>repo1</id>
-          <name>Maven Central Repository</name>
-          <url>scp://repo1.maven.org/home/projects/maven/repository-staging/to-ibiblio/maven2</url>
-        </repository>
-    -->
-    <snapshotRepository>
-      <id>apache.snapshots</id>
-      <name>Apache Development Repository</name>
-      <url>scp://minotaur.apache.org/www/cvs.apache.org/maven-snapshot-repository</url>
-    </snapshotRepository>
     <site>
       <id>website</id>
       <url>scp://minotaur.apache.org/www/maven.apache.org/repository-manager/</url>
