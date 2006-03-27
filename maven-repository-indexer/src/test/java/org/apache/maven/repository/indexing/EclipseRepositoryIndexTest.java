@@ -84,20 +84,25 @@ public class EclipseRepositoryIndexTest
         indexer.optimize();
         indexer.close();
 
+        long historicTime = artifactFileTime - 10000L;
+
         artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.getFile().setLastModified( historicTime );
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.getFile().setLastModified( historicTime );
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.getFile().setLastModified( historicTime );
         indexer.indexArtifact( artifact );
         indexer.optimize();
         indexer.close();
