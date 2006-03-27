@@ -581,10 +581,11 @@ public class RepositoryConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        long origTime = targetFile.lastModified();
-        long origPomTime = targetPomFile.lastModified();
-
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        long origTime = dateFormat.parse( "2006-03-03" ).getTime();
+	targetFile.setLastModified( origTime );
+	targetPomFile.setLastModified( origTime );
+
         sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
         sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
 
@@ -595,7 +596,7 @@ public class RepositoryConverterTest
         compareFiles( sourcePomFile, targetPomFile );
 
         assertFalse( "Check modified", origTime == targetFile.lastModified() );
-        assertFalse( "Check modified", origPomTime == targetPomFile.lastModified() );
+        assertFalse( "Check modified", origTime == targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
         File metadataFile =
