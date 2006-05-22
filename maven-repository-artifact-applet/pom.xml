@@ -12,8 +12,6 @@
     Applet for performing local operations on files such as creating a checksum of an artifact
     before uploading it.
   </description>
-  <dependencies>
-  </dependencies>
   <build>
     <plugins>
       <plugin>
@@ -36,4 +34,14 @@
       </plugin>
     </plugins>
   </build>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://svn.apache.org/maven-snapshot-repository</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
