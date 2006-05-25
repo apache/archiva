@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -12,9 +13,7 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
-
-<project>
+  --><project>
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.maven</groupId>
@@ -104,6 +103,7 @@
     <module>maven-repository-utils</module>
     <module>maven-repository-webapp</module>
     <module>maven-repository-proxy</module>
+    <module>maven-repository-manager-site</module>
   </modules>
   <dependencies>
     <dependency>
@@ -197,12 +197,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <url>scp://minotaur.apache.org/www/maven.apache.org/repository-manager/</url>
-    </site>
-  </distributionManagement>
   <reporting>
     <plugins>
       <!-- TODO: should be omitted when there are no tests to run -->
@@ -245,4 +239,3 @@
     </plugins>
   </reporting>
 </project>
-

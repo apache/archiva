@@ -13,7 +13,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration</artifactId>
-      <version>1.0-alpha-1-SNAPSHOT</version>
+      <version>1.0-alpha-1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.repository</groupId>
@@ -41,6 +41,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty6-plugin</artifactId>
+        <version>6.0.0beta6</version>
         <configuration>
           <webAppSourceDirectory>${basedir}/target/${artifactId}</webAppSourceDirectory>
           <scanIntervalSeconds>10</scanIntervalSeconds>
@@ -72,11 +73,4 @@
       </plugin>
     </plugins>
   </build>
-  <!-- For plexus xwork -->
-  <repositories>
-    <repository>
-      <id>snapshots</id>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
-    </repository>
-  </repositories>
 </project>

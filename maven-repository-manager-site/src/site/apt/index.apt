@@ -1,0 +1,26 @@
+ -----
+ Maven Repository Manager
+ -----
+ Brett Porter
+ -----
+ 25 May 2006
+ -----
+
+Maven Repository Manager
+
+  The Maven Repository Manager is currently under development. It provides several pieces of functionality for your remote repository:
+
+    * Browsing on POM information by group and artifact ID
+
+    * Search over various information in the POM and filename
+
+    * Locate JAR by checksum
+
+    * Repository management through reporting and maintenance
+
+  We welcome developers to the Maven community who are interested in contributing. If you'd like to discuss the Maven Repository manager, subscribe and post to
+  {{{/mail-lists.html} the development mailing list}}, <<<dev@maven.apache.org>>>.
+
+  If you'd like to obtain the code, you can get it from Subversion. See {{{source-repository.html} SCM details}} for more information.
+
+

@@ -39,9 +39,6 @@
       <id>apache.snapshots</id>
       <name>Apache Snapshot Repository</name>
       <url>http://svn.apache.org/maven-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
     </pluginRepository>
   </pluginRepositories>
 </project>

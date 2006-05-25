@@ -1,0 +1,23 @@
+<?xml version="1.0"?><project>
+  <parent>
+    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.repository</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.repository</groupId>
+  <artifactId>maven-repository-manager-site</artifactId>
+  <packaging>pom</packaging>
+  <name>Maven Repository Manager</name>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/repository-manager/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/repository-manager/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/repository-manager/trunk</url>
+  </scm>
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>scp://minotaur.apache.org/www/maven.apache.org/repository-manager/</url>
+    </site>
+  </distributionManagement>
+</project>
