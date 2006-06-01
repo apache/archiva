@@ -16,23 +16,24 @@ package org.apache.maven.repository.manager.web.job;
  * limitations under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.ParseException;
+import java.util.Properties;
+
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.Properties;
 
 /**
  * This class sets the job to be executed in the plexus-quartz scheduler
@@ -40,6 +41,7 @@ import java.util.Properties;
  * @plexus.component role="org.apache.maven.repository.manager.web.job.DiscovererScheduler"
  */
 public class DiscovererScheduler
+    extends AbstractLogEnabled
 {
     /**
      * @plexus.requirement
@@ -91,6 +93,7 @@ public class DiscovererScheduler
         props = config.getProperties();
         JobDetail jobDetail = new JobDetail( "discovererJob", "DISCOVERER", DiscovererJob.class );
         JobDataMap dataMap = new JobDataMap();
+        dataMap.put( DiscovererJob.LOGGER, getLogger() );
         dataMap.put( DiscovererJob.MAP_INDEXPATH, props.getProperty( "index.path" ) );
         dataMap.put( DiscovererJob.MAP_BLACKLIST, props.getProperty( "blacklist.patterns" ) );
         dataMap.put( DiscovererJob.MAP_DEFAULT_REPOSITORY, getDefaultRepository() );
@@ -105,8 +108,7 @@ public class DiscovererScheduler
         dataMap.put( DiscovererJob.MAP_REPO_FACTORY, repoFactory );
         jobDetail.setJobDataMap( dataMap );
 
-        CronTrigger trigger =
-            new CronTrigger( "DiscovererTrigger", "DISCOVERER", props.getProperty( "cron.expression" ) );
+        CronTrigger trigger = new CronTrigger( "DiscovererTrigger", "DISCOVERER", props.getProperty( "cron.expression" ) );
         scheduler.scheduleJob( jobDetail, trigger );
     }
 

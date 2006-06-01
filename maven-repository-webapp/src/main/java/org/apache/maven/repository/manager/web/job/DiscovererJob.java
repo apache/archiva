@@ -98,9 +98,10 @@ public class DiscovererJob
     public void execute( JobExecutionContext context )
         throws JobExecutionException
     {
-        getLogger().info( "Start execution of DiscovererJob.." );
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
+        setJobDataMap( dataMap );
+        getLogger().info( "[DiscovererJob] Start execution of DiscovererJob.." );
         //configuration values specified in properties file
         String indexPath = (String) dataMap.get( MAP_INDEXPATH );
         ArtifactRepository defaultRepository = (ArtifactRepository) dataMap.get( MAP_DEFAULT_REPOSITORY );
@@ -129,8 +130,8 @@ public class DiscovererJob
                                                                                 convertSnapshots );
                 indexPom( models, indexPath, defaultRepository );
 
-                List metadataList = defaultMetadataDiscoverer.discoverMetadata(
-                    new File( defaultRepository.getBasedir() ), blacklistedPatterns );
+                List metadataList = defaultMetadataDiscoverer.discoverMetadata( new File( defaultRepository
+                    .getBasedir() ), blacklistedPatterns );
                 indexMetadata( metadataList, indexPath, new File( defaultRepository.getBasedir() ) );
             }
             else if ( dataMap.get( MAP_LAYOUT ).equals( "legacy" ) )
@@ -197,8 +198,8 @@ public class DiscovererJob
         throws RepositoryIndexException, MalformedURLException
     {
         String repoDir = repositoryBase.toURL().toString();
-        ArtifactRepository repository =
-            repoFactory.createArtifactRepository( "repository", repoDir, layout, null, null );
+        ArtifactRepository repository = repoFactory
+            .createArtifactRepository( "repository", repoDir, layout, null, null );
 
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
