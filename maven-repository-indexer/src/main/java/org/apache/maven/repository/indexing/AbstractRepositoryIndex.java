@@ -254,7 +254,14 @@ public abstract class AbstractRepositoryIndex
         }
         else if ( indexDir.isDirectory() )
         {
-            throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
+            if( indexDir.listFiles().length > 1 )
+            {
+                throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
