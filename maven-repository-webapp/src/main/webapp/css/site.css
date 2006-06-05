@@ -1,0 +1,96 @@
+#sidebar {
+    float: right;
+    font-size: small;
+    margin: 10px;
+    padding: 10px;
+    border: 1px black solid;
+    width: 10em;
+}
+
+#contentArea {
+    border: 1px solid black;
+    border-style: groove;
+    margin-right: 15em;
+    padding: 1em;
+}
+
+#tabs b {
+    border: 1px solid black;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+#tabs a {
+    border: 1px solid black;
+    padding-left: 1em;
+    padding-right: 1em;
+    text-decoration: none;
+}
+
+#tabArea {
+    border: 1px solid black;
+    padding: 1em;
+}
+
+#searchBox p {
+    font-size: x-small;
+    text-align: center;
+    color: gray;
+}
+
+#searchTypes {
+    text-align: right;
+    font-size: xx-small;
+}
+
+#notes {
+    border: double blue;
+    margin-top: 20px;
+    margin-right: 15em;
+    padding: 5px;
+}
+
+#notes p:first-child {
+    border-bottom: 1px solid blue;
+    font-weight: bold;
+    text-align: center;
+}
+
+#feed {
+    float: right;
+}
+
+.downloadButton {
+    background-color: green;
+    border: double white;
+    float: right;
+    padding: 5px;
+}
+
+.downloadButton a {
+    font-size: large;
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#labels {
+    background-color: #f2f2f2;
+    padding: 0.5em 1em 0.5em 1em;
+}
+
+.statusOk {
+    color: green;
+    font-weight: bold;
+}
+
+.statusFailed {
+    color: red;
+    font-weight: bold;
+}
+
+.statusWarn {
+    color: orange;
+    font-weight: bold;
+}
+
