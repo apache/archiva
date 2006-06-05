@@ -31,12 +31,11 @@
   <input type="submit" value="Search" />
 </form>
 
-<!--
 <p>
-<applet code="org/apache/maven/repository/applet/ChecksumApplet.class" archive="maven-repository-artifact-applet.jar"
-width="400" height="20" name="ChecksumApplet" />
+  <applet code="org/apache/maven/repository/applet/ChecksumApplet.class" archive="maven-repository-artifact-applet.jar"
+          width="400" height="20" name="ChecksumApplet">
+  </applet>
 </p>
--->
 
 <p>Search:</p>
 
