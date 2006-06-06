@@ -13,7 +13,10 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  --><project>
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.maven</groupId>
@@ -84,6 +87,19 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.4</source>
+            <target>1.4</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-idea-plugin</artifactId>
+          <configuration>
+            <jdkLevel>1.4</jdkLevel>
+          </configuration>
+        </plugin>
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
@@ -199,17 +215,16 @@
   </dependencyManagement>
   <reporting>
     <plugins>
-      <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
       </plugin>
-      <!--
-            <plugin>
-              <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-      -->
-      <!-- TODO: should work, even if there are no sources -->
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>config/maven_checks.xml</configLocation>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>changelog-maven-plugin</artifactId>
@@ -218,24 +233,100 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
       </plugin>
-      <!-- TODO: should be omitted when there are no sources -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jxr-maven-plugin</artifactId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
       </plugin>
-      <!-- TODO: should be omitted when there are no tests to run -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>surefire-report-maven-plugin</artifactId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
-      <!-- TODO: should be omitted when there are no sources/not java -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
       </plugin>
-      <!-- TODO: should be omitted when there are no sources/not java -->
       <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
+        <!-- TODO: choose appropriate rulesets -->
       </plugin>
     </plugins>
   </reporting>
+  <profiles>
+    <profile>
+      <id>ciProfile</id>
+      <activation>
+        <property>
+          <name>enableCiProfile</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-sources</phase>
+                <goals>
+                  <!-- TODO: after rules are set
+                                    <goal>check</goal>
+                  -->
+                  <goal>cpd-check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>process-sources</phase>
+                <goals>
+                  <!-- TODO: reformat first
+                                    <goal>check</goal>
+                  -->
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <configuration>
+              <check>
+                <!-- TODO! raise to 85/100 -->
+                <totalLineRate>80</totalLineRate>
+                <totalBranchRate>95</totalBranchRate>
+              </check>
+
+              <instrumentation>
+                <excludes>
+                  <exclude>**/*$*</exclude>
+                </excludes>
+              </instrumentation>
+            </configuration>
+            <executions>
+              <execution>
+                <id>clean</id>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

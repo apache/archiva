@@ -25,6 +25,7 @@ import java.io.File;
  * Class used to bridge the servlet to the repository proxy implementation.
  *
  * @author Edwin Punzalan
+ * @todo the names get() and getRemoteFile() are confusing
  */
 public interface ProxyManager
 {

@@ -29,6 +29,7 @@ import java.util.List;
  *
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.proxy.configuration.ProxyConfiguration"
+ * @todo investigate how these should be set - probably plexus configuration
  */
 public class ProxyConfiguration
 {

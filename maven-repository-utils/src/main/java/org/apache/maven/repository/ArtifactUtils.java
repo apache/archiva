@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
  * Class used to build an artifact object based on a relative from a repository's basedir.
  *
  * @author Edwin Punzalan
+ * @todo I'm not sure why this class needs to exist. It seems like the perfect candidate for two implementations of an interface
  */
 public class ArtifactUtils
 {
