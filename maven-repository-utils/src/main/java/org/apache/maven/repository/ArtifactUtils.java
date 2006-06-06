@@ -157,7 +157,7 @@ public class ArtifactUtils
 
                     if ( result.isSnapshot() )
                     {
-                        // version is XXX-SNAPSHOT, filename is XXX-yyyyMMdd.hhmmss-b
+                        // version is *-SNAPSHOT, filename is *-yyyyMMdd.hhmmss-b
                         int classifierIndex = remainingFilename.indexOf( '-', version.length() + 8 );
                         if ( classifierIndex >= 0 )
                         {
