@@ -17,9 +17,9 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
+import java.util.zip.ZipEntry;
 
 /**
  * Abstract class for RepositoryIndexers
@@ -254,7 +255,7 @@ public abstract class AbstractRepositoryIndex
         }
         else if ( indexDir.isDirectory() )
         {
-            if( indexDir.listFiles().length > 1 )
+            if ( indexDir.listFiles().length > 1 )
             {
                 throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
             }
@@ -298,6 +299,37 @@ public abstract class AbstractRepositoryIndex
     public boolean isKeywordField( String field )
     {
         return KEYWORD_FIELDS.contains( field );
+    }
+
+    /**
+     * Method to test a zip entry if it is a java class, and adds it to the classes buffer
+     *
+     * @param entry   the zip entry to test for java class
+     * @param classes the String buffer to add the java class if the test result as true
+     * @return true if the zip entry is a java class and was successfully added to the buffer
+     */
+    protected boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )
+    {
+        boolean isAdded = false;
+
+        String name = entry.getName();
+        if ( name.endsWith( ".class" ) )
+        {
+            // TODO verify if class is public or protected
+            if ( name.lastIndexOf( "$" ) == -1 )
+            {
+                int idx = name.lastIndexOf( '/' );
+                if ( idx < 0 )
+                {
+                    idx = 0;
+                }
+                String classname = name.substring( idx + 1, name.length() - 6 );
+                classes.append( classname ).append( "\n" );
+                isAdded = true;
+            }
+        }
+
+        return isAdded;
     }
 
     private class ArtifactRepositoryIndexAnalyzer

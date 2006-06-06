@@ -29,11 +29,11 @@ import org.apache.maven.repository.digest.Digester;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -212,37 +212,6 @@ public class EclipseRepositoryIndex
         }
 
         return outputFile;
-    }
-
-    /**
-     * Method to test a zip entry if it is a java class, and adds it to the classes buffer
-     *
-     * @param entry   the zip entry to test for java class
-     * @param classes the String buffer to add the java class if the test result as true
-     * @return true if the zip entry is a java class and was successfully added to the buffer
-     */
-    protected boolean addIfClassEntry( ZipEntry entry, StringBuffer classes )
-    {
-        boolean isAdded = false;
-
-        String name = entry.getName();
-        if ( name.endsWith( ".class" ) )
-        {
-            // TODO verify if class is public or protected
-            if ( name.lastIndexOf( "$" ) == -1 )
-            {
-                int idx = name.lastIndexOf( '/' );
-                if ( idx < 0 )
-                {
-                    idx = 0;
-                }
-                String classname = name.substring( idx + 1, name.length() - 6 );
-                classes.append( classname ).append( "\n" );
-                isAdded = true;
-            }
-        }
-
-        return isAdded;
     }
 
     /**
