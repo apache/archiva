@@ -17,110 +17,32 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.ArtifactUtils;
 
 import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Artifact discoverer for the legacy repository layout (Maven 1.x).
  *
  * @author John Casey
  * @author Brett Porter
- * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.LegacyArtifactDiscoverer"
+ * @plexus.component role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="legacy"
  */
 public class LegacyArtifactDiscoverer
     extends AbstractArtifactDiscoverer
     implements ArtifactDiscoverer
 {
-    private final static String POM = ".pom";
-
-    private final static String DELIM = "\\";
-
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactFactory artifactFactory;
-
-    public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
+    protected Artifact buildArtifactFromPath( String path, ArtifactRepository repository )
     {
-        List artifacts = new ArrayList();
+        Artifact artifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
 
-        File repositoryBase = new File( repository.getBasedir() );
-        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
-
-        for ( int i = 0; i < artifactPaths.length; i++ )
+        if ( artifact != null )
         {
-            String path = artifactPaths[i];
-
-            Artifact artifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
-            if ( artifact != null )
-            {
-                artifact.setRepository( repository );
-                artifact.setFile( new File( repositoryBase, path ) );
-
-                if ( includeSnapshots || !artifact.isSnapshot() )
-                {
-                    artifacts.add( artifact );
-                }
-            }
-            else
-            {
-                addKickedOutPath( path );
-            }
+            artifact.setRepository( repository );
+            artifact.setFile( new File( repository.getBasedir(), path ) );
         }
 
-        return artifacts;
-    }
-
-    public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns,
-                                        boolean convertSnapshots )
-    {
-        List artifacts = new ArrayList();
-
-        File repositoryBase = new File( repository.getBasedir() );
-
-        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
-
-        for ( int i = 0; i < artifactPaths.length; i++ )
-        {
-            String path = artifactPaths[i];
-
-            if ( path.toLowerCase().endsWith( POM ) )
-            {
-                Artifact pomArtifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
-                if ( pomArtifact != null )
-                {
-                    pomArtifact.setFile( new File( repositoryBase, path ) );
-                }
-
-                MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-                String filename = repositoryBase.getAbsolutePath() + DELIM + path;
-                try
-                {
-                    Model model = mavenReader.read( new FileReader( filename ) );
-                    if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
-                    {
-                        if ( convertSnapshots || !pomArtifact.isSnapshot() )
-                        {
-                            artifacts.add( pomArtifact );
-                        }
-                    }
-                }
-                catch ( Exception e )
-                {
-                    getLogger().info( "error reading file: " + filename );
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return artifacts;
+        return artifact;
     }
 }

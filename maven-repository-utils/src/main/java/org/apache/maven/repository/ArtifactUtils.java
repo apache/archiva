@@ -39,21 +39,19 @@ public class ArtifactUtils
     /**
      * Method used to build an artifact and then set its repository and file fields with the proper values
      *
-     * @param repositoryBase  the base directory of the repository
      * @param path            the path of the artifact relative from the repository base directory
      * @param repository      the repository where the artifact can be found
      * @param artifactFactory the artifactFactory to build the Artifact object when the given path is a valid artifact path
      * @return Artifact object if the given path represents an artifact path, otherwise, returns null
      */
-    public static Artifact buildArtifact( File repositoryBase, String path, ArtifactRepository repository,
-                                          ArtifactFactory artifactFactory )
+    public static Artifact buildArtifact( String path, ArtifactRepository repository, ArtifactFactory artifactFactory )
     {
         Artifact artifact = buildArtifact( path, artifactFactory );
 
         if ( artifact != null )
         {
             artifact.setRepository( repository );
-            artifact.setFile( new File( repositoryBase, path ) );
+            artifact.setFile( new File( repository.getBasedir(), path ) );
         }
 
         return artifact;

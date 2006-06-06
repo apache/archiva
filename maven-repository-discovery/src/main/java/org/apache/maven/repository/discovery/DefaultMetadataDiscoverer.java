@@ -17,7 +17,6 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -46,14 +45,9 @@ import java.util.StringTokenizer;
  * @plexus.component role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultMetadataDiscoverer"
  */
 public class DefaultMetadataDiscoverer
-    extends AbstractArtifactDiscoverer
+    extends AbstractDiscoverer
     implements MetadataDiscoverer
 {
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactFactory artifactFactory;
-
     /**
      * Standard patterns to include in discovery of metadata files.
      */

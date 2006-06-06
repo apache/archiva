@@ -49,8 +49,7 @@ public class LegacyArtifactDiscovererTest
     {
         super.setUp();
 
-        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE,
-                                                  "org.apache.maven.repository.discovery.LegacyArtifactDiscoverer" );
+        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "legacy" );
 
         factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 

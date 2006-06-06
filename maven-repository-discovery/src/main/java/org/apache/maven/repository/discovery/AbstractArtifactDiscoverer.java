@@ -16,14 +16,14 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ import java.util.List;
  * @author Brett Porter
  */
 public abstract class AbstractArtifactDiscoverer
-    extends AbstractLogEnabled
+    extends AbstractDiscoverer
 {
     /**
      * Standard patterns to exclude from discovery as they are not artifacts.
@@ -42,11 +42,7 @@ public abstract class AbstractArtifactDiscoverer
         "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
         "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
-    private List excludedPaths = new ArrayList();
-
-    private List kickedOutPaths = new ArrayList();
+    protected static final String POM = ".pom";
 
     /**
      * Scan the repository for artifact paths.
@@ -56,57 +52,84 @@ public abstract class AbstractArtifactDiscoverer
         return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
     }
 
-    /**
-     * Scan the repository for artifact paths.
-     */
-    protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
-                                             String[] excludes )
+    protected abstract Artifact buildArtifactFromPath( String path, ArtifactRepository repository );
+
+    public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
     {
-        List allExcludes = new ArrayList();
-        allExcludes.addAll( FileUtils.getDefaultExcludesAsList() );
-        if ( excludes != null )
+        if ( !"file".equals( repository.getProtocol() ) )
         {
-            allExcludes.addAll( Arrays.asList( excludes ) );
+            throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
         }
 
-        if ( blacklistedPatterns != null && blacklistedPatterns.length() > 0 )
+        File repositoryBase = new File( repository.getBasedir() );
+
+        List artifacts = new ArrayList();
+
+        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
+
+        for ( int i = 0; i < artifactPaths.length; i++ )
         {
-            allExcludes.addAll( Arrays.asList( blacklistedPatterns.split( "," ) ) );
+            String path = artifactPaths[i];
+
+            Artifact artifact = buildArtifactFromPath( path, repository );
+            if ( artifact != null )
+            {
+                if ( includeSnapshots || !artifact.isSnapshot() )
+                {
+                    artifacts.add( artifact );
+                }
+            }
+            else
+            {
+                addKickedOutPath( path );
+            }
         }
 
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( repositoryBase );
-        if ( includes != null )
+        return artifacts;
+    }
+
+    public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns,
+                                        boolean includeSnapshots )
+    {
+        List artifacts = new ArrayList();
+
+        File repositoryBase = new File( repository.getBasedir() );
+
+        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
+
+        for ( int i = 0; i < artifactPaths.length; i++ )
         {
-            scanner.setIncludes( includes );
+            String path = artifactPaths[i];
+
+            if ( path.toLowerCase().endsWith( POM ) )
+            {
+                Artifact pomArtifact = buildArtifactFromPath( path, repository );
+                if ( pomArtifact != null )
+                {
+                    pomArtifact.setFile( new File( repositoryBase, path ) );
+                }
+
+                MavenXpp3Reader mavenReader = new MavenXpp3Reader();
+                String filename = repositoryBase.getAbsolutePath() + "/" + path;
+                try
+                {
+                    Model model = mavenReader.read( new FileReader( filename ) );
+                    if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
+                    {
+                        if ( includeSnapshots || !pomArtifact.isSnapshot() )
+                        {
+                            artifacts.add( model );
+                        }
+                    }
+                }
+                catch ( Exception e )
+                {
+                    getLogger().info( "error reading file: " + filename );
+                    e.printStackTrace();
+                }
+            }
         }
-        scanner.setExcludes( (String[]) allExcludes.toArray( EMPTY_STRING_ARRAY ) );
 
-        scanner.scan();
-
-        excludedPaths.addAll( Arrays.asList( scanner.getExcludedFiles() ) );
-
-        return scanner.getIncludedFiles();
-    }
-
-    /**
-     * Add a path to the list of files that were kicked out due to being invalid.
-     *
-     * @param path the path to add
-     * @todo add a reason
-     */
-    protected void addKickedOutPath( String path )
-    {
-        kickedOutPaths.add( path );
-    }
-
-    public Iterator getExcludedPathsIterator()
-    {
-        return excludedPaths.iterator();
-    }
-
-    public Iterator getKickedOutPathsIterator()
-    {
-        return kickedOutPaths.iterator();
+        return artifacts;
     }
 }

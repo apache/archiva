@@ -52,8 +52,7 @@ public class DefaultArtifactDiscovererTest
     {
         super.setUp();
 
-        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE,
-                                                  "org.apache.maven.repository.discovery.DefaultArtifactDiscoverer" );
+        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "default" );
 
         factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
