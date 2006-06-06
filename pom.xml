@@ -287,7 +287,7 @@
               <execution>
                 <phase>process-sources</phase>
                 <goals>
-                  <!-- TODO: reformat first
+                  <!-- TODO: reformat first, and correct the checks (some are not consistent with the Maven style)
                                     <goal>check</goal>
                   -->
                 </goals>
