@@ -76,6 +76,18 @@ public class ArtifactUtilsLegacyTest
         assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-SNAPSHOT" ), artifact );
     }
 
+    public void testFinal()
+        throws ComponentLookupException
+    {
+        String testPath = "org.apache.maven.test/jars/maven-model-1.0-final-20060606.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-final-20060606" ), artifact );
+    }
+
     public void testNormal()
         throws ComponentLookupException
     {
