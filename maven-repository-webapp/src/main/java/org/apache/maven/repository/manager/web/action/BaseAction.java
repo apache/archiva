@@ -18,6 +18,7 @@ package org.apache.maven.repository.manager.web.action;
 
 import com.opensymphony.xwork.Action;
 import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
+import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 
 /**
  * This is the Action class of index.jsp, which is the initial page of the web application.
@@ -28,6 +29,10 @@ import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
 public class BaseAction
     implements Action
 {
+    /**
+     * @plexus.requirement
+     */
+    private DiscovererExecution execution;
 
     /**
      * @plexus.requirement
@@ -43,6 +48,7 @@ public class BaseAction
     {
         try
         {
+            execution.executeDiscovererIfIndexDoesNotExist();
             discovererScheduler.setSchedule();
         }
         catch ( Exception e )

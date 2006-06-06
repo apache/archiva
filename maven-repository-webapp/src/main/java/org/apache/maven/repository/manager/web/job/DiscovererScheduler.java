@@ -28,6 +28,7 @@ import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.quartz.CronTrigger;
@@ -53,32 +54,12 @@ public class DiscovererScheduler
      */
     private Scheduler scheduler;
 
-    /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultArtifactDiscoverer"
-     */
-    private ArtifactDiscoverer defaultArtifactDiscoverer;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.LegacyArtifactDiscoverer"
-     */
-    private ArtifactDiscoverer legacyArtifactDiscoverer;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultMetadataDiscoverer"
-     */
-    private MetadataDiscoverer defaultMetadataDiscoverer;
-
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryIndexingFactory indexFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactRepositoryFactory repoFactory;
-
     private Properties props;
+
+    /**
+     * @plexus.requirement
+     */
+    private DiscovererExecution execution;
 
     /**
      * Method that sets the schedule in the plexus-quartz scheduler
@@ -94,38 +75,12 @@ public class DiscovererScheduler
         JobDetail jobDetail = new JobDetail( "discovererJob", "DISCOVERER", DiscovererJob.class );
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( DiscovererJob.LOGGER, getLogger() );
-        dataMap.put( DiscovererJob.MAP_INDEXPATH, props.getProperty( "index.path" ) );
-        dataMap.put( DiscovererJob.MAP_BLACKLIST, props.getProperty( "blacklist.patterns" ) );
-        dataMap.put( DiscovererJob.MAP_DEFAULT_REPOSITORY, getDefaultRepository() );
-        dataMap.put( DiscovererJob.MAP_LAYOUT, props.getProperty( "layout" ) );
-        dataMap.put( DiscovererJob.MAP_SNAPSHOTS, new Boolean( props.getProperty( "include.snapshots" ) ) );
-        dataMap.put( DiscovererJob.MAP_CONVERT, new Boolean( props.getProperty( "convert.snapshots" ) ) );
-        dataMap.put( DiscovererJob.MAP_DEF_ARTIFACT_DISCOVERER, defaultArtifactDiscoverer );
-        dataMap.put( DiscovererJob.MAP_LEG_ARTIFACT_DISCOVERER, legacyArtifactDiscoverer );
-        dataMap.put( DiscovererJob.MAP_DEF_METADATA_DISCOVERER, defaultMetadataDiscoverer );
-        dataMap.put( DiscovererJob.MAP_IDX_FACTORY, indexFactory );
-        dataMap.put( DiscovererJob.MAP_REPO_LAYOUT, config.getLayout() );
-        dataMap.put( DiscovererJob.MAP_REPO_FACTORY, repoFactory );
+        dataMap.put( DiscovererJob.MAP_DISCOVERER_EXECUTION, execution );
         jobDetail.setJobDataMap( dataMap );
 
-        CronTrigger trigger = new CronTrigger( "DiscovererTrigger", "DISCOVERER", props.getProperty( "cron.expression" ) );
+        CronTrigger trigger =
+            new CronTrigger( "DiscovererTrigger", "DISCOVERER", props.getProperty( "cron.expression" ) );
         scheduler.scheduleJob( jobDetail, trigger );
-    }
-
-    /**
-     * Method that creates the artifact repository
-     *
-     * @return an ArtifactRepository instance
-     * @throws java.net.MalformedURLException
-     */
-    private ArtifactRepository getDefaultRepository()
-        throws MalformedURLException
-    {
-        File repositoryDirectory = new File( config.getRepositoryDirectory() );
-        String repoDir = repositoryDirectory.toURL().toString();
-        ArtifactRepositoryFactory repoFactory = new DefaultArtifactRepositoryFactory();
-
-        return repoFactory.createArtifactRepository( "test", repoDir, config.getLayout(), null, null );
     }
 
     /**
@@ -147,5 +102,6 @@ public class DiscovererScheduler
     {
         return config;
     }
+
 
 }
