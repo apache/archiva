@@ -27,6 +27,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -184,26 +185,7 @@ public class EclipseRepositoryIndex
         {
             for ( int i = 0; i < files.length; i++ )
             {
-                ZipEntry e = new ZipEntry( files[i].getName() );
-                zos.putNextEntry( e );
-
-                FileInputStream is = new FileInputStream( files[i] );
-                byte[] buf = new byte[4096];
-                int n;
-                try
-                {
-                    while ( ( n = is.read( buf ) ) > 0 )
-                    {
-                        zos.write( buf, 0, n );
-                    }
-                }
-                finally
-                {
-                    is.close();
-                }
-                zos.flush();
-
-                zos.closeEntry();
+                writeFile( zos, files[i] );
             }
         }
         finally
@@ -212,6 +194,26 @@ public class EclipseRepositoryIndex
         }
 
         return outputFile;
+    }
+
+    private static void writeFile( ZipOutputStream zos, File file )
+        throws IOException
+    {
+        ZipEntry e = new ZipEntry( file.getName() );
+        zos.putNextEntry( e );
+
+        FileInputStream is = new FileInputStream( file );
+        try
+        {
+            IOUtil.copy( is, zos );
+        }
+        finally
+        {
+            is.close();
+        }
+        zos.flush();
+
+        zos.closeEntry();
     }
 
     /**
@@ -257,7 +259,7 @@ public class EclipseRepositoryIndex
     /**
      * Class used to analyze the lucene index
      */
-    private class EclipseIndexAnalyzer
+    private static class EclipseIndexAnalyzer
         extends Analyzer
     {
         private Analyzer defaultAnalyzer;
@@ -267,7 +269,7 @@ public class EclipseRepositoryIndex
          *
          * @param defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
          */
-        public EclipseIndexAnalyzer( Analyzer defaultAnalyzer )
+        EclipseIndexAnalyzer( Analyzer defaultAnalyzer )
         {
             this.defaultAnalyzer = defaultAnalyzer;
         }
@@ -294,33 +296,33 @@ public class EclipseRepositoryIndex
 
             return tokenStream;
         }
+    }
+
+    /**
+     * Class used to tokenize the eclipse index
+     */
+    private static class EclipseIndexTokenizer
+        extends CharTokenizer
+    {
+        /**
+         * Constructor with the required reader to the index stream
+         *
+         * @param reader the Reader object of the index stream
+         */
+        EclipseIndexTokenizer( Reader reader )
+        {
+            super( reader );
+        }
 
         /**
-         * Class used to tokenize the eclipse index
+         * method that lucene calls to check tokenization of a stream character
+         *
+         * @param character char currently being processed
+         * @return true if the char is a token, false if the char is a stop char
          */
-        private class EclipseIndexTokenizer
-            extends CharTokenizer
+        protected boolean isTokenChar( char character )
         {
-            /**
-             * Constructor with the required reader to the index stream
-             *
-             * @param reader the Reader object of the index stream
-             */
-            EclipseIndexTokenizer( Reader reader )
-            {
-                super( reader );
-            }
-
-            /**
-             * method that lucene calls to check tokenization of a stream character
-             *
-             * @param character char currently being processed
-             * @return true if the char is a token, false if the char is a stop char
-             */
-            protected boolean isTokenChar( char character )
-            {
-                return true;
-            }
+            return true;
         }
     }
 }
