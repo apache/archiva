@@ -47,7 +47,9 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- * Implementation Class for searching through the index
+ * Implementation Class for searching through the index.
+ *
+ * @todo this is not a component, but extends ALE, meaning logging will throw an exception! -- should be a component
  */
 public class DefaultRepositoryIndexSearcher
     extends AbstractLogEnabled

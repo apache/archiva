@@ -122,7 +122,10 @@ public class MavenProxyPropertyLoader
         return config;
     }
 
-    private void validateRemoteRepo( ProxyConfiguration configuration )
+    /**
+     * @todo should be shared with any other configuration loader - move method to configuration?
+     */
+    private static void validateRemoteRepo( ProxyConfiguration configuration )
         throws ValidationException
     {
         //Verify remote repository set
@@ -171,7 +174,10 @@ public class MavenProxyPropertyLoader
         return value;
     }
 
-    private void validateDirectories( ProxyConfiguration configuration )
+    /**
+     * @todo should be shared with any other configuration loader - move method to configuration?
+     */
+    private static void validateDirectories( ProxyConfiguration configuration )
         throws ValidationException
     {
         File f = new File( configuration.getRepositoryCachePath() );

@@ -23,6 +23,7 @@ import org.apache.maven.repository.digest.Digester;
 /**
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexingFactory"
+ * @todo these methods should be replaced by plexus lookups of some kind!
  */
 public class DefaultRepositoryIndexingFactory
     implements RepositoryIndexingFactory

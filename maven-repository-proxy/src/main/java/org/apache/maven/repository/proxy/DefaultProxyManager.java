@@ -53,6 +53,7 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
  * @todo too much of wagon manager is reproduced here because checksums need to be downloaded separately - is that necessary?
  * @todo this isn't reusing the parts of wagon manager than handle snapshots [!]
+ * @todo currently, cache must be in the same layout as the request, which prohibits any mapping
  */
 public class DefaultProxyManager
     extends AbstractLogEnabled
