@@ -1,5 +1,8 @@
 package org.apache.maven.repository.indexing.query;
 
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.maven.repository.indexing.RepositoryIndex;
+
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
  *
@@ -24,4 +27,6 @@ package org.apache.maven.repository.indexing.query;
  */
 public interface Query
 {
+    org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
+        throws ParseException;
 }

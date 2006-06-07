@@ -16,7 +16,12 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.maven.repository.indexing.RepositoryIndex;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -78,5 +83,21 @@ public class CompoundQuery
     public List getQueries()
     {
         return queries;
+    }
+
+    public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
+        throws ParseException
+    {
+        BooleanQuery booleanQuery = new BooleanQuery();
+        List queries = this.queries;
+        for ( Iterator i = queries.iterator(); i.hasNext(); )
+        {
+            CompoundQueryTerm subquery = (CompoundQueryTerm) i.next();
+
+            org.apache.lucene.search.Query luceneQuery = subquery.getQuery().createLuceneQuery( index );
+
+            booleanQuery.add( luceneQuery, subquery.isRequired(), subquery.isProhibited() );
+        }
+        return booleanQuery;
     }
 }

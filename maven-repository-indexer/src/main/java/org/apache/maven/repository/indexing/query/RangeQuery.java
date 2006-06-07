@@ -16,7 +16,11 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
+import org.apache.lucene.index.Term;
+import org.apache.maven.repository.indexing.RepositoryIndex;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,7 +31,7 @@ import java.util.List;
 public class RangeQuery
     implements Query
 {
-    List queries = new ArrayList();
+    private List queries = new ArrayList();
 
     private boolean inclusive;
 
@@ -49,5 +53,21 @@ public class RangeQuery
     public boolean isInclusive()
     {
         return inclusive;
+    }
+
+    public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
+    {
+        List queries = this.queries;
+        Iterator iter = queries.iterator();
+        Term begin = null;
+        Term end = null;
+        if ( queries.size() == 2 )
+        {
+            SinglePhraseQuery qry = (SinglePhraseQuery) iter.next();
+            begin = new Term( qry.getField(), qry.getValue() );
+            qry = (SinglePhraseQuery) iter.next();
+            end = new Term( qry.getField(), qry.getValue() );
+        }
+        return new org.apache.lucene.search.RangeQuery( begin, end, this.inclusive );
     }
 }

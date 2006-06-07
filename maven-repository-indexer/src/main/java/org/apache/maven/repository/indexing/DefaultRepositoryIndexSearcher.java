@@ -17,13 +17,9 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -32,11 +28,7 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.repository.indexing.query.CompoundQuery;
-import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.RangeQuery;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -136,31 +128,6 @@ public class DefaultRepositoryIndexSearcher
     }
 
     /**
-     * Method to create a lucene Query object from a single query phrase
-     *
-     * @param field the index field name to search into
-     * @param value the index field value to match the field with
-     * @return a lucene Query object representing the query phrase field = value
-     * @throws ParseException
-     */
-    private org.apache.lucene.search.Query createLuceneQuery( String field, String value )
-        throws ParseException
-    {
-        org.apache.lucene.search.Query qry;
-        if ( index.isKeywordField( field ) )
-        {
-            Term term = new Term( field, value );
-            qry = new TermQuery( term );
-        }
-        else
-        {
-            QueryParser parser = new QueryParser( field, index.getAnalyzer() );
-            qry = parser.parse( value );
-        }
-        return qry;
-    }
-
-    /**
      * Method to create a lucene Query object by converting a prepared Query object
      *
      * @param query the prepared Query object to be converted into a lucene Query object
@@ -170,44 +137,7 @@ public class DefaultRepositoryIndexSearcher
     private org.apache.lucene.search.Query createLuceneQuery( Query query )
         throws ParseException
     {
-        org.apache.lucene.search.Query retVal;
-
-        if ( query instanceof CompoundQuery )
-        {
-            BooleanQuery booleanQuery = new BooleanQuery();
-            CompoundQuery compoundQuery = (CompoundQuery) query;
-            List queries = compoundQuery.getQueries();
-            for ( Iterator i = queries.iterator(); i.hasNext(); )
-            {
-                CompoundQueryTerm subquery = (CompoundQueryTerm) i.next();
-
-                org.apache.lucene.search.Query luceneQuery = createLuceneQuery( subquery.getQuery() );
-
-                booleanQuery.add( luceneQuery, subquery.isRequired(), subquery.isProhibited() );
-            }
-            retVal = booleanQuery;
-        }
-        else if ( query instanceof RangeQuery )
-        {
-            RangeQuery rq = (RangeQuery) query;
-            List queries = rq.getQueries();
-            Iterator iter = queries.iterator();
-            Term begin = null, end = null;
-            if ( queries.size() == 2 )
-            {
-                SinglePhraseQuery qry = (SinglePhraseQuery) iter.next();
-                begin = new Term( qry.getField(), qry.getValue() );
-                qry = (SinglePhraseQuery) iter.next();
-                end = new Term( qry.getField(), qry.getValue() );
-            }
-            retVal = new org.apache.lucene.search.RangeQuery( begin, end, rq.isInclusive() );
-        }
-        else
-        {
-            SinglePhraseQuery singlePhraseQuery = (SinglePhraseQuery) query;
-            retVal = createLuceneQuery( singlePhraseQuery.getField(), singlePhraseQuery.getValue() );
-        }
-        return retVal;
+        return query.createLuceneQuery( index );
     }
 
     /**

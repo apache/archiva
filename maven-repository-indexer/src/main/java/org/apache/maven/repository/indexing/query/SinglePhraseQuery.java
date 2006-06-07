@@ -1,5 +1,11 @@
 package org.apache.maven.repository.indexing.query;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.TermQuery;
+import org.apache.maven.repository.indexing.RepositoryIndex;
+
 /*
  * Copyright 2001-2005 The Apache Software Foundation.
  *
@@ -59,5 +65,22 @@ public class SinglePhraseQuery
     public String getValue()
     {
         return value;
+    }
+
+    public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
+        throws ParseException
+    {
+        org.apache.lucene.search.Query qry;
+        if ( index.isKeywordField( this.field ) )
+        {
+            Term term = new Term( this.field, this.value );
+            qry = new TermQuery( term );
+        }
+        else
+        {
+            QueryParser parser = new QueryParser( this.field, index.getAnalyzer() );
+            qry = parser.parse( this.value );
+        }
+        return qry;
     }
 }
