@@ -54,10 +54,8 @@ public abstract class AbstractRepositoryIndex
      *
      * @param indexPath
      * @param repository
-     * @throws RepositoryIndexException
      */
     protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException
     {
         this.repository = repository;
         this.indexPath = indexPath;
@@ -237,11 +235,10 @@ public abstract class AbstractRepositoryIndex
      * Check if the index already exists.
      *
      * @return true if the index already exists
-     * @throws IOException
      * @throws RepositoryIndexException
      */
     protected boolean indexExists()
-        throws IOException, RepositoryIndexException
+        throws RepositoryIndexException
     {
         File indexDir = new File( indexPath );
 
@@ -332,7 +329,7 @@ public abstract class AbstractRepositoryIndex
         return isAdded;
     }
 
-    private class ArtifactRepositoryIndexAnalyzer
+    private static class ArtifactRepositoryIndexAnalyzer
         extends Analyzer
     {
         private Analyzer defaultAnalyzer;
@@ -342,7 +339,7 @@ public abstract class AbstractRepositoryIndex
          *
          * @param defaultAnalyzer the analyzer to use as default for the general fields of the artifact indeces
          */
-        public ArtifactRepositoryIndexAnalyzer( Analyzer defaultAnalyzer )
+        ArtifactRepositoryIndexAnalyzer( Analyzer defaultAnalyzer )
         {
             this.defaultAnalyzer = defaultAnalyzer;
         }
@@ -369,33 +366,33 @@ public abstract class AbstractRepositoryIndex
 
             return tokenStream;
         }
+    }
+
+    /**
+     * Class used to tokenize an artifact's version.
+     */
+    private static class VersionTokenizer
+        extends CharTokenizer
+    {
+        /**
+         * Constructor with the required reader to the index stream
+         *
+         * @param reader the Reader object of the index stream
+         */
+        VersionTokenizer( Reader reader )
+        {
+            super( reader );
+        }
 
         /**
-         * Class used to tokenize an artifact's version.
+         * method that lucene calls to check tokenization of a stream character
+         *
+         * @param character char currently being processed
+         * @return true if the char is a token, false if the char is a stop char
          */
-        private class VersionTokenizer
-            extends CharTokenizer
+        protected boolean isTokenChar( char character )
         {
-            /**
-             * Constructor with the required reader to the index stream
-             *
-             * @param reader the Reader object of the index stream
-             */
-            VersionTokenizer( Reader reader )
-            {
-                super( reader );
-            }
-
-            /**
-             * method that lucene calls to check tokenization of a stream character
-             *
-             * @param character char currently being processed
-             * @return true if the char is a token, false if the char is a stop char
-             */
-            protected boolean isTokenChar( char character )
-            {
-                return character != '.' && character != '-';
-            }
+            return character != '.' && character != '-';
         }
     }
 }

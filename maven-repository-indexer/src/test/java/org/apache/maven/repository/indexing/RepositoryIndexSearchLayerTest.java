@@ -28,8 +28,6 @@ import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryM
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.repository.digest.DefaultDigester;
-import org.apache.maven.repository.digest.Digester;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -54,8 +52,6 @@ public class RepositoryIndexSearchLayerTest
 
     private ArtifactFactory artifactFactory;
 
-    private Digester digester;
-
     private String indexPath;
 
     /**
@@ -72,21 +68,9 @@ public class RepositoryIndexSearchLayerTest
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
         ArtifactRepositoryFactory repoFactory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
-        digester = new DefaultDigester();
 
         indexPath = "target/index";
         FileUtils.deleteDirectory( indexPath );
-    }
-
-    /**
-     * Tear down method
-     *
-     * @throws Exception
-     */
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
     }
 
     /**
@@ -126,24 +110,24 @@ public class RepositoryIndexSearchLayerTest
 
         MetadataRepositoryIndex metaIndexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         RepositoryMetadata repoMetadata =
-            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", metaIndexer.GROUP_METADATA );
+            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
         repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
-                                    metaIndexer.ARTIFACT_METADATA );
+                                    MetadataRepositoryIndex.ARTIFACT_METADATA );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
         repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
-                                    metaIndexer.SNAPSHOT_METADATA );
+                                    MetadataRepositoryIndex.SNAPSHOT_METADATA );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
-        repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", metaIndexer.GROUP_METADATA );
+        repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
@@ -345,14 +329,14 @@ public class RepositoryIndexSearchLayerTest
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
-            assertEquals( result.getArtifact().getGroupId(), "test" );
+            assertEquals( "test", result.getArtifact().getGroupId() );
         }
 
         returnList = searchLayer.searchGeneral( "test-artifactId" );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
-            assertEquals( result.getArtifact().getArtifactId(), "test-artifactId" );
+            assertEquals( "test-artifactId", result.getArtifact().getArtifactId() );
         }
 
     }
@@ -375,7 +359,7 @@ public class RepositoryIndexSearchLayerTest
     {
         RepositoryMetadata repoMetadata = null;
         URL url;
-        InputStream is = null;
+        InputStream is;
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata

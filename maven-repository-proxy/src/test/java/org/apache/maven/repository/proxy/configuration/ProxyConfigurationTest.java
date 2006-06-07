@@ -32,6 +32,10 @@ public class ProxyConfigurationTest
 {
     private ProxyConfiguration config;
 
+    private static final int DEFAULT_CACHE_PERIOD = 3600;
+
+    private static final int DEFAULT_PORT = 80;
+
     protected void setUp()
         throws Exception
     {
@@ -60,9 +64,9 @@ public class ProxyConfigurationTest
         ArtifactRepositoryLayout legacyLayout = new LegacyRepositoryLayout();
         ProxyRepository repo2 = new ProxyRepository( "repo2", "http://www.ibiblio.org/maven", legacyLayout );
         repo2.setCacheFailures( false );
-        repo2.setCachePeriod( 3600 );
+        repo2.setCachePeriod( DEFAULT_CACHE_PERIOD );
         repo2.setProxied( true );
-        config.setHttpProxy( "some.local.proxy", 80, "username", "password" );
+        config.setHttpProxy( "some.local.proxy", DEFAULT_PORT, "username", "password" );
         config.addRepository( repo2 );
         assertEquals( 2, config.getRepositories().size() );
 
@@ -80,14 +84,14 @@ public class ProxyConfigurationTest
         assertEquals( "http://www.ibiblio.org/maven", repo.getUrl() );
         assertFalse( repo.isCacheFailures() );
         assertTrue( repo.isHardfail() );
-        assertEquals( 3600, repo.getCachePeriod() );
+        assertEquals( DEFAULT_CACHE_PERIOD, repo.getCachePeriod() );
         assertEquals( repo2, repo );
         assertTrue( repo.isProxied() );
 
         ProxyInfo proxyInfo = config.getHttpProxy();
         assertNotNull( proxyInfo );
         assertEquals( "some.local.proxy", proxyInfo.getHost() );
-        assertEquals( 80, proxyInfo.getPort() );
+        assertEquals( DEFAULT_PORT, proxyInfo.getPort() );
         assertEquals( "username", proxyInfo.getUserName() );
         assertEquals( "password", proxyInfo.getPassword() );
 
@@ -96,7 +100,7 @@ public class ProxyConfigurationTest
             repositories.add( new ProxyRepository( "repo", "url", defLayout ) );
             fail( "Expected UnsupportedOperationException not thrown." );
         }
-        catch ( java.lang.UnsupportedOperationException e )
+        catch ( UnsupportedOperationException e )
         {
             assertTrue( true );
         }

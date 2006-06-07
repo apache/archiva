@@ -47,10 +47,8 @@ public class ArtifactRepositoryIndex
      * @param indexPath  the path where the lucene index will be created/updated.
      * @param repository the repository where the indexed artifacts are located
      * @param digester   the digester object to generate the checksum strings
-     * @throws RepositoryIndexException
      */
     public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
-        throws RepositoryIndexException
     {
         super( indexPath, repository );
         this.digester = digester;
@@ -179,12 +177,9 @@ public class ArtifactRepositoryIndex
      *
      * @param name     the complete path name of the class
      * @param packages the packages buffer
-     * @return true if the package is successfully added
      */
-    private boolean addClassPackage( String name, StringBuffer packages )
+    private void addClassPackage( String name, StringBuffer packages )
     {
-        boolean isAdded = false;
-
         int idx = name.lastIndexOf( '/' );
         if ( idx > 0 )
         {
@@ -193,10 +188,7 @@ public class ArtifactRepositoryIndex
             {
                 packages.append( packageName ).append( "\n" );
             }
-            isAdded = true;
         }
-
-        return isAdded;
     }
 
     /**
@@ -204,9 +196,8 @@ public class ArtifactRepositoryIndex
      *
      * @param entry the zip entry to be added
      * @param files the buffer of files to update
-     * @return true if the file was successfully added
      */
-    private boolean addFile( ZipEntry entry, StringBuffer files )
+    private void addFile( ZipEntry entry, StringBuffer files )
     {
         String name = entry.getName();
         int idx = name.lastIndexOf( '/' );
@@ -215,14 +206,9 @@ public class ArtifactRepositoryIndex
             name = name.substring( idx + 1 );
         }
 
-        boolean isAdded = false;
-
         if ( files.indexOf( name + "\n" ) < 0 )
         {
             files.append( name ).append( "\n" );
-            isAdded = true;
         }
-
-        return isAdded;
     }
 }

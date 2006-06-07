@@ -1,5 +1,21 @@
 package org.apache.maven.repository.manager.web.action;
 
+/*
+ * Copyright 2005-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import com.opensymphony.xwork.Action;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -11,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -38,15 +55,15 @@ public class RepositoryBrowseAction
 
     private String group;
 
-    private TreeMap artifactMap;
+    private Map artifactMap;
 
     private String folder;
 
     private int idx;
 
     public String execute()
-        throws Exception
     {
+        // TODO! fix hardcoded path
         String path = "E:/jeprox/maven-repository-manager/trunk/maven-repository-discovery/src/test/repository";
 
         ArtifactRepository repository =
@@ -58,21 +75,19 @@ public class RepositoryBrowseAction
 
         artifactMap = new TreeMap();
 
-        String groupId;
-
         while ( iterator.hasNext() )
         {
             Artifact artifact = (Artifact) iterator.next();
 
-            groupId = artifact.getGroupId();
+            String groupId = artifact.getGroupId();
 
             String key = groupId.replace( '.', '/' ) + "/" + artifact.getArtifactId() + "/" + artifact.getVersion();
 
-            ArrayList artifactList;
+            List artifactList;
 
             if ( artifactMap.containsKey( key ) )
             {
-                artifactList = (ArrayList) artifactMap.get( key );
+                artifactList = (List) artifactMap.get( key );
             }
             else
             {
@@ -87,28 +102,28 @@ public class RepositoryBrowseAction
         }
 
         //set the index for folder level to be displayed
-        setIdx( 1 );
+        idx = 1;
 
-        setFolder( "" );
+        folder = "";
 
         return SUCCESS;
     }
 
+    // TODO! is this method needed?
     public String doEdit()
-        throws Exception
     {
-        setIdx( getIdx() + 1 );
+        idx = idx + 1;
 
         //set folder to "" if we are at the root directory
-        if ( getIdx() == 1 )
+        if ( idx == 1 )
         {
-            setFolder( "" );
+            folder = "";
         }
 
         return SUCCESS;
     }
 
-    public TreeMap getArtifactMap()
+    public Map getArtifactMap()
     {
         return artifactMap;
     }

@@ -32,6 +32,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ArtifactPomRewriter;
 import org.apache.maven.model.converter.ModelConverter;
+import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.converter.transaction.FileTransaction;
@@ -43,6 +44,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -212,6 +214,10 @@ public class DefaultRepositoryConverter
         {
             fileReader = new FileReader( file );
             metadata = reader.read( fileReader );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new RepositoryConversionException( "Error reading target metadata", e );
         }
         catch ( IOException e )
         {
@@ -443,9 +449,15 @@ public class DefaultRepositoryConverter
                     reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
-                catch ( Exception e )
+                catch ( IOException e )
                 {
                     throw new RepositoryConversionException( "Unable to write converted POM", e );
+                }
+                catch ( PomTranslationException e )
+                {
+                    // TODO! check handling, fix error message
+                    reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    result = false;
                 }
                 finally
                 {

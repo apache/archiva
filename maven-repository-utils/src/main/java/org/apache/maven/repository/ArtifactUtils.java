@@ -37,6 +37,10 @@ import java.util.StringTokenizer;
  */
 public class ArtifactUtils
 {
+    private ArtifactUtils()
+    {
+    }
+
     /**
      * Method used to build an artifact and then set its repository and file fields with the proper values
      *
@@ -245,6 +249,7 @@ public class ArtifactUtils
                 // contains artifactId, version, classifier, and extension.
                 String avceGlob = tokens.nextToken();
 
+                //noinspection CollectionDeclaredAsConcreteClass
                 LinkedList avceTokenList = new LinkedList();
 
                 StringTokenizer avceTokenizer = new StringTokenizer( avceGlob, "-" );

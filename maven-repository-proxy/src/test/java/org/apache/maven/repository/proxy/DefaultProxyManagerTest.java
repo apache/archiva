@@ -1,15 +1,5 @@
 package org.apache.maven.repository.proxy;
 
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
-import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
-import org.apache.maven.repository.proxy.repository.ProxyRepository;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-
-import java.io.File;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -25,6 +15,16 @@ import java.io.File;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
+import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
+import org.apache.maven.repository.proxy.repository.ProxyRepository;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+
+import java.io.File;
 
 /**
  * @author Edwin Punzalan
@@ -73,11 +73,11 @@ public class DefaultProxyManagerTest
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
 
         //test cache
-        file = proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
+        proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
 
         try
         {
-            file = proxy.get( "/commons-logging/commons-logging/2.0/commons-logging-2.0.jar" );
+            proxy.get( "/commons-logging/commons-logging/2.0/commons-logging-2.0.jar" );
             fail( "Expected ResourceDoesNotExistException exception not thrown" );
         }
         catch ( ResourceDoesNotExistException e )

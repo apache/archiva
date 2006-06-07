@@ -1,6 +1,6 @@
 package org.apache.maven.repository.indexing;
 
-/**
+/*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -180,10 +180,6 @@ public class PomRepositoryIndexingTest
             SearchResult result = (SearchResult) artifacts.next();
             Map map = result.getFieldMatches();
             Set mapEntry = map.entrySet();
-            for ( Iterator it = mapEntry.iterator(); it.hasNext(); )
-            {
-                Map.Entry entry = (Map.Entry) it.next();
-            }
             assertEquals( "jar", (String) map.get( RepositoryIndex.FLD_PACKAGING ) );
         }
 
@@ -212,7 +208,8 @@ public class PomRepositoryIndexingTest
             SearchResult result = (SearchResult) artifacts.next();
             Map map = result.getFieldMatches();
             boolean depFound = false;
-            Iterator dependencies = ( (List) map.get( RepositoryIndex.FLD_DEPENDENCIES ) ).iterator();
+            List list = (List) map.get( RepositoryIndex.FLD_DEPENDENCIES );
+            Iterator dependencies = list.iterator();
             while ( dependencies.hasNext() )
             {
                 String dep = (String) dependencies.next();
@@ -234,7 +231,8 @@ public class PomRepositoryIndexingTest
         {
             SearchResult result = (SearchResult) artifacts.next();
             Map map = result.getFieldMatches();
-            Iterator plugins = ( (List) map.get( RepositoryIndex.FLD_PLUGINS_BUILD ) ).iterator();
+            List list = (List) map.get( RepositoryIndex.FLD_PLUGINS_BUILD );
+            Iterator plugins = list.iterator();
             boolean found = false;
             while ( plugins.hasNext() )
             {
@@ -257,7 +255,8 @@ public class PomRepositoryIndexingTest
         {
             SearchResult result = (SearchResult) artifacts.next();
             Map map = result.getFieldMatches();
-            Iterator plugins = ( (List) map.get( RepositoryIndex.FLD_PLUGINS_REPORT ) ).iterator();
+            List list = (List) map.get( RepositoryIndex.FLD_PLUGINS_REPORT );
+            Iterator plugins = list.iterator();
             boolean found = false;
             while ( plugins.hasNext() )
             {
@@ -485,7 +484,7 @@ public class PomRepositoryIndexingTest
         RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.POM + pom.getId() );
         List artifactList = repoSearcher.search( qry );
-        assertEquals( artifactList.size(), 0 );
+        assertEquals( 0, artifactList.size() );
     }
 
     private Model getPom( String groupId, String artifactId, String version )

@@ -16,32 +16,14 @@ package org.apache.maven.repository.manager.web.job;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.model.Model;
-import org.apache.maven.repository.discovery.ArtifactDiscoverer;
-import org.apache.maven.repository.discovery.DefaultArtifactDiscoverer;
-import org.apache.maven.repository.discovery.DefaultMetadataDiscoverer;
-import org.apache.maven.repository.discovery.LegacyArtifactDiscoverer;
-import org.apache.maven.repository.discovery.MetadataDiscoverer;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
-import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
-import org.apache.maven.repository.indexing.PomRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class is the discoverer job that is executed by the scheduler.
@@ -53,7 +35,7 @@ public class DiscovererJob
 {
     public static final String ROLE = DiscovererJob.class.getName();
 
-    public static String MAP_DISCOVERER_EXECUTION = "EXECUTION";
+    public static final String MAP_DISCOVERER_EXECUTION = "EXECUTION";
 
     /**
      * Execute the discoverer and the indexer.
@@ -76,10 +58,12 @@ public class DiscovererJob
         }
         catch ( RepositoryIndexException e )
         {
+            // TODO!
             e.printStackTrace();
         }
         catch ( MalformedURLException me )
         {
+            // TODO!
             me.printStackTrace();
         }
 

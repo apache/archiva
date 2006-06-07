@@ -129,7 +129,7 @@ public class DefaultMetadataDiscoverer
             //}
 
             Artifact artifact = null;
-            if ( metaVersion != null && !metaVersion.equals( "" ) )
+            if ( metaVersion != null && !"".equals( metaVersion ) )
             {
                 artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
             }

@@ -23,11 +23,11 @@ public class RepositoryIndexSearchHit
 {
     private Object obj;
 
-    private boolean isHashMap = false;
+    private boolean isHashMap;
 
-    private boolean isMetadata = false;
+    private boolean isMetadata;
 
-    private boolean isModel = false;
+    private boolean isModel;
 
     /**
      * Class constructor

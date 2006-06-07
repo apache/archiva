@@ -20,14 +20,13 @@ import com.opensymphony.xwork.Action;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
-import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
+import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
+import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.apache.maven.repository.manager.web.job.Configuration;
-import org.apache.maven.repository.indexing.RepositoryIndex;
 
 import java.io.File;
 import java.net.MalformedURLException;

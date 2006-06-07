@@ -29,7 +29,7 @@ import java.io.File;
  */
 public interface ProxyManager
 {
-    static String ROLE = ProxyManager.class.getName();
+    String ROLE = ProxyManager.class.getName();
 
     /**
      * Used to retrieve a cached path or retrieve one if the cache does not contain it yet.

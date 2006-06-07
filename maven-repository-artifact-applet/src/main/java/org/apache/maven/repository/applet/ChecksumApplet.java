@@ -14,7 +14,6 @@ package org.apache.maven.repository.applet;
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 import javax.swing.*;
@@ -56,53 +55,73 @@ public class ChecksumApplet
     public String generateMd5( final String file )
         throws IOException, NoSuchAlgorithmException
     {
-        return (String) AccessController.doPrivileged( new PrivilegedAction()
+        Object o = AccessController.doPrivileged( new PrivilegedAction()
         {
             public Object run()
             {
                 try
                 {
-                    MessageDigest digest = MessageDigest.getInstance( "MD5" );
-
-                    long total = new File( file ).length();
-                    InputStream fis = new FileInputStream( file );
-                    try
-                    {
-                        long totalRead = 0;
-                        byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
-                        int numRead;
-                        do
-                        {
-                            numRead = fis.read( buffer );
-                            if ( numRead > 0 )
-                            {
-                                digest.update( buffer, 0, numRead );
-                                totalRead += numRead;
-                                progressBar.setValue( (int) ( totalRead * progressBar.getMaximum() / total ) );
-                            }
-                        }
-                        while ( numRead != -1 );
-                    }
-                    finally
-                    {
-                        fis.close();
-                    }
-
-                    return byteArrayToHexStr( digest.digest() );
+                    return checksumFile( file );
                 }
                 catch ( NoSuchAlgorithmException e )
                 {
-                    throw new RuntimeException( e );
+                    return e;
                 }
                 catch ( IOException e )
                 {
-                    throw new RuntimeException( e );
+                    return e;
                 }
             }
         } );
+
+        //noinspection ChainOfInstanceofChecks
+        if ( o instanceof IOException )
+        {
+            throw (IOException) o;
+        }
+        else if ( o instanceof NoSuchAlgorithmException )
+        {
+            throw (NoSuchAlgorithmException) o;
+        }
+        else
+        {
+            return (String) o;
+        }
     }
 
-    private static String byteArrayToHexStr( byte[] data )
+    protected String checksumFile( String file )
+        throws NoSuchAlgorithmException, IOException
+    {
+        MessageDigest digest = MessageDigest.getInstance( "MD5" );
+
+        long total = new File( file ).length();
+        InputStream fis = new FileInputStream( file );
+        try
+        {
+            long totalRead = 0;
+            byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
+            int numRead;
+            do
+            {
+                numRead = fis.read( buffer );
+                if ( numRead > 0 )
+                {
+                    digest.update( buffer, 0, numRead );
+                    totalRead += numRead;
+                    progressBar.setValue( (int) ( totalRead * progressBar.getMaximum() / total ) );
+                }
+            }
+            while ( numRead != -1 );
+        }
+        finally
+        {
+            fis.close();
+        }
+
+        return byteArrayToHexStr( digest.digest() );
+    }
+
+    protected static String byteArrayToHexStr( byte[] data )
     {
         String output = "";
 

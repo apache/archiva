@@ -132,7 +132,7 @@ public class Cache
      * @param key   the object to map the valued object
      * @param value the object to cache
      */
-    public Object put( Object key, Object value )
+    public void put( Object key, Object value )
     {
         Object old = null;
 
@@ -148,8 +148,6 @@ public class Cache
         }
 
         manageCache();
-
-        return old;
     }
 
     /**

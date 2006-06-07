@@ -103,6 +103,10 @@ public class DefaultRepositoryIndexSearcher
             Hits hits = searcher.search( luceneQuery );
             docs = buildList( hits );
         }
+        catch ( MalformedURLException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
+        }
         catch ( IOException e )
         {
             throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
@@ -168,17 +172,15 @@ public class DefaultRepositoryIndexSearcher
     protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc )
         throws MalformedURLException, IOException, XmlPullParserException
     {
-        String groupId, artifactId, version, name, packaging;
         RepositoryIndexSearchHit searchHit = null;
 
         // the document is of type artifact
         if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.ARTIFACT ) )
         {
-            groupId = doc.get( RepositoryIndex.FLD_GROUPID );
-            artifactId = doc.get( RepositoryIndex.FLD_ARTIFACTID );
-            version = doc.get( RepositoryIndex.FLD_VERSION );
-            name = doc.get( RepositoryIndex.FLD_NAME );
-            packaging = doc.get( RepositoryIndex.FLD_PACKAGING );
+            String groupId = doc.get( RepositoryIndex.FLD_GROUPID );
+            String artifactId = doc.get( RepositoryIndex.FLD_ARTIFACTID );
+            String version = doc.get( RepositoryIndex.FLD_VERSION );
+            String packaging = doc.get( RepositoryIndex.FLD_PACKAGING );
             Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
 
             artifact.setFile(
@@ -224,7 +226,7 @@ public class DefaultRepositoryIndexSearcher
             String metadataFile = (String) it.next();
             String tmpDir = (String) it.next();
 
-            String metadataType = "";
+            String metadataType;
             if ( tmpDir.equals( doc.get( RepositoryIndex.FLD_VERSION ) ) )
             {
                 metadataType = MetadataRepositoryIndex.SNAPSHOT_METADATA;
@@ -258,16 +260,17 @@ public class DefaultRepositoryIndexSearcher
      * @param filename     the name of the metadata file
      * @param metadataType the type of RepositoryMetadata object to be created (GROUP, ARTIFACT or SNAPSHOT)
      * @return RepositoryMetadata
-     * @throws MalformedURLException
      * @throws IOException
      * @throws XmlPullParserException
      */
     private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename,
                                             String metadataType )
-        throws MalformedURLException, IOException, XmlPullParserException
+        throws IOException, XmlPullParserException
     {
         RepositoryMetadata repoMetadata = null;
-        InputStream is = null;
+
+        // TODO! file handles left open
+        InputStream is;
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
         //group metadata

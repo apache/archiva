@@ -29,22 +29,22 @@ public class ProxyRepository
     extends DefaultArtifactRepository
 {
     // zero caches forever
-    private long cachePeriod = 0;
+    private long cachePeriod;
 
-    private boolean cacheFailures = false;
+    private boolean cacheFailures;
 
     private boolean hardfail = true;
 
-    private boolean proxied = false;
+    private boolean proxied;
 
     public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout, boolean cacheFailures,
                             long cachePeriod )
     {
         this( id, url, layout );
 
-        setCacheFailures( cacheFailures );
+        this.cacheFailures = cacheFailures;
 
-        setCachePeriod( cachePeriod );
+        this.cachePeriod = cachePeriod;
     }
 
     public ProxyRepository( String id, String url, ArtifactRepositoryLayout layout )

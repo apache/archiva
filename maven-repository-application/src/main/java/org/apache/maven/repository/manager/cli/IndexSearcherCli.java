@@ -20,10 +20,10 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.DefaultRepositoryIndexSearcher;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.plexus.PlexusContainerException;
@@ -40,6 +40,10 @@ import java.net.MalformedURLException;
  */
 public class IndexSearcherCli
 {
+    private IndexSearcherCli()
+    {
+    }
+
     public static void main( String[] args )
         throws PlexusContainerException, ComponentLookupException, RepositoryIndexException, MalformedURLException,
         RepositoryIndexSearchException
@@ -62,7 +66,7 @@ public class IndexSearcherCli
 
         ArtifactRepositoryIndex index =
             indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ).getAbsolutePath(), repository );
-              
+
         DefaultRepositoryIndexSearcher searcher = indexFactory.createDefaultRepositoryIndexSearcher( index );
 
         try

@@ -73,11 +73,11 @@ public class LegacyProxyManagerTest
                     file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
 
         //test cache
-        file = proxy.get( "/commons-logging/jars/commons-logging-1.0.jar" );
+        proxy.get( "/commons-logging/jars/commons-logging-1.0.jar" );
 
         try
         {
-            file = proxy.get( "/commons-logging/jars/commons-logging-2.0.jar" );
+            proxy.get( "/commons-logging/jars/commons-logging-2.0.jar" );
             fail( "Expected ResourceDoesNotExistException exception not thrown" );
         }
         catch ( ResourceDoesNotExistException e )

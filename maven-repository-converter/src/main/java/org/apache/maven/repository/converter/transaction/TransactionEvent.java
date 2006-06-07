@@ -1,7 +1,5 @@
 package org.apache.maven.repository.converter.transaction;
 
-import java.io.IOException;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -17,6 +15,8 @@ import java.io.IOException;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import java.io.IOException;
 
 /**
  * Interface for individual events in a transaction.

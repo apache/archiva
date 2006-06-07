@@ -17,8 +17,8 @@ package org.apache.maven.repository.manager.web.action;
  */
 
 import com.opensymphony.xwork.Action;
-import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
+import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
 
 /**
  * This is the Action class of index.jsp, which is the initial page of the web application.
@@ -53,6 +53,7 @@ public class BaseAction
         }
         catch ( Exception e )
         {
+            // TODO: better exception handling!
             e.printStackTrace();
             return ERROR;
         }

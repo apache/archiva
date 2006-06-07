@@ -1,14 +1,13 @@
 package org.apache.maven.repository.indexing;
 
 /*
- * Copyright 2001-2005 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
-
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,6 +30,7 @@ import org.apache.maven.repository.digest.Digester;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -55,11 +55,9 @@ public class PomRepositoryIndex
      * @param repository      the repository where objects indexed by this class resides
      * @param digester        the digester to be used for generating checksums
      * @param artifactFactory the factory for building artifact objects
-     * @throws RepositoryIndexException
      */
     public PomRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester,
                                ArtifactFactory artifactFactory )
-        throws RepositoryIndexException
     {
         super( indexPath, repository );
         this.digester = digester;
@@ -265,6 +263,10 @@ public class PomRepositoryIndex
         try
         {
             return digester.createChecksum( new File( file ), algorithm );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new RepositoryIndexException( e.getMessage(), e );
         }
         catch ( IOException e )
         {

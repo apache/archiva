@@ -422,7 +422,7 @@ public class ArtifactRepositoryIndexingTest
         try
         {
             Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "~~~~~" );
-            List artifacts = repoSearchLayer.searchAdvanced( qry );
+            repoSearchLayer.searchAdvanced( qry );
             fail( "Must throw an exception on unparseable query." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -436,7 +436,7 @@ public class ArtifactRepositoryIndexingTest
         try
         {
             Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
-            List artifacts = repoSearchLayer.searchAdvanced( qry );
+            repoSearchLayer.searchAdvanced( qry );
             fail( "Must throw an exception on invalid index location." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -466,7 +466,7 @@ public class ArtifactRepositoryIndexingTest
         RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
         List artifacts = repoSearcher.search( qry );
-        assertEquals( artifacts.size(), 0 );
+        assertEquals( 0, artifacts.size() );
     }
 
     /**

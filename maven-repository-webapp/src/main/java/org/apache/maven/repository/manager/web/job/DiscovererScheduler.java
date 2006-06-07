@@ -16,25 +16,17 @@ package org.apache.maven.repository.manager.web.job;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.text.ParseException;
-import java.util.Properties;
-
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
-import org.apache.maven.repository.discovery.ArtifactDiscoverer;
-import org.apache.maven.repository.discovery.MetadataDiscoverer;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
+
+import java.text.ParseException;
+import java.util.Properties;
 
 /**
  * This class sets the job to be executed in the plexus-quartz scheduler
@@ -54,8 +46,6 @@ public class DiscovererScheduler
      */
     private Scheduler scheduler;
 
-    private Properties props;
-
     /**
      * @plexus.requirement
      */
@@ -64,17 +54,16 @@ public class DiscovererScheduler
     /**
      * Method that sets the schedule in the plexus-quartz scheduler
      *
-     * @throws IOException
      * @throws ParseException
      * @throws SchedulerException
      */
     public void setSchedule()
-        throws IOException, ParseException, SchedulerException
+        throws ParseException, SchedulerException
     {
-        props = config.getProperties();
+        Properties props = config.getProperties();
         JobDetail jobDetail = new JobDetail( "discovererJob", "DISCOVERER", DiscovererJob.class );
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put( DiscovererJob.LOGGER, getLogger() );
+        dataMap.put( AbstractJob.LOGGER, getLogger() );
         dataMap.put( DiscovererJob.MAP_DISCOVERER_EXECUTION, execution );
         jobDetail.setJobDataMap( dataMap );
 

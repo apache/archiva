@@ -89,6 +89,8 @@ public class DefaultProxyManager
      */
     private Map failuresCache = new HashMap();
 
+    private static final int MS_PER_SEC = 1000;
+
     public void setConfiguration( ProxyConfiguration config )
     {
         this.config = config;
@@ -413,7 +415,7 @@ public class DefaultProxyManager
                     }
                     else
                     {
-                        long repoTimestamp = target.lastModified() + repository.getCachePeriod() * 1000;
+                        long repoTimestamp = target.lastModified() + repository.getCachePeriod() * MS_PER_SEC;
                         wagon.getIfNewer( path, temp, repoTimestamp );
                     }
 

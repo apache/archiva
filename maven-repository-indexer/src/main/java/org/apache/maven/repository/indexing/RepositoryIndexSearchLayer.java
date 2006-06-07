@@ -18,7 +18,6 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
@@ -144,7 +143,7 @@ public class RepositoryIndexSearchLayer
             else if ( hit.isMetadata() )
             {
                 //@todo what about metadata objects?
-                RepositoryMetadata metadata = (RepositoryMetadata) hit.getObject();
+//                RepositoryMetadata metadata = (RepositoryMetadata) hit.getObject();
             }
         }
 
@@ -212,7 +211,7 @@ public class RepositoryIndexSearchLayer
             }
         }
 
-        if ( values != null && values.size() > 0 )
+        if ( !values.isEmpty() )
         {
             resultMap.put( key, values );
         }
@@ -351,7 +350,7 @@ public class RepositoryIndexSearchLayer
             }
         }
 
-        if ( values.size() > 0 && values != null )
+        if ( !values.isEmpty() )
         {
             map.put( field, values );
         }

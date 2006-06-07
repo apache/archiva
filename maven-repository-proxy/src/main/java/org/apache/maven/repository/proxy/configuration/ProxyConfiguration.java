@@ -74,7 +74,7 @@ public class ProxyConfiguration
         proxyInfo.setHost( host );
         proxyInfo.setPort( port );
 
-        setHttpProxy( proxyInfo );
+        httpProxy = proxyInfo;
     }
 
     public void setHttpProxy( String host, int port, String username, String password )

@@ -581,10 +581,10 @@ public class RepositoryConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd", Locale.getDefault() );
         long origTime = dateFormat.parse( "2006-03-03" ).getTime();
-	targetFile.setLastModified( origTime );
-	targetPomFile.setLastModified( origTime );
+        targetFile.setLastModified( origTime );
+        targetPomFile.setLastModified( origTime );
 
         sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
         sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
@@ -954,7 +954,7 @@ public class RepositoryConverterTest
             }
             else if ( file.isDirectory() )
             {
-                if ( !file.getName().equals( ".svn" ) )
+                if ( !".svn".equals( file.getName() ) )
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {

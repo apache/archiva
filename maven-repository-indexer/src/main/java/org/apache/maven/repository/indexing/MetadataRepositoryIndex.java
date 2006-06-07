@@ -45,10 +45,8 @@ public class MetadataRepositoryIndex
      *
      * @param indexPath  the path to the index
      * @param repository the repository where the metadata to be indexed is located
-     * @throws RepositoryIndexException
      */
     public MetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException
     {
         super( indexPath, repository );
     }
@@ -105,7 +103,7 @@ public class MetadataRepositoryIndex
                 repoMetadata.getBaseVersion() + "/";
         }
 
-        if ( !repoMetadata.getRemoteFilename().equals( "" ) && repoMetadata.getRemoteFilename() != null )
+        if ( !"".equals( repoMetadata.getRemoteFilename() ) && repoMetadata.getRemoteFilename() != null )
         {
             path = path + repoMetadata.getRemoteFilename();
         }
@@ -130,7 +128,7 @@ public class MetadataRepositoryIndex
         for ( Iterator iter = plugins.iterator(); iter.hasNext(); )
         {
             Plugin plugin = (Plugin) iter.next();
-            if ( plugin.getPrefix() != null && !plugin.getPrefix().equals( "" ) )
+            if ( plugin.getPrefix() != null && !"".equals( plugin.getPrefix() ) )
             {
                 pluginAppended = plugin.getPrefix() + "\n";
             }
@@ -138,7 +136,7 @@ public class MetadataRepositoryIndex
         doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );
         doc.add( Field.Text( FLD_GROUPID, metadata.getGroupId() ) );
 
-        if ( metadata.getArtifactId() != null && !metadata.getArtifactId().equals( "" ) )
+        if ( metadata.getArtifactId() != null && !"".equals( metadata.getArtifactId() ) )
         {
             doc.add( Field.Text( FLD_ARTIFACTID, metadata.getArtifactId() ) );
         }
@@ -147,7 +145,7 @@ public class MetadataRepositoryIndex
             doc.add( Field.Text( FLD_ARTIFACTID, "" ) );
         }
 
-        if ( metadata.getVersion() != null && !metadata.getVersion().equals( "" ) )
+        if ( metadata.getVersion() != null && !"".equals( metadata.getVersion() ) )
         {
             doc.add( Field.Text( FLD_VERSION, metadata.getVersion() ) );
         }

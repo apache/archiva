@@ -16,29 +16,29 @@ package org.apache.maven.repository.manager.web.execution;
  * limitations under the License.
  */
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.repository.indexing.RepositoryIndexException;
+import org.apache.maven.model.Model;
+import org.apache.maven.repository.discovery.ArtifactDiscoverer;
+import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
 import org.apache.maven.repository.indexing.PomRepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.manager.web.job.Configuration;
-import org.apache.maven.repository.discovery.ArtifactDiscoverer;
-import org.apache.maven.repository.discovery.MetadataDiscoverer;
-import org.apache.maven.model.Model;
-import org.apache.lucene.index.IndexReader;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.Properties;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * This is the class that executes the discoverer and indexer.
@@ -80,8 +80,6 @@ public class DiscovererExecution
 
     private ArtifactRepositoryLayout layout;
 
-    private Properties props;
-
     private String indexPath;
 
     private String blacklistedPatterns;
@@ -101,23 +99,15 @@ public class DiscovererExecution
     public void executeDiscovererIfIndexDoesNotExist()
         throws MalformedURLException, RepositoryIndexException
     {
-        props = config.getProperties();
+        Properties props = config.getProperties();
         indexPath = props.getProperty( "index.path" );
 
         File indexDir = new File( indexPath );
-        boolean isExisting;
+        boolean isExisting = false;
 
         if ( IndexReader.indexExists( indexDir ) )
         {
             isExisting = true;
-        }
-        else if ( !indexDir.exists() )
-        {
-            isExisting = false;
-        }
-        else
-        {
-            isExisting = false;
         }
 
         if ( !isExisting )
@@ -132,12 +122,12 @@ public class DiscovererExecution
     public void executeDiscoverer()
         throws MalformedURLException, RepositoryIndexException
     {
-        props = config.getProperties();
+        Properties props = config.getProperties();
         indexPath = props.getProperty( "index.path" );
         layout = config.getLayout();
         blacklistedPatterns = props.getProperty( "blacklist.patterns" );
-        includeSnapshots = new Boolean( props.getProperty( "include.snapshots" ) ).booleanValue();
-        convertSnapshots = new Boolean( props.getProperty( "convert.snapshots" ) ).booleanValue();
+        includeSnapshots = Boolean.valueOf( props.getProperty( "include.snapshots" ) ).booleanValue();
+        convertSnapshots = Boolean.valueOf( props.getProperty( "convert.snapshots" ) ).booleanValue();
 
         try
         {
@@ -149,11 +139,11 @@ public class DiscovererExecution
         }
 
         getLogger().info( "[DiscovererExecution] Started discovery and indexing.." );
-        if ( props.getProperty( "layout" ).equals( "default" ) )
+        if ( "default".equals( props.getProperty( "layout" ) ) )
         {
             executeDiscovererInDefaultRepo();
         }
-        else if ( props.getProperty( "layout" ).equals( "legacy" ) )
+        else if ( "legacy".equals( props.getProperty( "layout" ) ) )
         {
             executeDiscovererInLegacyRepo();
         }
@@ -210,17 +200,7 @@ public class DiscovererExecution
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             Artifact artifact = (Artifact) iter.next();
-            try
-            {
-                artifactIndex.indexArtifact( artifact );
-            }
-            catch ( Exception e )
-            {
-                if ( e instanceof RepositoryIndexException )
-                {
-                    throw (RepositoryIndexException) e;
-                }
-            }
+            artifactIndex.indexArtifact( artifact );
 
             if ( artifactIndex.isOpen() )
             {
@@ -248,17 +228,8 @@ public class DiscovererExecution
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
             RepositoryMetadata repoMetadata = (RepositoryMetadata) iter.next();
-            try
-            {
-                metadataIndex.index( repoMetadata );
-            }
-            catch ( Exception e )
-            {
-                if ( e instanceof RepositoryIndexException )
-                {
-                    throw (RepositoryIndexException) e;
-                }
-            }
+            metadataIndex.index( repoMetadata );
+
             if ( metadataIndex.isOpen() )
             {
                 metadataIndex.optimize();
@@ -281,17 +252,7 @@ public class DiscovererExecution
         for ( Iterator iter = models.iterator(); iter.hasNext(); )
         {
             Model model = (Model) iter.next();
-            try
-            {
-                pomIndex.indexPom( model );
-            }
-            catch ( Exception e )
-            {
-                if ( e instanceof RepositoryIndexException )
-                {
-                    throw (RepositoryIndexException) e;
-                }
-            }
+            pomIndex.indexPom( model );
 
             if ( pomIndex.isOpen() )
             {

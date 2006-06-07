@@ -1,13 +1,13 @@
 package org.apache.maven.repository.proxy.configuration;
 
 /*
- * Copyright 2003-2004 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,70 +50,70 @@ public class MavenProxyPropertyLoader
 
         config.setRepositoryCachePath( getMandatoryProperty( props, REPO_LOCAL_STORE ) );
 
-        {//just get the first proxy and break
-            String propertyList = props.getProperty( PROXY_LIST );
-            if ( propertyList != null )
+        //just get the first proxy and break
+        String propertyList = props.getProperty( PROXY_LIST );
+        if ( propertyList != null )
+        {
+            StringTokenizer tok = new StringTokenizer( propertyList, "," );
+            while ( tok.hasMoreTokens() )
             {
-                StringTokenizer tok = new StringTokenizer( propertyList, "," );
-                while ( tok.hasMoreTokens() )
+                String key = tok.nextToken();
+                if ( StringUtils.isNotEmpty( key ) )
                 {
-                    String key = tok.nextToken();
-                    if ( StringUtils.isNotEmpty( key ) )
+                    String host = getMandatoryProperty( props, "proxy." + key + ".host" );
+                    int port = Integer.parseInt( getMandatoryProperty( props, "proxy." + key + ".port" ) );
+
+                    // the username and password isn't required
+                    String username = props.getProperty( "proxy." + key + ".username" );
+                    String password = props.getProperty( "proxy." + key + ".password" );
+
+                    if ( StringUtils.isNotEmpty( username ) )
                     {
-                        String host = getMandatoryProperty( props, "proxy." + key + ".host" );
-                        int port = Integer.parseInt( getMandatoryProperty( props, "proxy." + key + ".port" ) );
-
-                        // the username and password isn't required
-                        String username = props.getProperty( "proxy." + key + ".username" );
-                        String password = props.getProperty( "proxy." + key + ".password" );
-
-                        if ( StringUtils.isNotEmpty( username ) )
-                        {
-                            config.setHttpProxy( host, port, username, password );
-                        }
-                        else
-                        {
-                            config.setHttpProxy( host, port );
-                        }
-
-                        //accept only one proxy configuration
-                        break;
+                        config.setHttpProxy( host, port, username, password );
                     }
+                    else
+                    {
+                        config.setHttpProxy( host, port );
+                    }
+
+                    //accept only one proxy configuration
+                    break;
                 }
             }
         }
 
         List repositories = new ArrayList();
-        { //get the remote repository list
-            String repoList = getMandatoryProperty( props, REPO_LIST );
 
-            StringTokenizer tok = new StringTokenizer( repoList, "," );
-            while ( tok.hasMoreTokens() )
+        //get the remote repository list
+        String repoList = getMandatoryProperty( props, REPO_LIST );
+
+        StringTokenizer tok = new StringTokenizer( repoList, "," );
+        while ( tok.hasMoreTokens() )
+        {
+            String key = tok.nextToken();
+
+            Properties repoProps = getSubset( props, "repo." + key + "." );
+            String url = getMandatoryProperty( props, "repo." + key + ".url" );
+            String proxyKey = repoProps.getProperty( "proxy" );
+
+            boolean cacheFailures =
+                Boolean.valueOf( repoProps.getProperty( "cache.failures", "false" ) ).booleanValue();
+            boolean hardFail = Boolean.valueOf( repoProps.getProperty( "hardfail", "true" ) ).booleanValue();
+            long cachePeriod = Long.parseLong( repoProps.getProperty( "cache.period", "0" ) );
+
+            ProxyRepository repository =
+                new ProxyRepository( key, url, new DefaultRepositoryLayout(), cacheFailures, cachePeriod );
+
+            repository.setHardfail( hardFail );
+
+            if ( StringUtils.isNotEmpty( proxyKey ) )
             {
-                String key = tok.nextToken();
-
-                Properties repoProps = getSubset( props, "repo." + key + "." );
-                String url = getMandatoryProperty( props, "repo." + key + ".url" );
-                String proxyKey = repoProps.getProperty( "proxy" );
-
-                boolean cacheFailures =
-                    Boolean.valueOf( repoProps.getProperty( "cache.failures", "false" ) ).booleanValue();
-                boolean hardFail = Boolean.valueOf( repoProps.getProperty( "hardfail", "true" ) ).booleanValue();
-                long cachePeriod = Long.parseLong( repoProps.getProperty( "cache.period", "0" ) );
-
-                ProxyRepository repository =
-                    new ProxyRepository( key, url, new DefaultRepositoryLayout(), cacheFailures, cachePeriod );
-
-                repository.setHardfail( hardFail );
-
-                if ( StringUtils.isNotEmpty( proxyKey ) )
-                {
-                    repository.setProxied( true );
-                }
-
-                repositories.add( repository );
+                repository.setProxied( true );
             }
+
+            repositories.add( repository );
         }
+
         config.setRepositories( repositories );
 
         validateDirectories( config );
@@ -161,7 +161,7 @@ public class MavenProxyPropertyLoader
     private String getMandatoryProperty( Properties props, String key )
         throws ValidationException
     {
-        final String value = props.getProperty( key );
+        String value = props.getProperty( key );
 
         if ( value == null )
         {

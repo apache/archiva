@@ -27,59 +27,58 @@ import java.util.List;
  */
 public interface RepositoryIndex
 {
-    static final String POM = "POM";
+    String POM = "POM";
 
-    static final String METADATA = "METADATA";
+    String METADATA = "METADATA";
 
-    static final String ARTIFACT = "ARTIFACT";
+    String ARTIFACT = "ARTIFACT";
 
-    static final String FLD_ID = "id";
+    String FLD_ID = "id";
 
-    static final String FLD_NAME = "name";
+    String FLD_NAME = "name";
 
-    static final String FLD_DOCTYPE = "doctype";
+    String FLD_DOCTYPE = "doctype";
 
-    static final String FLD_GROUPID = "groupId";
+    String FLD_GROUPID = "groupId";
 
-    static final String FLD_ARTIFACTID = "artifactId";
+    String FLD_ARTIFACTID = "artifactId";
 
-    static final String FLD_VERSION = "version";
+    String FLD_VERSION = "version";
 
-    static final String FLD_PACKAGING = "packaging";
+    String FLD_PACKAGING = "packaging";
 
-    static final String FLD_SHA1 = "sha1";
+    String FLD_SHA1 = "sha1";
 
-    static final String FLD_MD5 = "md5";
+    String FLD_MD5 = "md5";
 
-    static final String FLD_LASTUPDATE = "last update";
+    String FLD_LASTUPDATE = "last update";
 
-    static final String FLD_PLUGINPREFIX = "plugin prefix";
+    String FLD_PLUGINPREFIX = "plugin prefix";
 
-    static final String FLD_CLASSES = "class";
+    String FLD_CLASSES = "class";
 
-    static final String FLD_PACKAGES = "package";
+    String FLD_PACKAGES = "package";
 
-    static final String FLD_FILES = "file";
+    String FLD_FILES = "file";
 
-    static final String FLD_LICENSE_URLS = "license url";
+    String FLD_LICENSE_URLS = "license url";
 
-    static final String FLD_DEPENDENCIES = "dependency";
+    String FLD_DEPENDENCIES = "dependency";
 
-    static final String FLD_PLUGINS_BUILD = "build plugin";
+    String FLD_PLUGINS_BUILD = "build plugin";
 
-    static final String FLD_PLUGINS_REPORT = "report plugin";
+    String FLD_PLUGINS_REPORT = "report plugin";
 
-    static final String FLD_PLUGINS_ALL = "plugins_all";
+    String FLD_PLUGINS_ALL = "plugins_all";
 
-    static final String[] FIELDS = {FLD_ID, FLD_NAME, FLD_DOCTYPE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION,
-        FLD_PACKAGING, FLD_SHA1, FLD_MD5, FLD_LASTUPDATE, FLD_PLUGINPREFIX, FLD_CLASSES, FLD_PACKAGES, FLD_FILES,
-        FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
+    String[] FIELDS = {FLD_ID, FLD_NAME, FLD_DOCTYPE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_SHA1,
+        FLD_MD5, FLD_LASTUPDATE, FLD_PLUGINPREFIX, FLD_CLASSES, FLD_PACKAGES, FLD_FILES, FLD_LICENSE_URLS,
+        FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
 
-    static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_PACKAGING, FLD_LICENSE_URLS,
-        FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
+    List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
+        FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
 
-    static final String[] MODEL_FIELDS =
-        {FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT};
+    String[] MODEL_FIELDS = {FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT};
 
     /**
      * Method used to query the index status

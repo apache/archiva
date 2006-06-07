@@ -20,9 +20,12 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +45,12 @@ public abstract class AbstractArtifactDiscoverer
         "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
         "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
 
-    protected static final String POM = ".pom";
+    private static final String POM = ".pom";
 
     /**
      * Scan the repository for artifact paths.
      */
-    protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
+    private String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
     {
         return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
     }
@@ -114,7 +117,7 @@ public abstract class AbstractArtifactDiscoverer
                 try
                 {
                     Model model = mavenReader.read( new FileReader( filename ) );
-                    if ( ( pomArtifact != null ) && ( "pom".equals( model.getPackaging() ) ) )
+                    if ( pomArtifact != null && "pom".equals( model.getPackaging() ) )
                     {
                         if ( includeSnapshots || !pomArtifact.isSnapshot() )
                         {
@@ -122,10 +125,19 @@ public abstract class AbstractArtifactDiscoverer
                         }
                     }
                 }
-                catch ( Exception e )
+                catch ( FileNotFoundException e )
                 {
-                    getLogger().info( "error reading file: " + filename );
-                    e.printStackTrace();
+                    // this should never happen
+                    getLogger().error( "Error finding file during POM discovery: " + filename, e );
+                }
+                catch ( IOException e )
+                {
+                    getLogger().error( "Error reading file during POM discovery: " + filename + ": " + e );
+                }
+                catch ( XmlPullParserException e )
+                {
+                    getLogger().error(
+                        "Parse error reading file during POM discovery: " + filename + ": " + e.getMessage() );
                 }
             }
         }

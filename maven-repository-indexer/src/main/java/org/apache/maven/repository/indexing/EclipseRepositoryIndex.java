@@ -67,10 +67,8 @@ public class EclipseRepositoryIndex
      * @param indexPath  the path where the lucene index will be created/updated.
      * @param repository the repository where the indexed artifacts are located
      * @param digester   the digester object to generate the checksum strings
-     * @throws RepositoryIndexException
      */
     public EclipseRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
-        throws RepositoryIndexException
     {
         super( indexPath, repository );
 
