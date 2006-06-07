@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO [!]: Description.
+ * Base class for the artifact and metadata discoverers.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */

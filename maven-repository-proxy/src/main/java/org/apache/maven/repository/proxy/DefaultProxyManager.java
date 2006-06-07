@@ -52,7 +52,7 @@ import java.util.Map;
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
  * @todo too much of wagon manager is reproduced here because checksums need to be downloaded separately - is that necessary?
- * @todo this isn't reusing the parts of wagon manager than handle snapshots
+ * @todo this isn't reusing the parts of wagon manager than handle snapshots [!]
  */
 public class DefaultProxyManager
     extends AbstractLogEnabled
@@ -297,13 +297,13 @@ public class DefaultProxyManager
 
     private ArtifactRepositoryPolicy getReleasesPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration
+        //todo get policy configuration from ProxyConfiguration [!]
         return new ArtifactRepositoryPolicy();
     }
 
     private ArtifactRepositoryPolicy getSnapshotsPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration
+        //todo get policy configuration from ProxyConfiguration [!]
         return new ArtifactRepositoryPolicy();
     }
 
@@ -392,7 +392,7 @@ public class DefaultProxyManager
         {
             wagon = wagonManager.getWagon( repository.getProtocol() );
 
-            //@todo configure wagonManager
+            //@todo configure wagonManager [!]
 
             if ( useChecksum )
             {

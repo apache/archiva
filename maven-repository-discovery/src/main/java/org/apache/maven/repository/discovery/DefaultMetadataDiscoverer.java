@@ -179,19 +179,19 @@ public class DefaultMetadataDiscoverer
         }
         catch ( FileNotFoundException fe )
         {
-            // TODO: log ignored metadata
+            // TODO: log ignored metadata!
         }
         catch ( XmlPullParserException xe )
         {
-            // TODO: log ignored metadata
+            // TODO: log ignored metadata!
         }
         catch ( MalformedURLException e )
         {
-            // TODO: log ignored metadata
+            // TODO: log ignored metadata!
         }
         catch ( IOException ie )
         {
-            // TODO: log ignored metadata
+            // TODO: log ignored metadata!
         }
 
         return metadata;

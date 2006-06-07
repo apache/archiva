@@ -33,7 +33,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 /**
- * TODO: Description.
+ * Search by package name.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="org.apache.maven.repository.manager.web.action.PackageSearchAction"
@@ -82,7 +82,7 @@ public class PackageSearchAction
             return ERROR;
         }
 
-        // TODO: better config
+        // TODO: better config [!]
         String indexPath = configuration.getIndexDirectory();
 
         // TODO: reduce the amount of lookup?

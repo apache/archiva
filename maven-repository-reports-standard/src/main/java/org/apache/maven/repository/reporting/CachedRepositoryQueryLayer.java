@@ -30,8 +30,7 @@ public class CachedRepositoryQueryLayer
 {
     private Cache cache;
 
-    private static final double CACHE_HIT_RATIO = 0.5;
-
+    public static final double CACHE_HIT_RATIO = 0.5;
 
     public CachedRepositoryQueryLayer( ArtifactRepository repository )
     {

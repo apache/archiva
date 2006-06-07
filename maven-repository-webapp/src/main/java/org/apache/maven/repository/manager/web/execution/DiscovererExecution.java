@@ -156,7 +156,7 @@ public class DiscovererExecution
      *
      * @throws MalformedURLException
      * @throws RepositoryIndexException
-     * @todo why is this any different from legacy?
+     * @todo why is this any different from legacy? [!]
      */
     protected void executeDiscovererInDefaultRepo()
         throws MalformedURLException, RepositoryIndexException

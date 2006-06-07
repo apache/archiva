@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivilegedAction;
 
 /**
- * TODO: Description.
+ * Applet that takes a file on the local filesystem and checksums it for sending to the server.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
