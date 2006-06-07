@@ -264,33 +264,41 @@ public class DefaultRepositoryConverter
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
                                       ArtifactReporter reporter )
     {
-        String key = "failure.incorrect.";
-
+        String groupIdKey;
+        String artifactIdKey = null;
+        String snapshotKey = null;
+        String versionKey = null;
+        String versionsKey = null;
         if ( repositoryMetadata.storedInGroupDirectory() )
         {
-            key += "groupMetadata.";
+            groupIdKey = "failure.incorrect.groupMetadata.groupId";
         }
         else if ( repositoryMetadata.storedInArtifactVersionDirectory() )
         {
-            key += "snapshotMetadata.";
+            groupIdKey = "failure.incorrect.snapshotMetadata.groupId";
+            artifactIdKey = "failure.incorrect.snapshotMetadata.artifactId";
+            versionKey = "failure.incorrect.snapshotMetadata.version";
+            snapshotKey = "failure.incorrect.snapshotMetadata.snapshot";
         }
         else
         {
-            key += "artifactMetadata.";
+            groupIdKey = "failure.incorrect.artifactMetadata.groupId";
+            artifactIdKey = "failure.incorrect.artifactMetadata.artifactId";
+            versionsKey = "failure.incorrect.artifactMetadata.versions";
         }
 
         boolean result = true;
 
         if ( !metadata.getGroupId().equals( artifact.getGroupId() ) )
         {
-            reporter.addFailure( artifact, getI18NString( key + "groupId" ) );
+            reporter.addFailure( artifact, getI18NString( groupIdKey ) );
             result = false;
         }
         if ( !repositoryMetadata.storedInGroupDirectory() )
         {
             if ( !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
             {
-                reporter.addFailure( artifact, getI18NString( key + "artifactId" ) );
+                reporter.addFailure( artifact, getI18NString( artifactIdKey ) );
                 result = false;
             }
             if ( !repositoryMetadata.storedInArtifactVersionDirectory() )
@@ -313,7 +321,7 @@ public class DefaultRepositoryConverter
 
                 if ( !foundVersion )
                 {
-                    reporter.addFailure( artifact, getI18NString( key + "versions" ) );
+                    reporter.addFailure( artifact, getI18NString( versionsKey ) );
                     result = false;
                 }
             }
@@ -322,7 +330,7 @@ public class DefaultRepositoryConverter
                 // snapshot metadata
                 if ( !artifact.getBaseVersion().equals( metadata.getVersion() ) )
                 {
-                    reporter.addFailure( artifact, getI18NString( key + "version" ) );
+                    reporter.addFailure( artifact, getI18NString( versionKey ) );
                     result = false;
                 }
 
@@ -345,7 +353,7 @@ public class DefaultRepositoryConverter
 
                         if ( !correct )
                         {
-                            reporter.addFailure( artifact, getI18NString( key + "snapshot" ) );
+                            reporter.addFailure( artifact, getI18NString( snapshotKey ) );
                             result = false;
                         }
                     }
