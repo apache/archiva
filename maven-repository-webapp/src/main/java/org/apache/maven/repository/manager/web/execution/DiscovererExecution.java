@@ -54,17 +54,17 @@ public class DiscovererExecution
     private Configuration config;
 
     /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultArtifactDiscoverer"
+     * @plexus.requirement role-hint="default"
      */
     private ArtifactDiscoverer defaultArtifactDiscoverer;
 
     /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer" role-hint="org.apache.maven.repository.discovery.LegacyArtifactDiscoverer"
+     * @plexus.requirement role-hint="legacy"
      */
     private ArtifactDiscoverer legacyArtifactDiscoverer;
 
     /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultMetadataDiscoverer"
+     * @plexus.requirement role-hint="default"
      */
     private MetadataDiscoverer defaultMetadataDiscoverer;
 

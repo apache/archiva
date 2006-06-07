@@ -39,7 +39,7 @@ public class RepositoryBrowseAction
     implements Action
 {
     /**
-     * @plexus.requirement role-hint="org.apache.maven.repository.discovery.DefaultArtifactDiscoverer"
+     * @plexus.requirement role-hint="default"
      */
     private ArtifactDiscoverer discoverer;
 
