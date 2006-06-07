@@ -42,7 +42,7 @@ import java.util.StringTokenizer;
 /**
  * This class gets all the paths that contain the metadata files.
  *
- * @plexus.component role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="org.apache.maven.repository.discovery.DefaultMetadataDiscoverer"
+ * @plexus.component role="org.apache.maven.repository.discovery.MetadataDiscoverer" role-hint="default"
  */
 public class DefaultMetadataDiscoverer
     extends AbstractDiscoverer
