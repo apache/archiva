@@ -253,12 +253,12 @@ public class RepositoryConverterTest
         // TODO: check 2 warnings (extend and versions) matched on i18n key
     }
 
-    public void testV4SnapshotPomConvert()
-        throws IOException, RepositoryConversionException
+    private void doTestV4SnapshotPomConvert( String version, String expectedMetadataFileName )
+        throws RepositoryConversionException, IOException
     {
         // test that it is copied as is
 
-        Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0-SNAPSHOT" );
+        Artifact artifact = createArtifact( "test", "v4artifact", version );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
         File artifactMetadataFile = new File( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
@@ -291,7 +291,7 @@ public class RepositoryConverterTest
 
         assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
 
-        expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-metadata.xml" );
+        expectedMetadataFile = getTestFile( expectedMetadataFileName );
 
         compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
@@ -339,47 +339,21 @@ public class RepositoryConverterTest
         compareFiles( expectedMetadataFile, snapshotMetadataFile );
     }
 
+    public void testV4SnapshotPomConvert()
+        throws IOException, RepositoryConversionException
+    {
+        doTestV4SnapshotPomConvert( "1.0.0-SNAPSHOT", "src/test/expected-files/v4-snapshot-metadata.xml" );
+
+        assertTrue( true );
+    }
+
     public void testV4TimestampedSnapshotPomConvert()
         throws IOException, RepositoryConversionException
     {
-        // test that it is copied as is
+        doTestV4SnapshotPomConvert( "1.0.0-20060111.120115-1",
+                                    "src/test/expected-files/v4-timestamped-snapshot-metadata.xml" );
 
-        Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0-20060111.120115-1" );
-        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
-
-        ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
-        snapshotMetadataFile.delete();
-
-        repositoryConverter.convert( artifact, targetRepository, reporter );
-        checkSuccess();
-
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
-
-        artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        assertTrue( "Check POM created", pomFile.exists() );
-
-        compareFiles( sourcePomFile, pomFile );
-
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
-
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-artifact-metadata.xml" );
-
-        compareFiles( expectedMetadataFile, artifactMetadataFile );
-
-        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
-
-        expectedMetadataFile = getTestFile( "src/test/expected-files/v4-timestamped-snapshot-metadata.xml" );
-
-        compareFiles( expectedMetadataFile, snapshotMetadataFile );
+        assertTrue( true );
     }
 
     public void testV3TimestampedSnapshotPomConvert()

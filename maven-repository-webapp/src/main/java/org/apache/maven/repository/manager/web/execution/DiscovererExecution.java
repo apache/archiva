@@ -152,10 +152,11 @@ public class DiscovererExecution
 
     /**
      * Method that discovers and indexes artifacts, poms and metadata in a default
-     * m2 repository structure
+     * m2 repository structure.
      *
      * @throws MalformedURLException
      * @throws RepositoryIndexException
+     * @todo why is this any different from legacy?
      */
     protected void executeDiscovererInDefaultRepo()
         throws MalformedURLException, RepositoryIndexException

@@ -480,33 +480,17 @@ public class DefaultRepositoryConverter
         if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" ) ||
             properties.containsKey( "relocated.version" ) )
         {
-            String newGroupId = v3Model.getGroupId();
-            if ( properties.containsKey( "relocated.groupId" ) )
-            {
-                newGroupId = properties.getProperty( "relocated.groupId" );
-                properties.remove( "relocated.groupId" );
-            }
+            String newGroupId = properties.getProperty( "relocated.groupId", v3Model.getGroupId() );
+            properties.remove( "relocated.groupId" );
 
-            String newArtifactId = v3Model.getArtifactId();
-            if ( properties.containsKey( "relocated.artifactId" ) )
-            {
-                newArtifactId = properties.getProperty( "relocated.artifactId" );
-                properties.remove( "relocated.artifactId" );
-            }
+            String newArtifactId = properties.getProperty( "relocated.artifactId", v3Model.getArtifactId() );
+            properties.remove( "relocated.artifactId" );
 
-            String newVersion = v3Model.getVersion();
-            if ( properties.containsKey( "relocated.version" ) )
-            {
-                newVersion = properties.getProperty( "relocated.version" );
-                properties.remove( "relocated.version" );
-            }
+            String newVersion = properties.getProperty( "relocated.version", v3Model.getVersion() );
+            properties.remove( "relocated.version" );
 
-            String message = "";
-            if ( properties.containsKey( "relocated.message" ) )
-            {
-                message = properties.getProperty( "relocated.message" );
-                properties.remove( "relocated.message" );
-            }
+            String message = properties.getProperty( "relocated.message", "" );
+            properties.remove( "relocated.message" );
 
             if ( properties.isEmpty() )
             {
@@ -580,35 +564,37 @@ public class DefaultRepositoryConverter
     private boolean testChecksums( Artifact artifact, File file, ArtifactReporter reporter )
         throws IOException, RepositoryConversionException
     {
-        boolean result = true;
+        boolean result;
 
         try
         {
-            File md5 = new File( file.getParentFile(), file.getName() + ".md5" );
-            if ( md5.exists() )
-            {
-                String checksum = FileUtils.fileRead( md5 );
-                if ( !digester.verifyChecksum( file, checksum, Digester.MD5 ) )
-                {
-                    reporter.addFailure( artifact, getI18NString( "failure.incorrect.md5" ) );
-                    result = false;
-                }
-            }
-
-            File sha1 = new File( file.getParentFile(), file.getName() + ".sha1" );
-            if ( sha1.exists() )
-            {
-                String checksum = FileUtils.fileRead( sha1 );
-                if ( !digester.verifyChecksum( file, checksum, Digester.SHA1 ) )
-                {
-                    reporter.addFailure( artifact, getI18NString( "failure.incorrect.sha1" ) );
-                    result = false;
-                }
-            }
+            result = verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact,
+                                     "failure.incorrect.md5" );
+            result = result && verifyChecksum( file, file.getName() + ".sha1", Digester.SHA1, reporter, artifact,
+                                               "failure.incorrect.sha1" );
         }
         catch ( NoSuchAlgorithmException e )
         {
             throw new RepositoryConversionException( "Error copying artifact: " + e.getMessage(), e );
+        }
+        return result;
+    }
+
+    private boolean verifyChecksum( File file, String fileName, String algorithm, ArtifactReporter reporter,
+                                    Artifact artifact, String key )
+        throws IOException, NoSuchAlgorithmException
+    {
+        boolean result = true;
+
+        File md5 = new File( file.getParentFile(), fileName );
+        if ( md5.exists() )
+        {
+            String checksum = FileUtils.fileRead( md5 );
+            if ( !digester.verifyChecksum( file, checksum, algorithm ) )
+            {
+                reporter.addFailure( artifact, getI18NString( key ) );
+                result = false;
+            }
         }
         return result;
     }

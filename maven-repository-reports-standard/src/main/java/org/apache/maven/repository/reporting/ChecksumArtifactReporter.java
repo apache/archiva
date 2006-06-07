@@ -35,7 +35,9 @@ import java.security.NoSuchAlgorithmException;
 public class ChecksumArtifactReporter
     implements ArtifactReportProcessor
 {
-    /** @plexus.requirement */
+    /**
+     * @plexus.requirement
+     */
     private Digester digester;
 
     /**
@@ -60,60 +62,39 @@ public class ChecksumArtifactReporter
         String path = repository.pathOf( artifact );
         File file = new File( repository.getBasedir(), path );
 
-        File md5File = new File( repository.getBasedir(), path + ".md5" );
-        if ( md5File.exists() )
-        {
-            try
-            {
-                if ( digester.verifyChecksum( file, FileUtils.fileRead( md5File ), Digester.MD5 ) )
-                {
-                    reporter.addSuccess( artifact );
-                }
-                else
-                {
-                    reporter.addFailure( artifact, "MD5 checksum does not match." );
-                }
-            }
-            catch ( NoSuchAlgorithmException e )
-            {
-                reporter.addFailure( artifact, "Unable to read MD5: " + e.getMessage() );
-            }
-            catch ( IOException e )
-            {
-                reporter.addFailure( artifact, "Unable to read MD5: " + e.getMessage() );
-            }
-        }
-        else
-        {
-            reporter.addFailure( artifact, "MD5 checksum file does not exist." );
-        }
+        verifyChecksum( repository, path + ".md5", file, Digester.MD5, reporter, artifact );
+        verifyChecksum( repository, path + ".sha1", file, Digester.SHA1, reporter, artifact );
+    }
 
-        File sha1File = new File( repository.getBasedir(), path + ".sha1" );
-        if ( sha1File.exists() )
+    private void verifyChecksum( ArtifactRepository repository, String path, File file, String checksumAlgorithm,
+                                 ArtifactReporter reporter, Artifact artifact )
+    {
+        File checksumFile = new File( repository.getBasedir(), path );
+        if ( checksumFile.exists() )
         {
             try
             {
-                if ( digester.verifyChecksum( file, FileUtils.fileRead( sha1File ), Digester.SHA1 ) )
+                if ( digester.verifyChecksum( file, FileUtils.fileRead( checksumFile ), checksumAlgorithm ) )
                 {
                     reporter.addSuccess( artifact );
                 }
                 else
                 {
-                    reporter.addFailure( artifact, "SHA-1 checksum does not match." );
+                    reporter.addFailure( artifact, checksumAlgorithm + " checksum does not match." );
                 }
             }
             catch ( NoSuchAlgorithmException e )
             {
-                reporter.addFailure( artifact, "Unable to read SHA-1: " + e.getMessage() );
+                reporter.addFailure( artifact, "Unable to read " + checksumAlgorithm + ": " + e.getMessage() );
             }
             catch ( IOException e )
             {
-                reporter.addFailure( artifact, "Unable to read SHA-1: " + e.getMessage() );
+                reporter.addFailure( artifact, "Unable to read " + checksumAlgorithm + ": " + e.getMessage() );
             }
         }
         else
         {
-            reporter.addFailure( artifact, "SHA-1 checksum file does not exist." );
+            reporter.addFailure( artifact, checksumAlgorithm + " checksum file does not exist." );
         }
     }
 }

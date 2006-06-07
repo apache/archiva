@@ -153,6 +153,7 @@ public class MetadataRepositoryIndex
         {
             doc.add( Field.Text( FLD_VERSION, "" ) );
         }
+        // TODO! do we need to add all these empty fields?
         doc.add( Field.Text( FLD_DOCTYPE, METADATA ) );
         doc.add( Field.Keyword( FLD_PACKAGING, "" ) );
         doc.add( Field.Text( FLD_SHA1, "" ) );

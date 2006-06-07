@@ -276,6 +276,7 @@ public class DefaultRepositoryIndexSearcher
         //group metadata
         if ( metadataType.equals( MetadataRepositoryIndex.GROUP_METADATA ) )
         {
+            // TODO! use pathOfMetadata
             is = new FileInputStream(
                 new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ) );
             repoMetadata = new GroupRepositoryMetadata( groupId );
@@ -284,6 +285,7 @@ public class DefaultRepositoryIndexSearcher
         //artifact metadata
         else if ( metadataType.equals( MetadataRepositoryIndex.ARTIFACT_METADATA ) )
         {
+            // TODO! use pathOfMetadata
             is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
                 artifactId + "/" + filename ) );
             repoMetadata =
@@ -293,6 +295,7 @@ public class DefaultRepositoryIndexSearcher
         //snapshot/version metadata
         else if ( metadataType.equals( MetadataRepositoryIndex.SNAPSHOT_METADATA ) )
         {
+            // TODO! use pathOfMetadata
             is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
                 artifactId + "/" + version + "/" + filename ) );
             repoMetadata = new SnapshotArtifactRepositoryMetadata(
