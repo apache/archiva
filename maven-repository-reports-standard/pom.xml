@@ -61,5 +61,9 @@
       <groupId>org.apache.maven.repository</groupId>
       <artifactId>maven-repository-utils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-indexer</artifactId>
+    </dependency>
   </dependencies>
 </project>
