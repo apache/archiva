@@ -463,7 +463,6 @@ public class DefaultRepositoryConverter
                 }
                 catch ( PomTranslationException e )
                 {
-                    // TODO! check handling, fix error message
                     reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }

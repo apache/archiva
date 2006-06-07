@@ -26,7 +26,6 @@ import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -92,106 +91,113 @@ public class DefaultMetadataDiscoverer
      */
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
     {
-        RepositoryMetadata metadata = null;
-
+        Metadata m = null;
+        String repoPath = repo + "/" + metadataPath;
         try
         {
-            URL url = new File( repo + "/" + metadataPath ).toURL();
+            URL url = new File( repoPath ).toURL();
             InputStream is = url.openStream();
             Reader reader = new InputStreamReader( is );
             MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
-            Metadata m = metadataReader.read( reader );
-            String metaGroupId = m.getGroupId();
-            String metaArtifactId = m.getArtifactId();
-            String metaVersion = m.getVersion();
-
-            // check if the groupId, artifactId and version is in the
-            // metadataPath
-            // parse the path, in reverse order
-            List pathParts = new ArrayList();
-            StringTokenizer st = new StringTokenizer( metadataPath, "/\\" );
-            while ( st.hasMoreTokens() )
-            {
-                pathParts.add( st.nextToken() );
-            }
-
-            Collections.reverse( pathParts );
-            // remove the metadata file
-            pathParts.remove( 0 );
-            Iterator it = pathParts.iterator();
-            String tmpDir = (String) it.next();
-
-            //ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-            //if( metaVersion != null && !metaVersion.equals( "" ) )
-            //{
-            //   VersionRange version = VersionRange.createFromVersion( metaVersion );
-            //}
-
-            Artifact artifact = null;
-            if ( metaVersion != null && !"".equals( metaVersion ) )
-            {
-                artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
-            }
-
-            // snapshotMetadata
-            if ( tmpDir != null && tmpDir.equals( metaVersion ) )
-            {
-                if ( artifact != null )
-                {
-                    metadata = new SnapshotArtifactRepositoryMetadata( artifact );
-                }
-            }
-            else if ( tmpDir != null && tmpDir.equals( metaArtifactId ) )
-            {
-                // artifactMetadata
-                if ( artifact != null )
-                {
-                    metadata = new ArtifactRepositoryMetadata( artifact );
-                }
-            }
-            else
-            {
-
-                String groupDir = "";
-                int ctr = 0;
-                for ( it = pathParts.iterator(); it.hasNext(); )
-                {
-                    String path = (String) it.next();
-                    if ( ctr == 0 )
-                    {
-                        groupDir = path;
-                    }
-                    else
-                    {
-                        groupDir = path + "." + groupDir;
-                    }
-                    ctr++;
-                }
-
-                // groupMetadata
-                if ( metaGroupId != null && metaGroupId.equals( groupDir ) )
-                {
-                    metadata = new GroupRepositoryMetadata( metaGroupId );
-                }
-            }
-
+            m = metadataReader.read( reader );
         }
-        catch ( FileNotFoundException fe )
+        catch ( XmlPullParserException e )
         {
-            // TODO: log ignored metadata!
-        }
-        catch ( XmlPullParserException xe )
-        {
-            // TODO: log ignored metadata!
+            getLogger().error( "Error parsing metadata file '" + repoPath + "': " + e.getMessage(), e );
         }
         catch ( MalformedURLException e )
         {
-            // TODO: log ignored metadata!
+            // shouldn't happen
+            getLogger().error( "Error constructing metadata file '" + repoPath + "': " + e.getMessage(), e );
         }
-        catch ( IOException ie )
+        catch ( IOException e )
         {
-            // TODO: log ignored metadata!
+            getLogger().error( "Error reading metadata file '" + repoPath + "': " + e.getMessage(), e );
+        }
+
+        RepositoryMetadata repositoryMetadata = null;
+        if ( m != null )
+        {
+            repositoryMetadata = buildMetadata( m, metadataPath );
+        }
+        return repositoryMetadata;
+    }
+
+    private RepositoryMetadata buildMetadata( Metadata m, String metadataPath )
+    {
+        String metaGroupId = m.getGroupId();
+        String metaArtifactId = m.getArtifactId();
+        String metaVersion = m.getVersion();
+
+        // check if the groupId, artifactId and version is in the
+        // metadataPath
+        // parse the path, in reverse order
+        List pathParts = new ArrayList();
+        StringTokenizer st = new StringTokenizer( metadataPath, "/\\" );
+        while ( st.hasMoreTokens() )
+        {
+            pathParts.add( st.nextToken() );
+        }
+
+        Collections.reverse( pathParts );
+        // remove the metadata file
+        pathParts.remove( 0 );
+        Iterator it = pathParts.iterator();
+        String tmpDir = (String) it.next();
+
+        //ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
+        //if( metaVersion != null && !metaVersion.equals( "" ) )
+        //{
+        //   VersionRange version = VersionRange.createFromVersion( metaVersion );
+        //}
+
+        Artifact artifact = null;
+        if ( metaVersion != null && !"".equals( metaVersion ) )
+        {
+            artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
+        }
+
+        // snapshotMetadata
+        RepositoryMetadata metadata = null;
+        if ( tmpDir != null && tmpDir.equals( metaVersion ) )
+        {
+            if ( artifact != null )
+            {
+                metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+            }
+        }
+        else if ( tmpDir != null && tmpDir.equals( metaArtifactId ) )
+        {
+            // artifactMetadata
+            if ( artifact != null )
+            {
+                metadata = new ArtifactRepositoryMetadata( artifact );
+            }
+        }
+        else
+        {
+            String groupDir = "";
+            int ctr = 0;
+            for ( it = pathParts.iterator(); it.hasNext(); )
+            {
+                String path = (String) it.next();
+                if ( ctr == 0 )
+                {
+                    groupDir = path;
+                }
+                else
+                {
+                    groupDir = path + "." + groupDir;
+                }
+                ctr++;
+            }
+
+            // groupMetadata
+            if ( metaGroupId != null && metaGroupId.equals( groupDir ) )
+            {
+                metadata = new GroupRepositoryMetadata( metaGroupId );
+            }
         }
 
         return metadata;
