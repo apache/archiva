@@ -140,7 +140,7 @@ public class PomRepositoryIndex
             doc.add( Field.Text( FLD_PLUGINS_ALL, "" ) );
         }
         doc.add( Field.UnIndexed( FLD_DOCTYPE, POM ) );
-        // TODO! do we need to add all these empty fields?
+        // TODO: do we need to add all these empty fields?
         doc.add( Field.Text( FLD_PLUGINPREFIX, "" ) );
         doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
         doc.add( Field.Text( FLD_NAME, "" ) );

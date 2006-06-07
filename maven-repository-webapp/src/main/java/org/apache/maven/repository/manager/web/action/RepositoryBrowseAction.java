@@ -109,20 +109,6 @@ public class RepositoryBrowseAction
         return SUCCESS;
     }
 
-    // TODO! is this method needed?
-    public String doEdit()
-    {
-        idx = idx + 1;
-
-        //set folder to "" if we are at the root directory
-        if ( idx == 1 )
-        {
-            folder = "";
-        }
-
-        return SUCCESS;
-    }
-
     public Map getArtifactMap()
     {
         return artifactMap;

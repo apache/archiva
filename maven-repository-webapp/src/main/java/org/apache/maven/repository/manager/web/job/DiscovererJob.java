@@ -58,13 +58,11 @@ public class DiscovererJob
         }
         catch ( RepositoryIndexException e )
         {
-            // TODO!
-            e.printStackTrace();
+            getLogger().error( "Error indexing: " + e.getMessage(), e );
         }
         catch ( MalformedURLException me )
         {
-            // TODO!
-            me.printStackTrace();
+            getLogger().error( "Error indexing: " + me.getMessage(), me );
         }
 
         getLogger().info( "[DiscovererJob] DiscovererJob has finished executing." );

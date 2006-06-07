@@ -38,12 +38,14 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * This is the class that executes the discoverer and indexer.
  *
  * @plexus.component role="org.apache.maven.repository.manager.web.execution.DiscovererExecution"
+ * @todo note that a legacy repository will fail due to lack of metadata discoverer
  */
 public class DiscovererExecution
     extends AbstractLogEnabled
@@ -54,19 +56,14 @@ public class DiscovererExecution
     private Configuration config;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer"
      */
-    private ArtifactDiscoverer defaultArtifactDiscoverer;
+    private Map artifactDiscoverers;
 
     /**
-     * @plexus.requirement role-hint="legacy"
+     * @plexus.requirement role="org.apache.maven.repository.discovery.MetadataDiscoverer"
      */
-    private ArtifactDiscoverer legacyArtifactDiscoverer;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private MetadataDiscoverer defaultMetadataDiscoverer;
+    private Map metadataDiscoverers;
 
     /**
      * @plexus.requirement
@@ -78,18 +75,6 @@ public class DiscovererExecution
      */
     private ArtifactRepositoryFactory repoFactory;
 
-    private ArtifactRepositoryLayout layout;
-
-    private String indexPath;
-
-    private String blacklistedPatterns;
-
-    private boolean includeSnapshots;
-
-    private boolean convertSnapshots;
-
-    private ArtifactRepository defaultRepository;
-
     /**
      * Executes discoverer and indexer if an index does not exist yet
      *
@@ -100,7 +85,7 @@ public class DiscovererExecution
         throws MalformedURLException, RepositoryIndexException
     {
         Properties props = config.getProperties();
-        indexPath = props.getProperty( "index.path" );
+        String indexPath = props.getProperty( "index.path" );
 
         File indexDir = new File( indexPath );
         boolean isExisting = false;
@@ -123,68 +108,27 @@ public class DiscovererExecution
         throws MalformedURLException, RepositoryIndexException
     {
         Properties props = config.getProperties();
-        indexPath = props.getProperty( "index.path" );
-        layout = config.getLayout();
-        blacklistedPatterns = props.getProperty( "blacklist.patterns" );
-        includeSnapshots = Boolean.valueOf( props.getProperty( "include.snapshots" ) ).booleanValue();
-        convertSnapshots = Boolean.valueOf( props.getProperty( "convert.snapshots" ) ).booleanValue();
+        String indexPath = props.getProperty( "index.path" );
+        String blacklistedPatterns = props.getProperty( "blacklist.patterns" );
+        boolean includeSnapshots = Boolean.valueOf( props.getProperty( "include.snapshots" ) ).booleanValue();
+        boolean convertSnapshots = Boolean.valueOf( props.getProperty( "convert.snapshots" ) ).booleanValue();
 
-        try
-        {
-            defaultRepository = getDefaultRepository();
-        }
-        catch ( MalformedURLException me )
-        {
-            getLogger().error( me.getMessage() );
-        }
+        ArtifactRepository defaultRepository = getDefaultRepository();
 
         getLogger().info( "[DiscovererExecution] Started discovery and indexing.." );
-        if ( "default".equals( props.getProperty( "layout" ) ) )
-        {
-            executeDiscovererInDefaultRepo();
-        }
-        else if ( "legacy".equals( props.getProperty( "layout" ) ) )
-        {
-            executeDiscovererInLegacyRepo();
-        }
-        getLogger().info( "[DiscovererExecution] Finished discovery and indexing." );
-    }
-
-    /**
-     * Method that discovers and indexes artifacts, poms and metadata in a default
-     * m2 repository structure.
-     *
-     * @throws MalformedURLException
-     * @throws RepositoryIndexException
-     * @todo why is this any different from legacy? [!]
-     */
-    protected void executeDiscovererInDefaultRepo()
-        throws MalformedURLException, RepositoryIndexException
-    {
-        List artifacts =
-            defaultArtifactDiscoverer.discoverArtifacts( defaultRepository, blacklistedPatterns, includeSnapshots );
+        String layoutProperty = props.getProperty( "layout" );
+        ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
+        List artifacts = discoverer.discoverArtifacts( defaultRepository, blacklistedPatterns, includeSnapshots );
         indexArtifact( artifacts, indexPath, defaultRepository );
 
-        List models = defaultArtifactDiscoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns,
-                                                                        convertSnapshots );
+        List models = discoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns, convertSnapshots );
         indexPom( models, indexPath, defaultRepository );
 
-        List metadataList = defaultMetadataDiscoverer.discoverMetadata( new File( defaultRepository
-            .getBasedir() ), blacklistedPatterns );
-        indexMetadata( metadataList, indexPath, new File( defaultRepository.getBasedir() ) );
-    }
-
-    /**
-     * Method that discovers and indexes artifacts in a legacy type repository
-     *
-     * @throws RepositoryIndexException
-     */
-    protected void executeDiscovererInLegacyRepo()
-        throws RepositoryIndexException
-    {
-        List artifacts =
-            legacyArtifactDiscoverer.discoverArtifacts( defaultRepository, blacklistedPatterns, includeSnapshots );
-        indexArtifact( artifacts, indexPath, defaultRepository );
+        MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
+        List metadataList =
+            metadataDiscoverer.discoverMetadata( new File( defaultRepository.getBasedir() ), blacklistedPatterns );
+        indexMetadata( metadataList, indexPath, new File( defaultRepository.getBasedir() ), config.getLayout() );
+        getLogger().info( "[DiscovererExecution] Finished discovery and indexing." );
     }
 
     /**
@@ -218,12 +162,13 @@ public class DiscovererExecution
      * @param indexPath      the path to the index file
      * @param repositoryBase the repository where the metadata are located
      */
-    protected void indexMetadata( List metadataList, String indexPath, File repositoryBase )
+    protected void indexMetadata( List metadataList, String indexPath, File repositoryBase,
+                                  ArtifactRepositoryLayout layout )
         throws RepositoryIndexException, MalformedURLException
     {
         String repoDir = repositoryBase.toURL().toString();
-        ArtifactRepository repository = repoFactory
-            .createArtifactRepository( "repository", repoDir, layout, null, null );
+        ArtifactRepository repository =
+            repoFactory.createArtifactRepository( "repository", repoDir, layout, null, null );
 
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )

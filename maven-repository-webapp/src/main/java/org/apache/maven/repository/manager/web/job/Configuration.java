@@ -26,6 +26,8 @@ import java.util.Properties;
 
 /**
  * This class contains the configuration values to be used by the scheduler
+ *
+ * @todo should not need to be initializable [!] Should have individual configuration items, and they could well be configured on the job itself, not in this class
  */
 public class Configuration
     implements Initializable
@@ -63,6 +65,7 @@ public class Configuration
 
     public ArtifactRepositoryLayout getLayout()
     {
+        // TODO: lookup from map [!]
         ArtifactRepositoryLayout layout;
         if ( "legacy".equals( props.getProperty( "layout" ) ) )
         {
