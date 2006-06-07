@@ -17,14 +17,13 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.repository.ArtifactUtils;
+import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ConnectionException;
@@ -67,11 +66,6 @@ public class DefaultProxyManager
     /**
      * @plexus.requirement
      */
-    private ArtifactFactory artifactFactory;
-
-    /**
-     * @plexus.requirement
-     */
     private ArtifactRepositoryFactory repositoryFactory;
 
     /**
@@ -90,6 +84,17 @@ public class DefaultProxyManager
     private Map failuresCache = new HashMap();
 
     private static final int MS_PER_SEC = 1000;
+
+    /**
+     * @plexus.requirement role-hint="default"
+     * @todo use a map, and have priorities in them
+     */
+    private ArtifactDiscoverer defaultArtifactDiscoverer;
+
+    /**
+     * @plexus.requirement role-hint="legacy"
+     */
+    private ArtifactDiscoverer legacyArtifactDiscoverer;
 
     public void setConfiguration( ProxyConfiguration config )
     {
@@ -155,11 +160,11 @@ public class DefaultProxyManager
         }
         else
         {
-            Artifact artifact = ArtifactUtils.buildArtifact( path, artifactFactory );
+            Artifact artifact = defaultArtifactDiscoverer.buildArtifact( path );
 
             if ( artifact == null )
             {
-                artifact = ArtifactUtils.buildArtifactFromLegacyPath( path, artifactFactory );
+                artifact = legacyArtifactDiscoverer.buildArtifact( path );
             }
 
             if ( artifact != null )

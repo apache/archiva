@@ -23,6 +23,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Model;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -401,6 +402,170 @@ public class DefaultArtifactDiscovererTest
         assertEquals( "org.apache.testgroup", model.getGroupId() );
         assertEquals( "discovery", model.getArtifactId() );
         assertEquals( "1.0", model.getVersion() );
+    }
+
+    public void testShortPath()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid-1.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for short paths", artifact );
+    }
+
+    public void testWrongArtifactId()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for wrong ArtifactId", artifact );
+    }
+
+    public void testNoType()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1/invalid-1";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for no type", artifact );
+    }
+
+    public void testWrongVersion()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1.0/invalid-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for wrong version", artifact );
+    }
+
+    public void testLongVersion()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1.0/invalid-1.0b.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for long version", artifact );
+    }
+
+    public void testWrongSnapshotVersion()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for wrong snapshot version", artifact );
+    }
+
+    public void testSnapshotBaseVersion()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for snapshot base version", artifact );
+    }
+
+    public void testPathWithClassifier()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/some-ejb/1.0/some-ejb-1.0-client.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with classifier error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "some-ejb", "1.0", "jar", "client" ), artifact );
+    }
+
+    public void testWithJavaSourceInclusion()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/testing/1.0/testing-1.0-sources.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with java source inclusion error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ), artifact );
+    }
+
+    public void testDistributionArtifacts()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/testing/1.0/testing-1.0.tar.gz";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "tar.gz distribution artifact error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-tgz" ), artifact );
+
+        testPath = "org/apache/maven/testing/1.0/testing-1.0.zip";
+
+        artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "zip distribution artifact error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-zip" ), artifact );
+    }
+
+    public void testSnapshot()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-SNAPSHOT.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ), artifact );
+
+        testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-20050611.112233-1.jar";
+
+        artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with snapshot error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1" ), artifact );
+    }
+
+    public void testNormal()
+        throws ComponentLookupException
+    {
+        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Normal artifact path error", artifact );
+
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
+    }
+
+    public void testSnapshotWithClassifier()
+        throws ComponentLookupException
+    {
+        String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-20050611.112233-1-javadoc.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with snapshot and classifier error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1", "jar", "javadoc" ),
+                      artifact );
+    }
+
+    private Artifact getArtifactFromPath( String path )
+    {
+        return discoverer.buildArtifact( path );
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String version )

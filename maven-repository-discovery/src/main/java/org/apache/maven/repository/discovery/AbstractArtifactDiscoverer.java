@@ -37,6 +37,7 @@ import java.util.List;
  */
 public abstract class AbstractArtifactDiscoverer
     extends AbstractDiscoverer
+    implements ArtifactDiscoverer
 {
     /**
      * Standard patterns to exclude from discovery as they are not artifacts.
@@ -54,8 +55,6 @@ public abstract class AbstractArtifactDiscoverer
     {
         return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
     }
-
-    protected abstract Artifact buildArtifactFromPath( String path, ArtifactRepository repository );
 
     public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
     {
@@ -107,10 +106,6 @@ public abstract class AbstractArtifactDiscoverer
             if ( path.toLowerCase().endsWith( POM ) )
             {
                 Artifact pomArtifact = buildArtifactFromPath( path, repository );
-                if ( pomArtifact != null )
-                {
-                    pomArtifact.setFile( new File( repositoryBase, path ) );
-                }
 
                 MavenXpp3Reader mavenReader = new MavenXpp3Reader();
                 String filename = repositoryBase.getAbsolutePath() + "/" + path;
@@ -143,5 +138,18 @@ public abstract class AbstractArtifactDiscoverer
         }
 
         return artifacts;
+    }
+
+    public Artifact buildArtifactFromPath( String path, ArtifactRepository repository )
+    {
+        Artifact artifact = buildArtifact( path );
+
+        if ( artifact != null )
+        {
+            artifact.setRepository( repository );
+            artifact.setFile( new File( repository.getBasedir(), path ) );
+        }
+
+        return artifact;
     }
 }

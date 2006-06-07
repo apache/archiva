@@ -22,6 +22,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -330,6 +331,82 @@ public class LegacyArtifactDiscovererTest
             assertNotNull( "Check repository set", artifact.getRepository() );
             assertEquals( "Check repository url is correct", url, artifact.getRepository().getUrl() );
         }
+    }
+
+    public void testWrongArtifactPackaging()
+        throws ComponentLookupException
+    {
+        String testPath = "org.apache.maven.test/jars/artifactId-1.0.jar.md5";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for wrong package extension", artifact );
+    }
+
+    public void testNoArtifactid()
+    {
+        String testPath = "groupId/jars/-1.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null when artifactId is missing", artifact );
+
+        testPath = "groupId/jars/1.0.jar";
+
+        artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null when artifactId is missing", artifact );
+    }
+
+    public void testNoType()
+        throws ComponentLookupException
+    {
+        String testPath = "invalid/invalid/1/invalid-1";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNull( "Artifact should be null for no type", artifact );
+    }
+
+    public void testSnapshot()
+        throws ComponentLookupException
+    {
+        String testPath = "org.apache.maven.test/jars/maven-model-1.0-SNAPSHOT.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-SNAPSHOT" ), artifact );
+    }
+
+    public void testFinal()
+        throws ComponentLookupException
+    {
+        String testPath = "org.apache.maven.test/jars/maven-model-1.0-final-20060606.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+
+        assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-final-20060606" ), artifact );
+    }
+
+    public void testNormal()
+        throws ComponentLookupException
+    {
+        String testPath = "javax.sql/jars/jdbc-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Normal artifact path error", artifact );
+
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
+    }
+
+    private Artifact getArtifactFromPath( String path )
+    {
+        return discoverer.buildArtifact( path );
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String version )

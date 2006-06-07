@@ -27,7 +27,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-utils</artifactId>
+      <artifactId>maven-repository-discovery</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -56,7 +56,7 @@
           <check>
             <!-- TODO: increase coverage -->
             <totalLineRate>60</totalLineRate>
-            <totalBranchRate>75</totalBranchRate>
+            <totalBranchRate>70</totalBranchRate>
           </check>
         </configuration>
       </plugin>

@@ -16,6 +16,7 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.util.Iterator;
@@ -72,4 +73,13 @@ public interface ArtifactDiscoverer
      * @return the paths as Strings.
      */
     Iterator getExcludedPathsIterator();
+
+    /**
+     * Build an artifact from a path in the repository
+     *
+     * @param path the path
+     * @return the artifact
+     * @todo this should be in maven-artifact
+     */
+    Artifact buildArtifact( String path );
 }
