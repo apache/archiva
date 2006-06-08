@@ -34,12 +34,6 @@ import java.util.List;
 public class MetadataRepositoryIndex
     extends AbstractRepositoryIndex
 {
-    protected static final String GROUP_METADATA = "GROUP_METADATA";
-
-    protected static final String ARTIFACT_METADATA = "ARTIFACT_METADATA";
-
-    protected static final String SNAPSHOT_METADATA = "SNAPSHOT_METADATA";
-
     /**
      * Class Constructor
      *
@@ -86,32 +80,9 @@ public class MetadataRepositoryIndex
         // artifactId, version based on its location
         Document doc = new Document();
         doc.add( Field.Keyword( FLD_ID, (String) repoMetadata.getKey() ) );
-        String path = "";
         Metadata metadata = repoMetadata.getMetadata();
 
-        if ( repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory() )
-        {
-            path = repoMetadata.getGroupId() + "/";
-        }
-        else if ( !repoMetadata.storedInGroupDirectory() && !repoMetadata.storedInArtifactVersionDirectory() )
-        {
-            path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/";
-        }
-        else if ( !repoMetadata.storedInGroupDirectory() && repoMetadata.storedInArtifactVersionDirectory() )
-        {
-            path = repoMetadata.getGroupId() + "/" + repoMetadata.getArtifactId() + "/" +
-                repoMetadata.getBaseVersion() + "/";
-        }
-
-        if ( !"".equals( repoMetadata.getRemoteFilename() ) && repoMetadata.getRemoteFilename() != null )
-        {
-            path = path + repoMetadata.getRemoteFilename();
-        }
-        else
-        {
-            path = path + repoMetadata.getLocalFilename( repository );
-        }
-        doc.add( Field.Text( FLD_NAME, path ) );
+        doc.add( Field.Text( FLD_NAME, repository.pathOfRemoteRepositoryMetadata( repoMetadata ) ) );
 
         Versioning versioning = metadata.getVersioning();
         if ( versioning != null )

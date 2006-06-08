@@ -23,6 +23,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
@@ -30,12 +31,13 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -109,25 +111,27 @@ public class RepositoryIndexSearchLayerTest
         indexer.close();
 
         MetadataRepositoryIndex metaIndexer = factory.createMetadataRepositoryIndex( indexPath, repository );
-        RepositoryMetadata repoMetadata =
-            getMetadata( "org.apache.maven", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
+        RepositoryMetadata repoMetadata = new GroupRepositoryMetadata( "org.apache.maven" );
+        repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
-        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
-                                    MetadataRepositoryIndex.ARTIFACT_METADATA );
+        repoMetadata = new ArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
+        repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
-        repoMetadata = getMetadata( "org.apache.maven", "maven-artifact", "2.0.1", "maven-metadata.xml",
-                                    MetadataRepositoryIndex.SNAPSHOT_METADATA );
+        repoMetadata =
+            new SnapshotArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
+        repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
 
-        repoMetadata = getMetadata( "test", null, null, "maven-metadata.xml", MetadataRepositoryIndex.GROUP_METADATA );
+        repoMetadata = new GroupRepositoryMetadata( "test" );
+        repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         metaIndexer.index( repoMetadata );
         metaIndexer.optimize();
         metaIndexer.close();
@@ -343,56 +347,6 @@ public class RepositoryIndexSearchLayerTest
 
 
     /**
-     * Method for creating RepositoryMetadata object
-     *
-     * @param groupId      the groupId to be set
-     * @param artifactId   the artifactId to be set
-     * @param version      the version to be set
-     * @param filename     the name of the metadata file
-     * @param metadataType the type of RepositoryMetadata object to be created (GROUP, ARTIFACT or SNAPSHOT)
-     * @return RepositoryMetadata
-     * @throws Exception
-     */
-    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename,
-                                            String metadataType )
-        throws Exception
-    {
-        RepositoryMetadata repoMetadata = null;
-        URL url;
-        InputStream is;
-        MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
-
-        //group metadata
-        if ( metadataType.equals( MetadataRepositoryIndex.GROUP_METADATA ) )
-        {
-            url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ).toURL();
-            is = url.openStream();
-            repoMetadata = new GroupRepositoryMetadata( groupId );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
-        }
-        //artifact metadata
-        else if ( metadataType.equals( MetadataRepositoryIndex.ARTIFACT_METADATA ) )
-        {
-            url = new File(
-                repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + filename ).toURL();
-            is = url.openStream();
-            repoMetadata = new ArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
-        }
-        //snapshot/version metadata
-        else if ( metadataType.equals( MetadataRepositoryIndex.SNAPSHOT_METADATA ) )
-        {
-            url = new File( repository.getBasedir() + groupId.replace( '.', '/' ) + "/" + artifactId + "/" + version +
-                "/" + filename ).toURL();
-            is = url.openStream();
-            repoMetadata = new SnapshotArtifactRepositoryMetadata( getArtifact( groupId, artifactId, version ) );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
-        }
-
-        return repoMetadata;
-    }
-
-    /**
      * Method for creating Artifact object
      *
      * @param groupId    the groupId of the artifact to be created
@@ -457,4 +411,39 @@ public class RepositoryIndexSearchLayerTest
         return new File( path.substring( 0, path.lastIndexOf( '.' ) ) + ".pom" );
     }
 
+    /**
+     * Create RepositoryMetadata object.
+     *
+     * @return RepositoryMetadata
+     */
+    private Metadata readMetadata( RepositoryMetadata repoMetadata )
+        throws RepositoryIndexSearchException
+    {
+        File file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repoMetadata ) );
+
+        MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
+
+        FileReader reader = null;
+        try
+        {
+            reader = new FileReader( file );
+            return metadataReader.read( reader );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to find metadata file: " + e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to read metadata file: " + e.getMessage(), e );
+        }
+        catch ( XmlPullParserException xe )
+        {
+            throw new RepositoryIndexSearchException( "Unable to parse metadata file: " + xe.getMessage(), xe );
+        }
+        finally
+        {
+            IOUtil.close( reader );
+        }
+    }
 }

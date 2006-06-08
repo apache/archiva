@@ -24,24 +24,25 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.indexing.query.Query;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -113,11 +114,6 @@ public class DefaultRepositoryIndexSearcher
         {
             throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
         }
-        catch ( XmlPullParserException xe )
-        {
-            throw new RepositoryIndexSearchException( "Unable to parse metadata file: " + xe.getMessage(), xe );
-        }
-
         finally
         {
             try
@@ -151,10 +147,9 @@ public class DefaultRepositoryIndexSearcher
      *
      * @param hits the search result set
      * @return List
-     * @throws IOException
      */
     private List buildList( Hits hits )
-        throws MalformedURLException, IOException, XmlPullParserException
+        throws RepositoryIndexSearchException, IOException
     {
         for ( int i = 0; i < hits.length(); i++ )
         {
@@ -172,16 +167,16 @@ public class DefaultRepositoryIndexSearcher
      * @return Object
      */
     protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc )
-        throws MalformedURLException, IOException, XmlPullParserException
+        throws RepositoryIndexSearchException
     {
         RepositoryIndexSearchHit searchHit = null;
 
         // the document is of type artifact
+        String groupId = doc.get( RepositoryIndex.FLD_GROUPID );
+        String artifactId = doc.get( RepositoryIndex.FLD_ARTIFACTID );
+        String version = doc.get( RepositoryIndex.FLD_VERSION );
         if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.ARTIFACT ) )
         {
-            String groupId = doc.get( RepositoryIndex.FLD_GROUPID );
-            String artifactId = doc.get( RepositoryIndex.FLD_ARTIFACTID );
-            String version = doc.get( RepositoryIndex.FLD_VERSION );
             String packaging = doc.get( RepositoryIndex.FLD_PACKAGING );
             Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
 
@@ -203,15 +198,10 @@ public class DefaultRepositoryIndexSearcher
         // the document is of type model
         else if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.POM ) )
         {
-            InputStream is = new FileInputStream( new File( index.getRepository().getBasedir() +
-                doc.get( RepositoryIndex.FLD_GROUPID ).replace( '.', '/' ) + "/" +
-                doc.get( RepositoryIndex.FLD_ARTIFACTID ) + "/" + doc.get( RepositoryIndex.FLD_VERSION ) + "/" +
-                doc.get( RepositoryIndex.FLD_ARTIFACTID ) + "-" + doc.get( RepositoryIndex.FLD_VERSION ) + ".pom" ) );
-            MavenXpp3Reader reader = new MavenXpp3Reader();
+            Artifact pomArtifact = factory.createProjectArtifact( groupId, artifactId, version );
 
             searchHit = new RepositoryIndexSearchHit( false, false, true );
-            searchHit.setObject( reader.read( new InputStreamReader( is ) ) );
-
+            searchHit.setObject( readPom( pomArtifact ) );
         }
         // the document is of type metadata
         else if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.METADATA ) )
@@ -224,28 +214,27 @@ public class DefaultRepositoryIndexSearcher
             }
 
             Collections.reverse( pathParts );
-            Iterator it = pathParts.iterator();
-            String metadataFile = (String) it.next();
-            String tmpDir = (String) it.next();
+            String tmpDir = (String) pathParts.get( 1 );
 
-            String metadataType;
-            if ( tmpDir.equals( doc.get( RepositoryIndex.FLD_VERSION ) ) )
+            RepositoryMetadata repoMetadata;
+
+            if ( tmpDir.equals( version ) )
             {
-                metadataType = MetadataRepositoryIndex.SNAPSHOT_METADATA;
+                repoMetadata = new SnapshotArtifactRepositoryMetadata(
+                    factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
             }
-            else if ( tmpDir.equals( doc.get( RepositoryIndex.FLD_ARTIFACTID ) ) )
+            else if ( tmpDir.equals( artifactId ) )
             {
-                metadataType = MetadataRepositoryIndex.ARTIFACT_METADATA;
+                repoMetadata = new ArtifactRepositoryMetadata(
+                    factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
             }
             else
             {
-                metadataType = MetadataRepositoryIndex.GROUP_METADATA;
+                repoMetadata = new GroupRepositoryMetadata( groupId );
             }
 
-            RepositoryMetadata repoMetadata = getMetadata( doc.get( RepositoryIndex.FLD_GROUPID ),
-                                                           doc.get( RepositoryIndex.FLD_ARTIFACTID ),
-                                                           doc.get( RepositoryIndex.FLD_VERSION ), metadataFile,
-                                                           metadataType );
+            repoMetadata.setMetadata( readMetadata( repoMetadata ) );
+
             searchHit = new RepositoryIndexSearchHit( false, true, false );
             searchHit.setObject( repoMetadata );
         }
@@ -256,56 +245,74 @@ public class DefaultRepositoryIndexSearcher
     /**
      * Create RepositoryMetadata object.
      *
-     * @param groupId      the groupId to be set
-     * @param artifactId   the artifactId to be set
-     * @param version      the version to be set
-     * @param filename     the name of the metadata file
-     * @param metadataType the type of RepositoryMetadata object to be created (GROUP, ARTIFACT or SNAPSHOT)
      * @return RepositoryMetadata
-     * @throws IOException
-     * @throws XmlPullParserException
      */
-    private RepositoryMetadata getMetadata( String groupId, String artifactId, String version, String filename,
-                                            String metadataType )
-        throws IOException, XmlPullParserException
+    private Metadata readMetadata( RepositoryMetadata repoMetadata )
+        throws RepositoryIndexSearchException
     {
-        RepositoryMetadata repoMetadata = null;
+        File file = new File( index.getRepository().getBasedir(),
+                              index.getRepository().pathOfRemoteRepositoryMetadata( repoMetadata ) );
 
-        // TODO! file handles left open
-        InputStream is;
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
-        //group metadata
-        if ( metadataType.equals( MetadataRepositoryIndex.GROUP_METADATA ) )
+        FileReader reader = null;
+        try
         {
-            // TODO! use pathOfMetadata
-            is = new FileInputStream(
-                new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" + filename ) );
-            repoMetadata = new GroupRepositoryMetadata( groupId );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
+            reader = new FileReader( file );
+            return metadataReader.read( reader );
         }
-        //artifact metadata
-        else if ( metadataType.equals( MetadataRepositoryIndex.ARTIFACT_METADATA ) )
+        catch ( FileNotFoundException e )
         {
-            // TODO! use pathOfMetadata
-            is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
-                artifactId + "/" + filename ) );
-            repoMetadata =
-                new ArtifactRepositoryMetadata( factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
+            throw new RepositoryIndexSearchException( "Unable to find metadata file: " + e.getMessage(), e );
         }
-        //snapshot/version metadata
-        else if ( metadataType.equals( MetadataRepositoryIndex.SNAPSHOT_METADATA ) )
+        catch ( IOException e )
         {
-            // TODO! use pathOfMetadata
-            is = new FileInputStream( new File( index.getRepository().getBasedir() + groupId.replace( '.', '/' ) + "/" +
-                artifactId + "/" + version + "/" + filename ) );
-            repoMetadata = new SnapshotArtifactRepositoryMetadata(
-                factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
-            repoMetadata.setMetadata( metadataReader.read( new InputStreamReader( is ) ) );
+            throw new RepositoryIndexSearchException( "Unable to read metadata file: " + e.getMessage(), e );
         }
+        catch ( XmlPullParserException xe )
+        {
+            throw new RepositoryIndexSearchException( "Unable to parse metadata file: " + xe.getMessage(), xe );
+        }
+        finally
+        {
+            IOUtil.close( reader );
+        }
+    }
 
-        return repoMetadata;
+    /**
+     * Create RepositoryMetadata object.
+     *
+     * @return RepositoryMetadata
+     */
+    private Model readPom( Artifact pomArtifact )
+        throws RepositoryIndexSearchException
+    {
+        File file = new File( index.getRepository().getBasedir(), index.getRepository().pathOf( pomArtifact ) );
+
+        MavenXpp3Reader r = new MavenXpp3Reader();
+
+        FileReader reader = null;
+        try
+        {
+            reader = new FileReader( file );
+            return r.read( reader );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to find requested POM: " + e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to read POM: " + e.getMessage(), e );
+        }
+        catch ( XmlPullParserException xe )
+        {
+            throw new RepositoryIndexSearchException( "Unable to parse POM: " + xe.getMessage(), xe );
+        }
+        finally
+        {
+            IOUtil.close( reader );
+        }
     }
 
 }
