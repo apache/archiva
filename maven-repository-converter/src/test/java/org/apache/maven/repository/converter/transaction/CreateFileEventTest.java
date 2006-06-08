@@ -54,6 +54,8 @@ public class CreateFileEventTest
     {
         File testFile = new File( testDir, "test-file.txt" );
 
+        testFile.getParentFile().mkdirs();
+
         testFile.createNewFile();
 
         FileUtils.fileWrite( testFile.getAbsolutePath(), "original contents" );
@@ -66,13 +68,15 @@ public class CreateFileEventTest
 
         event.commit();
 
-        assertTrue( "Test file is not yet created", testFile.exists() );
+        contents = FileUtils.fileRead( testFile.getAbsolutePath() );
+
+        assertEquals( "Test contents have not changed", "modified contents", contents );
 
         event.rollback();
 
-        assertFalse( "Test file is has been deleted after rollback", testFile.exists() );
-        assertFalse( "Test file parent directories has been rolledback too", testDir.exists() );
-        assertTrue( "target directory still exists", new File( PlexusTestCase.getBasedir(), "target" ).exists() );
+        contents = FileUtils.fileRead( testFile.getAbsolutePath() );
+
+        assertEquals( "Test contents have not changed", "original contents", contents );
     }
 
     public void testCreateRollbackCommit()
@@ -98,6 +102,7 @@ public class CreateFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( testDir, "target/transaction-tests" ).getAbsolutePath() );
+        FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(),
+                                             "target/transaction-tests" ).getAbsolutePath() );
     }
 }
