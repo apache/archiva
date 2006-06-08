@@ -24,6 +24,7 @@ import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.model.Model;
+import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
@@ -31,7 +32,6 @@ import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
 import org.apache.maven.repository.indexing.PomRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.manager.web.job.Configuration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
@@ -39,7 +39,6 @@ import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * This is the class that executes the discoverer and indexer.
@@ -50,10 +49,6 @@ import java.util.Properties;
 public class DiscovererExecution
     extends AbstractLogEnabled
 {
-    /**
-     * @plexus.requirement
-     */
-    private Configuration config;
 
     /**
      * @plexus.requirement role="org.apache.maven.repository.discovery.ArtifactDiscoverer"
@@ -76,18 +71,20 @@ public class DiscovererExecution
     private ArtifactRepositoryFactory repoFactory;
 
     /**
+     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
+     */
+    private Map repositoryLayouts;
+
+    /**
      * Executes discoverer and indexer if an index does not exist yet
      *
+     * @param indexDir
      * @throws MalformedURLException
      * @throws RepositoryIndexException
      */
-    public void executeDiscovererIfIndexDoesNotExist()
+    public void executeDiscovererIfIndexDoesNotExist( File indexDir )
         throws MalformedURLException, RepositoryIndexException
     {
-        Properties props = config.getProperties();
-        String indexPath = props.getProperty( "index.path" );
-
-        File indexDir = new File( indexPath );
         boolean isExisting = false;
 
         if ( IndexReader.indexExists( indexDir ) )
@@ -107,27 +104,26 @@ public class DiscovererExecution
     public void executeDiscoverer()
         throws MalformedURLException, RepositoryIndexException
     {
-        Properties props = config.getProperties();
-        String indexPath = props.getProperty( "index.path" );
-        String blacklistedPatterns = props.getProperty( "blacklist.patterns" );
-        boolean includeSnapshots = Boolean.valueOf( props.getProperty( "include.snapshots" ) ).booleanValue();
-        boolean convertSnapshots = Boolean.valueOf( props.getProperty( "convert.snapshots" ) ).booleanValue();
+        Configuration configuration = new Configuration(); // TODO!
+        File indexPath = new File( configuration.getIndexPath() );
+        String blacklistedPatterns = configuration.getDiscoveryBlackListPatterns();
+        boolean includeSnapshots = configuration.isDiscoverSnapshots();
 
-        ArtifactRepository defaultRepository = getDefaultRepository();
+        ArtifactRepository defaultRepository = getDefaultRepository( configuration );
 
         getLogger().info( "[DiscovererExecution] Started discovery and indexing.." );
-        String layoutProperty = props.getProperty( "layout" );
+        String layoutProperty = configuration.getRepositoryLayout();
         ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
         List artifacts = discoverer.discoverArtifacts( defaultRepository, blacklistedPatterns, includeSnapshots );
         indexArtifact( artifacts, indexPath, defaultRepository );
 
-        List models = discoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns, convertSnapshots );
+        List models = discoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns, includeSnapshots );
         indexPom( models, indexPath, defaultRepository );
 
         MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
         List metadataList =
             metadataDiscoverer.discoverMetadata( new File( defaultRepository.getBasedir() ), blacklistedPatterns );
-        indexMetadata( metadataList, indexPath, new File( defaultRepository.getBasedir() ), config.getLayout() );
+        indexMetadata( metadataList, indexPath, defaultRepository );
         getLogger().info( "[DiscovererExecution] Finished discovery and indexing." );
     }
 
@@ -138,7 +134,7 @@ public class DiscovererExecution
      * @param indexPath  the path to the index file
      * @param repository the repository where the artifacts are located
      */
-    protected void indexArtifact( List artifacts, String indexPath, ArtifactRepository repository )
+    protected void indexArtifact( List artifacts, File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         ArtifactRepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
@@ -158,18 +154,12 @@ public class DiscovererExecution
     /**
      * Index the metadata in the list
      *
-     * @param metadataList   the metadata to be indexed
-     * @param indexPath      the path to the index file
-     * @param repositoryBase the repository where the metadata are located
+     * @param metadataList the metadata to be indexed
+     * @param indexPath    the path to the index file
      */
-    protected void indexMetadata( List metadataList, String indexPath, File repositoryBase,
-                                  ArtifactRepositoryLayout layout )
+    protected void indexMetadata( List metadataList, File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException, MalformedURLException
     {
-        String repoDir = repositoryBase.toURL().toString();
-        ArtifactRepository repository =
-            repoFactory.createArtifactRepository( "repository", repoDir, layout, null, null );
-
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
@@ -191,7 +181,7 @@ public class DiscovererExecution
      * @param indexPath  the path to the index
      * @param repository the artifact repository where the poms were discovered
      */
-    protected void indexPom( List models, String indexPath, ArtifactRepository repository )
+    protected void indexPom( List models, File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         PomRepositoryIndex pomIndex = indexFactory.createPomRepositoryIndex( indexPath, repository );
@@ -214,33 +204,16 @@ public class DiscovererExecution
      * @return an ArtifactRepository instance
      * @throws java.net.MalformedURLException
      */
-    protected ArtifactRepository getDefaultRepository()
+    protected ArtifactRepository getDefaultRepository( Configuration configuration )
         throws MalformedURLException
     {
-        File repositoryDirectory = new File( config.getRepositoryDirectory() );
+        // TODO! share with general search action, should only instantiate once
+        File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
         String repoDir = repositoryDirectory.toURL().toString();
         ArtifactRepositoryFactory repoFactory = new DefaultArtifactRepositoryFactory();
 
-        return repoFactory.createArtifactRepository( "test", repoDir, config.getLayout(), null, null );
-    }
-
-    /**
-     * Method that sets the configuration object
-     *
-     * @param config
-     */
-    public void setConfiguration( Configuration config )
-    {
-        this.config = config;
-    }
-
-    /**
-     * Returns the cofiguration
-     *
-     * @return a Configuration object that contains the configuration values
-     */
-    public Configuration getConfiguration()
-    {
-        return config;
+        ArtifactRepositoryLayout layout =
+            (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
+        return repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
     }
 }

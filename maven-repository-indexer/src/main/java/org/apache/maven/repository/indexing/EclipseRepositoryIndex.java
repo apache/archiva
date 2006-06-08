@@ -68,7 +68,7 @@ public class EclipseRepositoryIndex
      * @param repository the repository where the indexed artifacts are located
      * @param digester   the digester object to generate the checksum strings
      */
-    public EclipseRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
+    public EclipseRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester )
     {
         super( indexPath, repository );
 
@@ -169,7 +169,7 @@ public class EclipseRepositoryIndex
     public File getCompressedCopy()
         throws IOException
     {
-        File indexPath = new File( getIndexPath() );
+        File indexPath = getIndexPath();
         String name = indexPath.getName();
 
         File outputFile = new File( indexPath.getParent(), name + ".zip" );

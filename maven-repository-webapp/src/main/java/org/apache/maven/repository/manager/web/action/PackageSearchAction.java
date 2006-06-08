@@ -19,6 +19,8 @@ package org.apache.maven.repository.manager.web.action;
 import com.opensymphony.xwork.Action;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
@@ -26,11 +28,11 @@ import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
-import org.apache.maven.repository.manager.web.job.Configuration;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Search by package name.
@@ -53,6 +55,11 @@ public class PackageSearchAction
     private RepositoryIndexingFactory factory;
 
     /**
+     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
+     */
+    private Map repositoryLayouts;
+
+    /**
      * @plexus.requirement
      */
     private ArtifactRepositoryFactory repositoryFactory;
@@ -61,11 +68,6 @@ public class PackageSearchAction
      * @plexus.requirement
      */
     private RepositoryIndexSearchLayer searchLayer;
-
-    /**
-     * @plexus.requirement
-     */
-    private Configuration configuration;
 
     public String execute()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -87,15 +89,17 @@ public class PackageSearchAction
             return ERROR;
         }
 
-        // TODO: better config [!]
-        String indexPath = configuration.getIndexDirectory();
+        // TODO: better config - share with general [!]
+        Configuration configuration = new Configuration();
+        File indexPath = new File( configuration.getIndexPath() );
 
-        // TODO: reduce the amount of lookup?
         File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
         String repoDir = repositoryDirectory.toURL().toString();
 
+        ArtifactRepositoryLayout layout =
+            (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
         ArtifactRepository repository =
-            repositoryFactory.createArtifactRepository( "repository", repoDir, configuration.getLayout(), null, null );
+            repositoryFactory.createArtifactRepository( "repository", repoDir, layout, null, null );
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 

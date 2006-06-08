@@ -24,6 +24,7 @@ import org.apache.maven.artifact.repository.metadata.Plugin;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +41,7 @@ public class MetadataRepositoryIndex
      * @param indexPath  the path to the index
      * @param repository the repository where the metadata to be indexed is located
      */
-    public MetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
+    public MetadataRepositoryIndex( File indexPath, ArtifactRepository repository )
     {
         super( indexPath, repository );
     }

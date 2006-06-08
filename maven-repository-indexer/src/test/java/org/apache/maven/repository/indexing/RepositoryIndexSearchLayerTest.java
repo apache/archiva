@@ -54,7 +54,7 @@ public class RepositoryIndexSearchLayerTest
 
     private ArtifactFactory artifactFactory;
 
-    private String indexPath;
+    private File indexPath;
 
     /**
      * Setup method
@@ -71,7 +71,7 @@ public class RepositoryIndexSearchLayerTest
         ArtifactRepositoryFactory repoFactory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
 
-        indexPath = "target/index";
+        indexPath = getTestFile( "target/index" );
         FileUtils.deleteDirectory( indexPath );
     }
 

@@ -22,6 +22,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -48,7 +49,7 @@ public class ArtifactRepositoryIndex
      * @param repository the repository where the indexed artifacts are located
      * @param digester   the digester object to generate the checksum strings
      */
-    public ArtifactRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester )
+    public ArtifactRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester )
     {
         super( indexPath, repository );
         this.digester = digester;

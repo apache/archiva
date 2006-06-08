@@ -69,7 +69,7 @@ public class IndexCli
         List artifacts = discoverer.discoverArtifacts( repository, null, false );
 
         ArtifactRepositoryIndex index =
-            indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ).getAbsolutePath(), repository );
+            indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ), repository );
 
         long time = System.currentTimeMillis();
         try

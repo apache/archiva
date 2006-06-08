@@ -65,7 +65,7 @@ public class IndexSearcherCli
                                                                           layout, null, null );
 
         ArtifactRepositoryIndex index =
-            indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ).getAbsolutePath(), repository );
+            indexFactory.createArtifactRepositoryIndex( new File( args[0], ".index" ), repository );
 
         RepositoryIndexSearcher searcher = (RepositoryIndexSearcher) embedder.lookup( RepositoryIndexSearcher.ROLE );
 

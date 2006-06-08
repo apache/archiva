@@ -1,0 +1,82 @@
+<model>
+  <id>configuration</id>
+  <name>Configuration</name>
+  <description>
+    Configuration for the Maven Repository Manager.
+  </description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.apache.maven.repository.configuration</value>
+    </default>
+  </defaults>
+  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist -->
+  <classes>
+    <class rootElement="true" xml.tagName="configuration">
+      <name>Configuration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>repositoryDirectory</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The location of the repository to monitor.
+          </description>
+        </field>
+        <field>
+          <name>repositoryLayout</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The layout of the repository. Valid values are "default" and "legacy".
+          </description>
+          <!-- TODO: should be able to detect this from the repository (perhaps by metadata at the root) -->
+          <defaultValue>default</defaultValue>
+        </field>
+        <field>
+          <name>indexPath</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The location of the Lucene index to use for the repository. The default is the .index subdirectory of
+            the repository.
+          </description>
+        </field>
+        <field>
+          <name>minimalIndexPath</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The location of the reduced Lucene index to use for the repository. The default is the .small-index
+            subdirectory of the repository.
+          </description>
+        </field>
+        <field>
+          <name>discoveryCronExpression</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>When to run the discovery mechanism.</description>
+          <defaultValue>0 0 8 * * ?</defaultValue>
+        </field>
+        <field>
+          <name>discoverSnapshots</name>
+          <version>1.0.0</version>
+          <type>boolean</type>
+          <description>Whether to include snapshot versions in the discovery process</description>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>discoveryBlackListPatterns</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>Blacklisted patterns in the discovery process</description>
+        </field>
+      </fields>
+    </class>
+  </classes>
+</model>
+
+

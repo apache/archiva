@@ -41,7 +41,7 @@ public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
     // TODO: can this be derived from the repository? -- probably a sensible default, but still should be configurable, but this could just be on the call to open()
-    private String indexPath;
+    private File indexPath;
 
     private boolean indexOpen;
 
@@ -58,7 +58,7 @@ public abstract class AbstractRepositoryIndex
      * @param indexPath
      * @param repository
      */
-    protected AbstractRepositoryIndex( String indexPath, ArtifactRepository repository )
+    protected AbstractRepositoryIndex( File indexPath, ArtifactRepository repository )
     {
         this.repository = repository;
         this.indexPath = indexPath;
@@ -144,7 +144,7 @@ public abstract class AbstractRepositoryIndex
     /**
      * @see org.apache.maven.repository.indexing.RepositoryIndex#getIndexPath()
      */
-    public String getIndexPath()
+    public File getIndexPath()
     {
         return indexPath;
     }
@@ -244,19 +244,17 @@ public abstract class AbstractRepositoryIndex
     protected boolean indexExists()
         throws RepositoryIndexException
     {
-        File indexDir = new File( indexPath );
-
-        if ( IndexReader.indexExists( indexDir ) )
+        if ( IndexReader.indexExists( indexPath ) )
         {
             return true;
         }
-        else if ( !indexDir.exists() )
+        else if ( !indexPath.exists() )
         {
             return false;
         }
-        else if ( indexDir.isDirectory() )
+        else if ( indexPath.isDirectory() )
         {
-            if ( indexDir.listFiles().length > 1 )
+            if ( indexPath.listFiles().length > 1 )
             {
                 throw new RepositoryIndexException( indexPath + " is not a valid index directory." );
             }

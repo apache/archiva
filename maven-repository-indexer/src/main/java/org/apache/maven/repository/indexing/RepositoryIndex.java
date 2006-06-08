@@ -19,6 +19,7 @@ package org.apache.maven.repository.indexing;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -113,7 +114,7 @@ public interface RepositoryIndex
      *
      * @return the path where the index resides
      */
-    String getIndexPath();
+    File getIndexPath();
 
     /**
      * Tests an index field if it is a keyword field

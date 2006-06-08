@@ -56,7 +56,7 @@ public class PomRepositoryIndex
      * @param digester        the digester to be used for generating checksums
      * @param artifactFactory the factory for building artifact objects
      */
-    public PomRepositoryIndex( String indexPath, ArtifactRepository repository, Digester digester,
+    public PomRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester,
                                ArtifactFactory artifactFactory )
     {
         super( indexPath, repository );

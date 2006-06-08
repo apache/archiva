@@ -20,6 +20,8 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
 
+import java.io.File;
+
 /**
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexingFactory"
@@ -37,28 +39,19 @@ public class DefaultRepositoryIndexingFactory
      */
     private ArtifactFactory artifactFactory;
 
-    /**
-     * @see RepositoryIndexingFactory#createArtifactRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
-     */
-    public ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
+    public ArtifactRepositoryIndex createArtifactRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new ArtifactRepositoryIndex( indexPath, repository, digester );
     }
 
-    /**
-     * @see RepositoryIndexingFactory#createPomRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
-     */
-    public PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
+    public PomRepositoryIndex createPomRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new PomRepositoryIndex( indexPath, repository, digester, artifactFactory );
     }
 
-    /**
-     * @see RepositoryIndexingFactory#createMetadataRepositoryIndex(String, org.apache.maven.artifact.repository.ArtifactRepository)
-     */
-    public MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
+    public MetadataRepositoryIndex createMetadataRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
         return new MetadataRepositoryIndex( indexPath, repository );

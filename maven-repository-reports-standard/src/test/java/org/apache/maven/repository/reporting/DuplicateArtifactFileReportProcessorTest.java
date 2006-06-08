@@ -41,7 +41,7 @@ public class DuplicateArtifactFileReportProcessorTest
 
     private ArtifactFactory artifactFactory;
 
-    private String indexPath = new File( "target/.index" ).getAbsolutePath();
+    private File indexPath = getTestFile( "target/.index" );
 
     protected void setUp()
         throws Exception

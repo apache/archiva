@@ -17,8 +17,11 @@ package org.apache.maven.repository.manager.web.action;
  */
 
 import com.opensymphony.xwork.Action;
+import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
+
+import java.io.File;
 
 /**
  * This is the Action class of index.jsp, which is the initial page of the web application.
@@ -48,8 +51,9 @@ public class BaseAction
     {
         try
         {
-            execution.executeDiscovererIfIndexDoesNotExist();
-            discovererScheduler.setSchedule();
+            Configuration configuration = new Configuration(); // TODO!
+            execution.executeDiscovererIfIndexDoesNotExist( new File( configuration.getIndexPath() ) );
+            discovererScheduler.setSchedule( configuration.getDiscoveryCronExpression() );
         }
         catch ( Exception e )
         {

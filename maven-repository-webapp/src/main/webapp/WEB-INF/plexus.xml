@@ -41,47 +41,6 @@
       <implementation>org.codehaus.plexus.xwork.PlexusObjectFactory</implementation>
     </component>
 
-    <component>
-      <role>org.apache.maven.repository.manager.web.job.Configuration</role>
-      <implementation>org.apache.maven.repository.manager.web.job.Configuration</implementation>
-      <configuration>
-        <properties>
-          <property>
-            <name>layout</name>
-            <value>default</value>
-          </property>
-          <property>
-            <name>default.repository.dir</name>
-            <value>C:/TEST_REPOS/.m2/repository/</value>
-          </property>
-          <property>
-            <name>legacy.repository.dir</name>
-            <value>C:/TEST_REPOS/.maven/repository/</value>
-          </property>
-          <property>
-            <name>index.path</name>
-            <value>C:/INDEX</value>
-          </property>
-          <property>
-            <name>cron.expression</name>
-            <value>0 0 8 * * ?</value>
-          </property>
-          <property>
-            <name>blacklist.patterns</name>
-            <value>null</value>
-          </property>
-          <property>
-            <name>include.snapshots</name>
-            <value>true</value>
-          </property>
-          <property>
-            <name>convert.snapshots</name>
-            <value>true</value>
-          </property>
-        </properties>
-      </configuration>
-    </component>
-
     <!--
      | Logger manager
      -->

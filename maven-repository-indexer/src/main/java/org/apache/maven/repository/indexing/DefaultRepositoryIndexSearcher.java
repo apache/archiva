@@ -78,7 +78,7 @@ public class DefaultRepositoryIndexSearcher
         IndexSearcher searcher;
         try
         {
-            searcher = new IndexSearcher( index.getIndexPath() );
+            searcher = new IndexSearcher( index.getIndexPath().getAbsolutePath() );
         }
         catch ( IOException e )
         {

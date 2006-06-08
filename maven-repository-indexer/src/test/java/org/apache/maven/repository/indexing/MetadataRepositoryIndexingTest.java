@@ -52,7 +52,7 @@ public class MetadataRepositoryIndexingTest
 {
     private ArtifactRepository repository;
 
-    private String indexPath;
+    private File indexPath;
 
     private ArtifactFactory artifactFactory;
 
@@ -71,7 +71,7 @@ public class MetadataRepositoryIndexingTest
         ArtifactRepositoryFactory repoFactory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
 
-        indexPath = "target/index";
+        indexPath = getTestFile( "target/index" );
         FileUtils.deleteDirectory( indexPath );
     }
 

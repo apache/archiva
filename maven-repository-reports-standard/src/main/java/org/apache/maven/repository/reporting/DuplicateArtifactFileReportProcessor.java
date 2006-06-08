@@ -68,8 +68,8 @@ public class DuplicateArtifactFileReportProcessor
     {
         if ( artifact.getFile() != null )
         {
-            //@todo remove hard-coded value; current value enables tests to pass
-            String indexPath = new File( "target/.index" ).getAbsolutePath();
+            //@todo remove hard-coded value; current value enables tests to pass!
+            File indexPath = new File( "target/.index" );
 
             RepositoryIndex index;
             try

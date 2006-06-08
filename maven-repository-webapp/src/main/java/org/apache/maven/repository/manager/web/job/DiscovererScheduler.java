@@ -26,7 +26,6 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
 import java.text.ParseException;
-import java.util.Properties;
 
 /**
  * This class sets the job to be executed in the plexus-quartz scheduler
@@ -36,11 +35,6 @@ import java.util.Properties;
 public class DiscovererScheduler
     extends AbstractLogEnabled
 {
-    /**
-     * @plexus.requirement
-     */
-    private Configuration config;
-
     /**
      * @plexus.requirement
      */
@@ -54,43 +48,20 @@ public class DiscovererScheduler
     /**
      * Method that sets the schedule in the plexus-quartz scheduler
      *
+     * @param cronExpression
      * @throws ParseException
      * @throws SchedulerException
      */
-    public void setSchedule()
+    public void setSchedule( String cronExpression )
         throws ParseException, SchedulerException
     {
-        Properties props = config.getProperties();
         JobDetail jobDetail = new JobDetail( "discovererJob", "DISCOVERER", DiscovererJob.class );
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( AbstractJob.LOGGER, getLogger() );
         dataMap.put( DiscovererJob.MAP_DISCOVERER_EXECUTION, execution );
         jobDetail.setJobDataMap( dataMap );
 
-        CronTrigger trigger =
-            new CronTrigger( "DiscovererTrigger", "DISCOVERER", props.getProperty( "cron.expression" ) );
+        CronTrigger trigger = new CronTrigger( "DiscovererTrigger", "DISCOVERER", cronExpression );
         scheduler.scheduleJob( jobDetail, trigger );
     }
-
-    /**
-     * Method that sets the configuration object
-     *
-     * @param config
-     */
-    public void setConfiguration( Configuration config )
-    {
-        this.config = config;
-    }
-
-    /**
-     * Returns the cofiguration
-     *
-     * @return a Configuration object that contains the configuration values
-     */
-    public Configuration getConfiguration()
-    {
-        return config;
-    }
-
-
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project>
+  <parent>
+    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.repository</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.repository</groupId>
+  <artifactId>maven-repository-core</artifactId>
+  <name>Maven Repository Manager Core</name>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

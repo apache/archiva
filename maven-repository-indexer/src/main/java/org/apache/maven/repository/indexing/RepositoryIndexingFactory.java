@@ -18,6 +18,8 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.io.File;
+
 
 /**
  * @author Edwin Punzalan
@@ -34,7 +36,7 @@ public interface RepositoryIndexingFactory
      * @return the ArtifactRepositoryIndex instance
      * @throws RepositoryIndexException
      */
-    ArtifactRepositoryIndex createArtifactRepositoryIndex( String indexPath, ArtifactRepository repository )
+    ArtifactRepositoryIndex createArtifactRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
     /**
@@ -45,7 +47,7 @@ public interface RepositoryIndexingFactory
      * @return the PomRepositoryIndex instance
      * @throws RepositoryIndexException
      */
-    PomRepositoryIndex createPomRepositoryIndex( String indexPath, ArtifactRepository repository )
+    PomRepositoryIndex createPomRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
     /**
@@ -56,7 +58,7 @@ public interface RepositoryIndexingFactory
      * @return the MetadataRepositoryIndex instance
      * @throws RepositoryIndexException
      */
-    MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
+    MetadataRepositoryIndex createMetadataRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
 }

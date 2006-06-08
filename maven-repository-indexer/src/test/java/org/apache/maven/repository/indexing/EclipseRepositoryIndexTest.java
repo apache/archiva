@@ -43,7 +43,7 @@ public class EclipseRepositoryIndexTest
 
     private ArtifactRepository repository;
 
-    private String indexPath;
+    private File indexPath;
 
     private Digester digester;
 
@@ -63,7 +63,7 @@ public class EclipseRepositoryIndexTest
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
         digester = new DefaultDigester();
 
-        indexPath = "target/index";
+        indexPath = getTestFile( "target/index" );
         FileUtils.deleteDirectory( indexPath );
     }
 
@@ -125,7 +125,7 @@ public class EclipseRepositoryIndexTest
 
         try
         {
-            String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
+            File notIndexDir = new File( "pom.xml" );
             EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( notIndexDir, repository, digester );
             indexer.indexArtifact( artifact );
             fail( "Must throw exception on non-directory index directory" );
@@ -137,7 +137,7 @@ public class EclipseRepositoryIndexTest
 
         try
         {
-            String notIndexDir = new File( "" ).getAbsolutePath();
+            File notIndexDir = new File( "" );
             EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( notIndexDir, repository, digester );
             indexer.indexArtifact( artifact );
             fail( "Must throw an exception on a non-index directory" );
@@ -169,7 +169,7 @@ public class EclipseRepositoryIndexTest
     {
         EclipseRepositoryIndex index = createTestIndex();
 
-        IndexSearcher searcher = new IndexSearcher( index.getIndexPath() );
+        IndexSearcher searcher = new IndexSearcher( index.getIndexPath().getAbsolutePath() );
         try
         {
             QueryParser parser = new QueryParser( "j", index.getAnalyzer() );

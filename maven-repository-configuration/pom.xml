@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project>
+  <parent>
+    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.repository</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.repository</groupId>
+  <artifactId>maven-repository-configuration</artifactId>
+  <name>Maven Repository Manager Configuration</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.modello</groupId>
+        <artifactId>modello-maven-plugin</artifactId>
+        <version>1.0-alpha-8</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xpp3-writer</goal>
+              <goal>java</goal>
+              <goal>xpp3-reader</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>1.0.0</version>
+          <model>src/main/mdo/configuration.mdo</model>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

@@ -48,7 +48,7 @@ public class PomRepositoryIndexingTest
 
     private ArtifactFactory artifactFactory;
 
-    private String indexPath;
+    private File indexPath;
 
     private Digester digester;
 
@@ -64,7 +64,7 @@ public class PomRepositoryIndexingTest
         repository = repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
         digester = new DefaultDigester();
 
-        indexPath = "target/index";
+        indexPath = getTestFile( "target/index" );
         FileUtils.deleteDirectory( indexPath );
     }
 
@@ -77,7 +77,7 @@ public class PomRepositoryIndexingTest
 
         try
         {
-            String notIndexDir = new File( "pom.xml" ).getAbsolutePath();
+            File notIndexDir = new File( "pom.xml" );
             PomRepositoryIndex indexer = factory.createPomRepositoryIndex( notIndexDir, repository );
             indexer.indexPom( pom );
             fail( "Must throw exception on non-directory index directory" );
@@ -89,7 +89,7 @@ public class PomRepositoryIndexingTest
 
         try
         {
-            String notIndexDir = new File( "" ).getAbsolutePath();
+            File notIndexDir = new File( "" );
             PomRepositoryIndex indexer = factory.createPomRepositoryIndex( notIndexDir, repository );
             indexer.indexPom( pom );
             fail( "Must throw an exception on a non-index directory" );
