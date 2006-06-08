@@ -22,6 +22,7 @@ import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -50,40 +51,24 @@ import java.util.StringTokenizer;
 /**
  * Implementation Class for searching through the index.
  *
- * @todo this is not a component, but extends ALE, meaning logging will throw an exception! -- should be a component
+ * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexSearcher"
  */
 public class DefaultRepositoryIndexSearcher
     extends AbstractLogEnabled
     implements RepositoryIndexSearcher
 {
-    protected RepositoryIndex index;
-
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory factory;
 
-    private List artifactList;
-
-    /**
-     * Constructor
-     *
-     * @param index the index object
-     */
-    protected DefaultRepositoryIndexSearcher( RepositoryIndex index, ArtifactFactory factory )
-    {
-        this.index = index;
-        this.factory = factory;
-    }
-
-    /**
-     * @see RepositoryIndexSearcher#search(org.apache.maven.repository.indexing.query.Query)
-     */
-    public List search( Query query )
+    public List search( Query query, RepositoryIndex index )
         throws RepositoryIndexSearchException
     {
-        artifactList = new ArrayList();
         org.apache.lucene.search.Query luceneQuery;
         try
         {
-            luceneQuery = createLuceneQuery( query );
+            luceneQuery = query.createLuceneQuery( index );
         }
         catch ( ParseException e )
         {
@@ -100,11 +85,15 @@ public class DefaultRepositoryIndexSearcher
             throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
         }
 
-        List docs;
+        List docs = new ArrayList();
         try
         {
             Hits hits = searcher.search( luceneQuery );
-            docs = buildList( hits );
+            for ( int i = 0; i < hits.length(); i++ )
+            {
+                Document doc = hits.doc( i );
+                docs.add( createSearchedObjectFromIndexDocument( doc, index.getRepository() ) );
+            }
         }
         catch ( MalformedURLException e )
         {
@@ -130,43 +119,14 @@ public class DefaultRepositoryIndexSearcher
     }
 
     /**
-     * Method to create a lucene Query object by converting a prepared Query object
-     *
-     * @param query the prepared Query object to be converted into a lucene Query object
-     * @return a lucene Query object to represent the passed Query object
-     * @throws ParseException
-     */
-    private org.apache.lucene.search.Query createLuceneQuery( Query query )
-        throws ParseException
-    {
-        return query.createLuceneQuery( index );
-    }
-
-    /**
-     * Create a list of artifact objects from the result set.
-     *
-     * @param hits the search result set
-     * @return List
-     */
-    private List buildList( Hits hits )
-        throws RepositoryIndexSearchException, IOException
-    {
-        for ( int i = 0; i < hits.length(); i++ )
-        {
-            Document doc = hits.doc( i );
-            artifactList.add( createSearchedObjectFromIndexDocument( doc ) );
-        }
-
-        return artifactList;
-    }
-
-    /**
      * Method for creating the object to be returned for the search
      *
-     * @param doc the index document where the object field values will be retrieved from
+     * @param doc        the index document where the object field values will be retrieved from
+     * @param repository
      * @return Object
      */
-    protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc )
+    protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc,
+                                                                              ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {
         RepositoryIndexSearchHit searchHit = null;
@@ -180,8 +140,7 @@ public class DefaultRepositoryIndexSearcher
             String packaging = doc.get( RepositoryIndex.FLD_PACKAGING );
             Artifact artifact = factory.createBuildArtifact( groupId, artifactId, version, packaging );
 
-            artifact.setFile(
-                new File( index.getRepository().getBasedir(), index.getRepository().pathOf( artifact ) ) );
+            artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
 
             Map map = new HashMap();
             map.put( RepositoryIndex.ARTIFACT, artifact );
@@ -201,7 +160,7 @@ public class DefaultRepositoryIndexSearcher
             Artifact pomArtifact = factory.createProjectArtifact( groupId, artifactId, version );
 
             searchHit = new RepositoryIndexSearchHit( false, false, true );
-            searchHit.setObject( readPom( pomArtifact ) );
+            searchHit.setObject( readPom( pomArtifact, repository ) );
         }
         // the document is of type metadata
         else if ( doc.get( RepositoryIndex.FLD_DOCTYPE ).equals( RepositoryIndex.METADATA ) )
@@ -233,7 +192,7 @@ public class DefaultRepositoryIndexSearcher
                 repoMetadata = new GroupRepositoryMetadata( groupId );
             }
 
-            repoMetadata.setMetadata( readMetadata( repoMetadata ) );
+            repoMetadata.setMetadata( readMetadata( repoMetadata, repository ) );
 
             searchHit = new RepositoryIndexSearchHit( false, true, false );
             searchHit.setObject( repoMetadata );
@@ -247,11 +206,10 @@ public class DefaultRepositoryIndexSearcher
      *
      * @return RepositoryMetadata
      */
-    private Metadata readMetadata( RepositoryMetadata repoMetadata )
+    private Metadata readMetadata( RepositoryMetadata repoMetadata, ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {
-        File file = new File( index.getRepository().getBasedir(),
-                              index.getRepository().pathOfRemoteRepositoryMetadata( repoMetadata ) );
+        File file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repoMetadata ) );
 
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
@@ -284,10 +242,10 @@ public class DefaultRepositoryIndexSearcher
      *
      * @return RepositoryMetadata
      */
-    private Model readPom( Artifact pomArtifact )
+    private Model readPom( Artifact pomArtifact, ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {
-        File file = new File( index.getRepository().getBasedir(), index.getRepository().pathOf( pomArtifact ) );
+        File file = new File( repository.getBasedir(), repository.pathOf( pomArtifact ) );
 
         MavenXpp3Reader r = new MavenXpp3Reader();
 

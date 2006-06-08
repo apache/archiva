@@ -161,12 +161,14 @@ public class ArtifactRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearchLayer repoSearchLayer =
+            (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
+
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         // search version
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
-        List artifacts = repoSearchLayer.searchAdvanced( qry );
+        List artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -177,7 +179,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search classes
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_CLASSES, "App" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -188,7 +190,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search packages
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_PACKAGES, "groupId" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -199,7 +201,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search files
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_FILES, "pom.xml" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 3, artifacts.size() );
         Iterator iter = artifacts.iterator();
         if ( iter.hasNext() )
@@ -211,7 +213,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search group id
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 2, artifacts.size() );
         iter = artifacts.iterator();
         if ( iter.hasNext() )
@@ -223,7 +225,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search artifact id
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -234,7 +236,7 @@ public class ArtifactRepositoryIndexingTest
 
         // search version
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2" );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 2, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -250,7 +252,7 @@ public class ArtifactRepositoryIndexingTest
         String sha1 = digester.createChecksum( artifact.getFile(), Digester.SHA1 );
 
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_SHA1, sha1.trim() );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -263,7 +265,7 @@ public class ArtifactRepositoryIndexingTest
         // search md5 checksum
         String md5 = digester.createChecksum( artifact.getFile(), Digester.MD5 );
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_MD5, md5.trim() );
-        artifacts = repoSearchLayer.searchAdvanced( qry );
+        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -287,9 +289,9 @@ public class ArtifactRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearchLayer repoSearchLayer =
+            (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        //RepositoryIndexSearcher repoSearchLayer = factory.createDefaultRepositoryIndexSearcher( indexer );
-        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         // Criteria 1: required query
         // ex. artifactId=maven-artifact AND groupId=org.apache.maven
@@ -299,7 +301,7 @@ public class ArtifactRepositoryIndexingTest
         rQry.and( qry1 );
         rQry.and( qry2 );
 
-        List artifacts = repoSearchLayer.searchAdvanced( rQry );
+        List artifacts = repoSearchLayer.searchAdvanced( rQry, indexer );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -316,7 +318,7 @@ public class ArtifactRepositoryIndexingTest
         oQry.or( rQry );
         oQry.or( qry3 );
 
-        artifacts = repoSearchLayer.searchAdvanced( oQry );
+        artifacts = repoSearchLayer.searchAdvanced( oQry, indexer );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -345,7 +347,7 @@ public class ArtifactRepositoryIndexingTest
         rQry2.and( rQry );
         rQry2.or( oQry5 );
 
-        artifacts = repoSearchLayer.searchAdvanced( rQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( rQry2, indexer );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -369,7 +371,7 @@ public class ArtifactRepositoryIndexingTest
         oQry2.and( rQry2 );
         oQry2.and( rQry3 );
 
-        artifacts = repoSearchLayer.searchAdvanced( oQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( oQry2, indexer );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -392,7 +394,7 @@ public class ArtifactRepositoryIndexingTest
         rQry4.and( qry8 );
         oQry2.and( rQry4 );
 
-        artifacts = repoSearchLayer.searchAdvanced( oQry2 );
+        artifacts = repoSearchLayer.searchAdvanced( oQry2, indexer );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -415,14 +417,15 @@ public class ArtifactRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearchLayer repoSearchLayer =
+            (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
+
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        // RepositoryIndexSearcher repoSearchLayer = factory.createDefaultRepositoryIndexSearcher( indexer );
-        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         try
         {
             Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "~~~~~" );
-            repoSearchLayer.searchAdvanced( qry );
+            repoSearchLayer.searchAdvanced( qry, indexer );
             fail( "Must throw an exception on unparseable query." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -431,12 +434,11 @@ public class ArtifactRepositoryIndexingTest
         }
 
         indexer = factory.createArtifactRepositoryIndex( "target/index/sample", repository );
-        repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         try
         {
             Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
-            repoSearchLayer.searchAdvanced( qry );
+            repoSearchLayer.searchAdvanced( qry, indexer );
             fail( "Must throw an exception on invalid index location." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -457,15 +459,16 @@ public class ArtifactRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearcher repoSearcher = (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE );
+
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.deleteDocument( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
 
-        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
-        List artifacts = repoSearcher.search( qry );
+        List artifacts = repoSearcher.search( qry, indexer );
         assertEquals( 0, artifacts.size() );
     }
 

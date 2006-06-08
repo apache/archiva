@@ -169,10 +169,11 @@ public class RepositoryIndexSearchLayerTest
     {
         createTestIndex();
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
-        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        RepositoryIndexSearchLayer searchLayer = factory.createRepositoryIndexSearchLayer( indexer );
+        RepositoryIndexSearchLayer searchLayer = (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
 
-        List returnList = searchLayer.searchGeneral( "org.apache.maven" );
+        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+
+        List returnList = searchLayer.searchGeneral( "org.apache.maven", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -193,7 +194,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         //POM license urls
-        returnList = searchLayer.searchGeneral( "http://www.apache.org/licenses/LICENSE-2.0.txt" );
+        returnList = searchLayer.searchGeneral( "http://www.apache.org/licenses/LICENSE-2.0.txt", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -214,7 +215,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         //POM dependency
-        returnList = searchLayer.searchGeneral( "org.codehaus.plexus:plexus-utils:1.0.5" );
+        returnList = searchLayer.searchGeneral( "org.codehaus.plexus:plexus-utils:1.0.5", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -235,7 +236,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         // POM reporting plugin
-        returnList = searchLayer.searchGeneral( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" );
+        returnList = searchLayer.searchGeneral( "org.apache.maven.plugins:maven-checkstyle-plugin:2.0", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -257,7 +258,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         // POM build plugin
-        returnList = searchLayer.searchGeneral( "org.codehaus.modello:modello-maven-plugin:2.0" );
+        returnList = searchLayer.searchGeneral( "org.codehaus.modello:modello-maven-plugin:2.0", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -278,7 +279,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         //maven-artifact-2.0.1.jar MD5 checksum
-        returnList = searchLayer.searchGeneral( "F5A934ABBBC70A33136D89A996B9D5C09F652766" );
+        returnList = searchLayer.searchGeneral( "F5A934ABBBC70A33136D89A996B9D5C09F652766", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -296,7 +297,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         //maven-artifact-2.0.1.jar SHA1 checksum
-        returnList = searchLayer.searchGeneral( "AE55D9B5720E11B6CF19FE1E31A42E51" );
+        returnList = searchLayer.searchGeneral( "AE55D9B5720E11B6CF19FE1E31A42E51", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -313,7 +314,7 @@ public class RepositoryIndexSearchLayerTest
         }
 
         //packaging jar
-        returnList = searchLayer.searchGeneral( "jar" );
+        returnList = searchLayer.searchGeneral( "jar", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
@@ -329,14 +330,14 @@ public class RepositoryIndexSearchLayerTest
             }
         }
 
-        returnList = searchLayer.searchGeneral( "test" );
+        returnList = searchLayer.searchGeneral( "test", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();
             assertEquals( "test", result.getArtifact().getGroupId() );
         }
 
-        returnList = searchLayer.searchGeneral( "test-artifactId" );
+        returnList = searchLayer.searchGeneral( "test-artifactId", indexer );
         for ( Iterator iter = returnList.iterator(); iter.hasNext(); )
         {
             SearchResult result = (SearchResult) iter.next();

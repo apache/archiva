@@ -59,19 +59,4 @@ public interface RepositoryIndexingFactory
     MetadataRepositoryIndex createMetadataRepositoryIndex( String indexPath, ArtifactRepository repository )
         throws RepositoryIndexException;
 
-    /**
-     * Method to create an instance of RepositoryIndexSearchLayer
-     *
-     * @param index the RepositoryIndex object where the query string will be searched
-     * @return the RepositoryIndexSearchLayer instance
-     */
-    RepositoryIndexSearchLayer createRepositoryIndexSearchLayer( RepositoryIndex index );
-
-    /**
-     * Method to create an instance of DefaultRepositoryIndexSearcher
-     *
-     * @param index the RepositoryIndex object where the query string will be searched
-     * @return the DefaultRepositoryIndexSearcher instance
-     */
-    DefaultRepositoryIndexSearcher createDefaultRepositoryIndexSearcher( RepositoryIndex index );
 }

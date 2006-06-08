@@ -32,21 +32,24 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 
 /**
- * Abstract class for RepositoryIndexers
+ * Abstract class for RepositoryIndexers.
  *
  * @author Edwin Punzalan
  */
 public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
+    // TODO [!] can this be derived from the repository?
     private String indexPath;
 
     private boolean indexOpen;
 
+    // TODO [!] why is the writer open for the life, but not the reader? why keep them open that length of time anyway? investigate best practices in Lucene
     private IndexWriter indexWriter;
 
     protected ArtifactRepository repository;
 
+    // TODO [!] is this really needed externally?
     private Analyzer analyzer;
 
     /**
@@ -155,6 +158,7 @@ public abstract class AbstractRepositoryIndex
     protected IndexWriter getIndexWriter()
         throws IOException
     {
+        // TODO [!] why is this allowed to be called before open()?
         if ( indexWriter == null )
         {
             indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
@@ -220,7 +224,7 @@ public abstract class AbstractRepositoryIndex
         }
         catch ( IOException ie )
         {
-            throw new RepositoryIndexException( indexPath + "is not a valid directory." );
+            throw new RepositoryIndexException( indexPath + " is not a valid directory." );
         }
         finally
         {

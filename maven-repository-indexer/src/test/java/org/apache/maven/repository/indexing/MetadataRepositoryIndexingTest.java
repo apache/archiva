@@ -137,13 +137,14 @@ public class MetadataRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearchLayer repoSearchLayer =
+            (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
+
         MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
-        //RepositoryIndexSearcher repoSearchLayer = factory.createDefaultRepositoryIndexSearcher( indexer );
-        RepositoryIndexSearchLayer repoSearchLayer = factory.createRepositoryIndexSearchLayer( indexer );
 
         // search last update
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
-        List metadataList = repoSearchLayer.searchAdvanced( qry );
+        List metadataList = repoSearchLayer.searchAdvanced( qry, indexer );
         //assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
@@ -159,7 +160,7 @@ public class MetadataRepositoryIndexingTest
 
         // search plugin prefix
         qry = new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
-        metadataList = repoSearchLayer.searchAdvanced( qry );
+        metadataList = repoSearchLayer.searchAdvanced( qry, indexer );
         //assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
@@ -184,7 +185,7 @@ public class MetadataRepositoryIndexingTest
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
 
-        metadataList = repoSearchLayer.searchAdvanced( rQry );
+        metadataList = repoSearchLayer.searchAdvanced( rQry, indexer );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
             RepositoryIndexSearchHit hit = (RepositoryIndexSearchHit) iter.next();
@@ -204,7 +205,7 @@ public class MetadataRepositoryIndexingTest
         rQry.addQuery( qry1 );
         rQry.addQuery( qry2 );
 
-        metadataList = repoSearchLayer.searchAdvanced( rQry );
+        metadataList = repoSearchLayer.searchAdvanced( rQry, indexer );
         assertEquals( 0, metadataList.size() );
 
         indexer.close();
@@ -256,15 +257,16 @@ public class MetadataRepositoryIndexingTest
         createTestIndex();
 
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearcher repoSearcher = (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE );
+
         MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
         RepositoryMetadata repoMetadata = new GroupRepositoryMetadata( "org.apache.maven" );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         indexer.deleteDocument( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
 
-        RepositoryIndexSearcher repoSearcher = factory.createDefaultRepositoryIndexSearcher( indexer );
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
-        List metadataList = repoSearcher.search( qry );
+        List metadataList = repoSearcher.search( qry, indexer );
         assertEquals( 0, metadataList.size() );
     }
 

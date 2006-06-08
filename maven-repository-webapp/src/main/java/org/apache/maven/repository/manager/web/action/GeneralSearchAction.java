@@ -50,6 +50,11 @@ public class GeneralSearchAction
     /**
      * @plexus.requirement
      */
+    private RepositoryIndexSearchLayer searchLayer;
+
+    /**
+     * @plexus.requirement
+     */
     private ArtifactRepositoryFactory repositoryFactory;
 
     /**
@@ -74,9 +79,7 @@ public class GeneralSearchAction
 
             ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 
-            RepositoryIndexSearchLayer searchLayer = factory.createRepositoryIndexSearchLayer( index );
-
-            searchResult = searchLayer.searchGeneral( searchString );
+            searchResult = searchLayer.searchGeneral( searchString, index );
 
             return SUCCESS;
         }

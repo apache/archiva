@@ -60,6 +60,11 @@ public class PackageSearchAction
     /**
      * @plexus.requirement
      */
+    private RepositoryIndexSearchLayer searchLayer;
+
+    /**
+     * @plexus.requirement
+     */
     private Configuration configuration;
 
     public String execute()
@@ -94,9 +99,7 @@ public class PackageSearchAction
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 
-        RepositoryIndexSearchLayer searchLayer = factory.createRepositoryIndexSearchLayer( index );
-
-        searchResult = searchLayer.searchAdvanced( new SinglePhraseQuery( key, searchTerm ) );
+        searchResult = searchLayer.searchAdvanced( new SinglePhraseQuery( key, searchTerm ), index );
 
         return SUCCESS;
     }

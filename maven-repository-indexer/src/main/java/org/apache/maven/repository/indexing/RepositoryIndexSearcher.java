@@ -26,13 +26,19 @@ import java.util.List;
 public interface RepositoryIndexSearcher
 {
     /**
+     * Plexus component role name.
+     */
+    String ROLE = RepositoryIndexSearcher.class.getName();
+
+    /**
      * Search the artifact based on the search criteria specified in the query object. Returns a list of
      * artifact objects.
      *
      * @param query The query object that contains the search criteria.
+     * @param index
      * @return List
      * @throws RepositoryIndexSearchException
      */
-    List search( Query query )
+    List search( Query query, RepositoryIndex index )
         throws RepositoryIndexSearchException;
 }

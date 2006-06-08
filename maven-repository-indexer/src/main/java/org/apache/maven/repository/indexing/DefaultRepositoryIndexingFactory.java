@@ -23,7 +23,6 @@ import org.apache.maven.repository.digest.Digester;
 /**
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.indexing.RepositoryIndexingFactory"
- * @todo these methods should be replaced by plexus lookups of some kind!
  */
 public class DefaultRepositoryIndexingFactory
     implements RepositoryIndexingFactory
@@ -63,22 +62,6 @@ public class DefaultRepositoryIndexingFactory
         throws RepositoryIndexException
     {
         return new MetadataRepositoryIndex( indexPath, repository );
-    }
-
-    /*
-     * @see RepositoryIndexingFactory#createRepositoryIndexSearchLayer(RepositoryIndex)
-     */
-    public RepositoryIndexSearchLayer createRepositoryIndexSearchLayer( RepositoryIndex index )
-    {
-        return new RepositoryIndexSearchLayer( index, artifactFactory );
-    }
-
-    /**
-     * @see RepositoryIndexingFactory#createDefaultRepositoryIndexSearcher(RepositoryIndex)
-     */
-    public DefaultRepositoryIndexSearcher createDefaultRepositoryIndexSearcher( RepositoryIndex index )
-    {
-        return new DefaultRepositoryIndexSearcher( index, artifactFactory );
     }
 
 }
