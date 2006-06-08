@@ -27,7 +27,7 @@ import java.io.IOException;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class CreateFileEvent
-    implements TransactionEvent
+    extends AbstractTransactionEvent
 {
     private final File destination;
 
@@ -42,7 +42,14 @@ public class CreateFileEvent
     public void commit()
         throws IOException
     {
-        destination.getParentFile().mkdirs();
+        createBackup( destination );
+
+        mkDirs( destination.getParentFile() );
+
+        if ( !destination.exists() && !destination.createNewFile() )
+        {
+            throw new IOException( "Unable to create new file" );
+        }
 
         FileUtils.fileWrite( destination.getAbsolutePath(), content );
     }
@@ -50,6 +57,10 @@ public class CreateFileEvent
     public void rollback()
         throws IOException
     {
-        // TODO: revert to backup/delete if was created
+        FileUtils.fileDelete( destination.getAbsolutePath() );
+
+        revertMkDirs();
+
+        restoreBackup( destination );
     }
 }

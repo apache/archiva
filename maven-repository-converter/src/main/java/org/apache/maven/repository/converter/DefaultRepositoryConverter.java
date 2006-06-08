@@ -376,7 +376,6 @@ public class DefaultRepositoryConverter
         boolean result = true;
         if ( file.exists() )
         {
-            // TODO: utility methods in the model converter
             File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pom ) );
 
             String contents = null;

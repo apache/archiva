@@ -27,7 +27,7 @@ import java.io.IOException;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class CopyFileEvent
-    implements TransactionEvent
+    extends AbstractTransactionEvent
 {
     private final File source;
 
@@ -42,7 +42,9 @@ public class CopyFileEvent
     public void commit()
         throws IOException
     {
-        destination.getParentFile().mkdirs();
+        createBackup( destination );
+
+        mkDirs( destination.getParentFile() );
 
         FileUtils.copyFile( source, destination );
     }
@@ -50,6 +52,10 @@ public class CopyFileEvent
     public void rollback()
         throws IOException
     {
-        // TODO: revert to backup/delete if was created
+        FileUtils.fileDelete( destination.getAbsolutePath() );
+
+        revertMkDirs();
+
+        restoreBackup( destination );
     }
 }
