@@ -298,13 +298,13 @@ public class DefaultProxyManager
 
     private ArtifactRepositoryPolicy getReleasesPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration [!]
+        //todo get policy configuration from ProxyConfiguration
         return new ArtifactRepositoryPolicy();
     }
 
     private ArtifactRepositoryPolicy getSnapshotsPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration [!]
+        //todo get policy configuration from ProxyConfiguration
         return new ArtifactRepositoryPolicy();
     }
 

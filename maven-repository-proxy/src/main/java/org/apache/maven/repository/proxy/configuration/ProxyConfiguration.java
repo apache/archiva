@@ -28,13 +28,9 @@ import java.util.List;
  * Class to represent the configuration file for the proxy
  *
  * @author Edwin Punzalan
- * @plexus.component role="org.apache.maven.repository.proxy.configuration.ProxyConfiguration"
- * @todo investigate how these should be set - probably plexus configuration [!]
  */
 public class ProxyConfiguration
 {
-    public static final String ROLE = ProxyConfiguration.class.getName();
-
     private List repositories = new ArrayList();
 
     private String cachePath;
