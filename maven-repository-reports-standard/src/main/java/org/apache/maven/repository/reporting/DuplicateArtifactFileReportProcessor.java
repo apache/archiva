@@ -17,12 +17,9 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
-import org.apache.maven.repository.digest.DefaultDigester;
 import org.apache.maven.repository.digest.Digester;
-import org.apache.maven.repository.indexing.DefaultRepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
@@ -42,21 +39,28 @@ import java.util.List;
  * Validates an artifact file for duplicates within the same groupId based from what's available in a RepositoryIndex
  *
  * @author Edwin Punzalan
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="duplicate"
  */
 public class DuplicateArtifactFileReportProcessor
     implements ArtifactReportProcessor
 {
+    /**
+     * @plexus.requirement
+     */
     private Digester digester;
 
+    /**
+     * @plexus.requirement
+     */
     private RepositoryIndexingFactory indexFactory;
 
     //@todo configurable?
     private String algorithm = RepositoryIndex.FLD_MD5;
 
+    /**
+     * @plexus.requirement
+     */
     private RepositoryIndexSearchLayer searchLayer;
-
-    //@todo must be injected
-    private ArtifactFactory artifactFactory;
 
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
@@ -67,18 +71,6 @@ public class DuplicateArtifactFileReportProcessor
             //@todo remove hard-coded value; current value enables tests to pass
             String indexPath = new File( "target/.index" ).getAbsolutePath();
 
-            //@todo may be injected?
-            if ( digester == null )
-            {
-                digester = new DefaultDigester();
-            }
-
-            //@todo may be injected?
-            if ( indexFactory == null )
-            {
-                indexFactory = new DefaultRepositoryIndexingFactory();
-            }
-
             RepositoryIndex index;
             try
             {
@@ -87,11 +79,6 @@ public class DuplicateArtifactFileReportProcessor
             catch ( RepositoryIndexException e )
             {
                 throw new ReportProcessorException( "Unable to create RepositoryIndex instance", e );
-            }
-
-            if ( searchLayer == null )
-            {
-                searchLayer = new RepositoryIndexSearchLayer( index, artifactFactory );
             }
 
             String checksum;
@@ -112,7 +99,7 @@ public class DuplicateArtifactFileReportProcessor
 
             try
             {
-                List results = searchLayer.searchAdvanced( query );
+                List results = searchLayer.searchAdvanced( query, index );
 
                 if ( results.isEmpty() )
                 {
@@ -156,15 +143,5 @@ public class DuplicateArtifactFileReportProcessor
         {
             reporter.addWarning( artifact, "Artifact file is null" );
         }
-    }
-
-    public ArtifactFactory getArtifactFactory()
-    {
-        return artifactFactory;
-    }
-
-    public void setArtifactFactory( ArtifactFactory artifactFactory )
-    {
-        this.artifactFactory = artifactFactory;
     }
 }
