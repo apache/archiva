@@ -25,7 +25,6 @@ import java.io.File;
  * Class used to bridge the servlet to the repository proxy implementation.
  *
  * @author Edwin Punzalan
- * @todo the names get() and getRemoteFile() are confusing [!]
  */
 public interface ProxyManager
 {
@@ -53,7 +52,7 @@ public interface ProxyManager
      * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
      *                                       configured repositories
      */
-    File getRemoteFile( String path )
+    File getAlways( String path )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
@@ -62,11 +61,4 @@ public interface ProxyManager
      * @param config the ProxyConfiguration to set the behavior of the proxy
      */
     void setConfiguration( ProxyConfiguration config );
-
-    /**
-     * Used to retrieve the configuration describing the behavior of the proxy
-     *
-     * @return the ProxyConfiguration of this proxy
-     */
-    ProxyConfiguration getConfiguration();
 }

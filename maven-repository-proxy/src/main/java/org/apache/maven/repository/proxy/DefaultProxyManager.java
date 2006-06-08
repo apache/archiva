@@ -52,7 +52,7 @@ import java.util.Map;
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.proxy.ProxyManager"
  * @todo too much of wagon manager is reproduced here because checksums need to be downloaded separately - is that necessary?
- * @todo this isn't reusing the parts of wagon manager than handle snapshots [!]
+ * @todo this isn't reusing the parts of artifact resolver that handles snapshots - should this be more artifact based than file-based?
  * @todo currently, cache must be in the same layout as the request, which prohibits any mapping
  */
 public class DefaultProxyManager
@@ -70,19 +70,13 @@ public class DefaultProxyManager
     private ArtifactRepositoryFactory repositoryFactory;
 
     /**
-     * @plexus.requirement
-     */
-    private ProxyConfiguration config;
-
-    /**
      * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
      */
     private Map repositoryLayoutMap;
 
-    /**
-     * A map
-     */
     private Map failuresCache = new HashMap();
+
+    private ProxyConfiguration config;
 
     private static final int MS_PER_SEC = 1000;
 
@@ -102,11 +96,6 @@ public class DefaultProxyManager
         this.config = config;
     }
 
-    public ProxyConfiguration getConfiguration()
-    {
-        return config;
-    }
-
     /**
      * @see org.apache.maven.repository.proxy.ProxyManager#get(String)
      */
@@ -120,15 +109,15 @@ public class DefaultProxyManager
         File cachedFile = new File( cachePath, path );
         if ( !cachedFile.exists() )
         {
-            cachedFile = getRemoteFile( path );
+            cachedFile = getAlways( path );
         }
         return cachedFile;
     }
 
     /**
-     * @see org.apache.maven.repository.proxy.ProxyManager#getRemoteFile(String)
+     * @see org.apache.maven.repository.proxy.ProxyManager#getAlways(String)
      */
-    public File getRemoteFile( String path )
+    public File getAlways( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
         checkConfiguration();
@@ -393,7 +382,7 @@ public class DefaultProxyManager
         {
             wagon = wagonManager.getWagon( repository.getProtocol() );
 
-            //@todo configure wagonManager [!]
+            //@todo configure wagon (ssh settings, etc)
 
             if ( useChecksum )
             {

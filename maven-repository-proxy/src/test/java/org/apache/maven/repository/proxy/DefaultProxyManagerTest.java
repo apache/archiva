@@ -34,6 +34,8 @@ public class DefaultProxyManagerTest
 {
     private ProxyManager proxy;
 
+    private ProxyConfiguration configuration;
+
     protected void setUp()
         throws Exception
     {
@@ -41,7 +43,8 @@ public class DefaultProxyManagerTest
 
         proxy = (ProxyManager) container.lookup( ProxyManager.ROLE );
 
-        proxy.setConfiguration( getTestConfiguration() );
+        configuration = getTestConfiguration();
+        proxy.setConfiguration( configuration );
     }
 
     public void testExceptions()
@@ -70,7 +73,7 @@ public class DefaultProxyManagerTest
         File file = proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
-                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+                    file.getAbsolutePath().startsWith( configuration.getRepositoryCachePath() ) );
 
         //test cache
         proxy.get( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar" );
@@ -89,11 +92,11 @@ public class DefaultProxyManagerTest
     public void testArtifactChecksum()
         throws Exception
     {
-        //force the downlod from the remote repository, use getRemoteFile()
-        File file = proxy.getRemoteFile( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar.md5" );
+        //force the downlod from the remote repository, use getAlways()
+        File file = proxy.getAlways( "/commons-logging/commons-logging/1.0/commons-logging-1.0.jar.md5" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
-                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+                    file.getAbsolutePath().startsWith( configuration.getRepositoryCachePath() ) );
     }
 
     public void testNonArtifactWithNoChecksum()
@@ -102,7 +105,7 @@ public class DefaultProxyManagerTest
         File file = proxy.get( "/not-standard/repository/file.txt" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
-                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+                    file.getAbsolutePath().startsWith( configuration.getRepositoryCachePath() ) );
     }
 
     public void testNonArtifactWithMD5Checksum()
@@ -111,7 +114,7 @@ public class DefaultProxyManagerTest
         File file = proxy.get( "/checksumed-md5/repository/file.txt" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
-                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+                    file.getAbsolutePath().startsWith( configuration.getRepositoryCachePath() ) );
     }
 
     public void testNonArtifactWithSHA1Checksum()
@@ -120,7 +123,7 @@ public class DefaultProxyManagerTest
         File file = proxy.get( "/checksumed-sha1/repository/file.txt" );
         assertTrue( "File must be downloaded.", file.exists() );
         assertTrue( "Downloaded file should be present in the cache.",
-                    file.getAbsolutePath().startsWith( proxy.getConfiguration().getRepositoryCachePath() ) );
+                    file.getAbsolutePath().startsWith( configuration.getRepositoryCachePath() ) );
     }
 
     protected void tearDown()
@@ -134,7 +137,7 @@ public class DefaultProxyManagerTest
     private ProxyConfiguration getTestConfiguration()
         throws ComponentLookupException
     {
-        ProxyConfiguration config = (ProxyConfiguration) container.lookup( ProxyConfiguration.ROLE );
+        ProxyConfiguration config = new ProxyConfiguration();
 
         config.setRepositoryCachePath( "target/proxy-cache" );
 

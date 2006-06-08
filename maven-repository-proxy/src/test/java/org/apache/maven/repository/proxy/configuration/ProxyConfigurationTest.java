@@ -41,7 +41,7 @@ public class ProxyConfigurationTest
     {
         super.setUp();
 
-        config = (ProxyConfiguration) container.lookup( ProxyConfiguration.ROLE );
+        config = new ProxyConfiguration();
     }
 
     public void testRepositoryCache()
