@@ -1,0 +1,78 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <h1>Synchronisation</h1>
+
+    <div id="contentArea">
+      <h2>Apache</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:01:04 (<a href="#">View Report</a>)</td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:00:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td><span class="statusOk">Success</span></td>
+        </tr>
+      </table>
+      <p>
+        <a href="browse2.html">Browse Source Repository</a> |
+        <a href="#">Sync Now</a>
+      </p>
+      <h2>Codehaus</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:05:04 (<a href="#">View Report</a>)</td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:05:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td><span class="statusFailed">FAILED</span>: confluence wouldn't share CPU cycles with me</td>
+        </tr>
+      </table>
+      <p>
+        <a href="browse2.html">Browse Source Repository</a> |
+        <a href="#">Sync Now</a>
+      </p>
+      <h2>Open Symphony</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:11:04 (<a href="#">View Report</a>)</td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:10:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td><span class="statusWarn">WARNING</span>: some warnings occurred during the conversion</td>
+        </tr>
+      </table>
+      <p>
+        <a href="browse2.html">Browse Source Repository</a> |
+        <a href="#">Sync Now</a>
+      </p>
+    </div>
+    <div id="notes">
+      <p>Notes</p>
+
+      <ul>
+        <li>Probably don't need this in v1.0 - can use old external rsync call and just monitor the directories occasionally without reports</li>
+        <li>Could also add show details, edit details, add/remove sync. Manually configure in v1.0</li>
+        <li>Could also add a history view to each to see old reports</li>
+      </ul>
+    </div>
+  </body>
+</document>
+

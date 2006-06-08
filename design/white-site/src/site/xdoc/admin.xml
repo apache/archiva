@@ -1,0 +1,25 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <h1>Administration</h1>
+
+    <div id="contentArea">
+    </div>
+    <div id="notes">
+      <p>Notes</p>
+
+      <ul>
+        <li>What do we want here? Should some be in separate pages?</li>
+        <ul>
+          <li>Proxy setup</li>
+          <li>Repositories setup</li>
+          <li>Job control</li>
+        </ul>
+        <li>Expect these to be manually configured in v1.0.</li>
+      </ul>
+    </div>
+  </body>
+</document>
+

@@ -1,0 +1,47 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <div id="sidebar">
+      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+    </div>
+
+    <h1>Search</h1>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <form action="results.html">
+          <p>
+            <input type="text" size="50"/>
+            <input type="submit" name="Go!"/>
+          </p>
+          <p>
+            Enter your search terms. A variety of data will be searched for your keywords.
+          </p>
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
+

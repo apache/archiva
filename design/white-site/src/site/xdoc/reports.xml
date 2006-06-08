@@ -1,0 +1,72 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <h1>Repository Health</h1>
+
+    <div id="contentArea">
+      <h2>Status</h2>
+      <table>
+        <tr>
+          <th>Last run</th>
+          <td>1 February 13:01:04</td>
+        </tr>
+        <tr>
+          <th>Next run</th>
+          <td>1 February 17:00:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td><span class="statusWarn">WARNING</span>: some warnings were found.</td>
+        </tr>
+      </table>
+      <h2>Errors</h2>
+      <p>
+        No errors found.
+      </p>
+      <h2>Warnings</h2>
+      <p>
+        3 warnings found.
+      </p>
+      <table>
+        <tr>
+          <th>Group ID</th>
+          <th>Artifact ID</th>
+          <th>Version</th>
+          <th>Message</th>
+        </tr>
+        <tr>
+          <td>org.apache.maven</td>
+          <td>maven-model</td>
+          <td>2.0.1</td>
+          <td>File is missing SHA1 checksum</td>
+        </tr>
+        <tr>
+          <td>org.apache.maven</td>
+          <td>maven-model</td>
+          <td>2.0.2</td>
+          <td>File is missing SHA1 checksum</td>
+        </tr>
+        <tr>
+          <td>org.apache.maven</td>
+          <td>maven-model</td>
+          <td>2.0.2</td>
+          <td>File is missing a digital signature</td>
+        </tr>
+      </table>
+      <table>
+
+      </table>
+    </div>
+    <div id="notes">
+      <p>Notes</p>
+
+      <ul>
+        <li>Should this just be part of the jobs? Aligned with the sync?</li>
+        <li>Should reports be aggregated?</li>
+      </ul>
+    </div>
+  </body>
+</document>
+

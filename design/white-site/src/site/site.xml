@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Maven Repository Manager">
+  <bannerLeft>
+    <src>http://www.apache.org/images/asf_logo_wide.gif</src>
+  </bannerLeft>
+  <body>
+    <menu name="Find">
+      <item name="Search" href="/index.html" />
+      <item name="Find Artifact" href="/find-artifact.html" />
+      <item name="Browse" href="/browse.html" />
+    </menu>
+    <menu name="Manage">
+      <item name="Reports" href="/reports.html" />
+      <item name="Synchronisation" href="/sync.html" />
+      <item name="Administration" href="/admin.html" />
+    </menu>
+  </body>
+</project>

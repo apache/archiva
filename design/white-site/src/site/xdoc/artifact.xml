@@ -1,0 +1,175 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <div id="sidebar">
+      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+    </div>
+
+    <img src="images/jar.png" width="100" height="100" alt="jar" style="float: left"/>
+    <div class="downloadButton">
+      <a href="#">Download</a>
+    </div>
+    <h1>Maven Model</h1>
+
+    <div id="contentArea">
+      <div id="tabs">
+        <p>
+          <b>Info</b>
+          <a href="TODO">Dependencies</a>
+          <a href="TODO">Depended On</a>
+          <a href="TODO">Mailing Lists</a>
+          <a href="TODO">Developers</a>
+          <a href="TODO">POM</a>
+        </p>
+      </div>
+      <div id="tabArea">
+        <p>
+          <a href="browse2.html">org</a>
+          /
+          <a href="browse2.html">apache</a>
+          /
+          <a href="browse2.html">maven</a>
+          /
+          <a href="browse3.html">maven-model</a>
+          /
+          <b>2.0</b>
+
+          (<strong class="statusFailed">Newer version available:</strong>
+          <a href="artifact.html">2.0.3</a>)
+        </p>
+
+        <p>Blah blah blah blah blah blah blah blah blah project description Blah blah blah blah blah blah blah blah blah</p>
+
+        <table>
+          <tr>
+            <th>Group ID</th>
+            <td>org.apache.maven</td>
+          </tr>
+          <tr>
+            <th>Artifact ID</th>
+            <td>maven-model</td>
+          </tr>
+          <tr>
+            <th>Version</th>
+            <td>2.0</td>
+          </tr>
+          <tr>
+            <th>Derivatives</th>
+            <td>
+              <a href="#">Source</a>
+              |
+              <a href="#">Javadoc</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Parent</th>
+            <td>
+              org.apache.maven maven 2.0 (
+              <a href="#">View</a>
+              )
+            </td>
+          </tr>
+          <tr>
+            <th>Deployment Date</th>
+            <td>
+              15 Jan 2006, 20:38:00 +1000
+            </td>
+          </tr>
+          <tr>
+            <th>Origin</th>
+            <td>
+              <a href="TODO">Apache Repository</a>
+            </td>
+          </tr>
+        </table>
+
+        <h2>Other Details</h2>
+        <table>
+          <tr>
+            <th>Organisation</th>
+            <td>
+              <a href="http://www.apache.org">Apache Software Foundation</a>
+            </td>
+          </tr>
+          <tr>
+            <th>License</th>
+            <td>
+              <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">The Apache Software License, Version 2.0</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Issue Tracker</th>
+            <td>
+              <a href="http://jira.codehaus.org/browse/MNG">JIRA</a>
+            </td>
+          </tr>
+          <tr>
+            <th>Continuous Integration</th>
+            <td>
+              <a href="http://maven.zones.apache.org:8080/continuum/">Continuum</a>
+            </td>
+          </tr>
+        </table>
+
+        <h2>SCM</h2>
+        <table>
+          <tr>
+            <th>Connection</th>
+            <td>
+              <code>scm:svn:http://svn.apache.org/repos/asf/maven/components/trunk</code>
+            </td>
+          </tr>
+          <tr>
+            <th>Dev. Connection</th>
+            <td>
+              <code>scm:svn:https://svn.apache.org/repos/asf/maven/components/trunk</code>
+            </td>
+          </tr>
+          <tr>
+            <th>Viewer</th>
+            <td>
+              <a href="http://svn.apache.org/viewcvs.cgi/maven/components/trunk">
+                http://svn.apache.org/viewcvs.cgi/maven/components/trunk</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div id="notes">
+      <p>Notes</p>
+
+      <ul>
+        <li>
+          What about repos?
+          build?
+          reporting?
+          profiles?
+          distmgmt?
+        </li>
+      </ul>
+    </div>
+  </body>
+</document>
+

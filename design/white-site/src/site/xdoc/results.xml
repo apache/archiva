@@ -1,0 +1,113 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <div id="sidebar">
+      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+    </div>
+
+    <h1>Search Results</h1>
+    <div id="contentArea">
+      <div id="searchBox">
+        <div id="feed">
+          <p>
+            <a href="">
+              <img src="images/xml-feed.gif" width="36" height="14"/>
+            </a>
+          </p>
+        </div>
+        <form action="results.html">
+          <p>
+            <input type="text" size="50"/>
+            <input type="submit" name="Go!"/>
+          </p>
+          <p>
+            Enter your search terms. A variety of data will be searched for your keywords.
+          </p>
+        </form>
+
+        <div id="resultsBox">
+          <table>
+            <tr>
+              <th>Group</th>
+              <th>Artifact</th>
+              <th>Version</th>
+              <th>Hits</th>
+              <th></th>
+            </tr>
+            <tr>
+              <td>
+                org.apache.maven
+              </td>
+              <td>
+                maven-model
+              </td>
+              <td>
+                2.0
+              </td>
+              <td>
+                <code>org.apache.maven</code>
+                (package)
+                <br/>
+                <code>org.apache.maven.model</code>
+                (package)
+              </td>
+              <td>
+                <a href="artifact.html">Details</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                org.apache.maven
+              </td>
+              <td>
+                maven-artifact
+              </td>
+              <td>
+                2.0
+              </td>
+              <td>
+                <code>org.apache.maven.artifact.Artifact</code>
+                (class)
+              </td>
+              <td>
+                <a href="#">Details</a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="notes">
+      <p>Notes</p>
+
+      <ul>
+        <li>We should use icons instead of class, package, etc.</li>
+        <li>Should we link the hits to searches for that package, class, etc?</li>
+        <li>How do we link the actual artifact?</li>
+      </ul>
+    </div>
+  </body>
+</document>
+

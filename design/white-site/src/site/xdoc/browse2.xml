@@ -1,0 +1,61 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <div id="sidebar">
+      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+      <p>blah blah blah</p>
+    </div>
+
+    <h1>Browse Repository</h1>
+
+    <div id="contentArea">
+      <div id="nameColumn">
+        <h2>Group / Artifact</h2>
+        <p>
+          <a href="#">org</a> /
+          <strong>apache</strong>
+        </p>
+        <table>
+          <tr>
+            <td>
+              <a href="browse3.html">cocoon/</a>
+            </td>
+            <td>
+              <a href="browse3.html">commons/</a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <a href="browse3.html">geronimo/</a>
+            </td>
+            <td>
+              <a href="browse3.html">maven/</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</document>
+

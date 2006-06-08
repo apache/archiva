@@ -1,0 +1,17 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.repository</groupId>
+  <artifactId>maven-repository-manager-white-site</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>Maven Repository Manager White Site</name>
+  <inceptionYear>2005</inceptionYear>
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+  </reporting>
+  <distributionManagement>
+    <site>
+      <url>scp://people.apache.org/home/brett/public_html/repoman-site</url>
+    </site>
+  </distributionManagement>
+</project>
