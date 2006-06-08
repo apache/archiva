@@ -35,21 +35,21 @@ import java.util.zip.ZipEntry;
  * Abstract class for RepositoryIndexers.
  *
  * @author Edwin Punzalan
+ * @todo [BP] overall am not happy with the design of this class and subclasses, but will refactor over time based on how it is used and by assessing how this affects Lucene's performance
  */
 public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
-    // TODO [!] can this be derived from the repository?
+    // TODO: can this be derived from the repository? -- probably a sensible default, but still should be configurable, but this could just be on the call to open()
     private String indexPath;
 
     private boolean indexOpen;
 
-    // TODO [!] why is the writer open for the life, but not the reader? why keep them open that length of time anyway? investigate best practices in Lucene
+    // TODO: why is the writer open for the life, but not the reader? why keep them open that length of time anyway? investigate best practices in Lucene
     private IndexWriter indexWriter;
 
     protected ArtifactRepository repository;
 
-    // TODO [!] is this really needed externally?
     private Analyzer analyzer;
 
     /**
@@ -158,7 +158,7 @@ public abstract class AbstractRepositoryIndex
     protected IndexWriter getIndexWriter()
         throws IOException
     {
-        // TODO [!] why is this allowed to be called before open()?
+        // TODO: why is this allowed to be called before open()?
         if ( indexWriter == null )
         {
             indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
