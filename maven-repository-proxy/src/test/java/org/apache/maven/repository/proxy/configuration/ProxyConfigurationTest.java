@@ -112,6 +112,21 @@ public class ProxyConfigurationTest
         assertEquals( repositories, config.getRepositories() );
     }
 
+    public void testHttpProxy()
+        throws Exception
+    {
+        config.setHttpProxy( "some.local.proxy", DEFAULT_PORT, "username", "password", "ntlmHost", "ntlmDomain" );
+
+        ProxyInfo proxyInfo = config.getHttpProxy();
+
+        assertEquals( "test proxy host", proxyInfo.getHost(), "some.local.proxy" );
+        assertEquals( DEFAULT_PORT, proxyInfo.getPort() );
+        assertEquals( "username", proxyInfo.getUserName() );
+        assertEquals( "password", proxyInfo.getPassword() );
+        assertEquals( "ntlmHost", proxyInfo.getNtlmHost() );
+        assertEquals( "ntlmDomain", proxyInfo.getNtlmDomain() );
+    }
+
     protected void tearDown()
         throws Exception
     {
