@@ -96,6 +96,11 @@ public class DefaultRepositoryConverter
     private boolean dryrun;
 
     /**
+     * @plexus.configuration default-value="true"
+     */
+    private boolean mergeWithSourceMetadata;
+
+    /**
      * @plexus.requirement
      */
     private I18N i18n;
@@ -120,8 +125,8 @@ public class DefaultRepositoryConverter
                     Versioning versioning = new Versioning();
                     versioning.addVersion( artifact.getBaseVersion() );
                     metadata.setVersioning( versioning );
-                    updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata,
-                                    transaction );
+                    updateMetadata( new ArtifactRepositoryMetadata( artifact ), artifact.getRepository(),
+                                    targetRepository, metadata, transaction );
 
                     metadata = createBaseMetadata( artifact );
                     metadata.setVersion( artifact.getBaseVersion() );
@@ -136,10 +141,9 @@ public class DefaultRepositoryConverter
                         versioning.setSnapshot( snapshot );
                     }
 
-                    // TODO: merge latest/release/snapshot from source instead
                     metadata.setVersioning( versioning );
-                    updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), targetRepository, metadata,
-                                    transaction );
+                    updateMetadata( new SnapshotArtifactRepositoryMetadata( artifact ), artifact.getRepository(),
+                                    targetRepository, metadata, transaction );
 
                     if ( !dryrun )
                     {
@@ -159,16 +163,16 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository targetRepository,
-                                 Metadata newMetadata, FileTransaction transaction )
+    private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository sourceRepository,
+                                 ArtifactRepository targetRepository, Metadata newMetadata, FileTransaction transaction )
         throws RepositoryConversionException
     {
+        Metadata metadata;
+        boolean changed = false;
+
+        //merge with target repository metadata
         File file = new File( targetRepository.getBasedir(),
                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-
-        Metadata metadata;
-        boolean changed;
-
         if ( file.exists() )
         {
             metadata = readMetadata( file );
@@ -178,6 +182,19 @@ public class DefaultRepositoryConverter
         {
             changed = true;
             metadata = newMetadata;
+        }
+
+        //merge with source repository metadata
+        if ( mergeWithSourceMetadata )
+        {
+            File srcfile = new File( sourceRepository.getBasedir(),
+                             sourceRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+
+            if ( srcfile.exists() )
+            {
+                Metadata sourceMetadata = readMetadata( srcfile );
+                changed = changed | metadata.merge( sourceMetadata );
+            }
         }
 
         if ( changed )

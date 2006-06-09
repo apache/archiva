@@ -1,0 +1,10 @@
+<metadata>
+  <groupId>test</groupId>
+  <artifactId>correctArtifactMetadata</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0.0</version>
+      <version>2.0</version>
+    </versions>
+  </versioning>
+</metadata>

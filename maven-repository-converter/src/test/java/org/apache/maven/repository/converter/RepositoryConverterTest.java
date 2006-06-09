@@ -732,6 +732,39 @@ public class RepositoryConverterTest
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
+    public void testSourceArtifactMetadataMerging()
+        throws Exception
+    {
+        // test metadata in target repository is merged with the metadata in the source repository
+
+        createModernSourceRepository();
+
+        Artifact artifact = createArtifact( "test", "correctArtifactMetadata", "1.0.0" );
+
+        repositoryConverter.convert( artifact, targetRepository, reporter );
+        checkSuccess();
+
+        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", artifactFile.exists() );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+
+        artifact = createPomArtifact( artifact );
+        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", pomFile.exists() );
+
+        compareFiles( sourcePomFile, pomFile );
+
+        ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+
+        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4artifact-source-merging-metadata.xml" );
+
+        compareFiles( expectedMetadataFile, artifactMetadataFile );
+    }
+
     public void testInvalidSourceSnapshotMetadata()
         throws Exception, MalformedURLException
     {
