@@ -71,7 +71,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = path.indexOf( ".svn" ) >= 0;
         }
@@ -91,7 +93,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "KEYS".equals( path );
         }
@@ -111,7 +115,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "javax/sql/jdbc/2.0/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -127,7 +133,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -147,7 +155,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar".equals(
                 path.replace( '\\', '/' ) );
@@ -169,7 +179,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid/1/invalid-1".equals( path.replace( '\\', '/' ) );
         }
@@ -189,7 +201,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid/1.0/invalid-2.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -209,7 +223,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid/1.0/invalid-1.0b.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -229,7 +245,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -249,7 +267,9 @@ public class DefaultArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar".equals(
                 path.replace( '\\', '/' ) );

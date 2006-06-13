@@ -75,7 +75,9 @@ public class DefaultMetadataDiscovererTest
         boolean found = false;
         while ( iter.hasNext() && !found )
         {
-            String dir = (String) iter.next();
+            DiscovererPath dPath = (DiscovererPath) iter.next();
+            String dir = dPath.getPath();
+
             String normalizedDir = dir.replace( '\\', '/' );
             if ( "javax/maven-metadata-repository.xml".equals( normalizedDir ) )
             {
@@ -95,7 +97,9 @@ public class DefaultMetadataDiscovererTest
         boolean found = false;
         while ( iter.hasNext() && !found )
         {
-            String dir = (String) iter.next();
+            DiscovererPath dPath = (DiscovererPath) iter.next();
+            String dir = dPath.getPath();
+
             String normalizedDir = dir.replace( '\\', '/' );
             if ( "org/apache/maven/some-ejb/1.0/maven-metadata-repository.xml".equals( normalizedDir ) )
             {

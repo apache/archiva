@@ -20,14 +20,13 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * Base class for the artifact and metadata discoverers.
@@ -38,7 +37,7 @@ public abstract class AbstractDiscoverer
     extends AbstractLogEnabled
     implements Discoverer
 {
-    private Map kickedOutPaths = new HashMap();
+    private List kickedOutPaths = new ArrayList();
 
     /**
      * @plexus.requirement
@@ -57,12 +56,12 @@ public abstract class AbstractDiscoverer
      */
     protected void addKickedOutPath( String path, String reason )
     {
-        kickedOutPaths.put( path, reason );
+        kickedOutPaths.add( new DiscovererPath( path, reason ) );
     }
 
     public Iterator getKickedOutPathsIterator()
     {
-        return kickedOutPaths.keySet().iterator();
+        return kickedOutPaths.iterator();
     }
 
     /**
@@ -78,7 +77,7 @@ public abstract class AbstractDiscoverer
             allExcludes.addAll( Arrays.asList( excludes ) );
         }
 
-        if ( blacklistedPatterns != null && blacklistedPatterns.length() > 0 )
+        if ( !StringUtils.isEmpty( blacklistedPatterns ) )
         {
             allExcludes.addAll( Arrays.asList( blacklistedPatterns.split( "," ) ) );
         }
@@ -93,7 +92,12 @@ public abstract class AbstractDiscoverer
 
         scanner.scan();
 
-        excludedPaths.addAll( Arrays.asList( scanner.getExcludedFiles() ) );
+        for ( Iterator files = Arrays.asList( scanner.getExcludedFiles() ).iterator(); files.hasNext(); )
+        {
+            String path = files.next().toString();
+
+            excludedPaths.add( new DiscovererPath( path, "Excluded by DirectoryScanner" ) );
+        }
 
         return scanner.getIncludedFiles();
     }

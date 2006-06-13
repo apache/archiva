@@ -69,7 +69,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = path.indexOf( ".svn" ) >= 0;
         }
@@ -89,7 +91,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "KEYS".equals( path );
         }
@@ -109,7 +113,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "javax.sql/jars/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -125,7 +131,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -145,7 +153,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/jars/1.0/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
         }
@@ -165,7 +175,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/foo/invalid-1.0.foo".equals( path.replace( '\\', '/' ) );
         }
@@ -185,7 +197,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/jars/no-extension".equals( path.replace( '\\', '/' ) );
         }
@@ -205,7 +219,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/jars/invalid-1.0.rar".equals( path.replace( '\\', '/' ) );
         }
@@ -225,7 +241,9 @@ public class LegacyArtifactDiscovererTest
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
         {
-            String path = (String) i.next();
+            DiscovererPath dPath = (DiscovererPath) i.next();
+
+            String path = dPath.getPath();
 
             found = "invalid/jars/invalid.jar".equals( path.replace( '\\', '/' ) );
         }
