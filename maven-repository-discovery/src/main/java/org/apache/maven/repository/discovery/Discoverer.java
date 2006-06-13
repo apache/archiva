@@ -1,5 +1,7 @@
 package org.apache.maven.repository.discovery;
 
+import java.util.Iterator;
+
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -16,22 +18,22 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.util.List;
-
 /**
- * Interface for discovering metadata files.
+ * @author Edwin Punzalan
  */
-public interface MetadataDiscoverer
-    extends Discoverer
+public interface Discoverer
 {
-    String ROLE = MetadataDiscoverer.class.getName();
+    /**
+     * Get the list of paths kicked out during the discovery process.
+     *
+     * @return the paths as Strings.
+     */
+    Iterator getKickedOutPathsIterator();
 
     /**
-     * Search for metadata files in the repository.
+     * Get the list of paths excluded during the discovery process.
      *
-     * @param repositoryBase      The repository directory.
-     * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
+     * @return the paths as Strings.
      */
-    List discoverMetadata( File repositoryBase, String blacklistedPatterns );
+    Iterator getExcludedPathsIterator();
 }

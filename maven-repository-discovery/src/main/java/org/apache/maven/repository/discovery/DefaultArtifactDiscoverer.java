@@ -35,6 +35,7 @@ public class DefaultArtifactDiscoverer
     extends AbstractArtifactDiscoverer
 {
     public Artifact buildArtifact( String path )
+        throws DiscovererException
     {
         List pathParts = new ArrayList();
         StringTokenizer st = new StringTokenizer( path, "/\\" );
@@ -64,11 +65,7 @@ public class DefaultArtifactDiscoverer
             String groupId = StringUtils.join( pathParts.iterator(), "." );
 
             String remainingFilename = filename;
-            if ( !remainingFilename.startsWith( artifactId + "-" ) )
-            {
-                return null;
-            }
-            else
+            if ( remainingFilename.startsWith( artifactId + "-" ) )
             {
                 remainingFilename = remainingFilename.substring( artifactId.length() + 1 );
 
@@ -97,87 +94,92 @@ public class DefaultArtifactDiscoverer
                 else
                 {
                     int index = remainingFilename.lastIndexOf( "." );
-                    if ( index < 0 )
-                    {
-                        return null;
-                    }
-                    else
+                    if ( index >= 0 )
                     {
                         type = remainingFilename.substring( index + 1 );
                         remainingFilename = remainingFilename.substring( 0, index );
                     }
+                    else
+                    {
+                        throw new DiscovererException( "Path filename does not have an extension" );
+                    }
                 }
 
-                if ( type != null )
+                Artifact result;
+                if ( classifier == null )
                 {
-                    Artifact result;
+                    result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME,
+                                                             type );
+                }
+                else
+                {
+                    result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
+                                                                           classifier );
+                }
 
-                    if ( classifier == null )
+                if ( result.isSnapshot() )
+                {
+                    // version is *-SNAPSHOT, filename is *-yyyyMMdd.hhmmss-b
+                    int classifierIndex = remainingFilename.indexOf( '-', version.length() + 8 );
+                    if ( classifierIndex >= 0 )
                     {
-                        result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME,
-                                                                 type );
+                        classifier = remainingFilename.substring( classifierIndex + 1 );
+                        remainingFilename = remainingFilename.substring( 0, classifierIndex );
+                        result = artifactFactory.createArtifactWithClassifier( groupId, artifactId,
+                                                                               remainingFilename, type,
+                                                                               classifier );
                     }
                     else
                     {
-                        result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
-                                                                               classifier );
+                        result = artifactFactory.createArtifact( groupId, artifactId, remainingFilename,
+                                                                 Artifact.SCOPE_RUNTIME, type );
                     }
 
-                    if ( result.isSnapshot() )
+                    // poor encapsulation requires we do this to populate base version
+                    if ( !result.isSnapshot() )
                     {
-                        // version is *-SNAPSHOT, filename is *-yyyyMMdd.hhmmss-b
-                        int classifierIndex = remainingFilename.indexOf( '-', version.length() + 8 );
-                        if ( classifierIndex >= 0 )
-                        {
-                            classifier = remainingFilename.substring( classifierIndex + 1 );
-                            remainingFilename = remainingFilename.substring( 0, classifierIndex );
-                            result = artifactFactory.createArtifactWithClassifier( groupId, artifactId,
-                                                                                   remainingFilename, type,
-                                                                                   classifier );
-                        }
-                        else
-                        {
-                            result = artifactFactory.createArtifact( groupId, artifactId, remainingFilename,
-                                                                     Artifact.SCOPE_RUNTIME, type );
-                        }
-
-                        // poor encapsulation requires we do this to populate base version
-                        if ( !result.isSnapshot() )
-                        {
-                            return null;
-                        }
-                        else if ( !result.getBaseVersion().equals( version ) )
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            artifact = result;
-                        }
+                        throw new DiscovererException( "Failed to create a snapshot artifact" );
                     }
-                    else if ( !remainingFilename.startsWith( version ) )
+                    else if ( !result.getBaseVersion().equals( version ) )
                     {
-                        return null;
-                    }
-                    else if ( !remainingFilename.equals( version ) )
-                    {
-                        if ( remainingFilename.charAt( version.length() ) != '-' )
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            classifier = remainingFilename.substring( version.length() + 1 );
-                            artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
-                                                                                     classifier );
-                        }
+                        throw new DiscovererException( "Built snapshot artifact base version does not match " +
+                                                       "path version" );
                     }
                     else
                     {
                         artifact = result;
                     }
                 }
+                else if ( !remainingFilename.startsWith( version ) )
+                {
+                    throw new DiscovererException( "Built artifact version does not match path version" );
+                }
+                else if ( !remainingFilename.equals( version ) )
+                {
+                    if ( remainingFilename.charAt( version.length() ) == '-' )
+                    {
+                        classifier = remainingFilename.substring( version.length() + 1 );
+                        artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
+                                                                                 classifier );
+                    }
+                    else
+                    {
+                        throw new DiscovererException( "Path version does not corresspond to an artifact version" );
+                    }
+                }
+                else
+                {
+                    artifact = result;
+                }
             }
+            else
+            {
+                throw new DiscovererException( "Path filename does not correspond to an artifact" );
+            }
+        }
+        else
+        {
+            throw new DiscovererException( "Path is too short to build an artifact from" );
         }
 
         return artifact;

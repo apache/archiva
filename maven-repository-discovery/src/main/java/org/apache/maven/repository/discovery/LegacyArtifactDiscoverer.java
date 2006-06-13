@@ -38,10 +38,11 @@ public class LegacyArtifactDiscoverer
     extends AbstractArtifactDiscoverer
 {
     public Artifact buildArtifact( String path )
+        throws DiscovererException
     {
         StringTokenizer tokens = new StringTokenizer( path, "/\\" );
 
-        Artifact result = null;
+        Artifact result;
 
         int numberOfTokens = tokens.countTokens();
 
@@ -68,8 +69,6 @@ public class LegacyArtifactDiscoverer
                 }
 
                 String lastAvceToken = (String) avceTokenList.removeLast();
-
-                boolean valid = true;
 
                 // TODO: share with other discoverer, use artifact handlers instead
                 if ( lastAvceToken.endsWith( ".tar.gz" ) )
@@ -111,157 +110,168 @@ public class LegacyArtifactDiscoverer
                         }
                         else
                         {
-                            //type does not match extension
-                            valid = false;
+                            throw new DiscovererException( "Path type does not match the extension" );
                         }
                     }
                     else
                     {
-                        // no extension
-                        valid = false;
+                        throw new DiscovererException( "Path filename does not have an extension" );
                     }
                 }
 
-                if ( valid )
+                // let's discover the version, and whatever's leftover will be either
+                // a classifier, or part of the artifactId, depending on position.
+                // Since version is at the end, we have to move in from the back.
+                Collections.reverse( avceTokenList );
+
+                // TODO: this is obscene - surely a better way?
+                String validVersionParts = "([Dd][Ee][Vv][_.0-9]*)|" + "([Ss][Nn][Aa][Pp][Ss][Hh][Oo][Tt])|" +
+                    "([0-9][_.0-9a-zA-Z]*)|" + "([Gg]?[_.0-9ab]*([Pp][Rr][Ee]|[Rr][Cc]|[Gg]|[Mm])[_.0-9]*)|" +
+                    "([Aa][Ll][Pp][Hh][Aa][_.0-9]*)|" + "([Bb][Ee][Tt][Aa][_.0-9]*)|" + "([Rr][Cc][_.0-9]*)|" +
+                    "([Tt][Ee][Ss][Tt][_.0-9]*)|" + "([Dd][Ee][Bb][Uu][Gg][_.0-9]*)|" +
+                    "([Uu][Nn][Oo][Ff][Ff][Ii][Cc][Ii][Aa][Ll][_.0-9]*)|" + "([Cc][Uu][Rr][Rr][Ee][Nn][Tt])|" +
+                    "([Ll][Aa][Tt][Ee][Ss][Tt])|" + "([Ff][Cc][Ss])|" + "([Rr][Ee][Ll][Ee][Aa][Ss][Ee][_.0-9]*)|" +
+                    "([Nn][Ii][Gg][Hh][Tt][Ll][Yy])|" + "[Ff][Ii][Nn][Aa][Ll]|" + "([AaBb][_.0-9]*)";
+
+                StringBuffer classifierBuffer = new StringBuffer();
+                StringBuffer versionBuffer = new StringBuffer();
+
+                boolean firstVersionTokenEncountered = false;
+                boolean firstToken = true;
+
+                int tokensIterated = 0;
+                for ( Iterator it = avceTokenList.iterator(); it.hasNext(); )
                 {
-                    // let's discover the version, and whatever's leftover will be either
-                    // a classifier, or part of the artifactId, depending on position.
-                    // Since version is at the end, we have to move in from the back.
-                    Collections.reverse( avceTokenList );
+                    String token = (String) it.next();
 
-                    // TODO: this is obscene - surely a better way?
-                    String validVersionParts = "([Dd][Ee][Vv][_.0-9]*)|" + "([Ss][Nn][Aa][Pp][Ss][Hh][Oo][Tt])|" +
-                        "([0-9][_.0-9a-zA-Z]*)|" + "([Gg]?[_.0-9ab]*([Pp][Rr][Ee]|[Rr][Cc]|[Gg]|[Mm])[_.0-9]*)|" +
-                        "([Aa][Ll][Pp][Hh][Aa][_.0-9]*)|" + "([Bb][Ee][Tt][Aa][_.0-9]*)|" + "([Rr][Cc][_.0-9]*)|" +
-                        "([Tt][Ee][Ss][Tt][_.0-9]*)|" + "([Dd][Ee][Bb][Uu][Gg][_.0-9]*)|" +
-                        "([Uu][Nn][Oo][Ff][Ff][Ii][Cc][Ii][Aa][Ll][_.0-9]*)|" + "([Cc][Uu][Rr][Rr][Ee][Nn][Tt])|" +
-                        "([Ll][Aa][Tt][Ee][Ss][Tt])|" + "([Ff][Cc][Ss])|" + "([Rr][Ee][Ll][Ee][Aa][Ss][Ee][_.0-9]*)|" +
-                        "([Nn][Ii][Gg][Hh][Tt][Ll][Yy])|" + "[Ff][Ii][Nn][Aa][Ll]|" + "([AaBb][_.0-9]*)";
+                    boolean tokenIsVersionPart = token.matches( validVersionParts );
 
-                    StringBuffer classifierBuffer = new StringBuffer();
-                    StringBuffer versionBuffer = new StringBuffer();
+                    StringBuffer bufferToUpdate;
 
-                    boolean firstVersionTokenEncountered = false;
-                    boolean firstToken = true;
-
-                    int tokensIterated = 0;
-                    for ( Iterator it = avceTokenList.iterator(); it.hasNext(); )
+                    // NOTE: logic in code is reversed, since we're peeling off the back
+                    // Any token after the last versionPart will be in the classifier.
+                    // Any token UP TO first non-versionPart is part of the version.
+                    if ( !tokenIsVersionPart )
                     {
-                        String token = (String) it.next();
-
-                        boolean tokenIsVersionPart = token.matches( validVersionParts );
-
-                        StringBuffer bufferToUpdate;
-
-                        // NOTE: logic in code is reversed, since we're peeling off the back
-                        // Any token after the last versionPart will be in the classifier.
-                        // Any token UP TO first non-versionPart is part of the version.
-                        if ( !tokenIsVersionPart )
+                        if ( firstVersionTokenEncountered )
                         {
-                            if ( firstVersionTokenEncountered )
-                            {
-                                //noinspection BreakStatement
-                                break;
-                            }
-                            else
-                            {
-                                bufferToUpdate = classifierBuffer;
-                            }
+                            //noinspection BreakStatement
+                            break;
                         }
                         else
                         {
-                            firstVersionTokenEncountered = true;
-
-                            bufferToUpdate = versionBuffer;
+                            bufferToUpdate = classifierBuffer;
                         }
-
-                        if ( firstToken )
-                        {
-                            firstToken = false;
-                        }
-                        else
-                        {
-                            bufferToUpdate.insert( 0, '-' );
-                        }
-
-                        bufferToUpdate.insert( 0, token );
-
-                        tokensIterated++;
-                    }
-
-                    // Now, restore the proper ordering so we can build the artifactId.
-                    Collections.reverse( avceTokenList );
-
-                    // if we didn't find a version, then punt. Use the last token
-                    // as the version, and set the classifier empty.
-                    if ( versionBuffer.length() < 1 )
-                    {
-                        if ( avceTokenList.size() > 1 )
-                        {
-                            int lastIdx = avceTokenList.size() - 1;
-
-                            versionBuffer.append( avceTokenList.get( lastIdx ) );
-                            avceTokenList.remove( lastIdx );
-                        }
-
-                        classifierBuffer.setLength( 0 );
                     }
                     else
                     {
-                        // if everything is kosher, then pop off all the classifier and
-                        // version tokens, leaving the naked artifact id in the list.
-                        avceTokenList =
-                            new LinkedList( avceTokenList.subList( 0, avceTokenList.size() - tokensIterated ) );
+                        firstVersionTokenEncountered = true;
+
+                        bufferToUpdate = versionBuffer;
                     }
 
-                    StringBuffer artifactIdBuffer = new StringBuffer();
-
-                    firstToken = true;
-                    for ( Iterator it = avceTokenList.iterator(); it.hasNext(); )
+                    if ( firstToken )
                     {
-                        String token = (String) it.next();
+                        firstToken = false;
+                    }
+                    else
+                    {
+                        bufferToUpdate.insert( 0, '-' );
+                    }
 
-                        if ( firstToken )
+                    bufferToUpdate.insert( 0, token );
+
+                    tokensIterated++;
+                }
+
+                // Now, restore the proper ordering so we can build the artifactId.
+                Collections.reverse( avceTokenList );
+
+                // if we didn't find a version, then punt. Use the last token
+                // as the version, and set the classifier empty.
+                if ( versionBuffer.length() < 1 )
+                {
+                    if ( avceTokenList.size() > 1 )
+                    {
+                        int lastIdx = avceTokenList.size() - 1;
+
+                        versionBuffer.append( avceTokenList.get( lastIdx ) );
+                        avceTokenList.remove( lastIdx );
+                    }
+
+                    classifierBuffer.setLength( 0 );
+                }
+                else
+                {
+                    // if everything is kosher, then pop off all the classifier and
+                    // version tokens, leaving the naked artifact id in the list.
+                    avceTokenList =
+                        new LinkedList( avceTokenList.subList( 0, avceTokenList.size() - tokensIterated ) );
+                }
+
+                StringBuffer artifactIdBuffer = new StringBuffer();
+
+                firstToken = true;
+                for ( Iterator it = avceTokenList.iterator(); it.hasNext(); )
+                {
+                    String token = (String) it.next();
+
+                    if ( firstToken )
+                    {
+                        firstToken = false;
+                    }
+                    else
+                    {
+                        artifactIdBuffer.append( '-' );
+                    }
+
+                    artifactIdBuffer.append( token );
+                }
+
+                String artifactId = artifactIdBuffer.toString();
+
+                if ( artifactId.length() > 0 )
+                {
+                    int lastVersionCharIdx = versionBuffer.length() - 1;
+                    if ( lastVersionCharIdx > -1 && versionBuffer.charAt( lastVersionCharIdx ) == '-' )
+                    {
+                        versionBuffer.setLength( lastVersionCharIdx );
+                    }
+
+                    String version = versionBuffer.toString();
+
+                    if ( version.length() > 0 )
+                    {
+                        if ( classifierBuffer.length() > 0 )
                         {
-                            firstToken = false;
+                            result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
+                                                                                   type,
+                                                                                   classifierBuffer.toString() );
                         }
                         else
                         {
-                            artifactIdBuffer.append( '-' );
+                            result = artifactFactory.createArtifact( groupId, artifactId, version,
+                                                                     Artifact.SCOPE_RUNTIME, type );
                         }
-
-                        artifactIdBuffer.append( token );
                     }
-
-                    String artifactId = artifactIdBuffer.toString();
-
-                    if ( artifactId.length() > 0 )
+                    else
                     {
-                        int lastVersionCharIdx = versionBuffer.length() - 1;
-                        if ( lastVersionCharIdx > -1 && versionBuffer.charAt( lastVersionCharIdx ) == '-' )
-                        {
-                            versionBuffer.setLength( lastVersionCharIdx );
-                        }
-
-                        String version = versionBuffer.toString();
-
-                        if ( version.length() >= 1 )
-                        {
-                            if ( classifierBuffer.length() > 0 )
-                            {
-                                result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version,
-                                                                                       type,
-                                                                                       classifierBuffer.toString() );
-                            }
-                            else
-                            {
-                                result = artifactFactory.createArtifact( groupId, artifactId, version,
-                                                                         Artifact.SCOPE_RUNTIME, type );
-                            }
-                        }
+                        throw new DiscovererException( "Path filename version is empty" );
                     }
+                }
+                else
+                {
+                    throw new DiscovererException( "Path filename artifactId is empty" );
                 }
             }
+            else
+            {
+                throw new DiscovererException( "Path artifact type does not corresspond to an artifact type" );
+            }
+        }
+        else
+        {
+            throw new DiscovererException( "Path does not match a legacy repository path for an artifact" );
         }
 
         return result;

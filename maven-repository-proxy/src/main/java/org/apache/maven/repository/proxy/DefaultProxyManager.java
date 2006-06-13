@@ -24,6 +24,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
+import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.ConnectionException;
@@ -150,11 +151,26 @@ public class DefaultProxyManager
         }
         else
         {
-            Artifact artifact = defaultArtifactDiscoverer.buildArtifact( path );
+            Artifact artifact = null;
+            try
+            {
+                artifact = defaultArtifactDiscoverer.buildArtifact( path );
+            }
+            catch ( DiscovererException e )
+            {
+                getLogger().debug( "Failed to build artifact using default layout with message: " + e.getMessage() );
+            }
 
             if ( artifact == null )
             {
-                artifact = legacyArtifactDiscoverer.buildArtifact( path );
+                try
+                {
+                    artifact = legacyArtifactDiscoverer.buildArtifact( path );
+                }
+                catch ( DiscovererException e )
+                {
+                    getLogger().debug( "Failed to build artifact using legacy layout with message: " + e.getMessage() );
+                }
             }
 
             if ( artifact != null )

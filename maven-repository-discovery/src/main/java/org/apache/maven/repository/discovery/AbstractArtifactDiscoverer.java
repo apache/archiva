@@ -73,17 +73,19 @@ public abstract class AbstractArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
-            Artifact artifact = buildArtifactFromPath( path, repository );
-            if ( artifact != null )
+            Artifact artifact = null;
+            try
             {
+                artifact = buildArtifactFromPath( path, repository );
+
                 if ( includeSnapshots || !artifact.isSnapshot() )
                 {
                     artifacts.add( artifact );
                 }
             }
-            else
+            catch ( DiscovererException e )
             {
-                addKickedOutPath( path );
+                addKickedOutPath( path, e.getMessage() );
             }
         }
 
@@ -103,14 +105,16 @@ public abstract class AbstractArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
+            String filename = repositoryBase.getAbsolutePath() + "/" + path;
+
             if ( path.toLowerCase().endsWith( POM ) )
             {
-                Artifact pomArtifact = buildArtifactFromPath( path, repository );
-
-                MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-                String filename = repositoryBase.getAbsolutePath() + "/" + path;
                 try
                 {
+                    Artifact pomArtifact = buildArtifactFromPath( path, repository );
+
+                    MavenXpp3Reader mavenReader = new MavenXpp3Reader();
+
                     Model model = mavenReader.read( new FileReader( filename ) );
                     if ( pomArtifact != null && "pom".equals( model.getPackaging() ) )
                     {
@@ -134,6 +138,10 @@ public abstract class AbstractArtifactDiscoverer
                     getLogger().error(
                         "Parse error reading file during POM discovery: " + filename + ": " + e.getMessage() );
                 }
+                catch ( DiscovererException e )
+                {
+                    getLogger().error( e.getMessage() );
+                }
             }
         }
 
@@ -141,6 +149,7 @@ public abstract class AbstractArtifactDiscoverer
     }
 
     public Artifact buildArtifactFromPath( String path, ArtifactRepository repository )
+        throws DiscovererException
     {
         Artifact artifact = buildArtifact( path );
 

@@ -19,7 +19,6 @@ package org.apache.maven.repository.discovery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -29,6 +28,7 @@ import java.util.List;
  * @author Brett Porter
  */
 public interface ArtifactDiscoverer
+    extends Discoverer
 {
     String ROLE = ArtifactDiscoverer.class.getName();
 
@@ -59,25 +59,12 @@ public interface ArtifactDiscoverer
     List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
 
     /**
-     * Get the list of paths kicked out during the discovery process.
-     *
-     * @return the paths as Strings.
-     */
-    Iterator getKickedOutPathsIterator();
-
-    /**
-     * Get the list of paths excluded during the discovery process.
-     *
-     * @return the paths as Strings.
-     */
-    Iterator getExcludedPathsIterator();
-
-    /**
      * Build an artifact from a path in the repository
      *
      * @param path the path
      * @return the artifact
      * @todo this should be in maven-artifact
      */
-    Artifact buildArtifact( String path );
+    Artifact buildArtifact( String path )
+        throws DiscovererException;
 }

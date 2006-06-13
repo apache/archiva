@@ -24,6 +24,7 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,15 +68,14 @@ public class DefaultMetadataDiscoverer
 
         for ( int i = 0; i < metadataPaths.length; i++ )
         {
-            RepositoryMetadata metadata = buildMetadata( repositoryBase.getPath(), metadataPaths[i] );
-
-            if ( metadata != null )
+            try
             {
+                RepositoryMetadata metadata = buildMetadata( repositoryBase.getPath(), metadataPaths[i] );
                 metadataFiles.add( metadata );
             }
-            else
+            catch ( DiscovererException e )
             {
-                addKickedOutPath( metadataPaths[i] );
+                addKickedOutPath( metadataPaths[i], e.getMessage() );
             }
         }
 
@@ -90,6 +90,7 @@ public class DefaultMetadataDiscoverer
      * @return the metadata
      */
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
+        throws DiscovererException
     {
         Metadata m = null;
         String repoPath = repo + "/" + metadataPath;
@@ -104,23 +105,26 @@ public class DefaultMetadataDiscoverer
         }
         catch ( XmlPullParserException e )
         {
-            getLogger().error( "Error parsing metadata file '" + repoPath + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error parsing metadata file '" + repoPath + "': " + e.getMessage(), e );
         }
         catch ( MalformedURLException e )
         {
             // shouldn't happen
-            getLogger().error( "Error constructing metadata file '" + repoPath + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error constructing metadata file '" + repoPath + "': " +
+                                           e.getMessage(), e );
         }
         catch ( IOException e )
         {
-            getLogger().error( "Error reading metadata file '" + repoPath + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error reading metadata file '" + repoPath + "': " + e.getMessage(), e );
         }
 
-        RepositoryMetadata repositoryMetadata = null;
-        if ( m != null )
+        RepositoryMetadata repositoryMetadata = buildMetadata( m, metadataPath );
+
+        if ( repositoryMetadata == null )
         {
-            repositoryMetadata = buildMetadata( m, metadataPath );
+            throw new DiscovererException( "Unable to build a repository metadata from path" );
         }
+
         return repositoryMetadata;
     }
 
@@ -146,14 +150,8 @@ public class DefaultMetadataDiscoverer
         Iterator it = pathParts.iterator();
         String tmpDir = (String) it.next();
 
-        //ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        //if( metaVersion != null && !metaVersion.equals( "" ) )
-        //{
-        //   VersionRange version = VersionRange.createFromVersion( metaVersion );
-        //}
-
         Artifact artifact = null;
-        if ( metaVersion != null && !"".equals( metaVersion ) )
+        if ( !StringUtils.isEmpty( metaVersion ) )
         {
             artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
         }

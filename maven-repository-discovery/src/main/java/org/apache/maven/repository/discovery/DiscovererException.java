@@ -16,22 +16,24 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
-import java.io.File;
-import java.util.List;
-
 /**
- * Interface for discovering metadata files.
+ * @author Edwin Punzalan
  */
-public interface MetadataDiscoverer
-    extends Discoverer
+public class DiscovererException
+    extends Exception
 {
-    String ROLE = MetadataDiscoverer.class.getName();
+    public DiscovererException( Throwable cause )
+    {
+        super( cause );
+    }
 
-    /**
-     * Search for metadata files in the repository.
-     *
-     * @param repositoryBase      The repository directory.
-     * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
-     */
-    List discoverMetadata( File repositoryBase, String blacklistedPatterns );
+    public DiscovererException( String message )
+    {
+        super( message );
+    }
+
+    public DiscovererException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 }

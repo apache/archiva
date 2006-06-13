@@ -565,7 +565,14 @@ public class DefaultArtifactDiscovererTest
 
     private Artifact getArtifactFromPath( String path )
     {
-        return discoverer.buildArtifact( path );
+        try
+        {
+            return discoverer.buildArtifact( path );
+        }
+        catch ( DiscovererException e )
+        {
+            return null;
+        }
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String version )

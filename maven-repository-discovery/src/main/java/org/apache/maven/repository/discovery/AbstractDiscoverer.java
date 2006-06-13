@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Base class for the artifact and metadata discoverers.
@@ -34,8 +36,9 @@ import java.util.List;
  */
 public abstract class AbstractDiscoverer
     extends AbstractLogEnabled
+    implements Discoverer
 {
-    private List kickedOutPaths = new ArrayList();
+    private Map kickedOutPaths = new HashMap();
 
     /**
      * @plexus.requirement
@@ -50,16 +53,16 @@ public abstract class AbstractDiscoverer
      * Add a path to the list of files that were kicked out due to being invalid.
      *
      * @param path the path to add
-     * @todo add a reason
+     * @param reason the reason why the path is being kicked out
      */
-    protected void addKickedOutPath( String path )
+    protected void addKickedOutPath( String path, String reason )
     {
-        kickedOutPaths.add( path );
+        kickedOutPaths.put( path, reason );
     }
 
     public Iterator getKickedOutPathsIterator()
     {
-        return kickedOutPaths.iterator();
+        return kickedOutPaths.keySet().iterator();
     }
 
     /**
