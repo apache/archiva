@@ -20,12 +20,10 @@ import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -116,24 +114,9 @@ public class MavenProxyPropertyLoader
 
         config.setRepositories( repositories );
 
-        validateDirectories( config );
-        validateRemoteRepo( config );
+        config.validate();
 
         return config;
-    }
-
-    /**
-     * @todo should be shared with any other configuration loader - move method to configuration?
-     */
-    private static void validateRemoteRepo( ProxyConfiguration configuration )
-        throws ValidationException
-    {
-        //Verify remote repository set
-        //only warn if missing
-        if ( configuration.getRepositories().size() < 1 )
-        {
-            throw new ValidationException( "At least one remote repository must be configured." );
-        }
     }
 
     private Properties getSubset( Properties props, String prefix )
@@ -173,31 +156,4 @@ public class MavenProxyPropertyLoader
 
         return value;
     }
-
-    /**
-     * @todo should be shared with any other configuration loader - move method to configuration?
-     */
-    private static void validateDirectories( ProxyConfiguration configuration )
-        throws ValidationException
-    {
-        File f = new File( configuration.getRepositoryCachePath() );
-        if ( !f.exists() )
-        {
-            throw new ValidationException( "Specified directory does not exist: " + f.getAbsolutePath() );
-        }
-
-        for ( Iterator repos = configuration.getRepositories().iterator(); repos.hasNext(); )
-        {
-            ProxyRepository repo = (ProxyRepository) repos.next();
-            if ( repo.getUrl().startsWith( "file://" ) )
-            {
-                File f2 = new File( repo.getBasedir() );
-                if ( !f2.exists() )
-                {
-                    throw new ValidationException( "Specified directory does not exist: " + f2.getAbsolutePath() );
-                }
-            }
-        }
-    }
-
 }

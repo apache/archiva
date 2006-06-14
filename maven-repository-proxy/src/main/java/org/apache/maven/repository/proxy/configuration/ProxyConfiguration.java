@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Class to represent the configuration file for the proxy
@@ -140,5 +141,46 @@ public class ProxyConfiguration
     public void setLayout( String layout )
     {
         this.layout = layout;
+    }
+
+    public void validate()
+        throws ValidationException
+    {
+        validateRemoteRepo();
+        validateDirectories();
+    }
+
+    private void validateRemoteRepo(  )
+        throws ValidationException
+    {
+        //Verify remote repository set
+        //only warn if missing
+        if ( getRepositories().size() < 1 )
+        {
+            throw new ValidationException( "At least one remote repository must be configured." );
+        }
+    }
+
+    private void validateDirectories()
+        throws ValidationException
+    {
+        File f = new File( getRepositoryCachePath() );
+        if ( !f.exists() )
+        {
+            throw new ValidationException( "Specified directory does not exist: " + f.getAbsolutePath() );
+        }
+
+        for ( Iterator repos = getRepositories().iterator(); repos.hasNext(); )
+        {
+            ProxyRepository repo = (ProxyRepository) repos.next();
+            if ( repo.getUrl().startsWith( "file://" ) )
+            {
+                File f2 = new File( repo.getBasedir() );
+                if ( !f2.exists() )
+                {
+                    throw new ValidationException( "Specified directory does not exist: " + f2.getAbsolutePath() );
+                }
+            }
+        }
     }
 }
