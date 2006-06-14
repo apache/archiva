@@ -69,6 +69,12 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/repository-manager/trunk</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/maven/repository-manager/trunk</url>
   </scm>
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>scp://minotaur.apache.org/www/maven.apache.org/repository-manager/</url>
+    </site>
+  </distributionManagement>
   <build>
     <plugins>
       <plugin>
@@ -108,7 +114,9 @@
     </pluginManagement>
   </build>
   <modules>
+    <!--
     <module>maven-repository-application</module>
+    -->
     <module>maven-repository-artifact-applet</module>
     <module>maven-repository-converter</module>
     <module>maven-repository-discovery</module>
@@ -118,6 +126,7 @@
     <module>maven-repository-webapp</module>
     <module>maven-repository-proxy</module>
     <module>maven-repository-manager-site</module>
+    <module>maven-repository-bundle-submission</module>
     <module>maven-repository-core</module>
     <module>maven-repository-configuration</module>
   </modules>
