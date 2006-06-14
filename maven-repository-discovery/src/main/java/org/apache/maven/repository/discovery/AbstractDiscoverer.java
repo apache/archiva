@@ -59,6 +59,11 @@ public abstract class AbstractDiscoverer
         kickedOutPaths.add( new DiscovererPath( path, reason ) );
     }
 
+    /**
+     * Returns an iterator for the list if DiscovererPaths that were found to not represent a searched object
+     *
+     * @return Iterator for the DiscovererPath List
+     */
     public Iterator getKickedOutPathsIterator()
     {
         return kickedOutPaths.iterator();
@@ -102,6 +107,11 @@ public abstract class AbstractDiscoverer
         return scanner.getIncludedFiles();
     }
 
+    /**
+     * Returns an iterator for the list if DiscovererPaths that were not processed because they are explicitly excluded
+     *
+     * @return Iterator for the DiscovererPath List
+     */
     public Iterator getExcludedPathsIterator()
     {
         return excludedPaths.iterator();

@@ -37,6 +37,9 @@ import java.util.StringTokenizer;
 public class LegacyArtifactDiscoverer
     extends AbstractArtifactDiscoverer
 {
+    /**
+     * @see org.apache.maven.repository.discovery.ArtifactDiscoverer#buildArtifact(String)
+     */
     public Artifact buildArtifact( String path )
         throws DiscovererException
     {

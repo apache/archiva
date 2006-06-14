@@ -17,12 +17,7 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
@@ -40,28 +35,16 @@ import java.util.List;
  * @todo test location of poms, checksums
  */
 public class DefaultArtifactDiscovererTest
-    extends PlexusTestCase
+    extends AbstractArtifactDiscovererTest
 {
-    private ArtifactDiscoverer discoverer;
-
-    private ArtifactFactory factory;
-
-    private ArtifactRepository repository;
-
-    protected void setUp()
-        throws Exception
+    protected String getLayout()
     {
-        super.setUp();
+        return "default";
+    }
 
-        discoverer = (ArtifactDiscoverer) lookup( ArtifactDiscoverer.ROLE, "default" );
-
-        factory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
-
-        File basedir = getTestFile( "src/test/repository" );
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
-
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
-        repository = factory.createArtifactRepository( "discoveryRepo", "file://" + basedir, layout, null, null );
+    protected File getRepositoryFile()
+    {
+        return getTestFile( "src/test/repository" );
     }
 
     public void testDefaultExcludes()
@@ -594,20 +577,4 @@ public class DefaultArtifactDiscovererTest
             return null;
         }
     }
-
-    private Artifact createArtifact( String groupId, String artifactId, String version )
-    {
-        return factory.createArtifact( groupId, artifactId, version, null, "jar" );
-    }
-
-    private Artifact createArtifact( String groupId, String artifactId, String version, String type )
-    {
-        return factory.createArtifact( groupId, artifactId, version, null, type );
-    }
-
-    private Artifact createArtifact( String groupId, String artifactId, String version, String type, String classifier )
-    {
-        return factory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
-    }
-
 }

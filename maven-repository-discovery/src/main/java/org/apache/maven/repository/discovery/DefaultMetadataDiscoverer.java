@@ -51,14 +51,16 @@ public class DefaultMetadataDiscoverer
     /**
      * Standard patterns to include in discovery of metadata files.
      */
-    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml", "**/*/*-metadata.xml",
-        "**/*/*/*-metadata.xml", "**/*-metadata-*.xml", "**/*/*-metadata-*.xml", "**/*/*/*-metadata-*.xml"};
+    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml",
+                                                                 "**/*/*-metadata.xml",
+                                                                 "**/*/*/*-metadata.xml",
+                                                                 "**/*-metadata-*.xml",
+                                                                 "**/*/*-metadata-*.xml",
+                                                                 "**/*/*/*-metadata-*.xml"
+                                                                };
 
     /**
-     * Search the repository for metadata files.
-     *
-     * @param repositoryBase
-     * @param blacklistedPatterns
+     * @see org.apache.maven.repository.discovery.MetadataDiscoverer#discoverMetadata(java.io.File, String)
      */
     public List discoverMetadata( File repositoryBase, String blacklistedPatterns )
     {
@@ -92,7 +94,7 @@ public class DefaultMetadataDiscoverer
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
         throws DiscovererException
     {
-        Metadata m = null;
+        Metadata m;
         String repoPath = repo + "/" + metadataPath;
         try
         {
@@ -128,6 +130,13 @@ public class DefaultMetadataDiscoverer
         return repositoryMetadata;
     }
 
+    /**
+     * Builds a RepositoryMetadata object from a Metadata object and its path
+     *
+     * @param m Metadata
+     * @param metadataPath path
+     * @return RepositoryMetadata if the parameters represent one; null if not
+     */
     private RepositoryMetadata buildMetadata( Metadata m, String metadataPath )
     {
         String metaGroupId = m.getGroupId();
