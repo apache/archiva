@@ -125,7 +125,6 @@
     <module>maven-repository-utils</module>
     <module>maven-repository-webapp</module>
     <module>maven-repository-proxy</module>
-    <module>maven-repository-bundle-submission</module>
     <module>maven-repository-core</module>
     <module>maven-repository-configuration</module>
   </modules>
