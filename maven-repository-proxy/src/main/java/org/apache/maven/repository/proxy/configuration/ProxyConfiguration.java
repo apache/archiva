@@ -16,14 +16,15 @@ package org.apache.maven.repository.proxy.configuration;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class to represent the configuration file for the proxy
@@ -39,6 +40,10 @@ public class ProxyConfiguration
     private String layout;
 
     private ProxyInfo httpProxy;
+
+    private ArtifactRepositoryPolicy cacheReleasePolicy;
+
+    private ArtifactRepositoryPolicy cacheSnapshotPolicy;
 
     /**
      * Used to set the location where the proxy should cache the configured repositories
@@ -182,5 +187,35 @@ public class ProxyConfiguration
                 }
             }
         }
+    }
+
+    public ArtifactRepositoryPolicy getCacheReleasePolicy()
+    {
+        if ( cacheReleasePolicy == null )
+        {
+            cacheReleasePolicy = new ArtifactRepositoryPolicy();
+        }
+
+        return cacheReleasePolicy;
+    }
+
+    public void setCacheReleasePolicy( ArtifactRepositoryPolicy cacheReleasePolicy )
+    {
+        this.cacheReleasePolicy = cacheReleasePolicy;
+    }
+
+    public ArtifactRepositoryPolicy getCacheSnapshotPolicy()
+    {
+        if ( cacheSnapshotPolicy == null )
+        {
+            cacheSnapshotPolicy = new ArtifactRepositoryPolicy();
+        }
+
+        return cacheSnapshotPolicy;
+    }
+
+    public void setCacheSnapshotPolicy( ArtifactRepositoryPolicy cacheSnapshotPolicy )
+    {
+        this.cacheSnapshotPolicy = cacheSnapshotPolicy;
     }
 }

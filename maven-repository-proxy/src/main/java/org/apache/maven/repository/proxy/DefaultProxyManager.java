@@ -303,14 +303,12 @@ public class DefaultProxyManager
 
     private ArtifactRepositoryPolicy getReleasesPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration
-        return new ArtifactRepositoryPolicy();
+        return config.getCacheReleasePolicy();
     }
 
     private ArtifactRepositoryPolicy getSnapshotsPolicy()
     {
-        //todo get policy configuration from ProxyConfiguration
-        return new ArtifactRepositoryPolicy();
+        return config.getCacheSnapshotPolicy();
     }
 
     public URL getRepositoryCacheURL()
