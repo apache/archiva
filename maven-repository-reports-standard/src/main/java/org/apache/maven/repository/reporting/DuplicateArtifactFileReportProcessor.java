@@ -71,6 +71,11 @@ public class DuplicateArtifactFileReportProcessor
             //@todo remove hard-coded value; current value enables tests to pass!
             File indexPath = new File( "target/.index" );
 
+            if ( !indexPath.exists() )
+            {
+                indexPath.mkdirs();
+            }
+
             RepositoryIndex index;
             try
             {

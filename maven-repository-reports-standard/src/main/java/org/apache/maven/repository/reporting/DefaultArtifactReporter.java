@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ * @plexus.component role-hint="default"
  */
 public class DefaultArtifactReporter
     implements ArtifactReporter
