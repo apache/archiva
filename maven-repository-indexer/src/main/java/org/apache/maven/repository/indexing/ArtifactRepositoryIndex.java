@@ -62,24 +62,12 @@ public class ArtifactRepositoryIndex
     }
 
     /**
-     * Checks if the artifact has already been indexed and deletes it if it is.
+     * Indexes the artifacts found within the specified list.  Deletes existing indices for the same artifacts first,
+     * before proceeding on adding them into the index.
      *
-     * @param artifact the object to be indexed.
+     * @param artifactList
      * @throws RepositoryIndexException
      */
-    private void deleteIfIndexed( Artifact artifact )
-        throws RepositoryIndexException
-    {
-        try
-        {
-            deleteDocument( FLD_ID, ARTIFACT + ":" + artifact.getId() );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Failed to delete a document", e );
-        }
-    }
-
     public void indexArtifacts( List artifactList )
         throws RepositoryIndexException
     {
@@ -95,6 +83,12 @@ public class ArtifactRepositoryIndex
         addDocuments( getDocumentList( artifactList ) );
     }
 
+    /**
+     * Creates a list of Lucene Term object used in index deletion
+     *
+     * @param artifactList
+     * @return List of Term object
+     */
     private List getTermList( List artifactList )
     {
         List list = new ArrayList();
@@ -109,6 +103,13 @@ public class ArtifactRepositoryIndex
         return list;
     }
 
+    /**
+     * Creates a list of Lucene documents, used for index additions
+     *
+     * @param artifactList
+     * @return
+     * @throws RepositoryIndexException
+     */
     private List getDocumentList( List artifactList )
         throws RepositoryIndexException
     {
@@ -136,6 +137,13 @@ public class ArtifactRepositoryIndex
         indexArtifacts( Collections.singletonList( artifact ) );
     }
 
+    /**
+     * Creates a Lucene Document from an artifact; used for index additions
+     *
+     * @param artifact
+     * @return
+     * @throws RepositoryIndexException
+     */
     private Document createDocument( Artifact artifact )
         throws RepositoryIndexException
     {

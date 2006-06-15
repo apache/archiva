@@ -88,6 +88,12 @@ public class EclipseRepositoryIndex
         return new EclipseIndexAnalyzer( new SimpleAnalyzer() );
     }
 
+    /**
+     * Indexes the artifacts inside the provided list
+     *
+     * @param artifactList
+     * @throws RepositoryIndexException
+     */
     public void indexArtifacts( List artifactList )
         throws RepositoryIndexException
     {
@@ -124,6 +130,13 @@ public class EclipseRepositoryIndex
         }
     }
 
+    /**
+     * Creates a Lucene Document from an artifact; used for index additions
+     *
+     * @param artifact
+     * @return
+     * @throws RepositoryIndexException
+     */
     private Document createDocument( Artifact artifact )
         throws RepositoryIndexException
     {

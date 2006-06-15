@@ -120,9 +120,23 @@ public interface RepositoryIndex
     public void validate()
         throws RepositoryIndexException, IOException;
 
+    /**
+     * Opens the lucene index and add all the lucene documents inside the list into the index.
+     * Closes the index at the end.
+     *
+     * @param docList List of Lucene Documents
+     * @throws RepositoryIndexException when an error occurred during the indexing of the documents
+     */
     public void addDocuments( List docList )
         throws RepositoryIndexException;
 
+    /**
+     * Delete from the index matching the list of lucene Terms
+     *
+     * @param termList List of Lucene Term
+     * @throws RepositoryIndexException
+     * @throws IOException
+     */
     public void deleteDocuments( List termList )
         throws RepositoryIndexException, IOException;
 }

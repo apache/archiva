@@ -51,7 +51,7 @@ public class MetadataRepositoryIndex
     }
 
     /**
-     * Index the contents of the specified RepositoryMetadata paramter object
+     * Index the contents of the specified RepositoryMetadata parameter object
      *
      * @param repoMetadata the metadata object to be indexed
      * @throws RepositoryIndexException
@@ -62,6 +62,13 @@ public class MetadataRepositoryIndex
         indexMetadata( Collections.singletonList( repoMetadata ) );
     }
 
+    /**
+     * Index the metadata found within the provided list.  Deletes existing entries in the index first before
+     * proceeding with the index additions.
+     *
+     * @param metadataList
+     * @throws RepositoryIndexException
+     */
     public void indexMetadata( List metadataList )
         throws RepositoryIndexException
     {
@@ -77,6 +84,12 @@ public class MetadataRepositoryIndex
         addDocuments( getDocumentList( metadataList ) );
     }
 
+    /**
+     * Creates a list of Lucene Term object used in index deletion
+     *
+     * @param metadataList
+     * @return List of Term object
+     */
     private List getTermList( List metadataList )
     {
         List terms = new ArrayList();
@@ -91,6 +104,12 @@ public class MetadataRepositoryIndex
         return terms;
     }
 
+    /**
+     * Creates a list of Lucene documents
+     *
+     * @param metadataList
+     * @return List of Lucene Documents
+     */
     private List getDocumentList( List metadataList )
     {
         List docs = new ArrayList();
@@ -105,6 +124,12 @@ public class MetadataRepositoryIndex
         return docs;
     }
 
+    /**
+     * Creates a Lucene Document from a RepositoryMetadata; used for index additions
+     *
+     * @param repoMetadata
+     * @return Lucene Document
+     */
     private Document createDocument( RepositoryMetadata repoMetadata )
     {
         //get lastUpdated from Versioning (specified in Metadata object)
@@ -171,18 +196,5 @@ public class MetadataRepositoryIndex
         doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
         doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
         return doc;
-    }
-
-    private void deleteIfIndexed( RepositoryMetadata repoMetadata )
-        throws RepositoryIndexException
-    {
-        try
-        {
-            deleteDocument( FLD_ID, (String) repoMetadata.getKey() );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Failed to delete document", e );
-        }
     }
 }

@@ -200,6 +200,9 @@ public abstract class AbstractRepositoryIndex
         deleteDocuments( Collections.singletonList( term ) );
     }
 
+    /**
+     * @see RepositoryIndex#deleteDocuments(java.util.List) 
+     */
     public void deleteDocuments( List termList )
         throws RepositoryIndexException, IOException
     {
@@ -228,11 +231,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * Opens the lucene index and add all the lucene documents inside the list into the index.
-     * Closes the index at the end.
-     *
-     * @param docList List of Lucene Documents
-     * @throws RepositoryIndexException when an error occurred during the indexing of the documents
+     * @see RepositoryIndex#addDocuments(java.util.List)
      */
     public void addDocuments( List docList )
         throws RepositoryIndexException

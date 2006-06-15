@@ -68,19 +68,6 @@ public class PomRepositoryIndex
         this.artifactFactory = artifactFactory;
     }
 
-    private void deleteIfIndexed( Model pom )
-        throws RepositoryIndexException
-    {
-        try
-        {
-            deleteDocument( FLD_ID, POM + ":" + pom.getId() );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Failed to delete document", e  );
-        }
-    }
-
     /**
      * Method to create the index fields for a Model object into the index
      *
@@ -93,6 +80,12 @@ public class PomRepositoryIndex
         indexPoms( Collections.singletonList( pom ) );
     }
 
+    /**
+     * Index the Models within the supplied List.  Deletes existing index values before adding them to the list.
+     *
+     * @param pomList
+     * @throws RepositoryIndexException
+     */
     public void indexPoms( List pomList )
         throws RepositoryIndexException
     {
@@ -108,6 +101,12 @@ public class PomRepositoryIndex
         addDocuments( getDocumentList( pomList ) );
     }
 
+    /**
+     * Creates a list of Lucene Term object used in index deletion
+     *
+     * @param pomList
+     * @return List of Term object
+     */
     private List getTermList( List pomList )
     {
         List terms = new ArrayList();
@@ -122,6 +121,13 @@ public class PomRepositoryIndex
         return terms;
     }
 
+    /**
+     * Creates a list of Lucene documents
+     *
+     * @param pomList
+     * @return
+     * @throws RepositoryIndexException
+     */
     private List getDocumentList( List pomList )
         throws RepositoryIndexException
     {
@@ -137,6 +143,13 @@ public class PomRepositoryIndex
         return docs;
     }
 
+    /**
+     * Creates a Lucene Document from a Model; used for index additions
+     *
+     * @param pom
+     * @return
+     * @throws RepositoryIndexException
+     */
     private Document createDocument( Model pom )
         throws RepositoryIndexException
     {
