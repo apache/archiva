@@ -19,6 +19,8 @@ package org.apache.maven.repository.converter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
@@ -105,7 +107,9 @@ public class DefaultRepositoryConverter
      */
     private I18N i18n;
 
-    public void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    public void convert( Artifact artifact,
+                         ArtifactRepository targetRepository,
+                         ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         if ( artifact.getRepository().getUrl().equals( targetRepository.getUrl() ) )
@@ -163,8 +167,11 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository sourceRepository,
-                                 ArtifactRepository targetRepository, Metadata newMetadata, FileTransaction transaction )
+    private void updateMetadata( RepositoryMetadata artifactMetadata,
+                                 ArtifactRepository sourceRepository,
+                                 ArtifactRepository targetRepository,
+                                 Metadata newMetadata,
+                                 FileTransaction transaction )
         throws RepositoryConversionException
     {
         Metadata metadata;
@@ -188,7 +195,7 @@ public class DefaultRepositoryConverter
         if ( mergeWithSourceMetadata )
         {
             File srcfile = new File( sourceRepository.getBasedir(),
-                             sourceRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+                                     sourceRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
 
             if ( srcfile.exists() )
             {
@@ -251,7 +258,8 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private boolean validateMetadata( Artifact artifact, ArtifactReporter reporter )
+    private boolean validateMetadata( Artifact artifact,
+                                      ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -278,7 +286,9 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
+    private boolean validateMetadata( Metadata metadata,
+                                      RepositoryMetadata repositoryMetadata,
+                                      Artifact artifact,
                                       ArtifactReporter reporter )
     {
         String groupIdKey;
@@ -380,7 +390,9 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+    private boolean copyPom( Artifact artifact,
+                             ArtifactRepository targetRepository,
+                             ArtifactReporter reporter,
                              FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -495,8 +507,10 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean doRelocation( Artifact artifact, org.apache.maven.model.v3_0_0.Model v3Model,
-                                  ArtifactRepository repository, FileTransaction transaction )
+    private boolean doRelocation( Artifact artifact,
+                                  org.apache.maven.model.v3_0_0.Model v3Model,
+                                  ArtifactRepository repository,
+                                  FileTransaction transaction )
         throws IOException
     {
         Properties properties = v3Model.getProperties();
@@ -539,9 +553,15 @@ public class DefaultRepositoryConverter
         }
     }
 
-    private void writeRelocationPom( String groupId, String artifactId, String version, String newGroupId,
-                                     String newArtifactId, String newVersion, String message,
-                                     ArtifactRepository repository, FileTransaction transaction )
+    private void writeRelocationPom( String groupId,
+                                     String artifactId,
+                                     String version,
+                                     String newGroupId,
+                                     String newArtifactId,
+                                     String newVersion,
+                                     String message,
+                                     ArtifactRepository repository,
+                                     FileTransaction transaction )
         throws IOException
     {
         Model pom = new Model();
@@ -574,7 +594,8 @@ public class DefaultRepositoryConverter
         transaction.createFile( strWriter.toString(), pomFile );
     }
 
-    private String getI18NString( String key, String arg0 )
+    private String getI18NString( String key,
+                                  String arg0 )
     {
         return i18n.format( getClass().getName(), Locale.getDefault(), key, arg0 );
     }
@@ -584,7 +605,9 @@ public class DefaultRepositoryConverter
         return i18n.getString( getClass().getName(), Locale.getDefault(), key );
     }
 
-    private boolean testChecksums( Artifact artifact, File file, ArtifactReporter reporter )
+    private boolean testChecksums( Artifact artifact,
+                                   File file,
+                                   ArtifactReporter reporter )
         throws IOException, RepositoryConversionException
     {
         boolean result;
@@ -603,8 +626,12 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean verifyChecksum( File file, String fileName, String algorithm, ArtifactReporter reporter,
-                                    Artifact artifact, String key )
+    private boolean verifyChecksum( File file,
+                                    String fileName,
+                                    String algorithm,
+                                    ArtifactReporter reporter,
+                                    Artifact artifact,
+                                    String key )
         throws IOException, NoSuchAlgorithmException
     {
         boolean result = true;
@@ -622,7 +649,9 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+    private boolean copyArtifact( Artifact artifact,
+                                  ArtifactRepository targetRepository,
+                                  ArtifactReporter reporter,
                                   FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -665,7 +694,9 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    public void convert( List artifacts, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    public void convert( List artifacts,
+                         ArtifactRepository targetRepository,
+                         ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )

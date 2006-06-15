@@ -21,6 +21,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.reporting.ArtifactReporter;
 
 import java.util.List;
+import java.io.File;
 
 /**
  * Copy a set of artifacts from one repository to the other, converting if necessary.
