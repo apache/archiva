@@ -41,30 +41,39 @@ public class DuplicateArtifactFileReportProcessorTest
 
     private ArtifactFactory artifactFactory;
 
-    private File indexPath = getTestFile( "target/.index" );
+    File indexDirectory;
 
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+
         Digester digester = (Digester) lookup( Digester.ROLE );
 
-        reporter = new MockArtifactReporter();
-        artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "jar" );
-        model = new Model();
-        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
+        indexDirectory = getTestFile( "target/indexDirectory" );
 
-        ArtifactRepositoryIndex index = new ArtifactRepositoryIndex( indexPath, repository, digester );
+        if ( !indexDirectory.exists() )
+        {
+            indexDirectory.mkdirs();
+        }
+
+        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+        artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "jar" );
+        reporter = new MockArtifactReporter();
+        model = new Model();
+
+        ArtifactRepositoryIndex index = new ArtifactRepositoryIndex( indexDirectory, repository, digester );
         index.indexArtifact( artifact );
         index.optimize();
         index.close();
+
+        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
     }
 
     protected void tearDown()
         throws Exception
     {
-        FileUtils.deleteDirectory( indexPath );
+        //FileUtils.deleteDirectory( indexDirectory );
 
         processor = null;
         model = null;
@@ -132,7 +141,10 @@ public class DuplicateArtifactFileReportProcessorTest
         assertEquals( "Check no failures", 1, reporter.getFailures() );
     }
 
-    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,
+    private Artifact createArtifact( String groupId,
+                                     String artifactId,
+                                     String baseVersion,
+                                     String version,
                                      String type )
     {
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );

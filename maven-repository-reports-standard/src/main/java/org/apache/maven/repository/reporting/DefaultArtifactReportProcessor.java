@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="default"
  */
 public class DefaultArtifactReportProcessor
     implements ArtifactReportProcessor

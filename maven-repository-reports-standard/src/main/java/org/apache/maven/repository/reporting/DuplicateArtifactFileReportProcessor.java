@@ -54,13 +54,18 @@ public class DuplicateArtifactFileReportProcessor
      */
     private RepositoryIndexingFactory indexFactory;
 
-    //@todo configurable?
-    private String algorithm = RepositoryIndex.FLD_MD5;
-
     /**
      * @plexus.requirement
      */
     private RepositoryIndexSearchLayer searchLayer;
+
+    /**
+     * @plexus.configuration
+     */
+    private String indexDirectory;
+
+    //@todo configurable?
+    private String algorithm = RepositoryIndex.FLD_MD5;
 
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
@@ -68,18 +73,10 @@ public class DuplicateArtifactFileReportProcessor
     {
         if ( artifact.getFile() != null )
         {
-            //@todo remove hard-coded value; current value enables tests to pass!
-            File indexPath = new File( "target/.index" );
-
-            if ( !indexPath.exists() )
-            {
-                indexPath.mkdirs();
-            }
-
             RepositoryIndex index;
             try
             {
-                index = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
+                index = indexFactory.createArtifactRepositoryIndex( new File( indexDirectory ), repository );
             }
             catch ( RepositoryIndexException e )
             {
