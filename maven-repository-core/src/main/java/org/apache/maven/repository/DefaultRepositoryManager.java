@@ -65,7 +65,7 @@ public class DefaultRepositoryManager
                                                                                    legacyLayout, null, null );
 
             repository = artifactRepositoryFactory.createArtifactRepository( "default",
-                                                                             legacyRepositoryDirectory.toURL().toString(),
+                                                                             repositoryDirectory.toURL().toString(),
                                                                              defaultLayout, null, null );
         }
         catch ( MalformedURLException e )
