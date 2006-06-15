@@ -20,6 +20,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,71 +29,58 @@ import java.util.List;
  */
 public interface RepositoryIndex
 {
-    String POM = "POM";
+    static final String POM = "POM";
 
-    String METADATA = "METADATA";
+    static final String METADATA = "METADATA";
 
-    String ARTIFACT = "ARTIFACT";
+    static final String ARTIFACT = "ARTIFACT";
 
-    String FLD_ID = "id";
+    static final String FLD_ID = "id";
 
-    String FLD_NAME = "name";
+    static final String FLD_NAME = "name";
 
-    String FLD_DOCTYPE = "doctype";
+    static final String FLD_DOCTYPE = "doctype";
 
-    String FLD_GROUPID = "groupId";
+    static final String FLD_GROUPID = "groupId";
 
-    String FLD_ARTIFACTID = "artifactId";
+    static final String FLD_ARTIFACTID = "artifactId";
 
-    String FLD_VERSION = "version";
+    static final String FLD_VERSION = "version";
 
-    String FLD_PACKAGING = "packaging";
+    static final String FLD_PACKAGING = "packaging";
 
-    String FLD_SHA1 = "sha1";
+    static final String FLD_SHA1 = "sha1";
 
-    String FLD_MD5 = "md5";
+    static final String FLD_MD5 = "md5";
 
-    String FLD_LASTUPDATE = "last update";
+    static final String FLD_LASTUPDATE = "last update";
 
-    String FLD_PLUGINPREFIX = "plugin prefix";
+    static final String FLD_PLUGINPREFIX = "plugin prefix";
 
-    String FLD_CLASSES = "class";
+    static final String FLD_CLASSES = "class";
 
-    String FLD_PACKAGES = "package";
+    static final String FLD_PACKAGES = "package";
 
-    String FLD_FILES = "file";
+    static final String FLD_FILES = "file";
 
-    String FLD_LICENSE_URLS = "license url";
+    static final String FLD_LICENSE_URLS = "license url";
 
-    String FLD_DEPENDENCIES = "dependency";
+    static final String FLD_DEPENDENCIES = "dependency";
 
-    String FLD_PLUGINS_BUILD = "build plugin";
+    static final String FLD_PLUGINS_BUILD = "build plugin";
 
-    String FLD_PLUGINS_REPORT = "report plugin";
+    static final String FLD_PLUGINS_REPORT = "report plugin";
 
-    String FLD_PLUGINS_ALL = "plugins_all";
+    static final String FLD_PLUGINS_ALL = "plugins_all";
 
-    String[] FIELDS = {FLD_ID, FLD_NAME, FLD_DOCTYPE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_SHA1,
+    static final String[] FIELDS = {FLD_ID, FLD_NAME, FLD_DOCTYPE, FLD_GROUPID, FLD_ARTIFACTID, FLD_VERSION, FLD_PACKAGING, FLD_SHA1,
         FLD_MD5, FLD_LASTUPDATE, FLD_PLUGINPREFIX, FLD_CLASSES, FLD_PACKAGES, FLD_FILES, FLD_LICENSE_URLS,
         FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL};
 
-    List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
+    static final List KEYWORD_FIELDS = Arrays.asList( new String[]{FLD_ID, FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES,
         FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT, FLD_PLUGINS_ALL} );
 
-    String[] MODEL_FIELDS = {FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT};
-
-    /**
-     * Method used to query the index status
-     *
-     * @return true if the index is open.
-     */
-    boolean isOpen();
-
-    /**
-     * Method to close open streams to the index directory
-     */
-    void close()
-        throws RepositoryIndexException;
+    static final String[] MODEL_FIELDS = {FLD_PACKAGING, FLD_LICENSE_URLS, FLD_DEPENDENCIES, FLD_PLUGINS_BUILD, FLD_PLUGINS_REPORT};
 
     ArtifactRepository getRepository();
 
@@ -123,4 +111,18 @@ public interface RepositoryIndex
      * @return true if the index field passed is a keyword, otherwise its false
      */
     boolean isKeywordField( String field );
+
+    /**
+     * method for validating an index directory
+     *
+     * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
+     */
+    public void validate()
+        throws RepositoryIndexException, IOException;
+
+    public void addDocuments( List docList )
+        throws RepositoryIndexException;
+
+    public void deleteDocuments( List termList )
+        throws RepositoryIndexException, IOException;
 }

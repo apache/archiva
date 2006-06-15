@@ -32,6 +32,7 @@ import org.codehaus.plexus.util.FileUtils;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Edwin Punzalan
@@ -98,17 +99,6 @@ public class ArtifactRepositoryIndexingTest
         {
             assertTrue( true );
         }
-
-        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
-        try
-        {
-            indexer.deleteIfIndexed( new Object() );
-            fail( "Must throw exception on object not of type artifact." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
     }
 
     /**
@@ -124,30 +114,27 @@ public class ArtifactRepositoryIndexingTest
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
+        List artifacts = new ArrayList();
+
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
+        artifacts.add( artifact );
 
         artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
+        artifacts.add( artifact );
+
+        artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifacts.add( artifact );
+
+        indexer.indexArtifacts( artifacts );
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
-        artifact = getArtifact( "test", "test-artifactId", "1.0" );
-        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        indexer.indexArtifact( artifact );
         indexer.optimize();
-        indexer.close();
-
     }
 
     /**
@@ -274,8 +261,6 @@ public class ArtifactRepositoryIndexingTest
             String md5Tmp = digester.createChecksum( artifact2.getFile(), Digester.MD5 );
             assertEquals( md5, md5Tmp );
         }
-
-        indexer.close();
     }
 
     /**
@@ -402,8 +387,6 @@ public class ArtifactRepositoryIndexingTest
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
-
-        indexer.close();
     }
 
     /**

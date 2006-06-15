@@ -37,6 +37,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -69,6 +73,7 @@ public class EclipseRepositoryIndex
      * @param digester   the digester object to generate the checksum strings
      */
     public EclipseRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester )
+        throws RepositoryIndexException
     {
         super( indexPath, repository );
 
@@ -83,6 +88,26 @@ public class EclipseRepositoryIndex
         return new EclipseIndexAnalyzer( new SimpleAnalyzer() );
     }
 
+    public void indexArtifacts( List artifactList )
+        throws RepositoryIndexException
+    {
+        List docs = new ArrayList();
+
+        for ( Iterator artifacts = artifactList.iterator(); artifacts.hasNext(); )
+        {
+            Artifact artifact = (Artifact) artifacts.next();
+
+            Document doc = createDocument( artifact );
+
+            if ( doc != null )
+            {
+                docs.add( doc );
+            }
+        }
+
+        addDocuments( docs );
+    }
+
     /**
      * Method to index a given artifact for use with the eclipse plugin
      *
@@ -92,6 +117,18 @@ public class EclipseRepositoryIndex
     public void indexArtifact( Artifact artifact )
         throws RepositoryIndexException
     {
+        Document doc = createDocument( artifact );
+        if ( doc != null )
+        {
+            addDocuments( Collections.singletonList( doc ) );
+        }
+    }
+
+    private Document createDocument( Artifact artifact )
+        throws RepositoryIndexException
+    {
+        Document doc = null;
+
         File artifactFile = artifact.getFile();
         if ( artifactFile != null && artifactFile.getName().endsWith( ".jar" ) && artifactFile.exists() )
         {
@@ -138,26 +175,15 @@ public class EclipseRepositoryIndex
                 throw new RepositoryIndexException( "Error reading from artifact file", e );
             }
 
-            Document doc = new Document();
+            doc = new Document();
             doc.add( Field.Text( MD5, md5 ) );
             doc.add( Field.Text( JAR_NAME, artifactFile.getName() ) );
             doc.add( Field.Text( JAR_DATE, DateField.timeToString( artifactFile.lastModified() ) ) );
             doc.add( Field.Text( JAR_SIZE, Long.toString( artifactFile.length() ) ) );
             doc.add( Field.Text( NAMES, classes.toString() ) );
-
-            try
-            {
-                if ( !isOpen() )
-                {
-                    open();
-                }
-                getIndexWriter().addDocument( doc );
-            }
-            catch ( IOException e )
-            {
-                throw new RepositoryIndexException( "Error opening index.", e );
-            }
         }
+
+        return doc;
     }
 
     /**
@@ -212,46 +238,6 @@ public class EclipseRepositoryIndex
         zos.flush();
 
         zos.closeEntry();
-    }
-
-    /**
-     * @see AbstractRepositoryIndex#deleteIfIndexed(Object)
-     */
-    public void deleteIfIndexed( Object object )
-        throws RepositoryIndexException, IOException
-    {
-        if ( object instanceof Artifact )
-        {
-            Artifact artifact = (Artifact) object;
-            if ( indexExists() )
-            {
-                validateIndex( FIELDS );
-
-                String md5;
-                try
-                {
-                    md5 = digester.createChecksum( artifact.getFile(), "MD5" );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    throw new RepositoryIndexException( "Unable to create index.", e );
-                }
-                catch ( NoSuchAlgorithmException e )
-                {
-                    throw new RepositoryIndexException( "Unable to create index.", e );
-                }
-                catch ( IOException e )
-                {
-                    throw new RepositoryIndexException( "Unable to create index.", e );
-                }
-
-                deleteDocument( MD5, md5 );
-            }
-        }
-        else
-        {
-            throw new RepositoryIndexException( "Object is not of type artifact." );
-        }
     }
 
     /**

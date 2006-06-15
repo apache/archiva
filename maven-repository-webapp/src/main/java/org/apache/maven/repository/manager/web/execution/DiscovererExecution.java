@@ -17,13 +17,10 @@ package org.apache.maven.repository.manager.web.execution;
  */
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.DefaultArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.model.Model;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
@@ -36,7 +33,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -138,17 +134,8 @@ public class DiscovererExecution
         throws RepositoryIndexException
     {
         ArtifactRepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
-        for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
-        {
-            Artifact artifact = (Artifact) iter.next();
-            artifactIndex.indexArtifact( artifact );
-
-            if ( artifactIndex.isOpen() )
-            {
-                artifactIndex.optimize();
-                artifactIndex.close();
-            }
-        }
+        artifactIndex.indexArtifacts( artifacts );
+        artifactIndex.optimize();
     }
 
     /**
@@ -161,17 +148,8 @@ public class DiscovererExecution
         throws RepositoryIndexException, MalformedURLException
     {
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
-        for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
-        {
-            RepositoryMetadata repoMetadata = (RepositoryMetadata) iter.next();
-            metadataIndex.index( repoMetadata );
-
-            if ( metadataIndex.isOpen() )
-            {
-                metadataIndex.optimize();
-                metadataIndex.close();
-            }
-        }
+        metadataIndex.indexMetadata( metadataList );
+        metadataIndex.optimize();
     }
 
     /**
@@ -185,17 +163,8 @@ public class DiscovererExecution
         throws RepositoryIndexException
     {
         PomRepositoryIndex pomIndex = indexFactory.createPomRepositoryIndex( indexPath, repository );
-        for ( Iterator iter = models.iterator(); iter.hasNext(); )
-        {
-            Model model = (Model) iter.next();
-            pomIndex.indexPom( model );
-
-            if ( pomIndex.isOpen() )
-            {
-                pomIndex.optimize();
-                pomIndex.close();
-            }
-        }
+        pomIndex.indexPoms( models );
+        pomIndex.optimize();
     }
 
     /**

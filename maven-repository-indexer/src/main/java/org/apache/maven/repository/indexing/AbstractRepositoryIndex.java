@@ -23,12 +23,16 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.document.Document;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Collections;
 import java.util.zip.ZipEntry;
 
 /**
@@ -40,12 +44,9 @@ import java.util.zip.ZipEntry;
 public abstract class AbstractRepositoryIndex
     implements RepositoryIndex
 {
-    // TODO: can this be derived from the repository? -- probably a sensible default, but still should be configurable, but this could just be on the call to open()
+    // TODO: can this be derived from the repository? -- probably a sensible default, but still should be configurable
     private File indexPath;
 
-    private boolean indexOpen;
-
-    // TODO: why is the writer open for the life, but not the reader? why keep them open that length of time anyway? investigate best practices in Lucene
     private IndexWriter indexWriter;
 
     protected ArtifactRepository repository;
@@ -59,35 +60,20 @@ public abstract class AbstractRepositoryIndex
      * @param repository
      */
     protected AbstractRepositoryIndex( File indexPath, ArtifactRepository repository )
+        throws RepositoryIndexException
     {
         this.repository = repository;
         this.indexPath = indexPath;
-    }
 
-    /**
-     * Method to open the IndexWriter
-     *
-     * @throws RepositoryIndexException
-     */
-    public void open()
-        throws RepositoryIndexException
-    {
         try
         {
-            if ( indexExists() )
-            {
-                indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
-            }
-            else
-            {
-                indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
-            }
+            validate();
         }
-        catch ( IOException ie )
+        catch ( IOException e )
         {
-            throw new RepositoryIndexException( ie );
+            throw new RepositoryIndexException( "Failed to validate index path: " +
+                                                getIndexPath().getAbsolutePath(), e );
         }
-        indexOpen = true;
     }
 
     /**
@@ -96,14 +82,10 @@ public abstract class AbstractRepositoryIndex
     public void optimize()
         throws RepositoryIndexException
     {
-        if ( !indexOpen )
-        {
-            throw new RepositoryIndexException( "Unable to optimize index on a closed index" );
-        }
-
         try
         {
-            indexWriter.optimize();
+            getIndexWriter().optimize();
+            close();
         }
         catch ( IOException ioe )
         {
@@ -112,17 +94,9 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * @see org.apache.maven.repository.indexing.RepositoryIndex#isOpen()
+     * closes the current index from writing thus removing lock files
      */
-    public boolean isOpen()
-    {
-        return indexOpen;
-    }
-
-    /**
-     * @see org.apache.maven.repository.indexing.RepositoryIndex#close()
-     */
-    public void close()
+    private void close()
         throws RepositoryIndexException
     {
         try
@@ -132,8 +106,6 @@ public abstract class AbstractRepositoryIndex
                 indexWriter.close();
                 indexWriter = null;
             }
-
-            indexOpen = false;
         }
         catch ( IOException e )
         {
@@ -155,45 +127,52 @@ public abstract class AbstractRepositoryIndex
      * @return the lucene IndexWriter object used to update the index
      * @throws IOException
      */
-    protected IndexWriter getIndexWriter()
-        throws IOException
+    private IndexWriter getIndexWriter()
+        throws IOException, RepositoryIndexException
     {
-        // TODO: why is this allowed to be called before open()?
         if ( indexWriter == null )
         {
-            indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
+            if ( indexExists() )
+            {
+                indexWriter = new IndexWriter( indexPath, getAnalyzer(), false );
+            }
+            else
+            {
+                indexWriter = new IndexWriter( indexPath, getAnalyzer(), true );
+            }
         }
+
         return indexWriter;
     }
 
     /**
-     * method for validating an index directory
-     *
-     * @param indexFields
-     * @throws RepositoryIndexException if the given indexPath is not valid for this type of RepositoryIndex
+     * @see RepositoryIndex#validate()
      */
-    protected void validateIndex( String[] indexFields )
+    public void validate()
         throws RepositoryIndexException, IOException
     {
-        IndexReader indexReader = IndexReader.open( indexPath );
-        try
+        if ( indexExists() )
         {
-            if ( indexReader.numDocs() > 0 )
+            IndexReader indexReader = IndexReader.open( indexPath );
+            try
             {
-                Collection fields = indexReader.getFieldNames();
-                for ( int idx = 0; idx < indexFields.length; idx++ )
+                if ( indexReader.numDocs() > 0 )
                 {
-                    if ( !fields.contains( indexFields[idx] ) )
+                    Collection fields = indexReader.getFieldNames();
+                    for ( int idx = 0; idx < FIELDS.length; idx++ )
                     {
-                        throw new RepositoryIndexException(
-                            "The Field " + indexFields[idx] + " does not exist in index " + indexPath + "." );
+                        if ( !fields.contains( FIELDS[idx] ) )
+                        {
+                            throw new RepositoryIndexException(
+                                "The Field " + FIELDS[idx] + " does not exist in index " + indexPath + "." );
+                        }
                     }
                 }
             }
-        }
-        finally
-        {
-            indexReader.close();
+            finally
+            {
+                indexReader.close();
+            }
         }
     }
 
@@ -216,22 +195,65 @@ public abstract class AbstractRepositoryIndex
     protected void deleteDocument( String field, String value )
         throws RepositoryIndexException, IOException
     {
-        IndexReader indexReader = null;
+        Term term = new Term( field, value );
+
+        deleteDocuments( Collections.singletonList( term ) );
+    }
+
+    public void deleteDocuments( List termList )
+        throws RepositoryIndexException, IOException
+    {
+        if ( indexExists() )
+        {
+            IndexReader indexReader = null;
+            try
+            {
+                indexReader = IndexReader.open( indexPath );
+
+                for ( Iterator terms = termList.iterator(); terms.hasNext(); )
+                {
+                    Term term = (Term) terms.next();
+
+                    indexReader.delete( term );
+                }
+            }
+            finally
+            {
+                if ( indexReader != null )
+                {
+                    indexReader.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Opens the lucene index and add all the lucene documents inside the list into the index.
+     * Closes the index at the end.
+     *
+     * @param docList List of Lucene Documents
+     * @throws RepositoryIndexException when an error occurred during the indexing of the documents
+     */
+    public void addDocuments( List docList )
+        throws RepositoryIndexException
+    {
         try
         {
-            indexReader = IndexReader.open( indexPath );
-            indexReader.delete( new Term( field, value ) );
+            IndexWriter indexWriter = getIndexWriter();
+
+            for ( Iterator docs = docList.iterator(); docs.hasNext(); )
+            {
+                Document doc = (Document) docs.next();
+                indexWriter.addDocument( doc );
+            }
         }
-        catch ( IOException ie )
+        catch ( IOException e )
         {
-            throw new RepositoryIndexException( indexPath + " is not a valid directory." );
+            throw new RepositoryIndexException( "Failed to add an index document", e );
         }
         finally
         {
-            if ( indexReader != null )
-            {
-                indexReader.close();
-            }
+            close();
         }
     }
 
@@ -268,16 +290,6 @@ public abstract class AbstractRepositoryIndex
             throw new RepositoryIndexException( indexPath + " is not a directory." );
         }
     }
-
-    /**
-     * Checks if the object has already been indexed and deletes it if it is.
-     *
-     * @param object the object to be indexed.
-     * @throws RepositoryIndexException
-     * @throws IOException
-     */
-    abstract void deleteIfIndexed( Object object )
-        throws RepositoryIndexException, IOException;
 
     /**
      * @see org.apache.maven.repository.indexing.RepositoryIndex#getAnalyzer()
@@ -331,6 +343,9 @@ public abstract class AbstractRepositoryIndex
         return isAdded;
     }
 
+    /**
+     * Inner class used as the default IndexAnalyzer
+     */
     private static class ArtifactRepositoryIndexAnalyzer
         extends Analyzer
     {
@@ -371,7 +386,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * Class used to tokenize an artifact's version.
+     * Inner class used to tokenize an artifact's version.
      */
     private static class VersionTokenizer
         extends CharTokenizer

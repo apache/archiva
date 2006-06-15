@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
@@ -26,7 +27,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -50,30 +55,73 @@ public class ArtifactRepositoryIndex
      * @param digester   the digester object to generate the checksum strings
      */
     public ArtifactRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester )
+        throws RepositoryIndexException
     {
         super( indexPath, repository );
         this.digester = digester;
     }
 
     /**
-     * @see AbstractRepositoryIndex#deleteIfIndexed(Object)
+     * Checks if the artifact has already been indexed and deletes it if it is.
+     *
+     * @param artifact the object to be indexed.
+     * @throws RepositoryIndexException
      */
-    public void deleteIfIndexed( Object object )
-        throws RepositoryIndexException, IOException
+    private void deleteIfIndexed( Artifact artifact )
+        throws RepositoryIndexException
     {
-        if ( object instanceof Artifact )
+        try
         {
-            Artifact artifact = (Artifact) object;
-            if ( indexExists() )
-            {
-                validateIndex( FIELDS );
-                deleteDocument( FLD_ID, ARTIFACT + ":" + artifact.getId() );
-            }
+            deleteDocument( FLD_ID, ARTIFACT + ":" + artifact.getId() );
         }
-        else
+        catch ( IOException e )
         {
-            throw new RepositoryIndexException( "Object is not of type artifact." );
+            throw new RepositoryIndexException( "Failed to delete a document", e );
         }
+    }
+
+    public void indexArtifacts( List artifactList )
+        throws RepositoryIndexException
+    {
+        try
+        {
+            deleteDocuments( getTermList( artifactList ) );
+        }
+        catch( IOException e )
+        {
+            throw new RepositoryIndexException( "Failed to delete an index document", e );
+        }
+
+        addDocuments( getDocumentList( artifactList ) );
+    }
+
+    private List getTermList( List artifactList )
+    {
+        List list = new ArrayList();
+
+        for ( Iterator artifacts = artifactList.iterator(); artifacts.hasNext(); )
+        {
+            Artifact artifact = (Artifact) artifacts.next();
+
+            list.add( new Term( FLD_ID, ARTIFACT + ":" + artifact.getId() ) );
+        }
+
+        return list;
+    }
+
+    private List getDocumentList( List artifactList )
+        throws RepositoryIndexException
+    {
+        List list = new ArrayList();
+
+        for ( Iterator artifacts = artifactList.iterator(); artifacts.hasNext(); )
+        {
+            Artifact artifact = (Artifact) artifacts.next();
+
+            list.add( createDocument( artifact ) );
+        }
+
+        return list;
     }
 
     /**
@@ -83,6 +131,12 @@ public class ArtifactRepositoryIndex
      * @throws RepositoryIndexException
      */
     public void indexArtifact( Artifact artifact )
+        throws RepositoryIndexException
+    {
+        indexArtifacts( Collections.singletonList( artifact ) );
+    }
+
+    private Document createDocument( Artifact artifact )
         throws RepositoryIndexException
     {
         StringBuffer classes = new StringBuffer();
@@ -158,20 +212,9 @@ public class ArtifactRepositoryIndex
         int i = artifact.getFile().getName().lastIndexOf( '.' );
         doc.add( Field.Text( FLD_PACKAGING, artifact.getFile().getName().substring( i + 1 ) ) );
 
-        try
-        {
-            deleteIfIndexed( artifact );
-            if ( !isOpen() )
-            {
-                open();
-            }
-            getIndexWriter().addDocument( doc );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Error opening index", e );
-        }
+        return doc;
     }
+
 
     /**
      * Method to add a class package to the buffer of packages

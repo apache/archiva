@@ -27,11 +27,6 @@ public class RepositoryIndexException
         super( message, cause );
     }
 
-    public RepositoryIndexException( Throwable cause )
-    {
-        super( cause );
-    }
-
     public RepositoryIndexException( String message )
     {
         super( message );

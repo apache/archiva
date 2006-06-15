@@ -32,6 +32,8 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Edwin Punzalan
@@ -79,35 +81,33 @@ public class EclipseRepositoryIndexTest
     {
         EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( indexPath, repository, new DefaultDigester() );
 
+        List artifacts = new ArrayList();
+
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifactFileTime = artifact.getFile().lastModified();
-        indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
+        artifacts.add( artifact );
 
         long historicTime = artifactFileTime - TIME_DIFFERENCE;
 
         artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifact.getFile().setLastModified( historicTime );
-        indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
+        artifacts.add( artifact );
+
+        artifact = getArtifact( "test", "test-artifactId", "1.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.getFile().setLastModified( historicTime );
+        artifacts.add( artifact );
+
+        indexer.indexArtifacts( artifacts );
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifact.getFile().setLastModified( historicTime );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
-        artifact = getArtifact( "test", "test-artifactId", "1.0" );
-        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
-        artifact.getFile().setLastModified( historicTime );
-        indexer.indexArtifact( artifact );
         indexer.optimize();
-        indexer.close();
 
         return indexer;
     }
@@ -141,17 +141,6 @@ public class EclipseRepositoryIndexTest
             EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( notIndexDir, repository, digester );
             indexer.indexArtifact( artifact );
             fail( "Must throw an exception on a non-index directory" );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
-
-        EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( indexPath, repository, digester );
-        try
-        {
-            indexer.deleteIfIndexed( new Object() );
-            fail( "Must throw exception on object not of type artifact." );
         }
         catch ( RepositoryIndexException e )
         {

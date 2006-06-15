@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -33,6 +34,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,32 +61,24 @@ public class PomRepositoryIndex
      */
     public PomRepositoryIndex( File indexPath, ArtifactRepository repository, Digester digester,
                                ArtifactFactory artifactFactory )
+        throws RepositoryIndexException
     {
         super( indexPath, repository );
         this.digester = digester;
         this.artifactFactory = artifactFactory;
     }
 
-    /**
-     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#deleteIfIndexed(Object)
-     */
-    public void deleteIfIndexed( Object object )
-        throws RepositoryIndexException, IOException
+    private void deleteIfIndexed( Model pom )
+        throws RepositoryIndexException
     {
-        if ( object instanceof Model )
+        try
         {
-            Model pom = (Model) object;
-            if ( indexExists() )
-            {
-                validateIndex( FIELDS );
-                deleteDocument( FLD_ID, POM + ":" + pom.getId() );
-            }
+            deleteDocument( FLD_ID, POM + ":" + pom.getId() );
         }
-        else
+        catch ( IOException e )
         {
-            throw new RepositoryIndexException( "Object is not of type model." );
+            throw new RepositoryIndexException( "Failed to delete document", e  );
         }
-
     }
 
     /**
@@ -93,6 +88,56 @@ public class PomRepositoryIndex
      * @throws RepositoryIndexException
      */
     public void indexPom( Model pom )
+        throws RepositoryIndexException
+    {
+        indexPoms( Collections.singletonList( pom ) );
+    }
+
+    public void indexPoms( List pomList )
+        throws RepositoryIndexException
+    {
+        try
+        {
+            deleteDocuments( getTermList( pomList ) );
+        }
+        catch( IOException e )
+        {
+            throw new RepositoryIndexException( "Failed to delete an index document", e );
+        }
+
+        addDocuments( getDocumentList( pomList ) );
+    }
+
+    private List getTermList( List pomList )
+    {
+        List terms = new ArrayList();
+
+        for ( Iterator poms = pomList.iterator(); poms.hasNext(); )
+        {
+            Model pom = (Model) poms.next();
+
+            terms.add( new Term( FLD_ID, POM + ":" + pom.getId() ) );
+        }
+
+        return terms;
+    }
+
+    private List getDocumentList( List pomList )
+        throws RepositoryIndexException
+    {
+        List docs = new ArrayList();
+
+        for ( Iterator poms = pomList.iterator(); poms.hasNext(); )
+        {
+            Model pom = (Model) poms.next();
+
+            docs.add( createDocument( pom ) );
+        }
+
+        return docs;
+    }
+
+    private Document createDocument( Model pom )
         throws RepositoryIndexException
     {
         Document doc = new Document();
@@ -147,20 +192,7 @@ public class PomRepositoryIndex
         doc.add( Field.Text( FLD_CLASSES, "" ) );
         doc.add( Field.Keyword( FLD_PACKAGES, "" ) );
         doc.add( Field.Text( FLD_FILES, "" ) );
-
-        try
-        {
-            deleteIfIndexed( pom );
-            if ( !isOpen() )
-            {
-                open();
-            }
-            getIndexWriter().addDocument( doc );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Error opening index", e );
-        }
+        return doc;
     }
 
     /**

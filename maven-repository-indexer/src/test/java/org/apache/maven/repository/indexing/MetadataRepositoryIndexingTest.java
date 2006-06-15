@@ -43,6 +43,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This class tests the MetadataRepositoryIndex.
@@ -100,30 +101,27 @@ public class MetadataRepositoryIndexingTest
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
         MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
+        List metadataList = new ArrayList();
+
         RepositoryMetadata repoMetadata = new GroupRepositoryMetadata( "org.apache.maven" );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        indexer.index( repoMetadata );
-        indexer.optimize();
-        indexer.close();
+        metadataList.add( repoMetadata );
 
         repoMetadata = new ArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        indexer.index( repoMetadata );
-        indexer.optimize();
-        indexer.close();
+        metadataList.add( repoMetadata );
 
         repoMetadata =
             new SnapshotArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        indexer.index( repoMetadata );
-        indexer.optimize();
-        indexer.close();
+        metadataList.add( repoMetadata );
 
         repoMetadata = new GroupRepositoryMetadata( "test" );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        indexer.index( repoMetadata );
+        metadataList.add( repoMetadata );
+
+        indexer.indexMetadata( metadataList );
         indexer.optimize();
-        indexer.close();
     }
 
     /**
@@ -207,43 +205,6 @@ public class MetadataRepositoryIndexingTest
 
         metadataList = repoSearchLayer.searchAdvanced( rQry, indexer );
         assertEquals( 0, metadataList.size() );
-
-        indexer.close();
-    }
-
-    /**
-     * Test the exceptions thrown by MetadataRepositoryIndex.
-     *
-     * @throws Exception
-     */
-    public void testExceptions()
-        throws Exception
-    {
-        //test when the object passed in the index(..) method is not a RepositoryMetadata instance
-        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
-        MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
-        try
-        {
-            Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
-            indexer.index( artifact );
-            fail( "Must throw exception when the passed object is not a RepositoryMetadata object." );
-            indexer.optimize();
-            indexer.close();
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
-
-        try
-        {
-            indexer.deleteIfIndexed( new Object() );
-            fail( "Must throw exception when the passed object is not of type metadata." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
     }
 
     /**

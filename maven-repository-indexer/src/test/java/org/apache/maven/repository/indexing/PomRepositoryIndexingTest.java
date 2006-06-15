@@ -98,17 +98,6 @@ public class PomRepositoryIndexingTest
         {
             assertTrue( true );
         }
-
-        PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
-        try
-        {
-            indexer.deleteIfIndexed( new Object() );
-            fail( "Must throw exception when the passed object is not of type model." );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
     }
 
     /**
@@ -299,8 +288,6 @@ public class PomRepositoryIndexingTest
             String md5Tmp = digester.createChecksum( getPomFile( artifact2 ), Digester.MD5 );
             assertEquals( md5, md5Tmp );
         }
-
-        indexer.close();
     }
 
     /**
@@ -430,8 +417,6 @@ public class PomRepositoryIndexingTest
             assertEquals( "maven-artifact", artifact.getArtifactId() );
             assertEquals( "org.apache.maven", artifact.getGroupId() );
         }
-
-        indexer.close();
     }
 
     /**
@@ -449,23 +434,17 @@ public class PomRepositoryIndexingTest
 
         Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
         indexer.indexPom( pom );
-        indexer.optimize();
-        indexer.close();
 
         pom = getPom( "org.apache.maven", "maven-model", "2.0" );
         indexer.indexPom( pom );
-        indexer.optimize();
-        indexer.close();
 
         pom = getPom( "test", "test-artifactId", "1.0" );
         indexer.indexPom( pom );
-        indexer.optimize();
-        indexer.close();
 
         pom = getPom( "test", "test-artifactId", "1.0" );
         indexer.indexPom( pom );
+
         indexer.optimize();
-        indexer.close();
     }
 
     /**

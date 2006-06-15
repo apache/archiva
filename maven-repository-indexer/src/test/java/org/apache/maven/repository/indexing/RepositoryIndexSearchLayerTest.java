@@ -89,74 +89,54 @@ public class RepositoryIndexSearchLayerTest
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
         artifact = getArtifact( "org.apache.maven", "maven-model", "2.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
         artifact = getArtifact( "test", "test-artifactId", "1.0" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.indexArtifact( artifact );
-        indexer.optimize();
-        indexer.close();
 
         MetadataRepositoryIndex metaIndexer = factory.createMetadataRepositoryIndex( indexPath, repository );
         RepositoryMetadata repoMetadata = new GroupRepositoryMetadata( "org.apache.maven" );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        metaIndexer.index( repoMetadata );
-        metaIndexer.optimize();
-        metaIndexer.close();
+        metaIndexer.indexMetadata( repoMetadata );
 
         repoMetadata = new ArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        metaIndexer.index( repoMetadata );
-        metaIndexer.optimize();
-        metaIndexer.close();
+        metaIndexer.indexMetadata( repoMetadata );
 
         repoMetadata =
             new SnapshotArtifactRepositoryMetadata( getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" ) );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        metaIndexer.index( repoMetadata );
-        metaIndexer.optimize();
-        metaIndexer.close();
+        metaIndexer.indexMetadata( repoMetadata );
 
         repoMetadata = new GroupRepositoryMetadata( "test" );
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
-        metaIndexer.index( repoMetadata );
+        metaIndexer.indexMetadata( repoMetadata );
+
         metaIndexer.optimize();
-        metaIndexer.close();
 
         PomRepositoryIndex pomIndexer = factory.createPomRepositoryIndex( indexPath, repository );
 
         Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
         pomIndexer.indexPom( pom );
-        pomIndexer.optimize();
-        pomIndexer.close();
 
         pom = getPom( "org.apache.maven", "maven-model", "2.0" );
         pomIndexer.indexPom( pom );
-        pomIndexer.optimize();
-        pomIndexer.close();
 
         pom = getPom( "test", "test-artifactId", "1.0" );
         pomIndexer.indexPom( pom );
-        pomIndexer.optimize();
-        pomIndexer.close();
 
         pom = getPom( "test", "test-artifactId", "1.0" );
         pomIndexer.indexPom( pom );
+
         pomIndexer.optimize();
-        pomIndexer.close();
     }
 
     /**

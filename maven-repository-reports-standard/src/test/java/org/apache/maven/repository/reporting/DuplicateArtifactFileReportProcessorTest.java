@@ -21,7 +21,6 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Model;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 
@@ -65,7 +64,6 @@ public class DuplicateArtifactFileReportProcessorTest
         ArtifactRepositoryIndex index = new ArtifactRepositoryIndex( indexDirectory, repository, digester );
         index.indexArtifact( artifact );
         index.optimize();
-        index.close();
 
         processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
     }

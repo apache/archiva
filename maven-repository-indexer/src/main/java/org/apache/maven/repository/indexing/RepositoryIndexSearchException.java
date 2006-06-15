@@ -26,14 +26,4 @@ public class RepositoryIndexSearchException
     {
         super( message, cause );
     }
-
-    public RepositoryIndexSearchException( Throwable cause )
-    {
-        super( cause );
-    }
-
-    public RepositoryIndexSearchException( String message )
-    {
-        super( message );
-    }
 }

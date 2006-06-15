@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.Plugin;
@@ -28,6 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * This class indexes the metadata in the repository.
@@ -42,28 +45,9 @@ public class MetadataRepositoryIndex
      * @param repository the repository where the metadata to be indexed is located
      */
     public MetadataRepositoryIndex( File indexPath, ArtifactRepository repository )
-    {
-        super( indexPath, repository );
-    }
-
-    /**
-     * Index the paramater object
-     *
-     * @param obj
-     * @throws RepositoryIndexException
-     */
-    public void index( Object obj )
         throws RepositoryIndexException
     {
-        if ( obj instanceof RepositoryMetadata )
-        {
-            indexMetadata( (RepositoryMetadata) obj );
-        }
-        else
-        {
-            throw new RepositoryIndexException(
-                "This instance of indexer cannot index instances of " + obj.getClass().getName() );
-        }
+        super( indexPath, repository );
     }
 
     /**
@@ -72,8 +56,56 @@ public class MetadataRepositoryIndex
      * @param repoMetadata the metadata object to be indexed
      * @throws RepositoryIndexException
      */
-    private void indexMetadata( RepositoryMetadata repoMetadata )
+    public void indexMetadata( RepositoryMetadata repoMetadata )
         throws RepositoryIndexException
+    {
+        indexMetadata( Collections.singletonList( repoMetadata ) );
+    }
+
+    public void indexMetadata( List metadataList )
+        throws RepositoryIndexException
+    {
+        try
+        {
+            deleteDocuments( getTermList( metadataList ) );
+        }
+        catch( IOException e )
+        {
+            throw new RepositoryIndexException( "Failed to delete an index document", e );
+        }
+
+        addDocuments( getDocumentList( metadataList ) );
+    }
+
+    private List getTermList( List metadataList )
+    {
+        List terms = new ArrayList();
+
+        for ( Iterator metadata = metadataList.iterator(); metadata.hasNext(); )
+        {
+            RepositoryMetadata repoMetadata = (RepositoryMetadata) metadata.next();
+
+            terms.add( new Term( FLD_ID, (String) repoMetadata.getKey() ) );
+        }
+
+        return terms;
+    }
+
+    private List getDocumentList( List metadataList )
+    {
+        List docs = new ArrayList();
+
+        for ( Iterator metadata = metadataList.iterator(); metadata.hasNext(); )
+        {
+            RepositoryMetadata repoMetadata = (RepositoryMetadata) metadata.next();
+
+            docs.add( createDocument( repoMetadata ) );
+        }
+
+        return docs;
+    }
+
+    private Document createDocument( RepositoryMetadata repoMetadata )
     {
         //get lastUpdated from Versioning (specified in Metadata object)
         //get pluginPrefixes from Plugin (spcified in Metadata object) -----> concatenate/append???
@@ -138,40 +170,19 @@ public class MetadataRepositoryIndex
         doc.add( Field.Keyword( FLD_PLUGINS_BUILD, "" ) );
         doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
         doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
+        return doc;
+    }
 
+    private void deleteIfIndexed( RepositoryMetadata repoMetadata )
+        throws RepositoryIndexException
+    {
         try
         {
-            deleteIfIndexed( repoMetadata );
-            if ( !isOpen() )
-            {
-                open();
-            }
-            getIndexWriter().addDocument( doc );
+            deleteDocument( FLD_ID, (String) repoMetadata.getKey() );
         }
         catch ( IOException e )
         {
-            throw new RepositoryIndexException( "Error opening index", e );
-        }
-    }
-
-    /**
-     * @see org.apache.maven.repository.indexing.AbstractRepositoryIndex#deleteIfIndexed(Object)
-     */
-    public void deleteIfIndexed( Object object )
-        throws RepositoryIndexException, IOException
-    {
-        if ( object instanceof RepositoryMetadata )
-        {
-            RepositoryMetadata repoMetadata = (RepositoryMetadata) object;
-            if ( indexExists() )
-            {
-                validateIndex( FIELDS );
-                deleteDocument( FLD_ID, (String) repoMetadata.getKey() );
-            }
-        }
-        else
-        {
-            throw new RepositoryIndexException( "Object is not of type metadata." );
+            throw new RepositoryIndexException( "Failed to delete document", e );
         }
     }
 }
