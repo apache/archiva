@@ -25,6 +25,9 @@
 <h1>Maven Repository Manager</h1>
 
 <%@ include file="form.jspf" %>
+<p/>
+<%@ include file="indexconfig.jsp" %>
+<p/>
 
 </body>
 </html>

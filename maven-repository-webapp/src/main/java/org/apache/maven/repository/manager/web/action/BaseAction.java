@@ -16,12 +16,16 @@ package org.apache.maven.repository.manager.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.webwork.interceptor.ParameterAware;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
+import org.apache.maven.repository.manager.web.utils.ConfigurationManager;
 
 import java.io.File;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This is the Action class of index.jsp, which is the initial page of the web application.
@@ -30,7 +34,8 @@ import java.io.File;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="org.apache.maven.repository.manager.web.action.BaseAction"
  */
 public class BaseAction
-    implements Action
+    extends ActionSupport
+    implements ParameterAware
 {
     /**
      * @plexus.requirement
@@ -43,6 +48,21 @@ public class BaseAction
     private DiscovererScheduler discovererScheduler;
 
     /**
+     * @plexus.requirement
+     */
+    private ConfigurationManager configManager;
+
+    private Map parameters;
+
+    public Map getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map parameters) {
+        this.parameters = parameters;
+    }
+
+    /**
      * Method that executes the action
      *
      * @return a String that specifies if the action executed was a success or a failure
@@ -51,9 +71,17 @@ public class BaseAction
     {
         try
         {
-            Configuration configuration = new Configuration(); // TODO!
-            execution.executeDiscovererIfIndexDoesNotExist( new File( configuration.getIndexPath() ) );
-            discovererScheduler.setSchedule( configuration.getDiscoveryCronExpression() );
+            Configuration config = configManager.getConfiguration();
+            Map parameters = new HashMap();
+            parameters.put( ConfigurationManager.INDEXPATH, config.getIndexPath() );
+            parameters.put( ConfigurationManager.MIN_INDEXPATH, config.getMinimalIndexPath() );
+            parameters.put( ConfigurationManager.DISCOVERY_BLACKLIST_PATTERNS, config.getDiscoveryBlackListPatterns() );
+            parameters.put( ConfigurationManager.DISCOVER_SNAPSHOTS, new Boolean( config.isDiscoverSnapshots() ) );
+            setParameters( parameters );
+
+            //Configuration configuration = new Configuration(); // TODO!
+            execution.executeDiscovererIfIndexDoesNotExist( new File( config.getIndexPath() ) );
+            discovererScheduler.setSchedule( config.getDiscoveryCronExpression() );
         }
         catch ( Exception e )
         {

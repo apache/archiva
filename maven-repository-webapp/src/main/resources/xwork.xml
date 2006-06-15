@@ -46,6 +46,12 @@
       <result name="success" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
     </action>
+
+    <action name="configureIndex" class="org.apache.maven.repository.manager.web.action.IndexConfigurationAction">
+      <result name="success" type="dispatcher">/WEB-INF/jsp/indexConfigUpdateSuccess.jsp</result>
+      <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+    </action>
+
   </package>
 </xwork>
 
