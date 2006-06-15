@@ -223,6 +223,11 @@
         <artifactId>maven-repository-configuration</artifactId>
         <version>${pom.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-converter</artifactId>
+        <version>${pom.version}</version>
+      </dependency>      
     </dependencies>
   </dependencyManagement>
   <reporting>
