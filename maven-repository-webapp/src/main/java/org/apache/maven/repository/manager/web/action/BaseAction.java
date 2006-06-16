@@ -54,11 +54,13 @@ public class BaseAction
 
     private Map parameters;
 
-    public Map getParameters() {
+    public Map getParameters()
+    {
         return parameters;
     }
 
-    public void setParameters(Map parameters) {
+    public void setParameters( Map parameters )
+    {
         this.parameters = parameters;
     }
 

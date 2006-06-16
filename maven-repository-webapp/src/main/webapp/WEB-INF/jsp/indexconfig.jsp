@@ -22,7 +22,7 @@
 <b>INDEX CONFIGURATION:</b>
 </p>
 
-<form action="configureIndex.action" method="get">
+<form action="configureIndex.action" method="post">
   Index Path: <input type="text" name="indexPath" value="<ww:property value="parameters.indexPath"/>"/>
   <br>
   Minimal Index Path: <input type="text" name="minimalIndexPath" value="<ww:property value="parameters.minimalIndexPath"/>"/>
