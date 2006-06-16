@@ -17,6 +17,7 @@ package org.apache.maven.repository.reporting;
  */
 
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
@@ -28,7 +29,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.security.NoSuchAlgorithmException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
@@ -61,7 +61,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
      * @param type The type of checksum file to be created.
      */
     protected void createChecksumFile( String type )
-        throws NoSuchAlgorithmException, IOException
+        throws DigesterException, IOException
     {
         //loop through the valid artifact names..
         if ( "VALID".equals( type ) )
@@ -86,7 +86,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
      * @param type The type of checksum to be created. (Valid or invalid)
      */
     protected void createMetadataFile( String type )
-        throws NoSuchAlgorithmException, IOException
+        throws DigesterException, IOException
     {
         //loop through the valid artifact names..
         if ( "VALID".equals( type ) )
@@ -110,7 +110,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
      * @param isValid      Indicates whether the checksum to be created is valid or not.
      */
     private void writeChecksumFile( String relativePath, String filename, String type, boolean isValid )
-        throws IOException, NoSuchAlgorithmException
+        throws IOException, DigesterException
     {
         //Initialize variables for creating jar files
         String repoUrl = repository.getBasedir();
@@ -177,7 +177,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
      * @param isValid      Indicates whether the checksum to be created is valid or not.
      */
     private void writeMetadataFile( String relativePath, String filename, String type, boolean isValid )
-        throws IOException, NoSuchAlgorithmException
+        throws IOException, DigesterException
     {
         //create checksum for the metadata file..
         String repoUrl = repository.getBasedir();

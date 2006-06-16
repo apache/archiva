@@ -26,21 +26,20 @@ import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
-import java.security.NoSuchAlgorithmException;
-import java.util.Enumeration;
-import java.util.Collections;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -150,15 +149,7 @@ public class EclipseRepositoryIndex
             {
                 md5 = digester.createChecksum( artifactFile, "MD5" );
             }
-            catch ( FileNotFoundException e )
-            {
-                throw new RepositoryIndexException( "Unable to compute checksum.", e );
-            }
-            catch ( NoSuchAlgorithmException e )
-            {
-                throw new RepositoryIndexException( "Unable to compute checksum.", e );
-            }
-            catch ( IOException e )
+            catch ( DigesterException e )
             {
                 throw new RepositoryIndexException( "Unable to compute checksum.", e );
             }

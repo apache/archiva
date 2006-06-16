@@ -39,54 +39,172 @@ public class DigesterTest
     private static final String WRONG_SHA1 = "4d8703779816556cdb8be7f6bb5c954f4b5730e2";
 
     public void testBareDigestFormat()
-        throws NoSuchAlgorithmException, IOException
+        throws DigesterException, IOException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
-        assertTrue( "test bare format MD5", digester.verifyChecksum( file, MD5, Digester.MD5 ) );
-        assertTrue( "test bare format SHA1", digester.verifyChecksum( file, SHA1, Digester.SHA1 ) );
 
-        assertFalse( "test wrong sha1", digester.verifyChecksum( file, WRONG_SHA1, Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, MD5, Digester.MD5 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "Bare format MD5 must not throw exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, SHA1, Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "Bare format SHA1 must not throw exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, WRONG_SHA1, Digester.SHA1 );
+            fail( "wrong checksum must throw an exception" );
+        }
+        catch ( DigesterException e )
+        {
+            //expected
+        }
     }
 
     public void testOpensslDigestFormat()
-        throws NoSuchAlgorithmException, IOException
+        throws IOException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
-        assertTrue( "test openssl format MD5",
-                    digester.verifyChecksum( file, "MD5(test-file.txt)= " + MD5, Digester.MD5 ) );
-        assertTrue( "test openssl format SHA1",
-                    digester.verifyChecksum( file, "SHA1(test-file.txt)= " + SHA1, Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, "MD5(test-file.txt)= " + MD5, Digester.MD5 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "OpenSSL MD5 format must not cause exception" );
+        }
 
-        assertTrue( "test freebsd format MD5",
-                    digester.verifyChecksum( file, "MD5 (test-file.txt) = " + MD5, Digester.MD5 ) );
-        assertTrue( "test freebsd format SHA1",
-                    digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + SHA1, Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, "SHA1(test-file.txt)= " + SHA1, Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "OpenSSL SHA1 format must not cause exception" );
+        }
 
-        assertFalse( "test wrong filename", digester.verifyChecksum( file, "SHA1 (FOO) = " + SHA1, Digester.SHA1 ) );
-        assertFalse( "test wrong sha1",
-                     digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + WRONG_SHA1, Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, "MD5 (test-file.txt) = " + MD5, Digester.MD5 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "FreeBSD MD5 format must not cause exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + SHA1, Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "FreeBSD SHA1 format must not cause exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, "SHA1 (FOO) = " + SHA1, Digester.SHA1 );
+            fail( "Wrong filename should cause an exception" );
+        }
+        catch ( DigesterException e )
+        {
+            //expected
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + WRONG_SHA1, Digester.SHA1 );
+            fail( "Wrong sha1 should cause an exception" );
+        }
+        catch ( DigesterException e )
+        {
+            //expected
+        }
     }
 
     public void testGnuDigestFormat()
         throws NoSuchAlgorithmException, IOException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
-        assertTrue( "test GNU format MD5", digester.verifyChecksum( file, MD5 + " *test-file.txt", Digester.MD5 ) );
-        assertTrue( "test GNU format SHA1", digester.verifyChecksum( file, SHA1 + " *test-file.txt", Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, MD5 + " *test-file.txt", Digester.MD5 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU format MD5 must not cause exception" );
+        }
 
-        assertTrue( "test GNU text format MD5", digester.verifyChecksum( file, MD5 + " test-file.txt", Digester.MD5 ) );
-        assertTrue( "test GNU text format SHA1",
-                    digester.verifyChecksum( file, SHA1 + " test-file.txt", Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, SHA1 + " *test-file.txt", Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU format SHA1 must not cause exception" );
+        }
 
-        assertFalse( "test wrong filename", digester.verifyChecksum( file, SHA1 + " FOO", Digester.SHA1 ) );
-        assertFalse( "test wrong sha1", digester.verifyChecksum( file, WRONG_SHA1 + " test-file.txt", Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, MD5 + " test-file.txt", Digester.MD5 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU text format MD5 must not cause exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, SHA1 + " test-file.txt", Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU text format SHA1 must not cause exception" );
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, SHA1 + " FOO", Digester.SHA1 );
+            fail( "Wrong filename cause an exception" );
+        }
+        catch ( DigesterException e )
+        {
+            //expected
+        }
+
+        try
+        {
+            digester.verifyChecksum( file, WRONG_SHA1 + " test-file.txt", Digester.SHA1 );
+            fail( "Wrong SHA1 cause an exception" );
+        }
+        catch ( DigesterException e )
+        {
+            //expected
+        }
     }
 
     public void testUntrimmedContent()
         throws NoSuchAlgorithmException, IOException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
-        assertTrue( "test untrimmed GNU format SHA1",
-                    digester.verifyChecksum( file, SHA1 + " *test-file.txt \n", Digester.SHA1 ) );
+        try
+        {
+            digester.verifyChecksum( file, SHA1 + " *test-file.txt \n", Digester.SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU untrimmed SHA1 must not cause exception" );
+        }
     }
 }

@@ -19,8 +19,6 @@ package org.apache.maven.repository.converter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
@@ -39,6 +37,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.converter.transaction.FileTransaction;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.apache.maven.repository.reporting.ArtifactReporter;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.FileUtils;
@@ -51,7 +50,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -612,17 +610,10 @@ public class DefaultRepositoryConverter
     {
         boolean result;
 
-        try
-        {
-            result = verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact,
-                                     "failure.incorrect.md5" );
-            result = result && verifyChecksum( file, file.getName() + ".sha1", Digester.SHA1, reporter, artifact,
-                                               "failure.incorrect.sha1" );
-        }
-        catch ( NoSuchAlgorithmException e )
-        {
-            throw new RepositoryConversionException( "Error copying artifact: " + e.getMessage(), e );
-        }
+        result = verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact,
+                                 "failure.incorrect.md5" );
+        result = result && verifyChecksum( file, file.getName() + ".sha1", Digester.SHA1, reporter, artifact,
+                                           "failure.incorrect.sha1" );
         return result;
     }
 
@@ -632,7 +623,7 @@ public class DefaultRepositoryConverter
                                     ArtifactReporter reporter,
                                     Artifact artifact,
                                     String key )
-        throws IOException, NoSuchAlgorithmException
+        throws IOException
     {
         boolean result = true;
 
@@ -640,7 +631,11 @@ public class DefaultRepositoryConverter
         if ( md5.exists() )
         {
             String checksum = FileUtils.fileRead( md5 );
-            if ( !digester.verifyChecksum( file, checksum, algorithm ) )
+            try
+            {
+                digester.verifyChecksum( file, checksum, algorithm );
+            }
+            catch ( DigesterException e )
             {
                 reporter.addFailure( artifact, getI18NString( key ) );
                 result = false;

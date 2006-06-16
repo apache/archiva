@@ -19,11 +19,11 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * This class reports invalid and mismatched checksums of artifacts and metadata files.
@@ -69,22 +69,17 @@ public class ChecksumMetadataReporter
         {
             try
             {
-                if ( digester.verifyChecksum( file, FileUtils.fileRead( checksumFile ), checksumAlgorithm ) )
-                {
-                    reporter.addSuccess( metadata );
-                }
-                else
-                {
-                    reporter.addFailure( metadata, checksumAlgorithm + " checksum does not match." );
-                }
+                digester.verifyChecksum( file, FileUtils.fileRead( checksumFile ), checksumAlgorithm );
+
+                reporter.addSuccess( metadata );
             }
-            catch ( NoSuchAlgorithmException e )
+            catch ( DigesterException e )
             {
-                reporter.addFailure( metadata, "Unable to read " + checksumAlgorithm + ": " + e.getMessage() );
+                reporter.addFailure( metadata, e.getMessage() );
             }
             catch ( IOException e )
             {
-                reporter.addFailure( metadata, "Unable to read " + checksumAlgorithm + ": " + e.getMessage() );
+                reporter.addFailure( metadata, "Read file error: " + e.getMessage() );
             }
         }
         else

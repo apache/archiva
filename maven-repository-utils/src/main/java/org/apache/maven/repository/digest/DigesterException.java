@@ -16,24 +16,19 @@ package org.apache.maven.repository.digest;
  * limitations under the License.
  */
 
-import java.io.File;
-
 /**
- * Create a digest for a file.
- *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @author Edwin Punzalan
  */
-public interface Digester
+public class DigesterException
+    extends Exception
 {
-    String ROLE = Digester.class.getName();
+    public DigesterException( String message )
+    {
+        super( message );
+    }
 
-    String SHA1 = "SHA-1";
-
-    String MD5 = "MD5";
-
-    String createChecksum( File file, String algorithm )
-        throws DigesterException;
-
-    void verifyChecksum( File file, String checksum, String algorithm )
-        throws DigesterException;
+    public DigesterException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 }

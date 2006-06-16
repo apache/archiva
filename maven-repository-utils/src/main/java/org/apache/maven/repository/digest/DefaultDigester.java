@@ -17,11 +17,13 @@ package org.apache.maven.repository.digest;
  */
 
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileNotFoundException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
@@ -41,11 +43,28 @@ public class DefaultDigester
     private static final int BYTE_MASK = 0xFF;
 
     public String createChecksum( File file, String algorithm )
-        throws IOException, NoSuchAlgorithmException
+        throws DigesterException
     {
-        MessageDigest digest = MessageDigest.getInstance( algorithm );
+        MessageDigest digest;
+        try
+        {
+            digest = MessageDigest.getInstance( algorithm );
+        }
+        catch ( NoSuchAlgorithmException e )
+        {
+            throw new DigesterException( "Specified algorithm not found: " + algorithm, e );
+        }
 
-        InputStream fis = new FileInputStream( file );
+        InputStream fis = null;
+        try
+        {
+            fis = new FileInputStream( file );
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new DigesterException( "Specified file not found: " + file.getAbsolutePath(), e );
+        }
+
         try
         {
             byte[] buffer = new byte[CHECKSUM_BUFFER_SIZE];
@@ -60,6 +79,10 @@ public class DefaultDigester
             }
             while ( numRead != -1 );
         }
+        catch( IOException e )
+        {
+            throw new DigesterException( "Failed to read from file: " + file.getAbsolutePath(), e );
+        }
         finally
         {
             IOUtil.close( fis );
@@ -68,11 +91,9 @@ public class DefaultDigester
         return byteArrayToHexStr( digest.digest() );
     }
 
-    public boolean verifyChecksum( File file, String checksum, String algorithm )
-        throws NoSuchAlgorithmException, IOException
+    public void verifyChecksum( File file, String checksum, String algorithm )
+        throws DigesterException
     {
-        boolean result = true;
-
         String trimmedChecksum = checksum.replace( '\n', ' ' ).trim();
         // Free-BSD / openssl
         Matcher m =
@@ -83,8 +104,7 @@ public class DefaultDigester
             String filename = m.group( 1 );
             if ( !filename.equals( file.getName() ) )
             {
-                // TODO: provide better warning
-                result = false;
+                throw new DigesterException( "Supplied checksum does not match checksum pattern" );
             }
             trimmedChecksum = m.group( 2 );
         }
@@ -97,20 +117,18 @@ public class DefaultDigester
                 String filename = m.group( 2 );
                 if ( !filename.equals( file.getName() ) )
                 {
-                    // TODO: provide better warning
-                    result = false;
+                    throw new DigesterException( "Supplied checksum does not match checksum pattern" );
                 }
                 trimmedChecksum = m.group( 1 );
             }
         }
 
-        if ( result )
+        //Create checksum for jar file
+        String sum = createChecksum( file, algorithm );
+        if ( !StringUtils.equalsIgnoreCase( trimmedChecksum, sum ) )
         {
-            //Create checksum for jar file
-            String sum = createChecksum( file, algorithm );
-            result = trimmedChecksum.toUpperCase().equals( sum.toUpperCase() );
+            throw new DigesterException( "Checksum failed" );
         }
-        return result;
     }
 
     /**

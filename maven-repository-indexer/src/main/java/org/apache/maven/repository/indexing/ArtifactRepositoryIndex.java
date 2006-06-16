@@ -22,11 +22,10 @@ import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -158,17 +157,9 @@ public class ArtifactRepositoryIndex
             sha1sum = digester.createChecksum( artifact.getFile(), Digester.SHA1 );
             md5sum = digester.createChecksum( artifact.getFile(), Digester.MD5 );
         }
-        catch ( NoSuchAlgorithmException e )
+        catch ( DigesterException e )
         {
             throw new RepositoryIndexException( "Unable to create a checksum", e );
-        }
-        catch ( FileNotFoundException e )
-        {
-            throw new RepositoryIndexException( "Error reading from artifact file", e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Error reading from artifact file", e );
         }
 
         try

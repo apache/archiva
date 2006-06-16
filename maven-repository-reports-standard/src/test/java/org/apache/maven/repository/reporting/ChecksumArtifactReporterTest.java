@@ -25,10 +25,10 @@ import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.repository.digest.DigesterException;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
 /**
@@ -56,7 +56,7 @@ public class ChecksumArtifactReporterTest
      * Test the ChecksumArtifactReporter when the checksum files are valid.
      */
     public void testChecksumArtifactReporterSuccess()
-        throws ReportProcessorException, NoSuchAlgorithmException, IOException
+        throws ReportProcessorException, IOException, DigesterException
     {
         createChecksumFile( "VALID" );
         createChecksumFile( "INVALID" );
@@ -90,7 +90,7 @@ public class ChecksumArtifactReporterTest
      * The reporter should report 2 success validation.
      */
     public void testChecksumMetadataReporterSuccess()
-        throws ReportProcessorException, NoSuchAlgorithmException, IOException
+        throws ReportProcessorException, DigesterException, IOException
     {
         createMetadataFile( "VALID" );
         createMetadataFile( "INVALID" );
@@ -195,7 +195,7 @@ public class ChecksumArtifactReporterTest
      * Test the conditional when the checksum files of the artifact & metadata do not exist.
      */
     public void testChecksumFilesDoNotExist()
-        throws ReportProcessorException, NoSuchAlgorithmException, IOException
+        throws ReportProcessorException, DigesterException, IOException
     {
         createChecksumFile( "VALID" );
         createMetadataFile( "VALID" );

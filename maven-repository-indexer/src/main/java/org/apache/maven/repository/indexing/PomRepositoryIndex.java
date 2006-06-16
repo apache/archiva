@@ -28,12 +28,11 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -310,17 +309,9 @@ public class PomRepositoryIndex
         {
             return digester.createChecksum( new File( file ), algorithm );
         }
-        catch ( FileNotFoundException e )
+        catch ( DigesterException e )
         {
-            throw new RepositoryIndexException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( e.getMessage(), e );
-        }
-        catch ( NoSuchAlgorithmException e )
-        {
-            throw new RepositoryIndexException( e.getMessage(), e );
+            throw new RepositoryIndexException( "Failed to create checksum", e );
         }
     }
 

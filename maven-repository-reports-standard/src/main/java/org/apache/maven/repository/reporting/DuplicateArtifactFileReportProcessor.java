@@ -20,6 +20,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.repository.digest.Digester;
+import org.apache.maven.repository.digest.DigesterException;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
@@ -30,8 +31,6 @@ import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -88,11 +87,7 @@ public class DuplicateArtifactFileReportProcessor
             {
                 checksum = digester.createChecksum( artifact.getFile(), algorithm );
             }
-            catch ( IOException e )
-            {
-                throw new ReportProcessorException( "Failed to generate checksum", e );
-            }
-            catch ( NoSuchAlgorithmException e )
+            catch ( DigesterException e )
             {
                 throw new ReportProcessorException( "Failed to generate checksum", e );
             }
