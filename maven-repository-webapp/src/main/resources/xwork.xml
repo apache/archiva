@@ -52,6 +52,11 @@
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
 
+    <action name="configureScheduler" class="org.apache.maven.repository.manager.web.action.SchedulerConfigurationAction">
+      <result name="success" type="dispatcher">/WEB-INF/jsp/indexConfigUpdateSuccess.jsp</result>
+      <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+    </action>    
+
   </package>
 </xwork>
 

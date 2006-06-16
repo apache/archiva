@@ -29,5 +29,9 @@
 <%@ include file="indexconfig.jsp" %>
 <p/>
 
+<p/>
+<%@ include file="schedulerconfig.jsp" %>
+<p/>
+
 </body>
 </html>

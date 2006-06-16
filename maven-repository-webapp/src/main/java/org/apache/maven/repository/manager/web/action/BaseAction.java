@@ -79,6 +79,7 @@ public class BaseAction
             parameters.put( ConfigurationManager.MIN_INDEXPATH, config.getMinimalIndexPath() );
             parameters.put( ConfigurationManager.DISCOVERY_BLACKLIST_PATTERNS, config.getDiscoveryBlackListPatterns() );
             parameters.put( ConfigurationManager.DISCOVER_SNAPSHOTS, new Boolean( config.isDiscoverSnapshots() ) );
+            parameters.put( ConfigurationManager.DISCOVERY_CRON_EXPRESSION, config.getDiscoveryCronExpression() );
             setParameters( parameters );
 
             //Configuration configuration = new Configuration(); // TODO!
