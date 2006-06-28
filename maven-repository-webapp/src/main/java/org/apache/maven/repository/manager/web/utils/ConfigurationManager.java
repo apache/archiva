@@ -17,17 +17,17 @@ package org.apache.maven.repository.manager.web.utils;
  */
 
 import org.apache.maven.repository.configuration.Configuration;
-import org.apache.maven.repository.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.apache.maven.repository.configuration.io.xpp3.ConfigurationXpp3Reader;
+import org.apache.maven.repository.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.io.Reader;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
+import java.io.Writer;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class ConfigurationManager
             }
             if ( name.equals( DISCOVER_SNAPSHOTS ) )
             {
-                config.setDiscoverSnapshots( Boolean.getBoolean( value ) );
+                config.setDiscoverSnapshots( Boolean.valueOf( value ).booleanValue() );
             }
             if ( name.equals( REPOSITORY_DIRECTORY ) )
             {
@@ -131,7 +131,6 @@ public class ConfigurationManager
     public Configuration getConfiguration()
         throws IOException
     {
-        Map map = null;
         File file = getConfigFile();
         config = new Configuration();
 
@@ -147,6 +146,7 @@ public class ConfigurationManager
             }
             catch ( XmlPullParserException xe )
             {
+                // TODO: fix error handling!
                 xe.printStackTrace();
             }
         }

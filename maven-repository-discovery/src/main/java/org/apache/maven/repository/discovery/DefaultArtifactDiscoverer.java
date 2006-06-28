@@ -49,7 +49,7 @@ public class DefaultArtifactDiscoverer
 
         Collections.reverse( pathParts );
 
-        Artifact artifact = null;
+        Artifact artifact;
         if ( pathParts.size() >= 4 )
         {
             // maven 2.x path
@@ -111,13 +111,13 @@ public class DefaultArtifactDiscoverer
                 Artifact result;
                 if ( classifier == null )
                 {
-                    result = artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME,
-                                                             type );
+                    result =
+                        artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_RUNTIME, type );
                 }
                 else
                 {
-                    result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
-                                                                           classifier );
+                    result =
+                        artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
                 }
 
                 if ( result.isSnapshot() )
@@ -128,9 +128,8 @@ public class DefaultArtifactDiscoverer
                     {
                         classifier = remainingFilename.substring( classifierIndex + 1 );
                         remainingFilename = remainingFilename.substring( 0, classifierIndex );
-                        result = artifactFactory.createArtifactWithClassifier( groupId, artifactId,
-                                                                               remainingFilename, type,
-                                                                               classifier );
+                        result = artifactFactory.createArtifactWithClassifier( groupId, artifactId, remainingFilename,
+                                                                               type, classifier );
                     }
                     else
                     {
@@ -145,8 +144,8 @@ public class DefaultArtifactDiscoverer
                     }
                     else if ( !result.getBaseVersion().equals( version ) )
                     {
-                        throw new DiscovererException( "Built snapshot artifact base version does not match " +
-                                                       "path version" );
+                        throw new DiscovererException(
+                            "Built snapshot artifact base version does not match " + "path version" );
                     }
                     else
                     {

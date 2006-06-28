@@ -59,9 +59,9 @@ public abstract class AbstractArtifactDiscoverer
     /**
      * Return a list of artifacts found in a specified repository
      *
-     * @param repository The ArtifactRepository to discover artifacts
+     * @param repository          The ArtifactRepository to discover artifacts
      * @param blacklistedPatterns Comma-delimited list of string paths that will be excluded in the discovery
-     * @param includeSnapshots if the repository contains snapshots which should also be included
+     * @param includeSnapshots    if the repository contains snapshots which should also be included
      * @return list of artifacts
      */
     public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
@@ -81,10 +81,9 @@ public abstract class AbstractArtifactDiscoverer
         {
             String path = artifactPaths[i];
 
-            Artifact artifact;
             try
             {
-                artifact = buildArtifactFromPath( path, repository );
+                Artifact artifact = buildArtifactFromPath( path, repository );
 
                 if ( includeSnapshots || !artifact.isSnapshot() )
                 {
@@ -103,9 +102,9 @@ public abstract class AbstractArtifactDiscoverer
     /**
      * Returns a list of pom packaging artifacts found in a specified repository
      *
-     * @param repository The ArtifactRepository to discover artifacts
+     * @param repository          The ArtifactRepository to discover artifacts
      * @param blacklistedPatterns Comma-delimited list of string paths that will be excluded in the discovery
-     * @param includeSnapshots if the repository contains snapshots which should also be included
+     * @param includeSnapshots    if the repository contains snapshots which should also be included
      * @return list of pom artifacts
      */
     public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns,
@@ -167,7 +166,7 @@ public abstract class AbstractArtifactDiscoverer
     /**
      * Returns an artifact object that is represented by the specified path in a repository
      *
-     * @param path The path that is pointing to an artifact
+     * @param path       The path that is pointing to an artifact
      * @param repository The repository of the artifact
      * @return Artifact
      * @throws DiscovererException when the specified path does correspond to an artifact

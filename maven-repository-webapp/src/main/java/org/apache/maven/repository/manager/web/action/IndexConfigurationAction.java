@@ -1,7 +1,7 @@
 package org.apache.maven.repository.manager.web.action;
 
 /*
- * Copyright 2006 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@ package org.apache.maven.repository.manager.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.Action;
 import com.opensymphony.webwork.interceptor.ParameterAware;
-
-import java.util.Map;
-import java.util.HashMap;
-
+import com.opensymphony.xwork.Action;
 import org.apache.maven.repository.manager.web.utils.ConfigurationManager;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -52,10 +52,10 @@ public class IndexConfigurationAction
      * Method that is executed when the action is invoked.
      *
      * @return a String that specifies where to go to next
-     * @throws Exception
+     * @throws IOException
      */
     public String execute()
-        throws Exception
+        throws IOException
     {
         String[] indexPath = (String[]) parameters.get( ConfigurationManager.INDEXPATH );
         Map map = new HashMap();

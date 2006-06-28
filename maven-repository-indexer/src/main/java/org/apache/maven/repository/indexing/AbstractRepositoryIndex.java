@@ -20,19 +20,19 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.document.Document;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Collection;
-import java.util.List;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.zip.ZipEntry;
 
 /**
@@ -71,8 +71,7 @@ public abstract class AbstractRepositoryIndex
         }
         catch ( IOException e )
         {
-            throw new RepositoryIndexException( "Failed to validate index path: " +
-                                                getIndexPath().getAbsolutePath(), e );
+            throw new RepositoryIndexException( "Failed to validate index path: " + indexPath.getAbsolutePath(), e );
         }
     }
 
@@ -148,7 +147,7 @@ public abstract class AbstractRepositoryIndex
     /**
      * @see RepositoryIndex#validate()
      */
-    public void validate()
+    public final void validate()
         throws RepositoryIndexException, IOException
     {
         if ( indexExists() )
@@ -201,7 +200,7 @@ public abstract class AbstractRepositoryIndex
     }
 
     /**
-     * @see RepositoryIndex#deleteDocuments(java.util.List) 
+     * @see RepositoryIndex#deleteDocuments(java.util.List)
      */
     public void deleteDocuments( List termList )
         throws RepositoryIndexException, IOException

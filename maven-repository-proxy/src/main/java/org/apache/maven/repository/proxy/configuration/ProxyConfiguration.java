@@ -155,7 +155,7 @@ public class ProxyConfiguration
         validateDirectories();
     }
 
-    private void validateRemoteRepo(  )
+    private void validateRemoteRepo()
         throws ValidationException
     {
         //Verify remote repository set
@@ -169,7 +169,7 @@ public class ProxyConfiguration
     private void validateDirectories()
         throws ValidationException
     {
-        File f = new File( getRepositoryCachePath() );
+        File f = new File( cachePath );
         if ( !f.exists() )
         {
             throw new ValidationException( "Specified directory does not exist: " + f.getAbsolutePath() );

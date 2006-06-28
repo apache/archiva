@@ -16,16 +16,16 @@ package org.apache.maven.repository.manager.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.webwork.interceptor.ParameterAware;
+import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
 import org.apache.maven.repository.manager.web.utils.ConfigurationManager;
 
 import java.io.File;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is the Action class of index.jsp, which is the initial page of the web application.
@@ -78,9 +78,9 @@ public class BaseAction
             parameters.put( ConfigurationManager.INDEXPATH, config.getIndexPath() );
             parameters.put( ConfigurationManager.MIN_INDEXPATH, config.getMinimalIndexPath() );
             parameters.put( ConfigurationManager.DISCOVERY_BLACKLIST_PATTERNS, config.getDiscoveryBlackListPatterns() );
-            parameters.put( ConfigurationManager.DISCOVER_SNAPSHOTS, new Boolean( config.isDiscoverSnapshots() ) );
+            parameters.put( ConfigurationManager.DISCOVER_SNAPSHOTS, Boolean.valueOf( config.isDiscoverSnapshots() ) );
             parameters.put( ConfigurationManager.DISCOVERY_CRON_EXPRESSION, config.getDiscoveryCronExpression() );
-            setParameters( parameters );
+            this.parameters = parameters;
 
             //Configuration configuration = new Configuration(); // TODO!
             execution.executeDiscovererIfIndexDoesNotExist( new File( config.getIndexPath() ) );

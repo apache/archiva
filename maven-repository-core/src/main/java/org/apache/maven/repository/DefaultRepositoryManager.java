@@ -1,16 +1,16 @@
 package org.apache.maven.repository;
 
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.converter.RepositoryConversionException;
 import org.apache.maven.repository.converter.RepositoryConverter;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.reporting.ArtifactReporter;
 
 import java.io.File;
-import java.util.List;
 import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * @author Jason van Zyl
@@ -49,8 +49,7 @@ public class DefaultRepositoryManager
      */
     private ArtifactReporter reporter;
 
-    public void convertLegacyRepository( File legacyRepositoryDirectory,
-                                         File repositoryDirectory,
+    public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          boolean includeSnapshots )
         throws RepositoryConversionException
     {

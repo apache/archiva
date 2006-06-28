@@ -145,7 +145,7 @@ public class DiscovererExecution
      * @param indexPath    the path to the index file
      */
     protected void indexMetadata( List metadataList, File indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException, MalformedURLException
+        throws RepositoryIndexException
     {
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
         metadataIndex.indexMetadata( metadataList );

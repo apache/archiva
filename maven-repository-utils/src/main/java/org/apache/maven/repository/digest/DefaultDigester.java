@@ -21,9 +21,9 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileNotFoundException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Matcher;
@@ -55,7 +55,7 @@ public class DefaultDigester
             throw new DigesterException( "Specified algorithm not found: " + algorithm, e );
         }
 
-        InputStream fis = null;
+        InputStream fis;
         try
         {
             fis = new FileInputStream( file );
@@ -79,7 +79,7 @@ public class DefaultDigester
             }
             while ( numRead != -1 );
         }
-        catch( IOException e )
+        catch ( IOException e )
         {
             throw new DigesterException( "Failed to read from file: " + file.getAbsolutePath(), e );
         }

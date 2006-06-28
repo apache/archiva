@@ -105,9 +105,7 @@ public class DefaultRepositoryConverter
      */
     private I18N i18n;
 
-    public void convert( Artifact artifact,
-                         ArtifactRepository targetRepository,
-                         ArtifactReporter reporter )
+    public void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         if ( artifact.getRepository().getUrl().equals( targetRepository.getUrl() ) )
@@ -165,15 +163,13 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private void updateMetadata( RepositoryMetadata artifactMetadata,
-                                 ArtifactRepository sourceRepository,
-                                 ArtifactRepository targetRepository,
-                                 Metadata newMetadata,
+    private void updateMetadata( RepositoryMetadata artifactMetadata, ArtifactRepository sourceRepository,
+                                 ArtifactRepository targetRepository, Metadata newMetadata,
                                  FileTransaction transaction )
         throws RepositoryConversionException
     {
         Metadata metadata;
-        boolean changed = false;
+        boolean changed;
 
         //merge with target repository metadata
         File file = new File( targetRepository.getBasedir(),
@@ -198,7 +194,7 @@ public class DefaultRepositoryConverter
             if ( srcfile.exists() )
             {
                 Metadata sourceMetadata = readMetadata( srcfile );
-                changed = changed | metadata.merge( sourceMetadata );
+                changed = changed || metadata.merge( sourceMetadata );
             }
         }
 
@@ -256,8 +252,7 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private boolean validateMetadata( Artifact artifact,
-                                      ArtifactReporter reporter )
+    private boolean validateMetadata( Artifact artifact, ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -284,9 +279,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean validateMetadata( Metadata metadata,
-                                      RepositoryMetadata repositoryMetadata,
-                                      Artifact artifact,
+    private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
                                       ArtifactReporter reporter )
     {
         String groupIdKey;
@@ -388,9 +381,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyPom( Artifact artifact,
-                             ArtifactRepository targetRepository,
-                             ArtifactReporter reporter,
+    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
                              FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -505,10 +496,8 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean doRelocation( Artifact artifact,
-                                  org.apache.maven.model.v3_0_0.Model v3Model,
-                                  ArtifactRepository repository,
-                                  FileTransaction transaction )
+    private boolean doRelocation( Artifact artifact, org.apache.maven.model.v3_0_0.Model v3Model,
+                                  ArtifactRepository repository, FileTransaction transaction )
         throws IOException
     {
         Properties properties = v3Model.getProperties();
@@ -551,15 +540,9 @@ public class DefaultRepositoryConverter
         }
     }
 
-    private void writeRelocationPom( String groupId,
-                                     String artifactId,
-                                     String version,
-                                     String newGroupId,
-                                     String newArtifactId,
-                                     String newVersion,
-                                     String message,
-                                     ArtifactRepository repository,
-                                     FileTransaction transaction )
+    private void writeRelocationPom( String groupId, String artifactId, String version, String newGroupId,
+                                     String newArtifactId, String newVersion, String message,
+                                     ArtifactRepository repository, FileTransaction transaction )
         throws IOException
     {
         Model pom = new Model();
@@ -592,8 +575,7 @@ public class DefaultRepositoryConverter
         transaction.createFile( strWriter.toString(), pomFile );
     }
 
-    private String getI18NString( String key,
-                                  String arg0 )
+    private String getI18NString( String key, String arg0 )
     {
         return i18n.format( getClass().getName(), Locale.getDefault(), key, arg0 );
     }
@@ -603,26 +585,19 @@ public class DefaultRepositoryConverter
         return i18n.getString( getClass().getName(), Locale.getDefault(), key );
     }
 
-    private boolean testChecksums( Artifact artifact,
-                                   File file,
-                                   ArtifactReporter reporter )
-        throws IOException, RepositoryConversionException
+    private boolean testChecksums( Artifact artifact, File file, ArtifactReporter reporter )
+        throws IOException
     {
-        boolean result;
 
-        result = verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact,
-                                 "failure.incorrect.md5" );
+        boolean result =
+            verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact, "failure.incorrect.md5" );
         result = result && verifyChecksum( file, file.getName() + ".sha1", Digester.SHA1, reporter, artifact,
                                            "failure.incorrect.sha1" );
         return result;
     }
 
-    private boolean verifyChecksum( File file,
-                                    String fileName,
-                                    String algorithm,
-                                    ArtifactReporter reporter,
-                                    Artifact artifact,
-                                    String key )
+    private boolean verifyChecksum( File file, String fileName, String algorithm, ArtifactReporter reporter,
+                                    Artifact artifact, String key )
         throws IOException
     {
         boolean result = true;
@@ -644,9 +619,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyArtifact( Artifact artifact,
-                                  ArtifactRepository targetRepository,
-                                  ArtifactReporter reporter,
+    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
                                   FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -689,9 +662,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    public void convert( List artifacts,
-                         ArtifactRepository targetRepository,
-                         ArtifactReporter reporter )
+    public void convert( List artifacts, ArtifactRepository targetRepository, ArtifactReporter reporter )
         throws RepositoryConversionException
     {
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )

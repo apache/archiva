@@ -21,17 +21,20 @@ package org.apache.maven.repository.discovery;
  */
 public class DiscovererPath
 {
-    private String path;
-    private String comment;
+    /**
+     * The path discovered.
+     */
+    private final String path;
 
-    public DiscovererPath()
-    {
-    }
+    /**
+     * A comment about why the path is being processed.
+     */
+    private final String comment;
 
     public DiscovererPath( String path, String comment )
     {
-        setPath( path );
-        setComment( comment );
+        this.path = path;
+        this.comment = comment;
     }
 
     public String getPath()
@@ -39,18 +42,8 @@ public class DiscovererPath
         return path;
     }
 
-    public void setPath( String path )
-    {
-        this.path = path;
-    }
-
     public String getComment()
     {
         return comment;
-    }
-
-    public void setComment( String comment )
-    {
-        this.comment = comment;
     }
 }

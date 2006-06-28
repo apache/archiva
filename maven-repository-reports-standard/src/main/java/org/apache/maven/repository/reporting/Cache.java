@@ -134,14 +134,12 @@ public class Cache
      */
     public void put( Object key, Object value )
     {
-        Object old = null;
-
         // remove and put: this promotes it to the top since we use a linked hash map
         synchronized ( cache )
         {
             if ( cache.containsKey( key ) )
             {
-                old = cache.remove( key );
+                cache.remove( key );
             }
 
             cache.put( key, value );
