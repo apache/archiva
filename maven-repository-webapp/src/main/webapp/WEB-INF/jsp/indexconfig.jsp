@@ -15,22 +15,26 @@
   ~
   --%>
 
-<%@ taglib uri="webwork" prefix="ww" %>
+<%@ taglib uri="/webwork" prefix="ww" %>
 
 <br>
+
 <p>
-<b>INDEX CONFIGURATION:</b>
+  <b>INDEX CONFIGURATION:</b>
 </p>
 
 <form action="configureIndex.action" method="post">
-  Index Path: <input type="text" name="indexPath" value="<ww:property value="parameters.indexPath"/>"/>
+  Index Path: <input type="text" name="indexPath" value="<ww:property value="parameters.indexPath"/>" />
   <br>
-  Minimal Index Path: <input type="text" name="minimalIndexPath" value="<ww:property value="parameters.minimalIndexPath"/>"/>
+  Minimal Index Path: <input type="text" name="minimalIndexPath"
+                             value="<ww:property value="parameters.minimalIndexPath"/>" />
   <br>
-  Blacklist Patterns: <input type="text" name="discoveryBlacklistPatterns" value="<ww:property value="parameters.discoveryBlacklistPatterns"/>"/>
+  Blacklist Patterns: <input type="text" name="discoveryBlacklistPatterns"
+                             value="<ww:property value="parameters.discoveryBlacklistPatterns"/>" />
   <br>
-  Discover Snapshots: <input type="text" name="discoverSnapshots" value="<ww:property value="parameters.discoverSnapshots"/>"/>
-  <input type="submit" value="Update"/>
+  Discover Snapshots: <input type="text" name="discoverSnapshots"
+                             value="<ww:property value="parameters.discoverSnapshots"/>" />
+  <input type="submit" value="Update" />
 </form>
 
 

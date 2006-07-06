@@ -22,36 +22,50 @@
   <display-name>Maven Repository Manager</display-name>
 
   <filter>
+    <filter-name>plexus</filter-name>
+    <filter-class>org.codehaus.plexus.xwork.PlexusFilter</filter-class>
+  </filter>
+
+  <filter>
+    <filter-name>webwork-cleanup</filter-name>
+    <filter-class>com.opensymphony.webwork.dispatcher.ActionContextCleanUp</filter-class>
+  </filter>
+
+  <filter>
     <filter-name>sitemesh</filter-name>
     <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
   </filter>
+
+  <filter>
+    <filter-name>webwork</filter-name>
+    <filter-class>com.opensymphony.webwork.dispatcher.FilterDispatcher</filter-class>
+  </filter>
+
+  <!-- this must be before the webwork filter -->
+  <filter-mapping>
+    <filter-name>plexus</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!-- this must be before the sitemesh filter -->
+  <filter-mapping>
+    <filter-name>webwork-cleanup</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>sitemesh</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <listener>
-    <listener-class>org.codehaus.plexus.servlet.PlexusServletContextListener</listener-class>
-  </listener>
+  <filter-mapping>
+    <filter-name>webwork</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
   <listener>
-    <listener-class>org.codehaus.plexus.webwork.servlet.PlexusWebWorkApplicationLifecycleListener</listener-class>
+    <listener-class>org.codehaus.plexus.xwork.PlexusLifecycleListener</listener-class>
   </listener>
-
-  <listener>
-    <listener-class>org.codehaus.plexus.webwork.servlet.PlexusWebWorkSessionLifecycleListener</listener-class>
-  </listener>
-
-  <servlet>
-    <servlet-name>webwork</servlet-name>
-    <servlet-class>com.opensymphony.webwork.dispatcher.ServletDispatcher</servlet-class>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>webwork</servlet-name>
-    <url-pattern>*.action</url-pattern>
-  </servlet-mapping>
 
   <welcome-file-list>
     <welcome-file>index.action</welcome-file>

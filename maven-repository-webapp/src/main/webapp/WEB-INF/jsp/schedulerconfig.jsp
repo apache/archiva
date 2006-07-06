@@ -15,16 +15,18 @@
   ~
   --%>
 
-<%@ taglib uri="webwork" prefix="ww" %>
+<%@ taglib uri="/webwork" prefix="ww" %>
 
 <br>
+
 <p>
-<b>SCHEDULER CONFIGURATION:</b>
+  <b>SCHEDULER CONFIGURATION:</b>
 </p>
 
 <form action="configureScheduler.action" method="post">
-  Cron Expression: <input type="text" name="discoveryCronExpression" value="<ww:property value="parameters.discoveryCronExpression"/>"/>
-  <input type="submit" value="Update"/>
+  Cron Expression: <input type="text" name="discoveryCronExpression"
+                          value="<ww:property value="parameters.discoveryCronExpression"/>" />
+  <input type="submit" value="Update" />
 </form>
 
 

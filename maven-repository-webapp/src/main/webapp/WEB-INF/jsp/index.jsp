@@ -14,7 +14,7 @@
   ~ limitations under the License.
   --%>
 
-<%@ taglib uri="webwork" prefix="ww" %>
+<%@ taglib uri="/webwork" prefix="ww" %>
 <html>
 <head>
   <title>Maven Repository Manager</title>
@@ -25,13 +25,13 @@
 <h1>Maven Repository Manager</h1>
 
 <%@ include file="form.jspf" %>
-<p/>
+<p />
 <%@ include file="indexconfig.jsp" %>
-<p/>
+<p />
 
-<p/>
+<p />
 <%@ include file="schedulerconfig.jsp" %>
-<p/>
+<p />
 
 </body>
 </html>
