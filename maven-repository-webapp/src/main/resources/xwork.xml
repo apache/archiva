@@ -43,6 +43,16 @@
         </action>
     -->
 
+    <action name="proxy" class="org.apache.maven.repository.proxy.web.action.RepositoryProxyAction">
+      <result name="success" type="stream">
+        <param name="contentType">application/octet-stream</param>
+        <param name="inputName">artifactStream</param>
+        <param name="bufferSize">1024</param>
+      </result>
+      <result name="notFound" type="dispatcher">notFoundError</result>
+      <result name="proxyError" type="dispatcher">proxyError</result>
+    </action>
+
     <action name="searchg" class="org.apache.maven.repository.manager.web.action.GeneralSearchAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/generalresults.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
