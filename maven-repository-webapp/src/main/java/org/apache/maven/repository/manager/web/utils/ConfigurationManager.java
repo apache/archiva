@@ -134,20 +134,23 @@ public class ConfigurationManager
         File file = getConfigFile();
         config = new Configuration();
 
-        if ( !file.exists() )
+        if ( file != null )
         {
-            writeXmlDocument( getConfigFile() );
-        }
-        else
-        {
-            try
+            if ( !file.exists() )
             {
-                config = readXmlDocument( file );
+                writeXmlDocument( getConfigFile() );
             }
-            catch ( XmlPullParserException xe )
+            else
             {
-                // TODO: fix error handling!
-                xe.printStackTrace();
+                try
+                {
+                    config = readXmlDocument( file );
+                }
+                catch ( XmlPullParserException xe )
+                {
+                    // TODO: fix error handling!
+                    xe.printStackTrace();
+                }
             }
         }
 
@@ -202,11 +205,14 @@ public class ConfigurationManager
         else
         {
             URL xmlPath = getClass().getClassLoader().getResource( "../" + WEB_XML_FILE );
-            String path = xmlPath.getFile();
-            int lastIndex = path.lastIndexOf( '/' );
-            path = path.substring( 0, lastIndex + 1 );
-            path = path + INDEX_CONFIG_FILE;
-            plexusDescriptor = new File( path );
+            if ( xmlPath != null )
+            {
+                String path = xmlPath.getFile();
+                int lastIndex = path.lastIndexOf( '/' );
+                path = path.substring( 0, lastIndex + 1 );
+                path = path + INDEX_CONFIG_FILE;
+                plexusDescriptor = new File( path );
+            }
         }
 
         return plexusDescriptor;

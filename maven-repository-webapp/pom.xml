@@ -43,6 +43,11 @@
       <version>1.0-alpha-2-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <version>1.0-alpha-10-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.repository</groupId>
       <artifactId>maven-repository-indexer</artifactId>
     </dependency>
@@ -121,6 +126,14 @@
               <exclude>**/**</exclude>
             </excludes>
           </instrumentation>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-maven-plugin</artifactId>
+        <configuration>
+          <fileName>plexus-request.xml</fileName>
+          <containerDescriptor>true</containerDescriptor>
         </configuration>
       </plugin>
     </plugins>

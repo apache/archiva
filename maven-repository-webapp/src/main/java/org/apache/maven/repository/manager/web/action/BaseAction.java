@@ -23,7 +23,6 @@ import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
 import org.apache.maven.repository.manager.web.utils.ConfigurationManager;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ import java.util.Map;
  * This is the Action class of index.jsp, which is the initial page of the web application.
  * It invokes the DiscovererScheduler to set the DiscoverJob in the scheduler.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="org.apache.maven.repository.manager.web.action.BaseAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="baseAction"
  */
 public class BaseAction
     extends ActionSupport
@@ -83,7 +82,7 @@ public class BaseAction
             this.parameters = parameters;
 
             //Configuration configuration = new Configuration(); // TODO!
-            execution.executeDiscovererIfIndexDoesNotExist( new File( config.getIndexPath() ) );
+//            execution.executeDiscovererIfIndexDoesNotExist( new File( config.getIndexPath() ) );
             discovererScheduler.setSchedule( config.getDiscoveryCronExpression() );
         }
         catch ( Exception e )

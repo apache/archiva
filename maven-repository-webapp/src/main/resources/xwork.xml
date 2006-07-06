@@ -26,11 +26,22 @@
     <!-- Default interceptor stack. -->
     <default-interceptor-ref name="defaultStack"/>
 
-    <!-- Action: Front page -->
-    <action name="index" class="org.apache.maven.repository.manager.web.action.BaseAction">
-      <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+    <action name="index" class="baseAction">
+      <result name="success" type="dispatcher">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
+
+    <action name="quickSearch" class="quickSearchAction">
+      <result name="success" type="dispatcher">/WEB-INF/jsp/results.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
+
+    <!-- TODO! old actions -->
+    <!--
+        <action name="index" class="org.apache.maven.repository.manager.web.action.BaseAction">
+          <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+          <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+        </action>
+    -->
 
     <action name="searchg" class="org.apache.maven.repository.manager.web.action.GeneralSearchAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/generalresults.jsp</result>
@@ -55,7 +66,7 @@
     <action name="configureScheduler" class="org.apache.maven.repository.manager.web.action.SchedulerConfigurationAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/indexConfigUpdateSuccess.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
-    </action>    
+    </action>
 
   </package>
 </xwork>
