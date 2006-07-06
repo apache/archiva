@@ -83,7 +83,7 @@ public class RepositoryConverterTest
         layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         File targetBase = getTestFile( "target/test-target-repository" );
-        FileUtils.copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
+        copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
         targetRepository =
             factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null, null );
@@ -95,6 +95,53 @@ public class RepositoryConverterTest
         i18n = (I18N) lookup( I18N.ROLE );
 
         reporter = new DefaultArtifactReporter();
+    }
+
+    private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
+        throws IOException
+    {
+        if ( !sourceDirectory.exists() )
+        {
+            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.getAbsolutePath() + ")." );
+        }
+
+        File[] files = sourceDirectory.listFiles();
+
+        String sourcePath = sourceDirectory.getAbsolutePath();
+
+        for ( int i = 0; i < files.length; i++ )
+        {
+            File file = files[i];
+
+            String dest = file.getAbsolutePath();
+
+            dest = dest.substring( sourcePath.length() + 1 );
+
+            File destination = new File( destinationDirectory, dest );
+
+            if ( file.isFile() )
+            {
+                destination = destination.getParentFile();
+
+                FileUtils.copyFileToDirectory( file, destination );
+            }
+            else if ( file.isDirectory() )
+            {
+                if ( !".svn".equals( file.getName() ) )
+                {
+                    if ( !destination.exists() && !destination.mkdirs() )
+                    {
+                        throw new IOException(
+                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                    }
+                    copyDirectoryStructure( file, destination );
+                }
+            }
+            else
+            {
+                throw new IOException( "Unknown file type: " + file.getAbsolutePath() );
+            }
+        }
     }
 
     public void testV4PomConvert()
