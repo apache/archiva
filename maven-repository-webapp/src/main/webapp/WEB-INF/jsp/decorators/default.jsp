@@ -17,7 +17,7 @@
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
 <html>
 <head>
-  <title><decorator:title default="Maven Repository Manager" /></title>
+  <title>Maven Repository Manager :: <decorator:title default="Maven Repository Manager" /></title>
 
   <style type="text/css" media="all">
     @import url( "./css/maven-base.css" );

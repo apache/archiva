@@ -44,8 +44,6 @@ public class ConfigurationManager
 
     public static final String INDEX_CONFIG_FILE = "mrm-admin-config.xml";
 
-    public static final String CONFIGURATION = "configuration";
-
     public static final String DISCOVER_SNAPSHOTS = "discoverSnapshots";
 
     public static final String DISCOVERY_CRON_EXPRESSION = "discoveryCronExpression";
@@ -80,6 +78,7 @@ public class ConfigurationManager
         }
         catch ( XmlPullParserException de )
         {
+            // TODO!
             de.printStackTrace();
         }
 
