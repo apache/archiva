@@ -26,23 +26,18 @@
     <!-- Default interceptor stack. -->
     <default-interceptor-ref name="defaultStack"/>
 
-    <action name="index" class="baseAction">
+    <action name="index" class="quickSearchAction" method="input">
       <result name="success" type="dispatcher">/WEB-INF/jsp/quickSearch.jsp</result>
+      <interceptor-ref name="validationWorkflowStack"/>
     </action>
 
     <action name="quickSearch" class="quickSearchAction">
+      <result name="input" type="dispatcher">/WEB-INF/jsp/quickSearch.jsp</result>
       <result name="success" type="dispatcher">/WEB-INF/jsp/results.jsp</result>
-      <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+      <interceptor-ref name="validationWorkflowStack"/>
     </action>
 
-    <!-- TODO! old actions -->
-    <!--
-        <action name="index" class="org.apache.maven.repository.manager.web.action.BaseAction">
-          <result name="success" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
-          <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
-        </action>
-    -->
-
+    <!-- TODO! old actions
     <action name="proxy" class="org.apache.maven.repository.proxy.web.action.RepositoryProxyAction">
       <result name="success" type="stream">
         <param name="contentType">application/octet-stream</param>
@@ -77,7 +72,7 @@
       <result name="success" type="dispatcher">/WEB-INF/jsp/indexConfigUpdateSuccess.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
-
+    -->
   </package>
 </xwork>
 

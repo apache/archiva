@@ -110,3 +110,8 @@
     font-weight: bold;
 }
 
+/* WebWork validation failures */
+.errorMessage {
+    color: red;
+    font-weight: bold;
+}

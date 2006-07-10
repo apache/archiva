@@ -1,5 +1,4 @@
-<%@ taglib prefix="ww" uri="/webwork" %>
-<%--
+<!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +12,15 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  --%>
+  -->
 
-<html>
-<head>
-  <title>Quick Search</title>
-  <ww:head />
-</head>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<body>
-
-<h1>Search</h1>
-
-<div id="contentArea">
-  <div id="searchBox">
-    <ww:form method="post" action="quickSearch" validate="true">
-      <ww:textfield label="Search for" size="50" name="q" />
-      <ww:submit label="Go!" />
-    </ww:form>
-    <p>
-      Enter your search terms. A variety of data will be searched for your keywords.
-    </p>
-  </div>
-</div>
-
-</body>
-</html>
+<validators>
+  <field name="q">
+    <field-validator type="requiredstring">
+      <message>You must enter some search terms.</message>
+    </field-validator>
+  </field>
+</validators>

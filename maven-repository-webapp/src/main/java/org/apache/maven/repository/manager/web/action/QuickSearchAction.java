@@ -95,8 +95,13 @@ public class QuickSearchAction
         }
         else
         {
-            return ERROR;
+            return INPUT;
         }
+    }
+
+    public String doInput()
+    {
+        return SUCCESS;
     }
 
     public String getQ()
