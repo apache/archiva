@@ -10,7 +10,7 @@
       <value>org.apache.maven.repository.configuration</value>
     </default>
   </defaults>
-  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist -->
+  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist, have multiple repositories -->
   <classes>
     <class rootElement="true" xml.tagName="configuration">
       <name>Configuration</name>
