@@ -17,6 +17,7 @@ package org.apache.maven.repository.configuration;
  */
 
 import org.apache.maven.repository.configuration.io.xpp3.ConfigurationXpp3Reader;
+import org.apache.maven.repository.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -24,6 +25,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -105,8 +107,6 @@ public class DefaultConfigurationStore
     public void storeConfiguration( Configuration configuration )
         throws ConfigurationStoreException
     {
-        // TODO: finish!
-
         for ( Iterator i = listeners.iterator(); i.hasNext(); )
         {
             ConfigurationChangeListener listener = (ConfigurationChangeListener) i.next();
@@ -114,6 +114,21 @@ public class DefaultConfigurationStore
             listener.notifyOfConfigurationChange( configuration );
         }
 
-        throw new UnsupportedOperationException( "Not yet implemented: storeConfiguration" );
+        ConfigurationXpp3Writer writer = new ConfigurationXpp3Writer();
+
+        FileWriter fileWriter = null;
+        try
+        {
+            fileWriter = new FileWriter( file );
+            writer.write( fileWriter, configuration );
+        }
+        catch ( IOException e )
+        {
+            throw new ConfigurationStoreException( e.getMessage(), e );
+        }
+        finally
+        {
+            IOUtil.close( fileWriter );
+        }
     }
 }

@@ -96,7 +96,7 @@
 
     <action name="saveConfiguration" class="configureAction">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
-      <!-- TODO: need a SUCCESS handler! -->
+      <result>/WEB-INF/jsp/admin/configure.jsp</result>
     </action>
   </package>
 </xwork>
