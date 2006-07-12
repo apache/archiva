@@ -16,11 +16,13 @@ package org.apache.maven.repository.manager.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.configuration.Configuration;
+import org.apache.maven.repository.configuration.ConfigurationStore;
+import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
@@ -38,7 +40,7 @@ import java.util.Map;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="quickSearchAction"
  */
 public class QuickSearchAction
-    implements Action
+    extends ActionSupport
 {
     /**
      * Query string.
@@ -70,38 +72,48 @@ public class QuickSearchAction
      */
     private Map repositoryLayouts;
 
+    /**
+     * @plexus.requirement
+     */
+    private ConfigurationStore configurationStore;
+
     public String execute()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
+        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
+        ConfigurationStoreException
     {
-        if ( q != null && q.length() != 0 )
-        {
-            Configuration configuration = new Configuration(); // TODO!
-            File indexPath = new File( configuration.getIndexPath() );
+        // TODO: give action message if indexing is in progress
 
-            // TODO: [!] repository should only have been instantiated once
-            File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
-            String repoDir = repositoryDirectory.toURL().toString();
+        // TODO: return zero results if index doesn't yet exist
 
-            ArtifactRepositoryLayout layout =
-                (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
-            ArtifactRepository repository =
-                repositoryFactory.createArtifactRepository( "test", repoDir, layout, null, null );
+        assert q != null && q.length() != 0;
 
-            ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        File indexPath = new File( configuration.getIndexPath() );
 
-            searchResult = searchLayer.searchGeneral( q, index );
+        ArtifactRepository repository = getDefaultRepository( configuration );
 
-            return SUCCESS;
-        }
-        else
-        {
-            return INPUT;
-        }
+        ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
+
+        searchResult = searchLayer.searchGeneral( q, index );
+
+        return SUCCESS;
+    }
+
+    private ArtifactRepository getDefaultRepository( Configuration configuration )
+        throws MalformedURLException
+    {
+        // TODO: [!] repository should only have been instantiated once
+        File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
+        String repoDir = repositoryDirectory.toURI().toURL().toString();
+
+        ArtifactRepositoryLayout layout =
+            (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
+        return repositoryFactory.createArtifactRepository( "test", repoDir, layout, null, null );
     }
 
     public String doInput()
     {
-        return SUCCESS;
+        return INPUT;
     }
 
     public String getQ()

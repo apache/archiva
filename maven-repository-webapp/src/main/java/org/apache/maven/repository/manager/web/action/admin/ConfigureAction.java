@@ -59,7 +59,7 @@ public class ConfigureAction
         if ( !file.exists() )
         {
             file.mkdirs();
-            // TODO: error handling when this fails
+            // TODO: error handling when this fails, or is not a directory
         }
 
         // TODO: these defaults belong in the model. They shouldn't be stored here, as you want them to re-default

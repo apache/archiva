@@ -18,6 +18,8 @@
     "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
 
 <xwork>
+  <!-- TODO: better error handling for exceptions needed -->
+
   <!-- Include webwork defaults (from WebWork JAR). -->
   <include file="webwork-default.xml"/>
 
