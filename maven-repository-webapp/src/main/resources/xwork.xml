@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.0//EN"
-    "http://www.opensymphony.com/xwork/xwork-1.0.dtd">
+<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1//EN"
+    "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
 
 <xwork>
   <!-- Include webwork defaults (from WebWork JAR). -->
@@ -23,18 +23,29 @@
 
   <!-- Configuration for the default package. -->
   <package name="default" extends="webwork-default">
+    <interceptors>
+      <interceptor name="configuration" class="configurationInterceptor"/>
+      <interceptor-stack name="configuredStack">
+        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="configuration"/>
+      </interceptor-stack>
+    </interceptors>
+
     <!-- Default interceptor stack. -->
-    <default-interceptor-ref name="defaultStack"/>
+    <default-interceptor-ref name="configuredStack"/>
+
+    <global-results>
+      <!-- TODO: might want an extra message on the configure page when this first happens -->
+      <result name="config-needed" type="redirect">/admin/configure.action</result>
+    </global-results>
 
     <action name="index" class="quickSearchAction" method="input">
-      <result name="success" type="dispatcher">/WEB-INF/jsp/quickSearch.jsp</result>
-      <interceptor-ref name="validationWorkflowStack"/>
+      <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
 
     <action name="quickSearch" class="quickSearchAction">
-      <result name="input" type="dispatcher">/WEB-INF/jsp/quickSearch.jsp</result>
-      <result name="success" type="dispatcher">/WEB-INF/jsp/results.jsp</result>
-      <interceptor-ref name="validationWorkflowStack"/>
+      <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
+      <result>/WEB-INF/jsp/results.jsp</result>
     </action>
 
     <!-- TODO! old actions
@@ -73,6 +84,20 @@
       <result name="error" type="dispatcher">/WEB-INF/jsp/index.jsp</result>
     </action>
     -->
+  </package>
+
+  <!-- Configuration for the admin package. -->
+  <package name="admin" namespace="/admin" extends="webwork-default">
+    <default-interceptor-ref name="defaultStack"/>
+
+    <action name="configure" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
+    </action>
+
+    <action name="saveConfiguration" class="configureAction">
+      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
+      <!-- TODO: need a SUCCESS handler! -->
+    </action>
   </package>
 </xwork>
 

@@ -20,11 +20,11 @@
   <title>Maven Repository Manager :: <decorator:title default="Maven Repository Manager" /></title>
 
   <style type="text/css" media="all">
-    @import url( "./css/maven-base.css" );
-    @import url( "./css/maven-theme.css" );
-    @import url( "./css/site.css" );
+    @import url( "<%= request.getContextPath() %>/css/maven-base.css" );
+    @import url( "<%= request.getContextPath() %>/css/maven-theme.css" );
+    @import url( "<%= request.getContextPath() %>/css/site.css" );
   </style>
-  <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/print.css" type="text/css" media="print" />
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 </head>
 

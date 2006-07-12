@@ -75,6 +75,17 @@
           <description>Blacklisted patterns in the discovery process</description>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code><![CDATA[
+    public boolean isValid()
+    {
+        return indexPath != null & repositoryDirectory != null;
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
   </classes>
 </model>
