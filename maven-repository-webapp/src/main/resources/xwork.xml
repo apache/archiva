@@ -24,7 +24,7 @@
   <include file="webwork-default.xml"/>
 
   <!-- Configuration for the default package. -->
-  <package name="default" extends="webwork-default">
+  <package name="default" extends="webwork-default" namespace="/">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor-stack name="configuredStack">

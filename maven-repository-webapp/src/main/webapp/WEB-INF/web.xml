@@ -21,10 +21,12 @@
 <web-app>
   <display-name>Maven Repository Manager</display-name>
 
-  <filter>
-    <filter-name>plexus</filter-name>
-    <filter-class>org.codehaus.plexus.xwork.PlexusFilter</filter-class>
-  </filter>
+  <!-- TODO: remove if we use the new xwork integration
+    <filter>
+      <filter-name>plexus</filter-name>
+      <filter-class>org.codehaus.plexus.xwork.PlexusFilter</filter-class>
+    </filter>
+  -->
 
   <filter>
     <filter-name>webwork-cleanup</filter-name>
@@ -42,10 +44,12 @@
   </filter>
 
   <!-- this must be before the webwork filter -->
+  <!-- TODO: remove if we use the new xwork integration
   <filter-mapping>
     <filter-name>plexus</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+  -->
 
   <!-- this must be before the sitemesh filter -->
   <filter-mapping>
