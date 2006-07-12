@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Searches for searchString in all indexed fields.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="quickSearchAction" instantiation-strategy="per-lookup"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="quickSearchAction"
  */
 public class QuickSearchAction
     extends ActionSupport

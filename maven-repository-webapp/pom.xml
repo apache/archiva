@@ -169,6 +169,12 @@
         <configuration>
           <fileName>plexus.xml</fileName>
           <containerDescriptor>true</containerDescriptor>
+          <roleDefaults>
+            <roleDefault>
+              <role>com.opensymphony.xwork.Action</role>
+              <instantiation-strategy>per-lookup</instantiation-strategy>
+            </roleDefault>
+          </roleDefaults>
         </configuration>
         <executions>
           <execution>

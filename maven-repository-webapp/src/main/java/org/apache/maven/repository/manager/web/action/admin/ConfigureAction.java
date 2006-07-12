@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * Configures the application.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureAction" instantiation-strategy="per-lookup"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureAction"
  */
 public class ConfigureAction
     extends ActionSupport
