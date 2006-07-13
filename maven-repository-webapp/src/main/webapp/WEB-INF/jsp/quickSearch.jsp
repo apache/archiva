@@ -33,6 +33,7 @@
     </ww:form>
     <p>
       Enter your search terms. A variety of data will be searched for your keywords.
+      <ww:actionerror />
     </p>
   </div>
 </div>

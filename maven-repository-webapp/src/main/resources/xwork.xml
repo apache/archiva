@@ -48,6 +48,7 @@
     <action name="quickSearch" class="quickSearchAction">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
 
     <!-- TODO! old actions

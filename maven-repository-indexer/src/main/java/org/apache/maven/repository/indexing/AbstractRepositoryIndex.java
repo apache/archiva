@@ -261,7 +261,7 @@ public abstract class AbstractRepositoryIndex
      * @return true if the index already exists
      * @throws RepositoryIndexException
      */
-    protected boolean indexExists()
+    public boolean indexExists()
         throws RepositoryIndexException
     {
         if ( IndexReader.indexExists( indexPath ) )

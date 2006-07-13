@@ -83,8 +83,6 @@ public class QuickSearchAction
     {
         // TODO: give action message if indexing is in progress
 
-        // TODO: return zero results if index doesn't yet exist
-
         assert q != null && q.length() != 0;
 
         Configuration configuration = configurationStore.getConfigurationFromStore();
@@ -93,6 +91,12 @@ public class QuickSearchAction
         ArtifactRepository repository = getDefaultRepository( configuration );
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
+
+        if ( !index.indexExists() )
+        {
+            addActionError( "The repository is not yet indexed. Please wait, and then try again." );
+            return ERROR;
+        }
 
         searchResult = searchLayer.searchGeneral( q, index );
 
