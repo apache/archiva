@@ -196,6 +196,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven.repository</groupId>
+        <artifactId>maven-repository-core</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.repository</groupId>
         <artifactId>maven-repository-reports-standard</artifactId>
         <version>${pom.version}</version>
       </dependency>
