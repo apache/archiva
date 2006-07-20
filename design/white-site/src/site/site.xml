@@ -5,14 +5,16 @@
   </bannerLeft>
   <body>
     <menu name="Find">
-      <item name="Search" href="/index.html" />
-      <item name="Find Artifact" href="/find-artifact.html" />
-      <item name="Browse" href="/browse.html" />
+      <item name="Search" href="/index.html"/>
+      <item name="Find Artifact" href="/find-artifact.html"/>
+      <item name="Browse" href="/browse.html"/>
     </menu>
     <menu name="Manage">
-      <item name="Reports" href="/reports.html" />
-      <item name="Synchronisation" href="/sync.html" />
-      <item name="Administration" href="/admin.html" />
+      <item name="Reports" href="/reports.html"/>
+      <item name="Synchronisation" href="/sync.html"/>
+      <item name="Administration" href="/admin/index.html">
+        <item name="Configuration" href="/admin/config.html"/>
+      </item>
     </menu>
   </body>
 </project>

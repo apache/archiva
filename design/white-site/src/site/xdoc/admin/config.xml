@@ -1,0 +1,27 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <h1>Configuration</h1>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <form method="post" action="saveConfiguration" namespace="/admin" validate="true">
+          <p>
+            Repository Directory:
+            <input type="text" size="100"/>
+          </p>
+          <p>
+            Indexing Cron Expression:
+            <input type="text"/>
+          </p>
+          <p>
+            <input type="submit" value="Save Configuration"/>
+          </p>
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
+
