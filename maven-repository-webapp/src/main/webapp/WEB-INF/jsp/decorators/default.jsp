@@ -31,7 +31,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
 </head>
 
-<body class="composite">
+<body onload="<decorator:getProperty property="body.onload" />" class="composite">
 <div id="banner">
   <span id="bannerLeft">
     <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
@@ -71,11 +71,11 @@
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <%-- TODO
-            <li class="none">
-              <a href="#">Find Artifact</a>
-            </li>
+      <li class="none">
+        <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
+      </li>
 
+      <%-- TODO
             <li class="none">
               <a href="#">Browse</a>
             </li>

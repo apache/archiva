@@ -21,6 +21,7 @@ import java.applet.Applet;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.AccessController;
@@ -65,28 +66,19 @@ public class ChecksumApplet
                 }
                 catch ( NoSuchAlgorithmException e )
                 {
-                    return e;
+                    return "Error checksumming file: " + e.getMessage();
+                }
+                catch ( FileNotFoundException e )
+                {
+                    return "Couldn't find the file. " + e.getMessage();
                 }
                 catch ( IOException e )
                 {
-                    return e;
+                    return "Error reading file: " + e.getMessage();
                 }
             }
         } );
-
-        //noinspection ChainOfInstanceofChecks
-        if ( o instanceof IOException )
-        {
-            throw (IOException) o;
-        }
-        else if ( o instanceof NoSuchAlgorithmException )
-        {
-            throw (NoSuchAlgorithmException) o;
-        }
-        else
-        {
-            return (String) o;
-        }
+        return (String) o;
     }
 
     protected String checksumFile( String file )

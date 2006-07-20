@@ -1,4 +1,4 @@
-<%--
+<!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,22 +12,18 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  --%>
+  -->
 
-<%@ taglib prefix="ww" uri="/webwork" %>
-<html>
-<head>
-  <title>Quick Search</title>
-  <ww:head />
-</head>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<body>
-
-<h1>Search</h1>
-
-<div id="contentArea">
-  <%@ include file="/WEB-INF/jsp/include/quickSearchForm.jspf" %>
-</div>
-
-</body>
-</html>
+<validators>
+  <field name="md5">
+    <field-validator type="requiredstring">
+      <message>
+        You must select a file, or enter the checksum. If the file was given and you receive this message,
+        there may have been an error generating the checksum.
+      </message>
+    </field-validator>
+  </field>
+</validators>

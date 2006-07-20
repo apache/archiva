@@ -41,14 +41,24 @@
       <result name="config-needed" type="redirect">/admin/configure.action</result>
     </global-results>
 
-    <action name="index" class="quickSearchAction" method="input">
+    <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
 
-    <action name="quickSearch" class="quickSearchAction">
+    <action name="quickSearch" class="searchAction" method="quickSearch">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
+
+    <action name="findArtifact" class="searchAction" method="input">
+      <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
+    </action>
+
+    <action name="checksumSearch" class="searchAction" method="findArtifact">
+      <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
+      <result>/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
     </action>
 
     <!-- TODO! old actions

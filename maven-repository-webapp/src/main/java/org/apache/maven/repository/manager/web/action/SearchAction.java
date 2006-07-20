@@ -27,6 +27,7 @@ import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -36,15 +37,20 @@ import java.util.Map;
 /**
  * Searches for searchString in all indexed fields.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="quickSearchAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="searchAction"
  */
-public class QuickSearchAction
+public class SearchAction
     extends ActionSupport
 {
     /**
      * Query string.
      */
     private String q;
+
+    /**
+     * The MD5 to search by.
+     */
+    private String md5;
 
     /**
      * Search results.
@@ -76,7 +82,7 @@ public class QuickSearchAction
      */
     private ConfigurationStore configurationStore;
 
-    public String execute()
+    public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
         ConfigurationStoreException
     {
@@ -84,12 +90,7 @@ public class QuickSearchAction
 
         assert q != null && q.length() != 0;
 
-        Configuration configuration = configurationStore.getConfigurationFromStore();
-        File indexPath = new File( configuration.getIndexPath() );
-
-        ArtifactRepository repository = repositoryFactory.createRepository( configuration );
-
-        ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
+        ArtifactRepositoryIndex index = getIndex();
 
         if ( !index.indexExists() )
         {
@@ -100,6 +101,37 @@ public class QuickSearchAction
         searchResults = searchLayer.searchGeneral( q, index );
 
         return SUCCESS;
+    }
+
+    public String findArtifact()
+        throws ConfigurationStoreException, RepositoryIndexException, RepositoryIndexSearchException
+    {
+        // TODO: give action message if indexing is in progress
+
+        assert md5 != null && md5.length() != 0;
+
+        ArtifactRepositoryIndex index = getIndex();
+
+        if ( !index.indexExists() )
+        {
+            addActionError( "The repository is not yet indexed. Please wait, and then try again." );
+            return ERROR;
+        }
+
+        searchResults = searchLayer.searchAdvanced( new SinglePhraseQuery( "md5", md5 ), index );
+
+        return SUCCESS;
+    }
+
+    private ArtifactRepositoryIndex getIndex()
+        throws ConfigurationStoreException, RepositoryIndexException
+    {
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        File indexPath = new File( configuration.getIndexPath() );
+
+        ArtifactRepository repository = repositoryFactory.createRepository( configuration );
+
+        return factory.createArtifactRepositoryIndex( indexPath, repository );
     }
 
     public String doInput()
@@ -115,6 +147,16 @@ public class QuickSearchAction
     public void setQ( String q )
     {
         this.q = q;
+    }
+
+    public String getMd5()
+    {
+        return md5;
+    }
+
+    public void setMd5( String md5 )
+    {
+        this.md5 = md5;
     }
 
     public List getSearchResults()
