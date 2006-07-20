@@ -15,6 +15,9 @@
   --%>
 
 <%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator" %>
+<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
   <title>Maven Repository Manager :: <decorator:title default="Maven Repository Manager" /></title>
@@ -65,33 +68,39 @@
     <ul>
 
       <li class="none">
-        <a href="index.html">Search</a>
+        <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
 
-      <li class="none">
-        <a href="find-artifact.html">Find Artifact</a>
+      <%-- TODO
+            <li class="none">
+              <a href="#">Find Artifact</a>
+            </li>
 
-      </li>
-
-      <li class="none">
-        <a href="browse.html">Browse</a>
-      </li>
+            <li class="none">
+              <a href="#">Browse</a>
+            </li>
+      --%>
     </ul>
     <h5>Manage</h5>
     <ul>
 
-      <li class="none">
+      <%-- TODO
+            <li class="none">
+              <a href="#">Reports</a>
+            </li>
 
-        <a href="reports.html">Reports</a>
-      </li>
+            <li class="none">
+              <a href="#">Synchronisation</a>
+            </li>
+      --%>
 
-      <li class="none">
-        <strong>Synchronisation</strong>
-      </li>
-
-      <li class="none">
-        <a href="admin.html">Administration</a>
-
+      <li class="expanded">
+        <a href="#">Administration</a>
+        <ul>
+          <li class="none">
+            <my:currentWWUrl action="configure" namespace="/admin">Configuration</my:currentWWUrl>
+          </li>
+        </ul>
       </li>
     </ul>
 
