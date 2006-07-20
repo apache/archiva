@@ -106,7 +106,7 @@ public class DefaultConfigurationStore
     }
 
     public void storeConfiguration( Configuration configuration )
-        throws ConfigurationStoreException
+        throws ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException
     {
         for ( Iterator i = listeners.iterator(); i.hasNext(); )
         {
@@ -132,5 +132,10 @@ public class DefaultConfigurationStore
         {
             IOUtil.close( fileWriter );
         }
+    }
+
+    public void addChangeListener( ConfigurationChangeListener listener )
+    {
+        listeners.add( listener );
     }
 }

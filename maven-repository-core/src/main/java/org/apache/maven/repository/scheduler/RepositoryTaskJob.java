@@ -1,4 +1,4 @@
-package org.apache.maven.repository.manager.web.job;
+package org.apache.maven.repository.scheduler;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -16,26 +16,18 @@ package org.apache.maven.repository.manager.web.job;
  * limitations under the License.
  */
 
-import org.apache.maven.repository.indexing.RepositoryIndexException;
-import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import java.net.MalformedURLException;
-
 /**
  * This class is the discoverer job that is executed by the scheduler.
- *
- * @plexus.component role="org.apache.maven.repository.manager.web.job.DiscovererJob"
  */
-public class DiscovererJob
+public class RepositoryTaskJob
     extends AbstractJob
 {
-    public static final String ROLE = DiscovererJob.class.getName();
-
-    public static final String MAP_DISCOVERER_EXECUTION = "EXECUTION";
+    static final String TASK_KEY = "EXECUTION";
 
     /**
      * Execute the discoverer and the indexer.
@@ -49,23 +41,16 @@ public class DiscovererJob
     {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
-        getLogger().info( "[DiscovererJob] Start execution of DiscovererJob.." );
 
+        RepositoryTask executor = (RepositoryTask) dataMap.get( TASK_KEY );
         try
         {
-            DiscovererExecution execution = (DiscovererExecution) dataMap.get( MAP_DISCOVERER_EXECUTION );
-            execution.executeDiscoverer();
+            executor.execute();
         }
-        catch ( RepositoryIndexException e )
+        catch ( TaskExecutionException e )
         {
-            getLogger().error( "Error indexing: " + e.getMessage(), e );
+            throw new JobExecutionException( e );
         }
-        catch ( MalformedURLException me )
-        {
-            getLogger().error( "Error indexing: " + me.getMessage(), me );
-        }
-
-        getLogger().info( "[DiscovererJob] DiscovererJob has finished executing." );
     }
 
 }

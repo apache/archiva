@@ -91,4 +91,10 @@
       </lifecycle-handler>
     </lifecycle-handlers>
   </lifecycle-handler-manager>
+
+  <load-on-start>
+    <component>
+      <role>org.apache.maven.repository.scheduler.RepositoryTaskScheduler</role>
+    </component>
+  </load-on-start>
 </plexus>

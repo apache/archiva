@@ -15,19 +15,14 @@
   ~ limitations under the License.
   --%>
 
-<html>
-<head>
-  <title>Quick Search</title>
-  <ww:head />
-</head>
+<div id="searchBox">
+  <ww:form method="post" action="quickSearch" validate="true">
+    <ww:textfield label="Search for" size="50" name="q" />
+    <ww:submit label="Go!" />
+  </ww:form>
 
-<body>
-
-<h1>Search</h1>
-
-<div id="contentArea">
-  <%@ include file="/WEB-INF/jsp/include/quickSearchForm.jspf" %>
+  <p>
+    Enter your search terms. A variety of data will be searched for your keywords.
+    <ww:actionerror />
+  </p>
 </div>
-
-</body>
-</html>

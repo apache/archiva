@@ -18,11 +18,10 @@ package org.apache.maven.repository.manager.web.action;
 
 import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
+import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
@@ -50,7 +49,7 @@ public class QuickSearchAction
     /**
      * Search results.
      */
-    private List searchResult;
+    private List searchResults;
 
     /**
      * @plexus.requirement
@@ -65,7 +64,7 @@ public class QuickSearchAction
     /**
      * @plexus.requirement
      */
-    private ArtifactRepositoryFactory repositoryFactory;
+    private ConfiguredRepositoryFactory repositoryFactory;
 
     /**
      * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
@@ -88,7 +87,7 @@ public class QuickSearchAction
         Configuration configuration = configurationStore.getConfigurationFromStore();
         File indexPath = new File( configuration.getIndexPath() );
 
-        ArtifactRepository repository = getDefaultRepository( configuration );
+        ArtifactRepository repository = repositoryFactory.createRepository( configuration );
 
         ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 
@@ -98,21 +97,9 @@ public class QuickSearchAction
             return ERROR;
         }
 
-        searchResult = searchLayer.searchGeneral( q, index );
+        searchResults = searchLayer.searchGeneral( q, index );
 
         return SUCCESS;
-    }
-
-    private ArtifactRepository getDefaultRepository( Configuration configuration )
-        throws MalformedURLException
-    {
-        // TODO: [!] repository should only have been instantiated once
-        File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
-        String repoDir = repositoryDirectory.toURI().toURL().toString();
-
-        ArtifactRepositoryLayout layout =
-            (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
-        return repositoryFactory.createArtifactRepository( "test", repoDir, layout, null, null );
     }
 
     public String doInput()
@@ -130,9 +117,9 @@ public class QuickSearchAction
         this.q = q;
     }
 
-    public List getSearchResult()
+    public List getSearchResults()
     {
-        return searchResult;
+        return searchResults;
     }
 
 }

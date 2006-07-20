@@ -38,6 +38,16 @@
       <version>2.2.1</version>
     </dependency>
     <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jstl</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration-single</artifactId>
       <version>1.0-alpha-2-SNAPSHOT</version>

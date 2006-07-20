@@ -18,9 +18,8 @@ package org.apache.maven.repository.manager.web.action;
 
 import com.opensymphony.xwork.Action;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.configuration.Configuration;
+import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
@@ -30,7 +29,6 @@ import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Searches for searchString in all indexed fields.
@@ -57,12 +55,7 @@ public class GeneralSearchAction
     /**
      * @plexus.requirement
      */
-    private ArtifactRepositoryFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
-     */
-    private Map repositoryLayouts;
+    private ConfiguredRepositoryFactory repositoryFactory;
 
     public String execute()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -72,14 +65,7 @@ public class GeneralSearchAction
             Configuration configuration = new Configuration(); // TODO!
             File indexPath = new File( configuration.getIndexPath() );
 
-            // TODO: [!] repository should only have been instantiated once
-            File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
-            String repoDir = repositoryDirectory.toURL().toString();
-
-            ArtifactRepositoryLayout layout =
-                (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
-            ArtifactRepository repository =
-                repositoryFactory.createArtifactRepository( "test", repoDir, layout, null, null );
+            ArtifactRepository repository = repositoryFactory.createRepository( configuration );
 
             ArtifactRepositoryIndex index = factory.createArtifactRepositoryIndex( indexPath, repository );
 

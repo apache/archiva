@@ -16,21 +16,21 @@ package org.apache.maven.repository.configuration;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
 /**
- * Component capable of noticing configuration changes and adjusting accordingly.
- * This is not a Plexus role.
+ * Create an artifact repository from the given configuration.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface ConfigurationChangeListener
+public interface ConfiguredRepositoryFactory
 {
+    String ROLE = ConfiguredRepositoryFactory.class.getName();
+
     /**
-     * Notify the object that there has been a configuration change.
+     * Create an artifact repository from the given configuration.
      *
-     * @param configuration the new configuration
-     * @throws InvalidConfigurationException if there is a problem with the new configuration
-     * @throws ConfigurationChangeException  if there is a problem changing the configuration, but the configuration is valid
+     * @param configuration the configuration
      */
-    void notifyOfConfigurationChange( Configuration configuration )
-        throws InvalidConfigurationException, ConfigurationChangeException;
+    ArtifactRepository createRepository( Configuration configuration );
 }

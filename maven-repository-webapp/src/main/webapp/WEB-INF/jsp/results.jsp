@@ -1,3 +1,5 @@
+<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -14,38 +16,55 @@
   ~ limitations under the License.
   --%>
 
-<%@ taglib uri="webwork" prefix="ww" %>
 <html>
 <head>
-  <title>Maven Repository Manager</title>
+  <title>Search Results</title>
+  <ww:head />
 </head>
 
 <body>
 
-<h1>Maven Repository Manager</h1>
+<h1>Search Results</h1>
 
-<%@ include file="form.jspf" %>
+<div id="contentArea">
+  <div id="searchBox">
+    <%@ include file="/WEB-INF/jsp/include/quickSearchForm.jspf" %>
 
-<table border="1px" cellspacing="0">
-  <tr>
-    <th>Group ID</th>
-    <th>Artifact ID</th>
-    <th>Version</th>
-  </tr>
-  <ww:iterator value="searchResult">
-    <tr>
-      <td valign="top">
-        <ww:property value="Artifact.getGroupId()"/>
-      </td>
-      <td valign="top">
-        <ww:property value="Artifact.getArtifactId()"/>
-      </td>
-      <td valign="top">
-        <ww:property value="Artifact.getVersion()"/>
-      </td>
-    </tr>
-  </ww:iterator>
-</table>
+    <div id="resultsBox">
+      <table class="bodyTable">
+        <tr class="a">
+          <th>Group</th>
+          <th>Artifact</th>
+          <th>Version</th>
+          <%-- TODO
+                    <th>Hits</th>
+                    <th></th>
+          --%>
+        </tr>
+        <ww:set name="searchResults" scope="request" value="searchResults" />
+        <c:forEach items="${searchResults}" var="result" varStatus="i">
+          <tr class="${i.index % 2 == 0 ? "b" : "a"}">
+            <td><c:out value="${result.artifact.groupId}" /></td>
+            <td><c:out value="${result.artifact.artifactId}" /></td>
+            <td><c:out value="${result.artifact.version}" /></td>
+              <%-- TODO: hits
+              <td>
 
+                <code>org.apache.maven</code>
+                (package)
+                <br/>
+                <code>org.apache.maven.model</code>
+                (package)
+              </td>
+              <td>
+                <a href="artifact.html">Details</a>
+              </td>
+              --%>
+          </tr>
+        </c:forEach>
+      </table>
+    </div>
+  </div>
+</div>
 </body>
 </html>

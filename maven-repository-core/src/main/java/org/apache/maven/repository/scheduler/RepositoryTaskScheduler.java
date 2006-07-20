@@ -1,4 +1,4 @@
-package org.apache.maven.repository.configuration;
+package org.apache.maven.repository.scheduler;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -17,20 +17,17 @@ package org.apache.maven.repository.configuration;
  */
 
 /**
- * Component capable of noticing configuration changes and adjusting accordingly.
- * This is not a Plexus role.
+ * The component that takes care of scheduling in the application.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface ConfigurationChangeListener
+public interface RepositoryTaskScheduler
 {
     /**
-     * Notify the object that there has been a configuration change.
-     *
-     * @param configuration the new configuration
-     * @throws InvalidConfigurationException if there is a problem with the new configuration
-     * @throws ConfigurationChangeException  if there is a problem changing the configuration, but the configuration is valid
+     * The Plexus component role.
      */
-    void notifyOfConfigurationChange( Configuration configuration )
-        throws InvalidConfigurationException, ConfigurationChangeException;
+    String ROLE = RepositoryTaskScheduler.class.getName();
+
+    void runIndexer()
+        throws TaskExecutionException;
 }

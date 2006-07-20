@@ -19,8 +19,7 @@ package org.apache.maven.repository.manager.web.action;
 import com.opensymphony.webwork.interceptor.ParameterAware;
 import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.repository.configuration.Configuration;
-import org.apache.maven.repository.manager.web.execution.DiscovererExecution;
-import org.apache.maven.repository.manager.web.job.DiscovererScheduler;
+import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.manager.web.utils.ConfigurationManager;
 
 import java.util.HashMap;
@@ -31,25 +30,17 @@ import java.util.Map;
  * It invokes the DiscovererScheduler to set the DiscoverJob in the scheduler.
  *
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="baseAction"
+ * @todo don't like this as a base and as a forwarding action!
  */
 public class BaseAction
     extends ActionSupport
     implements ParameterAware
 {
-    /**
-     * @plexus.requirement
-     */
-    private DiscovererExecution execution;
 
     /**
      * @plexus.requirement
      */
-    private DiscovererScheduler discovererScheduler;
-
-    /**
-     * @plexus.requirement
-     */
-    private ConfigurationManager configManager;
+    private ConfigurationStore configurationStore;
 
     private Map parameters;
 
@@ -72,18 +63,17 @@ public class BaseAction
     {
         try
         {
-            Configuration config = configManager.getConfiguration();
+            Configuration config = configurationStore.getConfigurationFromStore();
             Map parameters = new HashMap();
             parameters.put( ConfigurationManager.INDEXPATH, config.getIndexPath() );
             parameters.put( ConfigurationManager.MIN_INDEXPATH, config.getMinimalIndexPath() );
             parameters.put( ConfigurationManager.DISCOVERY_BLACKLIST_PATTERNS, config.getDiscoveryBlackListPatterns() );
             parameters.put( ConfigurationManager.DISCOVER_SNAPSHOTS, Boolean.valueOf( config.isDiscoverSnapshots() ) );
-            parameters.put( ConfigurationManager.DISCOVERY_CRON_EXPRESSION, config.getDiscoveryCronExpression() );
+            parameters.put( ConfigurationManager.DISCOVERY_CRON_EXPRESSION, config.getIndexerCronExpression() );
             this.parameters = parameters;
 
             //Configuration configuration = new Configuration(); // TODO!
 //            execution.executeDiscovererIfIndexDoesNotExist( new File( config.getIndexPath() ) );
-            discovererScheduler.setSchedule( config.getDiscoveryCronExpression() );
         }
         catch ( Exception e )
         {

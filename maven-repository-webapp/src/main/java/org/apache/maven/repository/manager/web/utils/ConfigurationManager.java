@@ -90,7 +90,7 @@ public class ConfigurationManager
 
             if ( name.equals( DISCOVERY_CRON_EXPRESSION ) )
             {
-                config.setDiscoveryCronExpression( value );
+                config.setIndexerCronExpression( value );
             }
             if ( name.equals( REPOSITORY_LAYOUT ) )
             {

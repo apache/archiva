@@ -20,8 +20,10 @@ import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.repository.configuration.Configuration;
+import org.apache.maven.repository.configuration.ConfigurationChangeException;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
+import org.apache.maven.repository.configuration.InvalidConfigurationException;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.codehaus.plexus.util.StringUtils;
@@ -49,7 +51,8 @@ public class ConfigureAction
     private Configuration configuration;
 
     public String execute()
-        throws IOException, RepositoryIndexException, RepositoryIndexSearchException, ConfigurationStoreException
+        throws IOException, RepositoryIndexException, RepositoryIndexSearchException, ConfigurationStoreException,
+        InvalidConfigurationException, ConfigurationChangeException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -98,7 +101,7 @@ public class ConfigureAction
     }
 
     public void prepare()
-        throws Exception
+        throws ConfigurationStoreException
     {
         configuration = configurationStore.getConfigurationFromStore();
     }

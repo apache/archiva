@@ -43,5 +43,12 @@ public interface ConfigurationStore
      * @param configuration the configuration to store
      */
     void storeConfiguration( Configuration configuration )
-        throws ConfigurationStoreException;
+        throws ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException;
+
+    /**
+     * Add a configuration change listener.
+     *
+     * @param listener the listener
+     */
+    void addChangeListener( ConfigurationChangeListener listener );
 }

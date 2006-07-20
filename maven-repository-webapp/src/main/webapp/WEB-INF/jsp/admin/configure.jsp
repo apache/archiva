@@ -30,7 +30,7 @@
     <ww:actionmessage />
     <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
       <ww:textfield name="repositoryDirectory" label="Repository Directory" size="100" />
-      <ww:textfield name="discoveryCronExpression" label="Discovery Cron Expression" />
+      <ww:textfield name="indexerCronExpression" label="Indexing Cron Expression" />
       <ww:submit value="Save Configuration" />
     </ww:form>
   </div>

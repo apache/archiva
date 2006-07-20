@@ -17,20 +17,15 @@ package org.apache.maven.repository.configuration;
  */
 
 /**
- * Component capable of noticing configuration changes and adjusting accordingly.
- * This is not a Plexus role.
+ * An error changing the configuration
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface ConfigurationChangeListener
+public class ConfigurationChangeException
+    extends Exception
 {
-    /**
-     * Notify the object that there has been a configuration change.
-     *
-     * @param configuration the new configuration
-     * @throws InvalidConfigurationException if there is a problem with the new configuration
-     * @throws ConfigurationChangeException  if there is a problem changing the configuration, but the configuration is valid
-     */
-    void notifyOfConfigurationChange( Configuration configuration )
-        throws InvalidConfigurationException, ConfigurationChangeException;
+    public ConfigurationChangeException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 }

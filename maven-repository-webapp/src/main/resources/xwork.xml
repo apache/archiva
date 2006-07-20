@@ -101,6 +101,10 @@
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <result>/WEB-INF/jsp/admin/configure.jsp</result>
     </action>
+
+    <action name="runIndexer" class="runIndexerAction">
+      <!-- TODO: back to page where this comes from! -->
+    </action>
   </package>
 </xwork>
 
