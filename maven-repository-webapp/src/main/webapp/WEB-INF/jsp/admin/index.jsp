@@ -18,23 +18,33 @@
 
 <html>
 <head>
-  <title>Configuration</title>
+  <title>Administration</title>
   <ww:head />
 </head>
 
 <body>
 
-<h1>Configuration</h1>
+<h1>Administration</h1>
 
 <div id="contentArea">
-  <div id="searchBox">
-    <ww:actionmessage />
-    <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
-      <ww:textfield name="repositoryDirectory" label="Repository Directory" size="100" />
-      <ww:textfield name="indexerCronExpression" label="Indexing Cron Expression" />
-      <ww:submit value="Save Configuration" />
-    </ww:form>
-  </div>
+  <h2>Configuration</h2>
+  <table>
+    <tr>
+      <th>Repository Directory</th>
+      <td><ww:property value="repositoryDirectory" /></td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>Indexing Schedule</th>
+      <td><ww:property value="indexerCronExpression" /></td>
+      <td><a href="<ww:url action="runIndexer" />">Run Now</a></td>
+    </tr>
+    <tr>
+      <td><a href="<ww:url action="configure" />">Edit Configuration</a></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
 </div>
 
 </body>

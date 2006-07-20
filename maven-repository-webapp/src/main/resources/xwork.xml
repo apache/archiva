@@ -62,10 +62,6 @@
       <result name="proxyError" type="dispatcher">proxyError</result>
     </action>
 
-    <action name="search" class="org.apache.maven.repository.manager.web.action.PackageSearchAction">
-      <result name="success" type="dispatcher">/WEB-INF/jsp/results.jsp</result>
-    </action>
-
     <action name="browse" class="org.apache.maven.repository.manager.web.action.RepositoryBrowseAction">
       <result name="success" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
       <result name="error" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
@@ -77,17 +73,21 @@
   <package name="admin" namespace="/admin" extends="webwork-default">
     <default-interceptor-ref name="defaultStack"/>
 
+    <action name="index" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
+    </action>
+
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
     </action>
 
     <action name="saveConfiguration" class="configureAction">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
-      <result>/WEB-INF/jsp/admin/configure.jsp</result>
+      <result>/WEB-INF/jsp/admin/index.jsp</result>
     </action>
 
     <action name="runIndexer" class="runIndexerAction">
-      <!-- TODO: back to page where this comes from! -->
+      <result type="redirect">/admin/index.action</result>
     </action>
   </package>
 </xwork>

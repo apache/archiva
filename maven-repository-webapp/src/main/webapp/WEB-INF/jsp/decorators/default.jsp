@@ -95,7 +95,7 @@
       --%>
 
       <li class="expanded">
-        <a href="#">Administration</a>
+        <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
         <ul>
           <li class="none">
             <my:currentWWUrl action="configure" namespace="/admin">Configuration</my:currentWWUrl>
@@ -104,7 +104,7 @@
       </li>
     </ul>
 
-
+    <br />
   </div>
 </div>
 

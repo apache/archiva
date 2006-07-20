@@ -6,6 +6,29 @@
     <h1>Administration</h1>
 
     <div id="contentArea">
+      <h2>Configuration</h2>
+
+      <table>
+        <tr>
+          <th>Repository Directory</th>
+          <td>...</td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>Indexing Schedule</th>
+          <td>...</td>
+          <td>
+            <a href="#">Run Now</a>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td>
+            <a href="config.html">Edit Configuration</a>
+          </td>
+        </tr>
+      </table>
     </div>
     <div id="notes">
       <p>Notes</p>

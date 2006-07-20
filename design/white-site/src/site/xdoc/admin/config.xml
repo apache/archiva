@@ -7,7 +7,7 @@
 
     <div id="contentArea">
       <div id="searchBox">
-        <form method="post" action="saveConfiguration" namespace="/admin" validate="true">
+        <form method="post" action="index.html">
           <p>
             Repository Directory:
             <input type="text" size="100"/>
