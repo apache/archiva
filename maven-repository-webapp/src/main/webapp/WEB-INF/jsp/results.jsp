@@ -48,6 +48,21 @@
             <td><c:out value="${result.artifact.artifactId}" /></td>
             <td><c:out value="${result.artifact.version}" /></td>
               <%-- TODO: hits
+            <td>
+              <table border="1px" width="100%" cellspacing="0">
+                <c:forEach items="${result.fieldMatchesEntrySet}" var="entry">
+                  <tr>
+                    <td valign="top" width="15%" align="right"><c:out value="${entry.key}"/></td>
+                    <td valign="top">
+                      <c:forEach items="${entry.value}" var="item">
+                        <c:out value="${item}" />
+                      </c:forEach>
+                      <br/>
+                    </td>
+                  </tr>
+                </c:forEach>
+              </table>
+            </td>
               <td>
 
                 <code>org.apache.maven</code>
