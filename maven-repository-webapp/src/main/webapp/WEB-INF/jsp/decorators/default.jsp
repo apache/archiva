@@ -20,7 +20,9 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
-  <title>Maven Repository Manager :: <decorator:title default="Maven Repository Manager" /></title>
+  <title>Maven Repository Manager ::
+    <decorator:title default="Maven Repository Manager" />
+  </title>
 
   <style type="text/css" media="all">
     @import url( "<%= request.getContextPath() %>/css/maven-base.css" );
@@ -34,7 +36,9 @@
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
 <div id="banner">
   <span id="bannerLeft">
-    <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
+    <%--
+        <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
+    --%>
   </span>
   <span id="bannerRight">
     <!-- img src="..." alt="" /> -->
