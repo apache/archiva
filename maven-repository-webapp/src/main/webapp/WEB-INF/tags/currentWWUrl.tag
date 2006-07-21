@@ -18,8 +18,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ attribute name="action" required="true" %>
 <%@ attribute name="namespace" required="true" %>
-<ww:url id="currentUrl" />
-<ww:url action="${action}" namespace="${namespace}" id="url" />
+<c:set var="currentUrl">
+  <ww:url />
+</c:set>
+<c:set var="url">
+  <ww:url action="${action}" namespace="${namespace}" />
+</c:set>
 <c:choose>
   <c:when test="${currentUrl == url}">
     <strong>
