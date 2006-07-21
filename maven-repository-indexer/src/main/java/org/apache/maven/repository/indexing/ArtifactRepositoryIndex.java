@@ -18,9 +18,11 @@ package org.apache.maven.repository.indexing;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.digest.DigesterException;
 
@@ -29,8 +31,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -74,7 +78,7 @@ public class ArtifactRepositoryIndex
         {
             deleteDocuments( getTermList( artifactList ) );
         }
-        catch( IOException e )
+        catch ( IOException e )
         {
             throw new RepositoryIndexException( "Failed to delete an index document", e );
         }
@@ -253,5 +257,88 @@ public class ArtifactRepositoryIndex
         {
             files.append( name ).append( "\n" );
         }
+    }
+
+    public List enumerateGroupIds()
+        throws IOException
+    {
+        IndexReader indexReader = IndexReader.open( getIndexPath() );
+
+        Set groups = new HashSet();
+
+        try
+        {
+            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            {
+                Document doc = indexReader.document( i );
+                groups.add( doc.getField( FLD_GROUPID ).stringValue() );
+            }
+        }
+        finally
+        {
+            indexReader.close();
+        }
+
+        List sortedGroups = new ArrayList( groups );
+        Collections.sort( sortedGroups );
+        return sortedGroups;
+    }
+
+    public List getArtifacts( String groupId )
+        throws IOException
+    {
+        IndexReader indexReader = IndexReader.open( getIndexPath() );
+
+        Set artifactIds = new HashSet();
+
+        try
+        {
+            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            {
+                Document doc = indexReader.document( i );
+                if ( doc.getField( FLD_GROUPID ).stringValue().equals( groupId ) )
+                {
+                    artifactIds.add( doc.getField( FLD_ARTIFACTID ).stringValue() );
+                }
+            }
+        }
+        finally
+        {
+            indexReader.close();
+        }
+
+        List sortedArtifactIds = new ArrayList( artifactIds );
+        Collections.sort( sortedArtifactIds );
+        return sortedArtifactIds;
+    }
+
+    public List getVersions( String groupId, String artifactId )
+        throws IOException
+    {
+        IndexReader indexReader = IndexReader.open( getIndexPath() );
+
+        Set versions = new HashSet();
+
+        try
+        {
+            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            {
+                Document doc = indexReader.document( i );
+                if ( doc.getField( FLD_GROUPID ).stringValue().equals( groupId ) &&
+                    doc.getField( FLD_ARTIFACTID ).stringValue().equals( artifactId ) )
+                {
+                    // DefaultArtifactVersion is used for correct ordering
+                    versions.add( new DefaultArtifactVersion( doc.getField( FLD_VERSION ).stringValue() ) );
+                }
+            }
+        }
+        finally
+        {
+            indexReader.close();
+        }
+
+        List sortedVersions = new ArrayList( versions );
+        Collections.sort( sortedVersions );
+        return sortedVersions;
     }
 }

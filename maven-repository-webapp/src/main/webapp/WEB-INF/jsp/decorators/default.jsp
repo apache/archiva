@@ -75,11 +75,9 @@
         <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
       </li>
 
-      <%-- TODO
-            <li class="none">
-              <a href="#">Browse</a>
-            </li>
-      --%>
+      <li class="none">
+        <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
+      </li>
     </ul>
     <h5>Manage</h5>
     <ul>

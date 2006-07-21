@@ -39,6 +39,7 @@
     <global-results>
       <!-- TODO: might want an extra message on the configure page when this first happens -->
       <result name="config-needed" type="redirect">/admin/configure.action</result>
+      <result name="error">/WEB-INF/jsp/generalError.jsp</result>
     </global-results>
 
     <action name="index" class="searchAction" method="input">
@@ -61,6 +62,22 @@
       <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
     </action>
 
+    <action name="browse" class="browseAction" method="browse">
+      <result>/WEB-INF/jsp/browse.jsp</result>
+    </action>
+
+    <action name="browseGroup" class="browseAction" method="browseGroup">
+      <result>/WEB-INF/jsp/browseGroup.jsp</result>
+    </action>
+
+    <action name="browseArtifact" class="browseAction" method="browseArtifact">
+      <result>/WEB-INF/jsp/browseArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifact" class="showArtifactAction">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
     <!-- TODO! old actions
     <action name="proxy" class="org.apache.maven.repository.proxy.web.action.RepositoryProxyAction">
       <result name="success" type="stream">
@@ -70,11 +87,6 @@
       </result>
       <result name="notFound" type="dispatcher">notFoundError</result>
       <result name="proxyError" type="dispatcher">proxyError</result>
-    </action>
-
-    <action name="browse" class="org.apache.maven.repository.manager.web.action.RepositoryBrowseAction">
-      <result name="success" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
-      <result name="error" type="dispatcher">/WEB-INF/jsp/browse.jsp</result>
     </action>
     -->
   </package>

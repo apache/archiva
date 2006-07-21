@@ -32,10 +32,9 @@ import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Searches for searchString in all indexed fields.
+ * Search all indexed fields by the given criteria.
  *
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="searchAction"
  */
@@ -71,11 +70,6 @@ public class SearchAction
      * @plexus.requirement
      */
     private ConfiguredRepositoryFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
-     */
-    private Map repositoryLayouts;
 
     /**
      * @plexus.requirement

@@ -41,7 +41,7 @@
                     <th></th>
           --%>
         </tr>
-        <ww:set name="searchResults" scope="request" value="searchResults" />
+        <ww:set name="searchResults" value="searchResults" />
         <c:forEach items="${searchResults}" var="result" varStatus="i">
           <tr class="${i.index % 2 == 0 ? "b" : "a"}">
             <td><c:out value="${result.artifact.groupId}" /></td>
