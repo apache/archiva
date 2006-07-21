@@ -96,24 +96,31 @@ public class DefaultRepositoryTaskScheduler
     private void scheduleJobs( Configuration configuration )
         throws ParseException, SchedulerException
     {
-        JobDetail jobDetail = new JobDetail( INDEXER_JOB, DISCOVERER_GROUP, RepositoryTaskJob.class );
-        JobDataMap dataMap = new JobDataMap();
-        dataMap.put( AbstractJob.LOGGER, getLogger() );
-        dataMap.put( RepositoryTaskJob.TASK_KEY, indexerTask );
-        jobDetail.setJobDataMap( dataMap );
-
-        getLogger().info( "Scheduling indexer: " + configuration.getIndexerCronExpression() );
-        CronTrigger trigger =
-            new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
-        scheduler.scheduleJob( jobDetail, trigger );
-
-        try
+        if ( configuration.getIndexPath() != null )
         {
-            indexerTask.executeNowIfNeeded();
+            JobDetail jobDetail = new JobDetail( INDEXER_JOB, DISCOVERER_GROUP, RepositoryTaskJob.class );
+            JobDataMap dataMap = new JobDataMap();
+            dataMap.put( AbstractJob.LOGGER, getLogger() );
+            dataMap.put( RepositoryTaskJob.TASK_KEY, indexerTask );
+            jobDetail.setJobDataMap( dataMap );
+
+            getLogger().info( "Scheduling indexer: " + configuration.getIndexerCronExpression() );
+            CronTrigger trigger =
+                new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
+            scheduler.scheduleJob( jobDetail, trigger );
+
+            try
+            {
+                indexerTask.executeNowIfNeeded();
+            }
+            catch ( TaskExecutionException e )
+            {
+                getLogger().error( "Error executing task first time, continuing anyway: " + e.getMessage(), e );
+            }
         }
-        catch ( TaskExecutionException e )
+        else
         {
-            getLogger().error( "Error executing task first time, continuing anyway: " + e.getMessage(), e );
+            getLogger().info( "Not scheduling indexer - index path is not configured" );
         }
 
         // TODO: wire in the converter
@@ -159,6 +166,5 @@ public class DefaultRepositoryTaskScheduler
         throws TaskExecutionException
     {
         indexerTask.execute();
-
     }
 }
