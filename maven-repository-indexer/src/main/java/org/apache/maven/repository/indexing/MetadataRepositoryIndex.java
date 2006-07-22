@@ -27,10 +27,10 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
 
 /**
  * This class indexes the metadata in the repository.
@@ -76,7 +76,7 @@ public class MetadataRepositoryIndex
         {
             deleteDocuments( getTermList( metadataList ) );
         }
-        catch( IOException e )
+        catch ( IOException e )
         {
             throw new RepositoryIndexException( "Failed to delete an index document", e );
         }
@@ -163,9 +163,17 @@ public class MetadataRepositoryIndex
             }
         }
         doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );
-        doc.add( Field.Text( FLD_GROUPID, metadata.getGroupId() ) );
 
-        if ( metadata.getArtifactId() != null && !"".equals( metadata.getArtifactId() ) )
+        if ( metadata.getGroupId() != null )
+        {
+            doc.add( Field.Text( FLD_GROUPID, metadata.getGroupId() ) );
+        }
+        else
+        {
+            doc.add( Field.Text( FLD_GROUPID, "" ) );
+        }
+
+        if ( metadata.getArtifactId() != null )
         {
             doc.add( Field.Text( FLD_ARTIFACTID, metadata.getArtifactId() ) );
         }
@@ -174,7 +182,7 @@ public class MetadataRepositoryIndex
             doc.add( Field.Text( FLD_ARTIFACTID, "" ) );
         }
 
-        if ( metadata.getVersion() != null && !"".equals( metadata.getVersion() ) )
+        if ( metadata.getVersion() != null )
         {
             doc.add( Field.Text( FLD_VERSION, metadata.getVersion() ) );
         }
