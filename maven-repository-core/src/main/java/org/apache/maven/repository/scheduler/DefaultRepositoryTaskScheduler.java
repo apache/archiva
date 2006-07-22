@@ -109,6 +109,7 @@ public class DefaultRepositoryTaskScheduler
                 new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
             scheduler.scheduleJob( jobDetail, trigger );
 
+            // TODO: run as a job so it doesn't block startup/configuration saving
             try
             {
                 indexerTask.executeNowIfNeeded();

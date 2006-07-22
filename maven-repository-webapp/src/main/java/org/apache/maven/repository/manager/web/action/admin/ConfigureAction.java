@@ -68,6 +68,8 @@ public class ConfigureAction
         // TODO: these defaults belong in the model. They shouldn't be stored here, as you want them to re-default
         // should the repository change even if these didn't
 
+        // TODO: if these are changed, do we move the index or recreate it?
+
         // TODO: these should be on an advanced configuration form, not the standard one
         if ( StringUtils.isEmpty( configuration.getIndexPath() ) )
         {
@@ -84,6 +86,8 @@ public class ConfigureAction
         assert configuration.isValid();
 
         configurationStore.storeConfiguration( configuration );
+
+        // TODO: if the repository has changed, we need to check if indexing is needed
 
         addActionMessage( "Successfully saved configuration" );
 
