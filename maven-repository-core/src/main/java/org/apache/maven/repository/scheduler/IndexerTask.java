@@ -92,6 +92,7 @@ public class IndexerTask
     private void execute( Configuration configuration, File indexPath )
         throws TaskExecutionException
     {
+        long time = System.currentTimeMillis();
         getLogger().info( "Starting repository discovery process" );
 
         try
@@ -131,7 +132,8 @@ public class IndexerTask
             throw new TaskExecutionException( e.getMessage(), e );
         }
 
-        getLogger().info( "Finished repository indexing process" );
+        time = System.currentTimeMillis() - time;
+        getLogger().info( "Finished repository indexing process in " + time + "ms" );
     }
 
     public void executeNowIfNeeded()
