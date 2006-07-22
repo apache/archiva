@@ -92,7 +92,7 @@ public class PomRepositoryIndex
         {
             deleteDocuments( getTermList( pomList ) );
         }
-        catch( IOException e )
+        catch ( IOException e )
         {
             throw new RepositoryIndexException( "Failed to delete an index document", e );
         }
@@ -152,15 +152,29 @@ public class PomRepositoryIndex
     private Document createDocument( Model pom )
         throws RepositoryIndexException
     {
+        String version = pom.getVersion();
+        if ( version == null )
+        {
+            // It was inherited
+            version = pom.getParent().getVersion();
+            // TODO: do we need to use the general inheritence mechanism or do we only want to search within those defined in this pom itself?
+            // I think searching just this one is adequate, and it is only necessary to inherit the version and group ID [BP]
+        }
+
+        String groupId = pom.getGroupId();
+        if ( groupId == null )
+        {
+            groupId = pom.getParent().getGroupId();
+        }
+
         Document doc = new Document();
         doc.add( Field.Keyword( FLD_ID, POM + ":" + pom.getId() ) );
-        doc.add( Field.Text( FLD_GROUPID, pom.getGroupId() ) );
+        doc.add( Field.Text( FLD_GROUPID, groupId ) );
         doc.add( Field.Text( FLD_ARTIFACTID, pom.getArtifactId() ) );
-        doc.add( Field.Text( FLD_VERSION, pom.getVersion() ) );
+        doc.add( Field.Text( FLD_VERSION, version ) );
         doc.add( Field.Keyword( FLD_PACKAGING, pom.getPackaging() ) );
 
-        Artifact artifact =
-            artifactFactory.createBuildArtifact( pom.getGroupId(), pom.getArtifactId(), pom.getVersion(), "pom" );
+        Artifact artifact = artifactFactory.createBuildArtifact( groupId, pom.getArtifactId(), version, "pom" );
         File pomFile = new File( repository.getBasedir(), repository.pathOf( artifact ) );
         doc.add( Field.Text( FLD_SHA1, getChecksum( Digester.SHA1, pomFile.getAbsolutePath() ) ) );
         doc.add( Field.Text( FLD_MD5, getChecksum( Digester.MD5, pomFile.getAbsolutePath() ) ) );

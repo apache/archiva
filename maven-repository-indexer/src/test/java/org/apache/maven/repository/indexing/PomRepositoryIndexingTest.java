@@ -100,6 +100,43 @@ public class PomRepositoryIndexingTest
         }
     }
 
+    public void testInheritedFields()
+        throws Exception
+    {
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        Model pom = getPom( "test.inherited", "test-inherited", "1.0.15" );
+
+        PomRepositoryIndex indexer = factory.createPomRepositoryIndex( indexPath, repository );
+        indexer.indexPom( pom );
+
+        RepositoryIndexSearchLayer repoSearchLayer =
+            (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
+
+        // search version
+        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0.15" );
+        List artifactList = repoSearchLayer.searchAdvanced( qry, indexer );
+        assertEquals( 1, artifactList.size() );
+        for ( Iterator iter = artifactList.iterator(); iter.hasNext(); )
+        {
+            SearchResult result = (SearchResult) iter.next();
+            Artifact artifact = result.getArtifact();
+            assertEquals( "1.0.15", artifact.getVersion() );
+        }
+
+        // search group id
+        qry = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test.inherited" );
+        artifactList = repoSearchLayer.searchAdvanced( qry, indexer );
+        assertEquals( 1, artifactList.size() );
+        Iterator artifacts = artifactList.iterator();
+        if ( artifacts.hasNext() )
+        {
+            SearchResult result = (SearchResult) artifacts.next();
+            Artifact artifact = result.getArtifact();
+            assertEquals( "test.inherited", artifact.getGroupId() );
+        }
+
+    }
+
     /**
      * Test the PomRepositoryIndex with DefaultRepositoryIndexSearcher using a single-phrase search.
      *

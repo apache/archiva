@@ -275,7 +275,17 @@ public class DefaultRepositoryIndexSearchLayer
      */
     private SearchResult createSearchResult( Model model, String field, List searchResults )
     {
-        int index = getListIndex( model.getGroupId(), model.getArtifactId(), model.getVersion(), searchResults );
+        String groupId = model.getGroupId();
+        if ( groupId == null )
+        {
+            groupId = model.getParent().getGroupId();
+        }
+        String version = model.getVersion();
+        if ( version == null )
+        {
+            version = model.getParent().getVersion();
+        }
+        int index = getListIndex( groupId, model.getArtifactId(), version, searchResults );
         SearchResult result;
         Map map;
 
@@ -288,8 +298,8 @@ public class DefaultRepositoryIndexSearchLayer
         else
         {
             result = new SearchResult();
-            result.setArtifact( factory.createBuildArtifact( model.getGroupId(), model.getArtifactId(),
-                                                             model.getVersion(), model.getPackaging() ) );
+            result.setArtifact(
+                factory.createBuildArtifact( groupId, model.getArtifactId(), version, model.getPackaging() ) );
             map = new HashMap();
         }
 
