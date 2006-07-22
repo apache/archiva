@@ -30,9 +30,9 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Edwin Punzalan
@@ -449,6 +449,30 @@ public class ArtifactRepositoryIndexingTest
         Artifact artifact = getArtifact( "org.apache.maven", "maven-artifact", "2.0.1" );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         indexer.deleteDocument( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
+
+        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
+        List artifacts = repoSearcher.search( qry, indexer );
+        assertEquals( 0, artifacts.size() );
+    }
+
+    /**
+     * Test delete of document from the artifact index.
+     *
+     * @throws Exception
+     */
+    public void testCorruptJar()
+        throws Exception
+    {
+        createTestIndex();
+
+        RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
+        RepositoryIndexSearcher repoSearcher = (RepositoryIndexSearcher) lookup( RepositoryIndexSearcher.ROLE );
+
+        ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
+
+        Artifact artifact = getArtifact( "org.apache.maven", "maven-corrupt-jar", "2.0" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        indexer.indexArtifact( artifact );
 
         Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
         List artifacts = repoSearcher.search( qry, indexer );

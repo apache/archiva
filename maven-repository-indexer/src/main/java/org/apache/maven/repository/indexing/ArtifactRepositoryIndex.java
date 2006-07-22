@@ -111,10 +111,8 @@ public class ArtifactRepositoryIndex
      *
      * @param artifactList
      * @return
-     * @throws RepositoryIndexException
      */
     private List getDocumentList( List artifactList )
-        throws RepositoryIndexException
     {
         List list = new ArrayList();
 
@@ -122,7 +120,15 @@ public class ArtifactRepositoryIndex
         {
             Artifact artifact = (Artifact) artifacts.next();
 
-            list.add( createDocument( artifact ) );
+            try
+            {
+                list.add( createDocument( artifact ) );
+            }
+            catch ( RepositoryIndexException e )
+            {
+                // TODO: log the problem and record it as a repository error
+                // We log the problem, but do not add the document to the list to be added to the index
+            }
         }
 
         return list;
@@ -268,7 +274,7 @@ public class ArtifactRepositoryIndex
 
         try
         {
-            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            for ( int i = 0; i < indexReader.numDocs(); i++ )
             {
                 Document doc = indexReader.document( i );
                 groups.add( doc.getField( FLD_GROUPID ).stringValue() );
@@ -293,7 +299,7 @@ public class ArtifactRepositoryIndex
 
         try
         {
-            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            for ( int i = 0; i < indexReader.numDocs(); i++ )
             {
                 Document doc = indexReader.document( i );
                 if ( doc.getField( FLD_GROUPID ).stringValue().equals( groupId ) )
@@ -321,7 +327,7 @@ public class ArtifactRepositoryIndex
 
         try
         {
-            for ( int i = 0; i < indexReader.numDocs(); i ++ )
+            for ( int i = 0; i < indexReader.numDocs(); i++ )
             {
                 Document doc = indexReader.document( i );
                 if ( doc.getField( FLD_GROUPID ).stringValue().equals( groupId ) &&
