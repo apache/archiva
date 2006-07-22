@@ -140,12 +140,13 @@ public class DefaultArtifactDiscoverer
                     // poor encapsulation requires we do this to populate base version
                     if ( !result.isSnapshot() )
                     {
-                        throw new DiscovererException( "Failed to create a snapshot artifact" );
+                        throw new DiscovererException( "Failed to create a snapshot artifact: " + result );
                     }
                     else if ( !result.getBaseVersion().equals( version ) )
                     {
                         throw new DiscovererException(
-                            "Built snapshot artifact base version does not match " + "path version" );
+                            "Built snapshot artifact base version does not match path version: " + result +
+                                "; should have been version: " + version );
                     }
                     else
                     {
