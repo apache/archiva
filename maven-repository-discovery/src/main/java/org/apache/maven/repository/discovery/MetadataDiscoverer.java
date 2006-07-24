@@ -36,5 +36,6 @@ public interface MetadataDiscoverer
      * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
      * @return the list of artifacts found
      */
-    List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns );
+    List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns )
+        throws DiscovererException;
 }

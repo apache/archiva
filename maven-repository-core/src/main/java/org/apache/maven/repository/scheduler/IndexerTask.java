@@ -26,6 +26,7 @@ import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -152,7 +153,7 @@ public class IndexerTask
         try
         {
             ArtifactRepository repository = repoFactory.createRepository( configuration );
-            ArtifactRepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
+            RepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
             if ( !artifactIndex.indexExists() )
             {
                 execute( configuration, indexPath );

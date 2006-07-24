@@ -140,4 +140,13 @@ public interface RepositoryIndex
      */
     void deleteDocuments( List termList )
         throws RepositoryIndexException, IOException;
+
+    /**
+     * Check if the index already exists.
+     *
+     * @return true if the index already exists
+     * @throws RepositoryIndexException
+     */
+    boolean indexExists()
+        throws RepositoryIndexException;
 }

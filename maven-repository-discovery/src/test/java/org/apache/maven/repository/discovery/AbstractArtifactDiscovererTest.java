@@ -111,7 +111,7 @@ public abstract class AbstractArtifactDiscovererTest
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertFalse( "Check not included",
-                     artifacts.contains( createArtifact( "org.apache.maven.update", "test-not-updated", "1.0" ) ) );
+                     artifacts.contains( createArtifact( "org.apache.maven.update", "test-updated", "1.0" ) ) );
     }
 
     public void testNotUpdatedInRepository()

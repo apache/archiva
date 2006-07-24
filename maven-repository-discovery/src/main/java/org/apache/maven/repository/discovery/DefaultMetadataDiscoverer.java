@@ -36,6 +36,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -51,21 +52,39 @@ public class DefaultMetadataDiscoverer
 {
     /**
      * Standard patterns to include in discovery of metadata files.
-     *
-     * @todo do we really need all these paths? Add tests for all 3 levels and confirm only 2 are needed.
      */
-    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml", "**/*/*-metadata.xml",
-        "**/*/*/*-metadata.xml", "**/*-metadata-*.xml", "**/*/*-metadata-*.xml", "**/*/*/*-metadata-*.xml"};
+    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/maven-metadata.xml", "**/maven-metadata-*.xml"};
 
     public List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns )
+        throws DiscovererException
     {
+        if ( !"file".equals( repository.getProtocol() ) )
+        {
+            throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
+        }
+
         long comparisonTimestamp = readComparisonTimestamp( repository, operation );
+
+        // Note that last checked time is deliberately set to the start of the process so that anything added
+        // mid-discovery and missed by the scanner will get checked next time.
+        // Due to this, there must be no negative side-effects of discovering something twice.
+        Date newLastCheckedTime = new Date();
 
         List metadataFiles = new ArrayList();
         List metadataPaths = scanForArtifactPaths( new File( repository.getBasedir() ), blacklistedPatterns,
                                                    STANDARD_DISCOVERY_INCLUDES, null, comparisonTimestamp );
 
-        // TODO: save! should we be using a different entry for metadata?
+        // Also note that the last check time, while set at the start, is saved at the end, so that if any exceptions
+        // occur, then the timestamp is not updated so that the discovery is attempted again
+        // TODO: under the list-return behaviour we have now, exceptions might occur later and the timestamp will not be reset - see MRM-83
+        try
+        {
+            setLastCheckedTime( repository, operation, newLastCheckedTime );
+        }
+        catch ( IOException e )
+        {
+            throw new DiscovererException( "Error writing metadata: " + e.getMessage(), e );
+        }
 
         for ( Iterator i = metadataPaths.iterator(); i.hasNext(); )
         {
@@ -155,7 +174,7 @@ public class DefaultMetadataDiscoverer
         Artifact artifact = null;
         if ( !StringUtils.isEmpty( metaVersion ) )
         {
-            artifact = artifactFactory.createBuildArtifact( metaGroupId, metaArtifactId, metaVersion, "jar" );
+            artifact = artifactFactory.createProjectArtifact( metaGroupId, metaArtifactId, metaVersion );
         }
 
         // snapshotMetadata
@@ -172,6 +191,11 @@ public class DefaultMetadataDiscoverer
             // artifactMetadata
             if ( artifact != null )
             {
+                metadata = new ArtifactRepositoryMetadata( artifact );
+            }
+            else
+            {
+                artifact = artifactFactory.createProjectArtifact( metaGroupId, metaArtifactId, "1.0" );
                 metadata = new ArtifactRepositoryMetadata( artifact );
             }
         }

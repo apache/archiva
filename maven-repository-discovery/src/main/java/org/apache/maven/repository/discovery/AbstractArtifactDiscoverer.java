@@ -18,19 +18,13 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomWriter;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Base class for artifact discoverers.
@@ -48,8 +42,6 @@ public abstract class AbstractArtifactDiscoverer
     private static final String[] STANDARD_DISCOVERY_EXCLUDES = {"bin/**", "reports/**", ".maven/**", "**/*.md5",
         "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
         "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
-
-    private static final String POM = ".pom";
 
     private List scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, long comparisonTimestamp )
     {
@@ -111,78 +103,6 @@ public abstract class AbstractArtifactDiscoverer
         }
 
         return artifacts;
-    }
-
-    public void resetLastCheckedTime( ArtifactRepository repository, String operation )
-        throws IOException
-    {
-        // TODO: get these changes into maven-metadata.xml and migrate towards that. The model is further diverging to a different layout at each level so submodels might be a good idea.
-        // TODO: maven-artifact probably needs an improved pathOfMetadata to cope with top level metadata
-        // TODO: might we need to write this as maven-metadata-local in some circumstances? merge others? Probably best to keep it simple and just use this format at the root. No need to merge anything that I can see
-        // TODO: since this metadata isn't meant to be shared, perhaps another file is called for after all.
-        // Format is: <repository><lastDiscovery><KEY>yyyyMMddHHmmss</KEY></lastDiscovery></repository> (ie, flat properties)
-
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-
-        Xpp3Dom dom = readDom( file );
-
-        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
-
-        boolean changed = false;
-
-        // do this in reverse so that removing doesn't affect counter
-        Xpp3Dom[] children = lastDiscoveryDom.getChildren();
-        for ( int i = lastDiscoveryDom.getChildCount() - 1; i >= 0; i-- )
-        {
-            if ( children[i].getName().equals( operation ) )
-            {
-                changed = true;
-                lastDiscoveryDom.removeChild( i );
-            }
-        }
-
-        if ( changed )
-        {
-            saveDom( file, dom );
-        }
-    }
-
-    private void saveDom( File file, Xpp3Dom dom )
-        throws IOException
-    {
-        FileWriter writer = new FileWriter( file );
-
-        // save metadata
-        try
-        {
-            Xpp3DomWriter.write( writer, dom );
-        }
-        finally
-        {
-            IOUtil.close( writer );
-        }
-    }
-
-    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
-        throws IOException
-    {
-        // see notes in resetLastCheckedTime
-
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-
-        Xpp3Dom dom = readDom( file );
-
-        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
-
-        Xpp3Dom entry = lastDiscoveryDom.getChild( operation );
-        if ( entry == null )
-        {
-            entry = new Xpp3Dom( operation );
-            lastDiscoveryDom.addChild( entry );
-        }
-        entry.setValue( new SimpleDateFormat( DATE_FMT, Locale.US ).format( date ) );
-
-        saveDom( file, dom );
     }
 
     /**
