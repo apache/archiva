@@ -111,6 +111,7 @@ public class IndexerTask
                 indexArtifact( artifacts, indexPath, defaultRepository );
             }
 
+            // TODO: I believe this is incorrect, since it only discovers standalone POMs, not the individual artifacts!
             List models = discoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns, includeSnapshots );
             if ( !models.isEmpty() )
             {

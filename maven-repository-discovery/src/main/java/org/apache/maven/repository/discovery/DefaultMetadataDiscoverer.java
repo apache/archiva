@@ -23,8 +23,8 @@ import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,17 +50,14 @@ public class DefaultMetadataDiscoverer
 {
     /**
      * Standard patterns to include in discovery of metadata files.
+     *
+     * @todo do we really need all these paths? Add tests for all 3 levels and confirm only 2 are needed.
      */
-    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml",
-                                                                 "**/*/*-metadata.xml",
-                                                                 "**/*/*/*-metadata.xml",
-                                                                 "**/*-metadata-*.xml",
-                                                                 "**/*/*-metadata-*.xml",
-                                                                 "**/*/*/*-metadata-*.xml"
-                                                                };
+    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml", "**/*/*-metadata.xml",
+        "**/*/*/*-metadata.xml", "**/*-metadata-*.xml", "**/*/*-metadata-*.xml", "**/*/*/*-metadata-*.xml"};
 
     /**
-     * @see org.apache.maven.repository.discovery.MetadataDiscoverer#discoverMetadata(java.io.File, String)
+     * @see org.apache.maven.repository.discovery.MetadataDiscoverer#discoverMetadata(java.io.File,String)
      */
     public List discoverMetadata( File repositoryBase, String blacklistedPatterns )
     {
@@ -112,8 +109,8 @@ public class DefaultMetadataDiscoverer
         catch ( MalformedURLException e )
         {
             // shouldn't happen
-            throw new DiscovererException( "Error constructing metadata file '" + repoPath + "': " +
-                                           e.getMessage(), e );
+            throw new DiscovererException( "Error constructing metadata file '" + repoPath + "': " + e.getMessage(),
+                                           e );
         }
         catch ( IOException e )
         {
@@ -133,7 +130,7 @@ public class DefaultMetadataDiscoverer
     /**
      * Builds a RepositoryMetadata object from a Metadata object and its path
      *
-     * @param m Metadata
+     * @param m            Metadata
      * @param metadataPath path
      * @return RepositoryMetadata if the parameters represent one; null if not
      */

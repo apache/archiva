@@ -26,6 +26,9 @@ import java.util.List;
  *
  * @author John Casey
  * @author Brett Porter
+ * @todo do we want blacklisted patterns in another form? Part of the object construction?
+ * @todo should includeSnapshots be configuration on the component? If not, should the methods be changed to include alternates for both possibilities (discoverReleaseArtifacts, discoverReleaseAndSnapshotArtifacts)?
+ * @todo instead of a returned list, should a listener be passed in?
  */
 public interface ArtifactDiscoverer
     extends Discoverer
@@ -39,9 +42,6 @@ public interface ArtifactDiscoverer
      * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
      * @param includeSnapshots    whether to discover snapshots
      * @return the list of artifacts discovered
-     * @todo do we want blacklisted patterns in another form? Part of the object construction?
-     * @todo should includeSnapshots be configuration on the component?
-     * @todo instead of a returned list, should a listener be passed in?
      */
     List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
 
@@ -52,9 +52,7 @@ public interface ArtifactDiscoverer
      * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
      * @param includeSnapshots    whether to discover snapshots
      * @return the list of artifacts discovered
-     * @todo do we want blacklisted patterns in another form? Part of the object construction?
-     * @todo should includeSnapshots be configuration on the component?
-     * @todo instead of a returned list, should a listener be passed in?
+     * @todo why do we need this? shouldn't the discovered artifacts above link to the related POM, and include standalone POMs? Why would we need just this list?
      */
     List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
 
@@ -63,6 +61,7 @@ public interface ArtifactDiscoverer
      *
      * @param path the path
      * @return the artifact
+     * @throws DiscovererException if the file is not a valid artifact
      * @todo this should be in maven-artifact
      */
     Artifact buildArtifact( String path )

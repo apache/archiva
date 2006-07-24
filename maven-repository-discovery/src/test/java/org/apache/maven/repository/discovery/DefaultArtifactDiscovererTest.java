@@ -605,6 +605,42 @@ public class DefaultArtifactDiscovererTest
         assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
     }
 
+    public void testUpdatedInRepository()
+        throws ComponentLookupException
+    {
+        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Normal artifact path error", artifact );
+
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
+    }
+
+    public void testNotUpdatedInRepository()
+        throws ComponentLookupException
+    {
+        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Normal artifact path error", artifact );
+
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
+    }
+
+    public void testNotUpdatedInRepositoryForcedDiscovery()
+        throws ComponentLookupException
+    {
+        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
+
+        Artifact artifact = getArtifactFromPath( testPath );
+
+        assertNotNull( "Normal artifact path error", artifact );
+
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
+    }
+
     public void testSnapshotWithClassifier()
         throws ComponentLookupException
     {

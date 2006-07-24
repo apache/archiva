@@ -1,0 +1,37 @@
+ -----
+ Discoverer Design
+ -----
+ Brett Porter
+ -----
+ 24 July 2006
+ -----
+
+Discoverer Design
+
+  The artifact discoverer is designed to traverse the paths in the repository and identify files that are part of
+  a legitimate artifact.
+
+  There are two plexus components available:
+
+    * {{{../apidocs/org/apache/maven/repository/discovery/ArtifactDiscoverer.html} ArtifactDiscoverer}}
+
+    * {{{../apidocs/org/apache/maven/repository/discovery/MetadataDiscoverer.html} MetadataDiscoverer}}
+
+  Each of these components currently have an implementation for the both <<<legacy>>> and <<<default>>> repository
+  layouts.
+
+  The artifact discoverer will find all artifacts in the repository, while metadata discovery finds any
+  <<<maven-metadata.xml>>> files (both remote and local repository formats).
+
+  * Limitations
+
+    * In the artifact discoverer, POMs will be identified as separate artifacts to their related artifacts, as will each
+      individual derivative artifact at present. Later, these will be linked - see
+      {{{http://jira.codehaus.org/browse/MRM-40} MRM-40}}.
+
+    * Currently, deleted artifacts are not tracked. This requires a separate event - see
+      {{{http://jira.codehaus.org/browse/MRM-37} MRM-37}}.
+
+    * Currently, all artifacts are discovered instead of just those changed since the last discovery for a particular
+      operation - see {{{http://jira.codehaus.org/browse/MRM-125} MRM-125}}.
+
