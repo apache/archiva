@@ -16,7 +16,8 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
-import java.io.File;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
 import java.util.List;
 
 /**
@@ -30,8 +31,10 @@ public interface MetadataDiscoverer
     /**
      * Search for metadata files in the repository.
      *
-     * @param repositoryBase      The repository directory.
+     * @param repository          The repository.
+     * @param operation           the operation being performed (used for timestamp comparison)
      * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
+     * @return the list of artifacts found
      */
-    List discoverMetadata( File repositoryBase, String blacklistedPatterns );
+    List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns );
 }

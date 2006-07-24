@@ -17,16 +17,27 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for the artifact and metadata discoverers.
@@ -47,6 +58,8 @@ public abstract class AbstractDiscoverer
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private List excludedPaths = new ArrayList();
+
+    protected static final String DATE_FMT = "yyyyMMddHHmmss";
 
     /**
      * Add a path to the list of files that were kicked out due to being invalid.
@@ -69,11 +82,8 @@ public abstract class AbstractDiscoverer
         return kickedOutPaths.iterator();
     }
 
-    /**
-     * Scan the repository for artifact paths.
-     */
-    protected String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
-                                             String[] excludes )
+    protected List scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
+                                         String[] excludes, long comparisonTimestamp )
     {
         List allExcludes = new ArrayList();
         allExcludes.addAll( FileUtils.getDefaultExcludesAsList() );
@@ -104,7 +114,19 @@ public abstract class AbstractDiscoverer
             excludedPaths.add( new DiscovererPath( path, "Artifact was in the specified list of exclusions" ) );
         }
 
-        return scanner.getIncludedFiles();
+        // TODO: this could be a part of the scanner
+        List includedPaths = new ArrayList();
+        for ( Iterator files = Arrays.asList( scanner.getIncludedFiles() ).iterator(); files.hasNext(); )
+        {
+            String path = files.next().toString();
+
+            if ( comparisonTimestamp == 0 || new File( repositoryBase, path ).lastModified() > comparisonTimestamp )
+            {
+                includedPaths.add( path );
+            }
+        }
+
+        return includedPaths;
     }
 
     /**
@@ -115,5 +137,68 @@ public abstract class AbstractDiscoverer
     public Iterator getExcludedPathsIterator()
     {
         return excludedPaths.iterator();
+    }
+
+    protected long readComparisonTimestamp( ArtifactRepository repository, String operation )
+    {
+        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+        Xpp3Dom dom = readDom( file );
+        dom = getLastDiscoveryDom( dom );
+        Xpp3Dom entry = dom.getChild( operation );
+        long comparisonTimestamp = 0;
+        if ( entry != null )
+        {
+            try
+            {
+                comparisonTimestamp = new SimpleDateFormat( DATE_FMT, Locale.US ).parse( entry.getValue() ).getTime();
+            }
+            catch ( ParseException e )
+            {
+                getLogger().error( "Timestamp was invalid: " + entry.getValue() + "; ignoring" );
+            }
+        }
+        return comparisonTimestamp;
+    }
+
+    protected Xpp3Dom readDom( File file )
+    {
+        Xpp3Dom dom;
+        FileReader fileReader = null;
+        try
+        {
+            fileReader = new FileReader( file );
+            dom = Xpp3DomBuilder.build( fileReader );
+        }
+        catch ( FileNotFoundException e )
+        {
+            // Safe to ignore
+            dom = new Xpp3Dom( "metadata" );
+        }
+        catch ( XmlPullParserException e )
+        {
+            getLogger().error( "Error reading metadata (ignoring and recreating): " + e.getMessage() );
+            dom = new Xpp3Dom( "metadata" );
+        }
+        catch ( IOException e )
+        {
+            getLogger().error( "Error reading metadata (ignoring and recreating): " + e.getMessage() );
+            dom = new Xpp3Dom( "metadata" );
+        }
+        finally
+        {
+            IOUtil.close( fileReader );
+        }
+        return dom;
+    }
+
+    protected Xpp3Dom getLastDiscoveryDom( Xpp3Dom dom )
+    {
+        Xpp3Dom lastDiscoveryDom = dom.getChild( "lastDiscovery" );
+        if ( lastDiscoveryDom == null )
+        {
+            dom.addChild( new Xpp3Dom( "lastDiscovery" ) );
+            lastDiscoveryDom = dom.getChild( "lastDiscovery" );
+        }
+        return lastDiscoveryDom;
     }
 }

@@ -19,6 +19,8 @@ package org.apache.maven.repository.discovery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,11 +41,15 @@ public interface ArtifactDiscoverer
      * Discover artifacts in the repository.
      *
      * @param repository          the location of the repository
+     * @param operation           the operation being used to discover for timestamp checking
      * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
      * @param includeSnapshots    whether to discover snapshots
      * @return the list of artifacts discovered
+     * @throws DiscovererException if there was an unrecoverable problem discovering artifacts or recording progress
      */
-    List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
+    List discoverArtifacts( ArtifactRepository repository, String operation, String blacklistedPatterns,
+                            boolean includeSnapshots )
+        throws DiscovererException;
 
     /**
      * Discover standalone POM artifacts in the repository.
@@ -66,4 +72,25 @@ public interface ArtifactDiscoverer
      */
     Artifact buildArtifact( String path )
         throws DiscovererException;
+
+    /**
+     * Reset the time in the repository that indicates the last time a check was performed.
+     *
+     * @param repository the location of the repository
+     * @param operation  the operation to record the timestamp for
+     * @throws java.io.IOException if there is a non-recoverable problem reading or writing the metadata
+     */
+    void resetLastCheckedTime( ArtifactRepository repository, String operation )
+        throws IOException;
+
+    /**
+     * Set the time in the repository that indicates the last time a check was performed.
+     *
+     * @param repository the location of the repository
+     * @param operation  the operation to record the timestamp for
+     * @param date       the date to set the last check to
+     * @throws java.io.IOException if there is a non-recoverable problem reading or writing the metadata
+     */
+    void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
+        throws IOException;
 }

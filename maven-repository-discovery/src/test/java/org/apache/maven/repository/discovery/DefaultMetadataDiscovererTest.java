@@ -16,6 +16,9 @@ package org.apache.maven.repository.discovery;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -30,7 +33,9 @@ public class DefaultMetadataDiscovererTest
 {
     private MetadataDiscoverer discoverer;
 
-    private File repositoryLocation;
+    private static final String TEST_OPERATION = "test";
+
+    private ArtifactRepository repository;
 
     /**
      *
@@ -41,7 +46,22 @@ public class DefaultMetadataDiscovererTest
         super.setUp();
 
         discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE, "default" );
-        repositoryLocation = getTestFile( "src/test/repository" );
+
+        repository = getRepository();
+
+        removeTimestampMetadata();
+    }
+
+    protected ArtifactRepository getRepository()
+        throws Exception
+    {
+        File basedir = getTestFile( "src/test/repository" );
+
+        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+
+        return factory.createArtifactRepository( "discoveryRepo", "file://" + basedir, layout, null, null );
     }
 
     /**
@@ -59,7 +79,7 @@ public class DefaultMetadataDiscovererTest
      */
     public void testMetadataDiscovererSuccess()
     {
-        List metadataPaths = discoverer.discoverMetadata( repositoryLocation, null );
+        List metadataPaths = discoverer.discoverMetadata( repository, TEST_OPERATION, null );
         assertNotNull( "Check metadata not null", metadataPaths );
         assertEquals( 3, metadataPaths.size() );
     }
@@ -69,7 +89,7 @@ public class DefaultMetadataDiscovererTest
      */
     public void testKickoutWrongDirectory()
     {
-        discoverer.discoverMetadata( repositoryLocation, null );
+        discoverer.discoverMetadata( repository, TEST_OPERATION, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )
@@ -93,7 +113,7 @@ public class DefaultMetadataDiscovererTest
      */
     public void testKickoutBlankMetadata()
     {
-        discoverer.discoverMetadata( repositoryLocation, null );
+        discoverer.discoverMetadata( repository, TEST_OPERATION, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )
@@ -112,4 +132,11 @@ public class DefaultMetadataDiscovererTest
         assertTrue( found );
     }
 
+    private void removeTimestampMetadata()
+    {
+        // remove the metadata that tracks time
+        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+        file.delete();
+        assertFalse( file.exists() );
+    }
 }

@@ -20,14 +20,22 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomWriter;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for artifact discoverers.
@@ -48,38 +56,41 @@ public abstract class AbstractArtifactDiscoverer
 
     private static final String POM = ".pom";
 
-    /**
-     * Scan the repository for artifact paths.
-     */
-    private String[] scanForArtifactPaths( File repositoryBase, String blacklistedPatterns )
+    private List scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, long comparisonTimestamp )
     {
-        return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
+        return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES,
+                                     comparisonTimestamp );
     }
 
-    /**
-     * Return a list of artifacts found in a specified repository
-     *
-     * @param repository          The ArtifactRepository to discover artifacts
-     * @param blacklistedPatterns Comma-delimited list of string paths that will be excluded in the discovery
-     * @param includeSnapshots    if the repository contains snapshots which should also be included
-     * @return list of artifacts
-     */
-    public List discoverArtifacts( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots )
+    public List discoverArtifacts( ArtifactRepository repository, String operation, String blacklistedPatterns,
+                                   boolean includeSnapshots )
+        throws DiscovererException
     {
         if ( !"file".equals( repository.getProtocol() ) )
         {
             throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
         }
 
+        long comparisonTimestamp = readComparisonTimestamp( repository, operation );
+
         File repositoryBase = new File( repository.getBasedir() );
 
         List artifacts = new ArrayList();
 
-        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
+        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns, comparisonTimestamp );
 
-        for ( int i = 0; i < artifactPaths.length; i++ )
+        try
         {
-            String path = artifactPaths[i];
+            setLastCheckedTime( repository, operation, new Date() );
+        }
+        catch ( IOException e )
+        {
+            throw new DiscovererException( "Error writing metadata: " + e.getMessage(), e );
+        }
+
+        for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
+        {
+            String path = (String) i.next();
 
             try
             {
@@ -114,11 +125,12 @@ public abstract class AbstractArtifactDiscoverer
 
         File repositoryBase = new File( repository.getBasedir() );
 
-        String[] artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
+        // TODO: if we keep this method, set comparison timestamp properly!
+        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns, 0 );
 
-        for ( int i = 0; i < artifactPaths.length; i++ )
+        for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
         {
-            String path = artifactPaths[i];
+            String path = (String) i.next();
 
             String filename = repositoryBase.getAbsolutePath() + "/" + path;
 
@@ -161,6 +173,78 @@ public abstract class AbstractArtifactDiscoverer
         }
 
         return artifacts;
+    }
+
+    public void resetLastCheckedTime( ArtifactRepository repository, String operation )
+        throws IOException
+    {
+        // TODO: get these changes into maven-metadata.xml and migrate towards that. The model is further diverging to a different layout at each level so submodels might be a good idea.
+        // TODO: maven-artifact probably needs an improved pathOfMetadata to cope with top level metadata
+        // TODO: might we need to write this as maven-metadata-local in some circumstances? merge others? Probably best to keep it simple and just use this format at the root. No need to merge anything that I can see
+        // TODO: since this metadata isn't meant to be shared, perhaps another file is called for after all.
+        // Format is: <repository><lastDiscovery><KEY>yyyyMMddHHmmss</KEY></lastDiscovery></repository> (ie, flat properties)
+
+        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+
+        Xpp3Dom dom = readDom( file );
+
+        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
+
+        boolean changed = false;
+
+        // do this in reverse so that removing doesn't affect counter
+        Xpp3Dom[] children = lastDiscoveryDom.getChildren();
+        for ( int i = lastDiscoveryDom.getChildCount() - 1; i >= 0; i-- )
+        {
+            if ( children[i].getName().equals( operation ) )
+            {
+                changed = true;
+                lastDiscoveryDom.removeChild( i );
+            }
+        }
+
+        if ( changed )
+        {
+            saveDom( file, dom );
+        }
+    }
+
+    private void saveDom( File file, Xpp3Dom dom )
+        throws IOException
+    {
+        FileWriter writer = new FileWriter( file );
+
+        // save metadata
+        try
+        {
+            Xpp3DomWriter.write( writer, dom );
+        }
+        finally
+        {
+            IOUtil.close( writer );
+        }
+    }
+
+    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
+        throws IOException
+    {
+        // see notes in resetLastCheckedTime
+
+        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+
+        Xpp3Dom dom = readDom( file );
+
+        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
+
+        Xpp3Dom entry = lastDiscoveryDom.getChild( operation );
+        if ( entry == null )
+        {
+            entry = new Xpp3Dom( operation );
+            lastDiscoveryDom.addChild( entry );
+        }
+        entry.setValue( new SimpleDateFormat( DATE_FMT, Locale.US ).format( date ) );
+
+        saveDom( file, dom );
     }
 
     /**

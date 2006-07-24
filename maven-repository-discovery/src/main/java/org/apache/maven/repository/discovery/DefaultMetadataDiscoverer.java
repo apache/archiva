@@ -17,6 +17,7 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
@@ -56,38 +57,33 @@ public class DefaultMetadataDiscoverer
     private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/*-metadata.xml", "**/*/*-metadata.xml",
         "**/*/*/*-metadata.xml", "**/*-metadata-*.xml", "**/*/*-metadata-*.xml", "**/*/*/*-metadata-*.xml"};
 
-    /**
-     * @see org.apache.maven.repository.discovery.MetadataDiscoverer#discoverMetadata(java.io.File,String)
-     */
-    public List discoverMetadata( File repositoryBase, String blacklistedPatterns )
+    public List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns )
     {
-        List metadataFiles = new ArrayList();
-        String[] metadataPaths =
-            scanForArtifactPaths( repositoryBase, blacklistedPatterns, STANDARD_DISCOVERY_INCLUDES, null );
+        long comparisonTimestamp = readComparisonTimestamp( repository, operation );
 
-        for ( int i = 0; i < metadataPaths.length; i++ )
+        List metadataFiles = new ArrayList();
+        List metadataPaths = scanForArtifactPaths( new File( repository.getBasedir() ), blacklistedPatterns,
+                                                   STANDARD_DISCOVERY_INCLUDES, null, comparisonTimestamp );
+
+        // TODO: save! should we be using a different entry for metadata?
+
+        for ( Iterator i = metadataPaths.iterator(); i.hasNext(); )
         {
+            String metadataPath = (String) i.next();
             try
             {
-                RepositoryMetadata metadata = buildMetadata( repositoryBase.getPath(), metadataPaths[i] );
+                RepositoryMetadata metadata = buildMetadata( repository.getBasedir(), metadataPath );
                 metadataFiles.add( metadata );
             }
             catch ( DiscovererException e )
             {
-                addKickedOutPath( metadataPaths[i], e.getMessage() );
+                addKickedOutPath( metadataPath, e.getMessage() );
             }
         }
 
         return metadataFiles;
     }
 
-    /**
-     * Create RepositoryMetadata object.
-     *
-     * @param repo         The path to the repository.
-     * @param metadataPath The path to the metadata file.
-     * @return the metadata
-     */
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
         throws DiscovererException
     {
@@ -95,7 +91,7 @@ public class DefaultMetadataDiscoverer
         String repoPath = repo + "/" + metadataPath;
         try
         {
-            URL url = new File( repoPath ).toURL();
+            URL url = new File( repoPath ).toURI().toURL();
             InputStream is = url.openStream();
             Reader reader = new InputStreamReader( is );
             MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
