@@ -58,7 +58,12 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = path.indexOf( ".svn" ) >= 0;
+            boolean b = path.indexOf( ".svn" ) >= 0;
+            if ( b )
+            {
+                found = true;
+                assertEquals( "Check comment", "Artifact was in the specified list of exclusions", dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -80,7 +85,11 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "KEYS".equals( path );
+            if ( "KEYS".equals( path ) )
+            {
+                found = true;
+                assertEquals( "Check comment", "Artifact was in the specified list of exclusions", dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -102,7 +111,12 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "javax/sql/jdbc/2.0/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "javax/sql/jdbc/2.0/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check comment is about blacklisting", "Artifact was in the specified list of exclusions",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -120,7 +134,13 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path is too short to build an artifact from",
+                              dPath.getComment() );
+
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -142,8 +162,13 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar".equals(
-                path.replace( '\\', '/' ) );
+            if ( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar".equals(
+                path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path filename does not correspond to an artifact",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -166,7 +191,12 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid/1/invalid-1".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid/1/invalid-1".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path filename does not have an extension",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -188,7 +218,12 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid/1.0/invalid-2.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid/1.0/invalid-2.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Built artifact version does not match path version",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -210,7 +245,12 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid/1.0/invalid-1.0b.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid/1.0/invalid-1.0b.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path version does not corresspond to an artifact version",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -232,7 +272,13 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout",
+                              "Failed to create a snapshot artifact: invalid:invalid:jar:1.0:runtime",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -254,8 +300,14 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar".equals(
-                path.replace( '\\', '/' ) );
+            if ( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar".equals(
+                path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout",
+                              "Built snapshot artifact base version does not match path version: invalid:invalid:jar:1.0-SNAPSHOT:runtime; should have been version: 1.0-20050611.123456-1",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 

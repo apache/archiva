@@ -22,11 +22,6 @@ package org.apache.maven.repository.discovery;
 public class DiscovererException
     extends Exception
 {
-    public DiscovererException( Throwable cause )
-    {
-        super( cause );
-    }
-
     public DiscovererException( String message )
     {
         super( message );

@@ -54,7 +54,11 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = path.indexOf( ".svn" ) >= 0;
+            if ( path.indexOf( ".svn" ) >= 0 )
+            {
+                found = true;
+                assertEquals( "Check comment", "Artifact was in the specified list of exclusions", dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -76,7 +80,11 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "KEYS".equals( path );
+            if ( "KEYS".equals( path ) )
+            {
+                found = true;
+                assertEquals( "Check comment", "Artifact was in the specified list of exclusions", dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -98,7 +106,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "javax.sql/jars/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "javax.sql/jars/jdbc-2.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check comment is about blacklisting", "Artifact was in the specified list of exclusions",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check exclusion was found", found );
 
@@ -116,7 +129,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/invalid-1.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout",
+                              "Path does not match a legacy repository path for an artifact", dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -138,7 +156,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/jars/1.0/invalid-1.0.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/jars/1.0/invalid-1.0.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout",
+                              "Path does not match a legacy repository path for an artifact", dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -160,7 +183,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/foo/invalid-1.0.foo".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/foo/invalid-1.0.foo".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path artifact type does not corresspond to an artifact type",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -182,7 +210,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/jars/no-extension".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/jars/no-extension".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path filename does not have an extension",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -204,7 +237,12 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/jars/invalid-1.0.rar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/jars/invalid-1.0.rar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path type does not match the extension",
+                              dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 
@@ -226,7 +264,11 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            found = "invalid/jars/invalid.jar".equals( path.replace( '\\', '/' ) );
+            if ( "invalid/jars/invalid.jar".equals( path.replace( '\\', '/' ) ) )
+            {
+                found = true;
+                assertEquals( "Check reason for kickout", "Path filename version is empty", dPath.getComment() );
+            }
         }
         assertTrue( "Check kickout was found", found );
 

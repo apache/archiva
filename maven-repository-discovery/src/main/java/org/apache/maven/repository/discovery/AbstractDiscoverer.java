@@ -51,7 +51,7 @@ public abstract class AbstractDiscoverer
     /**
      * Add a path to the list of files that were kicked out due to being invalid.
      *
-     * @param path the path to add
+     * @param path   the path to add
      * @param reason the reason why the path is being kicked out
      */
     protected void addKickedOutPath( String path, String reason )
@@ -101,7 +101,7 @@ public abstract class AbstractDiscoverer
         {
             String path = files.next().toString();
 
-            excludedPaths.add( new DiscovererPath( path, "Excluded by DirectoryScanner" ) );
+            excludedPaths.add( new DiscovererPath( path, "Artifact was in the specified list of exclusions" ) );
         }
 
         return scanner.getIncludedFiles();

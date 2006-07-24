@@ -40,8 +40,7 @@ public class DefaultMetadataDiscovererTest
     {
         super.setUp();
 
-        discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE,
-                                                  "default" );
+        discoverer = (MetadataDiscoverer) lookup( MetadataDiscoverer.ROLE, "default" );
         repositoryLocation = getTestFile( "src/test/repository" );
     }
 
@@ -82,6 +81,8 @@ public class DefaultMetadataDiscovererTest
             if ( "javax/maven-metadata-repository.xml".equals( normalizedDir ) )
             {
                 found = true;
+                assertEquals( "Check reason for kickout", "Unable to build a repository metadata from path",
+                              dPath.getComment() );
             }
         }
         assertTrue( found );
@@ -104,6 +105,8 @@ public class DefaultMetadataDiscovererTest
             if ( "org/apache/maven/some-ejb/1.0/maven-metadata-repository.xml".equals( normalizedDir ) )
             {
                 found = true;
+                assertTrue( "Check reason for kickout", dPath.getComment().matches(
+                    "Error reading metadata file '(.*)': input contained no data" ) );
             }
         }
         assertTrue( found );
