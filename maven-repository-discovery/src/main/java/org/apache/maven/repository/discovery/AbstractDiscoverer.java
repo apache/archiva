@@ -37,7 +37,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -142,11 +141,8 @@ public abstract class AbstractDiscoverer
         return excludedPaths.iterator();
     }
 
-    protected long readComparisonTimestamp( ArtifactRepository repository, String operation )
+    protected long readComparisonTimestamp( ArtifactRepository repository, String operation, Xpp3Dom dom )
     {
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-        Xpp3Dom dom = readDom( file );
-        dom = getLastDiscoveryDom( dom );
         Xpp3Dom entry = dom.getChild( operation );
         long comparisonTimestamp = 0;
         if ( entry != null )
@@ -194,13 +190,24 @@ public abstract class AbstractDiscoverer
         return dom;
     }
 
-    protected Xpp3Dom getLastDiscoveryDom( Xpp3Dom dom )
+    protected Xpp3Dom getLastArtifactDiscoveryDom( Xpp3Dom dom )
     {
-        Xpp3Dom lastDiscoveryDom = dom.getChild( "lastDiscovery" );
+        Xpp3Dom lastDiscoveryDom = dom.getChild( "lastArtifactDiscovery" );
         if ( lastDiscoveryDom == null )
         {
-            dom.addChild( new Xpp3Dom( "lastDiscovery" ) );
-            lastDiscoveryDom = dom.getChild( "lastDiscovery" );
+            dom.addChild( new Xpp3Dom( "lastArtifactDiscovery" ) );
+            lastDiscoveryDom = dom.getChild( "lastArtifactDiscovery" );
+        }
+        return lastDiscoveryDom;
+    }
+
+    protected Xpp3Dom getLastMetadataDiscoveryDom( Xpp3Dom dom )
+    {
+        Xpp3Dom lastDiscoveryDom = dom.getChild( "lastMetadataDiscovery" );
+        if ( lastDiscoveryDom == null )
+        {
+            dom.addChild( new Xpp3Dom( "lastMetadataDiscovery" ) );
+            lastDiscoveryDom = dom.getChild( "lastMetadataDiscovery" );
         }
         return lastDiscoveryDom;
     }
@@ -218,8 +225,26 @@ public abstract class AbstractDiscoverer
 
         Xpp3Dom dom = readDom( file );
 
-        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
+        boolean changed = false;
 
+        if ( removeEntry( getLastArtifactDiscoveryDom( dom ), operation ) )
+        {
+            changed = true;
+        }
+
+        if ( removeEntry( getLastMetadataDiscoveryDom( dom ), operation ) )
+        {
+            changed = true;
+        }
+
+        if ( changed )
+        {
+            saveDom( file, dom );
+        }
+    }
+
+    private boolean removeEntry( Xpp3Dom lastDiscoveryDom, String operation )
+    {
         boolean changed = false;
 
         // do this in reverse so that removing doesn't affect counter
@@ -232,14 +257,10 @@ public abstract class AbstractDiscoverer
                 lastDiscoveryDom.removeChild( i );
             }
         }
-
-        if ( changed )
-        {
-            saveDom( file, dom );
-        }
+        return changed;
     }
 
-    private void saveDom( File file, Xpp3Dom dom )
+    protected void saveDom( File file, Xpp3Dom dom )
         throws IOException
     {
         FileWriter writer = new FileWriter( file );
@@ -255,25 +276,19 @@ public abstract class AbstractDiscoverer
         }
     }
 
-    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
-        throws IOException
+    protected void setEntry( Xpp3Dom lastDiscoveryDom, String operation, String dateString )
     {
-        // see notes in resetLastCheckedTime
-
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-
-        Xpp3Dom dom = readDom( file );
-
-        Xpp3Dom lastDiscoveryDom = getLastDiscoveryDom( dom );
-
         Xpp3Dom entry = lastDiscoveryDom.getChild( operation );
         if ( entry == null )
         {
             entry = new Xpp3Dom( operation );
             lastDiscoveryDom.addChild( entry );
         }
-        entry.setValue( new SimpleDateFormat( DATE_FMT, Locale.US ).format( date ) );
+        entry.setValue( dateString );
+    }
 
-        saveDom( file, dom );
+    protected Xpp3Dom readRepositoryMetadataDom( ArtifactRepository repository )
+    {
+        return readDom( new File( repository.getBasedir(), "maven-metadata.xml" ) );
     }
 }

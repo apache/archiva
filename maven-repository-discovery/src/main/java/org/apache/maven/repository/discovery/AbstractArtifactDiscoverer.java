@@ -18,13 +18,16 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Base class for artifact discoverers.
@@ -58,7 +61,8 @@ public abstract class AbstractArtifactDiscoverer
             throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
         }
 
-        long comparisonTimestamp = readComparisonTimestamp( repository, operation );
+        Xpp3Dom dom = getLastArtifactDiscoveryDom( readRepositoryMetadataDom( repository ) );
+        long comparisonTimestamp = readComparisonTimestamp( repository, operation, dom );
 
         // Note that last checked time is deliberately set to the start of the process so that anything added
         // mid-discovery and missed by the scanner will get checked next time.
@@ -125,5 +129,21 @@ public abstract class AbstractArtifactDiscoverer
         }
 
         return artifact;
+    }
+
+    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
+        throws IOException
+    {
+        // see notes in resetLastCheckedTime
+
+        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+
+        Xpp3Dom dom = readDom( file );
+
+        String dateString = new SimpleDateFormat( DATE_FMT, Locale.US ).format( date );
+
+        setEntry( getLastArtifactDiscoveryDom( dom ), operation, dateString );
+
+        saveDom( file, dom );
     }
 }
