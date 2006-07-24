@@ -492,7 +492,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid-1.0.jar" );
+            discoverer.buildArtifact( "invalid/invalid-1.0.jar" );
 
             fail( "Artifact should be null for short paths" );
         }
@@ -508,7 +508,7 @@ public class DefaultArtifactDiscovererTest
 
         try
         {
-            getArtifactFromPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar" );
+            discoverer.buildArtifact( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar" );
 
             fail( "Artifact should be null for wrong ArtifactId" );
         }
@@ -523,7 +523,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1/invalid-1" );
+            discoverer.buildArtifact( "invalid/invalid/1/invalid-1" );
 
             fail( "Artifact should be null for no type" );
         }
@@ -538,7 +538,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1.0/invalid-2.0.jar" );
+            discoverer.buildArtifact( "invalid/invalid/1.0/invalid-2.0.jar" );
 
             fail( "Artifact should be null for wrong version" );
         }
@@ -553,7 +553,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1.0/invalid-1.0b.jar" );
+            discoverer.buildArtifact( "invalid/invalid/1.0/invalid-1.0b.jar" );
 
             fail( "Artifact should be null for long version" );
         }
@@ -568,7 +568,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar" );
+            discoverer.buildArtifact( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar" );
 
             fail( "Artifact should be null for wrong snapshot version" );
         }
@@ -583,7 +583,7 @@ public class DefaultArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
+            discoverer.buildArtifact( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
 
             fail( "Artifact should be null for snapshot base version" );
         }
@@ -598,9 +598,7 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "org/apache/maven/some-ejb/1.0/some-ejb-1.0-client.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with classifier error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "some-ejb", "1.0", "jar", "client" ), artifact );
     }
@@ -610,9 +608,7 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "org/apache/maven/testing/1.0/testing-1.0-sources.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with java source inclusion error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ), artifact );
     }
@@ -622,17 +618,13 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "org/apache/maven/testing/1.0/testing-1.0.tar.gz";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "tar.gz distribution artifact error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-tgz" ), artifact );
 
         testPath = "org/apache/maven/testing/1.0/testing-1.0.zip";
 
-        artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "zip distribution artifact error", artifact );
+        artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "testing", "1.0", "distribution-zip" ), artifact );
     }
@@ -642,17 +634,13 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-SNAPSHOT.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "test", "1.0-SNAPSHOT" ), artifact );
 
         testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-20050611.112233-1.jar";
 
-        artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with snapshot error", artifact );
+        artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1" ), artifact );
     }
@@ -662,9 +650,7 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Normal artifact path error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
     }
@@ -674,17 +660,9 @@ public class DefaultArtifactDiscovererTest
     {
         String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-20050611.112233-1-javadoc.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with snapshot and classifier error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven", "test", "1.0-20050611.112233-1", "jar", "javadoc" ),
                       artifact );
-    }
-
-    private Artifact getArtifactFromPath( String path )
-        throws DiscovererException
-    {
-        return discoverer.buildArtifact( path );
     }
 }

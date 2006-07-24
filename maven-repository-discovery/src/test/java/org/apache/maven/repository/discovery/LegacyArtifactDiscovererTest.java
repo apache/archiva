@@ -396,7 +396,7 @@ public class LegacyArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "org.apache.maven.test/jars/artifactId-1.0.jar.md5" );
+            discoverer.buildArtifact( "org.apache.maven.test/jars/artifactId-1.0.jar.md5" );
 
             fail( "Artifact should be null for wrong package extension" );
         }
@@ -411,7 +411,7 @@ public class LegacyArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "groupId/jars/-1.0.jar" );
+            discoverer.buildArtifact( "groupId/jars/-1.0.jar" );
 
             fail( "Artifact should be null when artifactId is missing" );
         }
@@ -422,7 +422,7 @@ public class LegacyArtifactDiscovererTest
 
         try
         {
-            getArtifactFromPath( "groupId/jars/1.0.jar" );
+            discoverer.buildArtifact( "groupId/jars/1.0.jar" );
 
             fail( "Artifact should be null when artifactId is missing" );
         }
@@ -437,7 +437,7 @@ public class LegacyArtifactDiscovererTest
     {
         try
         {
-            getArtifactFromPath( "invalid/invalid/1/invalid-1" );
+            discoverer.buildArtifact( "invalid/invalid/1/invalid-1" );
 
             fail( "Artifact should be null for no type" );
         }
@@ -452,9 +452,7 @@ public class LegacyArtifactDiscovererTest
     {
         String testPath = "org.apache.maven.test/jars/maven-model-1.0-SNAPSHOT.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-SNAPSHOT" ), artifact );
     }
@@ -464,9 +462,7 @@ public class LegacyArtifactDiscovererTest
     {
         String testPath = "org.apache.maven.test/jars/maven-model-1.0-final-20060606.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Artifact path with invalid snapshot error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "org.apache.maven.test", "maven-model", "1.0-final-20060606" ), artifact );
     }
@@ -476,16 +472,8 @@ public class LegacyArtifactDiscovererTest
     {
         String testPath = "javax.sql/jars/jdbc-2.0.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Normal artifact path error", artifact );
+        Artifact artifact = discoverer.buildArtifact( testPath );
 
         assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
-    }
-
-    private Artifact getArtifactFromPath( String path )
-        throws DiscovererException
-    {
-        return discoverer.buildArtifact( path );
     }
 }
