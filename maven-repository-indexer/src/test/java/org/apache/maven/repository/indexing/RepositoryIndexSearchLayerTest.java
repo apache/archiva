@@ -121,22 +121,6 @@ public class RepositoryIndexSearchLayerTest
         metaIndexer.indexMetadata( repoMetadata );
 
         metaIndexer.optimize();
-
-        PomRepositoryIndex pomIndexer = factory.createPomRepositoryIndex( indexPath, repository );
-
-        Model pom = getPom( "org.apache.maven", "maven-artifact", "2.0.1" );
-        pomIndexer.indexPom( pom );
-
-        pom = getPom( "org.apache.maven", "maven-model", "2.0" );
-        pomIndexer.indexPom( pom );
-
-        pom = getPom( "test", "test-artifactId", "1.0" );
-        pomIndexer.indexPom( pom );
-
-        pom = getPom( "test", "test-artifactId", "1.0" );
-        pomIndexer.indexPom( pom );
-
-        pomIndexer.optimize();
     }
 
     /**

@@ -38,7 +38,9 @@ public interface ArtifactDiscoverer
     String ROLE = ArtifactDiscoverer.class.getName();
 
     /**
-     * Discover artifacts in the repository.
+     * Discover artifacts in the repository. Only artifacts added since the last attempt at discovery will be found.
+     * This process guarantees never to miss an artifact, however it is possible that an artifact will be received twice
+     * consecutively even if unchanged, so any users of this list must handle such a situation gracefully.
      *
      * @param repository          the location of the repository
      * @param operation           the operation being used to discover for timestamp checking
@@ -50,17 +52,6 @@ public interface ArtifactDiscoverer
     List discoverArtifacts( ArtifactRepository repository, String operation, String blacklistedPatterns,
                             boolean includeSnapshots )
         throws DiscovererException;
-
-    /**
-     * Discover standalone POM artifacts in the repository.
-     *
-     * @param repository          the location of the repository
-     * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
-     * @param includeSnapshots    whether to discover snapshots
-     * @return the list of artifacts discovered
-     * @todo why do we need this? shouldn't the discovered artifacts above link to the related POM, and include standalone POMs? Why would we need just this list?
-     */
-    List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns, boolean includeSnapshots );
 
     /**
      * Build an artifact from a path in the repository

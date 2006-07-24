@@ -18,16 +18,11 @@ package org.apache.maven.repository.discovery;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomWriter;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -73,15 +68,23 @@ public abstract class AbstractArtifactDiscoverer
 
         long comparisonTimestamp = readComparisonTimestamp( repository, operation );
 
+        // Note that last checked time is deliberately set to the start of the process so that anything added
+        // mid-discovery and missed by the scanner will get checked next time.
+        // Due to this, there must be no negative side-effects of discovering something twice.
+        Date newLastCheckedTime = new Date();
+
         File repositoryBase = new File( repository.getBasedir() );
 
         List artifacts = new ArrayList();
 
         List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns, comparisonTimestamp );
 
+        // Also note that the last check time, while set at the start, is saved at the end, so that if any exceptions
+        // occur, then the timestamp is not updated so that the discovery is attempted again
+        // TODO: under the list-return behaviour we have now, exceptions might occur later and the timestamp will not be reset - see MRM-83
         try
         {
-            setLastCheckedTime( repository, operation, new Date() );
+            setLastCheckedTime( repository, operation, newLastCheckedTime );
         }
         catch ( IOException e )
         {
@@ -104,71 +107,6 @@ public abstract class AbstractArtifactDiscoverer
             catch ( DiscovererException e )
             {
                 addKickedOutPath( path, e.getMessage() );
-            }
-        }
-
-        return artifacts;
-    }
-
-    /**
-     * Returns a list of pom packaging artifacts found in a specified repository
-     *
-     * @param repository          The ArtifactRepository to discover artifacts
-     * @param blacklistedPatterns Comma-delimited list of string paths that will be excluded in the discovery
-     * @param includeSnapshots    if the repository contains snapshots which should also be included
-     * @return list of pom artifacts
-     */
-    public List discoverStandalonePoms( ArtifactRepository repository, String blacklistedPatterns,
-                                        boolean includeSnapshots )
-    {
-        List artifacts = new ArrayList();
-
-        File repositoryBase = new File( repository.getBasedir() );
-
-        // TODO: if we keep this method, set comparison timestamp properly!
-        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns, 0 );
-
-        for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
-        {
-            String path = (String) i.next();
-
-            String filename = repositoryBase.getAbsolutePath() + "/" + path;
-
-            if ( path.toLowerCase().endsWith( POM ) )
-            {
-                try
-                {
-                    Artifact pomArtifact = buildArtifactFromPath( path, repository );
-
-                    MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-
-                    Model model = mavenReader.read( new FileReader( filename ) );
-                    if ( pomArtifact != null && "pom".equals( model.getPackaging() ) )
-                    {
-                        if ( includeSnapshots || !pomArtifact.isSnapshot() )
-                        {
-                            artifacts.add( model );
-                        }
-                    }
-                }
-                catch ( FileNotFoundException e )
-                {
-                    // this should never happen
-                    getLogger().error( "Error finding file during POM discovery: " + filename, e );
-                }
-                catch ( IOException e )
-                {
-                    getLogger().error( "Error reading file during POM discovery: " + filename + ": " + e );
-                }
-                catch ( XmlPullParserException e )
-                {
-                    getLogger().error(
-                        "Parse error reading file during POM discovery: " + filename + ": " + e.getMessage() );
-                }
-                catch ( DiscovererException e )
-                {
-                    getLogger().error( e.getMessage() );
-                }
             }
         }
 

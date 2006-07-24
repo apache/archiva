@@ -6,6 +6,7 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.converter.RepositoryConversionException;
 import org.apache.maven.repository.converter.RepositoryConverter;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
+import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.repository.reporting.ArtifactReporter;
 
 import java.io.File;
@@ -51,7 +52,7 @@ public class DefaultRepositoryManager
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          boolean includeSnapshots )
-        throws RepositoryConversionException
+        throws RepositoryConversionException, DiscovererException
     {
         ArtifactRepository legacyRepository;
 
@@ -60,11 +61,11 @@ public class DefaultRepositoryManager
         try
         {
             legacyRepository = artifactRepositoryFactory.createArtifactRepository( "legacy",
-                                                                                   legacyRepositoryDirectory.toURL().toString(),
+                                                                                   legacyRepositoryDirectory.toURI().toURL().toString(),
                                                                                    legacyLayout, null, null );
 
             repository = artifactRepositoryFactory.createArtifactRepository( "default",
-                                                                             repositoryDirectory.toURL().toString(),
+                                                                             repositoryDirectory.toURI().toURL().toString(),
                                                                              defaultLayout, null, null );
         }
         catch ( MalformedURLException e )
@@ -72,7 +73,8 @@ public class DefaultRepositoryManager
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }
 
-        List legacyArtifacts = artifactDiscoverer.discoverArtifacts( legacyRepository, null, includeSnapshots );
+        List legacyArtifacts =
+            artifactDiscoverer.discoverArtifacts( legacyRepository, "converter", null, includeSnapshots );
 
         repositoryConverter.convert( legacyArtifacts, repository, reporter );
     }

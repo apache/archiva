@@ -17,15 +17,16 @@ package org.apache.maven.repository.discovery;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Model;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test the default artifact discoverer.
@@ -37,6 +38,7 @@ import java.util.List;
 public class DefaultArtifactDiscovererTest
     extends AbstractArtifactDiscovererTest
 {
+
     protected String getLayout()
     {
         return "default";
@@ -48,8 +50,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testDefaultExcludes()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
@@ -75,8 +78,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testStandardExcludes()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
@@ -101,8 +105,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testBlacklistedExclude()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, "javax/**", false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, "javax/**", false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )
@@ -124,8 +129,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithShortPath()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -152,8 +158,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithWrongArtifactId()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -181,8 +188,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithNoType()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -208,8 +216,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithWrongVersion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -235,8 +244,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithLongerVersion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -262,8 +272,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithWrongSnapshotVersion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -290,8 +301,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testKickoutWithSnapshotBaseVersion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getKickedOutPathsIterator(); i.hasNext() && !found; )
@@ -320,8 +332,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testInclusion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included",
@@ -329,8 +342,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testArtifactWithClassifier()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included",
@@ -338,8 +352,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testJavaSourcesInclusion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included", artifacts.contains(
@@ -347,8 +362,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testDistributionInclusion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check zip included",
@@ -359,8 +375,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testSnapshotInclusion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
@@ -369,8 +386,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testSnapshotInclusionWithClassifier()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check snapshot included", artifacts.contains(
@@ -378,8 +396,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testSnapshotExclusion()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
         assertNotNull( "Check artifacts not null", artifacts );
 
         assertTrue( "Check normal included", artifacts.contains( createArtifact( "javax.sql", "jdbc", "2.0" ) ) );
@@ -388,8 +407,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testFileSet()
+        throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
@@ -400,9 +420,9 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testRepositorySet()
-        throws MalformedURLException
+        throws MalformedURLException, DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, null, true );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, true );
         assertNotNull( "Check artifacts not null", artifacts );
 
         String url = repository.getUrl();
@@ -415,45 +435,53 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testStandalonePoms()
+        throws DiscovererException
     {
-        List models = discoverer.discoverStandalonePoms( repository, null, false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, null, false );
+
+        // cull down to actual artifacts (only standalone poms will have type = pom)
+        Map keyedArtifacts = new HashMap();
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            String key = a.getGroupId() + ":" + a.getArtifactId() + ":" + a.getVersion();
+            if ( !"pom".equals( a.getType() ) || !keyedArtifacts.containsKey( key ) )
+            {
+                keyedArtifacts.put( key, a );
+            }
+        }
+
+        List models = new ArrayList();
+
+        for ( Iterator i = keyedArtifacts.values().iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+
+            if ( "pom".equals( a.getType() ) )
+            {
+                models.add( a );
+            }
+        }
+
         assertEquals( 4, models.size() );
 
         // Define order we expect
-        Collections.sort( models, new Comparator()
-        {
-            public int compare( Object o1, Object o2 )
-            {
-                Model m1 = (Model) o1;
-                Model m2 = (Model) o2;
-
-                int result = m1.getGroupId().compareTo( m2.getGroupId() );
-                if ( result == 0 )
-                {
-                    result = m1.getArtifactId().compareTo( m2.getArtifactId() );
-                }
-                if ( result == 0 )
-                {
-                    result = m1.getVersion().compareTo( m2.getVersion() );
-                }
-                return result;
-            }
-        } );
+        Collections.sort( models );
 
         Iterator itr = models.iterator();
-        Model model = (Model) itr.next();
+        Artifact model = (Artifact) itr.next();
         assertEquals( "org.apache.maven", model.getGroupId() );
         assertEquals( "B", model.getArtifactId() );
         assertEquals( "1.0", model.getVersion() );
-        model = (Model) itr.next();
+        model = (Artifact) itr.next();
         assertEquals( "org.apache.maven", model.getGroupId() );
         assertEquals( "B", model.getArtifactId() );
         assertEquals( "2.0", model.getVersion() );
-        model = (Model) itr.next();
+        model = (Artifact) itr.next();
         assertEquals( "org.apache.maven", model.getGroupId() );
         assertEquals( "discovery", model.getArtifactId() );
         assertEquals( "1.0", model.getVersion() );
-        model = (Model) itr.next();
+        model = (Artifact) itr.next();
         assertEquals( "org.apache.testgroup", model.getGroupId() );
         assertEquals( "discovery", model.getArtifactId() );
         assertEquals( "1.0", model.getVersion() );

@@ -22,10 +22,10 @@ import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
+import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.repository.discovery.MetadataDiscoverer;
 import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
 import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
-import org.apache.maven.repository.indexing.PomRepositoryIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -104,24 +104,17 @@ public class IndexerTask
 
             String layoutProperty = configuration.getRepositoryLayout();
             ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
-            List artifacts = discoverer.discoverArtifacts( defaultRepository, blacklistedPatterns, includeSnapshots );
+            List artifacts =
+                discoverer.discoverArtifacts( defaultRepository, "indexer", blacklistedPatterns, includeSnapshots );
             if ( !artifacts.isEmpty() )
             {
                 getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
                 indexArtifact( artifacts, indexPath, defaultRepository );
             }
 
-            // TODO: I believe this is incorrect, since it only discovers standalone POMs, not the individual artifacts!
-            List models = discoverer.discoverStandalonePoms( defaultRepository, blacklistedPatterns, includeSnapshots );
-            if ( !models.isEmpty() )
-            {
-                getLogger().info( "Indexing " + models.size() + " new POMs" );
-                indexPom( models, indexPath, defaultRepository );
-            }
-
             MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
             List metadataList =
-                metadataDiscoverer.discoverMetadata( new File( defaultRepository.getBasedir() ), blacklistedPatterns );
+                metadataDiscoverer.discoverMetadata( defaultRepository, "indexer", blacklistedPatterns );
             if ( !metadataList.isEmpty() )
             {
                 getLogger().info( "Indexing " + metadataList.size() + " new metadata files" );
@@ -129,6 +122,10 @@ public class IndexerTask
             }
         }
         catch ( RepositoryIndexException e )
+        {
+            throw new TaskExecutionException( e.getMessage(), e );
+        }
+        catch ( DiscovererException e )
         {
             throw new TaskExecutionException( e.getMessage(), e );
         }
@@ -194,20 +191,5 @@ public class IndexerTask
         MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
         metadataIndex.indexMetadata( metadataList );
         metadataIndex.optimize();
-    }
-
-    /**
-     * Index the poms in the list
-     *
-     * @param models     list of poms that will be indexed
-     * @param indexPath  the path to the index
-     * @param repository the artifact repository where the poms were discovered
-     */
-    protected void indexPom( List models, File indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException
-    {
-        PomRepositoryIndex pomIndex = indexFactory.createPomRepositoryIndex( indexPath, repository );
-        pomIndex.indexPoms( models );
-        pomIndex.optimize();
     }
 }

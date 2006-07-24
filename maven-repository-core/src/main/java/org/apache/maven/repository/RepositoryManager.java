@@ -1,6 +1,7 @@
 package org.apache.maven.repository;
 
 import org.apache.maven.repository.converter.RepositoryConversionException;
+import org.apache.maven.repository.discovery.DiscovererException;
 
 import java.io.File;
 
@@ -22,8 +23,6 @@ public interface RepositoryManager
      * @param repositoryDirectory
      * @throws RepositoryConversionException
      */
-    void convertLegacyRepository( File legacyRepositoryDirectory,
-                                  File repositoryDirectory,
-                                  boolean includeSnapshots )
-        throws RepositoryConversionException;
+    void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory, boolean includeSnapshots )
+        throws RepositoryConversionException, DiscovererException;
 }

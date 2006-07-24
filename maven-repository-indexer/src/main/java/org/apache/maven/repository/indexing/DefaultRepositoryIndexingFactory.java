@@ -45,12 +45,6 @@ public class DefaultRepositoryIndexingFactory
         return new ArtifactRepositoryIndex( indexPath, repository, digester );
     }
 
-    public PomRepositoryIndex createPomRepositoryIndex( File indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException
-    {
-        return new PomRepositoryIndex( indexPath, repository, digester, artifactFactory );
-    }
-
     public MetadataRepositoryIndex createMetadataRepositoryIndex( File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
