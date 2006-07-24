@@ -55,8 +55,12 @@ public class DefaultMetadataDiscoverer
 {
     /**
      * Standard patterns to include in discovery of metadata files.
+     *
+     * @todo Note that only the remote format is supported at this time: you cannot search local repository metadata due
+     * to the way it is later loaded in the searchers. Review code using pathOfRemoteMetadata. IS there any value in
+     * searching the local metadata in the first place though?
      */
-    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/maven-metadata.xml", "**/maven-metadata-*.xml"};
+    private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/maven-metadata.xml"};
 
     public List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns )
         throws DiscovererException

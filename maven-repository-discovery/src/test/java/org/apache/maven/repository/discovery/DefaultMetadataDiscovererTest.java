@@ -105,7 +105,7 @@ public class DefaultMetadataDiscovererTest
             String dir = dPath.getPath();
 
             String normalizedDir = dir.replace( '\\', '/' );
-            if ( "javax/maven-metadata-repository.xml".equals( normalizedDir ) )
+            if ( "javax/maven-metadata.xml".equals( normalizedDir ) )
             {
                 found = true;
                 assertEquals( "Check reason for kickout", "Unable to build a repository metadata from path",
@@ -130,7 +130,7 @@ public class DefaultMetadataDiscovererTest
             String dir = dPath.getPath();
 
             String normalizedDir = dir.replace( '\\', '/' );
-            if ( "org/apache/maven/some-ejb/1.0/maven-metadata-repository.xml".equals( normalizedDir ) )
+            if ( "org/apache/maven/some-ejb/1.0/maven-metadata.xml".equals( normalizedDir ) )
             {
                 found = true;
                 assertTrue( "Check reason for kickout", dPath.getComment().matches(
@@ -141,9 +141,11 @@ public class DefaultMetadataDiscovererTest
     }
 
     private void removeTimestampMetadata()
+        throws IOException
     {
         // remove the metadata that tracks time
         File file = new File( repository.getBasedir(), "maven-metadata.xml" );
+        System.gc(); // for Windows
         file.delete();
         assertFalse( file.exists() );
     }
