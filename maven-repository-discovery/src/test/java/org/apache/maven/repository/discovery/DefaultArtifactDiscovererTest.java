@@ -462,75 +462,111 @@ public class DefaultArtifactDiscovererTest
     public void testShortPath()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid-1.0.jar";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid-1.0.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for short paths", artifact );
+            fail( "Artifact should be null for short paths" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testWrongArtifactId()
         throws ComponentLookupException
     {
-        String testPath = "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar";
 
-        Artifact artifact = getArtifactFromPath( testPath );
+        try
+        {
+            getArtifactFromPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar" );
 
-        assertNull( "Artifact should be null for wrong ArtifactId", artifact );
+            fail( "Artifact should be null for wrong ArtifactId" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testNoType()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid/1/invalid-1";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1/invalid-1" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for no type", artifact );
+            fail( "Artifact should be null for no type" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testWrongVersion()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid/1.0/invalid-2.0.jar";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1.0/invalid-2.0.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for wrong version", artifact );
+            fail( "Artifact should be null for wrong version" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testLongVersion()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid/1.0/invalid-1.0b.jar";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1.0/invalid-1.0b.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for long version", artifact );
+            fail( "Artifact should be null for long version" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testWrongSnapshotVersion()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for wrong snapshot version", artifact );
+            fail( "Artifact should be null for wrong snapshot version" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testSnapshotBaseVersion()
         throws ComponentLookupException
     {
-        String testPath = "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for snapshot base version", artifact );
+            fail( "Artifact should be null for snapshot base version" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testPathWithClassifier()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org/apache/maven/some-ejb/1.0/some-ejb-1.0-client.jar";
 
@@ -542,7 +578,7 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testWithJavaSourceInclusion()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org/apache/maven/testing/1.0/testing-1.0-sources.jar";
 
@@ -554,7 +590,7 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testDistributionArtifacts()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org/apache/maven/testing/1.0/testing-1.0.tar.gz";
 
@@ -574,7 +610,7 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testSnapshot()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-SNAPSHOT.jar";
 
@@ -594,43 +630,7 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testNormal()
-        throws ComponentLookupException
-    {
-        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
-
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Normal artifact path error", artifact );
-
-        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
-    }
-
-    public void testUpdatedInRepository()
-        throws ComponentLookupException
-    {
-        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
-
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Normal artifact path error", artifact );
-
-        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
-    }
-
-    public void testNotUpdatedInRepository()
-        throws ComponentLookupException
-    {
-        String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
-
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNotNull( "Normal artifact path error", artifact );
-
-        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
-    }
-
-    public void testNotUpdatedInRepositoryForcedDiscovery()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "javax/sql/jdbc/2.0/jdbc-2.0.jar";
 
@@ -642,7 +642,7 @@ public class DefaultArtifactDiscovererTest
     }
 
     public void testSnapshotWithClassifier()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org/apache/maven/test/1.0-SNAPSHOT/test-1.0-20050611.112233-1-javadoc.jar";
 
@@ -655,14 +655,8 @@ public class DefaultArtifactDiscovererTest
     }
 
     private Artifact getArtifactFromPath( String path )
+        throws DiscovererException
     {
-        try
-        {
-            return discoverer.buildArtifact( path );
-        }
-        catch ( DiscovererException e )
-        {
-            return null;
-        }
+        return discoverer.buildArtifact( path );
     }
 }

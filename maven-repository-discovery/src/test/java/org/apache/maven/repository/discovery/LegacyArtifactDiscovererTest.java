@@ -375,42 +375,63 @@ public class LegacyArtifactDiscovererTest
     }
 
     public void testWrongArtifactPackaging()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
-        String testPath = "org.apache.maven.test/jars/artifactId-1.0.jar.md5";
+        try
+        {
+            getArtifactFromPath( "org.apache.maven.test/jars/artifactId-1.0.jar.md5" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for wrong package extension", artifact );
+            fail( "Artifact should be null for wrong package extension" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
-    public void testNoArtifactid()
+    public void testNoArtifactId()
+        throws DiscovererException
     {
-        String testPath = "groupId/jars/-1.0.jar";
+        try
+        {
+            getArtifactFromPath( "groupId/jars/-1.0.jar" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
+            fail( "Artifact should be null when artifactId is missing" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
 
-        assertNull( "Artifact should be null when artifactId is missing", artifact );
+        try
+        {
+            getArtifactFromPath( "groupId/jars/1.0.jar" );
 
-        testPath = "groupId/jars/1.0.jar";
-
-        artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null when artifactId is missing", artifact );
+            fail( "Artifact should be null when artifactId is missing" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testNoType()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
-        String testPath = "invalid/invalid/1/invalid-1";
+        try
+        {
+            getArtifactFromPath( "invalid/invalid/1/invalid-1" );
 
-        Artifact artifact = getArtifactFromPath( testPath );
-
-        assertNull( "Artifact should be null for no type", artifact );
+            fail( "Artifact should be null for no type" );
+        }
+        catch ( DiscovererException e )
+        {
+            // excellent
+        }
     }
 
     public void testSnapshot()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org.apache.maven.test/jars/maven-model-1.0-SNAPSHOT.jar";
 
@@ -422,7 +443,7 @@ public class LegacyArtifactDiscovererTest
     }
 
     public void testFinal()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "org.apache.maven.test/jars/maven-model-1.0-final-20060606.jar";
 
@@ -434,7 +455,7 @@ public class LegacyArtifactDiscovererTest
     }
 
     public void testNormal()
-        throws ComponentLookupException
+        throws ComponentLookupException, DiscovererException
     {
         String testPath = "javax.sql/jars/jdbc-2.0.jar";
 
@@ -446,14 +467,8 @@ public class LegacyArtifactDiscovererTest
     }
 
     private Artifact getArtifactFromPath( String path )
+        throws DiscovererException
     {
-        try
-        {
-            return discoverer.buildArtifact( path );
-        }
-        catch ( DiscovererException e )
-        {
-            return null;
-        }
+        return discoverer.buildArtifact( path );
     }
 }
