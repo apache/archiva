@@ -22,6 +22,10 @@ Indexer Design
 
     * plugin prefix from the repository metadata (in the future, more may be indexed)
 
+    * Java classes and packages within a JAR artifact (delimited by \n)
+
+    * filenames within an archive (delimited by \n)
+
     * the identifier of the source repository
 
   Each record in the index refers to an artifact. Since the content for a record can come from various sources, the
@@ -67,7 +71,37 @@ Indexer Design
   size. This index is appropriate for use by certain clients such as IDE integration for fast searching. For a fuller
   interface to the repository information, the integration should use the XMLRPC interface.
 
-  ~~TODO: finish!
+  The following fields are in the reduced index:
+
+    * <<<j>>>: The JAR filename
+
+    * <<<s>>>: The JAR size
+
+    * <<<d>>>: The last modified timestamp
+
+    * <<<c>>>: A list of classes in the JAR (\n delimited)
+
+    * <<<m>>>: md5 checksum of the JAR
+
+  Only JARs are indexed at present.
+
+* Searching
+
+  Searching will be reasonably flexible, though the general use case will be to enter a single parsed query that is
+  applied to all fields in the index.
+
+  Some features that will be available:
+
+    * <Search by a particular field (exact match)>: This would be needed for search by checksum
+
+    * <Search in a range of field values>: This would be needed for searching based on update time
+
+    * <Limit search to particular fields>: It will be useful to only search Java classes and packages, for example
+
+  Another thing to note is that the search results should be able to be composed entirely from the index for performance
+  reasons. It should not have to read any metadata files or properties of files such as size and checksum from the disk.
+  This enables searching a repository remotely without having the physical repository available, which is useful for
+  IDE integration among other things.
 
 * Limitations
 
