@@ -51,14 +51,30 @@ import java.util.zip.ZipOutputStream;
 public class EclipseRepositoryIndex
     extends AbstractRepositoryIndex
 {
+    // TODO: change constants to an enumerated type
+    /**
+     * Field name for the JAR filename.
+     */
     private static final String JAR_NAME = "j";
 
+    /**
+     * Field name for the JAR file size.
+     */
     private static final String JAR_SIZE = "s";
 
+    /**
+     * Field name for the JAR last modified timestamp.
+     */
     private static final String JAR_DATE = "d";
 
+    /**
+     * Field name for the list of classes in the JAR.
+     */
     private static final String NAMES = "c";
 
+    /**
+     * Field name for the MD5 checksum of the JAR.
+     */
     private static final String MD5 = "m";
 
     private Digester digester;

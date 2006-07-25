@@ -66,10 +66,10 @@ Indexer Design
 * Reduced Size Index
 
   An additional index is maintained by the repository manager in the
-  {{{../apidocs/org/apache/maven/repository/indexing/MinimalIndex.html} MinimalIndex}} class. This indexes all of the
-  same artifacts as the first index, but stores them with shorter field names and less information to maintain a smaller
-  size. This index is appropriate for use by certain clients such as IDE integration for fast searching. For a fuller
-  interface to the repository information, the integration should use the XMLRPC interface.
+  {{{../apidocs/org/apache/maven/repository/indexing/MinimalArtifactIndexRecord.html} MinimalIndex}} class. This
+  indexes all of the same artifacts as the first index, but stores them with shorter field names and less information to
+  maintain a smaller size. This index is appropriate for use by certain clients such as IDE integration for fast
+  searching. For a fuller interface to the repository information, the integration should use the XMLRPC interface.
 
   The following fields are in the reduced index:
 
