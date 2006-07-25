@@ -15,7 +15,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.repository</groupId>
     <artifactId>maven-repository-manager</artifactId>
@@ -37,6 +37,7 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
     </dependency>
+    <!-- TODO! upgrade to lucene 2.0.0 -->
     <dependency>
       <groupId>lucene</groupId>
       <artifactId>lucene</artifactId>

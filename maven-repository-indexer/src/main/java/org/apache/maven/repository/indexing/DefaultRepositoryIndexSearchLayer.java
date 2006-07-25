@@ -63,6 +63,8 @@ public class DefaultRepositoryIndexSearchLayer
         for ( int i = 0; i < RepositoryIndex.FIELDS.length; i++ )
         {
             // TODO! does simply iterating the fields and searching each perform well enough and yield correct rankings?
+            // look into: http://wiki.apache.org/jakarta-lucene/LuceneFAQ#head-300f0756fdaa71f522c96a868351f716573f2d77
+            // ie: http://lucene.apache.org/java/docs/api/org/apache/lucene/queryParser/MultiFieldQueryParser.html
             QueryTerm term = new QueryTerm( RepositoryIndex.FIELDS[i], keyword );
             List results = searchAdvanced( new SingleTermQuery( term ), index );
             for ( Iterator iter = results.iterator(); iter.hasNext(); )
