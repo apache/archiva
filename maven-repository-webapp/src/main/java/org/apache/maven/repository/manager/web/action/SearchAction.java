@@ -27,7 +27,7 @@ import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -112,7 +112,7 @@ public class SearchAction
             return ERROR;
         }
 
-        searchResults = searchLayer.searchAdvanced( new SinglePhraseQuery( "md5", md5 ), index );
+        searchResults = searchLayer.searchAdvanced( new SingleTermQuery( "md5", md5 ), index );
 
         return SUCCESS;
     }

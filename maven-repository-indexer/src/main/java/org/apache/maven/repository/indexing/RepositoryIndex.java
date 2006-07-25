@@ -87,6 +87,8 @@ public interface RepositoryIndex
 
     /**
      * Method to encapsulate the optimize() method for lucene
+     *
+     * @throws RepositoryIndexException if there is a problem optimizing the index.
      */
     void optimize()
         throws RepositoryIndexException;

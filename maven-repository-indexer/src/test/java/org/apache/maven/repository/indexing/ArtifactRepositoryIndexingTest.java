@@ -25,8 +25,8 @@ import org.apache.maven.repository.digest.DefaultDigester;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.digest.DigesterException;
 import org.apache.maven.repository.indexing.query.CompoundQuery;
-import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.QueryTerm;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -80,8 +80,8 @@ public class ArtifactRepositoryIndexingTest
             (RepositoryIndexSearchLayer) lookup( RepositoryIndexSearchLayer.ROLE );
 
         // search version
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0.15" );
-        List artifactList = repoSearchLayer.searchAdvanced( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_VERSION, "1.0.15" );
+        List artifactList = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifactList.size() );
         for ( Iterator iter = artifactList.iterator(); iter.hasNext(); )
         {
@@ -91,8 +91,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search group id
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test.inherited" );
-        artifactList = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_GROUPID, "test.inherited" );
+        artifactList = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifactList.size() );
         Iterator artifacts = artifactList.iterator();
         if ( artifacts.hasNext() )
@@ -219,8 +219,8 @@ public class ArtifactRepositoryIndexingTest
         ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( indexPath, repository );
 
         // search version
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
-        List artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_VERSION, "1.0" );
+        List artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 2, artifacts.size() );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -230,8 +230,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search group id
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 4, artifacts.size() );
         Iterator iter = artifacts.iterator();
         if ( iter.hasNext() )
@@ -242,8 +242,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search artifact id
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 2, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -253,8 +253,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search version
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_VERSION, "2" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 4, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -264,8 +264,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search classes
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_CLASSES, "App" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_CLASSES, "App" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -275,8 +275,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search packages
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PACKAGES, "groupId" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_PACKAGES, "groupId" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -286,8 +286,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search files
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_FILES, "pom.xml" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_FILES, "pom.xml" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 3, artifacts.size() );
         iter = artifacts.iterator();
         if ( iter.hasNext() )
@@ -298,8 +298,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         // search packaging
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PACKAGING, "jar" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_PACKAGING, "jar" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 3, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -309,9 +309,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         //search license url
-        qry =
-            new SinglePhraseQuery( RepositoryIndex.FLD_LICENSE_URLS, "http://www.apache.org/licenses/LICENSE-2.0.txt" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_LICENSE_URLS, "http://www.apache.org/licenses/LICENSE-2.0.txt" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 2, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -325,8 +324,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         //search dependencies
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 2, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -348,9 +347,8 @@ public class ArtifactRepositoryIndexingTest
         }
 
         //search build plugin
-        qry =
-            new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINS_BUILD, "org.codehaus.modello:modello-maven-plugin:2.0" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_PLUGINS_BUILD, "org.codehaus.modello:modello-maven-plugin:2.0" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -372,9 +370,9 @@ public class ArtifactRepositoryIndexingTest
         }
 
         //search reporting plugin
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINS_REPORT,
-                                     "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" );
-        artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm =
+            new QueryTerm( RepositoryIndex.FLD_PLUGINS_REPORT, "org.apache.maven.plugins:maven-checkstyle-plugin:2.0" );
+        artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifacts.size() );
         for ( iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -412,8 +410,8 @@ public class ArtifactRepositoryIndexingTest
     {
         String sha1 = digester.createChecksum( artifact.getFile(), algorithm );
 
-        Query qry = new SinglePhraseQuery( field, sha1.trim() );
-        List artifacts = repoSearchLayer.searchAdvanced( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( field, sha1.trim() );
+        List artifacts = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 1, artifacts.size() );
         for ( Iterator iter = artifacts.iterator(); iter.hasNext(); )
         {
@@ -442,8 +440,8 @@ public class ArtifactRepositoryIndexingTest
 
         // Criteria 1: required query
         // ex. artifactId=maven-artifact AND groupId=org.apache.maven
-        Query qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
-        Query qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
+        QueryTerm qry1 = new QueryTerm( RepositoryIndex.FLD_ARTIFACTID, "maven-artifact" );
+        QueryTerm qry2 = new QueryTerm( RepositoryIndex.FLD_GROUPID, "org.apache.maven" );
         CompoundQuery rQry = new CompoundQuery();
         rQry.and( qry1 );
         rQry.and( qry2 );
@@ -460,7 +458,7 @@ public class ArtifactRepositoryIndexingTest
         // Criteria 2: nested required query
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) OR
         // version=2.0.3
-        Query qry3 = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2.0.3" );
+        QueryTerm qry3 = new QueryTerm( RepositoryIndex.FLD_VERSION, "2.0.3" );
         CompoundQuery oQry = new CompoundQuery();
         oQry.or( rQry );
         oQry.or( qry3 );
@@ -478,14 +476,14 @@ public class ArtifactRepositoryIndexingTest
         // ex. (artifactId=maven-artifact AND groupId=org.apache.maven) AND
         // (version=2.0.3 OR version=2.0.1)
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)
-        Query qry4 = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "2.0.1" );
+        QueryTerm qry4 = new QueryTerm( RepositoryIndex.FLD_VERSION, "2.0.1" );
         oQry = new CompoundQuery();
         oQry.or( qry3 );
         oQry.or( qry4 );
 
         CompoundQuery oQry5 = new CompoundQuery();
-        Query qry9 = new SinglePhraseQuery( RepositoryIndex.FLD_NAME, "maven-artifact-2.0.1.jar" );
-        Query qry10 = new SinglePhraseQuery( RepositoryIndex.FLD_NAME, "maven-artifact" );
+        QueryTerm qry9 = new QueryTerm( RepositoryIndex.FLD_NAME, "maven-artifact-2.0.1.jar" );
+        QueryTerm qry10 = new QueryTerm( RepositoryIndex.FLD_NAME, "maven-artifact" );
         oQry5.or( qry9 );
         oQry5.or( qry10 );
 
@@ -505,10 +503,9 @@ public class ArtifactRepositoryIndexingTest
         }
 
         CompoundQuery oQry6 = new CompoundQuery();
-        Query qry11 =
-            new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
-        Query qry12 = new SinglePhraseQuery( RepositoryIndex.FLD_DEPENDENCIES,
-                                             "org.codehaus.plexus:plexus-container-defualt:1.0-alpha-9" );
+        QueryTerm qry11 = new QueryTerm( RepositoryIndex.FLD_DEPENDENCIES, "org.codehaus.plexus:plexus-utils:1.0.5" );
+        QueryTerm qry12 = new QueryTerm( RepositoryIndex.FLD_DEPENDENCIES,
+                                         "org.codehaus.plexus:plexus-container-defualt:1.0-alpha-9" );
         oQry6.or( qry11 );
         oQry6.or( qry12 );
 
@@ -533,8 +530,8 @@ public class ArtifactRepositoryIndexingTest
         // AND (name=maven-artifact-2.0.1.jar OR name=maven-artifact)]
         // OR [(artifactId=sample AND groupId=test)]
         CompoundQuery rQry4 = new CompoundQuery();
-        Query qry5 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "sample" );
-        Query qry6 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test" );
+        QueryTerm qry5 = new QueryTerm( RepositoryIndex.FLD_ARTIFACTID, "sample" );
+        QueryTerm qry6 = new QueryTerm( RepositoryIndex.FLD_GROUPID, "test" );
         rQry4.and( qry5 );
         rQry4.and( qry6 );
         CompoundQuery oQry2 = new CompoundQuery();
@@ -558,8 +555,8 @@ public class ArtifactRepositoryIndexingTest
         // [(artifactId=sample AND groupId=test)] OR
         // [(artifactId=sample2 AND groupId=test)]
         CompoundQuery rQry5 = new CompoundQuery();
-        Query qry7 = new SinglePhraseQuery( RepositoryIndex.FLD_ARTIFACTID, "sample2" );
-        Query qry8 = new SinglePhraseQuery( RepositoryIndex.FLD_GROUPID, "test" );
+        QueryTerm qry7 = new QueryTerm( RepositoryIndex.FLD_ARTIFACTID, "sample2" );
+        QueryTerm qry8 = new QueryTerm( RepositoryIndex.FLD_GROUPID, "test" );
         rQry5.and( qry7 );
         rQry5.and( qry8 );
         oQry2.and( rQry5 );
@@ -592,8 +589,8 @@ public class ArtifactRepositoryIndexingTest
 
         try
         {
-            Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "~~~~~" );
-            repoSearchLayer.searchAdvanced( qry, indexer );
+            QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_VERSION, "~~~~~" );
+            repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
             fail( "Must throw an exception on unparseable query." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -605,8 +602,8 @@ public class ArtifactRepositoryIndexingTest
 
         try
         {
-            Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_VERSION, "1.0" );
-            repoSearchLayer.searchAdvanced( qry, indexer );
+            QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_VERSION, "1.0" );
+            repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
             fail( "Must throw an exception on invalid index location." );
         }
         catch ( RepositoryIndexSearchException re )
@@ -635,23 +632,24 @@ public class ArtifactRepositoryIndexingTest
         Artifact pomArtifact =
             createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), "pom" );
 
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + ":" + artifact.getId() );
-        List results = repoSearcher.search( qry, indexer );
+        QueryTerm queryTerm =
+            new QueryTerm( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + ":" + artifact.getId() );
+        List results = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertFalse( results.isEmpty() );
 
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.POM + ":" + pomArtifact.getId() );
-        results = repoSearcher.search( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_ID, RepositoryIndex.POM + ":" + pomArtifact.getId() );
+        results = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertFalse( results.isEmpty() );
 
         indexer.deleteArtifact( artifact );
         indexer.deleteArtifact( pomArtifact );
 
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + ":" + artifact.getId() );
-        results = repoSearcher.search( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + ":" + artifact.getId() );
+        results = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertTrue( results.isEmpty() );
 
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.POM + ":" + pomArtifact.getId() );
-        results = repoSearcher.search( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_ID, RepositoryIndex.POM + ":" + pomArtifact.getId() );
+        results = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertTrue( results.isEmpty() );
     }
 
@@ -673,8 +671,8 @@ public class ArtifactRepositoryIndexingTest
         Artifact artifact = createArtifact( "org.apache.maven", "maven-corrupt-jar", "2.0" );
         indexer.indexArtifact( artifact );
 
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
-        List artifacts = repoSearcher.search( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_ID, RepositoryIndex.ARTIFACT + artifact.getId() );
+        List artifacts = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 0, artifacts.size() );
     }
 

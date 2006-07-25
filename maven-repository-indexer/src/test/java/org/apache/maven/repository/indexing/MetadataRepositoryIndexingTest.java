@@ -29,9 +29,9 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.apache.maven.repository.indexing.query.Query;
+import org.apache.maven.repository.indexing.query.QueryTerm;
 import org.apache.maven.repository.indexing.query.RangeQuery;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
@@ -41,9 +41,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This class tests the MetadataRepositoryIndex.
@@ -141,8 +141,8 @@ public class MetadataRepositoryIndexingTest
         MetadataRepositoryIndex indexer = factory.createMetadataRepositoryIndex( indexPath, repository );
 
         // search last update
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
-        List metadataList = repoSearchLayer.searchAdvanced( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
+        List metadataList = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         //assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
@@ -157,8 +157,8 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search plugin prefix
-        qry = new SinglePhraseQuery( RepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
-        metadataList = repoSearchLayer.searchAdvanced( qry, indexer );
+        queryTerm = new QueryTerm( RepositoryIndex.FLD_PLUGINPREFIX, "org.apache.maven" );
+        metadataList = repoSearchLayer.searchAdvanced( new SingleTermQuery( queryTerm ), indexer );
         //assertEquals( 1, metadataList.size() );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
         {
@@ -177,11 +177,9 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using INCLUSIVE Range Query
-        Query qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
-        Query qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212235959" );
-        RangeQuery rQry = new RangeQuery( true );
-        rQry.addQuery( qry1 );
-        rQry.addQuery( qry2 );
+        QueryTerm qry1 = new QueryTerm( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        QueryTerm qry2 = new QueryTerm( RepositoryIndex.FLD_LASTUPDATE, "20051212235959" );
+        RangeQuery rQry = RangeQuery.createInclusiveRange( qry1, qry2 );
 
         metadataList = repoSearchLayer.searchAdvanced( rQry, indexer );
         for ( Iterator iter = metadataList.iterator(); iter.hasNext(); )
@@ -197,11 +195,10 @@ public class MetadataRepositoryIndexingTest
         }
 
         // search last update using EXCLUSIVE Range Query
-        qry1 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
-        qry2 = new SinglePhraseQuery( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
-        rQry = new RangeQuery( false );
-        rQry.addQuery( qry1 );
-        rQry.addQuery( qry2 );
+        qry1 = new QueryTerm( RepositoryIndex.FLD_LASTUPDATE, "20051212000000" );
+        qry2 = new QueryTerm( RepositoryIndex.FLD_LASTUPDATE, "20051212044643" );
+
+        rQry = RangeQuery.createExclusiveRange( qry1, qry2 );
 
         metadataList = repoSearchLayer.searchAdvanced( rQry, indexer );
         assertEquals( 0, metadataList.size() );
@@ -226,8 +223,8 @@ public class MetadataRepositoryIndexingTest
         repoMetadata.setMetadata( readMetadata( repoMetadata ) );
         indexer.deleteDocument( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
 
-        Query qry = new SinglePhraseQuery( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
-        List metadataList = repoSearcher.search( qry, indexer );
+        QueryTerm queryTerm = new QueryTerm( RepositoryIndex.FLD_ID, (String) repoMetadata.getKey() );
+        List metadataList = repoSearcher.search( new SingleTermQuery( queryTerm ), indexer );
         assertEquals( 0, metadataList.size() );
     }
 

@@ -17,30 +17,84 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
- * Term in a compound query.
+ * Base of all query terms.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface CompoundQueryTerm
+class CompoundQueryTerm
 {
+    /**
+     * The query to add to the compound query.
+     */
+    private final Query query;
+
+    /**
+     * Whether the term is required (an AND).
+     */
+    private final boolean required;
+
+    /**
+     * Whether the term is prohibited (a NOT).
+     */
+    private final boolean prohibited;
+
+    /**
+     * Class constructor
+     *
+     * @param query      the subquery to add
+     * @param required   whether the term is required (an AND)
+     * @param prohibited whether the term is prohibited (a NOT)
+     */
+    private CompoundQueryTerm( Query query, boolean required, boolean prohibited )
+    {
+        this.query = query;
+        this.prohibited = prohibited;
+        this.required = required;
+    }
+
     /**
      * Method to test if the Query is a search requirement
      *
      * @return true if this Query is a search requirement, otherwise returns false
      */
-    boolean isRequired();
+    boolean isRequired()
+    {
+        return required;
+    }
 
     /**
      * Method to test if the Query is prohibited in the search result
      *
      * @return true if this Query is prohibited in the search result
      */
-    boolean isProhibited();
+    boolean isProhibited()
+    {
+        return prohibited;
+    }
+
 
     /**
-     * Method to get the Query object represented by this object
+     * The subquery to execute.
      *
-     * @return the Query object represented by this object
+     * @return the query
      */
-    Query getQuery();
+    Query getQuery()
+    {
+        return query;
+    }
+
+    static CompoundQueryTerm and( Query query )
+    {
+        return new CompoundQueryTerm( query, true, false );
+    }
+
+    static CompoundQueryTerm or( Query query )
+    {
+        return new CompoundQueryTerm( query, false, false );
+    }
+
+    static CompoundQueryTerm not( Query query )
+    {
+        return new CompoundQueryTerm( query, false, true );
+    }
 }

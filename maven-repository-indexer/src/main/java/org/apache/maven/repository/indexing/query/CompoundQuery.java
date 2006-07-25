@@ -32,47 +32,69 @@ import java.util.List;
 public class CompoundQuery
     implements Query
 {
-    protected List queries;
+    /**
+     * The query terms.
+     */
+    private final List compoundQueryTerms = new ArrayList();
 
     /**
-     * Class constructor
+     * Appends a required term to this query.
+     *
+     * @param term the term to be appended to this query
      */
-    public CompoundQuery()
+    public void and( QueryTerm term )
     {
-        queries = new ArrayList();
+        compoundQueryTerms.add( CompoundQueryTerm.and( new SingleTermQuery( term ) ) );
     }
 
     /**
-     * Appends a required Query object to this Query object. The Query object will be encapsulated inside an
-     * AndQueryTerm object.
+     * Appends an optional term to this query.
      *
-     * @param query the Query object to be appended to this Query object
+     * @param term the term to be appended to this query
+     */
+    public void or( QueryTerm term )
+    {
+        compoundQueryTerms.add( CompoundQueryTerm.or( new SingleTermQuery( term ) ) );
+    }
+
+    /**
+     * Appends a prohibited term to this query.
+     *
+     * @param term the term to be appended to this query
+     */
+    public void not( QueryTerm term )
+    {
+        compoundQueryTerms.add( CompoundQueryTerm.not( new SingleTermQuery( term ) ) );
+    }
+
+    /**
+     * Appends a required subquery to this query.
+     *
+     * @param query the subquery to be appended to this query
      */
     public void and( Query query )
     {
-        queries.add( new AndQueryTerm( query ) );
+        compoundQueryTerms.add( CompoundQueryTerm.and( query ) );
     }
 
     /**
-     * Appends an optional Query object to this Query object. The Query object will be encapsulated inside an
-     * OrQueryTerm object.
+     * Appends an optional subquery to this query.
      *
-     * @param query the Query object to be appended to this Query object
+     * @param query the subquery to be appended to this query
      */
     public void or( Query query )
     {
-        queries.add( new OrQueryTerm( query ) );
+        compoundQueryTerms.add( CompoundQueryTerm.or( query ) );
     }
 
     /**
-     * Appends a prohibited Query object to this Query object. The Query object will be encapsulated inside an
-     * NotQueryTerm object.
+     * Appends a prohibited subquery to this query.
      *
-     * @param query the Query object to be appended to this Query object
+     * @param query the subquery to be appended to this query
      */
     public void not( Query query )
     {
-        queries.add( new NotQueryTerm( query ) );
+        compoundQueryTerms.add( CompoundQueryTerm.not( query ) );
     }
 
     /**
@@ -80,23 +102,23 @@ public class CompoundQuery
      *
      * @return List of all Queries added to this Query
      */
-    public List getQueries()
+    public List getCompoundQueryTerms()
     {
-        return queries;
+        return compoundQueryTerms;
     }
 
+    // TODO! relocate
     public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
         throws ParseException
     {
         BooleanQuery booleanQuery = new BooleanQuery();
-        List queries = this.queries;
+        List queries = this.compoundQueryTerms;
         for ( Iterator i = queries.iterator(); i.hasNext(); )
         {
-            CompoundQueryTerm subquery = (CompoundQueryTerm) i.next();
+            CompoundQueryTerm queryTerm = (CompoundQueryTerm) i.next();
 
-            org.apache.lucene.search.Query luceneQuery = subquery.getQuery().createLuceneQuery( index );
-
-            booleanQuery.add( luceneQuery, subquery.isRequired(), subquery.isProhibited() );
+            booleanQuery.add( queryTerm.getQuery().createLuceneQuery( index ), queryTerm.isRequired(),
+                              queryTerm.isProhibited() );
         }
         return booleanQuery;
     }

@@ -27,8 +27,7 @@ import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
 import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
 import org.apache.maven.repository.indexing.SearchResult;
-import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 
 import java.io.File;
 import java.util.Iterator;
@@ -92,11 +91,9 @@ public class DuplicateArtifactFileReportProcessor
                 throw new ReportProcessorException( "Failed to generate checksum", e );
             }
 
-            Query query = new SinglePhraseQuery( algorithm, checksum.trim() );
-
             try
             {
-                List results = searchLayer.searchAdvanced( query, index );
+                List results = searchLayer.searchAdvanced( new SingleTermQuery( algorithm, checksum.trim() ), index );
 
                 if ( results.isEmpty() )
                 {

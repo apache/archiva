@@ -19,35 +19,122 @@ package org.apache.maven.repository.indexing.query;
 import org.apache.lucene.index.Term;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
- * Query object that handles range queries for dates.
+ * Query object that handles range queries (presently used for dates).
  *
  * @author Maria Odea Ching
+ * @author Brett Porter
  */
 public class RangeQuery
     implements Query
 {
-    private List queries = new ArrayList();
+    /**
+     * Whether values equal to the boundaries are included in the query results.
+     */
+    private final boolean inclusive;
 
-    private boolean inclusive;
+    /**
+     * The lower bound.
+     */
+    private final QueryTerm begin;
 
-    public RangeQuery( boolean inclusive )
+    /**
+     * The upper bound.
+     */
+    private final QueryTerm end;
+
+    /**
+     * Constructor.
+     *
+     * @param begin     the lower bound
+     * @param end       the upper bound
+     * @param inclusive whether to include the boundaries in the query
+     */
+    private RangeQuery( QueryTerm begin, QueryTerm end, boolean inclusive )
     {
+        this.begin = begin;
+        this.end = end;
         this.inclusive = inclusive;
     }
 
-    public void addQuery( Query qry )
+    /**
+     * Create an open range, including all results.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createOpenRange()
     {
-        queries.add( qry );
+        return new RangeQuery( null, null, false );
     }
 
-    public List getQueries()
+    /**
+     * Create a bounded range, excluding the endpoints.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createExclusiveRange( QueryTerm begin, QueryTerm end )
     {
-        return queries;
+        return new RangeQuery( begin, end, false );
+    }
+
+    /**
+     * Create a bounded range, including the endpoints.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createInclusiveRange( QueryTerm begin, QueryTerm end )
+    {
+        return new RangeQuery( begin, end, true );
+    }
+
+    /**
+     * Create a range that is greater than or equal to a given term.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createGreaterThanOrEqualToRange( QueryTerm begin )
+    {
+        return new RangeQuery( begin, null, true );
+    }
+
+    /**
+     * Create a range that is greater than a given term.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createGreaterThanRange( QueryTerm begin )
+    {
+        return new RangeQuery( begin, null, false );
+    }
+
+    /**
+     * Create a range that is less than or equal to a given term.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createLessThanOrEqualToRange( QueryTerm end )
+    {
+        return new RangeQuery( null, end, true );
+    }
+
+    /**
+     * Create a range that is less than a given term.
+     *
+     * @return the query object
+     */
+    public static RangeQuery createLessThanRange( QueryTerm end )
+    {
+        return new RangeQuery( null, end, false );
+    }
+
+    public QueryTerm getBegin()
+    {
+        return begin;
+    }
+
+    public QueryTerm getEnd()
+    {
+        return end;
     }
 
     public boolean isInclusive()
@@ -55,19 +142,21 @@ public class RangeQuery
         return inclusive;
     }
 
+    /**
+     * @todo! this seems like the wrong place for this (it's back to front - create the query from the index
+     */
     public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
     {
-        List queries = this.queries;
-        Iterator iter = queries.iterator();
-        Term begin = null;
-        Term end = null;
-        if ( queries.size() == 2 )
+        Term beginTerm = null;
+        if ( begin != null )
         {
-            SinglePhraseQuery qry = (SinglePhraseQuery) iter.next();
-            begin = new Term( qry.getField(), qry.getValue() );
-            qry = (SinglePhraseQuery) iter.next();
-            end = new Term( qry.getField(), qry.getValue() );
+            beginTerm = new Term( begin.getField(), begin.getValue() );
         }
-        return new org.apache.lucene.search.RangeQuery( begin, end, this.inclusive );
+        Term endTerm = null;
+        if ( end != null )
+        {
+            endTerm = new Term( end.getField(), end.getValue() );
+        }
+        return new org.apache.lucene.search.RangeQuery( beginTerm, endTerm, inclusive );
     }
 }

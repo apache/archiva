@@ -18,58 +18,139 @@ package org.apache.maven.repository.indexing.query;
 
 import junit.framework.TestCase;
 
+import java.util.Iterator;
+
 /**
- * @author Edwin Punzalan
+ * @author Brett Porter
  */
 public class QueryTest
     extends TestCase
 {
-    public void testSinglePhraseQueryObject()
+    private QueryTerm term1 = new QueryTerm( "field1", "value1" );
+
+    private QueryTerm term2 = new QueryTerm( "field2", "value2" );
+
+    private QueryTerm term3 = new QueryTerm( "field3", "value3" );
+
+    public void testQueryTerm()
     {
-        SinglePhraseQuery query = new SinglePhraseQuery( "Field", "Value" );
-        assertEquals( "Field", query.getField() );
-        assertEquals( "Value", query.getValue() );
+        QueryTerm query = new QueryTerm( "Field", "Value" );
+        assertEquals( "check field setting", "Field", query.getField() );
+        assertEquals( "check value setting", "Value", query.getValue() );
     }
 
-    public void testCompoundQueries()
+    public void testSingleTermQuery()
     {
-        CompoundQuery rQuery = new CompoundQuery();
-        rQuery.and( new SinglePhraseQuery( "r1Field", "r1Value" ) );
-        rQuery.and( new SinglePhraseQuery( "r2Field", "r2Value" ) );
+        SingleTermQuery query = new SingleTermQuery( "Field", "Value" );
+        assertEquals( "check field setting", "Field", query.getField() );
+        assertEquals( "check value setting", "Value", query.getValue() );
 
-        CompoundQuery oQuery = new CompoundQuery();
-        oQuery.or( new SinglePhraseQuery( "oField", "oValue" ) );
+        query = new SingleTermQuery( term1 );
+        assertEquals( "check field setting", "field1", query.getField() );
+        assertEquals( "check value setting", "value1", query.getValue() );
+    }
 
-        CompoundQuery all = new CompoundQuery();
-        all.and( rQuery );
-        all.or( oQuery );
-        assertEquals( 2, all.getQueries().size() );
+    public void testRangeQueryOpen()
+    {
+        RangeQuery rangeQuery = RangeQuery.createOpenRange();
+        assertNull( "Check range has no start", rangeQuery.getBegin() );
+        assertNull( "Check range has no end", rangeQuery.getEnd() );
+    }
 
-        CompoundQueryTerm queryTerm = (CompoundQueryTerm) all.getQueries().get( 0 );
-        assertTrue( queryTerm.getQuery() instanceof CompoundQuery );
-        rQuery = (CompoundQuery) queryTerm.getQuery();
-        assertEquals( 2, rQuery.getQueries().size() );
-        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 0 );
-        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
-        SinglePhraseQuery sQuery = (SinglePhraseQuery) queryTerm.getQuery();
-        assertEquals( "r1Field", sQuery.getField() );
-        assertEquals( "r1Value", sQuery.getValue() );
-        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 1 );
-        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
-        sQuery = (SinglePhraseQuery) queryTerm.getQuery();
-        assertEquals( "r2Field", sQuery.getField() );
-        assertEquals( "r2Value", sQuery.getValue() );
+    public void testRangeQueryExclusive()
+    {
+        RangeQuery rangeQuery = RangeQuery.createExclusiveRange( term1, term2 );
+        assertEquals( "Check range start", term1, rangeQuery.getBegin() );
+        assertEquals( "Check range end", term2, rangeQuery.getEnd() );
+        assertFalse( "Check exclusive", rangeQuery.isInclusive() );
+    }
 
-        queryTerm = (CompoundQueryTerm) all.getQueries().get( 1 );
-        assertTrue( queryTerm.getQuery() instanceof CompoundQuery );
-        rQuery = (CompoundQuery) queryTerm.getQuery();
-        assertEquals( 1, rQuery.getQueries().size() );
-        queryTerm = (CompoundQueryTerm) rQuery.getQueries().get( 0 );
-        assertTrue( queryTerm.getQuery() instanceof SinglePhraseQuery );
-        sQuery = (SinglePhraseQuery) queryTerm.getQuery();
-        assertEquals( "oField", sQuery.getField() );
-        assertEquals( "oValue", sQuery.getValue() );
+    public void testRangeQueryInclusive()
+    {
+        RangeQuery rangeQuery = RangeQuery.createInclusiveRange( term1, term2 );
+        assertEquals( "Check range start", term1, rangeQuery.getBegin() );
+        assertEquals( "Check range end", term2, rangeQuery.getEnd() );
+        assertTrue( "Check inclusive", rangeQuery.isInclusive() );
+    }
 
+    public void testRangeQueryOpenEnded()
+    {
+        RangeQuery rangeQuery = RangeQuery.createGreaterThanOrEqualToRange( term1 );
+        assertEquals( "Check range start", term1, rangeQuery.getBegin() );
+        assertNull( "Check range end", rangeQuery.getEnd() );
+        assertTrue( "Check inclusive", rangeQuery.isInclusive() );
+
+        rangeQuery = RangeQuery.createGreaterThanRange( term1 );
+        assertEquals( "Check range start", term1, rangeQuery.getBegin() );
+        assertNull( "Check range end", rangeQuery.getEnd() );
+        assertFalse( "Check exclusive", rangeQuery.isInclusive() );
+
+        rangeQuery = RangeQuery.createLessThanOrEqualToRange( term1 );
+        assertNull( "Check range start", rangeQuery.getBegin() );
+        assertEquals( "Check range end", term1, rangeQuery.getEnd() );
+        assertTrue( "Check inclusive", rangeQuery.isInclusive() );
+
+        rangeQuery = RangeQuery.createLessThanRange( term1 );
+        assertNull( "Check range start", rangeQuery.getBegin() );
+        assertEquals( "Check range end", term1, rangeQuery.getEnd() );
+        assertFalse( "Check exclusive", rangeQuery.isInclusive() );
+    }
+
+    public void testCompundQuery()
+    {
+        CompoundQuery query = new CompoundQuery();
+        assertTrue( "check query is empty", query.getCompoundQueryTerms().isEmpty() );
+
+        query.and( term1 );
+        query.or( term2 );
+        query.not( term3 );
+
+        Iterator i = query.getCompoundQueryTerms().iterator();
+        CompoundQueryTerm term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check first term", "field1", getQuery( term ).getField() );
+        assertEquals( "Check first term", "value1", getQuery( term ).getValue() );
+        assertTrue( "Check first term", term.isRequired() );
+        assertFalse( "Check first term", term.isProhibited() );
+
+        term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check second term", "field2", getQuery( term ).getField() );
+        assertEquals( "Check second term", "value2", getQuery( term ).getValue() );
+        assertFalse( "Check second term", term.isRequired() );
+        assertFalse( "Check second term", term.isProhibited() );
+
+        term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check third term", "field3", getQuery( term ).getField() );
+        assertEquals( "Check third term", "value3", getQuery( term ).getValue() );
+        assertFalse( "Check third term", term.isRequired() );
+        assertTrue( "Check third term", term.isProhibited() );
+
+        CompoundQuery query2 = new CompoundQuery();
+        query2.and( query );
+        query2.or( new SingleTermQuery( term2 ) );
+        query2.not( new SingleTermQuery( term3 ) );
+
+        i = query2.getCompoundQueryTerms().iterator();
+        term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check first term", query, term.getQuery() );
+        assertTrue( "Check first term", term.isRequired() );
+        assertFalse( "Check first term", term.isProhibited() );
+
+        term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check second term", "field2", getQuery( term ).getField() );
+        assertEquals( "Check second term", "value2", getQuery( term ).getValue() );
+        assertFalse( "Check second term", term.isRequired() );
+        assertFalse( "Check second term", term.isProhibited() );
+
+        term = (CompoundQueryTerm) i.next();
+        assertEquals( "Check third term", "field3", getQuery( term ).getField() );
+        assertEquals( "Check third term", "value3", getQuery( term ).getValue() );
+        assertFalse( "Check third term", term.isRequired() );
+        assertTrue( "Check third term", term.isProhibited() );
+    }
+
+    private static SingleTermQuery getQuery( CompoundQueryTerm term )
+    {
+        return (SingleTermQuery) term.getQuery();
     }
 }
 

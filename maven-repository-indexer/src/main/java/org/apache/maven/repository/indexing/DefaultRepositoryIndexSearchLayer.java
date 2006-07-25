@@ -24,7 +24,8 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.ReportPlugin;
 import org.apache.maven.repository.indexing.query.Query;
-import org.apache.maven.repository.indexing.query.SinglePhraseQuery;
+import org.apache.maven.repository.indexing.query.QueryTerm;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,8 +62,9 @@ public class DefaultRepositoryIndexSearchLayer
         List generalSearchResults = new ArrayList();
         for ( int i = 0; i < RepositoryIndex.FIELDS.length; i++ )
         {
-            Query qry = new SinglePhraseQuery( RepositoryIndex.FIELDS[i], keyword );
-            List results = searchAdvanced( qry, index );
+            // TODO! does simply iterating the fields and searching each perform well enough and yield correct rankings?
+            QueryTerm term = new QueryTerm( RepositoryIndex.FIELDS[i], keyword );
+            List results = searchAdvanced( new SingleTermQuery( term ), index );
             for ( Iterator iter = results.iterator(); iter.hasNext(); )
             {
                 SearchResult result = (SearchResult) iter.next();
@@ -104,6 +106,7 @@ public class DefaultRepositoryIndexSearchLayer
                 fields.put( RepositoryIndex.FLD_SHA1, map.get( RepositoryIndex.FLD_SHA1 ) );
                 fields.put( RepositoryIndex.FLD_MD5, map.get( RepositoryIndex.FLD_MD5 ) );
 
+                // TODO! this doesn't seem like the correct way to determine what matched
                 result.setFieldMatches( fields );
                 searchResults.add( result );
             }

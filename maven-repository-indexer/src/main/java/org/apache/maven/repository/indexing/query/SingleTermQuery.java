@@ -23,63 +23,66 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 
 /**
- * Class to hold a single field search condition
+ * Query for a single term.
  *
- * @author Edwin Punzalan
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public class SinglePhraseQuery
+public class SingleTermQuery
     implements Query
 {
-    private String field;
-
-    private String value;
+    /**
+     * The term to query for.
+     */
+    private final QueryTerm term;
 
     /**
-     * Class constructor
+     * Constructor.
      *
-     * @param field the index field to search
-     * @param value the index value requirement
+     * @param term the term to query
      */
-    public SinglePhraseQuery( String field, String value )
+    public SingleTermQuery( QueryTerm term )
     {
-        this.field = field;
-        this.value = value;
+        this.term = term;
     }
 
     /**
-     * Method to retrieve the name of the index field searched
+     * Shorthand constructor - create a single term query from a field and value
      *
-     * @return the name of the index field
+     * @param field the field name
+     * @param value the value to check for
      */
-    public String getField()
+    public SingleTermQuery( String field, String value )
     {
-        return field;
+        this.term = new QueryTerm( field, value );
     }
 
     /**
-     * Method to retrieve the value used in searching the index field
-     *
-     * @return the value to corresspond the index field
+     * @todo! this seems like the wrong place for this (it's back to front - create the query from the index
      */
-    public String getValue()
-    {
-        return value;
-    }
-
     public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
         throws ParseException
     {
         org.apache.lucene.search.Query qry;
-        if ( index.isKeywordField( this.field ) )
+        if ( index.isKeywordField( term.getField() ) )
         {
-            Term term = new Term( this.field, this.value );
-            qry = new TermQuery( term );
+            qry = new TermQuery( new Term( term.getField(), term.getValue() ) );
         }
         else
         {
-            QueryParser parser = new QueryParser( this.field, index.getAnalyzer() );
-            qry = parser.parse( this.value );
+            // TODO: doesn't seem like the right place for this here!
+            QueryParser parser = new QueryParser( term.getField(), index.getAnalyzer() );
+            qry = parser.parse( term.getValue() );
         }
         return qry;
+    }
+
+    public String getField()
+    {
+        return term.getField();
+    }
+
+    public String getValue()
+    {
+        return term.getValue();
     }
 }

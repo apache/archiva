@@ -118,15 +118,8 @@ public class DefaultRepositoryIndexSearcher
         return docs;
     }
 
-    /**
-     * Method for creating the object to be returned for the search
-     *
-     * @param doc        the index document where the object field values will be retrieved from
-     * @param repository
-     * @return Object
-     */
-    protected RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc,
-                                                                              ArtifactRepository repository )
+    private RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc,
+                                                                            ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {
         RepositoryIndexSearchHit searchHit = null;
@@ -142,6 +135,7 @@ public class DefaultRepositoryIndexSearcher
 
             artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
 
+            // TODO: introduce strongly types search result!
             Map map = new HashMap();
             map.put( RepositoryIndex.ARTIFACT, artifact );
             map.put( RepositoryIndex.FLD_CLASSES, doc.get( RepositoryIndex.FLD_CLASSES ) );
@@ -159,6 +153,7 @@ public class DefaultRepositoryIndexSearcher
         {
             Artifact pomArtifact = factory.createProjectArtifact( groupId, artifactId, version );
 
+            // TODO: introduce strongly types search result! Don't read the POM here, though - populate with the data from the index
             searchHit = new RepositoryIndexSearchHit( false, false, true );
             searchHit.setObject( readPom( pomArtifact, repository ) );
         }
@@ -180,18 +175,19 @@ public class DefaultRepositoryIndexSearcher
             if ( tmpDir.equals( version ) )
             {
                 repoMetadata = new SnapshotArtifactRepositoryMetadata(
-                    factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
+                    factory.createProjectArtifact( groupId, artifactId, version ) );
             }
             else if ( tmpDir.equals( artifactId ) )
             {
-                repoMetadata = new ArtifactRepositoryMetadata(
-                    factory.createBuildArtifact( groupId, artifactId, version, "jar" ) );
+                repoMetadata =
+                    new ArtifactRepositoryMetadata( factory.createProjectArtifact( groupId, artifactId, version ) );
             }
             else
             {
                 repoMetadata = new GroupRepositoryMetadata( groupId );
             }
 
+            // TODO: introduce strongly types search result! Don't read the metadata here, though - populate with the data from the index
             repoMetadata.setMetadata( readMetadata( repoMetadata, repository ) );
 
             searchHit = new RepositoryIndexSearchHit( false, true, false );
@@ -201,11 +197,6 @@ public class DefaultRepositoryIndexSearcher
         return searchHit;
     }
 
-    /**
-     * Create RepositoryMetadata object.
-     *
-     * @return RepositoryMetadata
-     */
     private Metadata readMetadata( RepositoryMetadata repoMetadata, ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {
@@ -237,11 +228,6 @@ public class DefaultRepositoryIndexSearcher
         }
     }
 
-    /**
-     * Create RepositoryMetadata object.
-     *
-     * @return RepositoryMetadata
-     */
     private Model readPom( Artifact pomArtifact, ArtifactRepository repository )
         throws RepositoryIndexSearchException
     {

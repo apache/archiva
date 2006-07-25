@@ -17,28 +17,45 @@ package org.apache.maven.repository.indexing.query;
  */
 
 /**
- * A boolean NOT query term.
+ * Class to hold a single field search condition
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @author Edwin Punzalan
  */
-public class NotQueryTerm
-    extends AbstractCompoundQueryTerm
+public class QueryTerm
 {
+    private String field;
+
+    private String value;
+
     /**
      * Class constructor
      *
-     * @param query the Query object represented by this Query object
+     * @param field the index field to search
+     * @param value the index value requirement
      */
-    public NotQueryTerm( Query query )
+    public QueryTerm( String field, String value )
     {
-        super( query );
+        this.field = field;
+        this.value = value;
     }
 
     /**
-     * @see CompoundQueryTerm#isProhibited()
+     * Method to retrieve the name of the index field searched
+     *
+     * @return the name of the index field
      */
-    public boolean isProhibited()
+    public String getField()
     {
-        return true;
+        return field;
+    }
+
+    /**
+     * Method to retrieve the value used in searching the index field
+     *
+     * @return the value to corresspond the index field
+     */
+    public String getValue()
+    {
+        return value;
     }
 }
