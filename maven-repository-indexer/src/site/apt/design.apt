@@ -1,0 +1,77 @@
+ -----
+ Indexer Design
+ -----
+ Brett Porter
+ -----
+ 25 July 2006
+ -----
+
+Indexer Design
+
+  <<Note: The current indexer design is under review. This document will grow into what it should be, and the code and
+  tests refactored to match>>
+
+* Standard Artifact Index
+
+  We currently want to index these elements from the repository:
+
+    * for each artifact file: the artifact ID, version, group ID, classifier, type (extension), filename,
+      checksums (md5, sha1) and size
+
+    * for each artifact POM: the packaging, licenses, dependencies, build plugins, reporting plugins
+
+    * plugin prefix from the repository metadata (in the future, more may be indexed)
+
+    * the identifier of the source repository
+
+  Each record in the index refers to an artifact. Since the content for a record can come from various sources, the
+  record may need to be updated when different files that are related to the same artifact are discovered (ie, the
+  POM, or for plugins the metadata that contains their prefix).
+
+  Records in the index are generally keyed by their dependency conflict ID (ie, a combination of group, artifact,
+  version, type  and classifier). The exception to this rule is the POM: if an entry already exists with a different
+  type but the same group, artifact, version and no classifier, then a POM entry is not added and the model fields are
+  applied to the existing entry. Conversely, if a POM is added first and an artifact with the same group, artifact,
+  version and no classifier is later added then it overwrites the record of the POM.
+
+  The above process, especially with regard to the handling of the POM, should be much simpler if the discoverer is
+  able to associate a POM to the artifact instead of feeding them in separately as it does at present.
+
+  While some of the information stored is specific to a particular type of file, it is all maintained in a single index
+  for simplicity. In the future, if the content of the various documents diverges greatly, it may be split into separate
+  indexes. In that case, we may consider using Lucene's
+  {{{http://wiki.apache.org/jakarta-lucene/LuceneFAQ#head-b11296f9e7b2a5e7496d67118d0a5898f2fd9823} multiple index
+  searching capabilities}}.
+
+  Currently, the discoverer returns POMs as separate artifact entries to the actual artifact, and any derived artifacts
+  in the repository. To accommodate this, when indexed
+
+  Note that archetypes currently don't have a packaging associated with them in Maven, so it is not recorded in the POM.
+  However, to be able to search by this type, the indexer will look for a <<<META-INF/maven/archetype.xml>>> file, and
+  if found set its packaging to <<<maven-archetype>>>. In the future, this handling will be deprecated as the POMs
+  can start using the appropriate packaging.
+
+  The index is shared among multiple repositories. The source repository is recorded in the index record. The indexer
+  should complain if an artifact is attempted to be updated from a different repository at a later date to avoid
+  duplicates. Ideally, the discovery/conversion mechanisms would deal with this before reaching the indexer.
+
+  When indexing metadata from a POM, the POM should be loaded using the Maven project builder so that inheritance and
+  interpolation are performed. This ensures that the record is as complete as possible, and that searching by
+  fields that are inherited will reveal both the parent and the children in the search results.
+
+* Reduced Size Index
+
+  An additional index is maintained by the repository manager in the
+  {{{../apidocs/org/apache/maven/repository/indexing/MinimalIndex.html} MinimalIndex}} class. This indexes all of the
+  same artifacts as the first index, but stores them with shorter field names and less information to maintain a smaller
+  size. This index is appropriate for use by certain clients such as IDE integration for fast searching. For a fuller
+  interface to the repository information, the integration should use the XMLRPC interface.
+
+  ~~TODO: finish!
+
+* Limitations
+
+  Currently, because the POM and artifacts are fed in separately, there is no way to associate an artifact with a
+  classifier to its POM, meaning there is less information about it in the index. It may be best that this occurs by
+  design - it seems that while it is desirable to search by classifier you only want to find the main artifact for
+  browsing and see the derived artifact listed under that. How this evolves should be carefully considered.
