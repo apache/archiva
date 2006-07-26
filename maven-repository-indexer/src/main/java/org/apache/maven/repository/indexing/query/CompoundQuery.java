@@ -17,6 +17,7 @@ package org.apache.maven.repository.indexing.query;
  */
 
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.repository.indexing.RepositoryIndex;
 
@@ -117,8 +118,9 @@ public class CompoundQuery
         {
             CompoundQueryTerm queryTerm = (CompoundQueryTerm) i.next();
 
-            booleanQuery.add( queryTerm.getQuery().createLuceneQuery( index ), queryTerm.isRequired(),
-                              queryTerm.isProhibited() );
+            booleanQuery.add( queryTerm.getQuery().createLuceneQuery( index ), queryTerm.isRequired()
+                ? BooleanClause.Occur.MUST
+                : queryTerm.isProhibited() ? BooleanClause.Occur.MUST_NOT : BooleanClause.Occur.SHOULD );
         }
         return booleanQuery;
     }

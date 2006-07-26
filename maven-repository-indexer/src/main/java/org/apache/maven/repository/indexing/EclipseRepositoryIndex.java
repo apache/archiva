@@ -196,11 +196,13 @@ public class EclipseRepositoryIndex
             }
 
             doc = new Document();
-            doc.add( Field.Text( MD5, md5 ) );
-            doc.add( Field.Text( JAR_NAME, artifactFile.getName() ) );
-            doc.add( Field.Text( JAR_DATE, DateField.timeToString( artifactFile.lastModified() ) ) );
-            doc.add( Field.Text( JAR_SIZE, Long.toString( artifactFile.length() ) ) );
-            doc.add( Field.Text( NAMES, classes.toString() ) );
+            doc.add( new Field( MD5, md5, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+            doc.add( new Field( JAR_NAME, artifactFile.getName(), Field.Store.YES, Field.Index.TOKENIZED ) );
+            doc.add( new Field( JAR_DATE, DateField.timeToString( artifactFile.lastModified() ), Field.Store.YES,
+                                Field.Index.UN_TOKENIZED ) );
+            doc.add( new Field( JAR_SIZE, Long.toString( artifactFile.length() ), Field.Store.YES,
+                                Field.Index.UN_TOKENIZED ) );
+            doc.add( new Field( NAMES, classes.toString(), Field.Store.YES, Field.Index.TOKENIZED ) );
         }
 
         return doc;

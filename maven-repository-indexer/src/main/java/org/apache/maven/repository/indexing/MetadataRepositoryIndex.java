@@ -137,19 +137,19 @@ public class MetadataRepositoryIndex
         //get the metadatapath: check where metadata is located, then concatenate the groupId,
         // artifactId, version based on its location
         Document doc = new Document();
-        doc.add( Field.Keyword( FLD_ID, (String) repoMetadata.getKey() ) );
+        doc.add( createKeywordField( FLD_ID, (String) repoMetadata.getKey() ) );
         Metadata metadata = repoMetadata.getMetadata();
 
-        doc.add( Field.Text( FLD_NAME, repository.pathOfRemoteRepositoryMetadata( repoMetadata ) ) );
+        doc.add( createTextField( FLD_NAME, repository.pathOfRemoteRepositoryMetadata( repoMetadata ) ) );
 
         Versioning versioning = metadata.getVersioning();
         if ( versioning != null )
         {
-            doc.add( Field.Text( FLD_LASTUPDATE, versioning.getLastUpdated() ) );
+            doc.add( createTextField( FLD_LASTUPDATE, versioning.getLastUpdated() ) );
         }
         else
         {
-            doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
+            doc.add( createTextField( FLD_LASTUPDATE, "" ) );
         }
 
         List plugins = metadata.getPlugins();
@@ -162,47 +162,57 @@ public class MetadataRepositoryIndex
                 pluginAppended = plugin.getPrefix() + "\n";
             }
         }
-        doc.add( Field.Text( FLD_PLUGINPREFIX, pluginAppended ) );
+        doc.add( createTextField( FLD_PLUGINPREFIX, pluginAppended ) );
 
         if ( metadata.getGroupId() != null )
         {
-            doc.add( Field.Text( FLD_GROUPID, metadata.getGroupId() ) );
+            doc.add( createTextField( FLD_GROUPID, metadata.getGroupId() ) );
         }
         else
         {
-            doc.add( Field.Text( FLD_GROUPID, "" ) );
+            doc.add( createTextField( FLD_GROUPID, "" ) );
         }
 
         if ( metadata.getArtifactId() != null )
         {
-            doc.add( Field.Text( FLD_ARTIFACTID, metadata.getArtifactId() ) );
+            doc.add( createTextField( FLD_ARTIFACTID, metadata.getArtifactId() ) );
         }
         else
         {
-            doc.add( Field.Text( FLD_ARTIFACTID, "" ) );
+            doc.add( createTextField( FLD_ARTIFACTID, "" ) );
         }
 
         if ( metadata.getVersion() != null )
         {
-            doc.add( Field.Text( FLD_VERSION, metadata.getVersion() ) );
+            doc.add( createTextField( FLD_VERSION, metadata.getVersion() ) );
         }
         else
         {
-            doc.add( Field.Text( FLD_VERSION, "" ) );
+            doc.add( createTextField( FLD_VERSION, "" ) );
         }
         // TODO: do we need to add all these empty fields?
-        doc.add( Field.Text( FLD_DOCTYPE, METADATA ) );
-        doc.add( Field.Keyword( FLD_PACKAGING, "" ) );
-        doc.add( Field.Text( FLD_SHA1, "" ) );
-        doc.add( Field.Text( FLD_MD5, "" ) );
-        doc.add( Field.Text( FLD_CLASSES, "" ) );
-        doc.add( Field.Text( FLD_PACKAGES, "" ) );
-        doc.add( Field.Text( FLD_FILES, "" ) );
-        doc.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
-        doc.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_BUILD, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
+        doc.add( createTextField( FLD_DOCTYPE, METADATA ) );
+        doc.add( createKeywordField( FLD_PACKAGING, "" ) );
+        doc.add( createTextField( FLD_SHA1, "" ) );
+        doc.add( createTextField( FLD_MD5, "" ) );
+        doc.add( createTextField( FLD_CLASSES, "" ) );
+        doc.add( createTextField( FLD_PACKAGES, "" ) );
+        doc.add( createTextField( FLD_FILES, "" ) );
+        doc.add( createKeywordField( FLD_LICENSE_URLS, "" ) );
+        doc.add( createKeywordField( FLD_DEPENDENCIES, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_BUILD, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_REPORT, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_ALL, "" ) );
         return doc;
+    }
+
+    private static Field createTextField( String name, String value )
+    {
+        return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
+    }
+
+    private static Field createKeywordField( String name, String value )
+    {
+        return new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
     }
 }

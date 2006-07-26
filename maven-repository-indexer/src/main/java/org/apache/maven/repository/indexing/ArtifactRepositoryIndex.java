@@ -239,30 +239,44 @@ public class ArtifactRepositoryIndex
         }
 
         Document doc = new Document();
-        doc.add( Field.Keyword( FLD_ID, ARTIFACT + ":" + artifact.getId() ) );
-        doc.add( Field.Text( FLD_NAME, artifact.getFile().getName() ) );
-        doc.add( Field.Text( FLD_GROUPID, artifact.getGroupId() ) );
-        doc.add( Field.Text( FLD_ARTIFACTID, artifact.getArtifactId() ) );
-        doc.add( Field.Text( FLD_VERSION, artifact.getVersion() ) );
-        doc.add( Field.Text( FLD_SHA1, sha1sum ) );
-        doc.add( Field.Text( FLD_MD5, md5sum ) );
-        doc.add( Field.Text( FLD_CLASSES, classes.toString() ) );
-        doc.add( Field.Text( FLD_PACKAGES, packages.toString() ) );
-        doc.add( Field.Text( FLD_FILES, files.toString() ) );
-        doc.add( Field.UnIndexed( FLD_DOCTYPE, ARTIFACT ) );
-        doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
-        doc.add( Field.Text( FLD_PLUGINPREFIX, "" ) );
-        doc.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
-        doc.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_REPORT, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_BUILD, "" ) );
-        doc.add( Field.Keyword( FLD_PLUGINS_ALL, "" ) );
+        doc.add( createKeywordField( FLD_ID, ARTIFACT + ":" + artifact.getId() ) );
+        doc.add( createTextField( FLD_NAME, artifact.getFile().getName() ) );
+        doc.add( createTextField( FLD_GROUPID, artifact.getGroupId() ) );
+        doc.add( createTextField( FLD_ARTIFACTID, artifact.getArtifactId() ) );
+        doc.add( createTextField( FLD_VERSION, artifact.getVersion() ) );
+        doc.add( createTextField( FLD_SHA1, sha1sum ) );
+        doc.add( createTextField( FLD_MD5, md5sum ) );
+        doc.add( createTextField( FLD_CLASSES, classes.toString() ) );
+        doc.add( createTextField( FLD_PACKAGES, packages.toString() ) );
+        doc.add( createTextField( FLD_FILES, files.toString() ) );
+        doc.add( createUnindexedField( FLD_DOCTYPE, ARTIFACT ) );
+        doc.add( createTextField( FLD_LASTUPDATE, "" ) );
+        doc.add( createTextField( FLD_PLUGINPREFIX, "" ) );
+        doc.add( createKeywordField( FLD_LICENSE_URLS, "" ) );
+        doc.add( createKeywordField( FLD_DEPENDENCIES, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_REPORT, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_BUILD, "" ) );
+        doc.add( createKeywordField( FLD_PLUGINS_ALL, "" ) );
         int i = artifact.getFile().getName().lastIndexOf( '.' );
-        doc.add( Field.Text( FLD_PACKAGING, artifact.getFile().getName().substring( i + 1 ) ) );
+        doc.add( createTextField( FLD_PACKAGING, artifact.getFile().getName().substring( i + 1 ) ) );
 
         return doc;
     }
 
+    private static Field createUnindexedField( String name, String value )
+    {
+        return new Field( name, value, Field.Store.YES, Field.Index.NO );
+    }
+
+    private static Field createTextField( String name, String value )
+    {
+        return new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED );
+    }
+
+    private static Field createKeywordField( String name, String value )
+    {
+        return new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED );
+    }
 
     /**
      * Method to add a class package to the buffer of packages
@@ -413,15 +427,15 @@ public class ArtifactRepositoryIndex
         }
 
         Document doc = new Document();
-        doc.add( Field.Keyword( FLD_ID, POM + ":" + artifact.getId() ) );
-        doc.add( Field.Text( FLD_GROUPID, groupId ) );
-        doc.add( Field.Text( FLD_ARTIFACTID, pom.getArtifactId() ) );
-        doc.add( Field.Text( FLD_VERSION, version ) );
-        doc.add( Field.Keyword( FLD_PACKAGING, pom.getPackaging() ) );
+        doc.add( createKeywordField( FLD_ID, POM + ":" + artifact.getId() ) );
+        doc.add( createTextField( FLD_GROUPID, groupId ) );
+        doc.add( createTextField( FLD_ARTIFACTID, pom.getArtifactId() ) );
+        doc.add( createTextField( FLD_VERSION, version ) );
+        doc.add( createKeywordField( FLD_PACKAGING, pom.getPackaging() ) );
 
         File pomFile = new File( repository.getBasedir(), repository.pathOf( artifact ) );
-        doc.add( Field.Text( FLD_SHA1, getChecksum( Digester.SHA1, pomFile.getAbsolutePath() ) ) );
-        doc.add( Field.Text( FLD_MD5, getChecksum( Digester.MD5, pomFile.getAbsolutePath() ) ) );
+        doc.add( createTextField( FLD_SHA1, getChecksum( Digester.SHA1, pomFile.getAbsolutePath() ) ) );
+        doc.add( createTextField( FLD_MD5, getChecksum( Digester.MD5, pomFile.getAbsolutePath() ) ) );
 
         indexLicenseUrls( doc, pom );
         indexDependencies( doc, pom );
@@ -435,7 +449,7 @@ public class ArtifactRepositoryIndex
         }
         else
         {
-            doc.add( Field.Text( FLD_PLUGINS_BUILD, "" ) );
+            doc.add( createTextField( FLD_PLUGINS_BUILD, "" ) );
         }
 
         if ( pom.getReporting() != null && pom.getReporting().getPlugins() != null &&
@@ -447,21 +461,21 @@ public class ArtifactRepositoryIndex
         }
         else
         {
-            doc.add( Field.Text( FLD_PLUGINS_REPORT, "" ) );
+            doc.add( createTextField( FLD_PLUGINS_REPORT, "" ) );
         }
 
         if ( !hasPlugins )
         {
-            doc.add( Field.Text( FLD_PLUGINS_ALL, "" ) );
+            doc.add( createTextField( FLD_PLUGINS_ALL, "" ) );
         }
-        doc.add( Field.UnIndexed( FLD_DOCTYPE, POM ) );
+        doc.add( createUnindexedField( FLD_DOCTYPE, POM ) );
         // TODO: do we need to add all these empty fields?
-        doc.add( Field.Text( FLD_PLUGINPREFIX, "" ) );
-        doc.add( Field.Text( FLD_LASTUPDATE, "" ) );
-        doc.add( Field.Text( FLD_NAME, "" ) );
-        doc.add( Field.Text( FLD_CLASSES, "" ) );
-        doc.add( Field.Keyword( FLD_PACKAGES, "" ) );
-        doc.add( Field.Text( FLD_FILES, "" ) );
+        doc.add( createTextField( FLD_PLUGINPREFIX, "" ) );
+        doc.add( createTextField( FLD_LASTUPDATE, "" ) );
+        doc.add( createTextField( FLD_NAME, "" ) );
+        doc.add( createTextField( FLD_CLASSES, "" ) );
+        doc.add( createKeywordField( FLD_PACKAGES, "" ) );
+        doc.add( createTextField( FLD_FILES, "" ) );
         return doc;
     }
 
@@ -483,13 +497,13 @@ public class ArtifactRepositoryIndex
                 String url = license.getUrl();
                 if ( StringUtils.isNotEmpty( url ) )
                 {
-                    doc.add( Field.Keyword( FLD_LICENSE_URLS, url ) );
+                    doc.add( createKeywordField( FLD_LICENSE_URLS, url ) );
                 }
             }
         }
         else
         {
-            doc.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
+            doc.add( createKeywordField( FLD_LICENSE_URLS, "" ) );
         }
     }
 
@@ -509,12 +523,12 @@ public class ArtifactRepositoryIndex
             {
                 Dependency dep = (Dependency) dependencies.next();
                 String id = getId( dep.getGroupId(), dep.getArtifactId(), dep.getVersion() );
-                doc.add( Field.Keyword( FLD_DEPENDENCIES, id ) );
+                doc.add( createKeywordField( FLD_DEPENDENCIES, id ) );
             }
         }
         else
         {
-            doc.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
+            doc.add( createKeywordField( FLD_DEPENDENCIES, "" ) );
         }
     }
 
@@ -531,7 +545,7 @@ public class ArtifactRepositoryIndex
         {
             Plugin plugin = (Plugin) plugins.next();
             String id = getId( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion() );
-            doc.add( Field.Keyword( field, id ) );
+            doc.add( createKeywordField( field, id ) );
         }
     }
 
@@ -548,7 +562,7 @@ public class ArtifactRepositoryIndex
         {
             ReportPlugin plugin = (ReportPlugin) plugins.next();
             String id = getId( plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion() );
-            doc.add( Field.Keyword( field, id ) );
+            doc.add( createKeywordField( field, id ) );
         }
     }
 

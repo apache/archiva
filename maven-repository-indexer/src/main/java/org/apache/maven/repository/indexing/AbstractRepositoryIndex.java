@@ -159,7 +159,7 @@ public abstract class AbstractRepositoryIndex
             {
                 if ( indexReader.numDocs() > 0 )
                 {
-                    Collection fields = indexReader.getFieldNames();
+                    Collection fields = indexReader.getFieldNames( IndexReader.FieldOption.ALL );
                     for ( int idx = 0; idx < FIELDS.length; idx++ )
                     {
                         if ( !fields.contains( FIELDS[idx] ) )
@@ -218,7 +218,7 @@ public abstract class AbstractRepositoryIndex
                 {
                     Term term = (Term) terms.next();
 
-                    indexReader.delete( term );
+                    indexReader.deleteDocuments( term );
                 }
             }
             finally
