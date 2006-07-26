@@ -159,4 +159,9 @@ public class MinimalArtifactIndexRecord
         return "Filename: " + filename + "; checksum: " + md5Checksum + "; size: " + size + "; lastModified: " +
             new Date( lastModified ) + "; classes: " + classes;
     }
+
+    public String getPrimaryKey()
+    {
+        return filename;
+    }
 }

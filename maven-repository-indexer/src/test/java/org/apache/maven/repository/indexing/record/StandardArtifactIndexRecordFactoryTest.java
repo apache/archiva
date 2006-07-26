@@ -29,6 +29,8 @@ import java.io.File;
  * Test the minimal artifact index record.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @todo test packaging!
+ * @todo test pluginPrefix!
  */
 public class StandardArtifactIndexRecordFactoryTest
     extends PlexusTestCase

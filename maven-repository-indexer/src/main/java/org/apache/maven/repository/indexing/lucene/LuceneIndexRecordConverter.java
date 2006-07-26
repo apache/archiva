@@ -1,4 +1,4 @@
-package org.apache.maven.repository.indexing.record;
+package org.apache.maven.repository.indexing.lucene;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -16,17 +16,21 @@ package org.apache.maven.repository.indexing.record;
  * limitations under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
+
 /**
- * A repository index record.
+ * Converts repository records to Lucene documents.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface RepositoryIndexRecord
+public interface LuceneIndexRecordConverter
 {
     /**
-     * Get the primary key used to identify the record uniquely in the index.
+     * Convert an index record to a Lucene document.
      *
-     * @return the primary key
+     * @param record the record
+     * @return the document
      */
-    String getPrimaryKey();
+    Document convert( RepositoryIndexRecord record );
 }

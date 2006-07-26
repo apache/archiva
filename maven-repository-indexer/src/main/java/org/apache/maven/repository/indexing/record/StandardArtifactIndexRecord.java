@@ -69,6 +69,16 @@ public class StandardArtifactIndexRecord
      */
     private String repository;
 
+    /**
+     * The packaging specified in the POM for this artifact.
+     */
+    private String packaging;
+
+    /**
+     * The plugin prefix specified in the metadata if the artifact is a plugin.
+     */
+    private String pluginPrefix;
+
     public void setSha1Checksum( String sha1Checksum )
     {
         this.sha1Checksum = sha1Checksum;
@@ -170,6 +180,14 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
+        if ( packaging != null ? !packaging.equals( that.packaging ) : that.packaging != null )
+        {
+            return false;
+        }
+        if ( pluginPrefix != null ? !pluginPrefix.equals( that.pluginPrefix ) : that.pluginPrefix != null )
+        {
+            return false;
+        }
 
         return true;
     }
@@ -186,6 +204,73 @@ public class StandardArtifactIndexRecord
         result = 31 * result + ( packages != null ? packages.hashCode() : 0 );
         result = 31 * result + ( files != null ? files.hashCode() : 0 );
         result = 31 * result + ( repository != null ? repository.hashCode() : 0 );
+        result = 31 * result + ( packaging != null ? packaging.hashCode() : 0 );
+        result = 31 * result + ( pluginPrefix != null ? pluginPrefix.hashCode() : 0 );
         return result;
+    }
+
+    public String getSha1Checksum()
+    {
+        return sha1Checksum;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public String getPackages()
+    {
+        return packages;
+    }
+
+    public String getFiles()
+    {
+        return files;
+    }
+
+    public String getRepository()
+    {
+        return repository;
+    }
+
+    public String getPackaging()
+    {
+        return packaging;
+    }
+
+    public String getPluginPrefix()
+    {
+        return pluginPrefix;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
+    public void setPluginPrefix( String pluginPrefix )
+    {
+        this.pluginPrefix = pluginPrefix;
     }
 }

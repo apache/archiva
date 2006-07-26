@@ -89,8 +89,14 @@ public class StandardArtifactIndexRecordFactory
                 record.setSize( file.length() );
                 record.setRepository( artifact.getRepository().getId() );
 /* TODO! these come from the POM and metadata, so probably part of an update record method instead
+// remember to test parent & inheritence
                 record.setPluginPrefix( pluginPrefix );
                 record.setPackaging( packaging );
+                record.setProjectName( name );
+                record.setProjectDescription( description );
+                record.setInceptionYear( year );
+                */
+/* TODO: fields for later
                 indexPlugins( doc, FLD_PLUGINS_BUILD, pom.getBuild().getPlugins().iterator() );
                 indexReportPlugins( doc, FLD_PLUGINS_REPORT, pom.getReporting().getPlugins().iterator() );
                 record.setDependencies( dependencies );
