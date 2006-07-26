@@ -20,7 +20,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.artifact.Artifact;
@@ -198,8 +198,9 @@ public class EclipseRepositoryIndex
             doc = new Document();
             doc.add( new Field( MD5, md5, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
             doc.add( new Field( JAR_NAME, artifactFile.getName(), Field.Store.YES, Field.Index.TOKENIZED ) );
-            doc.add( new Field( JAR_DATE, DateField.timeToString( artifactFile.lastModified() ), Field.Store.YES,
-                                Field.Index.UN_TOKENIZED ) );
+            doc.add( new Field( JAR_DATE,
+                                DateTools.timeToString( artifactFile.lastModified(), DateTools.Resolution.SECOND ),
+                                Field.Store.YES, Field.Index.UN_TOKENIZED ) );
             doc.add( new Field( JAR_SIZE, Long.toString( artifactFile.length() ), Field.Store.YES,
                                 Field.Index.UN_TOKENIZED ) );
             doc.add( new Field( NAMES, classes.toString(), Field.Store.YES, Field.Index.TOKENIZED ) );
@@ -291,7 +292,15 @@ public class EclipseRepositoryIndex
         {
             TokenStream tokenStream;
 
-            if ( "s".equals( fieldName ) )
+            if ( JAR_SIZE.equals( fieldName ) )
+            {
+                tokenStream = new EclipseIndexTokenizer( reader );
+            }
+            else if ( JAR_DATE.equals( fieldName ) )
+            {
+                tokenStream = new EclipseIndexTokenizer( reader );
+            }
+            else if ( MD5.equals( fieldName ) )
             {
                 tokenStream = new EclipseIndexTokenizer( reader );
             }

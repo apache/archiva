@@ -16,7 +16,7 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
@@ -32,8 +32,8 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Edwin Punzalan
@@ -137,7 +137,7 @@ public class EclipseRepositoryIndexTest
 
         try
         {
-            File notIndexDir = new File( "" );
+            File notIndexDir = new File( "." );
             EclipseRepositoryIndex indexer = new EclipseRepositoryIndex( notIndexDir, repository, digester );
             indexer.indexArtifact( artifact );
             fail( "Must throw an exception on a non-index directory" );
@@ -170,13 +170,14 @@ public class EclipseRepositoryIndexTest
 
             parser = new QueryParser( "s", index.getAnalyzer() );
             hits = searcher.search( parser.parse( "78377" ) );
-
             assertEquals( "Total hits", 1, hits.length() );
+
             doc = hits.doc( 0 );
             assertEquals( "Check jar name", "maven-artifact-2.0.1.jar", doc.get( "j" ) );
 
             parser = new QueryParser( "d", index.getAnalyzer() );
-            hits = searcher.search( parser.parse( DateField.timeToString( artifactFileTime ) ) );
+            hits = searcher.search(
+                parser.parse( DateTools.timeToString( artifactFileTime, DateTools.Resolution.SECOND ) ) );
 
             assertEquals( "Total hits", 1, hits.length() );
             doc = hits.doc( 0 );
@@ -184,8 +185,8 @@ public class EclipseRepositoryIndexTest
 
             parser = new QueryParser( "m", index.getAnalyzer() );
             hits = searcher.search( parser.parse( "AE55D9B5720E11B6CF19FE1E31A42E51" ) );
-
             assertEquals( "Total hits", 1, hits.length() );
+
             doc = hits.doc( 0 );
             assertEquals( "Check jar name", "maven-artifact-2.0.1.jar", doc.get( "j" ) );
 

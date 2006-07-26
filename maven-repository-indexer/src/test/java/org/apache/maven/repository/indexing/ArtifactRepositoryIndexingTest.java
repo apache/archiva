@@ -113,25 +113,11 @@ public class ArtifactRepositoryIndexingTest
         throws Exception
     {
         RepositoryIndexingFactory factory = (RepositoryIndexingFactory) lookup( RepositoryIndexingFactory.ROLE );
-        Artifact artifact = createArtifact( "test", "test-artifactId", "1.0" );
 
         try
         {
-            File notIndexDir = new File( "pom.xml" );
-            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
-            indexer.indexArtifact( artifact );
-            fail( "Must throw exception on non-directory index directory" );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
-
-        try
-        {
-            File notIndexDir = new File( "" );
-            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
-            indexer.indexArtifact( artifact );
+            File notIndexDir = new File( "." );
+            factory.createArtifactRepositoryIndex( notIndexDir, repository );
             fail( "Must throw an exception on a non-index directory" );
         }
         catch ( RepositoryIndexException e )
@@ -139,26 +125,11 @@ public class ArtifactRepositoryIndexingTest
             assertTrue( true );
         }
 
-        artifact = createArtifact( "test", "test-artifactId", "1.0", "pom" );
-
         try
         {
             File notIndexDir = new File( "pom.xml" );
-            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
-            indexer.indexArtifact( artifact );
+            factory.createArtifactRepositoryIndex( notIndexDir, repository );
             fail( "Must throw exception on non-directory index directory" );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            assertTrue( true );
-        }
-
-        try
-        {
-            File notIndexDir = new File( "" );
-            ArtifactRepositoryIndex indexer = factory.createArtifactRepositoryIndex( notIndexDir, repository );
-            indexer.indexArtifact( artifact );
-            fail( "Must throw an exception on a non-index directory" );
         }
         catch ( RepositoryIndexException e )
         {
