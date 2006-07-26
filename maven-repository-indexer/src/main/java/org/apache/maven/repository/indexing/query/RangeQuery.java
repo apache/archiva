@@ -70,6 +70,8 @@ public class RangeQuery
     /**
      * Create a bounded range, excluding the endpoints.
      *
+     * @param begin the lower bound value to compare to
+     * @param end   the upper bound value to compare to
      * @return the query object
      */
     public static RangeQuery createExclusiveRange( QueryTerm begin, QueryTerm end )
@@ -80,6 +82,8 @@ public class RangeQuery
     /**
      * Create a bounded range, including the endpoints.
      *
+     * @param begin the lower bound value to compare to
+     * @param end   the upper bound value to compare to
      * @return the query object
      */
     public static RangeQuery createInclusiveRange( QueryTerm begin, QueryTerm end )
@@ -90,6 +94,7 @@ public class RangeQuery
     /**
      * Create a range that is greater than or equal to a given term.
      *
+     * @param begin the value to compare to
      * @return the query object
      */
     public static RangeQuery createGreaterThanOrEqualToRange( QueryTerm begin )
@@ -100,6 +105,7 @@ public class RangeQuery
     /**
      * Create a range that is greater than a given term.
      *
+     * @param begin the value to compare to
      * @return the query object
      */
     public static RangeQuery createGreaterThanRange( QueryTerm begin )
@@ -110,6 +116,7 @@ public class RangeQuery
     /**
      * Create a range that is less than or equal to a given term.
      *
+     * @param end the value to compare to
      * @return the query object
      */
     public static RangeQuery createLessThanOrEqualToRange( QueryTerm end )
@@ -120,6 +127,7 @@ public class RangeQuery
     /**
      * Create a range that is less than a given term.
      *
+     * @param end the value to compare to
      * @return the query object
      */
     public static RangeQuery createLessThanRange( QueryTerm end )
