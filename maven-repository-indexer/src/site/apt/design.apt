@@ -11,16 +11,18 @@ Indexer Design
   <<Note: The current indexer design is under review. This document will grow into what it should be, and the code and
   tests refactored to match>>
 
+  ~~TODO: separate API design from Lucene implementation design
+
 * Standard Artifact Index
 
   We currently want to index these elements from the repository:
 
-    * for each artifact file: the artifact ID, version, group ID, classifier, type (extension), filename,
-      checksums (md5, sha1) and size
+    * for each artifact file: the artifact ID, version, group ID, classifier, type (extension), filename (including path
+      from the repository base), checksums (md5, sha1) and size
 
     * for each artifact POM: the packaging, licenses, dependencies, build plugins, reporting plugins
 
-    * plugin prefix from the repository metadata (in the future, more may be indexed)
+    * plugin prefix
 
     * Java classes and packages within a JAR artifact (delimited by \n)
 
@@ -32,23 +34,42 @@ Indexer Design
   record may need to be updated when different files that are related to the same artifact are discovered (ie, the
   POM, or for plugins the metadata that contains their prefix).
 
-  Records in the index are generally keyed by their dependency conflict ID (ie, a combination of group, artifact,
-  version, type  and classifier). The exception to this rule is the POM: if an entry already exists with a different
-  type but the same group, artifact, version and no classifier, then a POM entry is not added and the model fields are
-  applied to the existing entry. Conversely, if a POM is added first and an artifact with the same group, artifact,
-  version and no classifier is later added then it overwrites the record of the POM.
+  To simplify this, the process for discovery is as follows:
 
-  The above process, especially with regard to the handling of the POM, should be much simpler if the discoverer is
-  able to associate a POM to the artifact instead of feeding them in separately as it does at present.
+    * Discovered artifacts will read the related POM and metadata from the repository to index, rather than relying on
+      it being discovered. This ensures that partial discovery still yields correct results in all cases, and it is
+      possible to construct the entire record without having to read back from the index.
 
-  While some of the information stored is specific to a particular type of file, it is all maintained in a single index
-  for simplicity. In the future, if the content of the various documents diverges greatly, it may be split into separate
-  indexes. In that case, we may consider using Lucene's
-  {{{http://wiki.apache.org/jakarta-lucene/LuceneFAQ#head-b11296f9e7b2a5e7496d67118d0a5898f2fd9823} multiple index
-  searching capabilities}}.
+    * POMs that do not have a packaging of POM are not sent to the indexer.
 
-  Currently, the discoverer returns POMs as separate artifact entries to the actual artifact, and any derived artifacts
-  in the repository. To accommodate this, when indexed
+  The result of this process is that updates to a POM or repository metadata and not the corresponding artifact(s) will
+  not update the index. As POMs should not be modified, this will not be a major concern. Likewise, updates to metadata
+  will only accompany updates to the artifact itself, so will not cause a problem.
+
+  The above case may have a problem if the discovery happens during the middle of a deployment outside of the
+  repository manager (where the artifact is present, but the metadata or POM is not). To avoid such cases, the
+  discoverer should only detect changes more than a minute old (this blackout should be configurable).
+
+  Other techniques were considered:
+
+    * Processing each artifact file individually, updating each record as needed.  This would result in having to read
+      back each index record before writing. This is quite costly in Lucene as it would be "read, delete, add". You
+      must have a reader and writer open for that process, and it greatly complicates the code.
+
+    * Have three indices, one for each. This would complicate searching (and may affect ranking of results, though this
+      was not analysed). While Lucene is
+      {{{http://wiki.apache.org/jakarta-lucene/LuceneFAQ#head-b11296f9e7b2a5e7496d67118d0a5898f2fd9823} capable of
+      searching multiple indices}}, it is expected that the results would be in the form of a list of separate records
+      rather than the "table join" this effectively is. A similar derivative of this technique would be to store
+      everything in one index, using a field (previously, doctype) to identify each record.
+
+  Records in the index are keyed by their path from the repository root. While this is longer than using the
+  dependency conflict ID, Lucene cannot delete by a combination of terms, so would require storing an additional
+  field in the index where the file already exists.
+
+  The plugin prefix can be found either from inside the plugin JAR (<<<META-INF/maven/plugin.xml>>>), or from the
+  repository metadata for the plugin's group. For simplicity, the first approach will be used. This means at present
+  there is no need to index the repository metadata, however that may be considered in future.
 
   Note that archetypes currently don't have a packaging associated with them in Maven, so it is not recorded in the POM.
   However, to be able to search by this type, the indexer will look for a <<<META-INF/maven/archetype.xml>>> file, and
@@ -83,7 +104,7 @@ Indexer Design
 
     * <<<m>>>: md5 checksum of the JAR
 
-  Only JARs are indexed at present.
+  Only JARs are indexed at present. The JAR filename is used as the key for later deleting entries.
 
 * Searching
 
@@ -92,9 +113,13 @@ Indexer Design
 
   Some features that will be available:
 
-    * <Search by a particular field (exact match)>: This would be needed for search by checksum
+    * <Search through most fields for a particular keyword>: the general case described above.
 
-    * <Search in a range of field values>: This would be needed for searching based on update time
+    * <Search by a particular field (exact match)>: This would be needed for search by checksum.
+
+    * <Search in a range of field values>: This would be needed for searching based on update time. Note that in
+      Lucene it may be better to search by other fields (or return all), and then filter the results by dates rather
+      than making dates part of a search query.
 
     * <Limit search to particular fields>: It will be useful to only search Java classes and packages, for example
 
@@ -102,10 +127,3 @@ Indexer Design
   reasons. It should not have to read any metadata files or properties of files such as size and checksum from the disk.
   This enables searching a repository remotely without having the physical repository available, which is useful for
   IDE integration among other things.
-
-* Limitations
-
-  Currently, because the POM and artifacts are fed in separately, there is no way to associate an artifact with a
-  classifier to its POM, meaning there is less information about it in the index. It may be best that this occurs by
-  design - it seems that while it is desirable to search by classifier you only want to find the main artifact for
-  browsing and see the derived artifact listed under that. How this evolves should be carefully considered.
