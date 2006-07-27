@@ -16,9 +16,6 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.maven.repository.indexing.RepositoryIndex;
-
 /**
  * Interface to label the query classes
  *
@@ -26,6 +23,4 @@ import org.apache.maven.repository.indexing.RepositoryIndex;
  */
 public interface Query
 {
-    org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
-        throws ParseException;
 }

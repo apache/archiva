@@ -17,9 +17,14 @@ package org.apache.maven.repository.indexing;
  */
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -31,7 +36,11 @@ import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryM
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.repository.indexing.query.CompoundQuery;
+import org.apache.maven.repository.indexing.query.CompoundQueryTerm;
 import org.apache.maven.repository.indexing.query.Query;
+import org.apache.maven.repository.indexing.query.RangeQuery;
+import org.apache.maven.repository.indexing.query.SingleTermQuery;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -44,6 +53,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -68,7 +78,7 @@ public class DefaultRepositoryIndexSearcher
         org.apache.lucene.search.Query luceneQuery;
         try
         {
-            luceneQuery = query.createLuceneQuery( index );
+            luceneQuery = createLuceneQuery( query, index );
         }
         catch ( ParseException e )
         {
@@ -116,6 +126,61 @@ public class DefaultRepositoryIndexSearcher
         }
 
         return docs;
+    }
+
+    private org.apache.lucene.search.Query createLuceneQuery( Query query, RepositoryIndex index )
+        throws ParseException
+    {
+        org.apache.lucene.search.Query luceneQuery = null;
+        // TODO: hacked in temporarily
+        if ( query instanceof CompoundQuery )
+        {
+            BooleanQuery booleanQuery = new BooleanQuery();
+            List queries = ( (CompoundQuery) query ).getCompoundQueryTerms();
+            for ( Iterator i = queries.iterator(); i.hasNext(); )
+            {
+                CompoundQueryTerm queryTerm = (CompoundQueryTerm) i.next();
+
+                booleanQuery.add( createLuceneQuery( queryTerm.getQuery(), index ), queryTerm.isRequired()
+                    ? BooleanClause.Occur.MUST
+                    : queryTerm.isProhibited() ? BooleanClause.Occur.MUST_NOT : BooleanClause.Occur.SHOULD );
+            }
+            luceneQuery = booleanQuery;
+        }
+        else if ( query instanceof SingleTermQuery )
+        {
+            org.apache.lucene.search.Query qry;
+            if ( index.isKeywordField( ( (SingleTermQuery) query ).getField() ) )
+            {
+                qry = new TermQuery(
+                    new Term( ( (SingleTermQuery) query ).getField(), ( (SingleTermQuery) query ).getValue() ) );
+            }
+            else
+            {
+                // TODO: doesn't seem like the right place for this here!
+                QueryParser parser = new QueryParser( ( (SingleTermQuery) query ).getField(), index.getAnalyzer() );
+                qry = parser.parse( ( (SingleTermQuery) query ).getValue() );
+            }
+            luceneQuery = qry;
+        }
+        else if ( query instanceof RangeQuery )
+        {
+            Term beginTerm = null;
+            if ( ( (RangeQuery) query ).getBegin() != null )
+            {
+                beginTerm = new Term( ( (RangeQuery) query ).getBegin().getField(),
+                                      ( (RangeQuery) query ).getBegin().getValue() );
+            }
+            Term endTerm = null;
+            if ( ( (RangeQuery) query ).getEnd() != null )
+            {
+                endTerm =
+                    new Term( ( (RangeQuery) query ).getEnd().getField(), ( (RangeQuery) query ).getEnd().getValue() );
+            }
+            luceneQuery =
+                new org.apache.lucene.search.RangeQuery( beginTerm, endTerm, ( (RangeQuery) query ).isInclusive() );
+        }
+        return luceneQuery;
     }
 
     private RepositoryIndexSearchHit createSearchedObjectFromIndexDocument( Document doc,

@@ -21,7 +21,7 @@ package org.apache.maven.repository.indexing.query;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-class CompoundQueryTerm
+public class CompoundQueryTerm
 {
     /**
      * The query to add to the compound query.
@@ -57,7 +57,7 @@ class CompoundQueryTerm
      *
      * @return true if this Query is a search requirement, otherwise returns false
      */
-    boolean isRequired()
+    public boolean isRequired()
     {
         return required;
     }
@@ -67,7 +67,7 @@ class CompoundQueryTerm
      *
      * @return true if this Query is prohibited in the search result
      */
-    boolean isProhibited()
+    public boolean isProhibited()
     {
         return prohibited;
     }
@@ -78,7 +78,7 @@ class CompoundQueryTerm
      *
      * @return the query
      */
-    Query getQuery()
+    public Query getQuery()
     {
         return query;
     }

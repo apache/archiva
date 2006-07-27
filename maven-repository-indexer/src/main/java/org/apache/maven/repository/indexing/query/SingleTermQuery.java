@@ -16,12 +16,6 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.TermQuery;
-import org.apache.maven.repository.indexing.RepositoryIndex;
-
 /**
  * Query for a single term.
  *
@@ -54,26 +48,6 @@ public class SingleTermQuery
     public SingleTermQuery( String field, String value )
     {
         this.term = new QueryTerm( field, value );
-    }
-
-    /**
-     * @todo! this seems like the wrong place for this (it's back to front - create the query from the index
-     */
-    public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
-        throws ParseException
-    {
-        org.apache.lucene.search.Query qry;
-        if ( index.isKeywordField( term.getField() ) )
-        {
-            qry = new TermQuery( new Term( term.getField(), term.getValue() ) );
-        }
-        else
-        {
-            // TODO: doesn't seem like the right place for this here!
-            QueryParser parser = new QueryParser( term.getField(), index.getAnalyzer() );
-            qry = parser.parse( term.getValue() );
-        }
-        return qry;
     }
 
     public String getField()

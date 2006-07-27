@@ -16,9 +16,6 @@ package org.apache.maven.repository.indexing.query;
  * limitations under the License.
  */
 
-import org.apache.lucene.index.Term;
-import org.apache.maven.repository.indexing.RepositoryIndex;
-
 /**
  * Query object that handles range queries (presently used for dates).
  *
@@ -150,21 +147,4 @@ public class RangeQuery
         return inclusive;
     }
 
-    /**
-     * @todo! this seems like the wrong place for this (it's back to front - create the query from the index
-     */
-    public org.apache.lucene.search.Query createLuceneQuery( RepositoryIndex index )
-    {
-        Term beginTerm = null;
-        if ( begin != null )
-        {
-            beginTerm = new Term( begin.getField(), begin.getValue() );
-        }
-        Term endTerm = null;
-        if ( end != null )
-        {
-            endTerm = new Term( end.getField(), end.getValue() );
-        }
-        return new org.apache.lucene.search.RangeQuery( beginTerm, endTerm, inclusive );
-    }
 }
