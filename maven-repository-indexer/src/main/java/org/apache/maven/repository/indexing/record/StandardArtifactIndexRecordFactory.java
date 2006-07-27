@@ -18,8 +18,6 @@ package org.apache.maven.repository.indexing.record;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.digest.Digester;
@@ -67,6 +65,8 @@ public class StandardArtifactIndexRecordFactory
     private ArtifactFactory artifactFactory;
 
     private static final String PLUGIN_METADATA_NAME = "META-INF/maven/plugin.xml";
+
+    private static final String ARCHETYPE_METADATA_NAME = "META-INF/maven/archetype.xml";
 
     public RepositoryIndexRecord createRecord( Artifact artifact )
         throws RepositoryIndexException
@@ -177,35 +177,6 @@ public class StandardArtifactIndexRecordFactory
         }
     }
 
-    private Metadata readMetadata( File file )
-        throws RepositoryIndexException
-    {
-        MetadataXpp3Reader r = new MetadataXpp3Reader();
-
-        FileReader reader = null;
-        try
-        {
-            reader = new FileReader( file );
-            return r.read( reader );
-        }
-        catch ( FileNotFoundException e )
-        {
-            throw new RepositoryIndexException( "Unable to find requested metadata: " + e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Unable to read metadata: " + e.getMessage(), e );
-        }
-        catch ( XmlPullParserException xe )
-        {
-            throw new RepositoryIndexException( "Unable to parse metadata: " + xe.getMessage(), xe );
-        }
-        finally
-        {
-            IOUtil.close( reader );
-        }
-    }
-
     private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )
         throws RepositoryIndexException
     {
@@ -225,21 +196,34 @@ public class StandardArtifactIndexRecordFactory
                 {
                     classes.append( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) ).append( "\n" );
                 }
-                else
+                else if ( PLUGIN_METADATA_NAME.equals( name ) )
                 {
-                    if ( PLUGIN_METADATA_NAME.equals( name ) )
-                    {
-                        populatePluginEntries( readPluginMetadata( artifactFile ), record );
-                    }
+                    populatePluginEntries( readXmlMetadataFileInJar( artifactFile, PLUGIN_METADATA_NAME ), record );
+                }
+                else if ( ARCHETYPE_METADATA_NAME.equals( name ) )
+                {
+                    populateArchetypeEntries( record );
                 }
             }
         }
 
-        record.setClasses( classes.toString() );
-        record.setFiles( fileBuffer.toString() );
+        if ( classes.length() > 0 )
+        {
+            record.setClasses( classes.toString() );
+        }
+        if ( fileBuffer.length() > 0 )
+        {
+            record.setFiles( fileBuffer.toString() );
+        }
     }
 
-    private Xpp3Dom readPluginMetadata( File file )
+    private void populateArchetypeEntries( StandardArtifactIndexRecord record )
+    {
+        // Typically discovered as a JAR
+        record.setType( "maven-archetype" );
+    }
+
+    private Xpp3Dom readXmlMetadataFileInJar( File file, String name )
         throws RepositoryIndexException
     {
         // TODO: would be more efficient with original ZipEntry still around
@@ -249,7 +233,7 @@ public class StandardArtifactIndexRecordFactory
         try
         {
             zipFile = new ZipFile( file );
-            ZipEntry entry = zipFile.getEntry( PLUGIN_METADATA_NAME );
+            ZipEntry entry = zipFile.getEntry( name );
             xpp3Dom = Xpp3DomBuilder.build( new InputStreamReader( zipFile.getInputStream( entry ) ) );
         }
         catch ( ZipException e )

@@ -169,6 +169,35 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedArchetype()
+        throws RepositoryIndexException, IOException, XmlPullParserException
+    {
+        Artifact artifact = createArtifact( "test-archetype" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "ecefd4674c75a175119572b19edc45f1" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setArtifactId( "test-archetype" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setSha1Checksum( "5ebabafdbcd6684ae434c06e22c32844df284b05" );
+        expectedRecord.setType( "maven-archetype" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setFiles( "META-INF/MANIFEST.MF\n" + "archetype-resources/pom.xml\n" +
+            "archetype-resources/src/main/java/App.java\n" + "archetype-resources/src/test/java/AppTest.java\n" +
+            "META-INF/maven/archetype.xml\n" +
+            "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.xml\n" +
+            "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.properties\n" );
+        expectedRecord.setPackaging( "jar" );
+        expectedRecord.setProjectName( "Archetype - test-archetype" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testCorruptJar()
         throws RepositoryIndexException
     {
