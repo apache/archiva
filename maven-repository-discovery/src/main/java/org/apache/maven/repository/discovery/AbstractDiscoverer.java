@@ -61,6 +61,11 @@ public abstract class AbstractDiscoverer
 
     private List excludedPaths = new ArrayList();
 
+    /**
+     * @plexus.configuration default-value="60000"
+     */
+    private int blackoutPeriod;
+
     protected static final String DATE_FMT = "yyyyMMddHHmmss";
 
     /**
@@ -122,9 +127,13 @@ public abstract class AbstractDiscoverer
         {
             String path = files.next().toString();
 
-            if ( comparisonTimestamp == 0 || new File( repositoryBase, path ).lastModified() > comparisonTimestamp )
+            long modTime = new File( repositoryBase, path ).lastModified();
+            if ( modTime < System.currentTimeMillis() - blackoutPeriod )
             {
-                includedPaths.add( path );
+                if ( modTime > comparisonTimestamp )
+                {
+                    includedPaths.add( path );
+                }
             }
         }
 

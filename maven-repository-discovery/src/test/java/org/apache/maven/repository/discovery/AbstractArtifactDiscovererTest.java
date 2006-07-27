@@ -79,7 +79,10 @@ public abstract class AbstractArtifactDiscovererTest
 
     protected Artifact createArtifact( String groupId, String artifactId, String version )
     {
-        return factory.createArtifact( groupId, artifactId, version, null, "jar" );
+        Artifact artifact = factory.createArtifact( groupId, artifactId, version, null, "jar" );
+        artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.setRepository( repository );
+        return artifact;
     }
 
     protected Artifact createArtifact( String groupId, String artifactId, String version, String type )
@@ -144,6 +147,46 @@ public abstract class AbstractArtifactDiscovererTest
 
         assertFalse( "Check not included",
                      artifacts.contains( createArtifact( "org.apache.maven.update", "test-not-updated", "1.0" ) ) );
+    }
+
+    public void testUpdatedInRepositoryBlackout()
+        throws ComponentLookupException, DiscovererException, IOException
+    {
+        discoverer.resetLastCheckedTime( repository, "update" );
+
+        Artifact artifact = createArtifact( "org.apache.maven.update", "test-not-updated", "1.0" );
+        artifact.getFile().setLastModified( System.currentTimeMillis() );
+
+        List artifacts = discoverer.discoverArtifacts( repository, "update", null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertFalse( "Check not included", artifacts.contains( artifact ) );
+
+        // try again with the updated timestamp
+        artifacts = discoverer.discoverArtifacts( repository, "update", null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertFalse( "Check not included", artifacts.contains( artifact ) );
+    }
+
+    public void testUpdatedInRepositoryNotBlackout()
+        throws ComponentLookupException, DiscovererException, IOException
+    {
+        discoverer.resetLastCheckedTime( repository, "update" );
+
+        Artifact artifact = createArtifact( "org.apache.maven.update", "test-not-updated", "1.0" );
+        artifact.getFile().setLastModified( System.currentTimeMillis() - 61000 );
+
+        List artifacts = discoverer.discoverArtifacts( repository, "update", null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertTrue( "Check included", artifacts.contains( artifact ) );
+
+        // try again with the updated timestamp
+        artifacts = discoverer.discoverArtifacts( repository, "update", null, true );
+        assertNotNull( "Check artifacts not null", artifacts );
+
+        assertFalse( "Check not included", artifacts.contains( artifact ) );
     }
 
     public void testNotUpdatedInRepositoryForcedDiscoveryMetadataAlreadyExists()
