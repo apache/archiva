@@ -113,6 +113,34 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedJarWithParentPom()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-child-pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setArtifactId( "test-child-pom" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
+        expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
+        expectedRecord.setType( "jar" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setPackaging( "jar" );
+        expectedRecord.setProjectName( "Child Project" );
+        expectedRecord.setProjectDescription( "Description" );
+        expectedRecord.setInceptionYear( "2005" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testIndexedPom()
         throws RepositoryIndexException
     {

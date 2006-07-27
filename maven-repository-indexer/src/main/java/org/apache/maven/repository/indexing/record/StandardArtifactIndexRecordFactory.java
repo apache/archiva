@@ -18,21 +18,22 @@ package org.apache.maven.repository.indexing.record;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -63,6 +64,11 @@ public class StandardArtifactIndexRecordFactory
      * @plexus.requirement
      */
     private ArtifactFactory artifactFactory;
+
+    /**
+     * @plexus.requirement
+     */
+    private MavenProjectBuilder projectBuilder;
 
     private static final String PLUGIN_METADATA_NAME = "META-INF/maven/plugin.xml";
 
@@ -120,12 +126,12 @@ public class StandardArtifactIndexRecordFactory
                                              artifact.getRepository().pathOf( pomArtifact ) );
                     if ( pomFile.exists() )
                     {
-                        populatePomEntries( readPom( pomFile ), record );
+                        populatePomEntries( readPom( pomArtifact, artifact.getRepository() ), record );
                     }
                 }
                 else
                 {
-                    Model model = readPom( file );
+                    Model model = readPom( artifact, artifact.getRepository() );
 
                     if ( !"pom".equals( model.getPackaging() ) )
                     {
@@ -158,33 +164,21 @@ public class StandardArtifactIndexRecordFactory
 */
     }
 
-    private Model readPom( File file )
+    private Model readPom( Artifact artifact, ArtifactRepository repository )
         throws RepositoryIndexException
     {
-        MavenXpp3Reader r = new MavenXpp3Reader();
-
-        FileReader reader = null;
+        // TODO: will this pollute with local repo metadata?
+        Model model;
         try
         {
-            reader = new FileReader( file );
-            return r.read( reader );
+            MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
+            model = project.getModel();
         }
-        catch ( FileNotFoundException e )
+        catch ( ProjectBuildingException e )
         {
-            throw new RepositoryIndexException( "Unable to find requested POM: " + e.getMessage(), e );
+            throw new RepositoryIndexException( "Unable to read project: " + e.getMessage(), e );
         }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Unable to read POM: " + e.getMessage(), e );
-        }
-        catch ( XmlPullParserException xe )
-        {
-            throw new RepositoryIndexException( "Unable to parse POM: " + xe.getMessage(), xe );
-        }
-        finally
-        {
-            IOUtil.close( reader );
-        }
+        return model;
     }
 
     private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )

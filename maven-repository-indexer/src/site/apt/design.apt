@@ -67,7 +67,7 @@ Indexer Design
   dependency conflict ID, Lucene cannot delete by a combination of terms, so would require storing an additional
   field in the index where the file already exists.
 
-  The plugin prefix can be found either from inside the plugin JAR (<<<META-INF/maven/plugin.xml>>>), or from the
+  The plugin prefix could be found either from inside the plugin JAR (<<<META-INF/maven/plugin.xml>>>), or from the
   repository metadata for the plugin's group. For simplicity, the first approach will be used. This means at present
   there is no need to index the repository metadata, however that may be considered in future.
 
@@ -76,9 +76,10 @@ Indexer Design
   if found set its packaging to <<<maven-archetype>>>. In the future, this handling will be deprecated as the POMs
   can start using the appropriate packaging.
 
-  The index is shared among multiple repositories. The source repository is recorded in the index record. The indexer
-  should complain if an artifact is attempted to be updated from a different repository at a later date to avoid
-  duplicates. Ideally, the discovery/conversion mechanisms would deal with this before reaching the indexer.
+  The index is shared among multiple repositories. The source repository is recorded in the index record. The
+  discovery/conversion/reporting mechanisms are expected to deal with duplicates before reaching the indexer, so if the
+  indexer encounters an artifact from a different repository than it was already added, it will simply replace the
+  record.
 
   When indexing metadata from a POM, the POM should be loaded using the Maven project builder so that inheritance and
   interpolation are performed. This ensures that the record is as complete as possible, and that searching by
