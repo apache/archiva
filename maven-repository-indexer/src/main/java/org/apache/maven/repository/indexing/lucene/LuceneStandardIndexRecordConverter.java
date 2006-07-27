@@ -58,11 +58,15 @@ public class LuceneStandardIndexRecordConverter
 
     private static final String FLD_CLASSES = "classes";
 
-    private static final String FLD_PACKAGES = "packages";
-
     private static final String FLD_PLUGINPREFIX = "pluginPrefix";
 
     private static final String FLD_FILES = "files";
+
+    private static final String FLD_INCEPTION_YEAR = "inceptionYear";
+
+    private static final String FLD_PROJECT_NAME = "projectName";
+
+    private static final String FLD_PROJECT_DESCRIPTION = "projectDesc";
 
     public Document convert( RepositoryIndexRecord record )
     {
@@ -83,9 +87,11 @@ public class LuceneStandardIndexRecordConverter
         addUntokenizedField( document, FLD_MD5, standardIndexRecord.getMd5Checksum() );
         addUntokenizedField( document, FLD_SHA1, standardIndexRecord.getSha1Checksum() );
         addTokenizedField( document, FLD_CLASSES, standardIndexRecord.getClasses() );
-        addTokenizedField( document, FLD_PACKAGES, standardIndexRecord.getPackages() );
         addTokenizedField( document, FLD_FILES, standardIndexRecord.getFiles() );
         addTokenizedField( document, FLD_PLUGINPREFIX, standardIndexRecord.getPluginPrefix() );
+        addUntokenizedField( document, FLD_INCEPTION_YEAR, standardIndexRecord.getInceptionYear() );
+        addTokenizedField( document, FLD_PROJECT_NAME, standardIndexRecord.getProjectName() );
+        addTokenizedField( document, FLD_PROJECT_DESCRIPTION, standardIndexRecord.getProjectDescription() );
 /* TODO: add later
         document.add( Field.Keyword( FLD_LICENSE_URLS, "" ) );
         document.add( Field.Keyword( FLD_DEPENDENCIES, "" ) );
@@ -111,5 +117,4 @@ public class LuceneStandardIndexRecordConverter
             document.add( new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED ) );
         }
     }
-
 }

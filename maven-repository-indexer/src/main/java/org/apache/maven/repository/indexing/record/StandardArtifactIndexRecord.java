@@ -55,11 +55,6 @@ public class StandardArtifactIndexRecord
     private String type;
 
     /**
-     * A list of packages (separated by '\n') in the artifact if it contains Java classes.
-     */
-    private String packages;
-
-    /**
      * A list of files (separated by '\n') in the artifact if it is an archive.
      */
     private String files;
@@ -78,6 +73,21 @@ public class StandardArtifactIndexRecord
      * The plugin prefix specified in the metadata if the artifact is a plugin.
      */
     private String pluginPrefix;
+
+    /**
+     * The year the project was started.
+     */
+    private String inceptionYear;
+
+    /**
+     * The description of the project.
+     */
+    private String projectDescription;
+
+    /**
+     * The name of the project.
+     */
+    private String projectName;
 
     public void setSha1Checksum( String sha1Checksum )
     {
@@ -107,11 +117,6 @@ public class StandardArtifactIndexRecord
     public void setType( String type )
     {
         this.type = type;
-    }
-
-    public void setPackages( String packages )
-    {
-        this.packages = packages;
     }
 
     public void setFiles( String files )
@@ -160,10 +165,6 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
-        if ( packages != null ? !packages.equals( that.packages ) : that.packages != null )
-        {
-            return false;
-        }
         if ( repository != null ? !repository.equals( that.repository ) : that.repository != null )
         {
             return false;
@@ -188,6 +189,19 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
+        if ( projectName != null ? !projectName.equals( that.projectName ) : that.projectName != null )
+        {
+            return false;
+        }
+        if ( inceptionYear != null ? !inceptionYear.equals( that.inceptionYear ) : that.inceptionYear != null )
+        {
+            return false;
+        }
+        if ( projectDescription != null ? !projectDescription.equals( that.projectDescription )
+            : that.projectDescription != null )
+        {
+            return false;
+        }
 
         return true;
     }
@@ -201,11 +215,13 @@ public class StandardArtifactIndexRecord
         result = 31 * result + version.hashCode();
         result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
         result = 31 * result + ( type != null ? type.hashCode() : 0 );
-        result = 31 * result + ( packages != null ? packages.hashCode() : 0 );
         result = 31 * result + ( files != null ? files.hashCode() : 0 );
         result = 31 * result + ( repository != null ? repository.hashCode() : 0 );
         result = 31 * result + ( packaging != null ? packaging.hashCode() : 0 );
         result = 31 * result + ( pluginPrefix != null ? pluginPrefix.hashCode() : 0 );
+        result = 31 * result + ( inceptionYear != null ? inceptionYear.hashCode() : 0 );
+        result = 31 * result + ( projectName != null ? projectName.hashCode() : 0 );
+        result = 31 * result + ( projectDescription != null ? projectDescription.hashCode() : 0 );
         return result;
     }
 
@@ -239,11 +255,6 @@ public class StandardArtifactIndexRecord
         return type;
     }
 
-    public String getPackages()
-    {
-        return packages;
-    }
-
     public String getFiles()
     {
         return files;
@@ -272,5 +283,35 @@ public class StandardArtifactIndexRecord
     public void setPluginPrefix( String pluginPrefix )
     {
         this.pluginPrefix = pluginPrefix;
+    }
+
+    public void setInceptionYear( String inceptionYear )
+    {
+        this.inceptionYear = inceptionYear;
+    }
+
+    public void setProjectDescription( String description )
+    {
+        this.projectDescription = description;
+    }
+
+    public void setProjectName( String projectName )
+    {
+        this.projectName = projectName;
+    }
+
+    public String getInceptionYear()
+    {
+        return inceptionYear;
+    }
+
+    public String getProjectDescription()
+    {
+        return projectDescription;
+    }
+
+    public String getProjectName()
+    {
+        return projectName;
     }
 }

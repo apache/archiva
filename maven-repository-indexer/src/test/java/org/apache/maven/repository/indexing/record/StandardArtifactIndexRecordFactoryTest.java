@@ -21,16 +21,17 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Test the minimal artifact index record.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @todo test packaging!
- * @todo test pluginPrefix!
  */
 public class StandardArtifactIndexRecordFactoryTest
     extends PlexusTestCase
@@ -63,6 +64,7 @@ public class StandardArtifactIndexRecordFactoryTest
     }
 
     public void testIndexedJar()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-jar" );
 
@@ -70,15 +72,14 @@ public class StandardArtifactIndexRecordFactoryTest
 
         StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
         expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
-        expectedRecord.setFilename( "test-jar-1.0.jar" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nB\nC\n" );
+        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
         expectedRecord.setArtifactId( "test-jar" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
         expectedRecord.setVersion( "1.0" );
         expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
-        expectedRecord.setPackages( "b\nb.c\n" );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
         expectedRecord.setRepository( "test" );
@@ -86,7 +87,90 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedJarAndPom()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar-and-pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setArtifactId( "test-jar-and-pom" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
+        expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
+        expectedRecord.setType( "jar" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setPackaging( "jar" );
+        expectedRecord.setProjectName( "Test JAR and POM" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedPom()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-pom", "1.0", "pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "32dbef7ff11eb933bd8b7e7bcab85406" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setArtifactId( "test-pom" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setSha1Checksum( "c3b374e394607e1e705e71c227f62641e8621ebe" );
+        expectedRecord.setType( "pom" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setPackaging( "pom" );
+        expectedRecord.setInceptionYear( "2005" );
+        expectedRecord.setProjectName( "Maven Repository Manager Test POM" );
+        expectedRecord.setProjectDescription( "Description" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedPlugin()
+        throws RepositoryIndexException, IOException, XmlPullParserException
+    {
+        Artifact artifact = createArtifact( "test-plugin" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "06f6fe25e46c4d4fb5be4f56a9bab0ee" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setArtifactId( "test-plugin" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setSha1Checksum( "382c1ebfb5d0c7d6061c2f8569fb53f8fc00fec2" );
+        expectedRecord.setType( "maven-plugin" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setClasses( "org.apache.maven.repository.record.MyMojo\n" );
+        expectedRecord.setFiles( "META-INF/MANIFEST.MF\n" + "META-INF/maven/plugin.xml\n" +
+            "org/apache/maven/repository/record/MyMojo.class\n" +
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.xml\n" +
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties\n" );
+        expectedRecord.setPackaging( "maven-plugin" );
+        expectedRecord.setProjectName( "Maven Mojo Archetype" );
+        expectedRecord.setPluginPrefix( "test" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testCorruptJar()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-corrupt-jar" );
 
@@ -96,6 +180,7 @@ public class StandardArtifactIndexRecordFactoryTest
     }
 
     public void testDll()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-dll", "1.0.1.34", "dll" );
 
@@ -103,7 +188,7 @@ public class StandardArtifactIndexRecordFactoryTest
 
         StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
         expectedRecord.setMd5Checksum( "d41d8cd98f00b204e9800998ecf8427e" );
-        expectedRecord.setFilename( "test-dll-1.0.1.34.dll" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
         expectedRecord.setArtifactId( "test-dll" );
@@ -112,14 +197,12 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSha1Checksum( "da39a3ee5e6b4b0d3255bfef95601890afd80709" );
         expectedRecord.setType( "dll" );
         expectedRecord.setRepository( "test" );
-        expectedRecord.setClasses( "" );
-        expectedRecord.setPackages( "" );
-        expectedRecord.setFiles( "" );
 
         assertEquals( "check record", expectedRecord, record );
     }
 
     public void testMissingFile()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-foo" );
 

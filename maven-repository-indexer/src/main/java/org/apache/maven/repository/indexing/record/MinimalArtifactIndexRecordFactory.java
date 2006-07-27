@@ -21,8 +21,11 @@ import org.apache.maven.repository.digest.Digester;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An index record type for the minimal index.
@@ -34,12 +37,15 @@ import java.util.List;
 public class MinimalArtifactIndexRecordFactory
     extends AbstractArtifactIndexRecordFactory
 {
+    /* List of types to index. */
+    private static final Set INDEXED_TYPES = new HashSet( Arrays.asList( new String[]{"jar", "maven-plugin"} ) );
+
     public RepositoryIndexRecord createRecord( Artifact artifact )
     {
         MinimalArtifactIndexRecord record = null;
 
         File file = artifact.getFile();
-        if ( file != null && "jar".equals( artifact.getType() ) && file.exists() )
+        if ( file != null && INDEXED_TYPES.contains( artifact.getType() ) && file.exists() )
         {
             String md5 = readChecksum( file, Digester.MD5 );
 
@@ -57,7 +63,7 @@ public class MinimalArtifactIndexRecordFactory
             {
                 record = new MinimalArtifactIndexRecord();
                 record.setMd5Checksum( md5 );
-                record.setFilename( file.getName() );
+                record.setFilename( artifact.getRepository().pathOf( artifact ) );
                 record.setLastModified( file.lastModified() );
                 record.setSize( file.length() );
                 record.setClasses( getClassesFromFiles( files ) );
@@ -76,9 +82,7 @@ public class MinimalArtifactIndexRecordFactory
 
             if ( isClass( name ) )
             {
-                int idx = name.lastIndexOf( '/' );
-                String classname = name.substring( idx + 1, name.length() - 6 );
-                classes.append( classname ).append( "\n" );
+                classes.append( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) ).append( "\n" );
             }
         }
 

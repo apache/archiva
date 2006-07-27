@@ -27,7 +27,7 @@ public class MinimalArtifactIndexRecord
     implements RepositoryIndexRecord
 {
     /**
-     * The classes in the archive for the artifact, if it is a JAR. The package name is <b>not</b> included.
+     * The classes in the archive for the artifact, if it is a JAR.
      */
     private String classes;
 

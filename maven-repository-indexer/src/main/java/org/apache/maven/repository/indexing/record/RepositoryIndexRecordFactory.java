@@ -1,7 +1,5 @@
 package org.apache.maven.repository.indexing.record;
 
-import org.apache.maven.artifact.Artifact;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -17,6 +15,9 @@ import org.apache.maven.artifact.Artifact;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.repository.indexing.RepositoryIndexException;
 
 /**
  * The layout of a record in a repository index.
@@ -35,6 +36,9 @@ public interface RepositoryIndexRecordFactory
      *
      * @param artifact the artifact
      * @return the index record
+     * @throws RepositoryIndexException if there is a problem constructing the record (due to not being able to read the artifact file as a POM)
      */
-    RepositoryIndexRecord createRecord( Artifact artifact );
+    RepositoryIndexRecord createRecord( Artifact artifact )
+        throws RepositoryIndexException;
+
 }

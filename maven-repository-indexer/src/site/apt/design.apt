@@ -24,7 +24,7 @@ Indexer Design
 
     * plugin prefix
 
-    * Java classes and packages within a JAR artifact (delimited by \n)
+    * Java classes within a JAR artifact (delimited by \n)
 
     * filenames within an archive (delimited by \n)
 

@@ -18,6 +18,7 @@ package org.apache.maven.repository.indexing.lucene;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.NumberTools;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.artifact.Artifact;
@@ -32,19 +33,24 @@ import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecordFactory;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Test the Lucene implementation of the artifact index.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public class LuceneRepositoryArtifactIndexTest
+public class LuceneMinimalArtifactIndexTest
     extends PlexusTestCase
 {
     private RepositoryArtifactIndex index;
@@ -62,7 +68,7 @@ public class LuceneRepositoryArtifactIndexTest
     {
         super.setUp();
 
-        recordFactory = (RepositoryIndexRecordFactory) lookup( RepositoryIndexRecordFactory.ROLE, "standard" );
+        recordFactory = (RepositoryIndexRecordFactory) lookup( RepositoryIndexRecordFactory.ROLE, "minimal" );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
@@ -82,8 +88,7 @@ public class LuceneRepositoryArtifactIndexTest
 
         FileUtils.deleteDirectory( indexLocation );
 
-        // TODO: test minimal one in same way
-        index = factory.createStandardIndex( indexLocation, repository );
+        index = factory.createMinimalIndex( indexLocation, repository );
     }
 
     public void testIndexExists()
@@ -129,7 +134,7 @@ public class LuceneRepositoryArtifactIndexTest
         try
         {
             Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-jar", document.getField( "artifactId" ).stringValue() );
+            assertEquals( "Check document", repository.pathOf( artifact ), document.get( "j" ) );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -152,7 +157,7 @@ public class LuceneRepositoryArtifactIndexTest
         try
         {
             Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-jar", document.getField( "artifactId" ).stringValue() );
+            assertRecord( document, artifact, "3a0adc365f849366cd8b633cad155cb7", "A\nb.B\nb.c.C\n" );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -161,26 +166,27 @@ public class LuceneRepositoryArtifactIndexTest
         }
     }
 
-/*
-    public void testUpdateRecordWithPomMetadata()
+    public void testAddRecordInIndex()
         throws IOException, RepositoryIndexException
     {
         createEmptyIndex();
 
-        Artifact artifact = createArtifact( "test-plugin" );
+        Artifact artifact = createArtifact( "test-jar" );
 
         RepositoryIndexRecord record = recordFactory.createRecord( artifact );
         index.indexRecords( Collections.singletonList( record ) );
 
-        // TODO: index again, with the POM metadata! Make sure a value in the first one is not present, and that is tested for
+        // Do it again
+        record = recordFactory.createRecord( artifact );
+        index.indexRecords( Collections.singletonList( record ) );
 
         IndexReader reader = IndexReader.open( indexLocation );
         try
         {
             Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-plugin", document.getField( "artifactId" ).stringValue() );
-            assertEquals( "Check document", "jar", document.getField( "type" ).stringValue() );
-            assertEquals( "Check document", "maven-plugin", document.getField( "packaging" ).stringValue() );
+            String expectedChecksum = "3a0adc365f849366cd8b633cad155cb7";
+            String expectedClasses = "A\nb.B\nb.c.C\n";
+            assertRecord( document, artifact, expectedChecksum, expectedClasses );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -188,7 +194,6 @@ public class LuceneRepositoryArtifactIndexTest
             reader.close();
         }
     }
-*/
 
     public void testAddPomRecord()
         throws IOException, RepositoryIndexException
@@ -203,11 +208,7 @@ public class LuceneRepositoryArtifactIndexTest
         IndexReader reader = IndexReader.open( indexLocation );
         try
         {
-            Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-pom", document.getField( "artifactId" ).stringValue() );
-            assertEquals( "Check document", "pom", document.getField( "type" ).stringValue() );
-//            assertEquals( "Check document", "pom", document.getField( "packaging" ).stringValue() ); // TODO!
-            assertEquals( "Check index size", 1, reader.numDocs() );
+            assertEquals( "No documents", 0, reader.numDocs() );
         }
         finally
         {
@@ -215,26 +216,23 @@ public class LuceneRepositoryArtifactIndexTest
         }
     }
 
-/*
-    public void testUpdateRecordWithRepoMetadata()
-        throws IOException, RepositoryIndexException
+    public void testAddPlugin()
+        throws IOException, RepositoryIndexException, XmlPullParserException
     {
         createEmptyIndex();
 
         Artifact artifact = createArtifact( "test-plugin" );
 
         RepositoryIndexRecord record = recordFactory.createRecord( artifact );
-        index.indexRecords( Collections.singletonList( record ) );
 
-        // TODO: index again, with the repo metadata!
+        index.indexRecords( Collections.singletonList( record ) );
 
         IndexReader reader = IndexReader.open( indexLocation );
         try
         {
             Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-plugin", document.getField( "artifactId" ).stringValue() );
-            assertEquals( "Check document", "maven-plugin", document.getField( "packaging" ).stringValue() );
-            assertEquals( "Check document", "plugin", document.getField( "pluginPrefix" ).stringValue() );
+            assertRecord( document, artifact, "06f6fe25e46c4d4fb5be4f56a9bab0ee",
+                          "org.apache.maven.repository.record.MyMojo\n" );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -242,34 +240,6 @@ public class LuceneRepositoryArtifactIndexTest
             reader.close();
         }
     }
-
-    public void testUpdateRecordWithArtifactData()
-        throws IOException, RepositoryIndexException
-    {
-        createEmptyIndex();
-
-        // TODO: index with the repo/POM metadata!
-
-        Artifact artifact = createArtifact( "test-plugin" );
-
-        RepositoryIndexRecord record = recordFactory.createRecord( artifact );
-        index.indexRecords( Collections.singletonList( record ) );
-
-        IndexReader reader = IndexReader.open( indexLocation );
-        try
-        {
-            Document document = reader.document( 0 );
-            assertEquals( "Check document", "test-plugin", document.getField( "artifactId" ).stringValue() );
-            assertEquals( "Check document", "maven-plugin", document.getField( "packaging" ).stringValue() );
-            assertEquals( "Check document", "plugin", document.getField( "pluginPrefix" ).stringValue() );
-            assertEquals( "Check index size", 1, reader.numDocs() );
-        }
-        finally
-        {
-            reader.close();
-        }
-    }
-*/
 
     private Artifact createArtifact( String artifactId )
     {
@@ -302,5 +272,22 @@ public class LuceneRepositoryArtifactIndexTest
         }
         writer.optimize();
         writer.close();
+    }
+
+    private void assertRecord( Document document, Artifact artifact, String expectedChecksum, String expectedClasses )
+    {
+        assertEquals( "Check document filename", repository.pathOf( artifact ), document.get( "j" ) );
+        assertEquals( "Check document timestamp", getLastModified( artifact.getFile() ), document.get( "d" ) );
+        assertEquals( "Check document checksum", expectedChecksum, document.get( "m" ) );
+        assertEquals( "Check document size", artifact.getFile().length(),
+                      NumberTools.stringToLong( document.get( "s" ) ) );
+        assertEquals( "Check document classes", expectedClasses, document.get( "c" ) );
+    }
+
+    private String getLastModified( File file )
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMddHHmmss", Locale.US );
+        dateFormat.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
+        return dateFormat.format( new Date( file.lastModified() ) );
     }
 }

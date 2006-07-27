@@ -16,7 +16,11 @@ package org.apache.maven.repository.indexing.lucene;
  * limitations under the License.
  */
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumberTools;
+import org.apache.maven.repository.indexing.record.MinimalArtifactIndexRecord;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 
 /**
@@ -27,9 +31,44 @@ import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 public class LuceneMinimalIndexRecordConverter
     implements LuceneIndexRecordConverter
 {
+    private static final String FLD_FILENAME = "j";
+
+    private static final String FLD_LAST_MODIFIED = "d";
+
+    private static final String FLD_FILE_SIZE = "s";
+
+    private static final String FLD_MD5 = "m";
+
+    private static final String FLD_CLASSES = "c";
+
     public Document convert( RepositoryIndexRecord record )
     {
-        // TODO: implement!
-        return null;
+        MinimalArtifactIndexRecord standardIndexRecord = (MinimalArtifactIndexRecord) record;
+
+        Document document = new Document();
+        addTokenizedField( document, FLD_FILENAME, standardIndexRecord.getFilename() );
+        addUntokenizedField( document, FLD_LAST_MODIFIED, DateTools.timeToString( standardIndexRecord.getLastModified(),
+                                                                                  DateTools.Resolution.SECOND ) );
+        addUntokenizedField( document, FLD_FILE_SIZE, NumberTools.longToString( standardIndexRecord.getSize() ) );
+        addUntokenizedField( document, FLD_MD5, standardIndexRecord.getMd5Checksum() );
+        addTokenizedField( document, FLD_CLASSES, standardIndexRecord.getClasses() );
+
+        return document;
+    }
+
+    private static void addUntokenizedField( Document document, String name, String value )
+    {
+        if ( value != null )
+        {
+            document.add( new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED ) );
+        }
+    }
+
+    private static void addTokenizedField( Document document, String name, String value )
+    {
+        if ( value != null )
+        {
+            document.add( new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED ) );
+        }
     }
 }

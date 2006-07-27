@@ -21,9 +21,12 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Test the minimal artifact index record.
@@ -61,6 +64,7 @@ public class MinimalArtifactIndexRecordFactoryTest
     }
 
     public void testIndexedJar()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-jar" );
 
@@ -68,15 +72,60 @@ public class MinimalArtifactIndexRecordFactoryTest
 
         MinimalArtifactIndexRecord expectedRecord = new MinimalArtifactIndexRecord();
         expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
-        expectedRecord.setFilename( "test-jar-1.0.jar" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nB\nC\n" );
+        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedJarAndPom()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar-and-pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        MinimalArtifactIndexRecord expectedRecord = new MinimalArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedPom()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-pom", "1.0", "pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
+    }
+
+    public void testIndexedPlugin()
+        throws RepositoryIndexException, IOException, XmlPullParserException
+    {
+        Artifact artifact = createArtifact( "test-plugin" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        MinimalArtifactIndexRecord expectedRecord = new MinimalArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "06f6fe25e46c4d4fb5be4f56a9bab0ee" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( "org.apache.maven.repository.record.MyMojo\n" );
 
         assertEquals( "check record", expectedRecord, record );
     }
 
     public void testCorruptJar()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-corrupt-jar" );
 
@@ -86,6 +135,7 @@ public class MinimalArtifactIndexRecordFactoryTest
     }
 
     public void testNonJar()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-dll", "1.0.1.34", "dll" );
 
@@ -95,6 +145,7 @@ public class MinimalArtifactIndexRecordFactoryTest
     }
 
     public void testMissingFile()
+        throws RepositoryIndexException
     {
         Artifact artifact = createArtifact( "test-foo" );
 
@@ -112,6 +163,7 @@ public class MinimalArtifactIndexRecordFactoryTest
     {
         Artifact artifact = artifactFactory.createBuildArtifact( TEST_GROUP_ID, artifactId, version, type );
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
+        artifact.setRepository( repository );
         return artifact;
     }
 }
