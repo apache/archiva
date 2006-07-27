@@ -125,7 +125,17 @@ public class StandardArtifactIndexRecordFactory
                 }
                 else
                 {
-                    populatePomEntries( readPom( file ), record );
+                    Model model = readPom( file );
+
+                    if ( !"pom".equals( model.getPackaging() ) )
+                    {
+                        // Don't return a record for a POM that is does not belong on its own
+                        record = null;
+                    }
+                    else
+                    {
+                        populatePomEntries( model, record );
+                    }
                 }
             }
         }

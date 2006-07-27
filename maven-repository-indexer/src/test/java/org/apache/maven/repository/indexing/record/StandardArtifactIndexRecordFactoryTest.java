@@ -139,6 +139,29 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testNonIndexedPom()
+        throws RepositoryIndexException
+    {
+        // If we pass in only the POM that belongs to a JAR, then expect null not the POM
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0", "pom" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
+
+        artifact = createArtifact( "test-plugin", "1.0", "pom" );
+
+        record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
+
+        artifact = createArtifact( "test-archetype", "1.0", "pom" );
+
+        record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
+    }
+
     public void testIndexedPlugin()
         throws RepositoryIndexException, IOException, XmlPullParserException
     {
