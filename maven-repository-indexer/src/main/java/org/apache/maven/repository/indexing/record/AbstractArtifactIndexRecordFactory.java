@@ -61,13 +61,21 @@ public abstract class AbstractArtifactIndexRecordFactory
         throws IOException
     {
         ZipFile zipFile = new ZipFile( file );
-        List files = new ArrayList( zipFile.size() );
-
-        for ( Enumeration entries = zipFile.entries(); entries.hasMoreElements(); )
+        List files;
+        try
         {
-            ZipEntry entry = (ZipEntry) entries.nextElement();
+            files = new ArrayList( zipFile.size() );
 
-            files.add( entry.getName() );
+            for ( Enumeration entries = zipFile.entries(); entries.hasMoreElements(); )
+            {
+                ZipEntry entry = (ZipEntry) entries.nextElement();
+
+                files.add( entry.getName() );
+            }
+        }
+        finally
+        {
+            closeQuietly( zipFile );
         }
         return files;
     }
@@ -76,5 +84,20 @@ public abstract class AbstractArtifactIndexRecordFactory
     {
         // TODO: verify if class is public or protected (this might require the original ZipEntry)
         return name.endsWith( ".class" ) && name.lastIndexOf( "$" ) < 0;
+    }
+
+    protected static void closeQuietly( ZipFile zipFile )
+    {
+        try
+        {
+            if ( zipFile != null )
+            {
+                zipFile.close();
+            }
+        }
+        catch ( IOException e )
+        {
+            // ignored
+        }
     }
 }

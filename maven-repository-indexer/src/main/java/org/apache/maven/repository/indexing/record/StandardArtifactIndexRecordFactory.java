@@ -18,29 +18,30 @@ package org.apache.maven.repository.indexing.record;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Plugin;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 /**
  * An index record type for the standard index.
@@ -64,6 +65,8 @@ public class StandardArtifactIndexRecordFactory
      * @plexus.requirement
      */
     private ArtifactFactory artifactFactory;
+
+    private static final String PLUGIN_METADATA_NAME = "META-INF/maven/plugin.xml";
 
     public RepositoryIndexRecord createRecord( Artifact artifact )
         throws RepositoryIndexException
@@ -105,7 +108,7 @@ public class StandardArtifactIndexRecordFactory
                 record.setRepository( artifact.getRepository().getId() );
                 if ( files != null )
                 {
-                    populateArchiveEntries( files, record );
+                    populateArchiveEntries( files, record, artifact.getFile() );
                 }
 
                 if ( !"pom".equals( artifact.getType() ) )
@@ -123,20 +126,6 @@ public class StandardArtifactIndexRecordFactory
                 else
                 {
                     populatePomEntries( readPom( file ), record );
-                }
-
-                if ( "maven-plugin".equals( record.getPackaging() ) )
-                {
-                    // Typically discovered as a JAR
-                    record.setType( record.getPackaging() );
-
-                    RepositoryMetadata metadata = new GroupRepositoryMetadata( artifact.getGroupId() );
-                    File metadataFile = new File( artifact.getRepository().getBasedir(),
-                                                  artifact.getRepository().pathOfRemoteRepositoryMetadata( metadata ) );
-                    if ( metadataFile.exists() )
-                    {
-                        populatePluginEntries( readMetadata( metadataFile ), record );
-                    }
                 }
             }
         }
@@ -217,7 +206,8 @@ public class StandardArtifactIndexRecordFactory
         }
     }
 
-    private void populateArchiveEntries( List files, StandardArtifactIndexRecord record )
+    private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )
+        throws RepositoryIndexException
     {
         StringBuffer classes = new StringBuffer();
         StringBuffer fileBuffer = new StringBuffer();
@@ -235,6 +225,13 @@ public class StandardArtifactIndexRecordFactory
                 {
                     classes.append( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) ).append( "\n" );
                 }
+                else
+                {
+                    if ( PLUGIN_METADATA_NAME.equals( name ) )
+                    {
+                        populatePluginEntries( readPluginMetadata( artifactFile ), record );
+                    }
+                }
             }
         }
 
@@ -242,23 +239,48 @@ public class StandardArtifactIndexRecordFactory
         record.setFiles( fileBuffer.toString() );
     }
 
-    public void populatePluginEntries( Metadata metadata, StandardArtifactIndexRecord record )
+    private Xpp3Dom readPluginMetadata( File file )
+        throws RepositoryIndexException
     {
-        Map prefixes = new HashMap();
-        for ( Iterator i = metadata.getPlugins().iterator(); i.hasNext(); )
-        {
-            Plugin plugin = (Plugin) i.next();
+        // TODO: would be more efficient with original ZipEntry still around
 
-            prefixes.put( plugin.getArtifactId(), plugin.getPrefix() );
+        Xpp3Dom xpp3Dom;
+        ZipFile zipFile = null;
+        try
+        {
+            zipFile = new ZipFile( file );
+            ZipEntry entry = zipFile.getEntry( PLUGIN_METADATA_NAME );
+            xpp3Dom = Xpp3DomBuilder.build( new InputStreamReader( zipFile.getInputStream( entry ) ) );
         }
-
-        if ( record.getGroupId().equals( metadata.getGroupId() ) )
+        catch ( ZipException e )
         {
-            String prefix = (String) prefixes.get( record.getArtifactId() );
-            if ( prefix != null )
-            {
-                record.setPluginPrefix( prefix );
-            }
+            throw new RepositoryIndexException( "Unable to read plugin metadata: " + e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Unable to read plugin metadata: " + e.getMessage(), e );
+        }
+        catch ( XmlPullParserException e )
+        {
+            throw new RepositoryIndexException( "Unable to read plugin metadata: " + e.getMessage(), e );
+        }
+        finally
+        {
+            closeQuietly( zipFile );
+        }
+        return xpp3Dom;
+    }
+
+    public void populatePluginEntries( Xpp3Dom metadata, StandardArtifactIndexRecord record )
+    {
+        // Typically discovered as a JAR
+        record.setType( "maven-plugin" );
+
+        Xpp3Dom prefix = metadata.getChild( "goalPrefix" );
+
+        if ( prefix != null )
+        {
+            record.setPluginPrefix( prefix.getValue() );
         }
     }
 }
