@@ -21,6 +21,7 @@ import org.apache.maven.repository.digest.Digester;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -72,9 +73,9 @@ public class MinimalArtifactIndexRecordFactory
         return record;
     }
 
-    private String getClassesFromFiles( List files )
+    private List getClassesFromFiles( List files )
     {
-        StringBuffer classes = new StringBuffer();
+        List classes = new ArrayList();
 
         for ( Iterator i = files.iterator(); i.hasNext(); )
         {
@@ -82,10 +83,10 @@ public class MinimalArtifactIndexRecordFactory
 
             if ( isClass( name ) )
             {
-                classes.append( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) ).append( "\n" );
+                classes.add( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) );
             }
         }
 
-        return classes.toString();
+        return classes;
     }
 }

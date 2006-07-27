@@ -309,8 +309,8 @@ public class LuceneStandardArtifactIndexTest
     {
         assertRecord( artifact, document, "test-jar", "jar", "3a0adc365f849366cd8b633cad155cb7",
                       "c66f18bf192cb613fc2febb4da541a34133eedc2" );
-        assertEquals( "Check document classes", "A\nb.B\nb.c.C\n", document.get( "classes" ) );
-        assertEquals( "Check document files", "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n",
+        assertEquals( "Check document classes", "A\nb.B\nb.c.C", document.get( "classes" ) );
+        assertEquals( "Check document files", "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class",
                       document.get( "files" ) );
         assertNull( "Check document inceptionYear", document.get( "inceptionYear" ) );
         assertNull( "Check document projectName", document.get( "projectName" ) );
@@ -323,12 +323,12 @@ public class LuceneStandardArtifactIndexTest
     {
         assertRecord( artifact, document, "test-plugin", "maven-plugin", "06f6fe25e46c4d4fb5be4f56a9bab0ee",
                       "382c1ebfb5d0c7d6061c2f8569fb53f8fc00fec2" );
-        assertEquals( "Check document classes", "org.apache.maven.repository.record.MyMojo\n",
+        assertEquals( "Check document classes", "org.apache.maven.repository.record.MyMojo",
                       document.get( "classes" ) );
         assertEquals( "Check document files", "META-INF/MANIFEST.MF\n" + "META-INF/maven/plugin.xml\n" +
             "org/apache/maven/repository/record/MyMojo.class\n" +
             "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.xml\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties\n", document.get( "files" ) );
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties", document.get( "files" ) );
         assertEquals( "Check document pluginPrefix", "test", document.get( "pluginPrefix" ) );
         assertEquals( "Check document packaging", "maven-plugin", document.get( "packaging" ) );
         assertNull( "Check document inceptionYear", document.get( "inceptionYear" ) );

@@ -27,6 +27,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Test the minimal artifact index record.
@@ -43,6 +46,8 @@ public class MinimalArtifactIndexRecordFactoryTest
     private ArtifactFactory artifactFactory;
 
     private static final String TEST_GROUP_ID = "org.apache.maven.repository.record";
+
+    private static final List JAR_CLASS_LIST = Arrays.asList( new String[]{"A", "b.B", "b.c.C"} );
 
     protected void setUp()
         throws Exception
@@ -75,7 +80,7 @@ public class MinimalArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -92,7 +97,7 @@ public class MinimalArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -142,7 +147,7 @@ public class MinimalArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "org.apache.maven.repository.record.MyMojo\n" );
+        expectedRecord.setClasses( Collections.singletonList( "org.apache.maven.repository.record.MyMojo" ) );
 
         assertEquals( "check record", expectedRecord, record );
     }

@@ -157,7 +157,7 @@ public class LuceneMinimalArtifactIndexTest
         try
         {
             Document document = reader.document( 0 );
-            assertRecord( document, artifact, "3a0adc365f849366cd8b633cad155cb7", "A\nb.B\nb.c.C\n" );
+            assertRecord( document, artifact, "3a0adc365f849366cd8b633cad155cb7", "A\nb.B\nb.c.C" );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -184,9 +184,7 @@ public class LuceneMinimalArtifactIndexTest
         try
         {
             Document document = reader.document( 0 );
-            String expectedChecksum = "3a0adc365f849366cd8b633cad155cb7";
-            String expectedClasses = "A\nb.B\nb.c.C\n";
-            assertRecord( document, artifact, expectedChecksum, expectedClasses );
+            assertRecord( document, artifact, "3a0adc365f849366cd8b633cad155cb7", "A\nb.B\nb.c.C" );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -232,7 +230,7 @@ public class LuceneMinimalArtifactIndexTest
         {
             Document document = reader.document( 0 );
             assertRecord( document, artifact, "06f6fe25e46c4d4fb5be4f56a9bab0ee",
-                          "org.apache.maven.repository.record.MyMojo\n" );
+                          "org.apache.maven.repository.record.MyMojo" );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally

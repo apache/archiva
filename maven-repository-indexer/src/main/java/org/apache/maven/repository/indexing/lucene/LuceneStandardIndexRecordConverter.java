@@ -22,6 +22,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumberTools;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 import org.apache.maven.repository.indexing.record.StandardArtifactIndexRecord;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Convert the standard index record to a Lucene document.
@@ -86,8 +87,16 @@ public class LuceneStandardIndexRecordConverter
         addUntokenizedField( document, FLD_FILE_SIZE, NumberTools.longToString( standardIndexRecord.getSize() ) );
         addUntokenizedField( document, FLD_MD5, standardIndexRecord.getMd5Checksum() );
         addUntokenizedField( document, FLD_SHA1, standardIndexRecord.getSha1Checksum() );
-        addTokenizedField( document, FLD_CLASSES, standardIndexRecord.getClasses() );
-        addTokenizedField( document, FLD_FILES, standardIndexRecord.getFiles() );
+        if ( standardIndexRecord.getClasses() != null )
+        {
+            addTokenizedField( document, FLD_CLASSES,
+                               StringUtils.join( standardIndexRecord.getClasses().iterator(), "\n" ) );
+        }
+        if ( standardIndexRecord.getFiles() != null )
+        {
+            addTokenizedField( document, FLD_FILES,
+                               StringUtils.join( standardIndexRecord.getFiles().iterator(), "\n" ) );
+        }
         addTokenizedField( document, FLD_PLUGINPREFIX, standardIndexRecord.getPluginPrefix() );
         addUntokenizedField( document, FLD_INCEPTION_YEAR, standardIndexRecord.getInceptionYear() );
         addTokenizedField( document, FLD_PROJECT_NAME, standardIndexRecord.getProjectName() );

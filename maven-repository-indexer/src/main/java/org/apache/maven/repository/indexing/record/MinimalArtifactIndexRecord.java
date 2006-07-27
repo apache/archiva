@@ -1,6 +1,7 @@
 package org.apache.maven.repository.indexing.record;
 
 import java.util.Date;
+import java.util.List;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -29,7 +30,7 @@ public class MinimalArtifactIndexRecord
     /**
      * The classes in the archive for the artifact, if it is a JAR.
      */
-    private String classes;
+    private List classes;
 
     /**
      * The MD5 checksum of the artifact file.
@@ -51,7 +52,7 @@ public class MinimalArtifactIndexRecord
      */
     private long size;
 
-    public void setClasses( String classes )
+    public void setClasses( List classes )
     {
         this.classes = classes;
     }
@@ -76,7 +77,7 @@ public class MinimalArtifactIndexRecord
         this.size = size;
     }
 
-    public String getClasses()
+    public List getClasses()
     {
         return classes;
     }

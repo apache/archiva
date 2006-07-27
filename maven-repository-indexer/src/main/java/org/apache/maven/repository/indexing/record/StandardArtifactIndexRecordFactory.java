@@ -32,6 +32,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -184,8 +185,8 @@ public class StandardArtifactIndexRecordFactory
     private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )
         throws RepositoryIndexException
     {
-        StringBuffer classes = new StringBuffer();
-        StringBuffer fileBuffer = new StringBuffer();
+        List classes = new ArrayList();
+        List fileList = new ArrayList();
 
         for ( Iterator i = files.iterator(); i.hasNext(); )
         {
@@ -194,11 +195,11 @@ public class StandardArtifactIndexRecordFactory
             // ignore directories
             if ( !name.endsWith( "/" ) )
             {
-                fileBuffer.append( name ).append( "\n" );
+                fileList.add( name );
 
                 if ( isClass( name ) )
                 {
-                    classes.append( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) ).append( "\n" );
+                    classes.add( name.substring( 0, name.length() - 6 ).replace( '/', '.' ) );
                 }
                 else if ( PLUGIN_METADATA_NAME.equals( name ) )
                 {
@@ -211,13 +212,13 @@ public class StandardArtifactIndexRecordFactory
             }
         }
 
-        if ( classes.length() > 0 )
+        if ( !classes.isEmpty() )
         {
-            record.setClasses( classes.toString() );
+            record.setClasses( classes );
         }
-        if ( fileBuffer.length() > 0 )
+        if ( !fileList.isEmpty() )
         {
-            record.setFiles( fileBuffer.toString() );
+            record.setFiles( fileList );
         }
     }
 

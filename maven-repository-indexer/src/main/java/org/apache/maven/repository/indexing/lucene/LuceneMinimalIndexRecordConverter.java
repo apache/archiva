@@ -22,6 +22,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumberTools;
 import org.apache.maven.repository.indexing.record.MinimalArtifactIndexRecord;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Convert the minimal index record to a Lucene document.
@@ -51,7 +52,8 @@ public class LuceneMinimalIndexRecordConverter
                                                                                   DateTools.Resolution.SECOND ) );
         addUntokenizedField( document, FLD_FILE_SIZE, NumberTools.longToString( standardIndexRecord.getSize() ) );
         addUntokenizedField( document, FLD_MD5, standardIndexRecord.getMd5Checksum() );
-        addTokenizedField( document, FLD_CLASSES, standardIndexRecord.getClasses() );
+        addTokenizedField( document, FLD_CLASSES,
+                           StringUtils.join( standardIndexRecord.getClasses().iterator(), "\n" ) );
 
         return document;
     }

@@ -27,6 +27,8 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Test the minimal artifact index record.
@@ -43,6 +45,11 @@ public class StandardArtifactIndexRecordFactoryTest
     private ArtifactFactory artifactFactory;
 
     private static final String TEST_GROUP_ID = "org.apache.maven.repository.record";
+
+    private static final List JAR_CLASS_LIST = Arrays.asList( new String[]{"A", "b.B", "b.c.C"} );
+
+    private static final List JAR_FILE_LIST =
+        Arrays.asList( new String[]{"META-INF/MANIFEST.MF", "A.class", "b/B.class", "b/c/C.class"} );
 
     protected void setUp()
         throws Exception
@@ -75,11 +82,11 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-jar" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
         expectedRecord.setVersion( "1.0" );
-        expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
+        expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
         expectedRecord.setRepository( "test" );
@@ -99,11 +106,11 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-jar-and-pom" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
         expectedRecord.setVersion( "1.0" );
-        expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
+        expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
         expectedRecord.setRepository( "test" );
@@ -125,11 +132,11 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setFilename( repository.pathOf( artifact ) );
         expectedRecord.setLastModified( artifact.getFile().lastModified() );
         expectedRecord.setSize( artifact.getFile().length() );
-        expectedRecord.setClasses( "A\nb.B\nb.c.C\n" );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-child-pom" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
         expectedRecord.setVersion( "1.0" );
-        expectedRecord.setFiles( "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class\n" );
+        expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
         expectedRecord.setRepository( "test" );
@@ -208,11 +215,11 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSha1Checksum( "382c1ebfb5d0c7d6061c2f8569fb53f8fc00fec2" );
         expectedRecord.setType( "maven-plugin" );
         expectedRecord.setRepository( "test" );
-        expectedRecord.setClasses( "org.apache.maven.repository.record.MyMojo\n" );
-        expectedRecord.setFiles( "META-INF/MANIFEST.MF\n" + "META-INF/maven/plugin.xml\n" +
-            "org/apache/maven/repository/record/MyMojo.class\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.xml\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties\n" );
+        expectedRecord.setClasses( Arrays.asList( new String[]{"org.apache.maven.repository.record.MyMojo"} ) );
+        expectedRecord.setFiles( Arrays.asList( new String[]{"META-INF/MANIFEST.MF", "META-INF/maven/plugin.xml",
+            "org/apache/maven/repository/record/MyMojo.class",
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.xml",
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties"} ) );
         expectedRecord.setPackaging( "maven-plugin" );
         expectedRecord.setProjectName( "Maven Mojo Archetype" );
         expectedRecord.setPluginPrefix( "test" );
@@ -238,11 +245,10 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSha1Checksum( "5ebabafdbcd6684ae434c06e22c32844df284b05" );
         expectedRecord.setType( "maven-archetype" );
         expectedRecord.setRepository( "test" );
-        expectedRecord.setFiles( "META-INF/MANIFEST.MF\n" + "archetype-resources/pom.xml\n" +
-            "archetype-resources/src/main/java/App.java\n" + "archetype-resources/src/test/java/AppTest.java\n" +
-            "META-INF/maven/archetype.xml\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.xml\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.properties\n" );
+        expectedRecord.setFiles( Arrays.asList( new String[]{"META-INF/MANIFEST.MF", "archetype-resources/pom.xml",
+            "archetype-resources/src/main/java/App.java", "archetype-resources/src/test/java/AppTest.java",
+            "META-INF/maven/archetype.xml", "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.xml",
+            "META-INF/maven/org.apache.maven.repository.record/test-archetype/pom.properties"} ) );
         expectedRecord.setPackaging( "jar" );
         expectedRecord.setProjectName( "Archetype - test-archetype" );
 

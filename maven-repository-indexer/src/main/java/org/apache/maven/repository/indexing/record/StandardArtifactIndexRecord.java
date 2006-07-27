@@ -1,5 +1,7 @@
 package org.apache.maven.repository.indexing.record;
 
+import java.util.List;
+
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -57,7 +59,7 @@ public class StandardArtifactIndexRecord
     /**
      * A list of files (separated by '\n') in the artifact if it is an archive.
      */
-    private String files;
+    private List files;
 
     /**
      * The identifier of the repository that the artifact came from.
@@ -119,7 +121,7 @@ public class StandardArtifactIndexRecord
         this.type = type;
     }
 
-    public void setFiles( String files )
+    public void setFiles( List files )
     {
         this.files = files;
     }
@@ -255,7 +257,7 @@ public class StandardArtifactIndexRecord
         return type;
     }
 
-    public String getFiles()
+    public List getFiles()
     {
         return files;
     }
