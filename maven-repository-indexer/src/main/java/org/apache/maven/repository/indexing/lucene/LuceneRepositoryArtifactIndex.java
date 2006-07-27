@@ -94,10 +94,14 @@ public class LuceneRepositoryArtifactIndex
             {
                 RepositoryIndexRecord record = (RepositoryIndexRecord) i.next();
 
-                Document document = converter.convert( record );
-                document.add( new Field( FLD_PK, record.getPrimaryKey(), Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+                if ( record != null )
+                {
+                    Document document = converter.convert( record );
+                    document.add(
+                        new Field( FLD_PK, record.getPrimaryKey(), Field.Store.NO, Field.Index.UN_TOKENIZED ) );
 
-                indexWriter.addDocument( document );
+                    indexWriter.addDocument( document );
+                }
             }
         }
         catch ( IOException e )
@@ -128,7 +132,7 @@ public class LuceneRepositoryArtifactIndex
 
     private Analyzer getAnalyzer()
     {
-        // TODO: investigate why changed in original!
+        // TODO: investigate why changed in original! Probably for MD5 and number querying.
         return new StandardAnalyzer();
     }
 
@@ -146,9 +150,12 @@ public class LuceneRepositoryArtifactIndex
                 {
                     RepositoryIndexRecord record = (RepositoryIndexRecord) artifacts.next();
 
-                    Term term = new Term( FLD_PK, record.getPrimaryKey() );
+                    if ( record != null )
+                    {
+                        Term term = new Term( FLD_PK, record.getPrimaryKey() );
 
-                    indexReader.deleteDocuments( term );
+                        indexReader.deleteDocuments( term );
+                    }
                 }
             }
             finally
