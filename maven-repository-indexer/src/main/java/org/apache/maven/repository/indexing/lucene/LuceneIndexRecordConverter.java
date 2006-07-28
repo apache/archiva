@@ -41,6 +41,7 @@ public interface LuceneIndexRecordConverter
      *
      * @param document the document
      * @return the record
+     * @throws java.text.ParseException if there is a problem parsing a field (specifically, dates)
      */
     RepositoryIndexRecord convert( Document document )
         throws ParseException;

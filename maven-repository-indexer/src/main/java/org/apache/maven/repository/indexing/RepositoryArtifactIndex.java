@@ -62,6 +62,7 @@ public interface RepositoryArtifactIndex
      * Delete records from the index. Simply ignore the request any did not exist.
      *
      * @param records the records to delete
+     * @throws RepositoryIndexException if there is a problem removing the record
      */
     void deleteRecords( Collection records )
         throws RepositoryIndexException;
