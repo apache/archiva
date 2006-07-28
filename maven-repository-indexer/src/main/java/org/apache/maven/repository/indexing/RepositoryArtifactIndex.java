@@ -16,6 +16,9 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
+import org.apache.maven.repository.indexing.query.Query;
+
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,8 +35,19 @@ public interface RepositoryArtifactIndex
      * @param records the artifacts to index
      * @throws RepositoryIndexException if there is a problem indexing the records
      */
-    void indexRecords( List records )
+    void indexRecords( Collection records )
         throws RepositoryIndexException;
+
+    /**
+     * Search the index based on the search criteria specified. Returns a list of index records.
+     *
+     * @param query The query that contains the search criteria
+     * @return the index records found
+     * @throws RepositoryIndexSearchException if there is a problem searching
+     * @todo should it return "SearchResult" instances that contain the index record and other search data (like score?)
+     */
+    List search( Query query )
+        throws RepositoryIndexSearchException;
 
     /**
      * Check if the index already exists.

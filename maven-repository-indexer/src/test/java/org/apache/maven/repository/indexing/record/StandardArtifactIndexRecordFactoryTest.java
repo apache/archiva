@@ -21,6 +21,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -85,6 +86,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-jar" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
         expectedRecord.setVersion( "1.0" );
         expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
@@ -94,10 +96,36 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedJarWithClassifier()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar", "1.0", "jar", "jdk14" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
+        expectedRecord.setArtifactId( "test-jar" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setFiles( JAR_FILE_LIST );
+        expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
+        expectedRecord.setType( "jar" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setClassifier( "jdk14" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testIndexedJarAndPom()
         throws RepositoryIndexException
     {
-        Artifact artifact = createArtifact( "test-jar-and-pom" );
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0-alpha-1", "jar" );
 
         RepositoryIndexRecord record = factory.createRecord( artifact );
 
@@ -109,7 +137,8 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-jar-and-pom" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
-        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setBaseVersion( "1.0-alpha-1" );
+        expectedRecord.setVersion( "1.0-alpha-1" );
         expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
@@ -120,10 +149,38 @@ public class StandardArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedJarAndPomWithClassifier()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0-alpha-1", "jar", "jdk14" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
+        expectedRecord.setArtifactId( "test-jar-and-pom" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0-alpha-1" );
+        expectedRecord.setVersion( "1.0-alpha-1" );
+        expectedRecord.setFiles( JAR_FILE_LIST );
+        expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
+        expectedRecord.setType( "jar" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setPackaging( "jar" );
+        expectedRecord.setProjectName( "Test JAR and POM" );
+        expectedRecord.setClassifier( "jdk14" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testIndexedJarWithParentPom()
         throws RepositoryIndexException
     {
-        Artifact artifact = createArtifact( "test-child-pom" );
+        Artifact artifact = createArtifact( "test-child-pom", "1.0-20060728.121314-1", "jar" );
 
         RepositoryIndexRecord record = factory.createRecord( artifact );
 
@@ -135,7 +192,8 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setClasses( JAR_CLASS_LIST );
         expectedRecord.setArtifactId( "test-child-pom" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
-        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setBaseVersion( "1.0-SNAPSHOT" );
+        expectedRecord.setVersion( "1.0-20060728.121314-1" );
         expectedRecord.setFiles( JAR_FILE_LIST );
         expectedRecord.setSha1Checksum( "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         expectedRecord.setType( "jar" );
@@ -162,6 +220,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSize( artifact.getFile().length() );
         expectedRecord.setArtifactId( "test-pom" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
         expectedRecord.setVersion( "1.0" );
         expectedRecord.setSha1Checksum( "c3b374e394607e1e705e71c227f62641e8621ebe" );
         expectedRecord.setType( "pom" );
@@ -211,6 +270,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSize( artifact.getFile().length() );
         expectedRecord.setArtifactId( "test-plugin" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
         expectedRecord.setVersion( "1.0" );
         expectedRecord.setSha1Checksum( "382c1ebfb5d0c7d6061c2f8569fb53f8fc00fec2" );
         expectedRecord.setType( "maven-plugin" );
@@ -241,6 +301,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSize( artifact.getFile().length() );
         expectedRecord.setArtifactId( "test-archetype" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
         expectedRecord.setVersion( "1.0" );
         expectedRecord.setSha1Checksum( "5ebabafdbcd6684ae434c06e22c32844df284b05" );
         expectedRecord.setType( "maven-archetype" );
@@ -279,6 +340,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setSize( artifact.getFile().length() );
         expectedRecord.setArtifactId( "test-dll" );
         expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0.1.34" );
         expectedRecord.setVersion( "1.0.1.34" );
         expectedRecord.setSha1Checksum( "da39a3ee5e6b4b0d3255bfef95601890afd80709" );
         expectedRecord.setType( "dll" );
@@ -304,7 +366,15 @@ public class StandardArtifactIndexRecordFactoryTest
 
     private Artifact createArtifact( String artifactId, String version, String type )
     {
-        Artifact artifact = artifactFactory.createBuildArtifact( TEST_GROUP_ID, artifactId, version, type );
+        return createArtifact( artifactId, version, type, null );
+    }
+
+    private Artifact createArtifact( String artifactId, String version, String type, String classifier )
+    {
+        Artifact artifact = artifactFactory.createDependencyArtifact( TEST_GROUP_ID, artifactId,
+                                                                      VersionRange.createFromVersion( version ), type,
+                                                                      classifier, Artifact.SCOPE_RUNTIME );
+        artifact.isSnapshot();
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifact.setRepository( repository );
         return artifact;

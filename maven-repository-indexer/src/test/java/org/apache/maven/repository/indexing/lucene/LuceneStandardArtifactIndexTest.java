@@ -31,6 +31,7 @@ import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecordFactory;
+import org.apache.maven.repository.indexing.record.StandardIndexRecordFields;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -276,47 +277,51 @@ public class LuceneStandardArtifactIndexTest
     private void assertRecord( Artifact artifact, Document document, String expectedArtifactId, String expectedType,
                                String expectedMd5, String expectedSha1 )
     {
-        assertEquals( "Check document filename", repository.pathOf( artifact ), document.get( "filename" ) );
-        assertEquals( "Check document groupId", "org.apache.maven.repository.record", document.get( "groupId" ) );
-        assertEquals( "Check document artifactId", expectedArtifactId, document.get( "artifactId" ) );
-        assertEquals( "Check document version", "1.0", document.get( "version" ) );
-        assertEquals( "Check document type", expectedType, document.get( "type" ) );
-        assertEquals( "Check document repository", "test", document.get( "repo" ) );
+        assertEquals( "Check document filename", repository.pathOf( artifact ),
+                      document.get( StandardIndexRecordFields.FILENAME ) );
+        assertEquals( "Check document groupId", "org.apache.maven.repository.record",
+                      document.get( StandardIndexRecordFields.GROUPID ) );
+        assertEquals( "Check document artifactId", expectedArtifactId,
+                      document.get( StandardIndexRecordFields.ARTIFACTID ) );
+        assertEquals( "Check document version", "1.0", document.get( StandardIndexRecordFields.VERSION ) );
+        assertEquals( "Check document type", expectedType, document.get( StandardIndexRecordFields.TYPE ) );
+        assertEquals( "Check document repository", "test", document.get( StandardIndexRecordFields.REPOSITORY ) );
         assertEquals( "Check document timestamp", getLastModified( artifact.getFile() ),
-                      document.get( "lastModified" ) );
-        assertEquals( "Check document md5", expectedMd5, document.get( "md5" ) );
-        assertEquals( "Check document sha1", expectedSha1, document.get( "sha1" ) );
+                      document.get( StandardIndexRecordFields.LAST_MODIFIED ) );
+        assertEquals( "Check document md5", expectedMd5, document.get( StandardIndexRecordFields.MD5 ) );
+        assertEquals( "Check document sha1", expectedSha1, document.get( StandardIndexRecordFields.SHA1 ) );
         assertEquals( "Check document file size", artifact.getFile().length(),
-                      NumberTools.stringToLong( document.get( "fileSize" ) ) );
-        assertNull( "Check document classifier", document.get( "classifier" ) );
+                      NumberTools.stringToLong( document.get( StandardIndexRecordFields.FILE_SIZE ) ) );
+        assertNull( "Check document classifier", document.get( StandardIndexRecordFields.CLASSIFIER ) );
     }
 
     private void assertPomRecord( Artifact artifact, Document document )
     {
         assertRecord( artifact, document, "test-pom", "pom", "32dbef7ff11eb933bd8b7e7bcab85406",
                       "c3b374e394607e1e705e71c227f62641e8621ebe" );
-        assertNull( "Check document classes", document.get( "classes" ) );
-        assertNull( "Check document files", document.get( "files" ) );
-        assertNull( "Check document pluginPrefix", document.get( "pluginPrefix" ) );
-        assertEquals( "Check document year", "2005", document.get( "inceptionYear" ) );
+        assertNull( "Check document classes", document.get( StandardIndexRecordFields.CLASSES ) );
+        assertNull( "Check document files", document.get( StandardIndexRecordFields.FILES ) );
+        assertNull( "Check document pluginPrefix", document.get( StandardIndexRecordFields.PLUGIN_PREFIX ) );
+        assertEquals( "Check document year", "2005", document.get( StandardIndexRecordFields.INCEPTION_YEAR ) );
         assertEquals( "Check document project name", "Maven Repository Manager Test POM",
-                      document.get( "projectName" ) );
-        assertEquals( "Check document project description", "Description", document.get( "projectDesc" ) );
-        assertEquals( "Check document packaging", "pom", document.get( "packaging" ) );
+                      document.get( StandardIndexRecordFields.PROJECT_NAME ) );
+        assertEquals( "Check document project description", "Description",
+                      document.get( StandardIndexRecordFields.PROJECT_DESCRIPTION ) );
+        assertEquals( "Check document packaging", "pom", document.get( StandardIndexRecordFields.PACKAGING ) );
     }
 
     private void assertJarRecord( Artifact artifact, Document document )
     {
         assertRecord( artifact, document, "test-jar", "jar", "3a0adc365f849366cd8b633cad155cb7",
                       "c66f18bf192cb613fc2febb4da541a34133eedc2" );
-        assertEquals( "Check document classes", "A\nb.B\nb.c.C", document.get( "classes" ) );
+        assertEquals( "Check document classes", "A\nb.B\nb.c.C", document.get( StandardIndexRecordFields.CLASSES ) );
         assertEquals( "Check document files", "META-INF/MANIFEST.MF\nA.class\nb/B.class\nb/c/C.class",
-                      document.get( "files" ) );
-        assertNull( "Check document inceptionYear", document.get( "inceptionYear" ) );
-        assertNull( "Check document projectName", document.get( "projectName" ) );
-        assertNull( "Check document projectDesc", document.get( "projectDesc" ) );
-        assertNull( "Check document pluginPrefix", document.get( "pluginPrefix" ) );
-        assertNull( "Check document packaging", document.get( "packaging" ) );
+                      document.get( StandardIndexRecordFields.FILES ) );
+        assertNull( "Check document inceptionYear", document.get( StandardIndexRecordFields.INCEPTION_YEAR ) );
+        assertNull( "Check document projectName", document.get( StandardIndexRecordFields.PROJECT_NAME ) );
+        assertNull( "Check document projectDesc", document.get( StandardIndexRecordFields.PROJECT_DESCRIPTION ) );
+        assertNull( "Check document pluginPrefix", document.get( StandardIndexRecordFields.PLUGIN_PREFIX ) );
+        assertNull( "Check document packaging", document.get( StandardIndexRecordFields.PACKAGING ) );
     }
 
     private void assertPluginRecord( Artifact artifact, Document document )
@@ -324,16 +329,18 @@ public class LuceneStandardArtifactIndexTest
         assertRecord( artifact, document, "test-plugin", "maven-plugin", "06f6fe25e46c4d4fb5be4f56a9bab0ee",
                       "382c1ebfb5d0c7d6061c2f8569fb53f8fc00fec2" );
         assertEquals( "Check document classes", "org.apache.maven.repository.record.MyMojo",
-                      document.get( "classes" ) );
+                      document.get( StandardIndexRecordFields.CLASSES ) );
         assertEquals( "Check document files", "META-INF/MANIFEST.MF\n" + "META-INF/maven/plugin.xml\n" +
             "org/apache/maven/repository/record/MyMojo.class\n" +
             "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.xml\n" +
-            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties", document.get( "files" ) );
-        assertEquals( "Check document pluginPrefix", "test", document.get( "pluginPrefix" ) );
-        assertEquals( "Check document packaging", "maven-plugin", document.get( "packaging" ) );
-        assertNull( "Check document inceptionYear", document.get( "inceptionYear" ) );
-        assertEquals( "Check document project name", "Maven Mojo Archetype", document.get( "projectName" ) );
-        assertNull( "Check document projectDesc", document.get( "projectDesc" ) );
+            "META-INF/maven/org.apache.maven.repository.record/test-plugin/pom.properties",
+                                              document.get( StandardIndexRecordFields.FILES ) );
+        assertEquals( "Check document pluginPrefix", "test", document.get( StandardIndexRecordFields.PLUGIN_PREFIX ) );
+        assertEquals( "Check document packaging", "maven-plugin", document.get( StandardIndexRecordFields.PACKAGING ) );
+        assertNull( "Check document inceptionYear", document.get( StandardIndexRecordFields.INCEPTION_YEAR ) );
+        assertEquals( "Check document project name", "Maven Mojo Archetype",
+                      document.get( StandardIndexRecordFields.PROJECT_NAME ) );
+        assertNull( "Check document projectDesc", document.get( StandardIndexRecordFields.PROJECT_DESCRIPTION ) );
     }
 
     private String getLastModified( File file )

@@ -29,6 +29,7 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
+import org.apache.maven.repository.indexing.record.MinimalIndexRecordFields;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecordFactory;
 import org.codehaus.plexus.PlexusTestCase;
@@ -134,7 +135,8 @@ public class LuceneMinimalArtifactIndexTest
         try
         {
             Document document = reader.document( 0 );
-            assertEquals( "Check document", repository.pathOf( artifact ), document.get( "j" ) );
+            assertEquals( "Check document", repository.pathOf( artifact ),
+                          document.get( MinimalIndexRecordFields.FILENAME ) );
             assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
@@ -274,12 +276,14 @@ public class LuceneMinimalArtifactIndexTest
 
     private void assertRecord( Document document, Artifact artifact, String expectedChecksum, String expectedClasses )
     {
-        assertEquals( "Check document filename", repository.pathOf( artifact ), document.get( "j" ) );
-        assertEquals( "Check document timestamp", getLastModified( artifact.getFile() ), document.get( "d" ) );
-        assertEquals( "Check document checksum", expectedChecksum, document.get( "m" ) );
+        assertEquals( "Check document filename", repository.pathOf( artifact ),
+                      document.get( MinimalIndexRecordFields.FILENAME ) );
+        assertEquals( "Check document timestamp", getLastModified( artifact.getFile() ),
+                      document.get( MinimalIndexRecordFields.LAST_MODIFIED ) );
+        assertEquals( "Check document checksum", expectedChecksum, document.get( MinimalIndexRecordFields.MD5 ) );
         assertEquals( "Check document size", artifact.getFile().length(),
-                      NumberTools.stringToLong( document.get( "s" ) ) );
-        assertEquals( "Check document classes", expectedClasses, document.get( "c" ) );
+                      NumberTools.stringToLong( document.get( MinimalIndexRecordFields.FILE_SIZE ) ) );
+        assertEquals( "Check document classes", expectedClasses, document.get( MinimalIndexRecordFields.CLASSES ) );
     }
 
     private String getLastModified( File file )

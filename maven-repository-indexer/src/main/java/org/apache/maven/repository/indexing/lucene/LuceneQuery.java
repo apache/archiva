@@ -16,32 +16,25 @@ package org.apache.maven.repository.indexing.lucene;
  * limitations under the License.
  */
 
-import org.apache.lucene.document.Document;
-import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
-
-import java.text.ParseException;
+import org.apache.maven.repository.indexing.query.Query;
 
 /**
- * Converts repository records to Lucene documents.
+ * TODO [!]: Description.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface LuceneIndexRecordConverter
+public class LuceneQuery
+    implements Query
 {
-    /**
-     * Convert an index record to a Lucene document.
-     *
-     * @param record the record
-     * @return the document
-     */
-    Document convert( RepositoryIndexRecord record );
+    private final org.apache.lucene.search.Query query;
 
-    /**
-     * Convert a Lucene document to an index record.
-     *
-     * @param document the document
-     * @return the record
-     */
-    RepositoryIndexRecord convert( Document document )
-        throws ParseException;
+    public LuceneQuery( org.apache.lucene.search.Query query )
+    {
+        this.query = query;
+    }
+
+    org.apache.lucene.search.Query getLuceneQuery()
+    {
+        return query;
+    }
 }

@@ -21,8 +21,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumberTools;
 import org.apache.maven.repository.indexing.record.MinimalArtifactIndexRecord;
+import org.apache.maven.repository.indexing.record.MinimalIndexRecordFields;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 import org.codehaus.plexus.util.StringUtils;
+
+import java.text.ParseException;
+import java.util.Arrays;
 
 /**
  * Convert the minimal index record to a Lucene document.
@@ -32,37 +36,41 @@ import org.codehaus.plexus.util.StringUtils;
 public class LuceneMinimalIndexRecordConverter
     implements LuceneIndexRecordConverter
 {
-    private static final String FLD_FILENAME = "j";
-
-    private static final String FLD_LAST_MODIFIED = "d";
-
-    private static final String FLD_FILE_SIZE = "s";
-
-    private static final String FLD_MD5 = "m";
-
-    private static final String FLD_CLASSES = "c";
-
     public Document convert( RepositoryIndexRecord record )
     {
-        MinimalArtifactIndexRecord standardIndexRecord = (MinimalArtifactIndexRecord) record;
+        MinimalArtifactIndexRecord rec = (MinimalArtifactIndexRecord) record;
 
         Document document = new Document();
-        addTokenizedField( document, FLD_FILENAME, standardIndexRecord.getFilename() );
-        addUntokenizedField( document, FLD_LAST_MODIFIED, DateTools.timeToString( standardIndexRecord.getLastModified(),
-                                                                                  DateTools.Resolution.SECOND ) );
-        addUntokenizedField( document, FLD_FILE_SIZE, NumberTools.longToString( standardIndexRecord.getSize() ) );
-        addUntokenizedField( document, FLD_MD5, standardIndexRecord.getMd5Checksum() );
-        addTokenizedField( document, FLD_CLASSES,
-                           StringUtils.join( standardIndexRecord.getClasses().iterator(), "\n" ) );
+        addTokenizedField( document, MinimalIndexRecordFields.FILENAME, rec.getFilename() );
+        addUntokenizedField( document, MinimalIndexRecordFields.LAST_MODIFIED,
+                             DateTools.timeToString( rec.getLastModified(), DateTools.Resolution.SECOND ) );
+        addUntokenizedField( document, MinimalIndexRecordFields.FILE_SIZE, NumberTools.longToString( rec.getSize() ) );
+        addUntokenizedField( document, MinimalIndexRecordFields.MD5, rec.getMd5Checksum() );
+        addTokenizedField( document, MinimalIndexRecordFields.CLASSES,
+                           StringUtils.join( rec.getClasses().iterator(), "\n" ) );
 
         return document;
+    }
+
+    public RepositoryIndexRecord convert( Document document )
+        throws ParseException
+    {
+        MinimalArtifactIndexRecord record = new MinimalArtifactIndexRecord();
+
+        record.setFilename( document.get( MinimalIndexRecordFields.FILENAME ) );
+        record.setLastModified( DateTools.stringToTime( document.get( MinimalIndexRecordFields.LAST_MODIFIED ) ) );
+        record.setSize( NumberTools.stringToLong( document.get( MinimalIndexRecordFields.FILE_SIZE ) ) );
+        record.setMd5Checksum( document.get( MinimalIndexRecordFields.MD5 ) );
+        record.setClasses( Arrays.asList( document.get( MinimalIndexRecordFields.CLASSES ).split( "\n" ) ) );
+
+        return record;
     }
 
     private static void addUntokenizedField( Document document, String name, String value )
     {
         if ( value != null )
         {
-            document.add( new Field( name, value, Field.Store.YES, Field.Index.TOKENIZED ) );
+            document.add( new Field( name, value, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
         }
     }
 

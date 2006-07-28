@@ -23,13 +23,19 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
+import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
+import org.apache.maven.repository.indexing.query.Query;
 import org.apache.maven.repository.indexing.record.RepositoryIndexRecord;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -53,14 +59,13 @@ public class LuceneRepositoryArtifactIndex
 
     private static final String FLD_PK = "pk";
 
-    public LuceneRepositoryArtifactIndex( File indexPath, ArtifactRepository repository,
-                                          LuceneIndexRecordConverter converter )
+    public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {
         this.indexLocation = indexPath;
         this.converter = converter;
     }
 
-    public void indexRecords( List records )
+    public void indexRecords( Collection records )
         throws RepositoryIndexException
     {
         try
@@ -75,7 +80,7 @@ public class LuceneRepositoryArtifactIndex
         addRecords( records );
     }
 
-    private void addRecords( List records )
+    private void addRecords( Collection records )
         throws RepositoryIndexException
     {
         IndexWriter indexWriter;
@@ -136,7 +141,7 @@ public class LuceneRepositoryArtifactIndex
         return new StandardAnalyzer();
     }
 
-    private void deleteRecords( List records )
+    private void deleteRecords( Collection records )
         throws IOException, RepositoryIndexException
     {
         if ( exists() )
@@ -193,6 +198,65 @@ public class LuceneRepositoryArtifactIndex
         else
         {
             throw new RepositoryIndexException( indexLocation + " is not a directory." );
+        }
+    }
+
+    public List search( Query query )
+        throws RepositoryIndexSearchException
+    {
+        LuceneQuery lQuery = (LuceneQuery) query;
+
+        org.apache.lucene.search.Query luceneQuery = lQuery.getLuceneQuery();
+
+        IndexSearcher searcher;
+        try
+        {
+            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
+        }
+
+        List records = new ArrayList();
+        try
+        {
+            Hits hits = searcher.search( luceneQuery );
+            for ( int i = 0; i < hits.length(); i++ )
+            {
+                Document doc = hits.doc( i );
+
+                records.add( converter.convert( doc ) );
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
+        }
+        catch ( ParseException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
+        }
+        finally
+        {
+            closeQuietly( searcher );
+        }
+
+        return records;
+    }
+
+    private static void closeQuietly( IndexSearcher searcher )
+    {
+        try
+        {
+            if ( searcher != null )
+            {
+                searcher.close();
+            }
+        }
+        catch ( IOException e )
+        {
+            // ignore
         }
     }
 }

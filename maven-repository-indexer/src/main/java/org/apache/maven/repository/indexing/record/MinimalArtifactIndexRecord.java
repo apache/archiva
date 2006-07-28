@@ -43,7 +43,7 @@ public class MinimalArtifactIndexRecord
     private String filename;
 
     /**
-     * The timestamp that the artifact file was last modified.
+     * The timestamp that the artifact file was last modified. Granularity is seconds.
      */
     private long lastModified;
 
@@ -51,6 +51,8 @@ public class MinimalArtifactIndexRecord
      * The size of the artifact file in bytes.
      */
     private long size;
+
+    private static final int MS_PER_SEC = 1000;
 
     public void setClasses( List classes )
     {
@@ -69,7 +71,7 @@ public class MinimalArtifactIndexRecord
 
     public void setLastModified( long lastModified )
     {
-        this.lastModified = lastModified;
+        this.lastModified = lastModified - lastModified % MS_PER_SEC;
     }
 
     public void setSize( long size )

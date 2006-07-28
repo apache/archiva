@@ -105,6 +105,8 @@ Indexer Design
 
     * <<<m>>>: md5 checksum of the JAR
 
+    * <<<pk>>>: the primary key of the artifact
+
   Only JARs are indexed at present. The JAR filename is used as the key for later deleting entries.
 
 * Searching
@@ -128,3 +130,7 @@ Indexer Design
   reasons. It should not have to read any metadata files or properties of files such as size and checksum from the disk.
   This enables searching a repository remotely without having the physical repository available, which is useful for
   IDE integration among other things.
+
+  Note that to be able to do an exact match search, a field must be stored untokenized. For fields where it makes sense
+  to search both tokenized and untokenized, they will be stored twice. This currently includes: artifact ID, group ID,
+  and version.

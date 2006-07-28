@@ -33,11 +33,11 @@ public class LuceneRepositoryArtifactIndexFactory
 {
     public RepositoryArtifactIndex createStandardIndex( File indexPath, ArtifactRepository repository )
     {
-        return new LuceneRepositoryArtifactIndex( indexPath, repository, new LuceneStandardIndexRecordConverter() );
+        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneStandardIndexRecordConverter() );
     }
 
     public RepositoryArtifactIndex createMinimalIndex( File indexPath, ArtifactRepository repository )
     {
-        return new LuceneRepositoryArtifactIndex( indexPath, repository, new LuceneMinimalIndexRecordConverter() );
+        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneMinimalIndexRecordConverter() );
     }
 }

@@ -21,6 +21,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -85,10 +86,44 @@ public class MinimalArtifactIndexRecordFactoryTest
         assertEquals( "check record", expectedRecord, record );
     }
 
+    public void testIndexedJarWithClassifier()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar", "1.0", "jar", "jdk14" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        MinimalArtifactIndexRecord expectedRecord = new MinimalArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
     public void testIndexedJarAndPom()
         throws RepositoryIndexException
     {
-        Artifact artifact = createArtifact( "test-jar-and-pom" );
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0-alpha-1", "jar" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        MinimalArtifactIndexRecord expectedRecord = new MinimalArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "3a0adc365f849366cd8b633cad155cb7" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setClasses( JAR_CLASS_LIST );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedJarAndPomWithClassifier()
+        throws RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0-alpha-1", "jar", "jdk14" );
 
         RepositoryIndexRecord record = factory.createRecord( artifact );
 
@@ -116,7 +151,7 @@ public class MinimalArtifactIndexRecordFactoryTest
         throws RepositoryIndexException
     {
         // If we pass in only the POM that belongs to a JAR, then expect null not the POM
-        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0", "pom" );
+        Artifact artifact = createArtifact( "test-jar-and-pom", "1.0-alpha-1", "pom" );
 
         RepositoryIndexRecord record = factory.createRecord( artifact );
 
@@ -189,7 +224,15 @@ public class MinimalArtifactIndexRecordFactoryTest
 
     private Artifact createArtifact( String artifactId, String version, String type )
     {
-        Artifact artifact = artifactFactory.createBuildArtifact( TEST_GROUP_ID, artifactId, version, type );
+        return createArtifact( artifactId, version, type, null );
+    }
+
+    private Artifact createArtifact( String artifactId, String version, String type, String classifier )
+    {
+        Artifact artifact = artifactFactory.createDependencyArtifact( TEST_GROUP_ID, artifactId,
+                                                                      VersionRange.createFromVersion( version ), type,
+                                                                      classifier, Artifact.SCOPE_RUNTIME );
+        artifact.isSnapshot();
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifact.setRepository( repository );
         return artifact;

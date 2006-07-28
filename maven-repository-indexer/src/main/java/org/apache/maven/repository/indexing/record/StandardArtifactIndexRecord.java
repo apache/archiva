@@ -91,6 +91,11 @@ public class StandardArtifactIndexRecord
      */
     private String projectName;
 
+    /**
+     * The base version (before the snapshot is determined).
+     */
+    private String baseVersion;
+
     public void setSha1Checksum( String sha1Checksum )
     {
         this.sha1Checksum = sha1Checksum;
@@ -183,6 +188,10 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
+        if ( !baseVersion.equals( that.baseVersion ) )
+        {
+            return false;
+        }
         if ( packaging != null ? !packaging.equals( that.packaging ) : that.packaging != null )
         {
             return false;
@@ -215,6 +224,7 @@ public class StandardArtifactIndexRecord
         result = 31 * result + groupId.hashCode();
         result = 31 * result + artifactId.hashCode();
         result = 31 * result + version.hashCode();
+        result = 31 * result + baseVersion.hashCode();
         result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
         result = 31 * result + ( type != null ? type.hashCode() : 0 );
         result = 31 * result + ( files != null ? files.hashCode() : 0 );
@@ -315,5 +325,15 @@ public class StandardArtifactIndexRecord
     public String getProjectName()
     {
         return projectName;
+    }
+
+    public void setBaseVersion( String baseVersion )
+    {
+        this.baseVersion = baseVersion;
+    }
+
+    public String getBaseVersion()
+    {
+        return baseVersion;
     }
 }

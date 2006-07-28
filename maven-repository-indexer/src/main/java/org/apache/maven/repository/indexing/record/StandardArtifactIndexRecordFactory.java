@@ -88,9 +88,13 @@ public class StandardArtifactIndexRecordFactory
             String sha1 = readChecksum( file, Digester.SHA1 );
 
             List files = null;
+            boolean archive = ARCHIVE_TYPES.contains( artifact.getType() );
             try
             {
-                files = readFilesInArchive( file );
+                if ( archive )
+                {
+                    files = readFilesInArchive( file );
+                }
             }
             catch ( IOException e )
             {
@@ -98,12 +102,13 @@ public class StandardArtifactIndexRecordFactory
             }
 
             // If it's an archive with no files, don't create a record
-            if ( !ARCHIVE_TYPES.contains( artifact.getType() ) || files != null )
+            if ( !archive || files != null )
             {
                 record = new StandardArtifactIndexRecord();
 
                 record.setGroupId( artifact.getGroupId() );
                 record.setArtifactId( artifact.getArtifactId() );
+                record.setBaseVersion( artifact.getBaseVersion() );
                 record.setVersion( artifact.getVersion() );
                 record.setClassifier( artifact.getClassifier() );
                 record.setType( artifact.getType() );
@@ -123,6 +128,7 @@ public class StandardArtifactIndexRecordFactory
                     Artifact pomArtifact = artifactFactory.createProjectArtifact( artifact.getGroupId(),
                                                                                   artifact.getArtifactId(),
                                                                                   artifact.getVersion() );
+                    pomArtifact.isSnapshot(); // gross hack around bug in maven-artifact
                     File pomFile = new File( artifact.getRepository().getBasedir(),
                                              artifact.getRepository().pathOf( pomArtifact ) );
                     if ( pomFile.exists() )
