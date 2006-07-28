@@ -19,10 +19,13 @@ package org.apache.maven.repository.reporting;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Model;
-import org.apache.maven.repository.digest.Digester;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
+import org.apache.maven.repository.indexing.record.RepositoryIndexRecordFactory;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.util.Collections;
 
 /**
  * @author Edwin Punzalan
@@ -47,37 +50,25 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         super.setUp();
 
-        Digester digester = (Digester) lookup( Digester.ROLE );
-
         indexDirectory = getTestFile( "target/indexDirectory" );
-
-        if ( !indexDirectory.exists() )
-        {
-            indexDirectory.mkdirs();
-        }
+        FileUtils.deleteDirectory( indexDirectory );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "jar" );
         reporter = new MockArtifactReporter();
         model = new Model();
 
-        ArtifactRepositoryIndex index = new ArtifactRepositoryIndex( indexDirectory, repository, digester );
-        index.indexArtifact( artifact );
-        index.optimize();
+        RepositoryArtifactIndexFactory factory =
+            (RepositoryArtifactIndexFactory) lookup( RepositoryArtifactIndexFactory.ROLE, "lucene" );
+
+        RepositoryArtifactIndex index = factory.createStandardIndex( indexDirectory, repository );
+
+        RepositoryIndexRecordFactory recordFactory =
+            (RepositoryIndexRecordFactory) lookup( RepositoryIndexRecordFactory.ROLE, "standard" );
+
+        index.indexRecords( Collections.singletonList( recordFactory.createRecord( artifact ) ) );
 
         processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
-    }
-
-    protected void tearDown()
-        throws Exception
-    {
-        //FileUtils.deleteDirectory( indexDirectory );
-
-        processor = null;
-        model = null;
-        artifact = null;
-        reporter = null;
-        super.tearDown();
     }
 
     public void testNullArtifactFile()
@@ -139,10 +130,7 @@ public class DuplicateArtifactFileReportProcessorTest
         assertEquals( "Check no failures", 1, reporter.getFailures() );
     }
 
-    private Artifact createArtifact( String groupId,
-                                     String artifactId,
-                                     String baseVersion,
-                                     String version,
+    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,
                                      String type )
     {
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );

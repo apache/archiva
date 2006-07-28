@@ -16,6 +16,7 @@ package org.apache.maven.repository.scheduler;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
@@ -23,15 +24,15 @@ import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.DiscovererException;
-import org.apache.maven.repository.discovery.MetadataDiscoverer;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
-import org.apache.maven.repository.indexing.MetadataRepositoryIndex;
-import org.apache.maven.repository.indexing.RepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.indexing.record.RepositoryIndexRecordFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class IndexerTask
     /**
      * @plexus.requirement
      */
-    private RepositoryIndexingFactory indexFactory;
+    private RepositoryArtifactIndexFactory indexFactory;
 
     /**
      * @plexus.requirement
@@ -68,9 +69,9 @@ public class IndexerTask
     private Map artifactDiscoverers;
 
     /**
-     * @plexus.requirement role="org.apache.maven.repository.discovery.MetadataDiscoverer"
+     * @plexus.requirement role-hint="standard"
      */
-    private Map metadataDiscoverers;
+    private RepositoryIndexRecordFactory recordFactory;
 
     public void execute()
         throws TaskExecutionException
@@ -112,15 +113,6 @@ public class IndexerTask
                 getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
                 indexArtifact( artifacts, indexPath, defaultRepository );
             }
-
-            MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
-            List metadataList =
-                metadataDiscoverer.discoverMetadata( defaultRepository, "indexer", blacklistedPatterns );
-            if ( !metadataList.isEmpty() )
-            {
-                getLogger().info( "Indexing " + metadataList.size() + " new metadata files" );
-                indexMetadata( metadataList, indexPath, defaultRepository );
-            }
         }
         catch ( RepositoryIndexException e )
         {
@@ -153,8 +145,8 @@ public class IndexerTask
         try
         {
             ArtifactRepository repository = repoFactory.createRepository( configuration );
-            RepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
-            if ( !artifactIndex.indexExists() )
+            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath, repository );
+            if ( !artifactIndex.exists() )
             {
                 execute( configuration, indexPath );
             }
@@ -165,32 +157,16 @@ public class IndexerTask
         }
     }
 
-    /**
-     * Index the artifacts in the list
-     *
-     * @param artifacts  the artifacts to be indexed
-     * @param indexPath  the path to the index file
-     * @param repository the repository where the artifacts are located
-     */
-    protected void indexArtifact( List artifacts, File indexPath, ArtifactRepository repository )
+    private void indexArtifact( List artifacts, File indexPath, ArtifactRepository repository )
         throws RepositoryIndexException
     {
-        ArtifactRepositoryIndex artifactIndex = indexFactory.createArtifactRepositoryIndex( indexPath, repository );
-        artifactIndex.indexArtifacts( artifacts );
-        artifactIndex.optimize();
-    }
-
-    /**
-     * Index the metadata in the list
-     *
-     * @param metadataList the metadata to be indexed
-     * @param indexPath    the path to the index file
-     */
-    protected void indexMetadata( List metadataList, File indexPath, ArtifactRepository repository )
-        throws RepositoryIndexException
-    {
-        MetadataRepositoryIndex metadataIndex = indexFactory.createMetadataRepositoryIndex( indexPath, repository );
-        metadataIndex.indexMetadata( metadataList );
-        metadataIndex.optimize();
+        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath, repository );
+        List records = new ArrayList();
+        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
+        {
+            Artifact a = (Artifact) i.next();
+            records.add( recordFactory.createRecord( a ) );
+        }
+        artifactIndex.indexRecords( records );
     }
 }

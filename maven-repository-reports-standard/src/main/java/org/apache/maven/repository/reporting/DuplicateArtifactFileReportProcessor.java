@@ -16,25 +16,26 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.repository.digest.Digester;
 import org.apache.maven.repository.digest.DigesterException;
-import org.apache.maven.repository.indexing.RepositoryIndex;
-import org.apache.maven.repository.indexing.RepositoryIndexException;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
-import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.SearchResult;
-import org.apache.maven.repository.indexing.query.SingleTermQuery;
+import org.apache.maven.repository.indexing.lucene.LuceneQuery;
+import org.apache.maven.repository.indexing.record.StandardArtifactIndexRecord;
+import org.apache.maven.repository.indexing.record.StandardIndexRecordFields;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * Validates an artifact file for duplicates within the same groupId based from what's available in a RepositoryIndex
+ * Validates an artifact file for duplicates within the same groupId based from what's available in a repository index.
  *
  * @author Edwin Punzalan
  * @plexus.component role="org.apache.maven.repository.reporting.ArtifactReportProcessor" role-hint="duplicate"
@@ -50,20 +51,12 @@ public class DuplicateArtifactFileReportProcessor
     /**
      * @plexus.requirement
      */
-    private RepositoryIndexingFactory indexFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryIndexSearchLayer searchLayer;
+    private RepositoryArtifactIndexFactory indexFactory;
 
     /**
      * @plexus.configuration
      */
     private String indexDirectory;
-
-    //@todo configurable?
-    private String algorithm = RepositoryIndex.FLD_MD5;
 
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
@@ -71,20 +64,12 @@ public class DuplicateArtifactFileReportProcessor
     {
         if ( artifact.getFile() != null )
         {
-            RepositoryIndex index;
-            try
-            {
-                index = indexFactory.createArtifactRepositoryIndex( new File( indexDirectory ), repository );
-            }
-            catch ( RepositoryIndexException e )
-            {
-                throw new ReportProcessorException( "Unable to create RepositoryIndex instance", e );
-            }
+            RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ), repository );
 
             String checksum;
             try
             {
-                checksum = digester.createChecksum( artifact.getFile(), algorithm );
+                checksum = digester.createChecksum( artifact.getFile(), Digester.MD5 );
             }
             catch ( DigesterException e )
             {
@@ -93,7 +78,8 @@ public class DuplicateArtifactFileReportProcessor
 
             try
             {
-                List results = searchLayer.searchAdvanced( new SingleTermQuery( algorithm, checksum.trim() ), index );
+                List results = index.search( new LuceneQuery(
+                    new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
 
                 if ( results.isEmpty() )
                 {
@@ -101,23 +87,20 @@ public class DuplicateArtifactFileReportProcessor
                 }
                 else
                 {
-                    String id = artifact.getId();
-
                     boolean hasDuplicates = false;
-                    for ( Iterator hits = results.iterator(); hits.hasNext(); )
+                    for ( Iterator i = results.iterator(); i.hasNext(); )
                     {
-                        SearchResult result = (SearchResult) hits.next();
-                        Artifact artifactMatch = result.getArtifact();
+                        StandardArtifactIndexRecord result = (StandardArtifactIndexRecord) i.next();
 
                         //make sure it is not the same artifact
-                        if ( !id.equals( artifactMatch.getId() ) )
+                        if ( !result.getFilename().equals( repository.pathOf( artifact ) ) )
                         {
                             //report only duplicates from the same groupId
                             String groupId = artifact.getGroupId();
-                            if ( groupId.equals( artifactMatch.getGroupId() ) )
+                            if ( groupId.equals( result.getGroupId() ) )
                             {
                                 hasDuplicates = true;
-                                reporter.addFailure( artifact, "Found duplicate for " + artifactMatch.getId() );
+                                reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
                             }
                         }
                     }

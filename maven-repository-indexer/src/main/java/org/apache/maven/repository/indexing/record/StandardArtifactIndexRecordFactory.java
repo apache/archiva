@@ -133,21 +133,36 @@ public class StandardArtifactIndexRecordFactory
                                              artifact.getRepository().pathOf( pomArtifact ) );
                     if ( pomFile.exists() )
                     {
-                        populatePomEntries( readPom( pomArtifact, artifact.getRepository() ), record );
+                        try
+                        {
+                            populatePomEntries( readPom( pomArtifact, artifact.getRepository() ), record );
+                        }
+                        catch ( ProjectBuildingException e )
+                        {
+                            getLogger().error( "Error reading POM file, not populating in index: " + e.getMessage() );
+                        }
                     }
                 }
                 else
                 {
-                    Model model = readPom( artifact, artifact.getRepository() );
+                    Model model;
+                    try
+                    {
+                        model = readPom( artifact, artifact.getRepository() );
 
-                    if ( !"pom".equals( model.getPackaging() ) )
-                    {
-                        // Don't return a record for a POM that is does not belong on its own
-                        record = null;
+                        if ( !"pom".equals( model.getPackaging() ) )
+                        {
+                            // Don't return a record for a POM that is does not belong on its own
+                            record = null;
+                        }
+                        else
+                        {
+                            populatePomEntries( model, record );
+                        }
                     }
-                    else
+                    catch ( ProjectBuildingException e )
                     {
-                        populatePomEntries( model, record );
+                        getLogger().error( "Error reading POM file, not populating in index: " + e.getMessage() );
                     }
                 }
             }
@@ -172,20 +187,11 @@ public class StandardArtifactIndexRecordFactory
     }
 
     private Model readPom( Artifact artifact, ArtifactRepository repository )
-        throws RepositoryIndexException
+        throws RepositoryIndexException, ProjectBuildingException
     {
         // TODO: will this pollute with local repo metadata?
-        Model model;
-        try
-        {
-            MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
-            model = project.getModel();
-        }
-        catch ( ProjectBuildingException e )
-        {
-            throw new RepositoryIndexException( "Unable to read project: " + e.getMessage(), e );
-        }
-        return model;
+        MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
+        return project.getModel();
     }
 
     private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )

@@ -1,5 +1,3 @@
-<%@ taglib uri="/webwork" prefix="ww" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -15,6 +13,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
+<%@ taglib uri="/webwork" prefix="ww" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>
 <head>
@@ -42,11 +43,17 @@
           --%>
         </tr>
         <ww:set name="searchResults" value="searchResults" />
-        <c:forEach items="${searchResults}" var="result" varStatus="i">
+        <c:forEach items="${searchResults}" var="record" varStatus="i">
           <tr class="${i.index % 2 == 0 ? "b" : "a"}">
-            <td><c:out value="${result.artifact.groupId}" /></td>
-            <td><c:out value="${result.artifact.artifactId}" /></td>
-            <td><c:out value="${result.artifact.version}" /></td>
+            <td>
+              <c:out value="${record.groupId}" />
+            </td>
+            <td>
+              <c:out value="${record.artifactId}" />
+            </td>
+            <td>
+              <c:out value="${record.version}" />
+            </td>
               <%-- TODO: hits
             <td>
               <table border="1px" width="100%" cellspacing="0">

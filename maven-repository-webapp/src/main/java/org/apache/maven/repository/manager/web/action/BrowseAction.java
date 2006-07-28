@@ -17,30 +17,42 @@ package org.apache.maven.repository.manager.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
-import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
+import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
+import org.apache.maven.repository.indexing.lucene.LuceneQuery;
+import org.apache.maven.repository.indexing.record.StandardArtifactIndexRecord;
+import org.apache.maven.repository.indexing.record.StandardIndexRecordFields;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Browse the repository.
  *
- * @todo the tree part probably belongs in a browsing component, along with the methods currently in the indexer
+ * @todo the tree part probably belongs in a browsing component, and the indexer could optimize how it retrieves the terms rather than querying everything
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="browseAction"
  */
 public class BrowseAction
@@ -49,12 +61,7 @@ public class BrowseAction
     /**
      * @plexus.requirement
      */
-    private RepositoryIndexingFactory factory;
-
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryIndexSearchLayer searchLayer;
+    private RepositoryArtifactIndexFactory factory;
 
     /**
      * @plexus.requirement
@@ -79,11 +86,11 @@ public class BrowseAction
     private List versions;
 
     public String browse()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException
+        throws ConfigurationStoreException, RepositoryIndexException, IOException, RepositoryIndexSearchException
     {
-        ArtifactRepositoryIndex index = getIndex();
+        RepositoryArtifactIndex index = getIndex();
 
-        if ( !index.indexExists() )
+        if ( !index.exists() )
         {
             addActionError( "The repository is not yet indexed. Please wait, and then try again." );
             return ERROR;
@@ -97,11 +104,11 @@ public class BrowseAction
     }
 
     public String browseGroup()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException
+        throws ConfigurationStoreException, RepositoryIndexException, IOException, RepositoryIndexSearchException
     {
-        ArtifactRepositoryIndex index = getIndex();
+        RepositoryArtifactIndex index = getIndex();
 
-        if ( !index.indexExists() )
+        if ( !index.exists() )
         {
             addActionError( "The repository is not yet indexed. Please wait, and then try again." );
             return ERROR;
@@ -135,15 +142,26 @@ public class BrowseAction
 
         this.groups = collateGroups( rootNode );
 
-        this.artifactIds = index.getArtifacts( groupId.replaceAll( GROUP_SEPARATOR, "." ) );
+        String groupId = this.groupId.replaceAll( GROUP_SEPARATOR, "." );
+        List records = index.search(
+            new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ) ) );
+
+        Set artifactIds = new HashSet();
+        for ( Iterator i = records.iterator(); i.hasNext(); )
+        {
+            StandardArtifactIndexRecord record = (StandardArtifactIndexRecord) i.next();
+            artifactIds.add( record.getArtifactId() );
+        }
+        this.artifactIds = new ArrayList( artifactIds );
+        Collections.sort( this.artifactIds );
 
         return SUCCESS;
     }
 
     public String browseArtifact()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException
+        throws ConfigurationStoreException, RepositoryIndexException, IOException, RepositoryIndexSearchException
     {
-        ArtifactRepositoryIndex index = getIndex();
+        RepositoryArtifactIndex index = getIndex();
 
         if ( StringUtils.isEmpty( groupId ) )
         {
@@ -159,26 +177,51 @@ public class BrowseAction
             return ERROR;
         }
 
-        versions = index.getVersions( groupId.replaceAll( GROUP_SEPARATOR, "." ), artifactId );
+        String groupId = this.groupId.replaceAll( GROUP_SEPARATOR, "." );
 
-        if ( versions.isEmpty() )
+        BooleanQuery query = new BooleanQuery();
+        query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
+                   BooleanClause.Occur.MUST );
+        query.add( new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, artifactId ) ),
+                   BooleanClause.Occur.MUST );
+
+        List records = index.search( new LuceneQuery( query ) );
+
+        if ( records.isEmpty() )
         {
             // TODO: i18n
             addActionError( "Could not find any artifacts with the given group and artifact ID" );
             return ERROR;
         }
 
+        Set versions = new HashSet();
+        for ( Iterator i = records.iterator(); i.hasNext(); )
+        {
+            StandardArtifactIndexRecord record = (StandardArtifactIndexRecord) i.next();
+            versions.add( record.getVersion() );
+        }
+
+        this.versions = new ArrayList( versions );
+        Collections.sort( this.versions );
+
         return SUCCESS;
     }
 
-    private GroupTreeNode buildGroupTree( ArtifactRepositoryIndex index )
-        throws IOException
+    private GroupTreeNode buildGroupTree( RepositoryArtifactIndex index )
+        throws IOException, RepositoryIndexSearchException
     {
         // TODO: give action message if indexing is in progress
 
         // TODO: this will be inefficient over a very large number of artifacts, should be cached
 
-        List groups = index.enumerateGroupIds();
+        List records = index.search( new LuceneQuery( new MatchAllDocsQuery() ) );
+
+        Set groups = new TreeSet();
+        for ( Iterator i = records.iterator(); i.hasNext(); )
+        {
+            StandardArtifactIndexRecord record = (StandardArtifactIndexRecord) i.next();
+            groups.add( record.getGroupId() );
+        }
 
         GroupTreeNode rootNode = new GroupTreeNode();
 
@@ -227,7 +270,7 @@ public class BrowseAction
         return groups;
     }
 
-    private ArtifactRepositoryIndex getIndex()
+    private RepositoryArtifactIndex getIndex()
         throws ConfigurationStoreException, RepositoryIndexException
     {
         Configuration configuration = configurationStore.getConfigurationFromStore();
@@ -235,7 +278,7 @@ public class BrowseAction
 
         ArtifactRepository repository = repositoryFactory.createRepository( configuration );
 
-        return factory.createArtifactRepositoryIndex( indexPath, repository );
+        return factory.createStandardIndex( indexPath, repository );
     }
 
     public List getGroups()

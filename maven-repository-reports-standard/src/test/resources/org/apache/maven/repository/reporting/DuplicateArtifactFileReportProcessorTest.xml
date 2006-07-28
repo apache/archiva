@@ -9,10 +9,7 @@
           <role>org.apache.maven.repository.digest.Digester</role>
         </requirement>
         <requirement>
-          <role>org.apache.maven.repository.indexing.RepositoryIndexingFactory</role>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.repository.indexing.RepositoryIndexSearchLayer</role>
+          <role>org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory</role>
         </requirement>
       </requirements>
       <configuration>

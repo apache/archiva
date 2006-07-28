@@ -17,17 +17,22 @@ package org.apache.maven.repository.manager.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.repository.indexing.ArtifactRepositoryIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
+import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
-import org.apache.maven.repository.indexing.RepositoryIndexSearchLayer;
-import org.apache.maven.repository.indexing.RepositoryIndexingFactory;
-import org.apache.maven.repository.indexing.query.SingleTermQuery;
+import org.apache.maven.repository.indexing.lucene.LuceneQuery;
+import org.apache.maven.repository.indexing.record.StandardIndexRecordFields;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -59,12 +64,7 @@ public class SearchAction
     /**
      * @plexus.requirement
      */
-    private RepositoryIndexingFactory factory;
-
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryIndexSearchLayer searchLayer;
+    private RepositoryArtifactIndexFactory factory;
 
     /**
      * @plexus.requirement
@@ -78,21 +78,27 @@ public class SearchAction
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
-        ConfigurationStoreException
+        ConfigurationStoreException, ParseException
     {
         // TODO: give action message if indexing is in progress
 
         assert q != null && q.length() != 0;
 
-        ArtifactRepositoryIndex index = getIndex();
+        RepositoryArtifactIndex index = getIndex();
 
-        if ( !index.indexExists() )
+        if ( !index.exists() )
         {
             addActionError( "The repository is not yet indexed. Please wait, and then try again." );
             return ERROR;
         }
 
-        searchResults = searchLayer.searchGeneral( q, index );
+        // TODO! this is correct, but ugly
+        MultiFieldQueryParser parser = new MultiFieldQueryParser( new String[]{StandardIndexRecordFields.GROUPID,
+            StandardIndexRecordFields.ARTIFACTID, StandardIndexRecordFields.BASE_VERSION,
+            StandardIndexRecordFields.CLASSIFIER, StandardIndexRecordFields.CLASSES, StandardIndexRecordFields.FILES,
+            StandardIndexRecordFields.TYPE, StandardIndexRecordFields.PROJECT_NAME,
+            StandardIndexRecordFields.PROJECT_DESCRIPTION}, new StandardAnalyzer() );
+        searchResults = index.search( new LuceneQuery( parser.parse( q ) ) );
 
         return SUCCESS;
     }
@@ -104,20 +110,21 @@ public class SearchAction
 
         assert md5 != null && md5.length() != 0;
 
-        ArtifactRepositoryIndex index = getIndex();
+        RepositoryArtifactIndex index = getIndex();
 
-        if ( !index.indexExists() )
+        if ( !index.exists() )
         {
             addActionError( "The repository is not yet indexed. Please wait, and then try again." );
             return ERROR;
         }
 
-        searchResults = searchLayer.searchAdvanced( new SingleTermQuery( "md5", md5 ), index );
+        searchResults = index.search(
+            new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.MD5, md5.toLowerCase() ) ) ) );
 
         return SUCCESS;
     }
 
-    private ArtifactRepositoryIndex getIndex()
+    private RepositoryArtifactIndex getIndex()
         throws ConfigurationStoreException, RepositoryIndexException
     {
         Configuration configuration = configurationStore.getConfigurationFromStore();
@@ -125,7 +132,7 @@ public class SearchAction
 
         ArtifactRepository repository = repositoryFactory.createRepository( configuration );
 
-        return factory.createArtifactRepositoryIndex( indexPath, repository );
+        return factory.createStandardIndex( indexPath, repository );
     }
 
     public String doInput()
