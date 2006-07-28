@@ -241,6 +241,62 @@ public class LuceneStandardArtifactIndexTest
         }
     }
 
+    public void testDeleteRecordInIndex()
+        throws IOException, RepositoryIndexException
+    {
+        createEmptyIndex();
+
+        Artifact artifact = createArtifact( "test-jar" );
+
+        RepositoryIndexRecord record = recordFactory.createRecord( artifact );
+        index.indexRecords( Collections.singletonList( record ) );
+
+        index.deleteRecords( Collections.singletonList( record ) );
+
+        IndexReader reader = IndexReader.open( indexLocation );
+        try
+        {
+            assertEquals( "No documents", 0, reader.numDocs() );
+        }
+        finally
+        {
+            reader.close();
+        }
+    }
+
+    public void testDeleteRecordNotInIndex()
+        throws IOException, RepositoryIndexException
+    {
+        createEmptyIndex();
+
+        Artifact artifact = createArtifact( "test-jar" );
+
+        RepositoryIndexRecord record = recordFactory.createRecord( artifact );
+
+        index.deleteRecords( Collections.singletonList( record ) );
+
+        IndexReader reader = IndexReader.open( indexLocation );
+        try
+        {
+            assertEquals( "No documents", 0, reader.numDocs() );
+        }
+        finally
+        {
+            reader.close();
+        }
+    }
+
+    public void testDeleteRecordNoIndex()
+        throws IOException, RepositoryIndexException
+    {
+        Artifact artifact = createArtifact( "test-jar" );
+
+        RepositoryIndexRecord record = recordFactory.createRecord( artifact );
+        index.deleteRecords( Collections.singleton( record ) );
+
+        assertFalse( index.exists() );
+    }
+
     private Artifact createArtifact( String artifactId )
     {
         return createArtifact( artifactId, "1.0", "jar" );

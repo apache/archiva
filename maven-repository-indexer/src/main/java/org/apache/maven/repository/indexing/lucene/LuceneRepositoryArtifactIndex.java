@@ -68,14 +68,7 @@ public class LuceneRepositoryArtifactIndex
     public void indexRecords( Collection records )
         throws RepositoryIndexException
     {
-        try
-        {
-            deleteRecords( records );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Failed to delete an index document", e );
-        }
+        deleteRecords( records );
 
         addRecords( records );
     }
@@ -141,8 +134,8 @@ public class LuceneRepositoryArtifactIndex
         return new StandardAnalyzer();
     }
 
-    private void deleteRecords( Collection records )
-        throws IOException, RepositoryIndexException
+    public void deleteRecords( Collection records )
+        throws RepositoryIndexException
     {
         if ( exists() )
         {
@@ -163,11 +156,15 @@ public class LuceneRepositoryArtifactIndex
                     }
                 }
             }
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
+            }
             finally
             {
                 if ( indexReader != null )
                 {
-                    indexReader.close();
+                    closeQuietly( indexReader );
                 }
             }
         }
@@ -252,6 +249,21 @@ public class LuceneRepositoryArtifactIndex
             if ( searcher != null )
             {
                 searcher.close();
+            }
+        }
+        catch ( IOException e )
+        {
+            // ignore
+        }
+    }
+
+    private static void closeQuietly( IndexReader reader )
+    {
+        try
+        {
+            if ( reader != null )
+            {
+                reader.close();
             }
         }
         catch ( IOException e )

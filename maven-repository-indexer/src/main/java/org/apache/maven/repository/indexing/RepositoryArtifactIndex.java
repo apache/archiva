@@ -57,4 +57,12 @@ public interface RepositoryArtifactIndex
      */
     boolean exists()
         throws RepositoryIndexException;
+
+    /**
+     * Delete records from the index. Simply ignore the request any did not exist.
+     *
+     * @param records the records to delete
+     */
+    void deleteRecords( Collection records )
+        throws RepositoryIndexException;
 }
