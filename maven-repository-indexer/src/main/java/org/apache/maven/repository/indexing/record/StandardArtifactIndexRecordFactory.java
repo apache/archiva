@@ -75,6 +75,9 @@ public class StandardArtifactIndexRecordFactory
 
     private static final String ARCHETYPE_METADATA_NAME = "META-INF/maven/archetype.xml";
 
+    // some current/old archetypes have the archetype.xml at different location.
+    private static final String ARCHETYPE_METADATA_NAME_OLD = "META-INF/archetype.xml";
+
     public RepositoryIndexRecord createRecord( Artifact artifact )
         throws RepositoryIndexException
     {
@@ -217,7 +220,7 @@ public class StandardArtifactIndexRecordFactory
                 {
                     populatePluginEntries( readXmlMetadataFileInJar( artifactFile, PLUGIN_METADATA_NAME ), record );
                 }
-                else if ( ARCHETYPE_METADATA_NAME.equals( name ) )
+                else if ( ARCHETYPE_METADATA_NAME.equals( name ) || ARCHETYPE_METADATA_NAME_OLD.equals( name ) )
                 {
                     populateArchetypeEntries( record );
                 }
