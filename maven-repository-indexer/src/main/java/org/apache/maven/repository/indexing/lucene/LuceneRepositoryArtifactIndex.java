@@ -101,6 +101,8 @@ public class LuceneRepositoryArtifactIndex
                     indexWriter.addDocument( document );
                 }
             }
+
+            indexWriter.optimize();
         }
         catch ( IOException e )
         {
