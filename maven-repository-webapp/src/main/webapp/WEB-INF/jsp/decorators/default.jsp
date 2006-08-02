@@ -36,12 +36,19 @@
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
 <div id="banner">
   <span id="bannerLeft">
-    <%--
-        <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
-    --%>
+    <a href="http://maven.apache.org/repository-manager/">
+      <img src="http://maven.apache.org/images/maven.jpg" alt="" width="267" height="70" />
+      <%-- TODO: logo instead
+            <img src="http://ci.codehaus.org/continuum_logo_75.gif" alt="" width="188" height="89" />
+      --%>
+    </a>
   </span>
   <span id="bannerRight">
-    <!-- img src="..." alt="" /> -->
+    <%-- TODO: configured corporate banner
+        <a href="http://www.apache.org/">
+          <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
+        </a>
+    --%>
   </span>
 
   <div class="clear">
@@ -50,12 +57,14 @@
 </div>
 
 <div id="breadcrumbs">
-
-
   <div class="xleft">
+    <%-- TODO: login --%>
   </div>
 
   <div class="xright">
+    <a href="http://maven.apache.org/repository-manager">Repository Manager</a> |
+    <a href="http://maven.apache.org/">Maven</a> |
+    <a href="http://www.apache.org/">Apache</a>
   </div>
 
   <div class="clear">
@@ -66,7 +75,6 @@
 <div id="leftColumn">
 
   <div id="navcolumn">
-
 
     <h5>Find</h5>
     <ul>
@@ -114,7 +122,6 @@
   <div id="contentBox">
     <decorator:body />
   </div>
-
 </div>
 
 <div class="clear">

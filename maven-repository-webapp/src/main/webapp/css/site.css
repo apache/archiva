@@ -25,7 +25,6 @@
 
 #contentArea {
     border: 1px solid black;
-    border-style: groove;
     margin-right: 15em;
     padding: 1em;
 }
@@ -59,19 +58,7 @@
     font-size: xx-small;
 }
 
-#notes {
-    border: double blue;
-    margin-top: 20px;
-    margin-right: 15em;
-    padding: 5px;
-}
-
-#notes p:first-child {
-    border-bottom: 1px solid blue;
-    font-weight: bold;
-    text-align: center;
-}
-
+/* TODO: remove if they aren't used
 #feed {
     float: right;
 }
@@ -106,6 +93,24 @@
 }
 
 .statusWarn {
+    color: orange;
+    font-weight: bold;
+}
+*/
+
+/* WebWork validation failures */
+.errorMessage {
+    color: red;
+    font-weight: bold;
+}
+
+.actionMessage {
+    font-weight: bold;
+}
+}
+    font-weight: bold;
+}
+sWarn {
     color: orange;
     font-weight: bold;
 }

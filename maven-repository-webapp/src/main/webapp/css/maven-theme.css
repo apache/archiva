@@ -23,6 +23,14 @@ body, td, select, input, li {
     font-size: 13px;
 }
 
+select, input {
+    font-size: x-small;
+}
+
+table {
+    width: auto;
+}
+
 code {
     font-family: Courier, monospace;
     font-size: 13px;
@@ -30,18 +38,6 @@ code {
 
 a {
     text-decoration: none;
-}
-
-a:link {
-    color: #36a;
-}
-
-a:visited {
-    color: #47a;
-}
-
-a:active, a:hover {
-    color: #69c;
 }
 
 #legend li.externalLink {
@@ -64,61 +60,23 @@ a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWin
     padding-right: 18px;
 }
 
-h2 {
-    padding: 4px 4px 4px 6px;
-    border: 1px solid #999;
-    color: #900;
-    background-color: #ddd;
-    font-weight: 900;
-    font-size: x-large;
-}
-
-h3 {
-    padding: 4px 4px 4px 6px;
-    border: 1px solid #aaa;
-    color: #900;
-    background-color: #eee;
-    font-weight: normal;
-    font-size: large;
-}
-
-h4 {
-    padding: 4px 4px 4px 6px;
-    border: 1px solid #bbb;
-    color: #900;
-    background-color: #fff;
-    font-weight: normal;
-    font-size: large;
-}
-
-h5 {
-    padding: 4px 4px 4px 6px;
-    color: #900;
-    font-size: normal;
-}
-
 p {
     line-height: 1.3em;
     font-size: small;
 }
 
 #breadcrumbs {
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    background-color: #ccc;
-}
-
-#leftColumn {
-    margin: 10px 0 0 5px;
-    border: 1px solid #999;
-    background-color: #eee;
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #999;
+    background-color: #F3B455;
+    padding: 2px 8px;
 }
 
 #navcolumn h5 {
-    font-size: smaller;
-    border-bottom: 1px solid #aaaaaa;
-    padding-top: 2px;
-    color: #000;
+    color: gray;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 10px 0px 1px 19px;
 }
 
 table.bodyTable th {
@@ -160,6 +118,25 @@ dt {
 
 #banner {
     border-bottom: 1px solid #fff;
+    padding: 8px;
+}
+
+#breadcrumbs a:link {
+    text-decoration: none;
+}
+
+#breadcrumbs a:visited {
+    text-decoration: none;
+    color: #333
+}
+
+#breadcrumbs a:hover {
+    text-decoration: none;
+    color: white
+}
+
+a:link {
+    color: #333;
 }
 
 .errormark, .warningmark, .donemark, .infomark {
@@ -176,5 +153,78 @@ dt {
 
 .infomark {
     background-image: url( ../images/icon_info_sml.gif );
+}
+
+#leftColumn {
+    padding: 4px 4px 4px 4px;
+    overflow: hidden;
+}
+
+#navcolumn {
+    padding: 6px 0 0 2px;
+}
+
+#navcolumn li {
+    font-size: 9px;
+    text-indent: 19px;
+    line-height: 24px;
+    height: 25px;
+    width: 161px;
+    background-image: url( ../images/super.gif );
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    display: block;
+    padding-left: 0;
+}
+
+#navcolumn li li {
+    padding-left: 16px;
+    background: none;
+    display: block;
+}
+
+#navcolumn li li a:hover {
+    color: black !important;
+    background: none;
+    display: block;
+}
+
+#navcolumn li li a:active {
+    color: red !important;
+    background: none;
+    display: block;
+}
+
+#navcolumn li.expanded {
+    background-image: url( ../images/super.gif );
+    height: inherit;
+}
+
+#navcolumn li a:link {
+    color: #666;
+    display: block;
+}
+
+#navcolumn li a:hover {
+    color: #fff !important;
+    background: url( ../images/super_hl.gif ) 0 -25px no-repeat;
+    display: block;
+}
+
+#navcolumn li a:active {
+    color: #fff !important;
+    background: url( ../images/super_hl.gif ) 0 -50px no-repeat;
+    display: block;
+}
+
+#navcolumn li a:visited {
+    color: #666;
+    display: block;
+}
+
+#footer {
+    background: url( ../images/footerborder.gif ) 0 5px repeat-x;
+    padding: 14px 4px 12px 4px;
+    margin-top: 2em;
 }
 
