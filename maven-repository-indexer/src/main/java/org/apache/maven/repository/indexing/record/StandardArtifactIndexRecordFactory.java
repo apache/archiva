@@ -192,6 +192,7 @@ public class StandardArtifactIndexRecordFactory
     private Model readPom( Artifact artifact, ArtifactRepository repository )
         throws RepositoryIndexException, ProjectBuildingException
     {
+        // TODO: this can create a -SNAPSHOT.pom when it didn't exist and a timestamped one did. This is harmless, but should be avoided
         // TODO: will this pollute with local repo metadata?
         MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
         return project.getModel();
