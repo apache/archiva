@@ -76,6 +76,12 @@ public class SearchAction
      */
     private ConfigurationStore configurationStore;
 
+    private static final String NO_RESULTS = "noResults";
+
+    private static final String RESULTS = "results";
+
+    private static final String ARTIFACT = "artifact";
+
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
         ConfigurationStoreException, ParseException
@@ -104,7 +110,7 @@ public class SearchAction
     }
 
     public String findArtifact()
-        throws ConfigurationStoreException, RepositoryIndexException, RepositoryIndexSearchException
+        throws Exception
     {
         // TODO: give action message if indexing is in progress
 
@@ -121,7 +127,18 @@ public class SearchAction
         searchResults = index.search(
             new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.MD5, md5.toLowerCase() ) ) ) );
 
-        return SUCCESS;
+        if ( searchResults.isEmpty() )
+        {
+            return NO_RESULTS;
+        }
+        if ( searchResults.size() == 1 )
+        {
+            return ARTIFACT;
+        }
+        else
+        {
+            return RESULTS;
+        }
     }
 
     private RepositoryArtifactIndex getIndex()
@@ -164,5 +181,4 @@ public class SearchAction
     {
         return searchResults;
     }
-
 }
