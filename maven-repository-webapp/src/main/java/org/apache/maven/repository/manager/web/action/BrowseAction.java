@@ -77,7 +77,7 @@ public class BrowseAction
 
     private String groupId;
 
-    private static final String GROUP_SEPARATOR = "/";
+    private static final String GROUP_SEPARATOR = ".";
 
     private List artifactIds;
 
@@ -142,7 +142,6 @@ public class BrowseAction
 
         this.groups = collateGroups( rootNode );
 
-        String groupId = this.groupId.replaceAll( GROUP_SEPARATOR, "." );
         List records = index.search(
             new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ) ) );
 
@@ -176,8 +175,6 @@ public class BrowseAction
             addActionError( "You must specify a artifact ID to browse" );
             return ERROR;
         }
-
-        String groupId = this.groupId.replaceAll( GROUP_SEPARATOR, "." );
 
         BooleanQuery query = new BooleanQuery();
         query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
@@ -230,7 +227,7 @@ public class BrowseAction
         {
             String groupId = (String) i.next();
 
-            StringTokenizer tok = new StringTokenizer( groupId, "." );
+            StringTokenizer tok = new StringTokenizer( groupId, GROUP_SEPARATOR );
 
             GroupTreeNode node = rootNode;
 

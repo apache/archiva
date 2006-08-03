@@ -28,6 +28,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Properties;
 
+/**
+ * @todo remove this!
+ */
 public class RepositoryProxyActionMapper
     extends DefaultActionMapper
 {
