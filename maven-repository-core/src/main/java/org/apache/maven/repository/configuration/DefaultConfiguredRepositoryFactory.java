@@ -65,4 +65,10 @@ public class DefaultConfiguredRepositoryFactory
 
         return repositories;
     }
+
+    public ArtifactRepository createLocalRepository( Configuration configuration )
+    {
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( "default" );
+        return repoFactory.createArtifactRepository( "local", configuration.getLocalRepository(), layout, null, null );
+    }
 }

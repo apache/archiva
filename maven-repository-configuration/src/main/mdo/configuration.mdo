@@ -25,6 +25,14 @@
           </association>
         </field>
         <field>
+          <name>localRepository</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The location of the local repository.
+          </description>
+        </field>
+        <field>
           <name>indexPath</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -67,6 +75,11 @@
         <codeSegment>
           <version>1.0.0</version>
           <code><![CDATA[
+    public Configuration()
+    {
+        localRepository = new java.io.File( System.getProperty( "user.home" ), ".m2/repository" ).getAbsolutePath();
+    }
+
     public boolean isValid()
     {
         boolean valid = true;

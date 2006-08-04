@@ -44,4 +44,12 @@ public interface ConfiguredRepositoryFactory
      * @return the artifact repositories
      */
     List createRepositories( Configuration configuration );
+
+    /**
+     * Create a local repository from the given configuration.
+     *
+     * @param configuration the configuration
+     * @return the local artifact repository
+     */
+    ArtifactRepository createLocalRepository( Configuration configuration );
 }

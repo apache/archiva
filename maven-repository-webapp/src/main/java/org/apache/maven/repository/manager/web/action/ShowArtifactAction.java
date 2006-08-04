@@ -28,11 +28,9 @@ import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.repository.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -101,21 +99,12 @@ public class ShowArtifactAction
 
         Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
         // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
-        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, getLocalRepository() );
+        ArtifactRepository localRepository = repositoryFactory.createLocalRepository( configuration );
+        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, localRepository );
 
         model = project.getModel();
 
         return SUCCESS;
-    }
-
-    private ArtifactRepository getLocalRepository()
-        throws IOException
-    {
-        // TODO: do we want this to be configurable?
-        RepositoryConfiguration configuration = new RepositoryConfiguration();
-        configuration.setId( "local" );
-        configuration.setDirectory( File.createTempFile( "repository", "local" ).getAbsolutePath() );
-        return repositoryFactory.createRepository( configuration );
     }
 
     public Model getModel()
