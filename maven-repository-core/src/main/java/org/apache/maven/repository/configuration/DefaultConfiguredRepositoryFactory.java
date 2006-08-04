@@ -51,8 +51,7 @@ public class DefaultConfiguredRepositoryFactory
         String repoDir = repositoryDirectory.toURI().toString();
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
-        // TODO! real ID
-        return repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
+        return repoFactory.createArtifactRepository( configuration.getId(), repoDir, layout, null, null );
     }
 
     public List createRepositories( Configuration configuration )

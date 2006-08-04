@@ -19,6 +19,7 @@ package org.apache.maven.repository.manager.web.action;
 import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -27,9 +28,11 @@ import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
+import org.apache.maven.repository.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -98,11 +101,21 @@ public class ShowArtifactAction
 
         Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
         // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
-        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, null );
+        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, getLocalRepository() );
 
         model = project.getModel();
 
         return SUCCESS;
+    }
+
+    private ArtifactRepository getLocalRepository()
+        throws IOException
+    {
+        // TODO: do we want this to be configurable?
+        RepositoryConfiguration configuration = new RepositoryConfiguration();
+        configuration.setId( "local" );
+        configuration.setDirectory( File.createTempFile( "repository", "local" ).getAbsolutePath() );
+        return repositoryFactory.createRepository( configuration );
     }
 
     public Model getModel()
