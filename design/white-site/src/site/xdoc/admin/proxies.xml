@@ -51,13 +51,13 @@
           <tr>
             <th>Snapshots</th>
             <td>
-              <span style="statusFailed">DISABLED</span>
+              <span class="statusFailed">DISABLED</span>
             </td>
           </tr>
           <tr>
             <th>Releases</th>
             <td>
-              <span style="statusOk">ENABLED</span>
+              <span class="statusOk">ENABLED</span>
             </td>
           </tr>
           <tr>
@@ -96,14 +96,14 @@
           <tr>
             <th>Snapshots</th>
             <td>
-              <span style="statusOk">ENABLED</span>
+              <span class="statusOk">ENABLED</span>
               : updated hourly
             </td>
           </tr>
           <tr>
             <th>Releases</th>
             <td>
-              <span style="statusOk">ENABLED</span>
+              <span class="statusOk">ENABLED</span>
             </td>
           </tr>
           <tr>

@@ -56,13 +56,13 @@
           <tr>
             <th>Snapshots Included</th>
             <td>
-              <span style="statusFailed">NO</span>
+              <span class="statusFailed">NO</span>
             </td>
           </tr>
           <tr>
             <th>Indexed</th>
             <td>
-              <span style="statusOk">YES</span>
+              <span class="statusOk">YES</span>
             </td>
           </tr>
         </table>
@@ -94,13 +94,13 @@
           <tr>
             <th>Snapshots Included</th>
             <td>
-              <span style="statusOk">YES</span>
+              <span class="statusOk">YES</span>
             </td>
           </tr>
           <tr>
             <th>Indexed</th>
             <td>
-              <span style="statusFailed">NO</span>
+              <span class="statusFailed">NO</span>
             </td>
           </tr>
         </table>
@@ -117,10 +117,8 @@
       <ul>
         <li>What do we want here? Should some be in separate pages?</li>
         <ul>
-          <li>Proxy setup</li>
           <li>Job control</li>
         </ul>
-        <li>Expect these to be manually configured in v1.0.</li>
       </ul>
     </div>
   </body>
