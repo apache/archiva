@@ -3,6 +3,10 @@
   <bannerLeft>
     <src>http://www.apache.org/images/asf_logo_wide.gif</src>
   </bannerLeft>
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-application-skin</artifactId>
+  </skin>
   <body>
     <menu name="Find">
       <item name="Search" href="/index.html"/>
@@ -13,7 +17,8 @@
       <item name="Reports" href="/reports.html"/>
       <item name="Synchronisation" href="/sync.html"/>
       <item name="Administration" href="/admin/index.html">
-        <item name="Configuration" href="/admin/config.html"/>
+        <item name="Proxied Repositories" href="/admin/proxies.html"/>
+        <item name="Synced Repositories" href="/admin/sync.html"/>
       </item>
     </menu>
   </body>
