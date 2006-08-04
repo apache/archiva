@@ -18,6 +18,8 @@ package org.apache.maven.repository.configuration;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
+import java.util.List;
+
 /**
  * Create an artifact repository from the given configuration.
  *
@@ -31,6 +33,15 @@ public interface ConfiguredRepositoryFactory
      * Create an artifact repository from the given configuration.
      *
      * @param configuration the configuration
+     * @return the artifact repository
      */
-    ArtifactRepository createRepository( Configuration configuration );
+    ArtifactRepository createRepository( RepositoryConfiguration configuration );
+
+    /**
+     * Create artifact repositories from the given configuration.
+     *
+     * @param configuration the configuration containing the repositories
+     * @return the artifact repositories
+     */
+    List createRepositories( Configuration configuration );
 }

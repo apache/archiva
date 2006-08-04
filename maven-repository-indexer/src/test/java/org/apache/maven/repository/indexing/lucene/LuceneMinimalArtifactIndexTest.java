@@ -89,7 +89,7 @@ public class LuceneMinimalArtifactIndexTest
 
         FileUtils.deleteDirectory( indexLocation );
 
-        index = factory.createMinimalIndex( indexLocation, repository );
+        index = factory.createMinimalIndex( indexLocation );
     }
 
     public void testIndexExists()

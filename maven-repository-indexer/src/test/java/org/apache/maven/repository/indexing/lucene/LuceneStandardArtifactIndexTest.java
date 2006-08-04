@@ -89,7 +89,7 @@ public class LuceneStandardArtifactIndexTest
 
         FileUtils.deleteDirectory( indexLocation );
 
-        index = factory.createStandardIndex( indexLocation, repository );
+        index = factory.createStandardIndex( indexLocation );
     }
 
     public void testIndexExists()

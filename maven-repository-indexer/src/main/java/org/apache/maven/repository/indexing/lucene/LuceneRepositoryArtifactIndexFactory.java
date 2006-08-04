@@ -16,7 +16,6 @@ package org.apache.maven.repository.indexing.lucene;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory;
 
@@ -31,12 +30,12 @@ import java.io.File;
 public class LuceneRepositoryArtifactIndexFactory
     implements RepositoryArtifactIndexFactory
 {
-    public RepositoryArtifactIndex createStandardIndex( File indexPath, ArtifactRepository repository )
+    public RepositoryArtifactIndex createStandardIndex( File indexPath )
     {
         return new LuceneRepositoryArtifactIndex( indexPath, new LuceneStandardIndexRecordConverter() );
     }
 
-    public RepositoryArtifactIndex createMinimalIndex( File indexPath, ArtifactRepository repository )
+    public RepositoryArtifactIndex createMinimalIndex( File indexPath )
     {
         return new LuceneRepositoryArtifactIndex( indexPath, new LuceneMinimalIndexRecordConverter() );
     }

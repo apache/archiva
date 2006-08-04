@@ -22,6 +22,7 @@ import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
+import org.apache.maven.repository.configuration.RepositoryConfiguration;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.repository.indexing.RepositoryArtifactIndex;
@@ -99,19 +100,28 @@ public class IndexerTask
 
         try
         {
-            String blacklistedPatterns = configuration.getDiscoveryBlackListPatterns();
-            boolean includeSnapshots = configuration.isDiscoverSnapshots();
-
-            ArtifactRepository defaultRepository = repoFactory.createRepository( configuration );
-
-            String layoutProperty = configuration.getRepositoryLayout();
-            ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
-            List artifacts =
-                discoverer.discoverArtifacts( defaultRepository, "indexer", blacklistedPatterns, includeSnapshots );
-            if ( !artifacts.isEmpty() )
+            for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
             {
-                getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
-                indexArtifact( artifacts, indexPath, defaultRepository );
+                RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
+
+                if ( repositoryConfiguration.isIndexed() )
+                {
+                    // TODO! include global ones
+                    String blacklistedPatterns = repositoryConfiguration.getBlackListPatterns();
+                    boolean includeSnapshots = repositoryConfiguration.isIncludeSnapshots();
+
+                    ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
+
+                    String layoutProperty = repositoryConfiguration.getLayout();
+                    ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
+                    List artifacts =
+                        discoverer.discoverArtifacts( repository, "indexer", blacklistedPatterns, includeSnapshots );
+                    if ( !artifacts.isEmpty() )
+                    {
+                        getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
+                        indexArtifact( artifacts, indexPath );
+                    }
+                }
             }
         }
         catch ( RepositoryIndexException e )
@@ -144,8 +154,7 @@ public class IndexerTask
 
         try
         {
-            ArtifactRepository repository = repoFactory.createRepository( configuration );
-            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath, repository );
+            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
             if ( !artifactIndex.exists() )
             {
                 execute( configuration, indexPath );
@@ -157,10 +166,10 @@ public class IndexerTask
         }
     }
 
-    private void indexArtifact( List artifacts, File indexPath, ArtifactRepository repository )
+    private void indexArtifact( List artifacts, File indexPath )
         throws RepositoryIndexException
     {
-        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath, repository );
+        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
         List records = new ArrayList();
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {

@@ -26,7 +26,6 @@ import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.InvalidConfigurationException;
 import org.apache.maven.repository.indexing.RepositoryIndexException;
 import org.apache.maven.repository.indexing.RepositoryIndexSearchException;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,31 +54,15 @@ public class ConfigureAction
         InvalidConfigurationException, ConfigurationChangeException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
+        // TODO: if this is changed, do we move the index or recreate it?
 
         // Normalize the path
-        File file = new File( configuration.getRepositoryDirectory() );
-        configuration.setRepositoryDirectory( file.getCanonicalPath() );
+        File file = new File( configuration.getIndexPath() );
+        configuration.setIndexPath( file.getCanonicalPath() );
         if ( !file.exists() )
         {
             file.mkdirs();
             // TODO: error handling when this fails, or is not a directory
-        }
-
-        // TODO: these defaults belong in the model. They shouldn't be stored here, as you want them to re-default
-        // should the repository change even if these didn't
-
-        // TODO: if these are changed, do we move the index or recreate it?
-
-        // TODO: these should be on an advanced configuration form, not the standard one
-        if ( StringUtils.isEmpty( configuration.getIndexPath() ) )
-        {
-            configuration.setIndexPath(
-                new File( configuration.getRepositoryDirectory(), ".index" ).getAbsolutePath() );
-        }
-        if ( StringUtils.isEmpty( configuration.getMinimalIndexPath() ) )
-        {
-            configuration.setMinimalIndexPath(
-                new File( configuration.getRepositoryDirectory(), ".index-minimal" ).getAbsolutePath() );
         }
 
         // Just double checking that our validation routines line up with what is expected in the configuration
@@ -94,7 +77,7 @@ public class ConfigureAction
         return SUCCESS;
     }
 
-    public String doInput()
+    public String input()
     {
         return INPUT;
     }

@@ -21,6 +21,9 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,14 +45,25 @@ public class DefaultConfiguredRepositoryFactory
      */
     private ArtifactRepositoryFactory repoFactory;
 
-    public ArtifactRepository createRepository( Configuration configuration )
+    public ArtifactRepository createRepository( RepositoryConfiguration configuration )
     {
-        File repositoryDirectory = new File( configuration.getRepositoryDirectory() );
+        File repositoryDirectory = new File( configuration.getDirectory() );
         String repoDir = repositoryDirectory.toURI().toString();
 
-        ArtifactRepositoryLayout layout =
-            (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getRepositoryLayout() );
-        // TODO: real ID
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
+        // TODO! real ID
         return repoFactory.createArtifactRepository( "test", repoDir, layout, null, null );
+    }
+
+    public List createRepositories( Configuration configuration )
+    {
+        List repositories = new ArrayList( configuration.getRepositories().size() );
+
+        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+        {
+            repositories.add( createRepository( (RepositoryConfiguration) i.next() ) );
+        }
+
+        return repositories;
     }
 }

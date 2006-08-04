@@ -1,4 +1,4 @@
-<!--
+<%--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,32 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
-  -->
+  --%>
 
-<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
-    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<%@ taglib prefix="ww" uri="/webwork" %>
 
-<validators>
-  <field name="indexPath">
-    <field-validator type="requiredstring">
-      <message>You must enter the index directory.</message>
-    </field-validator>
-  </field>
-</validators>
+<html>
+<head>
+  <title>Configuration</title>
+  <ww:head />
+</head>
+
+<body>
+
+<h1>Configuration</h1>
+
+<div id="contentArea">
+
+  <h2>Add Managed Repository</h2>
+
+  <ww:actionmessage />
+  <ww:form method="post" action="addRepository" namespace="/admin" validate="true">
+    <ww:textfield name="id" label="Identifier" size="10" />
+    <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
+    <ww:checkbox name="indexed" fieldValue="true" value="true" label="Indexed" />
+    <ww:submit value="Add Repository" />
+  </ww:form>
+</div>
+
+</body>
+</html>

@@ -27,14 +27,12 @@
 <h1>Configuration</h1>
 
 <div id="contentArea">
-  <div id="searchBox">
-    <ww:actionmessage />
-    <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
-      <ww:textfield name="repositoryDirectory" label="Repository Directory" size="100" />
-      <ww:textfield name="indexerCronExpression" label="Indexing Cron Expression" />
-      <ww:submit value="Save Configuration" />
-    </ww:form>
-  </div>
+  <ww:actionmessage />
+  <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
+    <ww:textfield name="indexPath" label="Index Directory" size="100" />
+    <ww:textfield name="indexerCronExpression" label="Indexing Schedule" />
+    <ww:submit value="Save Configuration" />
+  </ww:form>
 </div>
 
 </body>

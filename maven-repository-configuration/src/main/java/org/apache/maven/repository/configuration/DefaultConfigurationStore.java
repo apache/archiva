@@ -87,7 +87,7 @@ public class DefaultConfigurationStore
             getLogger().info( "Reading configuration from " + file );
             try
             {
-                configuration = reader.read( fileReader );
+                configuration = reader.read( fileReader, false );
             }
             catch ( IOException e )
             {

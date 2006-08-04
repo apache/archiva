@@ -87,7 +87,7 @@ public class LuceneStandardArtifactIndexSearchTest
 
         FileUtils.deleteDirectory( indexLocation );
 
-        index = factory.createStandardIndex( indexLocation, repository );
+        index = factory.createStandardIndex( indexLocation );
 
         records.put( "test-jar", recordFactory.createRecord( createArtifact( "test-jar" ) ) );
         records.put( "test-jar-jdk14",

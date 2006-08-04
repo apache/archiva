@@ -43,7 +43,14 @@ public class ConfigurationInterceptor
 
         if ( !configuration.isValid() )
         {
-            return "config-needed";
+            if ( configuration.getRepositories().isEmpty() )
+            {
+                return "config-repository-needed";
+            }
+            else
+            {
+                return "config-needed";
+            }
         }
         else
         {

@@ -19,7 +19,6 @@ package org.apache.maven.repository.manager.web.action;
 import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -31,9 +30,8 @@ import org.apache.maven.repository.configuration.ConfiguredRepositoryFactory;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Browse the repository.
@@ -74,9 +72,6 @@ public class ShowArtifactAction
     public String execute()
         throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
-        ArtifactRepository repository = repositoryFactory.createRepository( configuration );
-
         if ( StringUtils.isEmpty( groupId ) )
         {
             // TODO: i18n
@@ -98,18 +93,12 @@ public class ShowArtifactAction
             return ERROR;
         }
 
-        Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
-        // TODO: is this going to be problematic because repository is remote format, but being used as local?
-        // TODO: should it try to use the repo manager as a remote repo, proxying out?
-        // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling
-        MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        List repositories = repositoryFactory.createRepositories( configuration );
 
-        if ( !new File( repository.getBasedir(), repository.pathOf( artifact ) ).exists() )
-        {
-            // TODO: i18n
-            addActionError( "The given artifact was not found in the repository" );
-            return ERROR;
-        }
+        Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
+        // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
+        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, null );
 
         model = project.getModel();
 

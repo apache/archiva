@@ -16,8 +16,6 @@ package org.apache.maven.repository.indexing;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-
 import java.io.File;
 
 /**
@@ -35,18 +33,16 @@ public interface RepositoryArtifactIndexFactory
     /**
      * Method to create an instance of the standard index.
      *
-     * @param indexPath  the path where the index will be created/updated
-     * @param repository the repository where the indexed artifacts are located
+     * @param indexPath the path where the index will be created/updated
      * @return the index instance
      */
-    RepositoryArtifactIndex createStandardIndex( File indexPath, ArtifactRepository repository );
+    RepositoryArtifactIndex createStandardIndex( File indexPath );
 
     /**
      * Method to create an instance of the minimal index.
      *
-     * @param indexPath  the path where the index will be created/updated
-     * @param repository the repository where the indexed artifacts are located
+     * @param indexPath the path where the index will be created/updated
      * @return the index instance
      */
-    RepositoryArtifactIndex createMinimalIndex( File indexPath, ArtifactRepository repository );
+    RepositoryArtifactIndex createMinimalIndex( File indexPath );
 }

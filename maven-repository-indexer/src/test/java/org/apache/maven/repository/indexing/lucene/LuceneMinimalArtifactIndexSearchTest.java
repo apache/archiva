@@ -84,7 +84,7 @@ public class LuceneMinimalArtifactIndexSearchTest
 
         FileUtils.deleteDirectory( indexLocation );
 
-        index = factory.createMinimalIndex( indexLocation, repository );
+        index = factory.createMinimalIndex( indexLocation );
 
         records.put( "test-jar", recordFactory.createRecord( createArtifact( "test-jar" ) ) );
         records.put( "test-jar-jdk14",

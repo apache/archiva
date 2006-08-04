@@ -22,7 +22,6 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.TermQuery;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
 import org.apache.maven.repository.configuration.ConfigurationStoreException;
@@ -273,9 +272,7 @@ public class BrowseAction
         Configuration configuration = configurationStore.getConfigurationFromStore();
         File indexPath = new File( configuration.getIndexPath() );
 
-        ArtifactRepository repository = repositoryFactory.createRepository( configuration );
-
-        return factory.createStandardIndex( indexPath, repository );
+        return factory.createStandardIndex( indexPath );
     }
 
     public List getGroups()

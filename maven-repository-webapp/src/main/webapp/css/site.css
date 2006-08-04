@@ -82,6 +82,12 @@
     padding: 0.5em 1em 0.5em 1em;
 }
 
+.statusWarn {
+    color: orange;
+    font-weight: bold;
+}
+*/
+
 .statusOk {
     color: green;
     font-weight: bold;
@@ -92,12 +98,6 @@
     font-weight: bold;
 }
 
-.statusWarn {
-    color: orange;
-    font-weight: bold;
-}
-*/
-
 /* WebWork validation failures */
 .errorMessage {
     color: red;
@@ -107,9 +107,7 @@
 .actionMessage {
     font-weight: bold;
 }
-}
-    font-weight: bold;
-}
+
 sWarn {
     color: orange;
     font-weight: bold;
@@ -122,5 +120,8 @@ sWarn {
 }
 
 .actionMessage {
+    font-weight: bold;
+}
+
     font-weight: bold;
 }

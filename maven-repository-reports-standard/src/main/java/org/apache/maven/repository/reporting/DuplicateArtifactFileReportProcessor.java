@@ -64,7 +64,7 @@ public class DuplicateArtifactFileReportProcessor
     {
         if ( artifact.getFile() != null )
         {
-            RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ), repository );
+            RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ) );
 
             String checksum;
             try

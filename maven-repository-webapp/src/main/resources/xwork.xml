@@ -23,8 +23,7 @@
   <!-- Include webwork defaults (from WebWork JAR). -->
   <include file="webwork-default.xml"/>
 
-  <!-- Configuration for the default package. -->
-  <package name="default" extends="webwork-default" namespace="/">
+  <package name="base" extends="webwork-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor-stack name="configuredStack">
@@ -38,9 +37,32 @@
 
     <global-results>
       <!-- TODO: might want an extra message on the configure page when this first happens -->
-      <result name="config-needed" type="redirect">/admin/configure.action</result>
+      <!-- TODO: can we send them back to the original location afterwards? -->
+      <result name="config-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <param name="actionName">configure</param>
+      </result>
+      <result name="config-repository-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <!-- TODO should use param name=method, but WW 2.2.2 doesn't recognise it -->
+        <param name="actionName">addRepository!input</param>
+      </result>
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
     </global-results>
+  </package>
+
+  <!-- Configuration for the default package. -->
+  <package name="default" extends="base" namespace="/">
+    <interceptors>
+      <interceptor name="configuration" class="configurationInterceptor"/>
+      <interceptor-stack name="configuredStack">
+        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="configuration"/>
+      </interceptor-stack>
+    </interceptors>
+
+    <!-- Default interceptor stack. -->
+    <default-interceptor-ref name="configuredStack"/>
 
     <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
@@ -64,7 +86,6 @@
       <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
       <result name="noResults">/WEB-INF/jsp/noResults.jsp</result>
       <!-- TODO! -->
-      <!-- TODO! use redirect-action instead -->
       <result name="artifact" type="redirect">
         /browse/${searchResults[0].groupId}/${searchResults[0].artifactId}/${searchResults[0].version}
       </result>
@@ -100,24 +121,35 @@
   </package>
 
   <!-- Configuration for the admin package. -->
-  <package name="admin" namespace="/admin" extends="webwork-default">
-    <default-interceptor-ref name="defaultStack"/>
-
+  <package name="admin" namespace="/admin" extends="base">
     <action name="index" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
     </action>
 
+    <action name="addRepository" class="configureRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
+      <result type="redirect-action">index</result>
+      <interceptor-ref name="defaultStack"/>
+    </action>
+
+    <action name="editRepository" class="configureRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
+      <result type="redirect-action">index</result>
+    </action>
+
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
+      <interceptor-ref name="defaultStack"/>
     </action>
 
     <action name="saveConfiguration" class="configureAction">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <result>/WEB-INF/jsp/admin/index.jsp</result>
+      <interceptor-ref name="defaultStack"/>
     </action>
 
     <action name="runIndexer" class="runIndexerAction">
-      <result type="redirect">/admin/index.action</result>
+      <result type="redirect-action">index</result>
     </action>
   </package>
 </xwork>

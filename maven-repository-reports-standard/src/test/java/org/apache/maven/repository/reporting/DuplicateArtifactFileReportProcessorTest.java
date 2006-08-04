@@ -61,7 +61,7 @@ public class DuplicateArtifactFileReportProcessorTest
         RepositoryArtifactIndexFactory factory =
             (RepositoryArtifactIndexFactory) lookup( RepositoryArtifactIndexFactory.ROLE, "lucene" );
 
-        RepositoryArtifactIndex index = factory.createStandardIndex( indexDirectory, repository );
+        RepositoryArtifactIndex index = factory.createStandardIndex( indexDirectory );
 
         RepositoryIndexRecordFactory recordFactory =
             (RepositoryIndexRecordFactory) lookup( RepositoryIndexRecordFactory.ROLE, "standard" );
