@@ -137,6 +137,11 @@
       <result type="redirect-action">index</result>
     </action>
 
+    <action name="deleteRepository" class="deleteRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
+      <result type="redirect-action">index</result>
+    </action>
+
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <interceptor-ref name="defaultStack"/>

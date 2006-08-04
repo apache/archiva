@@ -64,8 +64,9 @@
       <div style="float: right">
           <%-- TODO! replace with icons --%>
         <a href="<ww:url action="editRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Edit
-          Repository</a> | <a href="#">Delete Repository</a>
-          <%-- TODO! serious confirmation, implement, prompt whether to delete contents too, remember index --%>
+          Repository</a> | <a
+          href="<ww:url action="deleteRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Delete
+        Repository</a>
       </div>
       <h3>${repository.name}</h3>
       <table>
