@@ -132,6 +132,7 @@ public class ConfigureRepositoryAction
         if ( repository == null )
         {
             repository = new RepositoryConfiguration();
+            repository.setIndexed( false );
         }
         return repository;
     }

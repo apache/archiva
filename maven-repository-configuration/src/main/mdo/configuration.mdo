@@ -187,11 +187,6 @@
         <codeSegment>
           <version>1.0.0</version>
           <code><![CDATA[
-    public RepositoryConfiguration()
-    {
-        this.indexed = false; // for webwork
-    }
-
     public boolean isValid()
     {
         boolean valid = true;
