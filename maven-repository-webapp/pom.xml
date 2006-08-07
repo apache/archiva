@@ -49,16 +49,9 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-xwork-integration-single</artifactId>
+      <artifactId>plexus-xwork-integration</artifactId>
       <version>1.0-alpha-2-SNAPSHOT</version>
     </dependency>
-    <!-- TODO: remove if using the new xwork permanently
-        <dependency>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-xwork-integration</artifactId>
-          <version>1.0-alpha-2-SNAPSHOT</version>
-        </dependency>
-    -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-log4j-logging</artifactId>
@@ -158,31 +151,6 @@
           </instrumentation>
         </configuration>
       </plugin>
-      <!-- TODO: remove if we use the new xwork integration
-      <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-maven-plugin</artifactId>
-        <configuration>
-          <fileName>plexus-application.xml</fileName>
-          <containerDescriptor>true</containerDescriptor>
-        </configuration>
-        <executions>
-          <execution>
-            <id>merge</id>
-            <configuration>
-              <output>${project.build.outputDirectory}/META-INF/plexus/plexus-application.xml</output>
-              <descriptors>
-                <descriptor>${project.build.directory}/generated-resources/plexus/plexus-application.xml</descriptor>
-                <descriptor>src/main/plexus/plexus.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <goals>
-              <goal>merge-descriptors</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
