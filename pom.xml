@@ -96,6 +96,10 @@
           <target>1.4</target>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
