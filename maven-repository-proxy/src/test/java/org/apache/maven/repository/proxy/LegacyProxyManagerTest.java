@@ -43,7 +43,7 @@ public class LegacyProxyManagerTest
 
         proxy = (ProxyManager) container.lookup( ProxyManager.ROLE );
 
-        configuration = getTestConfiguration();
+        configuration = getProxyConfiguration();
         proxy.setConfiguration( configuration );
     }
 
@@ -134,7 +134,7 @@ public class LegacyProxyManagerTest
         super.tearDown();
     }
 
-    private ProxyConfiguration getTestConfiguration()
+    private ProxyConfiguration getProxyConfiguration()
         throws ComponentLookupException
     {
         ProxyConfiguration config = new ProxyConfiguration();
