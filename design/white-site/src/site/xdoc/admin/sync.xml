@@ -26,9 +26,9 @@
 
       <div>
         <div style="float: right">
-          <a href="add-sync-repository.html">Edit Repository</a>
+          <a href="edit-rsync-sync-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-sync-repository.html">Delete Repository</a>
         </div>
         <h3>Apache</h3>
         <table>
@@ -41,7 +41,7 @@
           </tr>
           <tr>
             <th>Method</th>
-            <td>rsync + ssh</td>
+            <td>rsync (over SSH)</td>
           </tr>
           <tr>
             <th>Host</th>
@@ -71,9 +71,9 @@
 
       <div>
         <div style="float: right">
-          <a href="add-sync-repository.html">Edit Repository</a>
+          <a href="edit-rsync-sync-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-sync-repository.html">Delete Repository</a>
         </div>
         <h3>Apache (Legacy)</h3>
         <table>
@@ -86,7 +86,7 @@
           </tr>
           <tr>
             <th>Method</th>
-            <td>rsync + ssh</td>
+            <td>rsync (over SSH)</td>
           </tr>
           <tr>
             <th>Host</th>
@@ -99,6 +99,51 @@
           <tr>
             <th>Username</th>
             <td>...</td>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <td>Maven 1.x Repository</td>
+          </tr>
+          <tr>
+            <th>Synced to</th>
+            <td>Central Repository (
+              <code>central</code>
+              )
+            </td>
+          </tr>
+          <tr>
+            <th>Schedule</th>
+            <td>0 * * * ?</td>
+          </tr>
+        </table>
+      </div>
+
+      <div>
+        <div style="float: right">
+          <a href="edit-cvs-sync-repository.html">Edit Repository</a>
+          |
+          <a href="delete-sync-repository.html">Delete Repository</a>
+        </div>
+        <h3>java.net</h3>
+        <table>
+          <tr>
+            <th>Identifier</th>
+            <td>
+              <!-- must be unique among remote repos -->
+              <code>java-net</code>
+            </td>
+          </tr>
+          <tr>
+            <th>Method</th>
+            <td>SCM (CVS over SSH)</td>
+          </tr>
+          <tr>
+            <th>CVS Root</th>
+            <td>anonymous@maven-repository.dev.java.net:/cvsroot</td>
+          </tr>
+          <tr>
+            <th>Module</th>
+            <td>maven-repository</td>
           </tr>
           <tr>
             <th>Type</th>

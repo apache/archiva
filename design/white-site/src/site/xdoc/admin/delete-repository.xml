@@ -1,0 +1,24 @@
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <h1>Administration</h1>
+
+    <div id="contentArea">
+      <h2>Delete Managed Repository</h2>
+
+      <blockquote>
+        <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
+      </blockquote>
+
+      <form action="sync.html">
+        <input type="radio"/> Remove the repository and delete its contents from disk<br/>
+        <input type="radio" /> Remove the repository from the management list, but leave the contents unmodified<br/>
+        <input type="radio" checked="checked" /> Leave the repository unmodified<br/>
+        <input type="submit" />
+      </form>
+    </div>
+  </body>
+</document>
+

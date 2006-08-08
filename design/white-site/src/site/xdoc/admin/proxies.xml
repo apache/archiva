@@ -28,7 +28,7 @@
         <div style="float: right">
           <a href="add-proxied-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-proxied-repository.html">Delete Repository</a>
         </div>
         <h3>Ibiblio</h3>
         <table>
@@ -73,7 +73,7 @@
         <div style="float: right">
           <a href="add-proxied-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-proxied-repository.html">Delete Repository</a>
         </div>
         <h3>Codehaus Snapshots</h3>
         <table>

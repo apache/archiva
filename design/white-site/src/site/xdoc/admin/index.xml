@@ -33,7 +33,7 @@
         <div style="float: right">
           <a href="add-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-repository.html">Delete Repository</a>
         </div>
         <h3>Central Repository</h3>
         <table>
@@ -71,7 +71,7 @@
         <div style="float: right">
           <a href="add-repository.html">Edit Repository</a>
           |
-          <a href="#">Delete Repository</a>
+          <a href="delete-repository.html">Delete Repository</a>
         </div>
         <h3>Snapshot Repository</h3>
         <table>
