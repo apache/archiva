@@ -14,4 +14,11 @@
       <url>scp://people.apache.org/home/brett/public_html/repoman-site</url>
     </site>
   </distributionManagement>
+  <repositories>
+    <!-- for skin -->
+    <repository>
+      <id>apache.snapshots</id>
+      <url>http://people.apache.org/maven-snapshot-repository</url>
+    </repository>
+  </repositories>
 </project>
