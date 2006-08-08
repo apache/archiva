@@ -142,6 +142,25 @@
       <result type="redirect-action">index</result>
     </action>
 
+    <action name="proxiedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/proxiedRepositories.jsp</result>
+    </action>
+
+    <action name="addProxiedRepository" class="configureProxiedRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
+    <action name="editProxiedRepository" class="configureProxiedRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
+    <action name="deleteProxiedRepository" class="deleteProxiedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <interceptor-ref name="defaultStack"/>

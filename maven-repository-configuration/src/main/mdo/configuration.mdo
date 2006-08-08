@@ -10,7 +10,7 @@
       <value>org.apache.maven.repository.configuration</value>
     </default>
   </defaults>
-  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist, have multiple repositories -->
+  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist -->
   <classes>
     <class rootElement="true" xml.tagName="configuration">
       <name>Configuration</name>
@@ -21,6 +21,22 @@
           <version>1.0.0</version>
           <association>
             <type>RepositoryConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>proxiedRepositories</name>
+          <version>1.0.0</version>
+          <association>
+            <type>ProxiedRepositoryConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>syncedRepositories</name>
+          <version>1.0.0</version>
+          <association>
+            <type>SyncedRepositoryConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -92,15 +108,6 @@
         {
             valid = false;
         }
-        else
-        {
-            for ( java.util.Iterator i = repositories.iterator(); i.hasNext() && valid; )
-            {
-                RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-
-                valid = repository.isValid();
-            }
-        }
         return valid;
     }
 
@@ -116,12 +123,87 @@
         }
         return null;
     }
+
+    public SyncedRepositoryConfiguration getSyncedRepositoryById( String id )
+    {
+        for ( java.util.Iterator i = getSyncedRepositories().iterator(); i.hasNext(); )
+        {
+            SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) i.next();
+            if ( repository.getId().equals( id ) )
+            {
+                return repository;
+            }
+        }
+        return null;
+    }
+
+    public ProxiedRepositoryConfiguration getProxiedRepositoryById( String id )
+    {
+        for ( java.util.Iterator i = getProxiedRepositories().iterator(); i.hasNext(); )
+        {
+            ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) i.next();
+            if ( repository.getId().equals( id ) )
+            {
+                return repository;
+            }
+        }
+        return null;
+    }
+
+    private java.util.Map repositoriesMap;
+
+    public java.util.Map getRepositoriesMap()
+    {
+        if ( repositoriesMap == null )
+        {
+            repositoriesMap = new java.util.HashMap();
+            for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
+            {
+                RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
+                repositoriesMap.put( repository.getId(), repository );
+            }
+        }
+        return repositoriesMap;
+    }
+
+    private java.util.Map proxiedRepositoriesMap;
+
+    public java.util.Map getProxiedRepositoriesMap()
+    {
+        if ( proxiedRepositoriesMap == null )
+        {
+            proxiedRepositoriesMap = new java.util.HashMap();
+            for ( java.util.Iterator i = getProxiedRepositories().iterator(); i.hasNext(); )
+            {
+                ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) i.next();
+                proxiedRepositoriesMap.put( repository.getId(), repository );
+            }
+        }
+        return proxiedRepositoriesMap;
+    }
+
+    private java.util.Map syncedRepositoriesMap;
+
+    public java.util.Map getSyncedRepositoriesMap()
+    {
+        if ( syncedRepositoriesMap == null )
+        {
+            syncedRepositoriesMap = new java.util.HashMap();
+            for ( java.util.Iterator i = getSyncedRepositories().iterator(); i.hasNext(); )
+            {
+                SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) i.next();
+                syncedRepositoriesMap.put( repository.getId(), repository );
+            }
+        }
+        return syncedRepositoriesMap;
+    }
           ]]></code>
         </codeSegment>
       </codeSegments>
     </class>
     <class>
-      <name>RepositoryConfiguration</name>
+      <name>AbstractRepositoryConfiguration</name>
+      <abstract>true</abstract>
       <version>1.0.0</version>
       <fields>
         <field>
@@ -143,15 +225,6 @@
           </description>
         </field>
         <field>
-          <name>directory</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The location of the repository to monitor.
-          </description>
-        </field>
-        <field>
           <name>layout</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -161,6 +234,33 @@
           </description>
           <!-- TODO: should be able to detect this from the repository (perhaps by metadata at the root) -->
           <defaultValue>default</defaultValue>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code><![CDATA[
+    public String toString()
+    {
+        return name + " (" + id + ")";
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    <class>
+      <superClass>AbstractRepositoryConfiguration</superClass>
+      <name>RepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>directory</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The location of the repository to monitor.
+          </description>
         </field>
         <field>
           <name>includeSnapshots</name>
@@ -183,24 +283,167 @@
           <description>Blacklisted patterns in the discovery process</description>
         </field>
       </fields>
-      <codeSegments>
-        <codeSegment>
+    </class>
+    <class>
+      <superClass>AbstractRepositoryConfiguration</superClass>
+      <name>ProxiedRepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>url</name>
           <version>1.0.0</version>
-          <code><![CDATA[
-    public boolean isValid()
-    {
-        boolean valid = true;
-
-        if ( directory == null )
-        {
-            valid = false;
-        }
-
-        return valid;
-    }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL of the remote repository to proxy.
+          </description>
+        </field>
+        <!-- TODO: would be much easier to have an association here, as long as it could be specified as a reference -->
+        <field>
+          <name>managedRepository</name>
+          <version>1.0.0</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The ID of the managed repository to use as the local storage for proxied artifacts.
+          </description>
+        </field>
+        <field>
+          <name>snapshotsPolicy</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <defaultValue>disabled</defaultValue>
+          <description>
+            The policy for snapshots: one of disabled, daily, hourly, interval, never
+            (allow snapshots, but never update once retrieved).
+          </description>
+        </field>
+        <field>
+          <name>snapshotsInterval</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The interval in minutes before updating snapshots if the policy is set to 'interval'.
+          </description>
+        </field>
+        <field>
+          <name>releasesPolicy</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <defaultValue>daily</defaultValue>
+          <description>
+            The policy for releases: one of disabled, daily, hourly, interval, never
+            (allow releases, but never update once retrieved).
+          </description>
+        </field>
+        <field>
+          <name>releasesInterval</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The interval in minutes before updating releases if the policy is set to 'interval'.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <superClass>AbstractRepositoryConfiguration</superClass>
+      <name>SyncedRepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>rsyncHost</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The host of the remote repository to synchronize.
+          </description>
+        </field>
+        <field>
+          <name>rsyncDirectory</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The location of the repository to synchronize on the remote host.
+          </description>
+        </field>
+        <!-- TODO: would be much easier to have an association here, as long as it could be specified as a reference -->
+        <field>
+          <name>managedRepository</name>
+          <version>1.0.0</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The ID of the managed repository to use as the local storage for proxied artifacts.
+          </description>
+        </field>
+        <field>
+          <name>cronExpression</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>When to run the sync mechanism. Default is every hour on the hour.</description>
+          <defaultValue>0 0 * * * ?</defaultValue>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <superClass>SyncedRepositoryConfiguration</superClass>
+      <name>RsyncSyncedRepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>rsyncHost</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The host of the remote repository to synchronize.
+          </description>
+        </field>
+        <field>
+          <name>rsyncDirectory</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The location of the repository to synchronize on the remote host.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <superClass>SyncedRepositoryConfiguration</superClass>
+      <name>ScmSyncedRepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>scmUrl</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The SCM URL of the remote repository to synchronize.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <superClass>SyncedRepositoryConfiguration</superClass>
+      <name>FileSyncedRepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>directory</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The location of the repository to synchronize on the filesystem.
+          </description>
+        </field>
+      </fields>
     </class>
   </classes>
 </model>

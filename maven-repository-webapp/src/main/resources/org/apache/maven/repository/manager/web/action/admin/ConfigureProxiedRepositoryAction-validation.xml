@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+
+<validators>
+  <!-- TODO: constrain more -->
+  <field name="id">
+    <field-validator type="requiredstring">
+      <message>You must enter the repository identifier.</message>
+    </field-validator>
+  </field>
+  <field name="name">
+    <field-validator type="requiredstring">
+      <message>You must enter the repository name.</message>
+    </field-validator>
+  </field>
+  <field name="url">
+    <field-validator type="requiredstring">
+      <message>You must enter the repository URL.</message>
+    </field-validator>
+  </field>
+  <!-- TODO: validate layout -->
+  <!-- TODO: validate policies -->
+  <!-- TODO: validate that intervals are integers -->
+  <!-- TODO: validate that intervals are empty if policy is not interval -->
+</validators>

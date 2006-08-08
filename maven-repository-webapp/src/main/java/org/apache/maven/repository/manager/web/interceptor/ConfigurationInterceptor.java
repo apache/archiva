@@ -20,6 +20,7 @@ import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.maven.repository.configuration.Configuration;
 import org.apache.maven.repository.configuration.ConfigurationStore;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * An interceptor that makes the application configuration available
@@ -29,6 +30,7 @@ import org.apache.maven.repository.configuration.ConfigurationStore;
  * @plexus.component role="com.opensymphony.xwork.interceptor.Interceptor" role-hint="configurationInterceptor"
  */
 public class ConfigurationInterceptor
+    extends AbstractLogEnabled
     implements Interceptor
 {
     /**
@@ -45,10 +47,12 @@ public class ConfigurationInterceptor
         {
             if ( configuration.getRepositories().isEmpty() )
             {
+                getLogger().info( "No repositories were configured - forwarding to repository configuration page" );
                 return "config-repository-needed";
             }
             else
             {
+                getLogger().info( "Configuration is incomplete - forwarding to configuration page" );
                 return "config-needed";
             }
         }

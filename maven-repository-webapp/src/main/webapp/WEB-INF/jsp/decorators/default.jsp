@@ -108,10 +108,10 @@
         <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
         <ul>
           <li class="none">
-            <my:currentWWUrl action="proxied" namespace="/admin">Proxied Repositories</my:currentWWUrl>
+            <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
           </li>
           <li class="none">
-            <my:currentWWUrl action="synced" namespace="/admin">Synced Repositories</my:currentWWUrl>
+            <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
           </li>
         </ul>
       </li>
