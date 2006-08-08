@@ -34,7 +34,6 @@
           <a href="add-repository.html">Edit Repository</a>
           |
           <a href="#">Delete Repository</a>
-          <!-- TODO!: serious confirmation -->
         </div>
         <h3>Central Repository</h3>
         <table>
@@ -73,7 +72,6 @@
           <a href="add-repository.html">Edit Repository</a>
           |
           <a href="#">Delete Repository</a>
-          <!-- TODO!: serious confirmation -->
         </div>
         <h3>Snapshot Repository</h3>
         <table>

@@ -29,7 +29,6 @@
           <a href="add-proxied-repository.html">Edit Repository</a>
           |
           <a href="#">Delete Repository</a>
-          <!-- TODO!: serious confirmation -->
         </div>
         <h3>Ibiblio</h3>
         <table>
@@ -75,7 +74,6 @@
           <a href="add-proxied-repository.html">Edit Repository</a>
           |
           <a href="#">Delete Repository</a>
-          <!-- TODO!: serious confirmation -->
         </div>
         <h3>Codehaus Snapshots</h3>
         <table>

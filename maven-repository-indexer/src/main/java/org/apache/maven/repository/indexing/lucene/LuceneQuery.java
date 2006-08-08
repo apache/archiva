@@ -19,7 +19,7 @@ package org.apache.maven.repository.indexing.lucene;
 import org.apache.maven.repository.indexing.query.Query;
 
 /**
- * TODO [!]: Description.
+ * A holder for a lucene query to pass to the indexer API.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
