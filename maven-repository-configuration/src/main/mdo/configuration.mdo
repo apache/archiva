@@ -349,26 +349,9 @@
     <class>
       <superClass>AbstractRepositoryConfiguration</superClass>
       <name>SyncedRepositoryConfiguration</name>
+      <abstract>true</abstract>
       <version>1.0.0</version>
       <fields>
-        <field>
-          <name>rsyncHost</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The host of the remote repository to synchronize.
-          </description>
-        </field>
-        <field>
-          <name>rsyncDirectory</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The location of the repository to synchronize on the remote host.
-          </description>
-        </field>
         <!-- TODO: would be much easier to have an association here, as long as it could be specified as a reference -->
         <field>
           <name>managedRepository</name>
@@ -386,62 +369,22 @@
           <description>When to run the sync mechanism. Default is every hour on the hour.</description>
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
-      </fields>
-    </class>
-    <class>
-      <superClass>SyncedRepositoryConfiguration</superClass>
-      <name>RsyncSyncedRepositoryConfiguration</name>
-      <version>1.0.0</version>
-      <fields>
         <field>
-          <name>rsyncHost</name>
+          <name>method</name>
           <version>1.0.0</version>
           <type>String</type>
-          <required>true</required>
-          <description>
-            The host of the remote repository to synchronize.
-          </description>
+          <description>The type of synchronization to use.</description>
+          <defaultValue>rsync</defaultValue>
         </field>
         <field>
-          <name>rsyncDirectory</name>
+          <name>properties</name>
           <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The location of the repository to synchronize on the remote host.
-          </description>
-        </field>
-      </fields>
-    </class>
-    <class>
-      <superClass>SyncedRepositoryConfiguration</superClass>
-      <name>ScmSyncedRepositoryConfiguration</name>
-      <version>1.0.0</version>
-      <fields>
-        <field>
-          <name>scmUrl</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The SCM URL of the remote repository to synchronize.
-          </description>
-        </field>
-      </fields>
-    </class>
-    <class>
-      <superClass>SyncedRepositoryConfiguration</superClass>
-      <name>FileSyncedRepositoryConfiguration</name>
-      <version>1.0.0</version>
-      <fields>
-        <field>
-          <name>directory</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The location of the repository to synchronize on the filesystem.
-          </description>
+          <type>Properties</type>
+          <description>Configuration for the repository synchronization.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
       </fields>
     </class>

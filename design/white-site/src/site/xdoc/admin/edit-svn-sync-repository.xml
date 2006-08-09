@@ -24,9 +24,26 @@
     <div id="contentArea">
       <h2>Add (Edit) Repository</h2>
 
-      <h3>NAME GOES HERE</h3>
       <form action="sync.html">
         <table>
+          <tr>
+            <th>Identifier</th>
+            <td>
+              <input type="text"/>
+            </td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td>
+              <input type="text"/>
+            </td>
+          </tr>
+          <tr>
+            <th>Host</th>
+            <td>
+              <input type="text"/>
+            </td>
+          </tr>
           <tr>
             <th>Subversion URL</th>
             <td>
@@ -35,6 +52,30 @@
           </tr>
           <tr>
             <th>Username</th>
+            <td>
+              <input type="text"/>
+            </td>
+          </tr>
+          <tr>
+            <th>Type</th>
+            <td>
+              <select>
+                <option selected="selected">Maven 2.x Repository</option>
+                <option>Maven 1.x Repository</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th>Synced to</th>
+            <td>
+              <select>
+                <option selected="selected">Central Repository (central)</option>
+                <option>Snapshot Repository (central-snapshots)</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th>Schedule</th>
             <td>
               <input type="text"/>
             </td>

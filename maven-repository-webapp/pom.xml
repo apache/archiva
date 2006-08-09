@@ -107,6 +107,7 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
+          <contextPath>/</contextPath>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9000</port>

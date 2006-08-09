@@ -27,18 +27,6 @@
       <form onsubmit="this.action=this.method.value;" method="POST">
         <table>
           <tr>
-            <th>Identifier</th>
-            <td>
-              <input type="text"/>
-            </td>
-          </tr>
-          <tr>
-            <th>Name</th>
-            <td>
-              <input type="text"/>
-            </td>
-          </tr>
-          <tr>
             <th>Method</th>
             <td>
               <select name="method">
@@ -47,30 +35,6 @@
                 <option value="edit-cvs-sync-repository.html">CVS</option>
                 <option value="edit-file-sync-repository.html">Local File System</option>
               </select>
-            </td>
-          </tr>
-          <tr>
-            <th>Type</th>
-            <td>
-              <select>
-                <option selected="selected">Maven 2.x Repository</option>
-                <option>Maven 1.x Repository</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>Synced to</th>
-            <td>
-              <select>
-                <option selected="selected">Central Repository (central)</option>
-                <option>Snapshot Repository (central-snapshots)</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>Schedule</th>
-            <td>
-              <input type="text"/>
             </td>
           </tr>
           <tr>

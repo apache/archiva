@@ -30,6 +30,10 @@
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="configuration"/>
       </interceptor-stack>
+      <interceptor-stack name="configuredPrepareParamsStack">
+        <interceptor-ref name="paramsPrepareParamsStack"/>
+        <interceptor-ref name="configuration"/>
+      </interceptor-stack>
     </interceptors>
 
     <!-- Default interceptor stack. -->
@@ -135,6 +139,7 @@
     <action name="editRepository" class="configureRepositoryAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result type="redirect-action">index</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="deleteRepository" class="deleteRepositoryAction">
@@ -154,11 +159,40 @@
     <action name="editProxiedRepository" class="configureProxiedRepositoryAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editProxiedRepository.jsp</result>
       <result type="redirect-action">proxiedRepositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="deleteProxiedRepository" class="deleteProxiedRepositoryAction">
       <result name="input">/WEB-INF/jsp/admin/deleteProxiedRepository.jsp</result>
       <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
+    <action name="syncedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/syncedRepositories.jsp</result>
+    </action>
+
+    <action name="addSyncedRepository" class="configureSyncedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/selectSyncedRepository.jsp</result>
+      <result type="chain">
+        <param name="actionName">addSelectedSyncedRepository</param>
+        <param name="method">input</param>
+      </result>
+    </action>
+
+    <action name="addSelectedSyncedRepository" class="configureSyncedRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
+    </action>
+
+    <action name="editSyncedRepository" class="configureSyncedRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteSyncedRepository" class="deleteSyncedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
     </action>
 
     <action name="configure" class="configureAction" method="input">

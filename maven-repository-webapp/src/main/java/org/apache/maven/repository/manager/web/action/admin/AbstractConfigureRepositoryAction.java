@@ -16,7 +16,6 @@ package org.apache.maven.repository.manager.web.action.admin;
  * limitations under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ParameterAware;
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
@@ -28,7 +27,6 @@ import org.apache.maven.repository.configuration.ConfigurationStoreException;
 import org.apache.maven.repository.configuration.InvalidConfigurationException;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Base action for repository configuration actions.
@@ -37,7 +35,7 @@ import java.util.Map;
  */
 public abstract class AbstractConfigureRepositoryAction
     extends ActionSupport
-    implements ModelDriven, Preparable, ParameterAware
+    implements ModelDriven, Preparable
 {
     /**
      * @plexus.requirement
@@ -113,14 +111,6 @@ public abstract class AbstractConfigureRepositoryAction
 
     public Object getModel()
     {
-        if ( repository == null )
-        {
-            repository = getRepository( repoId );
-        }
-        if ( repository == null )
-        {
-            repository = createRepository();
-        }
         return repository;
     }
 
@@ -131,8 +121,14 @@ public abstract class AbstractConfigureRepositoryAction
     {
         configuration = configurationStore.getConfigurationFromStore();
 
-        // initialises the repository if it is empty
-        getModel();
+        if ( repository == null )
+        {
+            repository = getRepository( repoId );
+        }
+        if ( repository == null )
+        {
+            repository = createRepository();
+        }
     }
 
     public String getRepoId()
@@ -143,15 +139,6 @@ public abstract class AbstractConfigureRepositoryAction
     public void setRepoId( String repoId )
     {
         this.repoId = repoId;
-    }
-
-    public void setParameters( Map map )
-    {
-        if ( map.containsKey( "repoId" ) )
-        {
-            String[] param = (String[]) map.get( "repoId" );
-            repoId = param[0];
-        }
     }
 
     protected AbstractRepositoryConfiguration getRepository()

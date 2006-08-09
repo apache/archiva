@@ -62,7 +62,7 @@
   <c:forEach items="${repositories}" var="repository" varStatus="i">
     <div>
       <div style="float: right">
-          <%-- TODO! replace with icons --%>
+          <%-- TODO replace with icons --%>
         <a href="<ww:url action="editRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Edit
           Repository</a> | <a
           href="<ww:url action="deleteRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Delete
@@ -73,7 +73,6 @@
         <tr>
           <th>Identifier</th>
           <td>
-              <%-- TODO! must be unique among managed repos --%>
             <code>${repository.id}</code>
           </td>
         </tr>

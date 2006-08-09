@@ -18,7 +18,6 @@
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
 <validators>
-  <!-- TODO: constrain more -->
   <field name="id">
     <field-validator type="requiredstring">
       <message>You must enter the repository identifier.</message>
@@ -29,14 +28,7 @@
       <message>You must enter the repository name.</message>
     </field-validator>
   </field>
-  <field name="url">
-    <field-validator type="requiredstring">
-      <message>You must enter the repository URL.</message>
-    </field-validator>
-  </field>
   <!-- TODO: validate managed repository -->
   <!-- TODO: validate layout -->
-  <!-- TODO: validate policies -->
-  <!-- TODO: validate that intervals are integers -->
-  <!-- TODO: validate that intervals are empty if policy is not interval -->
+  <!-- TODO: validate sync settings, depending on what method -->
 </validators>

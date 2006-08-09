@@ -5,7 +5,7 @@
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~     http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,19 @@
 
 <div id="contentArea">
 
-  <h2>Add Proxied Repository</h2>
+  <h2>Delete Synced Repository</h2>
 
-  <ww:actionmessage />
-  <ww:form method="post" action="addProxiedRepository" namespace="/admin" validate="true">
-    <ww:textfield name="id" label="Identifier" size="10" />
-    <%@ include file="/WEB-INF/jsp/admin/include/proxiedRepositoryForm.jspf" %>
+  <blockquote>
+    <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
+  </blockquote>
 
-    <ww:submit value="Add Repository" />
+  <ww:form method="post" action="deleteSyncedRepository" namespace="/admin" validate="true">
+    <ww:hidden name="repoId" />
+    <ww:radio list="#@java.util.LinkedHashMap@{
+    'delete-contents' : 'Remove the repository and delete its contents from managed repositories',
+    'delete-entry' : 'Remove the repository from the available list, but leave the contents in the managed repositories',
+    'unmodified' : 'Leave the repository unmodified'}" name="operation" theme="repository-manager" />
+    <ww:submit value="Go" />
   </ww:form>
 </div>
 

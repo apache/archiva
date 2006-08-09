@@ -33,26 +33,7 @@
   <ww:actionmessage />
   <ww:form method="post" action="editProxiedRepository" namespace="/admin" validate="true">
     <ww:hidden name="id" />
-    <!-- TODO! share with add -->
-    <ww:textfield name="name" label="Name" size="50" />
-    <ww:textfield name="url" label="URL" size="50" />
-    <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
-               name="layout" label="Type" />
-    <ww:select name="snapshotsPolicy" label="Snapshots" list="#@java.util.LinkedHashMap@{
-        'disabled' : 'Disabled',
-        'daily' : 'Enabled, updated daily',
-        'hourly' : 'Enabled, updated hourly',
-        'never' : 'Enabled, never updated',
-        'interval' : 'Enabled, updated on given interval'}" />
-    <ww:textfield label="Snapshot update interval" name="snapshotsInterval" size="4" />
-    <ww:select name="releasesPolicy" label="Releases" list="#@java.util.LinkedHashMap@{
-        'disabled' : 'Disabled',
-        'daily' : 'Enabled, updated daily',
-        'hourly' : 'Enabled, updated hourly',
-        'never' : 'Enabled, never updated',
-        'interval' : 'Enabled, updated on given interval'}" />
-    <ww:textfield label="Release update interval" name="releasesInterval" size="4" />
-    <ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through"/>
+    <%@ include file="/WEB-INF/jsp/admin/include/proxiedRepositoryForm.jspf" %>
     <ww:submit value="Change Repository" />
   </ww:form>
 </div>
