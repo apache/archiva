@@ -18,7 +18,10 @@
         </tr>
         <tr>
           <th>Status</th>
-          <td><span class="statusWarn">WARNING</span>: some warnings were found.</td>
+          <td>
+            <span class="statusWarn">WARNING</span>
+            : some warnings were found.
+          </td>
         </tr>
       </table>
       <h2>Errors</h2>
@@ -27,7 +30,9 @@
       </p>
       <h2>Warnings</h2>
       <p>
-        3 warnings found.
+        3 warnings found. (
+        <a href="#">Repair all</a>
+        )
       </p>
       <table>
         <tr>
@@ -35,37 +40,41 @@
           <th>Artifact ID</th>
           <th>Version</th>
           <th>Message</th>
+          <th></th>
         </tr>
         <tr>
           <td>org.apache.maven</td>
           <td>maven-model</td>
           <td>2.0.1</td>
           <td>File is missing SHA1 checksum</td>
+          <td>
+            <a href="#">Repair</a>
+          </td>
         </tr>
         <tr>
           <td>org.apache.maven</td>
           <td>maven-model</td>
           <td>2.0.2</td>
           <td>File is missing SHA1 checksum</td>
+          <td>
+            <span
+                style="color: green; font-weight: bold">Fixed
+            </span>
+          </td>
         </tr>
         <tr>
           <td>org.apache.maven</td>
           <td>maven-model</td>
           <td>2.0.2</td>
           <td>File is missing a digital signature</td>
+          <td>
+            <span style="color: gray">No fix available</span>
+          </td>
         </tr>
       </table>
       <table>
 
       </table>
-    </div>
-    <div id="notes">
-      <p>Notes</p>
-
-      <ul>
-        <li>Should this just be part of the jobs? Aligned with the sync?</li>
-        <li>Should reports be aggregated?</li>
-      </ul>
     </div>
   </body>
 </document>

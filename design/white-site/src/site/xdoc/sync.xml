@@ -22,7 +22,6 @@
         </tr>
       </table>
       <p>
-        <a href="browse2.html">Browse Source Repository</a> |
         <a href="#">Sync Now</a>
       </p>
       <h2>Codehaus</h2>
@@ -41,7 +40,6 @@
         </tr>
       </table>
       <p>
-        <a href="browse2.html">Browse Source Repository</a> |
         <a href="#">Sync Now</a>
       </p>
       <h2>Open Symphony</h2>
@@ -60,18 +58,8 @@
         </tr>
       </table>
       <p>
-        <a href="browse2.html">Browse Source Repository</a> |
         <a href="#">Sync Now</a>
       </p>
-    </div>
-    <div id="notes">
-      <p>Notes</p>
-
-      <ul>
-        <li>Probably don't need this in v1.0 - can use old external rsync call and just monitor the directories occasionally without reports</li>
-        <li>Could also add show details, edit details, add/remove sync. Manually configure in v1.0</li>
-        <li>Could also add a history view to each to see old reports</li>
-      </ul>
     </div>
   </body>
 </document>

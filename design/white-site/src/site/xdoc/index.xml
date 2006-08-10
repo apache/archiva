@@ -4,27 +4,7 @@
   </properties>
   <body>
     <div id="sidebar">
-      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
+      <p>reserved sidebar</p>
     </div>
 
     <h1>Search</h1>

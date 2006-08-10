@@ -4,86 +4,66 @@
   </properties>
   <body>
     <div id="sidebar">
-      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
+      <p>reserved sidebar</p>
     </div>
 
     <h1>Browse Repository</h1>
 
     <div id="contentArea">
       <div id="nameColumn">
-        <h2>Group / Artifact</h2>
-        <table>
-          <tr>
-            <td>
-              <a href="browse2.html">com/</a>
-            </td>
-            <td>
-              <a href="browse2.html">org/</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <a href="browse2.html">commons-collections/</a>
-            </td>
-            <td>
-              <a href="browse2.html">commons-logging/</a>
-            </td>
-          </tr>
-        </table>
+        <h2>Groups</h2>
+        <ul>
+          <li>
+            <a href="browse2.html">com/</a>
+          </li>
+          <li>
+            <a href="browse2.html">commons-collections/</a>
+          </li>
+          <li>
+            <a href="browse2.html">commons-logging/</a>
+          </li>
+          <li>
+            <a href="browse2.html">org/</a>
+          </li>
+        </ul>
       </div>
-      <div id="categoryColumn">
-        <h2>Category</h2>
-        <table>
-          <tr>
-            <td>
-              <a href="#">Java</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <a href="#">Ruby</a>
-            </td>
-          </tr>
-        </table>
-      </div>
+      <!--
+            <div id="categoryColumn">
+              <h2>Category</h2>
+              <table>
+                <tr>
+                  <td>
+                    <a href="#">Java</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href="#">Ruby</a>
+                  </td>
+                </tr>
+              </table>
+            </div>
 
-      <h2>Labels</h2>
-      <div id="labels">
-        <p>
-          <a href="#">jdo</a>
-          <a href="#">j2ee</a>
-          <a href="#">maven</a>
-        </p>
-      </div>
+            <h2>Labels</h2>
+            <div id="labels">
+              <p>
+                <a href="#">jdo</a>
+                <a href="#">j2ee</a>
+                <a href="#">maven</a>
+              </p>
+            </div>
+      -->
     </div>
-    <div id="notes">
-      <p>Notes</p>
+    <!--
+        <div id="notes">
+          <p>Notes</p>
 
-      <ul>
-        <li>Categories and tags will be omitted until Maven 2.1 supports them</li>
-        <li>We need to filter out old root level categories as they start mapping to the new ones</li>
-      </ul>
-    </div>
+          <ul>
+            <li>Categories and tags will be omitted until Maven 2.1 supports them</li>
+            <li>We need to filter out old root level categories as they start mapping to the new ones</li>
+          </ul>
+        </div>
+    -->
   </body>
 </document>
 

@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+
+<document>
+  <properties>
+    <title>Maven Repository Manager</title>
+  </properties>
+  <body>
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
+    <img src="images/jar.png" width="100" height="100" alt="jar" style="float: left"/>
+    <h1>Maven Model</h1>
+
+    <div id="contentArea">
+      <div id="tabs">
+        <p>
+          <a href="artifact.html">Info</a>
+          <a href="dependencies.html">Dependencies</a>
+          <b>Depended On By</b>
+          <a href="mail-lists.html">Mailing Lists</a>
+        </p>
+      </div>
+      <div id="tabArea">
+        <h3>
+          <a href="browse3.html">Maven Artifact</a>
+        </h3>
+        <p>
+          <span style="font-size: x-small">
+            <strong>Group ID:</strong>
+            <a href="browse2.html">org</a>
+            /
+            <a href="browse2.html">apache</a>
+            /
+            <a href="browse2.html">maven</a>
+            <strong>Artifact ID:</strong>
+            <a href="browse3.html">maven-artifact</a>
+            <strong>Version(s):</strong>
+            <a href="artifact.html">2.0</a>,
+            <a href="artifact.html">2.0.1</a>,
+            <a href="artifact.html">2.0.4</a>
+          </span>
+        </p>
+        <h3>
+          <a href="browse3.html">Maven Project</a>
+        </h3>
+        <p>
+          <span style="font-size: x-small">
+            <strong>Group ID:</strong>
+            <a href="browse2.html">org</a>
+            /
+            <a href="browse2.html">apache</a>
+            /
+            <a href="browse2.html">maven</a>
+            <strong>Artifact ID:</strong>
+            <a href="browse3.html">maven-project</a>
+            <strong>Version(s):</strong>
+            <a href="artifact.html">2.0</a>,
+            <a href="artifact.html">2.0.1</a>,
+            <a href="artifact.html">2.0.4</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </body>
+</document>
+

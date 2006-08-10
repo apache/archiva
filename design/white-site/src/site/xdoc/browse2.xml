@@ -4,56 +4,38 @@
   </properties>
   <body>
     <div id="sidebar">
-      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
+      <p>reserved sidebar</p>
     </div>
 
     <h1>Browse Repository</h1>
 
     <div id="contentArea">
       <div id="nameColumn">
-        <h2>Group / Artifact</h2>
         <p>
           <a href="#">org</a> /
           <strong>apache</strong>
         </p>
-        <table>
-          <tr>
-            <td>
-              <a href="browse3.html">cocoon/</a>
-            </td>
-            <td>
-              <a href="browse3.html">commons/</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <a href="browse3.html">geronimo/</a>
-            </td>
-            <td>
-              <a href="browse3.html">maven/</a>
-            </td>
-          </tr>
-        </table>
+        <h2>Groups</h2>
+        <ul>
+          <li>
+            <a href="browse3.html">org.apache.cocoon/</a>
+          </li>
+          <li>
+            <a href="browse3.html">org.apache.commons/</a>
+          </li>
+          <li>
+            <a href="browse3.html">org.apache.geronimo/</a>
+          </li>
+          <li>
+            <a href="browse3.html">org.apache.maven/</a>
+          </li>
+        </ul>
+        <h2>Artifacts</h2>
+        <ul>
+          <li>
+            <a href="browse3.html">apache/</a>
+          </li>
+        </ul>
       </div>
     </div>
   </body>

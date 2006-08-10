@@ -11,6 +11,7 @@
   </reporting>
   <distributionManagement>
     <site>
+      <id>apache.website</id>
       <url>scp://people.apache.org/home/brett/public_html/repoman-site</url>
     </site>
   </distributionManagement>

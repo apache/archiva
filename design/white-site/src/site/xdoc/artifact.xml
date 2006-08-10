@@ -4,27 +4,7 @@
   </properties>
   <body>
     <div id="sidebar">
-      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
+      <p>reserved sidebar</p>
     </div>
 
     <img src="images/jar.png" width="100" height="100" alt="jar" style="float: left"/>
@@ -37,11 +17,9 @@
       <div id="tabs">
         <p>
           <b>Info</b>
-          <a href="TODO">Dependencies</a>
-          <a href="TODO">Depended On</a>
-          <a href="TODO">Mailing Lists</a>
-          <a href="TODO">Developers</a>
-          <a href="TODO">POM</a>
+          <a href="dependencies.html">Dependencies</a>
+          <a href="dependedon.html">Depended On By</a>
+          <a href="mail-lists.html">Mailing Lists</a>
         </p>
       </div>
       <div id="tabArea">
@@ -56,11 +34,15 @@
           /
           <b>2.0</b>
 
-          (<strong class="statusFailed">Newer version available:</strong>
-          <a href="artifact.html">2.0.3</a>)
+          (
+          <strong class="statusFailed">Newer version available:</strong>
+          <a href="artifact.html">2.0.3</a>
+          )
         </p>
 
-        <p>Blah blah blah blah blah blah blah blah blah project description Blah blah blah blah blah blah blah blah blah</p>
+        <p>Blah blah blah blah blah blah blah blah blah project description Blah blah blah blah blah blah blah blah
+          blah
+        </p>
 
         <table>
           <tr>
@@ -100,7 +82,7 @@
           <tr>
             <th>Origin</th>
             <td>
-              <a href="TODO">Apache Repository</a>
+              Apache Repository
             </td>
           </tr>
         </table>
@@ -151,24 +133,12 @@
             <th>Viewer</th>
             <td>
               <a href="http://svn.apache.org/viewcvs.cgi/maven/components/trunk">
-                http://svn.apache.org/viewcvs.cgi/maven/components/trunk</a>
+                http://svn.apache.org/viewcvs.cgi/maven/components/trunk
+              </a>
             </td>
           </tr>
         </table>
       </div>
-    </div>
-    <div id="notes">
-      <p>Notes</p>
-
-      <ul>
-        <li>
-          What about repos?
-          build?
-          reporting?
-          profiles?
-          distmgmt?
-        </li>
-      </ul>
     </div>
   </body>
 </document>

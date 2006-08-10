@@ -32,12 +32,6 @@
     padding: 1em;
 }
 
-#searchBox p {
-    font-size : x-small;
-    text-align: center;
-    color: gray;
-}
-
 #searchTypes {
     text-align: right;
     font-size: xx-small;

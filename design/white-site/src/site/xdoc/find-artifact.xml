@@ -7,7 +7,7 @@
 
     <div id="contentArea">
       <div id="searchBox">
-        <form action="results.html">
+        <form action="artifact.html">
           <p>
             <input type="file" size="50"/>
             <input type="submit" value="Go!"/>

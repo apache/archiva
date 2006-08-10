@@ -7,7 +7,13 @@
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-application-skin</artifactId>
   </skin>
+  <publishDate position="none"/>
   <body>
+    <links>
+      <item name="Curator" href="http://maven.apache.org/repository-manager/"/>
+      <item name="Maven" href="http://maven.apache.org/"/>
+      <item name="Apache" href="http://www.apache.org/"/>
+    </links>
     <menu name="Find">
       <item name="Search" href="/index.html"/>
       <item name="Find Artifact" href="/find-artifact.html"/>

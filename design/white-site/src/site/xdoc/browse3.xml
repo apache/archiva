@@ -4,34 +4,13 @@
   </properties>
   <body>
     <div id="sidebar">
-      <span style="font-weight: bold; text-decoration:underline;">Ads By Google</span>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
-      <p>blah blah blah</p>
+      <p>reserved sidebar</p>
     </div>
 
     <h1>Browse Repository</h1>
 
     <div id="contentArea">
       <div id="nameColumn">
-        <h2>Group / Artifact</h2>
         <p>
           <a href="browse2.html">org</a>
           /
@@ -41,24 +20,18 @@
           /
           <strong>maven-model</strong>
         </p>
-        <table>
-          <tr>
-            <td>
-              <a href="artifact.html">2.0/</a>
-            </td>
-            <td>
-              <a href="artifact.html">2.0.2/</a>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <a href="artifact.html">2.0.1/</a>
-            </td>
-            <td>
-              
-            </td>
-          </tr>
-        </table>
+        <h2>Versions</h2>
+        <ul>
+          <li>
+            <a href="artifact.html">2.0/</a>
+          </li>
+          <li>
+            <a href="artifact.html">2.0.2/</a>
+          </li>
+          <li>
+            <a href="artifact.html">2.0.1/</a>
+          </li>
+        </ul>
       </div>
     </div>
   </body>
