@@ -66,9 +66,14 @@ public class DefaultRepositoryConverter
     implements RepositoryConverter
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="sha1"
      */
-    private Digester digester;
+    private Digester sha1Digester;
+
+    /**
+     * @plexus.requirement role-hint="md5"
+     */
+    private Digester md5Digester;
 
     /**
      * @plexus.requirement
@@ -572,25 +577,25 @@ public class DefaultRepositoryConverter
     {
 
         boolean result =
-            verifyChecksum( file, file.getName() + ".md5", Digester.MD5, reporter, artifact, "failure.incorrect.md5" );
-        result = result && verifyChecksum( file, file.getName() + ".sha1", Digester.SHA1, reporter, artifact,
+            verifyChecksum( file, file.getName() + ".md5", md5Digester, reporter, artifact, "failure.incorrect.md5" );
+        result = result && verifyChecksum( file, file.getName() + ".sha1", sha1Digester, reporter, artifact,
                                            "failure.incorrect.sha1" );
         return result;
     }
 
-    private boolean verifyChecksum( File file, String fileName, String algorithm, ArtifactReporter reporter,
+    private boolean verifyChecksum( File file, String fileName, Digester digester, ArtifactReporter reporter,
                                     Artifact artifact, String key )
         throws IOException
     {
         boolean result = true;
 
-        File md5 = new File( file.getParentFile(), fileName );
-        if ( md5.exists() )
+        File checksumFile = new File( file.getParentFile(), fileName );
+        if ( checksumFile.exists() )
         {
-            String checksum = FileUtils.fileRead( md5 );
+            String checksum = FileUtils.fileRead( checksumFile );
             try
             {
-                digester.verifyChecksum( file, checksum, algorithm );
+                digester.verify( file, checksum );
             }
             catch ( DigesterException e )
             {

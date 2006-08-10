@@ -112,6 +112,7 @@ public abstract class AbstractDiscoverer
         }
         scanner.setExcludes( (String[]) allExcludes.toArray( EMPTY_STRING_ARRAY ) );
 
+        // TODO: Correct for extremely large repositories (artifact counts over 200,000 entries)
         scanner.scan();
 
         for ( Iterator files = Arrays.asList( scanner.getExcludedFiles() ).iterator(); files.hasNext(); )

@@ -26,7 +26,13 @@
       <requirements>
         <requirement>
           <role>org.apache.maven.repository.digest.Digester</role>
-          <field-name>digester</field-name>
+          <role-hint>sha1</role-hint>
+          <field-name>sha1Digester</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.repository.digest.Digester</role>
+          <role-hint>md5</role-hint>
+          <field-name>md5Digester</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
@@ -52,7 +58,13 @@
       <requirements>
         <requirement>
           <role>org.apache.maven.repository.digest.Digester</role>
-          <field-name>digester</field-name>
+          <role-hint>sha1</role-hint>
+          <field-name>sha1Digester</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.repository.digest.Digester</role>
+          <role-hint>md5</role-hint>
+          <field-name>md5Digester</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>

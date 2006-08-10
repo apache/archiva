@@ -35,10 +35,15 @@ public class ChecksumMetadataReporter
     implements MetadataReportProcessor
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="sha1"
      */
-    private Digester digester;
+    private Digester sha1Digester;
 
+    /**
+     * @plexus.requirement role-hint="md5"
+     */
+    private Digester md5Digester;
+    
     /**
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
@@ -56,12 +61,12 @@ public class ChecksumMetadataReporter
         String path = repository.pathOfRemoteRepositoryMetadata( metadata );
         File file = new File( repository.getBasedir(), path );
 
-        verifyChecksum( repository, path + ".md5", file, Digester.MD5, reporter, metadata );
-        verifyChecksum( repository, path + ".sha1", file, Digester.SHA1, reporter, metadata );
+        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, metadata );
+        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, metadata );
 
     }
 
-    private void verifyChecksum( ArtifactRepository repository, String path, File file, String checksumAlgorithm,
+    private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
                                  ArtifactReporter reporter, RepositoryMetadata metadata )
     {
         File checksumFile = new File( repository.getBasedir(), path );
@@ -69,7 +74,7 @@ public class ChecksumMetadataReporter
         {
             try
             {
-                digester.verifyChecksum( file, FileUtils.fileRead( checksumFile ), checksumAlgorithm );
+                digester.verify( file, FileUtils.fileRead( checksumFile ) );
 
                 reporter.addSuccess( metadata );
             }
@@ -84,7 +89,7 @@ public class ChecksumMetadataReporter
         }
         else
         {
-            reporter.addFailure( metadata, checksumAlgorithm + " checksum file does not exist." );
+            reporter.addFailure( metadata, digester.getAlgorithm() + " checksum file does not exist." );
         }
     }
 

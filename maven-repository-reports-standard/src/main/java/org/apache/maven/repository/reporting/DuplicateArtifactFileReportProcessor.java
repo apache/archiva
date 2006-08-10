@@ -16,6 +16,10 @@ package org.apache.maven.repository.reporting;
  * limitations under the License.
  */
 
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.maven.artifact.Artifact;
@@ -30,10 +34,6 @@ import org.apache.maven.repository.indexing.lucene.LuceneQuery;
 import org.apache.maven.repository.indexing.record.StandardArtifactIndexRecord;
 import org.apache.maven.repository.indexing.record.StandardIndexRecordFields;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Validates an artifact file for duplicates within the same groupId based from what's available in a repository index.
  *
@@ -44,7 +44,7 @@ public class DuplicateArtifactFileReportProcessor
     implements ArtifactReportProcessor
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="md5"
      */
     private Digester digester;
 
@@ -69,7 +69,7 @@ public class DuplicateArtifactFileReportProcessor
             String checksum;
             try
             {
-                checksum = digester.createChecksum( artifact.getFile(), Digester.MD5 );
+                checksum = digester.calc( artifact.getFile() );
             }
             catch ( DigesterException e )
             {

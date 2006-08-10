@@ -59,7 +59,7 @@ public class StandardArtifactIndexRecordFactory
      * @todo this should be smarter (perhaps use plexus archiver to look for an unarchiver, and make the ones for zip configurable since sar, par, etc can be added at random.
      */
     private static final Set ARCHIVE_TYPES =
-        new HashSet( Arrays.asList( new String[]{"jar", "zip", "ejb", "par", "sar", "war", "ear"} ) );
+        new HashSet( Arrays.asList( new String[]{"jar", "ejb", "par", "sar", "war", "ear", "rar"} ) );
 
     /**
      * @plexus.requirement
@@ -70,6 +70,16 @@ public class StandardArtifactIndexRecordFactory
      * @plexus.requirement
      */
     private MavenProjectBuilder projectBuilder;
+
+    /**
+     * @plexus.requirement role-hint="sha1"
+     */
+    protected Digester sha1Digester;
+
+    /**
+     * @plexus.requirement role-hint="md5"
+     */
+    protected Digester md5Digester;
 
     private static final String PLUGIN_METADATA_NAME = "META-INF/maven/plugin.xml";
 
@@ -84,12 +94,13 @@ public class StandardArtifactIndexRecordFactory
         StandardArtifactIndexRecord record = null;
 
         File file = artifact.getFile();
+        
         // TODO: is this condition really a possibility?
         if ( file != null && file.exists() )
         {
-            String md5 = readChecksum( file, Digester.MD5 );
-            String sha1 = readChecksum( file, Digester.SHA1 );
-
+            String md5 = readChecksum( file, md5Digester );
+            String sha1 = readChecksum( file, sha1Digester );
+            
             List files = null;
             boolean archive = ARCHIVE_TYPES.contains( artifact.getType() );
             try

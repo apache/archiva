@@ -16,7 +16,7 @@ package org.apache.maven.repository.digest;
  * limitations under the License.
  */
 
-import junit.framework.TestCase;
+import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,15 +28,32 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class DigesterTest
-    extends TestCase
+    extends PlexusTestCase
 {
-    private Digester digester = new DefaultDigester();
-
     private static final String MD5 = "adbc688ce77fa2aece4bb72cad9f98ba";
 
     private static final String SHA1 = "2a7b459938e12a2dc35d1bf6cff35e9c2b592fa9";
 
     private static final String WRONG_SHA1 = "4d8703779816556cdb8be7f6bb5c954f4b5730e2";
+
+    private Digester sha1Digest;
+
+    private Digester md5Digest;
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        sha1Digest = (Digester) lookup( Digester.ROLE, "sha1" );
+        md5Digest = (Digester) lookup( Digester.ROLE, "md5" );
+    }
+
+    public void testAlgorithm()
+    {
+        assertEquals( "SHA-1", sha1Digest.getAlgorithm() );
+        assertEquals( "MD5", md5Digest.getAlgorithm() );
+    }
 
     public void testBareDigestFormat()
         throws DigesterException, IOException
@@ -45,7 +62,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, MD5, Digester.MD5 );
+            md5Digest.verify( file, MD5 );
         }
         catch ( DigesterException e )
         {
@@ -54,7 +71,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, SHA1, Digester.SHA1 );
+            sha1Digest.verify( file, SHA1 );
         }
         catch ( DigesterException e )
         {
@@ -63,7 +80,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, WRONG_SHA1, Digester.SHA1 );
+            sha1Digest.verify( file, WRONG_SHA1 );
             fail( "wrong checksum must throw an exception" );
         }
         catch ( DigesterException e )
@@ -73,12 +90,13 @@ public class DigesterTest
     }
 
     public void testOpensslDigestFormat()
-        throws IOException
+        throws IOException, DigesterException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
+
         try
         {
-            digester.verifyChecksum( file, "MD5(test-file.txt)= " + MD5, Digester.MD5 );
+            md5Digest.verify( file, "MD5(test-file.txt)= " + MD5 );
         }
         catch ( DigesterException e )
         {
@@ -87,16 +105,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, "SHA1(test-file.txt)= " + SHA1, Digester.SHA1 );
-        }
-        catch ( DigesterException e )
-        {
-            fail( "OpenSSL SHA1 format must not cause exception" );
-        }
-
-        try
-        {
-            digester.verifyChecksum( file, "MD5 (test-file.txt) = " + MD5, Digester.MD5 );
+            md5Digest.verify( file, "MD5 (test-file.txt) = " + MD5 );
         }
         catch ( DigesterException e )
         {
@@ -105,7 +114,16 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + SHA1, Digester.SHA1 );
+            sha1Digest.verify( file, "SHA1(test-file.txt)= " + SHA1 );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "OpenSSL SHA1 format must not cause exception" );
+        }
+
+        try
+        {
+            sha1Digest.verify( file, "SHA1 (test-file.txt) = " + SHA1 );
         }
         catch ( DigesterException e )
         {
@@ -114,7 +132,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, "SHA1 (FOO) = " + SHA1, Digester.SHA1 );
+            sha1Digest.verify( file, "SHA1 (FOO) = " + SHA1 );
             fail( "Wrong filename should cause an exception" );
         }
         catch ( DigesterException e )
@@ -124,7 +142,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, "SHA1 (test-file.txt) = " + WRONG_SHA1, Digester.SHA1 );
+            sha1Digest.verify( file, "SHA1 (test-file.txt) = " + WRONG_SHA1 );
             fail( "Wrong sha1 should cause an exception" );
         }
         catch ( DigesterException e )
@@ -134,12 +152,13 @@ public class DigesterTest
     }
 
     public void testGnuDigestFormat()
-        throws NoSuchAlgorithmException, IOException
+        throws NoSuchAlgorithmException, IOException, DigesterException
     {
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
+
         try
         {
-            digester.verifyChecksum( file, MD5 + " *test-file.txt", Digester.MD5 );
+            md5Digest.verify( file, MD5 + " *test-file.txt" );
         }
         catch ( DigesterException e )
         {
@@ -148,16 +167,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, SHA1 + " *test-file.txt", Digester.SHA1 );
-        }
-        catch ( DigesterException e )
-        {
-            fail( "GNU format SHA1 must not cause exception" );
-        }
-
-        try
-        {
-            digester.verifyChecksum( file, MD5 + " test-file.txt", Digester.MD5 );
+            md5Digest.verify( file, MD5 + " test-file.txt" );
         }
         catch ( DigesterException e )
         {
@@ -166,7 +176,16 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, SHA1 + " test-file.txt", Digester.SHA1 );
+            sha1Digest.verify( file, SHA1 + " *test-file.txt" );
+        }
+        catch ( DigesterException e )
+        {
+            fail( "GNU format SHA1 must not cause exception" );
+        }
+
+        try
+        {
+            sha1Digest.verify( file, SHA1 + " test-file.txt" );
         }
         catch ( DigesterException e )
         {
@@ -175,7 +194,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, SHA1 + " FOO", Digester.SHA1 );
+            sha1Digest.verify( file, SHA1 + " FOO" );
             fail( "Wrong filename cause an exception" );
         }
         catch ( DigesterException e )
@@ -185,7 +204,7 @@ public class DigesterTest
 
         try
         {
-            digester.verifyChecksum( file, WRONG_SHA1 + " test-file.txt", Digester.SHA1 );
+            sha1Digest.verify( file, WRONG_SHA1 + " test-file.txt" );
             fail( "Wrong SHA1 cause an exception" );
         }
         catch ( DigesterException e )
@@ -200,7 +219,7 @@ public class DigesterTest
         File file = new File( getClass().getResource( "/test-file.txt" ).getPath() );
         try
         {
-            digester.verifyChecksum( file, SHA1 + " *test-file.txt \n", Digester.SHA1 );
+            sha1Digest.verify( file, SHA1 + " *test-file.txt \n" );
         }
         catch ( DigesterException e )
         {

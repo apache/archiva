@@ -37,17 +37,12 @@ public abstract class AbstractArtifactIndexRecordFactory
     extends AbstractLogEnabled
     implements RepositoryIndexRecordFactory
 {
-    /**
-     * @plexus.requirement
-     */
-    private Digester digester;
-
-    protected String readChecksum( File file, String algorithm )
+    protected String readChecksum( File file, Digester digester )
     {
         String checksum;
         try
         {
-            checksum = digester.createChecksum( file, algorithm ).toLowerCase();
+            checksum = digester.calc( file ).toLowerCase();
         }
         catch ( DigesterException e )
         {

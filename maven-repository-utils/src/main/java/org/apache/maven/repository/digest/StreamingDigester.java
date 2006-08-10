@@ -7,7 +7,7 @@ package org.apache.maven.repository.digest;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,17 +16,16 @@ package org.apache.maven.repository.digest;
  * limitations under the License.
  */
 
-import java.io.File;
 import java.io.InputStream;
 
 /**
- * Create a digest for a file.
+ * Gradually create a digest for a stream.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface Digester
+public interface StreamingDigester
 {
-    String ROLE = Digester.class.getName();
+    String ROLE = StreamingDigester.class.getName();
 
     /**
      * Get the algorithm used for the checksum.
@@ -36,22 +35,30 @@ public interface Digester
     String getAlgorithm();
 
     /**
-     * Calculate a checksum for a file.
+     * Reset the hashcode calculation algorithm.
+     * Only useful when performing incremental hashcodes based on repeated use of {@link #update(InputStream)}
      *
-     * @param file the file to calculate the checksum for
-     * @return the current checksum.
-     * @throws DigesterException if there was a problem computing the hashcode.
+     * @throws DigesterException if there was a problem with the internal message digest
      */
-    String calc( File file )
+    void reset()
         throws DigesterException;
 
     /**
-     * Verify that a checksum is correct.
+     * Calculate the current checksum.
      *
-     * @param file     the file to compute the checksum for
-     * @param checksum the checksum to compare to
+     * @return the current checksum.
      * @throws DigesterException if there was a problem computing the hashcode.
      */
-    void verify( File file, String checksum )
+    String calc()
         throws DigesterException;
+
+    /**
+     * Update the checksum with the content of the input stream.
+     *
+     * @param is the input stream
+     * @throws DigesterException if there was a problem computing the hashcode.
+     */
+    void update( InputStream is )
+        throws DigesterException;
+
 }

@@ -36,10 +36,15 @@ public class ChecksumArtifactReporter
     implements ArtifactReportProcessor
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="sha1"
      */
-    private Digester digester;
+    private Digester sha1Digester;
 
+    /**
+     * @plexus.requirement role-hint="md5"
+     */
+    private Digester md5Digester;
+    
     /**
      * Validate the checksum of the specified artifact.
      *
@@ -62,11 +67,11 @@ public class ChecksumArtifactReporter
         String path = repository.pathOf( artifact );
         File file = new File( repository.getBasedir(), path );
 
-        verifyChecksum( repository, path + ".md5", file, Digester.MD5, reporter, artifact );
-        verifyChecksum( repository, path + ".sha1", file, Digester.SHA1, reporter, artifact );
+        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, artifact );
+        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, artifact );
     }
 
-    private void verifyChecksum( ArtifactRepository repository, String path, File file, String checksumAlgorithm,
+    private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
                                  ArtifactReporter reporter, Artifact artifact )
     {
         File checksumFile = new File( repository.getBasedir(), path );
@@ -74,7 +79,7 @@ public class ChecksumArtifactReporter
         {
             try
             {
-                digester.verifyChecksum( file, FileUtils.fileRead( checksumFile ), checksumAlgorithm );
+                digester.verify( file, FileUtils.fileRead( checksumFile ) );
 
                 reporter.addSuccess( artifact );
             }
@@ -89,7 +94,7 @@ public class ChecksumArtifactReporter
         }
         else
         {
-            reporter.addFailure( artifact, checksumAlgorithm + " checksum file does not exist." );
+            reporter.addFailure( artifact, digester.getAlgorithm() + " checksum file does not exist." );
         }
     }
 }

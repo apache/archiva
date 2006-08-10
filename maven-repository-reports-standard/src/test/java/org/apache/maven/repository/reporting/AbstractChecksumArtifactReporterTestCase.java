@@ -45,14 +45,17 @@ public abstract class AbstractChecksumArtifactReporterTestCase
 
     private static final String metadataChecksumFilename = "maven-metadata";
 
-    private Digester digester;
+    private Digester sha1Digest;
+
+    private Digester md5Digest;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
 
-        digester = (Digester) lookup( Digester.ROLE );
+        sha1Digest = (Digester) lookup( Digester.ROLE, "sha1" );
+        md5Digest = (Digester) lookup( Digester.ROLE, "md5" );
     }
 
     /**
@@ -141,7 +144,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
             File file = new File( path + ".md5" );
             OutputStream os = new FileOutputStream( file );
             OutputStreamWriter osw = new OutputStreamWriter( os );
-            String sum = digester.createChecksum( new File( path ), Digester.MD5 );
+            String sum = md5Digest.calc( new File( path ) );
             if ( !isValid )
             {
                 osw.write( sum + "1" );
@@ -155,7 +158,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
             file = new File( path + ".sha1" );
             os = new FileOutputStream( file );
             osw = new OutputStreamWriter( os );
-            String sha1sum = digester.createChecksum( new File( path ), Digester.SHA1 );
+            String sha1sum = sha1Digest.calc( new File( path ) );
             if ( !isValid )
             {
                 osw.write( sha1sum + "2" );
@@ -187,11 +190,10 @@ public abstract class AbstractChecksumArtifactReporterTestCase
         FileUtils.copyFile( new File( url ), new File( path ) );
 
         //Create md5 and sha-1 checksum files..
-
         File file = new File( path + ".md5" );
         OutputStream os = new FileOutputStream( file );
         OutputStreamWriter osw = new OutputStreamWriter( os );
-        String md5sum = digester.createChecksum( new File( path ), Digester.MD5 );
+        String md5sum = md5Digest.calc( new File( path ) );
         if ( !isValid )
         {
             osw.write( md5sum + "1" );
@@ -205,7 +207,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
         file = new File( path + ".sha1" );
         os = new FileOutputStream( file );
         osw = new OutputStreamWriter( os );
-        String sha1sum = digester.createChecksum( new File( path ), Digester.SHA1 );
+        String sha1sum = sha1Digest.calc( new File( path ) );
         if ( !isValid )
         {
             osw.write( sha1sum + "2" );

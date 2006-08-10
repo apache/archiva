@@ -40,6 +40,14 @@ public class MinimalArtifactIndexRecordFactory
 {
     /* List of types to index. */
     private static final Set INDEXED_TYPES = new HashSet( Arrays.asList( new String[]{"jar", "maven-plugin"} ) );
+    /**
+     * @plexus.requirement role-hint="sha1"
+     */
+    protected Digester sha1Digester;
+    /**
+     * @plexus.requirement role-hint="md5"
+     */
+    protected Digester md5Digester;
 
     public RepositoryIndexRecord createRecord( Artifact artifact )
     {
@@ -48,7 +56,7 @@ public class MinimalArtifactIndexRecordFactory
         File file = artifact.getFile();
         if ( file != null && INDEXED_TYPES.contains( artifact.getType() ) && file.exists() )
         {
-            String md5 = readChecksum( file, Digester.MD5 );
+            String md5 = readChecksum( file, md5Digester );
 
             List files = null;
             try
