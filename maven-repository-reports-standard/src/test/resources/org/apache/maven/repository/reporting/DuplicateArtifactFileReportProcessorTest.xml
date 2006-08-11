@@ -7,6 +7,7 @@
       <requirements>
         <requirement>
           <role>org.apache.maven.repository.digest.Digester</role>
+          <role-hint>md5</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.maven.repository.indexing.RepositoryArtifactIndexFactory</role>

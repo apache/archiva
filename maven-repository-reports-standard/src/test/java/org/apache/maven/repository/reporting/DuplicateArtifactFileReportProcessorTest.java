@@ -33,8 +33,6 @@ import java.util.Collections;
 public class DuplicateArtifactFileReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
-    private MockArtifactReporter reporter;
-
     private Artifact artifact;
 
     private Model model;
@@ -55,7 +53,6 @@ public class DuplicateArtifactFileReportProcessorTest
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "jar" );
-        reporter = new MockArtifactReporter();
         model = new Model();
 
         RepositoryArtifactIndexFactory factory =
@@ -76,6 +73,8 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         artifact.setFile( null );
 
+        MockArtifactReporter reporter = new MockArtifactReporter();
+
         processor.processArtifact( model, artifact, reporter, repository );
 
         assertEquals( "Check no successes", 0, reporter.getSuccesses() );
@@ -86,6 +85,8 @@ public class DuplicateArtifactFileReportProcessorTest
     public void testSuccessOnAlreadyIndexedArtifact()
         throws Exception
     {
+        MockArtifactReporter reporter = new MockArtifactReporter();
+
         processor.processArtifact( model, artifact, reporter, repository );
 
         assertEquals( "Check no successes", 1, reporter.getSuccesses() );
@@ -96,6 +97,8 @@ public class DuplicateArtifactFileReportProcessorTest
     public void testSuccessOnDifferentGroupId()
         throws Exception
     {
+        MockArtifactReporter reporter = new MockArtifactReporter();
+
         artifact.setGroupId( "different.groupId" );
         processor.processArtifact( model, artifact, reporter, repository );
 
@@ -108,6 +111,8 @@ public class DuplicateArtifactFileReportProcessorTest
         throws Exception
     {
         Artifact newArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "pom" );
+
+        MockArtifactReporter reporter = new MockArtifactReporter();
 
         processor.processArtifact( model, newArtifact, reporter, repository );
 
@@ -123,6 +128,9 @@ public class DuplicateArtifactFileReportProcessorTest
                                              artifact.getVersion(), artifact.getType() );
         duplicate.setFile( artifact.getFile() );
 
+        MockArtifactReporter reporter = new MockArtifactReporter();
+
+        System.err.println("OKAY");
         processor.processArtifact( model, duplicate, reporter, repository );
 
         assertEquals( "Check no successes", 0, reporter.getSuccesses() );
