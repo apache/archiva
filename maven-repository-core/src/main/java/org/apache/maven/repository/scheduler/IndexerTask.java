@@ -119,7 +119,7 @@ public class IndexerTask
                     if ( !artifacts.isEmpty() )
                     {
                         getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
-                        indexArtifact( artifacts, indexPath );
+                        indexArtifacts( artifacts, indexPath );
                     }
                 }
             }
@@ -166,16 +166,17 @@ public class IndexerTask
         }
     }
 
-    private void indexArtifact( List artifacts, File indexPath )
+    private void indexArtifacts( List artifacts, File indexPath )
         throws RepositoryIndexException
     {
-        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
         List records = new ArrayList();
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
             records.add( recordFactory.createRecord( a ) );
         }
+
+        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
         artifactIndex.indexRecords( records );
     }
 }
