@@ -31,6 +31,11 @@
   <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
     <ww:textfield name="indexPath" label="Index Directory" size="100" />
     <ww:textfield name="indexerCronExpression" label="Indexing Schedule" />
+    <ww:hidden name="proxy.protocol" value="http" /> 
+    <ww:textfield name="proxy.host" label="HTTP Proxy Host" />
+    <ww:textfield name="proxy.port" label="HTTP Proxy Port" />
+    <ww:textfield name="proxy.username" label="HTTP Proxy Username" />
+    <ww:password name="proxy.password" label="HTTP Proxy Password" />
     <ww:submit value="Save Configuration" />
   </ww:form>
 </div>

@@ -86,6 +86,14 @@
           <type>String</type>
           <description>Blacklisted patterns in the discovery process</description>
         </field>
+        <field>
+          <name>proxy</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Proxy</type>
+          </association>
+          <description>The network proxy to use for outgoing requests.</description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -344,6 +352,15 @@
             The interval in minutes before updating releases if the policy is set to 'interval'.
           </description>
         </field>
+        <field>
+          <name>useNetworkProxy</name>
+          <version>1.0.0</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            Whether to use the network proxy, if one is configured for the protocol of this repository.
+          </description>
+        </field>
       </fields>
     </class>
     <class>
@@ -385,6 +402,53 @@
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>Proxy</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>protocol</name>
+          <version>1.0.0</version>
+          <description><![CDATA[The proxy protocol.]]></description>
+          <type>String</type>
+          <defaultValue>http</defaultValue>
+        </field>
+        <field>
+          <name>username</name>
+          <version>1.0.0</version>
+          <description><![CDATA[The proxy user.]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>password</name>
+          <version>1.0.0</version>
+          <description><![CDATA[The proxy password.]]></description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>port</name>
+          <version>1.0.0</version>
+          <description><![CDATA[The proxy port.]]></description>
+          <type>int</type>
+          <defaultValue>8080</defaultValue>
+        </field>
+        <field>
+          <name>host</name>
+          <version>1.0.0</version>
+          <description><![CDATA[The proxy host.]]></description>
+          <type>String</type>
+          <required>true</required>
+        </field>
+        <field>
+          <name>nonProxyHosts</name>
+          <version>1.0.0</version>
+          <description><![CDATA[
+                The list of non-proxied hosts (delimited by |).
+          ]]></description>
+          <type>String</type>
         </field>
       </fields>
     </class>

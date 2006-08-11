@@ -49,6 +49,26 @@
     </tr>
   </table>
 
+  <ww:set name="proxy" value="proxy" />
+  <c:if test="${!empty(proxy.host)}">
+    <h3>HTTP Proxy</h3>
+
+    <table>
+      <tr>
+        <th>Host</th>
+        <td>${proxy.host}</td>
+      </tr>
+      <tr>
+        <th>Port</th>
+        <td>${proxy.port}</td>
+      </tr>
+      <tr>
+        <th>Username</th>
+        <td>${proxy.username}</td>
+      </tr>
+    </table>
+  </c:if>
+
   <p>
     <a href="<ww:url action="configure" />">Edit Configuration</a>
   </p>

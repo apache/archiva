@@ -123,6 +123,17 @@
             (<code>${repositoriesMap[repository.managedRepository].id}</code>)
           </td>
         </tr>
+        <tr>
+          <th>Use HTTP Proxy</th>
+          <td>
+            <c:if test="${!repository.useNetworkProxy}">
+              <span class="statusFailed">NO</span>
+            </c:if>
+            <c:if test="${repository.useNetworkProxy}">
+              <span class="statusOk">YES</span>
+            </c:if>
+          </td>
+        </tr>
       </table>
     </div>
   </c:forEach>

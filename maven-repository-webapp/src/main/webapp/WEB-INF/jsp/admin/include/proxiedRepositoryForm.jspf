@@ -14,6 +14,7 @@
   ~ limitations under the License.
   --%>
 
+<%@ taglib prefix="ww" uri="/webwork" %>
 <ww:textfield name="name" label="Name" size="50" />
 <ww:textfield name="url" label="URL" size="50" />
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
@@ -32,4 +33,5 @@
         'never' : 'Enabled, never updated',
         'interval' : 'Enabled, updated on given interval'}" />
 <ww:textfield label="Release update interval" name="releasesInterval" size="4" />
-<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through"/>
+<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through" />
+<ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy" />
