@@ -163,8 +163,6 @@
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
         <configuration>
-          <fileName>plexus.xml</fileName>
-          <containerDescriptor>true</containerDescriptor>
           <roleDefaults>
             <roleDefault>
               <role>com.opensymphony.xwork.Action</role>
@@ -172,21 +170,6 @@
             </roleDefault>
           </roleDefaults>
         </configuration>
-        <executions>
-          <execution>
-            <id>merge</id>
-            <configuration>
-              <output>${project.build.outputDirectory}/META-INF/plexus/plexus.xml</output>
-              <descriptors>
-                <descriptor>${project.build.directory}/generated-resources/plexus/plexus.xml</descriptor>
-                <descriptor>src/main/plexus/plexus.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <goals>
-              <goal>merge-descriptors</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
