@@ -130,7 +130,6 @@ public class DuplicateArtifactFileReportProcessorTest
 
         MockArtifactReporter reporter = new MockArtifactReporter();
 
-        System.err.println("OKAY");
         processor.processArtifact( model, duplicate, reporter, repository );
 
         assertEquals( "Check no successes", 0, reporter.getSuccesses() );
