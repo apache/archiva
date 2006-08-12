@@ -47,7 +47,7 @@ public class ProxiedArtifactRepository
     /**
      * The artifact repository on the other end of the proxy.
      */
-    private ArtifactRepository repository;
+    private final ArtifactRepository repository;
 
     /**
      * Cache of failures that have already occurred, containing paths from the repository root.
@@ -58,6 +58,11 @@ public class ProxiedArtifactRepository
      * A user friendly name for the repository.
      */
     private String name;
+
+    public ProxiedArtifactRepository( ArtifactRepository repository )
+    {
+        this.repository = repository;
+    }
 
     public boolean isHardFail()
     {
@@ -103,5 +108,25 @@ public class ProxiedArtifactRepository
     public String getName()
     {
         return name;
+    }
+
+    public void setCacheFailures( boolean cacheFailures )
+    {
+        this.cacheFailures = cacheFailures;
+    }
+
+    public void setHardFail( boolean hardFail )
+    {
+        this.hardFail = hardFail;
+    }
+
+    public void setUseNetworkProxy( boolean useNetworkProxy )
+    {
+        this.useNetworkProxy = useNetworkProxy;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
     }
 }

@@ -81,6 +81,7 @@ public class DefaultProxyRequestHandler
     public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException
     {
+        // TODO! this will prove wrong for metadata and snapshots, let tests bring it out
         //@todo use wagonManager for cache use file:// as URL
         File cachedFile = new File( managedRepository.getBasedir(), path );
         if ( !cachedFile.exists() )
@@ -101,7 +102,7 @@ public class DefaultProxyRequestHandler
                            ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException
     {
-        File remoteFile = null;
+        File target = new File( managedRepository.getBasedir(), path );
 
         for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
         {
@@ -115,13 +116,15 @@ public class DefaultProxyRequestHandler
             {
                 if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
                 {
-                    // always read from the managed repository
-                    remoteFile = new File( managedRepository.getBasedir(), path );
+                    // always read from the managed repository, no need to make remote request
                 }
                 else if ( path.endsWith( "maven-metadata.xml" ) )
                 {
-                    remoteFile = getFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy,
-                                                    repository.getRepository().getReleases() );
+                    // TODO: this is not always!
+                    if ( !target.exists() || isOutOfDate( repository.getRepository().getReleases(), target ) )
+                    {
+                        getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
+                    }
                 }
                 else
                 {
@@ -151,22 +154,23 @@ public class DefaultProxyRequestHandler
 
                     if ( artifact != null )
                     {
-                        getArtifact( artifact, repository, managedRepository, wagonProxy );
-
-                        remoteFile = artifact.getFile();
+                        getArtifactFromRepository( artifact, repository, managedRepository, wagonProxy, target );
                     }
                     else
                     {
                         // Some other unknown file in the repository, proxy as is
-                        getFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, null );
+                        // TODO: this is not always!
+                        if ( !target.exists() )
+                        {
+                            getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy,
+                                                   target );
+                        }
                     }
                 }
 
-                if ( remoteFile != null && !remoteFile.exists() )
+                if ( !target.exists() )
                 {
                     repository.addFailure( path );
-                    throw new ResourceDoesNotExistException(
-                        "Could not find " + path + " in any of the repositories." );
                 }
                 else
                 {
@@ -176,99 +180,99 @@ public class DefaultProxyRequestHandler
             }
         }
 
-        return remoteFile;
+        if ( !target.exists() )
+        {
+            throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
+        }
+
+        return target;
     }
 
-    private File getFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
-                                    ProxyInfo httpProxy, ArtifactRepositoryPolicy policy )
+    private void getFileFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
+                                        ProxyInfo httpProxy, File target )
         throws ProxyException, ResourceDoesNotExistException
     {
-        File target = new File( repositoryCachePath, path );
-        if ( !target.exists() || isOutOfDate( policy, target ) )
+        boolean connected = false;
+        Map checksums = null;
+        Wagon wagon = null;
+
+        try
         {
-            boolean connected = false;
-            Map checksums = null;
-            Wagon wagon = null;
-
-            try
+            String protocol = repository.getRepository().getProtocol();
+            wagon = (Wagon) wagons.get( protocol );
+            if ( wagon == null )
             {
-                String protocol = repository.getRepository().getProtocol();
-                wagon = (Wagon) wagons.get( protocol );
-                if ( wagon == null )
+                throw new ProxyException( "Unsupported remote protocol: " + protocol );
+            }
+
+            //@todo configure wagon (ssh settings, etc)
+
+            checksums = prepareChecksumListeners( wagon );
+
+            connected = connectToRepository( wagon, repository, httpProxy );
+            if ( connected )
+            {
+                File temp = new File( target.getAbsolutePath() + ".tmp" );
+                temp.deleteOnExit();
+
+                int tries = 0;
+                boolean success;
+
+                do
                 {
-                    throw new ProxyException( "Unsupported remote protocol: " + protocol );
-                }
+                    tries++;
 
-                //@todo configure wagon (ssh settings, etc)
+                    getLogger().info( "Trying " + path + " from " + repository.getName() + "..." );
 
-                checksums = prepareChecksumListeners( wagon );
-
-                connected = connectToRepository( wagon, repository, httpProxy );
-                if ( connected )
-                {
-                    File temp = new File( target.getAbsolutePath() + ".tmp" );
-                    temp.deleteOnExit();
-
-                    int tries = 0;
-                    boolean success;
-
-                    do
+                    if ( !target.exists() )
                     {
-                        tries++;
-
-                        getLogger().info( "Trying " + path + " from " + repository.getName() + "..." );
-
-                        if ( !target.exists() )
-                        {
-                            wagon.get( path, temp );
-                        }
-                        else
-                        {
-                            wagon.getIfNewer( path, temp, target.lastModified() );
-                        }
-
-                        success = doChecksumCheck( checksums, path, wagon, repositoryCachePath );
-
-                        if ( tries > 1 && !success )
-                        {
-                            throw new ProxyException( "Checksum failures occurred while downloading " + path );
-                        }
+                        wagon.get( path, temp );
                     }
-                    while ( !success );
-
-                    disconnectWagon( wagon );
-
-                    if ( temp.exists() )
+                    else
                     {
-                        moveTempToTarget( temp, target );
+                        wagon.getIfNewer( path, temp, target.lastModified() );
+                    }
+
+                    success = doChecksumCheck( checksums, path, wagon, repositoryCachePath );
+
+                    if ( tries > 1 && !success )
+                    {
+                        throw new ProxyException( "Checksum failures occurred while downloading " + path );
                     }
                 }
-                //try next repository
-            }
-            catch ( TransferFailedException e )
-            {
-                String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
-                processRepositoryFailure( repository, message, e );
-            }
-            catch ( AuthorizationException e )
-            {
-                String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
-                processRepositoryFailure( repository, message, e );
-            }
-            finally
-            {
-                if ( wagon != null && checksums != null )
-                {
-                    releaseChecksumListeners( wagon, checksums );
-                }
+                while ( !success );
 
-                if ( connected )
+                disconnectWagon( wagon );
+
+                if ( temp.exists() )
                 {
-                    disconnectWagon( wagon );
+                    moveTempToTarget( temp, target );
                 }
+            }
+            //try next repository
+        }
+        catch ( TransferFailedException e )
+        {
+            String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
+            processRepositoryFailure( repository, message, e );
+        }
+        catch ( AuthorizationException e )
+        {
+            String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
+            processRepositoryFailure( repository, message, e );
+        }
+        finally
+        {
+            if ( wagon != null && checksums != null )
+            {
+                releaseChecksumListeners( wagon, checksums );
+            }
+
+            if ( connected )
+            {
+                disconnectWagon( wagon );
             }
         }
-        return target;
     }
 
     private static boolean isOutOfDate( ArtifactRepositoryPolicy policy, File target )
@@ -480,8 +484,8 @@ public class DefaultProxyRequestHandler
         }
     }
 
-    private void getArtifact( Artifact artifact, ProxiedArtifactRepository repository, ArtifactRepository repoCache,
-                              ProxyInfo httpProxy )
+    private void getArtifactFromRepository( Artifact artifact, ProxiedArtifactRepository repository,
+                                            ArtifactRepository managedRepository, ProxyInfo httpProxy, File remoteFile )
         throws ProxyException, ResourceDoesNotExistException
     {
         ArtifactRepository artifactRepository = repository.getRepository();
@@ -495,9 +499,13 @@ public class DefaultProxyRequestHandler
         else
         {
             getLogger().debug( "Trying repository " + repository.getName() );
-            // Don't use releases policy, we don't want to perform updates on them (only metadata, as used above)
-            getFromRepository( artifactRepository.pathOf( artifact ), repository, repoCache.getBasedir(), httpProxy,
-                               artifact.isSnapshot() ? artifactRepository.getSnapshots() : null );
+            // Don't use releases policy, we don't want to perform updates on them (only metadata, as used earlier)
+            // TODO: this is not always!
+            if ( !remoteFile.exists() || isOutOfDate( policy, remoteFile ) )
+            {
+                getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
+                                       managedRepository.getBasedir(), httpProxy, remoteFile );
+            }
             getLogger().debug( "  Artifact resolved" );
 
             artifact.setResolved( true );
