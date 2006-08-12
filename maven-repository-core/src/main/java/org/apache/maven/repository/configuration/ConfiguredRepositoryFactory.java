@@ -52,4 +52,20 @@ public interface ConfiguredRepositoryFactory
      * @return the local artifact repository
      */
     ArtifactRepository createLocalRepository( Configuration configuration );
+
+    /**
+     * Create an artifact repository from the given proxy repository configuration.
+     *
+     * @param configuration the configuration
+     * @return the artifact repository
+     */
+    ArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration );
+
+    /**
+     * Create artifact repositories from the given proxy repository configurations.
+     *
+     * @param configuration the configuration containing the repositories
+     * @return the artifact repositories
+     */
+    List createProxiedRepositories( Configuration configuration );
 }

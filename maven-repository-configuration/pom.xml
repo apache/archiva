@@ -18,6 +18,12 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
+    <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>1.2_Java1.3</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -44,9 +50,12 @@
         <artifactId>cobertura-maven-plugin</artifactId>
         <configuration>
           <instrumentation>
-            <!-- TODO: should this module have tests? -->
+            <!-- exclude generated -->
             <excludes>
-              <exclude>**/**</exclude>
+              <exclude>org/apache/maven/repository/configuration/io/**</exclude>
+              <exclude>org/apache/maven/repository/configuration/*RepositoryConfiguration.*</exclude>
+              <exclude>org/apache/maven/repository/configuration/Configuration.*</exclude>
+              <exclude>org/apache/maven/repository/configuration/Proxy.*</exclude>
             </excludes>
           </instrumentation>
         </configuration>

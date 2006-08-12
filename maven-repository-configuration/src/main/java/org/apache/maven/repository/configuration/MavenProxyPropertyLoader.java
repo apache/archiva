@@ -1,4 +1,4 @@
-package org.apache.maven.repository.proxy.configuration;
+package org.apache.maven.repository.configuration;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -16,20 +16,17 @@ package org.apache.maven.repository.proxy.configuration;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
-import org.apache.maven.repository.proxy.repository.ProxyRepository;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
 /**
  * @author Ben Walding
+ * @author Brett Porter
  */
 public class MavenProxyPropertyLoader
 {
@@ -39,16 +36,19 @@ public class MavenProxyPropertyLoader
 
     private static final String REPO_LIST = "repo.list";
 
-    public ProxyConfiguration load( Properties props )
-        throws ValidationException
+    public void load( Properties props, Configuration configuration )
+        throws InvalidConfigurationException
     {
-        ProxyConfiguration config = new ProxyConfiguration();
+        // set up the managed repository
+        String localCachePath = getMandatoryProperty( props, REPO_LOCAL_STORE );
 
-        config.setLayout( "default" );
+        RepositoryConfiguration config = new RepositoryConfiguration();
+        config.setDirectory( localCachePath );
+        config.setName( "Imported Maven-Proxy Cache" );
+        config.setId( "maven-proxy" );
+        configuration.addRepository( config );
 
-        config.setRepositoryCachePath( getMandatoryProperty( props, REPO_LOCAL_STORE ) );
-
-        //just get the first proxy and break
+        //just get the first HTTP proxy and break
         String propertyList = props.getProperty( PROXY_LIST );
         if ( propertyList != null )
         {
@@ -58,29 +58,21 @@ public class MavenProxyPropertyLoader
                 String key = tok.nextToken();
                 if ( StringUtils.isNotEmpty( key ) )
                 {
-                    String host = getMandatoryProperty( props, "proxy." + key + ".host" );
-                    int port = Integer.parseInt( getMandatoryProperty( props, "proxy." + key + ".port" ) );
+                    Proxy proxy = new Proxy();
+                    proxy.setHost( getMandatoryProperty( props, "proxy." + key + ".host" ) );
+                    proxy.setPort( Integer.parseInt( getMandatoryProperty( props, "proxy." + key + ".port" ) ) );
 
                     // the username and password isn't required
-                    String username = props.getProperty( "proxy." + key + ".username" );
-                    String password = props.getProperty( "proxy." + key + ".password" );
+                    proxy.setUsername( props.getProperty( "proxy." + key + ".username" ) );
+                    proxy.setPassword( props.getProperty( "proxy." + key + ".password" ) );
 
-                    if ( StringUtils.isNotEmpty( username ) )
-                    {
-                        config.setHttpProxy( host, port, username, password );
-                    }
-                    else
-                    {
-                        config.setHttpProxy( host, port );
-                    }
+                    configuration.setProxy( proxy );
 
                     //accept only one proxy configuration
                     break;
                 }
             }
         }
-
-        List repositories = new ArrayList();
 
         //get the remote repository list
         String repoList = getMandatoryProperty( props, REPO_LIST );
@@ -97,26 +89,21 @@ public class MavenProxyPropertyLoader
             boolean cacheFailures =
                 Boolean.valueOf( repoProps.getProperty( "cache.failures", "false" ) ).booleanValue();
             boolean hardFail = Boolean.valueOf( repoProps.getProperty( "hardfail", "true" ) ).booleanValue();
-            long cachePeriod = Long.parseLong( repoProps.getProperty( "cache.period", "0" ) );
+            int cachePeriod = Integer.parseInt( repoProps.getProperty( "cache.period", "60" ) );
 
-            ProxyRepository repository =
-                new ProxyRepository( key, url, new DefaultRepositoryLayout(), cacheFailures, cachePeriod );
+            ProxiedRepositoryConfiguration repository = new ProxiedRepositoryConfiguration();
+            repository.setId( key );
+            repository.setLayout( "legacy" );
+            repository.setManagedRepository( config.getId() );
+            repository.setName( "Imported Maven-Proxy Remote Proxy" );
+            repository.setSnapshotsInterval( cachePeriod );
+            repository.setUrl( url );
+            repository.setUseNetworkProxy( StringUtils.isNotEmpty( proxyKey ) );
+            repository.setCacheFailures( cacheFailures );
+            repository.setHardFail( hardFail );
 
-            repository.setHardfail( hardFail );
-
-            if ( StringUtils.isNotEmpty( proxyKey ) )
-            {
-                repository.setProxied( true );
-            }
-
-            repositories.add( repository );
+            configuration.addProxiedRepository( repository );
         }
-
-        config.setRepositories( repositories );
-
-        config.validate();
-
-        return config;
     }
 
     private Properties getSubset( Properties props, String prefix )
@@ -136,22 +123,22 @@ public class MavenProxyPropertyLoader
         return result;
     }
 
-    public ProxyConfiguration load( InputStream is )
-        throws IOException, ValidationException
+    public void load( InputStream is, Configuration configuration )
+        throws IOException, InvalidConfigurationException
     {
         Properties props = new Properties();
         props.load( is );
-        return load( props );
+        load( props, configuration );
     }
 
     private String getMandatoryProperty( Properties props, String key )
-        throws ValidationException
+        throws InvalidConfigurationException
     {
         String value = props.getProperty( key );
 
         if ( value == null )
         {
-            throw new ValidationException( "Missing property: " + key );
+            throw new InvalidConfigurationException( key, "Missing required field: " + key );
         }
 
         return value;

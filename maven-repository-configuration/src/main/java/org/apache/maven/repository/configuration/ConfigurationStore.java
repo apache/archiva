@@ -33,6 +33,7 @@ public interface ConfigurationStore
      * Get the configuration from the store. A cached version may be used.
      *
      * @return the configuration
+     * @throws ConfigurationStoreException if there is a problem loading the configuration
      */
     Configuration getConfigurationFromStore()
         throws ConfigurationStoreException;

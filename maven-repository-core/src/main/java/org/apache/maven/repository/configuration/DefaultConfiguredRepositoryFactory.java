@@ -18,6 +18,7 @@ package org.apache.maven.repository.configuration;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 import java.io.File;
@@ -54,13 +55,45 @@ public class DefaultConfiguredRepositoryFactory
         return repoFactory.createArtifactRepository( configuration.getId(), repoDir, layout, null, null );
     }
 
+    public ArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration )
+    {
+        boolean enabled = isEnabled( configuration.getSnapshotsPolicy() );
+        String updatePolicy =
+            getUpdatePolicy( configuration.getSnapshotsPolicy(), configuration.getSnapshotsInterval() );
+        ArtifactRepositoryPolicy snapshotsPolicy =
+            new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
+
+        enabled = isEnabled( configuration.getReleasesPolicy() );
+        updatePolicy = getUpdatePolicy( configuration.getReleasesPolicy(), configuration.getReleasesInterval() );
+        ArtifactRepositoryPolicy releasesPolicy =
+            new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
+
+        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
+        return repoFactory.createArtifactRepository( configuration.getId(), configuration.getUrl(), layout,
+                                                     snapshotsPolicy, releasesPolicy );
+    }
+
     public List createRepositories( Configuration configuration )
     {
-        List repositories = new ArrayList( configuration.getRepositories().size() );
+        List managedRepositories = configuration.getRepositories();
+        List repositories = new ArrayList( managedRepositories.size() );
 
-        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+        for ( Iterator i = managedRepositories.iterator(); i.hasNext(); )
         {
             repositories.add( createRepository( (RepositoryConfiguration) i.next() ) );
+        }
+
+        return repositories;
+    }
+
+    public List createProxiedRepositories( Configuration configuration )
+    {
+        List proxiedRepositories = configuration.getProxiedRepositories();
+        List repositories = new ArrayList( proxiedRepositories.size() );
+
+        for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
+        {
+            repositories.add( createProxiedRepository( (ProxiedRepositoryConfiguration) i.next() ) );
         }
 
         return repositories;
@@ -72,5 +105,15 @@ public class DefaultConfiguredRepositoryFactory
         File localRepository = new File( configuration.getLocalRepository() );
         localRepository.mkdirs();
         return repoFactory.createArtifactRepository( "local", localRepository.toURI().toString(), layout, null, null );
+    }
+
+    private static String getUpdatePolicy( String policy, int interval )
+    {
+        return "interval".equals( policy ) ? policy + ":" + interval : policy;
+    }
+
+    private static boolean isEnabled( String policy )
+    {
+        return !"disabled".equals( policy );
     }
 }

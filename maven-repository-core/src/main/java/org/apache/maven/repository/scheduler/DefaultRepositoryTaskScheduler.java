@@ -155,7 +155,7 @@ public class DefaultRepositoryTaskScheduler
         }
         catch ( ParseException e )
         {
-            throw new InvalidConfigurationException( "discoveryCronExpression", "Invalid cron expression", e );
+            throw new InvalidConfigurationException( "indexerCronExpression", "Invalid cron expression", e );
         }
         catch ( SchedulerException e )
         {

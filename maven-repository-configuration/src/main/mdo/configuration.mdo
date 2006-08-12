@@ -329,7 +329,7 @@
         <field>
           <name>snapshotsInterval</name>
           <version>1.0.0</version>
-          <type>String</type>
+          <type>int</type>
           <description>
             The interval in minutes before updating snapshots if the policy is set to 'interval'.
           </description>
@@ -347,7 +347,7 @@
         <field>
           <name>releasesInterval</name>
           <version>1.0.0</version>
-          <type>String</type>
+          <type>int</type>
           <description>
             The interval in minutes before updating releases if the policy is set to 'interval'.
           </description>
@@ -359,6 +359,24 @@
           <defaultValue>false</defaultValue>
           <description>
             Whether to use the network proxy, if one is configured for the protocol of this repository.
+          </description>
+        </field>
+        <field>
+          <name>cacheFailures</name>
+          <version>1.0.0</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            Whether to cache failures to avoid re-attempting them over the network.
+          </description>
+        </field>
+        <field>
+          <name>hardFail</name>
+          <version>1.0.0</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            Whether to cause the entire request to fail if attempts to retrieve from this proxy fail.
           </description>
         </field>
       </fields>

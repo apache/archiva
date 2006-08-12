@@ -24,19 +24,16 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.repository</groupId>
+      <artifactId>maven-repository-proxy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.repository</groupId>
       <artifactId>maven-repository-reports-standard</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-quartz</artifactId>
       <version>1.0-alpha-2</version>
-    </dependency>
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

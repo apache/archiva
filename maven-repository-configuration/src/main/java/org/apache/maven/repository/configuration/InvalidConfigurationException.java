@@ -26,6 +26,12 @@ public class InvalidConfigurationException
 {
     private final String name;
 
+    public InvalidConfigurationException( String name, String message )
+    {
+        super( message );
+        this.name = name;
+    }
+
     public InvalidConfigurationException( String name, String message, Throwable cause )
     {
         super( message, cause );

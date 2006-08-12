@@ -63,4 +63,19 @@
       <artifactId>maven-repository-metadata</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <check>
+            <!-- TODO: increase coverage -->
+            <totalLineRate>80</totalLineRate>
+            <totalBranchRate>80</totalBranchRate>
+          </check>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

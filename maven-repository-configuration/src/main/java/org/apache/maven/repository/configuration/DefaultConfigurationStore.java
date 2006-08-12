@@ -39,7 +39,7 @@ import java.util.List;
  * @todo would be great for plexus to do this for us - so the configuration would be a component itself rather than this store
  * @todo would be good to monitor the store file for changes
  * @todo support other implementations than XML file
- * @plexus.component role="org.apache.maven.repository.configuration.ConfigurationStore"
+ * @plexus.component
  */
 public class DefaultConfigurationStore
     extends AbstractLogEnabled
@@ -121,6 +121,8 @@ public class DefaultConfigurationStore
         FileWriter fileWriter = null;
         try
         {
+            file.getParentFile().mkdirs();
+
             fileWriter = new FileWriter( file );
             writer.write( fileWriter, configuration );
         }

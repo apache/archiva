@@ -7,7 +7,7 @@ package org.apache.maven.repository.proxy;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,18 +16,19 @@ package org.apache.maven.repository.proxy;
  * limitations under the License.
  */
 
-import org.apache.maven.repository.proxy.configuration.ProxyConfiguration;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 
 import java.io.File;
 
 /**
- * Class used to bridge the servlet to the repository proxy implementation.
+ * Repository proxying component. This component will take requests for a given path within a managed repository
+ * and if it is not found or expired, will look in the specified proxy repositories.
  *
- * @author Edwin Punzalan
+ * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface ProxyManager
 {
+    /** The Plexus role for the component. */
     String ROLE = ProxyManager.class.getName();
 
     /**
@@ -36,7 +37,7 @@ public interface ProxyManager
      * @param path the expected repository path
      * @return File object referencing the requested path in the cache
      * @throws ProxyException                when an exception occurred during the retrieval of the requested path
-     * @throws ResourceDoesNotExistException when the requested object can't be found in any of the
+     * @throws org.apache.maven.wagon.ResourceDoesNotExistException when the requested object can't be found in any of the
      *                                       configured repositories
      */
     File get( String path )
@@ -54,11 +55,4 @@ public interface ProxyManager
      */
     File getAlways( String path )
         throws ProxyException, ResourceDoesNotExistException;
-
-    /**
-     * Used by the factory to set the configuration of the proxy
-     *
-     * @param config the ProxyConfiguration to set the behavior of the proxy
-     */
-    void setConfiguration( ProxyConfiguration config );
 }

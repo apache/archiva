@@ -293,7 +293,7 @@
   </reporting>
   <profiles>
     <profile>
-      <id>ciProfile</id>
+      <id>ci</id>
       <activation>
         <property>
           <name>enableCiProfile</name>
