@@ -110,7 +110,7 @@ public class DefaultProxyRequestHandler
 
             if ( repository.isCachedFailure( path ) )
             {
-                getLogger().debug( "Skipping repository " + repository.getName() + " for a cached path failure." );
+                processRepositoryFailure( repository, "Cached failure found" );
             }
             else
             {
@@ -249,8 +249,8 @@ public class DefaultProxyRequestHandler
 
                     if ( tries > 1 && !success )
                     {
-                        //noinspection ThrowCaughtLocally
-                        throw new TransferFailedException( "Checksum failures occurred while downloading " + path );
+                        processRepositoryFailure( repository, "Checksum failures occurred while downloading " + path );
+                        return;
                     }
 
                     // temp won't exist if we called getIfNewer and it was older, but its still a successful return
@@ -265,13 +265,11 @@ public class DefaultProxyRequestHandler
         }
         catch ( TransferFailedException e )
         {
-            String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
-            processRepositoryFailure( repository, message, e );
+            processRepositoryFailure( repository, e );
         }
         catch ( AuthorizationException e )
         {
-            String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
-            processRepositoryFailure( repository, message, e );
+            processRepositoryFailure( repository, e );
         }
         catch ( ResourceDoesNotExistException e )
         {
@@ -483,26 +481,33 @@ public class DefaultProxyRequestHandler
         }
     }
 
-    /**
-     * Queries the configuration on how to handle a repository download failure
-     *
-     * @param repository the repository object where the failure occurred
-     * @param message    the message/reason for the failure
-     * @param t          the cause for the exception
-     * @throws ProxyException if hard failure is enabled on the repository causing the failure
-     */
-    private void processRepositoryFailure( ProxiedArtifactRepository repository, String message, Throwable t )
+    private void processRepositoryFailure( ProxiedArtifactRepository repository, Throwable t )
         throws ProxyException
     {
         if ( repository.isHardFail() )
         {
             throw new ProxyException(
-                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + message, t );
+                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + t.getMessage(),
+                t );
         }
         else
         {
-            getLogger().warn( message );
-            getLogger().debug( message, t );
+            getLogger().warn( "Skipping repository " + repository.getName() + ": " + t.getMessage() );
+            getLogger().debug( "Cause", t );
+        }
+    }
+
+    private void processRepositoryFailure( ProxiedArtifactRepository repository, String message )
+        throws ProxyException
+    {
+        if ( repository.isHardFail() )
+        {
+            throw new ProxyException(
+                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + message );
+        }
+        else
+        {
+            getLogger().warn( "Skipping repository " + repository.getName() + ": " + message );
         }
     }
 

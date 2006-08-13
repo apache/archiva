@@ -36,8 +36,6 @@ import java.util.List;
 /**
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test when failure is cached
- * @todo test when failure is cached and repo is hard fail
  * @todo test when failure should be cached but caching is disabled
  * @todo test snapshots - general
  * @todo test snapshots - newer version on repo2 is pulled down
@@ -58,6 +56,7 @@ import java.util.List;
  * @todo test remote checksum present and correct
  * @todo test remote checksum present and incorrect
  * @todo test remote checksum transfer failed
+ * @todo test when failure is cached but cache period is over (and check failure is cleared)
  */
 public class ProxyRequestHandlerTest
     extends PlexusTestCase
@@ -320,6 +319,64 @@ public class ProxyRequestHandlerTest
             wagonMockControl.verify();
 
             assertEquals( "Check cause", failedException, e.getCause() );
+            assertTrue( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
+        }
+    }
+
+    public void testGetInSecondProxiedRepoFirstFailsFromCache()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        // fail from the cache, even though it is in the first repo now
+
+        String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetInSecondProxiedRepoFirstHardFailsFromCache()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        // fail from the cache, even though it is in the first repo now
+
+        String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createHardFailProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ProxyException e )
+        {
+            // expect a failure
             assertTrue( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
         }
     }
