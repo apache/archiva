@@ -18,6 +18,7 @@ package org.apache.maven.repository.proxy;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -30,33 +31,34 @@ import org.easymock.MockControl;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test when failure should be cached but caching is disabled
- * @todo test snapshots - general
- * @todo test snapshots - newer version on repo2 is pulled down
- * @todo test snapshots - older version on repo2 is skipped
- * @todo test snapshots - update interval
+ * @todo test get always
+ * @todo test get always when resource is present locally but not in any proxied repos (should fail)
+ * @todo test get always ignores cached failures
+ * @todo test when managed repo is m1 layout (proxy is m2), including metadata
+ * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
+ * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
  * @todo test metadata - general
  * @todo test metadata - multiple repos are merged
  * @todo test metadata - update interval
  * @todo test metadata - looking for an update and file has been removed remotely
- * @todo test when managed repo is m1 layout (proxy is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
- * @todo test get always
- * @todo test get always when resource is present locally but not in any proxied repos (should fail)
+ * @todo test snapshots - general
+ * @todo test snapshots - newer version on repo2 is pulled down
+ * @todo test snapshots - older version on repo2 is skipped
+ * @todo test snapshots - update interval
+ * @todo test snapshots - when failure is cached but cache period is over (and check failure is cleared)
  * @todo test remote checksum only md5
  * @todo test remote checksum only sha1
  * @todo test remote checksum missing
  * @todo test remote checksum present and correct
  * @todo test remote checksum present and incorrect
  * @todo test remote checksum transfer failed
- * @todo test when failure is cached but cache period is over (and check failure is cleared)
  */
 public class ProxyRequestHandlerTest
     extends PlexusTestCase
@@ -78,6 +80,12 @@ public class ProxyRequestHandlerTest
     private MockControl wagonMockControl;
 
     private Wagon wagonMock;
+
+    private static final ArtifactRepositoryPolicy DEFAULT_POLICY =
+        new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER, null );
+
+    private static final ArtifactRepositoryPolicy ALWAYS_UPDATE_POLICY =
+        new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS, null );
 
     protected void setUp()
         throws Exception
@@ -336,7 +344,7 @@ public class ProxyRequestHandlerTest
 
         proxiedRepositories.clear();
         ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
-        proxiedArtifactRepository.addFailure( path );
+        proxiedArtifactRepository.addFailure( path, DEFAULT_POLICY );
         proxiedRepositories.add( proxiedArtifactRepository );
         proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -366,7 +374,7 @@ public class ProxyRequestHandlerTest
 
         proxiedRepositories.clear();
         ProxiedArtifactRepository proxiedArtifactRepository = createHardFailProxiedRepository( proxiedRepository1 );
-        proxiedArtifactRepository.addFailure( path );
+        proxiedArtifactRepository.addFailure( path, DEFAULT_POLICY );
         proxiedRepositories.add( proxiedArtifactRepository );
         proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
         try
@@ -381,13 +389,77 @@ public class ProxyRequestHandlerTest
         }
     }
 
+    public void testGetInSecondProxiedRepoFirstFailsDisabledCacheFailure()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path ).getAbsoluteFile();
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepository1 = createRepository( "proxied1", "test://..." );
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path, DEFAULT_POLICY );
+        proxiedArtifactRepository.setCacheFailures( false );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMockControl.replay();
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        wagonMockControl.verify();
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
+    }
+
+    public void testGetWhenInBothProxiedReposFirstHasExpiredCacheFailure()
+        throws ResourceDoesNotExistException, ProxyException, IOException, ParseException
+    {
+        String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path, ALWAYS_UPDATE_POLICY );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        proxiedFile = new File( proxiedRepository2.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+
+        assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
+    }
+
     /**
      * A faster recursive copy that omits .svn directories.
      *
      * @param sourceDirectory the source directory to copy
      * @param destDirectory   the target location
      * @throws java.io.IOException if there is a copying problem
-     * @todo get back into plexus-utils, share with indexing module
+     * @todo get back into plexus-utils, share with converter module
      */
     private static void copyDirectoryStructure( File sourceDirectory, File destDirectory )
         throws IOException

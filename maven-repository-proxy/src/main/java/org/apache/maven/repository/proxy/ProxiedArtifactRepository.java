@@ -17,9 +17,11 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A proxied artifact repository - contains the artifact repository and additional information about
@@ -50,9 +52,10 @@ public class ProxiedArtifactRepository
     private final ArtifactRepository repository;
 
     /**
-     * Cache of failures that have already occurred, containing paths from the repository root.
+     * Cache of failures that have already occurred, containing paths from the repository root. The value given
+     * specifies when the failure should expire.
      */
-    private Set/*<String>*/ failureCache = new HashSet/*<String>*/();
+    private Map/*<String,Long>*/ failureCache = new HashMap/*<String,Long>*/();
 
     /**
      * A user friendly name for the repository.
@@ -84,25 +87,87 @@ public class ProxiedArtifactRepository
         return repository;
     }
 
+    /**
+     * Check if there is a previously cached failure for requesting the given path.
+     *
+     * @param path the path
+     * @return whether there is a failure
+     */
     public boolean isCachedFailure( String path )
     {
-        return cacheFailures && failureCache.contains( path );
-    }
-
-    public void addFailure( String path )
-    {
+        boolean failed = false;
         if ( cacheFailures )
         {
-            failureCache.add( path );
+            Long time = (Long) failureCache.get( path );
+            if ( time != null )
+            {
+                if ( System.currentTimeMillis() < time.longValue() )
+                {
+                    failed = true;
+                }
+                else
+                {
+                    clearFailure( path );
+                }
+            }
         }
+        return failed;
     }
 
+    /**
+     * Add a failure to the cache.
+     *
+     * @param path   the path that failed
+     * @param policy the policy for when the failure should expire
+     */
+    public void addFailure( String path, ArtifactRepositoryPolicy policy )
+    {
+        failureCache.put( path, new Long( calculateExpiryTime( policy ) ) );
+    }
+
+    private long calculateExpiryTime( ArtifactRepositoryPolicy policy )
+    {
+        String updatePolicy = policy.getUpdatePolicy();
+        long time;
+        if ( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS.equals( updatePolicy ) )
+        {
+            time = 0;
+        }
+        else if ( ArtifactRepositoryPolicy.UPDATE_POLICY_DAILY.equals( updatePolicy ) )
+        {
+            // Get midnight boundary
+            Calendar cal = Calendar.getInstance();
+            cal.set( Calendar.HOUR_OF_DAY, 0 );
+            cal.set( Calendar.MINUTE, 0 );
+            cal.set( Calendar.SECOND, 0 );
+            cal.set( Calendar.MILLISECOND, 0 );
+            cal.add( Calendar.DAY_OF_MONTH, 1 );
+            time = cal.getTime().getTime();
+        }
+        else if ( updatePolicy.startsWith( ArtifactRepositoryPolicy.UPDATE_POLICY_INTERVAL ) )
+        {
+            String s = updatePolicy.substring( ArtifactRepositoryPolicy.UPDATE_POLICY_INTERVAL.length() + 1 );
+            int minutes = Integer.valueOf( s ).intValue();
+            Calendar cal = Calendar.getInstance();
+            cal.add( Calendar.MINUTE, minutes );
+            time = cal.getTime().getTime();
+        }
+        else
+        {
+            // else assume "never"
+            time = Long.MAX_VALUE;
+        }
+        return time;
+    }
+
+    /**
+     * Remove a failure.
+     *
+     * @param path the path that had previously failed
+     */
     public void clearFailure( String path )
     {
-        if ( cacheFailures )
-        {
-            failureCache.remove( path );
-        }
+        failureCache.remove( path );
     }
 
     public String getName()

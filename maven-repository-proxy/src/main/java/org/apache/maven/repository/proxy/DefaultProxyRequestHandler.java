@@ -110,29 +110,11 @@ public class DefaultProxyRequestHandler
 
             if ( repository.isCachedFailure( path ) )
             {
-                processRepositoryFailure( repository, "Cached failure found" );
+                processCachedRepositoryFailure( repository, "Cached failure found for: " + path );
             }
             else
             {
-                try
-                {
-                    get( path, target, repository, managedRepository, wagonProxy );
-
-                    if ( !target.exists() )
-                    {
-                        repository.addFailure( path );
-                    }
-                    else
-                    {
-                        // in case it previously failed and we've since found it
-                        repository.clearFailure( path );
-                    }
-                }
-                catch ( ProxyException e )
-                {
-                    repository.addFailure( path );
-                    throw e;
-                }
+                get( path, target, repository, managedRepository, wagonProxy );
             }
         }
 
@@ -148,16 +130,20 @@ public class DefaultProxyRequestHandler
                       ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException
     {
+        ArtifactRepositoryPolicy policy = null;
+
         if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
         {
             // always read from the managed repository, no need to make remote request
         }
         else if ( path.endsWith( "maven-metadata.xml" ) )
         {
-            // TODO: this is not always!
-            if ( !target.exists() || isOutOfDate( repository.getRepository().getReleases(), target ) )
+            // TODO: this is not "always" as this method expects!
+            // TODO: merge the metadata!
+            policy = repository.getRepository().getReleases();
+            if ( !target.exists() || isOutOfDate( policy, target ) )
             {
-                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
+                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy );
             }
         }
         else
@@ -186,22 +172,46 @@ public class DefaultProxyRequestHandler
 
             if ( artifact != null )
             {
-                getArtifactFromRepository( artifact, repository, managedRepository, wagonProxy, target );
+                ArtifactRepository artifactRepository = repository.getRepository();
+                policy = artifact.isSnapshot() ? artifactRepository.getSnapshots() : artifactRepository.getReleases();
+
+                if ( !policy.isEnabled() )
+                {
+                    getLogger().debug( "Skipping disabled repository " + repository.getName() );
+                }
+                else
+                {
+                    // Don't use releases policy, we don't want to perform updates on them (only metadata, as used earlier)
+                    // TODO: this is not "always" as this method expects!
+                    if ( !target.exists() || isOutOfDate( policy, target ) )
+                    {
+                        getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
+                                               managedRepository.getBasedir(), wagonProxy, target, policy );
+                    }
+                }
             }
             else
             {
                 // Some other unknown file in the repository, proxy as is
-                // TODO: this is not always!
+                // TODO: this is not "always" as this method expects!
                 if ( !target.exists() )
                 {
-                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
+                    policy = repository.getRepository().getReleases();
+                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target,
+                                           policy );
                 }
             }
+        }
+
+        if ( target.exists() )
+        {
+            // in case it previously failed and we've since found it
+            repository.clearFailure( path );
         }
     }
 
     private void getFileFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
-                                        ProxyInfo httpProxy, File target )
+                                        ProxyInfo httpProxy, File target, ArtifactRepositoryPolicy policy )
         throws ProxyException
     {
         boolean connected = false;
@@ -249,7 +259,8 @@ public class DefaultProxyRequestHandler
 
                     if ( tries > 1 && !success )
                     {
-                        processRepositoryFailure( repository, "Checksum failures occurred while downloading " + path );
+                        processRepositoryFailure( repository, "Checksum failures occurred while downloading " + path,
+                                                  path, policy );
                         return;
                     }
 
@@ -265,11 +276,11 @@ public class DefaultProxyRequestHandler
         }
         catch ( TransferFailedException e )
         {
-            processRepositoryFailure( repository, e );
+            processRepositoryFailure( repository, e, path, policy );
         }
         catch ( AuthorizationException e )
         {
-            processRepositoryFailure( repository, e );
+            processRepositoryFailure( repository, e, path, policy );
         }
         catch ( ResourceDoesNotExistException e )
         {
@@ -481,23 +492,34 @@ public class DefaultProxyRequestHandler
         }
     }
 
-    private void processRepositoryFailure( ProxiedArtifactRepository repository, Throwable t )
+    private void processRepositoryFailure( ProxiedArtifactRepository repository, Throwable t, String path,
+                                           ArtifactRepositoryPolicy policy )
         throws ProxyException
     {
+        repository.addFailure( path, policy );
+
+        String message = t.getMessage();
         if ( repository.isHardFail() )
         {
+            repository.addFailure( path, policy );
             throw new ProxyException(
-                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + t.getMessage(),
-                t );
+                "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + message, t );
         }
-        else
-        {
-            getLogger().warn( "Skipping repository " + repository.getName() + ": " + t.getMessage() );
-            getLogger().debug( "Cause", t );
-        }
+
+        getLogger().warn( "Skipping repository " + repository.getName() + ": " + message );
+        getLogger().debug( "Cause", t );
     }
 
-    private void processRepositoryFailure( ProxiedArtifactRepository repository, String message )
+    private void processRepositoryFailure( ProxiedArtifactRepository repository, String message, String path,
+                                           ArtifactRepositoryPolicy policy )
+        throws ProxyException
+    {
+        repository.addFailure( path, policy );
+
+        processCachedRepositoryFailure( repository, message );
+    }
+
+    private void processCachedRepositoryFailure( ProxiedArtifactRepository repository, String message )
         throws ProxyException
     {
         if ( repository.isHardFail() )
@@ -505,38 +527,7 @@ public class DefaultProxyRequestHandler
             throw new ProxyException(
                 "An error occurred in hardfailing repository " + repository.getName() + "...\n    " + message );
         }
-        else
-        {
-            getLogger().warn( "Skipping repository " + repository.getName() + ": " + message );
-        }
+
+        getLogger().warn( "Skipping repository " + repository.getName() + ": " + message );
     }
-
-    private void getArtifactFromRepository( Artifact artifact, ProxiedArtifactRepository repository,
-                                            ArtifactRepository managedRepository, ProxyInfo httpProxy, File remoteFile )
-        throws ProxyException
-    {
-        ArtifactRepository artifactRepository = repository.getRepository();
-        ArtifactRepositoryPolicy policy =
-            artifact.isSnapshot() ? artifactRepository.getSnapshots() : artifactRepository.getReleases();
-
-        if ( !policy.isEnabled() )
-        {
-            getLogger().debug( "Skipping disabled repository " + repository.getName() );
-        }
-        else
-        {
-            getLogger().debug( "Trying repository " + repository.getName() );
-            // Don't use releases policy, we don't want to perform updates on them (only metadata, as used earlier)
-            // TODO: this is not always!
-            if ( !remoteFile.exists() || isOutOfDate( policy, remoteFile ) )
-            {
-                getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
-                                       managedRepository.getBasedir(), httpProxy, remoteFile );
-            }
-            getLogger().debug( "  Artifact resolved" );
-
-            artifact.setResolved( true );
-        }
-    }
-
 }
