@@ -26,6 +26,7 @@ import java.util.Properties;
  * Test the configuration store.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @noinspection JavaDoc
  */
 public class ConfigurationStoreTest
     extends PlexusTestCase
@@ -130,6 +131,9 @@ public class ConfigurationStoreTest
         assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 
+    /**
+     * @noinspection JUnitTestMethodWithNoAssertions
+     */
     public void testChangeListeners()
         throws Exception
     {

@@ -17,7 +17,6 @@ package org.apache.maven.repository.proxy;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.manager.ChecksumFailedException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
@@ -38,8 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +48,7 @@ import java.util.Map;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @plexus.component
  * @todo this currently duplicates a lot of the wagon manager, and doesn't do things like snapshot resolution, etc.
+ * The checksum handling is inconsistent with that of the wagon manager.
  * Should we have a more artifact based one? This will merge metadata so should behave correctly, and it is able to
  * correct some limitations of the wagon manager (eg, it can retrieve newer SNAPSHOT files without metadata)
  */
@@ -100,7 +100,7 @@ public class DefaultProxyRequestHandler
 
     public File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository,
                            ProxyInfo wagonProxy )
-        throws ProxyException, ResourceDoesNotExistException
+        throws ResourceDoesNotExistException, ProxyException
     {
         File target = new File( managedRepository.getBasedir(), path );
 
@@ -114,68 +114,24 @@ public class DefaultProxyRequestHandler
             }
             else
             {
-                if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
+                try
                 {
-                    // always read from the managed repository, no need to make remote request
-                }
-                else if ( path.endsWith( "maven-metadata.xml" ) )
-                {
-                    // TODO: this is not always!
-                    if ( !target.exists() || isOutOfDate( repository.getRepository().getReleases(), target ) )
-                    {
-                        getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
-                    }
-                }
-                else
-                {
-                    Artifact artifact = null;
-                    try
-                    {
-                        artifact = defaultArtifactDiscoverer.buildArtifact( path );
-                    }
-                    catch ( DiscovererException e )
-                    {
-                        getLogger().debug(
-                            "Failed to build artifact using default layout with message: " + e.getMessage() );
-                    }
+                    get( path, target, repository, managedRepository, wagonProxy );
 
-                    if ( artifact == null )
+                    if ( !target.exists() )
                     {
-                        try
-                        {
-                            artifact = legacyArtifactDiscoverer.buildArtifact( path );
-                        }
-                        catch ( DiscovererException e )
-                        {
-                            getLogger().debug(
-                                "Failed to build artifact using legacy layout with message: " + e.getMessage() );
-                        }
-                    }
-
-                    if ( artifact != null )
-                    {
-                        getArtifactFromRepository( artifact, repository, managedRepository, wagonProxy, target );
+                        repository.addFailure( path );
                     }
                     else
                     {
-                        // Some other unknown file in the repository, proxy as is
-                        // TODO: this is not always!
-                        if ( !target.exists() )
-                        {
-                            getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy,
-                                                   target );
-                        }
+                        // in case it previously failed and we've since found it
+                        repository.clearFailure( path );
                     }
                 }
-
-                if ( !target.exists() )
+                catch ( ProxyException e )
                 {
                     repository.addFailure( path );
-                }
-                else
-                {
-                    // in case it previously failed and we've since found it
-                    repository.clearFailure( path );
+                    throw e;
                 }
             }
         }
@@ -188,9 +144,65 @@ public class DefaultProxyRequestHandler
         return target;
     }
 
+    private void get( String path, File target, ProxiedArtifactRepository repository,
+                      ArtifactRepository managedRepository, ProxyInfo wagonProxy )
+        throws ProxyException
+    {
+        if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
+        {
+            // always read from the managed repository, no need to make remote request
+        }
+        else if ( path.endsWith( "maven-metadata.xml" ) )
+        {
+            // TODO: this is not always!
+            if ( !target.exists() || isOutOfDate( repository.getRepository().getReleases(), target ) )
+            {
+                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
+            }
+        }
+        else
+        {
+            Artifact artifact = null;
+            try
+            {
+                artifact = defaultArtifactDiscoverer.buildArtifact( path );
+            }
+            catch ( DiscovererException e )
+            {
+                getLogger().debug( "Failed to build artifact using default layout with message: " + e.getMessage() );
+            }
+
+            if ( artifact == null )
+            {
+                try
+                {
+                    artifact = legacyArtifactDiscoverer.buildArtifact( path );
+                }
+                catch ( DiscovererException e )
+                {
+                    getLogger().debug( "Failed to build artifact using legacy layout with message: " + e.getMessage() );
+                }
+            }
+
+            if ( artifact != null )
+            {
+                getArtifactFromRepository( artifact, repository, managedRepository, wagonProxy, target );
+            }
+            else
+            {
+                // Some other unknown file in the repository, proxy as is
+                // TODO: this is not always!
+                if ( !target.exists() )
+                {
+                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target );
+                }
+            }
+        }
+    }
+
     private void getFileFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
                                         ProxyInfo httpProxy, File target )
-        throws ProxyException, ResourceDoesNotExistException
+        throws ProxyException
     {
         boolean connected = false;
         Map checksums = null;
@@ -222,7 +234,7 @@ public class DefaultProxyRequestHandler
                 {
                     tries++;
 
-                    getLogger().info( "Trying " + path + " from " + repository.getName() + "..." );
+                    getLogger().debug( "Trying " + path + " from " + repository.getName() + "..." );
 
                     if ( !target.exists() )
                     {
@@ -233,21 +245,21 @@ public class DefaultProxyRequestHandler
                         wagon.getIfNewer( path, temp, target.lastModified() );
                     }
 
-                    success = doChecksumCheck( checksums, path, wagon, repositoryCachePath );
+                    success = checkChecksum( checksums, path, wagon, repositoryCachePath );
 
                     if ( tries > 1 && !success )
                     {
-                        throw new ProxyException( "Checksum failures occurred while downloading " + path );
+                        //noinspection ThrowCaughtLocally
+                        throw new TransferFailedException( "Checksum failures occurred while downloading " + path );
+                    }
+
+                    // temp won't exist if we called getIfNewer and it was older, but its still a successful return
+                    if ( temp.exists() )
+                    {
+                        moveTempToTarget( temp, target );
                     }
                 }
                 while ( !success );
-
-                disconnectWagon( wagon );
-
-                if ( temp.exists() )
-                {
-                    moveTempToTarget( temp, target );
-                }
             }
             //try next repository
         }
@@ -260,6 +272,11 @@ public class DefaultProxyRequestHandler
         {
             String message = "Skipping repository " + repository.getName() + ": " + e.getMessage();
             processRepositoryFailure( repository, message, e );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // hard failure setting doesn't affect "not found".
+            getLogger().debug( "Artifact not found in repository: " + repository.getName() + ": " + e.getMessage() );
         }
         finally
         {
@@ -288,7 +305,7 @@ public class DefaultProxyRequestHandler
      */
     private Map prepareChecksumListeners( Wagon wagon )
     {
-        Map checksums = new HashMap();
+        Map checksums = new LinkedHashMap();
         try
         {
             ChecksumObserver checksum = new ChecksumObserver( "SHA-1" );
@@ -344,7 +361,7 @@ public class DefaultProxyRequestHandler
         return connected;
     }
 
-    private boolean doChecksumCheck( Map checksumMap, String path, Wagon wagon, String repositoryCachePath )
+    private boolean checkChecksum( Map checksumMap, String path, Wagon wagon, String repositoryCachePath )
         throws ProxyException
     {
         releaseChecksumListeners( wagon, checksumMap );
@@ -367,45 +384,49 @@ public class DefaultProxyRequestHandler
                     remoteChecksum = remoteChecksum.substring( 0, remoteChecksum.indexOf( ' ' ) );
                 }
 
-                boolean checksumCheck = false;
-                if ( remoteChecksum.toUpperCase().equals( checksum.getActualChecksum().toUpperCase() ) )
+                String actualChecksum = checksum.getActualChecksum().toUpperCase();
+                remoteChecksum = remoteChecksum.toUpperCase();
+
+                boolean checksumCheck;
+                if ( remoteChecksum.equals( actualChecksum ) )
                 {
                     moveTempToTarget( tempChecksumFile, checksumFile );
 
                     checksumCheck = true;
                 }
+                else
+                {
+                    getLogger().warn(
+                        "The checksum '" + actualChecksum + "' did not match the remote value: " + remoteChecksum );
+                    checksumCheck = false;
+                }
                 return checksumCheck;
-            }
-            catch ( ChecksumFailedException e )
-            {
-                return false;
             }
             catch ( TransferFailedException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
-                                   e );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
+                                  e );
                 // do nothing try the next checksum
             }
             catch ( ResourceDoesNotExistException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
-                                   e );
+                getLogger().debug( "The checksum did not exist: " + checksumPath, e );
                 // do nothing try the next checksum
             }
             catch ( AuthorizationException e )
             {
-                getLogger().debug( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
-                                   e );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
+                                  e );
                 // do nothing try the next checksum
             }
             catch ( IOException e )
             {
-                getLogger().debug( "An error occurred while reading the temporary checksum file.", e );
+                getLogger().warn( "An error occurred while reading the temporary checksum file.", e );
                 return false;
             }
         }
 
-        getLogger().debug( "Skipping checksum validation for " + path + ": No remote checksums available." );
+        getLogger().debug( "No remote checksums available." );
 
         return true;
     }
@@ -480,13 +501,14 @@ public class DefaultProxyRequestHandler
         }
         else
         {
-            getLogger().error( message, t );
+            getLogger().warn( message );
+            getLogger().debug( message, t );
         }
     }
 
     private void getArtifactFromRepository( Artifact artifact, ProxiedArtifactRepository repository,
                                             ArtifactRepository managedRepository, ProxyInfo httpProxy, File remoteFile )
-        throws ProxyException, ResourceDoesNotExistException
+        throws ProxyException
     {
         ArtifactRepository artifactRepository = repository.getRepository();
         ArtifactRepositoryPolicy policy =
