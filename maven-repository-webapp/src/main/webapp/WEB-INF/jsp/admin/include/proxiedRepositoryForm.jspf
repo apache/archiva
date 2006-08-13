@@ -35,3 +35,5 @@
 <ww:textfield label="Release update interval" name="releasesInterval" size="4" />
 <ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through" />
 <ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy" />
+<ww:checkbox name="cacheFailures" fieldValue="true" label="Cache Failures" />
+<ww:checkbox name="hardFail" fieldValue="true" label="Fail Whole Group" />

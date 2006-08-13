@@ -367,7 +367,8 @@
           <type>boolean</type>
           <defaultValue>false</defaultValue>
           <description>
-            Whether to cache failures to avoid re-attempting them over the network.
+            Whether to cache failures to avoid re-attempting them over the network. The cache will last for the duration
+            of the intervals specified above depending on whether it a release or snapshot.
           </description>
         </field>
         <field>
