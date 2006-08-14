@@ -20,6 +20,9 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
@@ -30,20 +33,20 @@ import org.easymock.MockControl;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Test the proxy handler.
  *
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test metadata - general
- * @todo test metadata - multiple repos are merged
- * @todo test metadata - update interval
- * @todo test metadata - looking for an update and file has been removed remotely
  * @todo test snapshots - general
  * @todo test snapshots - newer version on repo1 (than local), timestamp driven
  * @todo test snapshots - older version on repo1 skipped (than local), timestamp driven
@@ -870,10 +873,9 @@ public class ProxyRequestHandlerTest
 
         assertFalse( expectedFile.exists() );
 
-        File file = null;
         try
         {
-            file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
             fail( "Found file: " + file + "; but was expecting a failure" );
         }
         catch ( ResourceDoesNotExistException e )
@@ -892,10 +894,9 @@ public class ProxyRequestHandlerTest
 
         assertFalse( expectedFile.exists() );
 
-        File file = null;
         try
         {
-            file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+            File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
             fail( "Found file: " + file + "; but was expecting a failure" );
         }
         catch ( ResourceDoesNotExistException e )
@@ -904,6 +905,190 @@ public class ProxyRequestHandlerTest
 
             assertFalse( expectedFile.exists() );
         }
+    }
+
+    public void testGetMetadataNotPresent()
+        throws ProxyException
+    {
+        String path = "org/apache/maven/test/dummy-artifact/1.0/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // expected
+
+            assertFalse( expectedFile.exists() );
+        }
+    }
+
+    public void testGetMetadataProxied()
+        throws ProxyException, ResourceDoesNotExistException, IOException
+    {
+        String path = "org/apache/maven/test/get-default-metadata/1.0/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        String expectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+    }
+
+    public void testGetMetadataMergeRepos()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-merged-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        StringWriter expectedContents = new StringWriter();
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( "get-merged-metadata" );
+        m.setVersioning( new Versioning() );
+        m.getVersioning().addVersion( "0.9" );
+        m.getVersioning().addVersion( "1.0" );
+        m.getVersioning().addVersion( "2.0" );
+        m.getVersioning().addVersion( "3.0" );
+        m.getVersioning().addVersion( "5.0" );
+        m.getVersioning().addVersion( "4.0" );
+        m.setModelEncoding( null );
+        new MetadataXpp3Writer().write( expectedContents, m );
+
+        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+    }
+
+    public void testGetMetadataRemovedFromProxies()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-removed-metadata/1.0/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+    }
+
+    public void testGetMetadataNotExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+
+        String unexpectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        assertFalse( "Check content doesn't match proxy version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetMetadataNotUpdated()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( proxiedFile.lastModified() );
+
+        proxiedRepository1.getReleases().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check content doesn't match proxy version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetMetadataUpdated()
+        throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getHistoricalDate().getTime() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        StringWriter expectedContents = new StringWriter();
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( "get-updated-metadata" );
+        m.setVersioning( new Versioning() );
+        m.getVersioning().addVersion( "1.0" );
+        m.getVersioning().addVersion( "2.0" );
+        m.setModelEncoding( null );
+        new MetadataXpp3Writer().write( expectedContents, m );
+        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertFalse( "Check content doesn't match old version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetAlwaysMetadata()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        StringWriter expectedContents = new StringWriter();
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( "get-updated-metadata" );
+        m.setVersioning( new Versioning() );
+        m.getVersioning().addVersion( "1.0" );
+        m.getVersioning().addVersion( "2.0" );
+        m.setModelEncoding( null );
+        new MetadataXpp3Writer().write( expectedContents, m );
+        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertFalse( "Check content doesn't match old version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    private static Date getHistoricalDate()
+        throws ParseException
+    {
+        return new SimpleDateFormat( "yyyy-MM-dd", Locale.US ).parse( "2000-01-01" );
     }
 
     private void mockFailedChecksums( String path, File expectedFile )

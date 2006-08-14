@@ -19,6 +19,9 @@ package org.apache.maven.repository.proxy;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.repository.digest.DigestUtils;
 import org.apache.maven.repository.digest.DigesterException;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
@@ -34,8 +37,12 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -145,12 +152,15 @@ public class DefaultProxyRequestHandler
         }
         else if ( path.endsWith( "maven-metadata.xml" ) )
         {
-            // TODO: merge the metadata!
+            File metadataFile = new File( target.getParentFile(), ".metadata-" + repository.getRepository().getId() );
+
             policy = repository.getRepository().getReleases();
-            if ( force || !target.exists() || isOutOfDate( policy, target ) )
+            if ( force || !metadataFile.exists() || isOutOfDate( policy, metadataFile ) )
             {
-                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy,
-                                       force );
+                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, metadataFile,
+                                       policy, force );
+
+                mergeMetadataFiles( target, metadataFile );
             }
         }
         else
@@ -215,18 +225,100 @@ public class DefaultProxyRequestHandler
         }
     }
 
+    private void mergeMetadataFiles( File target, File metadataFile )
+        throws ProxyException
+    {
+        if ( target.exists() )
+        {
+            MetadataXpp3Reader reader = new MetadataXpp3Reader();
+            Metadata metadata;
+            FileReader fileReader = null;
+            try
+            {
+                fileReader = new FileReader( target );
+                metadata = reader.read( fileReader );
+            }
+            catch ( XmlPullParserException e )
+            {
+                throw new ProxyException( "Unable to parse existing metadata: " + e.getMessage(), e );
+            }
+            catch ( IOException e )
+            {
+                throw new ProxyException( "Unable to read existing metadata: " + e.getMessage(), e );
+            }
+            finally
+            {
+                IOUtil.close( fileReader );
+            }
+
+            fileReader = null;
+            boolean changed = false;
+            try
+            {
+                fileReader = new FileReader( metadataFile );
+                Metadata newMetadata = reader.read( fileReader );
+
+                changed = metadata.merge( newMetadata );
+            }
+            catch ( IOException e )
+            {
+                // ignore the merged file
+                getLogger().warn( "Unable to read new metadata: " + e.getMessage() );
+            }
+            catch ( XmlPullParserException e )
+            {
+                // ignore the merged file
+                getLogger().warn( "Unable to parse new metadata: " + e.getMessage() );
+            }
+            finally
+            {
+                IOUtil.close( fileReader );
+            }
+
+            if ( changed )
+            {
+                FileWriter fileWriter = null;
+                try
+                {
+                    fileWriter = new FileWriter( target );
+                    new MetadataXpp3Writer().write( fileWriter, metadata );
+                }
+                catch ( IOException e )
+                {
+                    getLogger().warn( "Unable to store new metadata: " + e.getMessage() );
+                }
+                finally
+                {
+                    IOUtil.close( fileWriter );
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                FileUtils.copyFile( metadataFile, target );
+            }
+            catch ( IOException e )
+            {
+                // warn, but ignore
+                getLogger().warn( "Unable to copy metadata: " + metadataFile + " to " + target );
+            }
+        }
+    }
+
     private void getFileFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
                                         ProxyInfo httpProxy, File target, ArtifactRepositoryPolicy policy,
                                         boolean force )
         throws ProxyException
     {
-        boolean connected = false;
         Map checksums = null;
         Wagon wagon = null;
 
         File temp = new File( target.getAbsolutePath() + ".tmp" );
         temp.deleteOnExit();
 
+        boolean connected = false;
         try
         {
             String protocol = repository.getRepository().getProtocol();
