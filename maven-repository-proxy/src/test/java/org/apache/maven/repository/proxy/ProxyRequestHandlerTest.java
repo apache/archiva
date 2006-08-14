@@ -36,10 +36,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Test the proxy handler.
+ *
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test checksum request from proxy gets from managed repo when present
- * @todo test checksum request from proxy doesn't go to proxy when not in managed repo
  * @todo test metadata - general
  * @todo test metadata - multiple repos are merged
  * @todo test metadata - update interval
@@ -800,23 +800,6 @@ public class ProxyRequestHandlerTest
         }
     }
 
-    private void mockFailedChecksums( String path, File expectedFile )
-        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
-    {
-        // must do it twice as it will re-attempt it
-        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
-        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
-
-        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
-        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
-
-        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
-        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
-
-        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
-        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
-    }
-
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemote()
         throws ResourceDoesNotExistException, ProxyException, IOException
     {
@@ -837,6 +820,107 @@ public class ProxyRequestHandlerTest
 
         assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".sha1" ).exists() );
         assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".md5" ).exists() );
+    }
+
+    public void testGetChecksumPresentInManagedRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-checksum-from-managed-repo/1.0/get-checksum-from-managed-repo-1.0.jar.sha1";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetAlwaysChecksumPresentInManagedRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-checksum-from-managed-repo/1.0/get-checksum-from-managed-repo-1.0.jar.sha1";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetChecksumNotPresentInManagedRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar.sha1";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = null;
+        try
+        {
+            file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // expected
+
+            assertFalse( expectedFile.exists() );
+        }
+    }
+
+    public void testGetAlwaysChecksumNotPresentInManagedRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar.sha1";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = null;
+        try
+        {
+            file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // expected
+
+            assertFalse( expectedFile.exists() );
+        }
+    }
+
+    private void mockFailedChecksums( String path, File expectedFile )
+        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
+    {
+        // must do it twice as it will re-attempt it
+        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
     }
 
     private File getChecksumFile( File file, String algorithm )
