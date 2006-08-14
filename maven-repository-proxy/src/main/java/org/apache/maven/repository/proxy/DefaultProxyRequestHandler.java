@@ -155,6 +155,13 @@ public class DefaultProxyRequestHandler
             File metadataFile = new File( target.getParentFile(), ".metadata-" + repository.getRepository().getId() );
 
             policy = repository.getRepository().getReleases();
+
+            // if it is snapshot metadata, use a different policy
+            if ( path.endsWith( "-SNAPSHOT/maven-metadata.xml" ) )
+            {
+                policy = repository.getRepository().getSnapshots();
+            }
+
             if ( force || !metadataFile.exists() || isOutOfDate( policy, metadataFile ) )
             {
                 getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, metadataFile,
@@ -190,20 +197,21 @@ public class DefaultProxyRequestHandler
             if ( artifact != null )
             {
                 ArtifactRepository artifactRepository = repository.getRepository();
+
+                // we use the release policy for tracking failures, but only check for updates on snapshots
+                // also, we don't look for updates on timestamp snapshot files, only non-unique-version ones
                 policy = artifact.isSnapshot() ? artifactRepository.getSnapshots() : artifactRepository.getReleases();
 
-                if ( !policy.isEnabled() )
+                boolean needsUpdate = false;
+                if ( artifact.getVersion().endsWith( "-SNAPSHOT" ) && isOutOfDate( policy, target ) )
                 {
-                    getLogger().debug( "Skipping disabled repository " + repository.getName() );
+                    needsUpdate = true;
                 }
-                else
+
+                if ( needsUpdate || force || !target.exists() )
                 {
-                    // Don't use releases policy, we don't want to perform updates on them (only metadata, as used earlier)
-                    if ( force || !target.exists() || isOutOfDate( policy, target ) )
-                    {
-                        getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
-                                               managedRepository.getBasedir(), wagonProxy, target, policy, force );
-                    }
+                    getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
+                                           managedRepository.getBasedir(), wagonProxy, target, policy, force );
                 }
             }
             else
@@ -312,6 +320,12 @@ public class DefaultProxyRequestHandler
                                         boolean force )
         throws ProxyException
     {
+        if ( !policy.isEnabled() )
+        {
+            getLogger().debug( "Skipping disabled repository " + repository.getName() );
+            return;
+        }
+
         Map checksums = null;
         Wagon wagon = null;
 
@@ -344,22 +358,32 @@ public class DefaultProxyRequestHandler
 
                     getLogger().debug( "Trying " + path + " from " + repository.getName() + "..." );
 
+                    boolean downloaded = true;
                     if ( force || !target.exists() )
                     {
                         wagon.get( path, temp );
                     }
                     else
                     {
-                        wagon.getIfNewer( path, temp, target.lastModified() );
+                        downloaded = wagon.getIfNewer( path, temp, target.lastModified() );
                     }
 
-                    success = checkChecksum( checksums, path, wagon, repositoryCachePath );
-
-                    if ( tries > 1 && !success )
+                    if ( downloaded )
                     {
-                        processRepositoryFailure( repository, "Checksum failures occurred while downloading " + path,
-                                                  path, policy );
-                        return;
+                        success = checkChecksum( checksums, path, wagon, repositoryCachePath );
+
+                        if ( tries > 1 && !success )
+                        {
+                            processRepositoryFailure( repository,
+                                                      "Checksum failures occurred while downloading " + path, path,
+                                                      policy );
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // getIfNewer determined we were up to date
+                        success = true;
                     }
                 }
                 while ( !success );

@@ -21,6 +21,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -38,6 +39,7 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,18 +49,6 @@ import java.util.Locale;
  *
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test snapshots - general
- * @todo test snapshots - newer version on repo1 (than local), timestamp driven
- * @todo test snapshots - older version on repo1 skipped (than local), timestamp driven
- * @todo test snapshots - newer version on repo2 is pulled down (no local), timestamp driven
- * @todo test snapshots - older version on repo2 is skipped  (no local), timestamp driven
- * @todo test snapshots - update interval (not updated if within period), timestamp driven
- * @todo test snapshots - newer version on repo1 (than local), metadata driven
- * @todo test snapshots - older version on repo1 skipped (than local), metadata driven
- * @todo test snapshots - newer version on repo2 is pulled down (no local), metadata driven
- * @todo test snapshots - older version on repo2 is skipped  (no local), metadata driven
- * @todo test snapshots - update interval (not updated if within period), metadata driven
- * @todo test snapshots - when failure is cached but cache period is over (and check failure is cleared)
  * @todo test when managed repo is m1 layout (proxy is m2), including metadata
  * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
  * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
@@ -162,6 +152,27 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
+    }
+
+    public void testGetDefaultLayoutRemoteUpdate()
+        throws ResourceDoesNotExistException, ProxyException, IOException, ParseException
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        expectedFile.setLastModified( getPastDate().getTime() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
 
     public void testGetWhenInBothProxiedRepos()
@@ -987,8 +998,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
     }
 
-    public void testGetMetadataNotExpired()
-        throws IOException, ResourceDoesNotExistException, ProxyException
+    public void testGetReleaseMetadataNotExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
@@ -996,12 +1007,105 @@ public class ProxyRequestHandlerTest
 
         assertTrue( expectedFile.exists() );
 
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepository1.getReleases().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER );
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
 
         String unexpectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        assertFalse( "Check content doesn't match proxy version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetSnapshotMetadataNotExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepository1.getReleases().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+
+        String unexpectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        assertFalse( "Check content doesn't match proxy version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetReleaseMetadataExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepository1.getReleases().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        StringWriter expectedContents = new StringWriter();
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( "get-updated-metadata" );
+        m.setVersioning( new Versioning() );
+        m.getVersioning().addVersion( "1.0" );
+        m.getVersioning().addVersion( "2.0" );
+        m.setModelEncoding( null );
+        new MetadataXpp3Writer().write( expectedContents, m );
+
+        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertFalse( "Check content doesn't match proxy version",
+                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetSnapshotMetadataExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
+    {
+        String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+
+        assertTrue( expectedFile.exists() );
+
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepository1.getReleases().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER );
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        StringWriter expectedContents = new StringWriter();
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( "get-updated-metadata" );
+        m.setVersion( "1.0-SNAPSHOT" );
+        m.setVersioning( new Versioning() );
+        m.getVersioning().setSnapshot( new Snapshot() );
+        m.getVersioning().getSnapshot().setTimestamp( "20050831.111213" );
+        m.getVersioning().getSnapshot().setBuildNumber( 2 );
+        m.setModelEncoding( null );
+        new MetadataXpp3Writer().write( expectedContents, m );
+
+        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
@@ -1038,7 +1142,7 @@ public class ProxyRequestHandlerTest
 
         assertTrue( expectedFile.exists() );
 
-        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getHistoricalDate().getTime() );
+        new File( expectedFile.getParentFile(), ".metadata-proxied1" ).setLastModified( getPastDate().getTime() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
@@ -1085,10 +1189,285 @@ public class ProxyRequestHandlerTest
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
 
-    private static Date getHistoricalDate()
+    public void testSnapshotNonExistant()
+        throws ProxyException
+    {
+        String path = "org/apache/maven/test/does-not-exist/1.0-SNAPSHOT/does-not-exist-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "File returned was: " + file + "; should have got a not found exception" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // expected, but check file was not created
+            assertFalse( expectedFile.exists() );
+        }
+    }
+
+    public void testTimestampDrivenSnapshotNotPresentAlready()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+    }
+
+    public void testNewerTimestampDrivenSnapshotOnFirstRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException, ParseException
+    {
+        String path =
+            "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertTrue( expectedFile.exists() );
+
+        expectedFile.setLastModified( getPastDate().getTime() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+    }
+
+    public void testOlderTimestampDrivenSnapshotOnFirstRepo()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        expectedFile.setLastModified( getFutureDate().getTime() );
+
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+/* TODO: won't pass until Wagon preserves timestamp on download
+    public void testNewerTimestampDrivenSnapshotOnSecondRepoThanFirstNotPresentAlready()
+        throws ResourceDoesNotExistException, ProxyException, IOException, ParseException
+    {
+        String path =
+            "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File repoLocation = getTestFile( "target/test-repository/proxied1" );
+        FileUtils.deleteDirectory( repoLocation );
+        copyDirectoryStructure( getTestFile( "src/test/repositories/proxied1" ), repoLocation );
+        proxiedRepository1 = createRepository( "proxied1", repoLocation );
+
+        new File( proxiedRepository1.getBasedir(), path ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepositories.clear();
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository1 ) );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+*/
+
+    public void testOlderTimestampDrivenSnapshotOnSecondRepoThanFirstNotPresentAlready()
+        throws ParseException, ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File repoLocation = getTestFile( "target/test-repository/proxied2" );
+        FileUtils.deleteDirectory( repoLocation );
+        copyDirectoryStructure( getTestFile( "src/test/repositories/proxied2" ), repoLocation );
+        proxiedRepository2 = createRepository( "proxied2", repoLocation );
+
+        new File( proxiedRepository2.getBasedir(), path ).setLastModified( getPastDate().getTime() );
+
+        proxiedRepositories.clear();
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository1 ) );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        proxiedFile = new File( proxiedRepository2.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testTimestampDrivenSnapshotNotExpired()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path =
+            "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertTrue( expectedFile.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        proxiedFile.setLastModified( getFutureDate().getTime() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testTimestampDrivenSnapshotNotUpdated()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path =
+            "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        expectedFile.setLastModified( proxiedFile.lastModified() );
+
+        proxiedRepository1.getSnapshots().setUpdatePolicy( ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testTimestampDrivenSnapshotNotPresentAlreadyExpiredCacheFailure()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path, ALWAYS_UPDATE_POLICY );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
+    }
+
+    public void testMetadataDrivenSnapshotNotPresentAlready()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path =
+            "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+    }
+
+    public void testGetMetadataDrivenSnapshotRemoteUpdate()
+        throws ResourceDoesNotExistException, ProxyException, IOException, ParseException
+    {
+        // Metadata driven snapshots (using a full timestamp) are treated like a release. It is the timing of the
+        // updates to the metadata files that triggers which will be downloaded
+
+        String path =
+            "org/apache/maven/test/get-present-metadata-snapshot/1.0-SNAPSHOT/get-present-metadata-snapshot-1.0-20050831.101112-1.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        expectedFile.setLastModified( getPastDate().getTime() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    private static Date getPastDate()
         throws ParseException
     {
         return new SimpleDateFormat( "yyyy-MM-dd", Locale.US ).parse( "2000-01-01" );
+    }
+
+    private static Date getFutureDate()
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.add( Calendar.YEAR, 1 );
+        return cal.getTime();
     }
 
     private void mockFailedChecksums( String path, File expectedFile )
