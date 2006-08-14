@@ -40,6 +40,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -48,10 +49,6 @@ import java.util.Locale;
  * Test the proxy handler.
  *
  * @author Brett Porter
- * @todo! tests to do vvv
- * @todo test when managed repo is m1 layout (proxy is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
  */
 public class ProxyRequestHandlerTest
     extends PlexusTestCase
@@ -60,11 +57,17 @@ public class ProxyRequestHandlerTest
 
     private List proxiedRepositories;
 
+    private List legacyProxiedRepositories;
+
     private ArtifactRepository defaultManagedRepository;
+
+    private ArtifactRepository legacyManagedRepository;
 
     private ArtifactRepository proxiedRepository1;
 
     private ArtifactRepository proxiedRepository2;
+
+    private ArtifactRepository legacyProxiedRepository;
 
     private ArtifactRepositoryLayout defaultLayout;
 
@@ -87,14 +90,24 @@ public class ProxyRequestHandlerTest
 
         requestHandler = (ProxyRequestHandler) lookup( ProxyRequestHandler.ROLE );
 
+        factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+
         File repoLocation = getTestFile( "target/test-repository/managed" );
         FileUtils.deleteDirectory( repoLocation );
         copyDirectoryStructure( getTestFile( "src/test/repositories/managed" ), repoLocation );
 
         defaultLayout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
-        factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
         defaultManagedRepository = createRepository( "managed-repository", repoLocation );
+
+        repoLocation = getTestFile( "target/test-repository/legacy-managed" );
+        FileUtils.deleteDirectory( repoLocation );
+        copyDirectoryStructure( getTestFile( "src/test/repositories/legacy-managed" ), repoLocation );
+
+        ArtifactRepositoryLayout legacyLayout =
+            (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
+
+        legacyManagedRepository = createRepository( "managed-repository", repoLocation );
 
         File location = getTestFile( "src/test/repositories/proxied1" );
         proxiedRepository1 = createRepository( "proxied1", location );
@@ -105,6 +118,11 @@ public class ProxyRequestHandlerTest
         proxiedRepositories = new ArrayList( 2 );
         proxiedRepositories.add( createProxiedRepository( proxiedRepository1 ) );
         proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+
+        location = getTestFile( "src/test/repositories/legacy-proxied" );
+        legacyProxiedRepository = createRepository( "legacy-proxied", location, legacyLayout );
+
+        legacyProxiedRepositories = Collections.singletonList( createProxiedRepository( legacyProxiedRepository ) );
 
         wagonMockControl = MockControl.createNiceControl( Wagon.class );
         wagonMock = (Wagon) wagonMockControl.getMock();
@@ -1457,6 +1475,136 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
 
+    public void testLegacyManagedRepoGetNotPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(),
+                                     "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar" );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        // TODO: timestamp preservation requires support for that in wagon
+//        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
+    }
+
+    public void testLegacyManagedRepoGetAlreadyPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+        long originalModificationTime = expectedFile.lastModified();
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(),
+                                     "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar" );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
+        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
+                      file.lastModified() );
+    }
+
+    public void testLegacyProxyRepoGetNotPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, legacyProxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile =
+            new File( legacyProxiedRepository.getBasedir(), "org.apache.maven.test/jars/get-default-layout-1.0.jar" );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        // TODO: timestamp preservation requires support for that in wagon
+//        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
+    }
+
+    public void testLegacyProxyRepoGetAlreadyPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+        long originalModificationTime = expectedFile.lastModified();
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, legacyProxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        File proxiedFile = new File( legacyProxiedRepository.getBasedir(),
+                                     "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
+        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
+                      file.lastModified() );
+    }
+
+    public void testLegacyManagedAndProxyRepoGetNotPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, legacyProxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        // TODO: timestamp preservation requires support for that in wagon
+//        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
+    }
+
+    public void testLegacyManagedAndProxyRepoGetAlreadyPresent()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+        long originalModificationTime = expectedFile.lastModified();
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, legacyProxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
+        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
+                      file.lastModified() );
+    }
+
     private static Date getPastDate()
         throws ParseException
     {
@@ -1567,6 +1715,12 @@ public class ProxyRequestHandlerTest
         throws MalformedURLException
     {
         return createRepository( id, repoLocation.toURI().toURL().toExternalForm() );
+    }
+
+    private ArtifactRepository createRepository( String id, File location, ArtifactRepositoryLayout layout )
+        throws MalformedURLException
+    {
+        return createRepository( id, location.toURI().toURL().toExternalForm(), layout );
     }
 
     private ArtifactRepository createRepository( String id, String url )

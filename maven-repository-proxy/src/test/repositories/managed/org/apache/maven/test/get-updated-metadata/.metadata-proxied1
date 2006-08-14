@@ -17,9 +17,9 @@
 <metadata>
   <groupId>org.apache.maven.test</groupId>
   <artifactId>get-updated-metadata</artifactId>
-  <versionining>
+  <versioning>
     <versions>
       <version>1.0</version>
     </versions>
-  </versionining>
+  </versioning>
 </metadata>
