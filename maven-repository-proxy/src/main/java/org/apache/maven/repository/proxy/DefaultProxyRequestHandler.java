@@ -19,6 +19,8 @@ package org.apache.maven.repository.proxy;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
+import org.apache.maven.repository.digest.DigestUtils;
+import org.apache.maven.repository.digest.DigesterException;
 import org.apache.maven.repository.discovery.ArtifactDiscoverer;
 import org.apache.maven.repository.discovery.DiscovererException;
 import org.apache.maven.wagon.ConnectionException;
@@ -47,6 +49,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @plexus.component
+ * @todo use wagonManager for cache use file:// as URL
  * @todo this currently duplicates a lot of the wagon manager, and doesn't do things like snapshot resolution, etc.
  * The checksum handling is inconsistent with that of the wagon manager.
  * Should we have a more artifact based one? This will merge metadata so should behave correctly, and it is able to
@@ -72,6 +75,11 @@ public class DefaultProxyRequestHandler
      */
     private Map/*<String,Wagon>*/ wagons;
 
+    /**
+     * @plexus.requirement role="org.apache.maven.repository.digest.Digester"
+     */
+    private Map/*<String,Digester>*/ digesters;
+
     public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException
     {
@@ -81,16 +89,8 @@ public class DefaultProxyRequestHandler
     public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException
     {
-        // TODO! this will prove wrong for metadata and snapshots, let tests bring it out
-        //@todo use wagonManager for cache use file:// as URL
-        File cachedFile = new File( managedRepository.getBasedir(), path );
-        if ( !cachedFile.exists() )
-        {
-            cachedFile = getAlways( path, proxiedRepositories, managedRepository, wagonProxy );
-        }
-        return cachedFile;
+        return get( managedRepository, path, proxiedRepositories, wagonProxy, false );
     }
-
 
     public File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException
@@ -102,19 +102,26 @@ public class DefaultProxyRequestHandler
                            ProxyInfo wagonProxy )
         throws ResourceDoesNotExistException, ProxyException
     {
+        return get( managedRepository, path, proxiedRepositories, wagonProxy, true );
+    }
+
+    private File get( ArtifactRepository managedRepository, String path, List proxiedRepositories, ProxyInfo wagonProxy,
+                      boolean force )
+        throws ProxyException, ResourceDoesNotExistException
+    {
         File target = new File( managedRepository.getBasedir(), path );
 
         for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
         {
             ProxiedArtifactRepository repository = (ProxiedArtifactRepository) i.next();
 
-            if ( repository.isCachedFailure( path ) )
+            if ( !force && repository.isCachedFailure( path ) )
             {
                 processCachedRepositoryFailure( repository, "Cached failure found for: " + path );
             }
             else
             {
-                get( path, target, repository, managedRepository, wagonProxy );
+                get( path, target, repository, managedRepository, wagonProxy, force );
             }
         }
 
@@ -127,10 +134,10 @@ public class DefaultProxyRequestHandler
     }
 
     private void get( String path, File target, ProxiedArtifactRepository repository,
-                      ArtifactRepository managedRepository, ProxyInfo wagonProxy )
+                      ArtifactRepository managedRepository, ProxyInfo wagonProxy, boolean force )
         throws ProxyException
     {
-        ArtifactRepositoryPolicy policy = null;
+        ArtifactRepositoryPolicy policy;
 
         if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
         {
@@ -138,12 +145,12 @@ public class DefaultProxyRequestHandler
         }
         else if ( path.endsWith( "maven-metadata.xml" ) )
         {
-            // TODO: this is not "always" as this method expects!
             // TODO: merge the metadata!
             policy = repository.getRepository().getReleases();
-            if ( !target.exists() || isOutOfDate( policy, target ) )
+            if ( force || !target.exists() || isOutOfDate( policy, target ) )
             {
-                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy );
+                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy,
+                                       force );
             }
         }
         else
@@ -182,23 +189,21 @@ public class DefaultProxyRequestHandler
                 else
                 {
                     // Don't use releases policy, we don't want to perform updates on them (only metadata, as used earlier)
-                    // TODO: this is not "always" as this method expects!
-                    if ( !target.exists() || isOutOfDate( policy, target ) )
+                    if ( force || !target.exists() || isOutOfDate( policy, target ) )
                     {
                         getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
-                                               managedRepository.getBasedir(), wagonProxy, target, policy );
+                                               managedRepository.getBasedir(), wagonProxy, target, policy, force );
                     }
                 }
             }
             else
             {
                 // Some other unknown file in the repository, proxy as is
-                // TODO: this is not "always" as this method expects!
-                if ( !target.exists() )
+                if ( force || !target.exists() )
                 {
                     policy = repository.getRepository().getReleases();
-                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target,
-                                           policy );
+                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy,
+                                           force );
                 }
             }
         }
@@ -211,12 +216,16 @@ public class DefaultProxyRequestHandler
     }
 
     private void getFileFromRepository( String path, ProxiedArtifactRepository repository, String repositoryCachePath,
-                                        ProxyInfo httpProxy, File target, ArtifactRepositoryPolicy policy )
+                                        ProxyInfo httpProxy, File target, ArtifactRepositoryPolicy policy,
+                                        boolean force )
         throws ProxyException
     {
         boolean connected = false;
         Map checksums = null;
         Wagon wagon = null;
+
+        File temp = new File( target.getAbsolutePath() + ".tmp" );
+        temp.deleteOnExit();
 
         try
         {
@@ -234,9 +243,6 @@ public class DefaultProxyRequestHandler
             connected = connectToRepository( wagon, repository, httpProxy );
             if ( connected )
             {
-                File temp = new File( target.getAbsolutePath() + ".tmp" );
-                temp.deleteOnExit();
-
                 int tries = 0;
                 boolean success;
 
@@ -246,7 +252,7 @@ public class DefaultProxyRequestHandler
 
                     getLogger().debug( "Trying " + path + " from " + repository.getName() + "..." );
 
-                    if ( !target.exists() )
+                    if ( force || !target.exists() )
                     {
                         wagon.get( path, temp );
                     }
@@ -263,14 +269,14 @@ public class DefaultProxyRequestHandler
                                                   path, policy );
                         return;
                     }
-
-                    // temp won't exist if we called getIfNewer and it was older, but its still a successful return
-                    if ( temp.exists() )
-                    {
-                        moveTempToTarget( temp, target );
-                    }
                 }
                 while ( !success );
+
+                // temp won't exist if we called getIfNewer and it was older, but its still a successful return
+                if ( temp.exists() )
+                {
+                    moveTempToTarget( temp, target );
+                }
             }
             //try next repository
         }
@@ -289,6 +295,8 @@ public class DefaultProxyRequestHandler
         }
         finally
         {
+            temp.delete();
+
             if ( wagon != null && checksums != null )
             {
                 releaseChecksumListeners( wagon, checksums );
@@ -374,70 +382,92 @@ public class DefaultProxyRequestHandler
         throws ProxyException
     {
         releaseChecksumListeners( wagon, checksumMap );
-        for ( Iterator checksums = checksumMap.keySet().iterator(); checksums.hasNext(); )
+
+        boolean correctChecksum = false;
+
+        boolean allNotFound = true;
+
+        for ( Iterator i = checksumMap.keySet().iterator(); i.hasNext() && !correctChecksum; )
         {
-            String checksumExt = (String) checksums.next();
+            String checksumExt = (String) i.next();
             ChecksumObserver checksum = (ChecksumObserver) checksumMap.get( checksumExt );
             String checksumPath = path + "." + checksumExt;
             File checksumFile = new File( repositoryCachePath, checksumPath );
 
+            File tempChecksumFile = new File( checksumFile.getAbsolutePath() + ".tmp" );
+            tempChecksumFile.deleteOnExit();
+
             try
             {
-                File tempChecksumFile = new File( checksumFile.getAbsolutePath() + ".tmp" );
-
                 wagon.get( checksumPath, tempChecksumFile );
 
-                String remoteChecksum = FileUtils.fileRead( tempChecksumFile ).trim();
-                if ( remoteChecksum.indexOf( ' ' ) > 0 )
-                {
-                    remoteChecksum = remoteChecksum.substring( 0, remoteChecksum.indexOf( ' ' ) );
-                }
+                allNotFound = false;
+
+                String remoteChecksum = DigestUtils.cleanChecksum( FileUtils.fileRead( tempChecksumFile ),
+                                                                   checksumExt.toUpperCase(),
+                                                                   path.substring( path.lastIndexOf( '/' ) ) );
 
                 String actualChecksum = checksum.getActualChecksum().toUpperCase();
                 remoteChecksum = remoteChecksum.toUpperCase();
 
-                boolean checksumCheck;
                 if ( remoteChecksum.equals( actualChecksum ) )
                 {
                     moveTempToTarget( tempChecksumFile, checksumFile );
 
-                    checksumCheck = true;
+                    correctChecksum = true;
                 }
                 else
                 {
                     getLogger().warn(
                         "The checksum '" + actualChecksum + "' did not match the remote value: " + remoteChecksum );
-                    checksumCheck = false;
                 }
-                return checksumCheck;
             }
             catch ( TransferFailedException e )
             {
                 getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
                                   e );
                 // do nothing try the next checksum
+
+                allNotFound = false;
             }
             catch ( ResourceDoesNotExistException e )
             {
                 getLogger().debug( "The checksum did not exist: " + checksumPath, e );
                 // do nothing try the next checksum
+                // remove it if it is present locally in case there is an old incorrect one
+                if ( checksumFile.exists() )
+                {
+                    checksumFile.delete();
+                }
             }
             catch ( AuthorizationException e )
             {
                 getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
                                   e );
                 // do nothing try the next checksum
+
+                allNotFound = false;
             }
             catch ( IOException e )
             {
                 getLogger().warn( "An error occurred while reading the temporary checksum file.", e );
-                return false;
+                // do nothing try the next checksum
+
+                allNotFound = false;
+            }
+            catch ( DigesterException e )
+            {
+                getLogger().warn( "The checksum was invalid: " + checksumPath + ": " + e.getMessage(), e );
+                // do nothing try the next checksum
+
+                allNotFound = false;
+            }
+            finally
+            {
+                tempChecksumFile.delete();
             }
         }
-
-        getLogger().debug( "No remote checksums available." );
-
-        return true;
+        return correctChecksum || allNotFound;
     }
 
     /**

@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Create a digest for a file.
@@ -72,36 +70,8 @@ public abstract class AbstractDigester
     public void verify( File file, String checksum )
         throws DigesterException
     {
-        String trimmedChecksum = checksum.replace( '\n', ' ' ).trim();
-
-        String algorithm = streamingDigester.getAlgorithm();
-
-        // Free-BSD / openssl
-        Matcher m = Pattern.compile( algorithm.replaceAll( "-", "" ) + "\\s*\\((.*?)\\)\\s*=\\s*([a-zA-Z0-9]+)" )
-            .matcher( trimmedChecksum );
-        if ( m.matches() )
-        {
-            String filename = m.group( 1 );
-            if ( !filename.equals( file.getName() ) )
-            {
-                throw new DigesterException( "Supplied checksum does not match checksum pattern" );
-            }
-            trimmedChecksum = m.group( 2 );
-        }
-        else
-        {
-            // GNU tools
-            m = Pattern.compile( "([a-zA-Z0-9]+)\\s\\*?(.+)" ).matcher( trimmedChecksum );
-            if ( m.matches() )
-            {
-                String filename = m.group( 2 );
-                if ( !filename.equals( file.getName() ) )
-                {
-                    throw new DigesterException( "Supplied checksum does not match checksum pattern" );
-                }
-                trimmedChecksum = m.group( 1 );
-            }
-        }
+        String trimmedChecksum =
+            DigestUtils.cleanChecksum( checksum, streamingDigester.getAlgorithm(), file.getName() );
 
         //Create checksum for jar file
         String sum = calc( file );

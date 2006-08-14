@@ -16,19 +16,21 @@ package org.apache.maven.repository.proxy;
  * limitations under the License.
  */
 
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.TransferFailedException;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.ConnectionException;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.apache.maven.wagon.TransferFailedException;
+import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.authentication.AuthenticationException;
+import org.apache.maven.wagon.authentication.AuthenticationInfo;
+import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.SessionListener;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.authentication.AuthenticationException;
-import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.apache.maven.wagon.authorization.AuthorizationException;
+import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * A dummy wagon implementation
@@ -40,16 +42,21 @@ public class WagonDelegate
 {
     private Wagon delegate;
 
+    private String contentToGet;
+
     public void get( String resourceName, File destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         delegate.get( resourceName, destination );
+        create( destination );
     }
 
     public boolean getIfNewer( String resourceName, File destination, long timestamp )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        return delegate.getIfNewer( resourceName, destination, timestamp );
+        boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
+        createIfMissing( destination );
+        return result;
     }
 
     public void put( File source, String destination )
@@ -153,5 +160,39 @@ public class WagonDelegate
     public void setDelegate( Wagon delegate )
     {
         this.delegate = delegate;
+    }
+
+    void setContentToGet( String content )
+    {
+        contentToGet = content;
+    }
+
+    private void createIfMissing( File destination )
+    {
+        // since the mock won't actually copy a file, create an empty one to simulate file existence
+        if ( !destination.exists() )
+        {
+            create( destination );
+        }
+    }
+
+    private void create( File destination )
+    {
+        try
+        {
+            destination.getParentFile().mkdirs();
+            if ( contentToGet == null )
+            {
+                destination.createNewFile();
+            }
+            else
+            {
+                FileUtils.fileWrite( destination.getAbsolutePath(), contentToGet );
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
     }
 }

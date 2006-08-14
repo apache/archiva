@@ -38,27 +38,27 @@ import java.util.List;
 /**
  * @author Brett Porter
  * @todo! tests to do vvv
- * @todo test get always
- * @todo test get always when resource is present locally but not in any proxied repos (should fail)
- * @todo test get always ignores cached failures
- * @todo test when managed repo is m1 layout (proxy is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
- * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
+ * @todo test checksum request from proxy gets from managed repo when present
+ * @todo test checksum request from proxy doesn't go to proxy when not in managed repo
  * @todo test metadata - general
  * @todo test metadata - multiple repos are merged
  * @todo test metadata - update interval
  * @todo test metadata - looking for an update and file has been removed remotely
  * @todo test snapshots - general
- * @todo test snapshots - newer version on repo2 is pulled down
- * @todo test snapshots - older version on repo2 is skipped
- * @todo test snapshots - update interval
+ * @todo test snapshots - newer version on repo1 (than local), timestamp driven
+ * @todo test snapshots - older version on repo1 skipped (than local), timestamp driven
+ * @todo test snapshots - newer version on repo2 is pulled down (no local), timestamp driven
+ * @todo test snapshots - older version on repo2 is skipped  (no local), timestamp driven
+ * @todo test snapshots - update interval (not updated if within period), timestamp driven
+ * @todo test snapshots - newer version on repo1 (than local), metadata driven
+ * @todo test snapshots - older version on repo1 skipped (than local), metadata driven
+ * @todo test snapshots - newer version on repo2 is pulled down (no local), metadata driven
+ * @todo test snapshots - older version on repo2 is skipped  (no local), metadata driven
+ * @todo test snapshots - update interval (not updated if within period), metadata driven
  * @todo test snapshots - when failure is cached but cache period is over (and check failure is cleared)
- * @todo test remote checksum only md5
- * @todo test remote checksum only sha1
- * @todo test remote checksum missing
- * @todo test remote checksum present and correct
- * @todo test remote checksum present and incorrect
- * @todo test remote checksum transfer failed
+ * @todo test when managed repo is m1 layout (proxy is m2), including metadata
+ * @todo test when one proxied repo is m1 layout (managed is m2), including metadata
+ * @todo test when one proxied repo is m1 layout (managed is m1), including metadata
  */
 public class ProxyRequestHandlerTest
     extends PlexusTestCase
@@ -451,6 +451,397 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
 
         assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
+    }
+
+    public void testGetAlwaysAlreadyPresent()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetAlwaysAlreadyPresentRemovedFromProxies()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-removed-from-proxies/1.0/get-removed-from-proxies-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+
+        // TODO: is this the correct behaviour, or should it be considered removed too?
+    }
+
+    public void testGetAlwaysWithCachedFailure()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository = createProxiedRepository( proxiedRepository1 );
+        proxiedArtifactRepository.addFailure( path, DEFAULT_POLICY );
+        proxiedRepositories.add( proxiedArtifactRepository );
+        proxiedRepositories.add( createProxiedRepository( proxiedRepository2 ) );
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+    }
+
+    public void testGetRemovesTemporaryFileOnSuccess()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File tempFile = new File( file.getParentFile(), file.getName() + ".tmp" );
+        assertFalse( "Check temporary file removed", tempFile.exists() );
+    }
+
+    public void testGetRemovesTemporaryFileOnError()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepository1 = createRepository( "proxied1", "test://..." );
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository1 = createProxiedRepository( proxiedRepository1 );
+        proxiedRepositories.add( proxiedArtifactRepository1 );
+
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMockControl.replay();
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // as expected
+            wagonMockControl.verify();
+
+            File tempFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
+            assertFalse( "Check temporary file removed", tempFile.exists() );
+        }
+    }
+
+    public void testGetRemovesTemporaryChecksumFileOnSuccess()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File tempFile = new File( file.getParentFile(), file.getName() + ".sha1.tmp" );
+        assertFalse( "Check temporary file removed", tempFile.exists() );
+    }
+
+    public void testGetRemovesTemporaryChecksumFileOnError()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepository1 = createRepository( "proxied1", "test://..." );
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository1 = createProxiedRepository( proxiedRepository1 );
+        proxiedRepositories.add( proxiedArtifactRepository1 );
+
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+
+        mockFailedChecksums( path, expectedFile );
+
+        wagonMockControl.replay();
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // as expected
+            wagonMockControl.verify();
+
+            File tempFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
+            assertFalse( "Check temporary file removed", tempFile.exists() );
+
+            tempFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" );
+            assertFalse( "Check temporary file removed", tempFile.exists() );
+        }
+    }
+
+    public void testGetChecksumBothCorrect()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File checksumFile = getChecksumFile( file, "sha1" );
+        assertTrue( "Check file created", checksumFile.exists() );
+        assertEquals( "Check checksum", "066d76e459f7782c312c31e8a11b3c0f1e3e43a7 *get-checksum-both-right-1.0.jar",
+                      FileUtils.fileRead( checksumFile ).trim() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
+    }
+
+    public void testGetCorrectSha1NoMd5()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File checksumFile = getChecksumFile( file, "sha1" );
+        assertTrue( "Check file created", checksumFile.exists() );
+        assertEquals( "Check checksum", "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
+                      FileUtils.fileRead( checksumFile ).trim() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
+    }
+
+    public void testGetCorrectSha1BadMd5()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File checksumFile = getChecksumFile( file, "sha1" );
+        assertTrue( "Check file created", checksumFile.exists() );
+        assertEquals( "Check checksum", "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
+                      FileUtils.fileRead( checksumFile ).trim() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
+    }
+
+    public void testGetCorrectMd5NoSha1()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File checksumFile = getChecksumFile( file, "md5" );
+        assertTrue( "Check file created", checksumFile.exists() );
+        assertEquals( "Check checksum", "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar",
+                      FileUtils.fileRead( checksumFile ).trim() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "sha1" ).exists() );
+    }
+
+    public void testGetCorrectMd5BadSha1()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-md5-bad-sha1/1.0/get-checksum-md5-bad-sha1-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        File checksumFile = getChecksumFile( file, "md5" );
+        assertTrue( "Check file created", checksumFile.exists() );
+        assertEquals( "Check checksum", "8a02aa67549d27b2a03cd4547439c6d3 *get-checksum-md5-bad-sha1-1.0.jar",
+                      FileUtils.fileRead( checksumFile ).trim() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "sha1" ).exists() );
+    }
+
+    public void testGetWithNoChecksums()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+
+        assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
+        assertFalse( "Check file not created", getChecksumFile( file, "sha1" ).exists() );
+    }
+
+    public void testGetBadMd5BadSha1()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // expect a failure
+            assertFalse( "Check file not created", expectedFile.exists() );
+
+            assertFalse( "Check file not created", getChecksumFile( expectedFile, "md5" ).exists() );
+            assertFalse( "Check file not created", getChecksumFile( expectedFile, "sha1" ).exists() );
+        }
+    }
+
+    public void testGetChecksumTransferFailed()
+        throws ResourceDoesNotExistException, ProxyException, IOException, TransferFailedException,
+        AuthorizationException
+    {
+        String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+
+        assertFalse( expectedFile.exists() );
+
+        proxiedRepository1 = createRepository( "proxied1", "test://..." );
+        proxiedRepositories.clear();
+        ProxiedArtifactRepository proxiedArtifactRepository1 = createProxiedRepository( proxiedRepository1 );
+        proxiedRepositories.add( proxiedArtifactRepository1 );
+
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+
+        mockFailedChecksums( path, expectedFile );
+
+        wagonMockControl.replay();
+
+        try
+        {
+            File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Found file: " + file + "; but was expecting a failure" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            // as expected
+            wagonMockControl.verify();
+
+            assertFalse( "Check file not created", expectedFile.exists() );
+
+            assertFalse( "Check file not created", getChecksumFile( expectedFile, "md5" ).exists() );
+            assertFalse( "Check file not created", getChecksumFile( expectedFile, "sha1" ).exists() );
+        }
+    }
+
+    private void mockFailedChecksums( String path, File expectedFile )
+        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
+    {
+        // must do it twice as it will re-attempt it
+        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".sha1", new File( expectedFile.getParentFile(), expectedFile.getName() + ".sha1.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+
+        wagonMock.get( path + ".md5", new File( expectedFile.getParentFile(), expectedFile.getName() + ".md5.tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+    }
+
+    public void testGetAlwaysBadChecksumPresentLocallyAbsentRemote()
+        throws ResourceDoesNotExistException, ProxyException, IOException
+    {
+        String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        String unexpectedContents = FileUtils.fileRead( expectedFile );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.getAlways( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+        assertTrue( "Check file created", file.exists() );
+        File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
+        String expectedContents = FileUtils.fileRead( proxiedFile );
+        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+
+        assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".sha1" ).exists() );
+        assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".md5" ).exists() );
+    }
+
+    private File getChecksumFile( File file, String algorithm )
+    {
+        return new File( file.getParentFile(), file.getName() + "." + algorithm );
     }
 
     /**
