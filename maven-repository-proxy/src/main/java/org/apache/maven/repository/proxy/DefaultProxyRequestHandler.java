@@ -450,7 +450,7 @@ public class DefaultProxyRequestHandler
         }
         catch ( NoSuchAlgorithmException e )
         {
-            getLogger().info( "An error occurred while preparing checksum observers", e );
+            getLogger().error( "An error occurred while preparing checksum observers: " + e.getMessage() );
         }
         return checksums;
     }
@@ -539,15 +539,14 @@ public class DefaultProxyRequestHandler
             }
             catch ( TransferFailedException e )
             {
-                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
-                                  e );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
 
                 allNotFound = false;
             }
             catch ( ResourceDoesNotExistException e )
             {
-                getLogger().debug( "The checksum did not exist: " + checksumPath, e );
+                getLogger().debug( "The checksum did not exist: " + checksumPath + "; " + e.getMessage() );
                 // do nothing try the next checksum
                 // remove it if it is present locally in case there is an old incorrect one
                 if ( checksumFile.exists() )
@@ -557,22 +556,21 @@ public class DefaultProxyRequestHandler
             }
             catch ( AuthorizationException e )
             {
-                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage(),
-                                  e );
+                getLogger().warn( "An error occurred during the download of " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
 
                 allNotFound = false;
             }
             catch ( IOException e )
             {
-                getLogger().warn( "An error occurred while reading the temporary checksum file.", e );
+                getLogger().warn( "An error occurred while reading the temporary checksum file: " + e.getMessage() );
                 // do nothing try the next checksum
 
                 allNotFound = false;
             }
             catch ( DigesterException e )
             {
-                getLogger().warn( "The checksum was invalid: " + checksumPath + ": " + e.getMessage(), e );
+                getLogger().warn( "The checksum was invalid: " + checksumPath + ": " + e.getMessage() );
                 // do nothing try the next checksum
 
                 allNotFound = false;
