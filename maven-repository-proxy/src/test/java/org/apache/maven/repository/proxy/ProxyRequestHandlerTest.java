@@ -39,9 +39,11 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -93,7 +95,8 @@ public class ProxyRequestHandlerTest
         factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
         File repoLocation = getTestFile( "target/test-repository/managed" );
-        FileUtils.deleteDirectory( repoLocation );
+        // faster only to delete this one before copying, the others are done case by case
+        FileUtils.deleteDirectory( new File( repoLocation, "org/apache/maven/test/get-merged-metadata" ) );
         copyDirectoryStructure( getTestFile( "src/test/repositories/managed" ), repoLocation );
 
         defaultLayout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
@@ -136,6 +139,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -199,6 +203,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -221,6 +226,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -258,7 +264,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path ).getAbsoluteFile();
-
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -292,6 +298,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path ).getAbsoluteFile();
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -334,6 +341,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path ).getAbsoluteFile();
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -372,6 +380,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepositories.clear();
@@ -402,6 +411,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepositories.clear();
@@ -552,6 +562,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -569,6 +580,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -619,6 +631,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -656,6 +669,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -677,6 +691,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -698,6 +713,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -719,6 +735,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -740,6 +757,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-md5-bad-sha1/1.0/get-checksum-md5-bad-sha1-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -761,6 +779,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -778,6 +797,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         try
@@ -802,6 +822,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         proxiedRepository1 = createRepository( "proxied1", "test://..." );
@@ -900,6 +921,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar.sha1";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         try
@@ -921,6 +943,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar.sha1";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         try
@@ -937,7 +960,7 @@ public class ProxyRequestHandlerTest
     }
 
     public void testGetMetadataNotPresent()
-        throws ProxyException
+        throws ProxyException, IOException
     {
         String path = "org/apache/maven/test/dummy-artifact/1.0/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
@@ -963,12 +986,13 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-metadata/1.0/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        String expectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        String expectedContents = getExpectedMetadata( "get-default-metadata", "1.0" );
         assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
     }
 
@@ -984,21 +1008,10 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        StringWriter expectedContents = new StringWriter();
-        Metadata m = new Metadata();
-        m.setGroupId( "org.apache.maven.test" );
-        m.setArtifactId( "get-merged-metadata" );
-        m.setVersioning( new Versioning() );
-        m.getVersioning().addVersion( "0.9" );
-        m.getVersioning().addVersion( "1.0" );
-        m.getVersioning().addVersion( "2.0" );
-        m.getVersioning().addVersion( "3.0" );
-        m.getVersioning().addVersion( "5.0" );
-        m.getVersioning().addVersion( "4.0" );
-        m.setModelEncoding( null );
-        new MetadataXpp3Writer().write( expectedContents, m );
+        String expectedContents = getExpectedMetadata( "get-merged-metadata", getVersioning(
+            Arrays.asList( new String[]{"0.9", "1.0", "2.0", "3.0", "5.0", "4.0"} ) ) );
 
-        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
     }
 
     public void testGetMetadataRemovedFromProxies()
@@ -1079,17 +1092,10 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        StringWriter expectedContents = new StringWriter();
-        Metadata m = new Metadata();
-        m.setGroupId( "org.apache.maven.test" );
-        m.setArtifactId( "get-updated-metadata" );
-        m.setVersioning( new Versioning() );
-        m.getVersioning().addVersion( "1.0" );
-        m.getVersioning().addVersion( "2.0" );
-        m.setModelEncoding( null );
-        new MetadataXpp3Writer().write( expectedContents, m );
+        String expectedContents =
+            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
 
-        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
@@ -1111,19 +1117,10 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        StringWriter expectedContents = new StringWriter();
-        Metadata m = new Metadata();
-        m.setGroupId( "org.apache.maven.test" );
-        m.setArtifactId( "get-updated-metadata" );
-        m.setVersion( "1.0-SNAPSHOT" );
-        m.setVersioning( new Versioning() );
-        m.getVersioning().setSnapshot( new Snapshot() );
-        m.getVersioning().getSnapshot().setTimestamp( "20050831.111213" );
-        m.getVersioning().getSnapshot().setBuildNumber( 2 );
-        m.setModelEncoding( null );
-        new MetadataXpp3Writer().write( expectedContents, m );
+        String expectedContents =
+            getExpectedMetadata( "get-updated-metadata", "1.0-SNAPSHOT", getVersioning( "20050831.111213", 2 ) );
 
-        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
@@ -1166,16 +1163,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        StringWriter expectedContents = new StringWriter();
-        Metadata m = new Metadata();
-        m.setGroupId( "org.apache.maven.test" );
-        m.setArtifactId( "get-updated-metadata" );
-        m.setVersioning( new Versioning() );
-        m.getVersioning().addVersion( "1.0" );
-        m.getVersioning().addVersion( "2.0" );
-        m.setModelEncoding( null );
-        new MetadataXpp3Writer().write( expectedContents, m );
-        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        String expectedContents =
+            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
         assertFalse( "Check content doesn't match old version",
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
@@ -1193,22 +1183,16 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        StringWriter expectedContents = new StringWriter();
-        Metadata m = new Metadata();
-        m.setGroupId( "org.apache.maven.test" );
-        m.setArtifactId( "get-updated-metadata" );
-        m.setVersioning( new Versioning() );
-        m.getVersioning().addVersion( "1.0" );
-        m.getVersioning().addVersion( "2.0" );
-        m.setModelEncoding( null );
-        new MetadataXpp3Writer().write( expectedContents, m );
-        assertEquals( "Check content matches", expectedContents.toString(), FileUtils.fileRead( file ) );
+        String expectedContents =
+            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
+
+        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
         assertFalse( "Check content doesn't match old version",
                      unexpectedContents.equals( FileUtils.fileRead( file ) ) );
     }
 
     public void testSnapshotNonExistant()
-        throws ProxyException
+        throws ProxyException, IOException
     {
         String path = "org/apache/maven/test/does-not-exist/1.0-SNAPSHOT/does-not-exist-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
@@ -1234,6 +1218,7 @@ public class ProxyRequestHandlerTest
             "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -1332,6 +1317,7 @@ public class ProxyRequestHandlerTest
             "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File repoLocation = getTestFile( "target/test-repository/proxied2" );
@@ -1413,6 +1399,7 @@ public class ProxyRequestHandlerTest
             "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         proxiedRepositories.clear();
@@ -1439,6 +1426,7 @@ public class ProxyRequestHandlerTest
             "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
@@ -1525,6 +1513,7 @@ public class ProxyRequestHandlerTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
 
+        expectedFile.delete();
         assertFalse( expectedFile.exists() );
 
         File file = requestHandler.get( path, legacyProxiedRepositories, defaultManagedRepository );
@@ -1603,6 +1592,54 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
+    }
+
+    private static Versioning getVersioning( List versions )
+    {
+        Versioning versioning = new Versioning();
+        for ( Iterator i = versions.iterator(); i.hasNext(); )
+        {
+            String v = (String) i.next();
+            versioning.addVersion( v );
+        }
+        return versioning;
+    }
+
+    private static String getExpectedMetadata( String artifactId, Versioning versioning )
+        throws IOException
+    {
+        return getExpectedMetadata( artifactId, null, versioning );
+    }
+
+    private static String getExpectedMetadata( String artifactId, String version, Versioning versioning )
+        throws IOException
+    {
+        StringWriter expectedContents = new StringWriter();
+
+        Metadata m = new Metadata();
+        m.setGroupId( "org.apache.maven.test" );
+        m.setArtifactId( artifactId );
+        m.setVersion( version );
+        m.setVersioning( versioning );
+        m.setModelEncoding( null );
+
+        new MetadataXpp3Writer().write( expectedContents, m );
+        return expectedContents.toString();
+    }
+
+    private static String getExpectedMetadata( String artifactId, String version )
+        throws IOException
+    {
+        return getExpectedMetadata( artifactId, version, null );
+    }
+
+    private static Versioning getVersioning( String timestamp, int buildNumber )
+    {
+        Versioning versioning = new Versioning();
+        versioning.setSnapshot( new Snapshot() );
+        versioning.getSnapshot().setTimestamp( timestamp );
+        versioning.getSnapshot().setBuildNumber( buildNumber );
+        return versioning;
     }
 
     private static Date getPastDate()

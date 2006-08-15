@@ -236,37 +236,48 @@ public class DefaultProxyRequestHandler
     private void mergeMetadataFiles( File target, File metadataFile )
         throws ProxyException
     {
-        if ( target.exists() )
+        MetadataXpp3Reader reader = new MetadataXpp3Reader();
+        if ( metadataFile.exists() )
         {
-            MetadataXpp3Reader reader = new MetadataXpp3Reader();
-            Metadata metadata;
-            FileReader fileReader = null;
-            try
+            Metadata metadata = null;
+            if ( target.exists() )
             {
-                fileReader = new FileReader( target );
-                metadata = reader.read( fileReader );
-            }
-            catch ( XmlPullParserException e )
-            {
-                throw new ProxyException( "Unable to parse existing metadata: " + e.getMessage(), e );
-            }
-            catch ( IOException e )
-            {
-                throw new ProxyException( "Unable to read existing metadata: " + e.getMessage(), e );
-            }
-            finally
-            {
-                IOUtil.close( fileReader );
+                FileReader fileReader = null;
+                try
+                {
+                    fileReader = new FileReader( target );
+                    metadata = reader.read( fileReader );
+                }
+                catch ( XmlPullParserException e )
+                {
+                    throw new ProxyException( "Unable to parse existing metadata: " + e.getMessage(), e );
+                }
+                catch ( IOException e )
+                {
+                    throw new ProxyException( "Unable to read existing metadata: " + e.getMessage(), e );
+                }
+                finally
+                {
+                    IOUtil.close( fileReader );
+                }
             }
 
-            fileReader = null;
+            FileReader fileReader = null;
             boolean changed = false;
             try
             {
                 fileReader = new FileReader( metadataFile );
                 Metadata newMetadata = reader.read( fileReader );
 
-                changed = metadata.merge( newMetadata );
+                if ( metadata != null )
+                {
+                    changed = metadata.merge( newMetadata );
+                }
+                else
+                {
+                    metadata = newMetadata;
+                    changed = true;
+                }
             }
             catch ( IOException e )
             {
@@ -299,18 +310,6 @@ public class DefaultProxyRequestHandler
                 {
                     IOUtil.close( fileWriter );
                 }
-            }
-        }
-        else
-        {
-            try
-            {
-                FileUtils.copyFile( metadataFile, target );
-            }
-            catch ( IOException e )
-            {
-                // warn, but ignore
-                getLogger().warn( "Unable to copy metadata: " + metadataFile + " to " + target );
             }
         }
     }

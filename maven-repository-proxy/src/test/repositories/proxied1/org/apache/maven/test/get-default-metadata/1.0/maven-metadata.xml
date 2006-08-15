@@ -15,5 +15,7 @@
   -->
 
 <metadata>
-
+  <groupId>org.apache.maven.test</groupId>
+  <artifactId>get-default-metadata</artifactId>
+  <version>1.0</version>
 </metadata>
