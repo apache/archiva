@@ -33,6 +33,8 @@ public class RepositoryActionMapper
 {
     private static final String BROWSE_PREFIX = "/browse/";
 
+    private static final String PROXY_PREFIX = "/proxy/";
+
     public String getUriFromActionMapping( ActionMapping actionMapping )
     {
         Map params = actionMapping.getParams();
@@ -48,6 +50,10 @@ public class RepositoryActionMapper
         {
             return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
                 params.remove( "version" );
+        }
+        else if ( "proxy".equals( actionMapping.getName() ) )
+        {
+            return PROXY_PREFIX + params.remove( "path" );
         }
 
         return super.getUriFromActionMapping( actionMapping );
@@ -88,6 +94,15 @@ public class RepositoryActionMapper
                     return new ActionMapping( "showArtifact", "/", "", params );
                 }
             }
+        }
+        else if ( path.startsWith( PROXY_PREFIX ) )
+        {
+            // retain the leading /
+            path = path.substring( PROXY_PREFIX.length() - 1 );
+
+            Map params = new HashMap();
+            params.put( "path", path );
+            return new ActionMapping( "proxy", "/", "", params );
         }
 
         return super.getMapping( httpServletRequest );

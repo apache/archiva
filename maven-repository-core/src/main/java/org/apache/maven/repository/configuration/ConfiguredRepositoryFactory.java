@@ -17,6 +17,7 @@ package org.apache.maven.repository.configuration;
  */
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.repository.proxy.ProxiedArtifactRepository;
 
 import java.util.List;
 
@@ -59,7 +60,7 @@ public interface ConfiguredRepositoryFactory
      * @param configuration the configuration
      * @return the artifact repository
      */
-    ArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration );
+    ProxiedArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration );
 
     /**
      * Create artifact repositories from the given proxy repository configurations.

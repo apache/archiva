@@ -20,6 +20,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.repository.proxy.ProxiedArtifactRepository;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class DefaultConfiguredRepositoryFactory
         return repoFactory.createArtifactRepository( configuration.getId(), repoDir, layout, null, null );
     }
 
-    public ArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration )
+    public ProxiedArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration )
     {
         boolean enabled = isEnabled( configuration.getSnapshotsPolicy() );
         String updatePolicy =
@@ -69,8 +70,15 @@ public class DefaultConfiguredRepositoryFactory
             new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
-        return repoFactory.createArtifactRepository( configuration.getId(), configuration.getUrl(), layout,
-                                                     snapshotsPolicy, releasesPolicy );
+        ArtifactRepository artifactRepository = repoFactory.createArtifactRepository( configuration.getId(),
+                                                                                      configuration.getUrl(), layout,
+                                                                                      snapshotsPolicy, releasesPolicy );
+        ProxiedArtifactRepository repository = new ProxiedArtifactRepository( artifactRepository );
+        repository.setCacheFailures( configuration.isCacheFailures() );
+        repository.setHardFail( configuration.isHardFail() );
+        repository.setName( configuration.getName() );
+        repository.setUseNetworkProxy( configuration.isUseNetworkProxy() );
+        return repository;
     }
 
     public List createRepositories( Configuration configuration )

@@ -111,17 +111,15 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
-    <!-- TODO! old actions
-    <action name="proxy" class="org.apache.maven.repository.proxy.web.action.RepositoryProxyAction">
-      <result name="success" type="stream">
-        <param name="contentType">application/octet-stream</param>
+    <action name="proxy" class="proxyAction">
+      <result type="stream">
+        <param name="contentType">${contentType}</param>
+        <param name="contentDisposition">filename="${filename}"</param>
         <param name="inputName">artifactStream</param>
         <param name="bufferSize">1024</param>
       </result>
-      <result name="notFound" type="dispatcher">notFoundError</result>
-      <result name="proxyError" type="dispatcher">proxyError</result>
+      <result name="notFound" type="httpheader">404</result>
     </action>
-    -->
   </package>
 
   <!-- Configuration for the admin package. -->

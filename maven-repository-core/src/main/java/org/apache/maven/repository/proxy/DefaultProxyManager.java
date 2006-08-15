@@ -51,7 +51,8 @@ public class DefaultProxyManager
     private ConfigurationStore configurationStore;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.maven.repository.proxy.ProxyRequestHandler"
+     * @todo seems to be a bug in qdox that the role above is required
      */
     private ProxyRequestHandler requestHandler;
 
@@ -61,22 +62,40 @@ public class DefaultProxyManager
     private ConfiguredRepositoryFactory repositoryFactory;
 
     /**
-     * The proxy handlers for each managed repository.
+     * The proxy groups for each managed repository.
      */
     private Map/*<String,ProxiedRepositoryGroup>*/ proxyGroups;
+
+    /**
+     * The default proxy group/managed repository.
+     */
+    private ProxiedRepositoryGroup defaultProxyGroup;
 
     public File get( String path )
         throws ProxyException, ResourceDoesNotExistException
     {
         assert path.startsWith( "/" );
 
-        Map groups = getProxyRepositoryHandlers();
+        Map groups = getProxyGroups();
 
-        String id = parseRepositoryId( path, groups );
+        ProxiedRepositoryGroup proxyGroup = parseRepositoryId( path, groups );
 
-        String repositoryPath = path.substring( id.length() + 2 );
-
-        ProxiedRepositoryGroup proxyGroup = (ProxiedRepositoryGroup) groups.get( id );
+        String repositoryPath = path;
+        if ( proxyGroup == null )
+        {
+            if ( defaultProxyGroup != null )
+            {
+                proxyGroup = defaultProxyGroup;
+            }
+            else
+            {
+                throw new ResourceDoesNotExistException( "No repositories exist under the path: " + path );
+            }
+        }
+        else
+        {
+            repositoryPath = repositoryPath.substring( proxyGroup.getManagedRepository().getId().length() + 2 );
+        }
 
         return requestHandler.get( repositoryPath, proxyGroup.getProxiedRepositories(),
                                    proxyGroup.getManagedRepository(), proxyGroup.getWagonProxy() );
@@ -87,13 +106,26 @@ public class DefaultProxyManager
     {
         assert path.startsWith( "/" );
 
-        Map groups = getProxyRepositoryHandlers();
+        Map groups = getProxyGroups();
 
-        String id = parseRepositoryId( path, groups );
+        ProxiedRepositoryGroup proxyGroup = parseRepositoryId( path, groups );
 
-        String repositoryPath = path.substring( id.length() + 2 );
-
-        ProxiedRepositoryGroup proxyGroup = (ProxiedRepositoryGroup) groups.get( id );
+        String repositoryPath = path;
+        if ( proxyGroup == null )
+        {
+            if ( defaultProxyGroup != null )
+            {
+                proxyGroup = defaultProxyGroup;
+            }
+            else
+            {
+                throw new ResourceDoesNotExistException( "No repositories exist under the path: " + path );
+            }
+        }
+        else
+        {
+            repositoryPath = repositoryPath.substring( proxyGroup.getManagedRepository().getId().length() + 2 );
+        }
 
         return requestHandler.getAlways( repositoryPath, proxyGroup.getProxiedRepositories(),
                                          proxyGroup.getManagedRepository(), proxyGroup.getWagonProxy() );
@@ -115,7 +147,7 @@ public class DefaultProxyManager
         return configuration;
     }
 
-    private Map getProxyRepositoryHandlers()
+    private Map getProxyGroups()
         throws ProxyException
     {
         if ( proxyGroups == null )
@@ -135,6 +167,13 @@ public class DefaultProxyManager
 
                 groups.put( repository.getId(),
                             new ProxiedRepositoryGroup( proxiedRepositories, managedRepository, wagonProxy ) );
+            }
+
+            // TODO: ability to configure default proxy separately
+
+            if ( groups.size() == 1 )
+            {
+                defaultProxyGroup = (ProxiedRepositoryGroup) groups.values().iterator().next();
             }
 
             proxyGroups = groups;
@@ -157,19 +196,22 @@ public class DefaultProxyManager
         return repositories;
     }
 
-    private static String parseRepositoryId( String path, Map handlers )
+    private static ProxiedRepositoryGroup parseRepositoryId( String path, Map groups )
         throws ProxyException, ResourceDoesNotExistException
     {
-        for ( Iterator i = handlers.keySet().iterator(); i.hasNext(); )
-        {
-            String id = (String) i.next();
+        ProxiedRepositoryGroup group = null;
 
-            if ( path.startsWith( "/" + id + "/" ) )
+        for ( Iterator i = groups.entrySet().iterator(); i.hasNext() && group == null; )
+        {
+            Map.Entry entry = (Map.Entry) i.next();
+
+            if ( path.startsWith( "/" + entry.getKey() + "/" ) )
             {
-                return id;
+                group = (ProxiedRepositoryGroup) entry.getValue();
             }
         }
-        throw new ResourceDoesNotExistException( "No repositories exist under the path: " + path );
+
+        return group;
     }
 
     private static ProxyInfo createWagonProxy( Proxy proxy )

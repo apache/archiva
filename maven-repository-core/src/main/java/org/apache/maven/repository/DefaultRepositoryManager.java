@@ -21,32 +21,32 @@ public class DefaultRepositoryManager
     implements RepositoryManager
 {
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.discovery.ArtifactDiscoverer" role-hint="legacy"
+     * @plexus.requirement role-hint="legacy"
      */
     private ArtifactDiscoverer artifactDiscoverer;
 
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout" role-hint="legacy"
+     * @plexus.requirement role-hint="legacy"
      */
     private ArtifactRepositoryLayout legacyLayout;
 
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout" role-hint="default"
+     * @plexus.requirement role-hint="default"
      */
     private ArtifactRepositoryLayout defaultLayout;
 
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.ArtifactRepositoryFactory"
+     * @plexus.requirement
      */
     private ArtifactRepositoryFactory artifactRepositoryFactory;
 
     /**
-     * @plexus.requirement role="org.apache.maven.repository.converter.ArtifactRepositoryFactory"
+     * @plexus.requirement
      */
     private RepositoryConverter repositoryConverter;
 
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.repository.reporter.ArtifactReporter" role-hint="default"
+     * @plexus.requirement role-hint="default"
      */
     private ArtifactReporter reporter;
 
