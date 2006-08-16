@@ -30,13 +30,13 @@
 <div id="contentArea">
   <div id="nameColumn">
     <p>
-      <c:forTokens items="${groupId}" delims="./" var="part" varStatus="status">
+      <c:forTokens items="${groupId}" delims="." var="part" varStatus="status">
         <c:choose>
           <c:when test="${empty(cumulativeGroup)}">
             <c:set var="cumulativeGroup" value="${part}" />
           </c:when>
           <c:otherwise>
-            <c:set var="cumulativeGroup" value="${cumulativeGroup}/${part}" />
+            <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}" />
           </c:otherwise>
         </c:choose>
         <c:choose>
