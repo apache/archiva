@@ -32,47 +32,43 @@
     administration, artifact handling,
     browsing and searching.
   </description>
-  <url>http://maven.apache.org/repository-manager</url>
+  <url>http://maven.apache.org/archiva</url>
   <issueManagement>
     <system>jira</system>
     <url>http://jira.codehaus.org/browse/MRM</url>
   </issueManagement>
   <mailingLists>
     <mailingList>
-      <name>Maven User List</name>
-      <subscribe>users-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>users-unsubscribe@maven.apache.org</unsubscribe>
-      <post>users@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-users</archive>
-      <otherArchives>
-        <otherArchive>http://www.mail-archive.com/users@maven.apache.org/</otherArchive>
-        <otherArchive>http://www.nabble.com/Maven---Users-f178.html</otherArchive>
-      </otherArchives>
+      <name>Maven Archiva User List</name>
+      <subscribe>archiva-users-subscribe@maven.apache.org</subscribe>
+      <unsubscribe>archiva-users-unsubscribe@maven.apache.org</unsubscribe>
+      <post>archiva-users@maven.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-users</archive>
     </mailingList>
     <mailingList>
-      <name>Maven Developer List</name>
-      <subscribe>dev-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>dev-unsubscribe@maven.apache.org</unsubscribe>
-      <post>dev@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
+      <name>Maven Archiva Developer List</name>
+      <subscribe>archiva-dev-subscribe@maven.apache.org</subscribe>
+      <unsubscribe>archiva-dev-unsubscribe@maven.apache.org</unsubscribe>
+      <post>archiva-dev@maven.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-dev</archive>
     </mailingList>
     <mailingList>
-      <name>Maven Commits List</name>
-      <subscribe>commits-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>commits-unsubscribe@maven.apache.org</unsubscribe>
-      <post>commits@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-dev</archive>
+      <name>Maven Archiva Commits List</name>
+      <subscribe>archiva-commits-subscribe@maven.apache.org</subscribe>
+      <unsubscribe>archiva-commits-unsubscribe@maven.apache.org</unsubscribe>
+      <post>archiva-commits@maven.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/repository-manager/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/repository-manager/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/repository-manager/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
   </scm>
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>scp://minotaur.apache.org/www/maven.apache.org/repository-manager/</url>
+      <url>scp://minotaur.apache.org/www/maven.apache.org/archiva/</url>
     </site>
   </distributionManagement>
   <build>
@@ -112,7 +108,7 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/maven/repository-manager/tags</tagBase>
+            <tagBase>https://svn.apache.org/repos/asf/maven/archiva/tags</tagBase>
           </configuration>
         </plugin>
       </plugins>
