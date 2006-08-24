@@ -1,7 +1,7 @@
 #!/bin/sh
 
-FROM=mavensync@repository.codehaus.org:/repository/
-TO=.
+FROM=mavensync@repository.codehaus.org:/repository/org/livetribe/
+TO=org/livetribe/
 SSH_OPTS="-i $HOME/.ssh/new-id_dsa"
 #RSYNC_OPTS="-L"
 
