@@ -28,7 +28,8 @@ for f in `find conf -iname "*.sh"`
   TO=
   NO_SSH=
   SSH_OPTS=
-  RSYNC_SSH=
+  # to prevent empty variable
+  RSYNC_SSH="-z"
 
   source $f
 
