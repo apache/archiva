@@ -34,12 +34,7 @@ for f in `find conf -iname "*.sh"`
 
   if [ -z $NO_SSH ]
   then
-    if [ -z $SSH_OPTS ]
-    then
-      RSYNC_SSH="--rsh=ssh"
-    else
-      RSYNC_SSH="--rsh=ssh $SSH_OPTS"
-    fi
+    RSYNC_SSH="--rsh=ssh $SSH_OPTS"
   fi
 
   echo "Syncing $FROM -> $TO"
