@@ -105,7 +105,11 @@
     <th>Version</th>
     <td>${model.version}</td>
   </tr>
-  <%-- TODO: derivatives
+  <tr>
+      <th>Packaging</th>
+      <td><code>${model.packaging}</code></td>
+    </tr>
+    <%-- TODO: derivatives
     <tr>
       <th>Derivatives</th>
       <td>
@@ -147,11 +151,19 @@
   -->
 </table>
 
-<c:if test="${model.organization != null || !empty(model.licenses)
+<c:if test="${!empty(model.url) || model.organization != null || !empty(model.licenses)
     || model.issueManagement != null || model.ciManagement != null}">
 
   <h2>Other Details</h2>
   <table>
+    <c:if test="${!empty(model.url)}">
+      <tr>
+        <th>URL</th>
+        <td>
+          <a href="${model.url}">${model.url}</a>
+        </td>
+      </tr>
+    </c:if>
     <c:if test="${model.organization != null}">
       <tr>
         <th>Organisation</th>
