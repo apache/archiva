@@ -10,7 +10,7 @@
   <publishDate position="none"/>
   <body>
     <links>
-      <item name="Curator" href="http://maven.apache.org/repository-manager/"/>
+      <item name="Archiva" href="http://maven.apache.org/archiva/"/>
       <item name="Maven" href="http://maven.apache.org/"/>
       <item name="Apache" href="http://www.apache.org/"/>
     </links>

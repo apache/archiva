@@ -58,6 +58,12 @@
             <td>2.0</td>
           </tr>
           <tr>
+            <th>Packaging</th>
+            <td>
+              <code>jar</code>
+            </td>
+          </tr>
+          <tr>
             <th>Derivatives</th>
             <td>
               <a href="#">Source</a>
@@ -89,6 +95,12 @@
 
         <h2>Other Details</h2>
         <table>
+          <tr>
+            <th>URL</th>
+            <td>
+              <a href="http://maven.apache.org/ref/current/maven-model">http://maven.apache.org/ref/current/maven-model</a>
+            </td>
+          </tr>
           <tr>
             <th>Organisation</th>
             <td>
