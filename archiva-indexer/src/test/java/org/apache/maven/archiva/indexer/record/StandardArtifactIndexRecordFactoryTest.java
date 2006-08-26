@@ -28,7 +28,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,6 +53,10 @@ public class StandardArtifactIndexRecordFactoryTest
 
     private static final List JAR_FILE_LIST =
         Arrays.asList( new String[]{"META-INF/MANIFEST.MF", "A.class", "b/B.class", "b/c/C.class"} );
+
+    private static final String JUNIT_DEPENDENCY = "junit:junit:3.8.1";
+
+    private static final String PLUGIN_API_DEPENDENCY = "org.apache.maven:maven-plugin-api:2.0";
 
     protected void setUp()
         throws Exception
@@ -145,6 +151,8 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setRepository( "test" );
         expectedRecord.setPackaging( "jar" );
         expectedRecord.setProjectName( "Test JAR and POM" );
+        expectedRecord.setDependencies( createDependencies() );
+        expectedRecord.setDevelopers( createDevelopers() );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -173,6 +181,8 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setPackaging( "jar" );
         expectedRecord.setProjectName( "Test JAR and POM" );
         expectedRecord.setClassifier( "jdk14" );
+        expectedRecord.setDependencies( createDependencies() );
+        expectedRecord.setDevelopers( createDevelopers() );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -202,6 +212,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setProjectName( "Child Project" );
         expectedRecord.setProjectDescription( "Description" );
         expectedRecord.setInceptionYear( "2005" );
+        expectedRecord.setDependencies( Collections.singletonList( JUNIT_DEPENDENCY ) );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -289,6 +300,7 @@ public class StandardArtifactIndexRecordFactoryTest
         expectedRecord.setPackaging( "maven-plugin" );
         expectedRecord.setProjectName( "Maven Mojo Archetype" );
         expectedRecord.setPluginPrefix( "test" );
+        expectedRecord.setDependencies( Arrays.asList( new String[]{JUNIT_DEPENDENCY, PLUGIN_API_DEPENDENCY} ) );
 
         assertEquals( "check record", expectedRecord, record );
     }
@@ -412,5 +424,20 @@ public class StandardArtifactIndexRecordFactoryTest
         artifact.setFile( new File( repository.getBasedir(), repository.pathOf( artifact ) ) );
         artifact.setRepository( repository );
         return artifact;
+    }
+
+    private static List createDevelopers()
+    {
+        List developers = new ArrayList();
+        developers.add( "brett:Brett Porter:brett@apache.org" );
+        return developers;
+    }
+
+    private static List createDependencies()
+    {
+        List dependencies = new ArrayList();
+        dependencies.add( JUNIT_DEPENDENCY );
+        dependencies.add( "org.apache.maven:maven-project:2.0" );
+        return dependencies;
     }
 }

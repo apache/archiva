@@ -96,6 +96,16 @@ public class StandardArtifactIndexRecord
      */
     private String baseVersion;
 
+    /**
+     * A list of dependencies for the artifact, each a string of the form <code>groupId:artifactId:version</code>.
+     */
+    private List dependencies;
+
+    /**
+     * A list of developers in the POM, each a string of the form <code>id:name:email</code>.
+     */
+    private List developers;
+
     public void setSha1Checksum( String sha1Checksum )
     {
         this.sha1Checksum = sha1Checksum;
@@ -164,6 +174,14 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
+        if ( dependencies != null ? !dependencies.equals( that.dependencies ) : that.dependencies != null )
+        {
+            return false;
+        }
+        if ( developers != null ? !developers.equals( that.developers ) : that.developers != null )
+        {
+            return false;
+        }
         if ( files != null ? !files.equals( that.files ) : that.files != null )
         {
             return false;
@@ -228,6 +246,8 @@ public class StandardArtifactIndexRecord
         result = 31 * result + ( classifier != null ? classifier.hashCode() : 0 );
         result = 31 * result + ( type != null ? type.hashCode() : 0 );
         result = 31 * result + ( files != null ? files.hashCode() : 0 );
+        result = 31 * result + ( developers != null ? developers.hashCode() : 0 );
+        result = 31 * result + ( dependencies != null ? dependencies.hashCode() : 0 );
         result = 31 * result + ( repository != null ? repository.hashCode() : 0 );
         result = 31 * result + ( packaging != null ? packaging.hashCode() : 0 );
         result = 31 * result + ( pluginPrefix != null ? pluginPrefix.hashCode() : 0 );
@@ -335,5 +355,25 @@ public class StandardArtifactIndexRecord
     public String getBaseVersion()
     {
         return baseVersion;
+    }
+
+    public void setDependencies( List dependencies )
+    {
+        this.dependencies = dependencies;
+    }
+
+    public void setDevelopers( List developers )
+    {
+        this.developers = developers;
+    }
+
+    public List getDevelopers()
+    {
+        return developers;
+    }
+
+    public List getDependencies()
+    {
+        return dependencies;
     }
 }

@@ -70,6 +70,10 @@ public class StandardIndexRecordFields
 
     public static final String PROJECT_DESCRIPTION = "projectDesc";
 
+    public static final String DEVELOPERS = "developers";
+
+    public static final String DEPENDENCIES = "dependencies";
+
     private StandardIndexRecordFields()
     {
         // No touchy!

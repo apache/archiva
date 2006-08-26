@@ -73,9 +73,18 @@ public class LuceneStandardIndexRecordConverter
         addUntokenizedField( document, StandardIndexRecordFields.INCEPTION_YEAR, rec.getInceptionYear() );
         addTokenizedField( document, StandardIndexRecordFields.PROJECT_NAME, rec.getProjectName() );
         addTokenizedField( document, StandardIndexRecordFields.PROJECT_DESCRIPTION, rec.getProjectDescription() );
+        if ( rec.getDependencies() != null )
+        {
+            addTokenizedField( document, StandardIndexRecordFields.DEPENDENCIES,
+                               StringUtils.join( rec.getDependencies().iterator(), "\n" ) );
+        }
+        if ( rec.getDevelopers() != null )
+        {
+            addTokenizedField( document, StandardIndexRecordFields.DEVELOPERS,
+                               StringUtils.join( rec.getDevelopers().iterator(), "\n" ) );
+        }
 /* TODO: add later
         document.add( Field.Keyword( StandardIndexRecordFields.FLD_LICENSE_URLS, "" ) );
-        document.add( Field.Keyword( StandardIndexRecordFields.FLD_DEPENDENCIES, "" ) );
         document.add( Field.Keyword( StandardIndexRecordFields.FLD_PLUGINS_REPORT, "" ) );
         document.add( Field.Keyword( StandardIndexRecordFields.FLD_PLUGINS_BUILD, "" ) );
 */
@@ -110,6 +119,16 @@ public class LuceneStandardIndexRecordConverter
         if ( files != null )
         {
             record.setFiles( Arrays.asList( files.split( "\n" ) ) );
+        }
+        String dependencies = document.get( StandardIndexRecordFields.DEPENDENCIES );
+        if ( dependencies != null )
+        {
+            record.setDependencies( Arrays.asList( dependencies.split( "\n" ) ) );
+        }
+        String developers = document.get( StandardIndexRecordFields.DEVELOPERS );
+        if ( developers != null )
+        {
+            record.setDevelopers( Arrays.asList( developers.split( "\n" ) ) );
         }
         record.setPluginPrefix( document.get( StandardIndexRecordFields.PLUGIN_PREFIX ) );
         record.setInceptionYear( document.get( StandardIndexRecordFields.INCEPTION_YEAR ) );

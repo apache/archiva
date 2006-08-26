@@ -21,6 +21,8 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Developer;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -136,6 +138,7 @@ public class StandardArtifactIndexRecordFactory
                 record.setLastModified( file.lastModified() );
                 record.setSize( file.length() );
                 record.setRepository( artifact.getRepository().getId() );
+
                 if ( files != null )
                 {
                     populateArchiveEntries( files, record, artifact.getFile() );
@@ -196,12 +199,51 @@ public class StandardArtifactIndexRecordFactory
         record.setProjectDescription( pom.getDescription() );
         record.setInceptionYear( pom.getInceptionYear() );
 
+        List dependencies = populateDependencies( pom.getDependencies() );
+        if ( !dependencies.isEmpty() )
+        {
+            record.setDependencies( dependencies );
+        }
+        List developers = populateDevelopers( pom.getDevelopers() );
+        if ( !developers.isEmpty() )
+        {
+            record.setDevelopers( developers );
+        }
+
 /* TODO: fields for later
                 indexPlugins( doc, FLD_PLUGINS_BUILD, pom.getBuild().getPlugins().iterator() );
                 indexReportPlugins( doc, FLD_PLUGINS_REPORT, pom.getReporting().getPlugins().iterator() );
-                record.setDependencies( dependencies );
                 record.setLicenses( licenses );
 */
+    }
+
+    private List populateDependencies( List dependencies )
+    {
+        List convertedDependencies = new ArrayList();
+
+        for ( Iterator i = dependencies.iterator(); i.hasNext(); )
+        {
+            Dependency dependency = (Dependency) i.next();
+
+            convertedDependencies.add(
+                dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion() );
+        }
+
+        return convertedDependencies;
+    }
+
+    private List populateDevelopers( List developers )
+    {
+        List convertedDevelopers = new ArrayList();
+
+        for ( Iterator i = developers.iterator(); i.hasNext(); )
+        {
+            Developer developer = (Developer) i.next();
+
+            convertedDevelopers.add( developer.getId() + ":" + developer.getName() + ":" + developer.getEmail() );
+        }
+
+        return convertedDevelopers;
     }
 
     private Model readPom( Artifact artifact, ArtifactRepository repository )
