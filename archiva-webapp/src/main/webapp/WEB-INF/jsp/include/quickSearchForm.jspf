@@ -17,12 +17,16 @@
 
 <div id="searchBox">
   <ww:form method="post" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q" />
-    <ww:submit label="Go!" />
+    <ww:textfield label="Search for" size="50" name="q"/>
+    <ww:submit label="Go!"/>
   </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("quickSearch_q").focus();
+  </script>
 
   <p>
     Enter your search terms. A variety of data will be searched for your keywords.
-    <ww:actionerror />
+    <ww:actionerror/>
   </p>
 </div>

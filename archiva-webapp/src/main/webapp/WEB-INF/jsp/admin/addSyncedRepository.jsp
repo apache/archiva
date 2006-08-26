@@ -20,7 +20,7 @@
 <html>
 <head>
   <title>Configuration</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -31,13 +31,18 @@
 
   <h2>Add Synced Repository</h2>
 
-  <ww:actionmessage />
+  <ww:actionmessage/>
   <ww:form method="post" action="addSelectedSyncedRepository" namespace="/admin" validate="true">
-    <ww:textfield name="id" label="Identifier" size="10" />
+    <ww:textfield name="id" label="Identifier" size="10"/>
     <%@ include file="/WEB-INF/jsp/admin/include/syncedRepositoryForm.jspf" %>
 
-    <ww:submit value="Add Repository" />
+    <ww:submit value="Add Repository"/>
   </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("addSelectedSyncedRepository_id").focus();
+  </script>
+
 </div>
 
 </body>

@@ -19,7 +19,7 @@
 <html>
 <head>
   <title>Configuration</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -30,13 +30,18 @@
 
   <h2>Edit Managed Repository</h2>
 
-  <ww:actionmessage />
+  <ww:actionmessage/>
   <ww:form method="post" action="editRepository" namespace="/admin" validate="true">
-    <ww:hidden name="id" />
+    <ww:hidden name="id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
-    <ww:checkbox name="indexed" fieldValue="true" label="Indexed" />
-    <ww:submit value="Change Repository" />
+    <ww:checkbox name="indexed" fieldValue="true" label="Indexed"/>
+    <ww:submit value="Change Repository"/>
   </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("editRepository_name").focus();
+  </script>
+
 </div>
 
 </body>

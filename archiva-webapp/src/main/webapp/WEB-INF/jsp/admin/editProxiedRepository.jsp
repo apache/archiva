@@ -19,7 +19,7 @@
 <html>
 <head>
   <title>Configuration</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -30,12 +30,17 @@
 
   <h2>Edit Proxied Repository</h2>
 
-  <ww:actionmessage />
+  <ww:actionmessage/>
   <ww:form method="post" action="editProxiedRepository" namespace="/admin" validate="true">
-    <ww:hidden name="id" />
+    <ww:hidden name="id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/proxiedRepositoryForm.jspf" %>
-    <ww:submit value="Change Repository" />
+    <ww:submit value="Change Repository"/>
   </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("editProxiedRepository_name").focus();
+  </script>
+
 </div>
 
 </body>
