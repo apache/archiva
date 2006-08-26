@@ -635,6 +635,23 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check results size", results.isEmpty() );
     }
 
+    public void testExactMatchDependency()
+        throws RepositoryIndexSearchException
+    {
+        Query query = new TermQuery(
+            new Term( StandardIndexRecordFields.DEPENDENCIES, "org.apache.maven:maven-plugin-api:2.0" ) );
+        List results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
+        assertEquals( "Check results size", 1, results.size() );
+
+        // test non-match fails
+        query = new TermQuery( new Term( StandardIndexRecordFields.DEPENDENCIES, "foo" ) );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+    }
+
     public void testMatchProjectName()
         throws RepositoryIndexSearchException
     {

@@ -17,6 +17,8 @@ package org.apache.maven.archiva.indexer.lucene;
  */
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,9 +32,11 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.query.Query;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecord;
+import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -130,10 +134,35 @@ public class LuceneRepositoryArtifactIndex
         }
     }
 
-    private Analyzer getAnalyzer()
+    public Analyzer getAnalyzer()
     {
-        // TODO: investigate why changed in original! Probably for MD5 and number querying.
-        return new StandardAnalyzer();
+        return new MyAnalyzer();
+    }
+
+    private static class MyAnalyzer
+        extends Analyzer
+    {
+        private static final Analyzer STANDARD = new StandardAnalyzer();
+
+        public TokenStream tokenStream( String field, final Reader reader )
+        {
+            // do not tokenize field called 'element'
+            if ( StandardIndexRecordFields.DEPENDENCIES.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '\n';
+                    }
+                };
+            }
+            else
+            {
+                // use standard analyzer
+                return STANDARD.tokenStream( field, reader );
+            }
+        }
     }
 
     public void deleteRecords( Collection records )
