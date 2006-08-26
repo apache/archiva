@@ -2,24 +2,29 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <p>
+  <c:set var="cumulativeGroup" value=""/>
   <c:forTokens items="${model.groupId}" delims="." var="part">
     <c:choose>
       <c:when test="${empty(cumulativeGroup)}">
         <c:set var="cumulativeGroup" value="${part}"/>
       </c:when>
       <c:otherwise>
-        <c:set var="cumulativeGroup" value="${cumulativeGroup}/${part}"/>
+        <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
       </c:otherwise>
     </c:choose>
-    <ww:url id="url" action="browseGroup" namespace="/">
-      <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
-    </ww:url>
+    <c:set var="url">
+      <ww:url action="browseGroup" namespace="/">
+        <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
+      </ww:url>
+    </c:set>
     <a href="${url}">${part}</a> /
   </c:forTokens>
-  <ww:url id="url" action="browseArtifact" namespace="/">
-    <ww:param name="groupId" value="%{'${model.groupId}'}"/>
-    <ww:param name="artifactId" value="%{'${model.artifactId}'}"/>
-  </ww:url>
+  <c:set var="url">
+    <ww:url action="browseArtifact" namespace="/">
+      <ww:param name="groupId" value="%{'${model.groupId}'}"/>
+      <ww:param name="artifactId" value="%{'${model.artifactId}'}"/>
+    </ww:url>
+  </c:set>
   <a href="${url}">${model.artifactId}</a> /
   <strong>${model.version}</strong>
 
@@ -63,11 +68,13 @@
       <th>Parent</th>
       <td>
           ${model.parent.groupId} ${model.parent.artifactId} ${model.parent.version}
-        <ww:url id="url" action="showArtifact" namespace="/">
-          <ww:param name="groupId" value="%{'${model.parent.groupId}'}"/>
-          <ww:param name="artifactId" value="%{'${model.parent.artifactId}'}"/>
-          <ww:param name="version" value="%{'${model.parent.version}'}"/>
-        </ww:url>
+        <c:set var="url">
+          <ww:url action="showArtifact" namespace="/">
+            <ww:param name="groupId" value="%{'${model.parent.groupId}'}"/>
+            <ww:param name="artifactId" value="%{'${model.parent.artifactId}'}"/>
+            <ww:param name="version" value="%{'${model.parent.version}'}"/>
+          </ww:url>
+        </c:set>
         (<a href="${url}">View</a>)
       </td>
     </tr>
