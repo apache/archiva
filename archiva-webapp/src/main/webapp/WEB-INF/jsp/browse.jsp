@@ -20,7 +20,7 @@
 <html>
 <head>
   <title>Browse Repository</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -31,11 +31,13 @@
   <div id="nameColumn">
     <h2>Groups</h2>
     <ul>
-      <ww:set name="groups" value="groups" />
+      <ww:set name="groups" value="groups"/>
       <c:forEach items="${groups}" var="groupId">
-        <ww:url id="url" action="browseGroup" namespace="/">
-          <ww:param name="groupId" value="%{'${groupId}'}" />
-        </ww:url>
+        <c:set var="url">
+          <ww:url action="browseGroup" namespace="/">
+            <ww:param name="groupId" value="%{'${groupId}'}"/>
+          </ww:url>
+        </c:set>
         <li><a href="${url}">${groupId}/</a></li>
       </c:forEach>
     </ul>
