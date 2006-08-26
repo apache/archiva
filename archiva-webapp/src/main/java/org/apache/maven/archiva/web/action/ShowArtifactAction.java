@@ -17,13 +17,22 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
+import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
+import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -31,8 +40,15 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Browse the repository.
@@ -62,6 +78,11 @@ public class ShowArtifactAction
      */
     private ConfigurationStore configurationStore;
 
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryArtifactIndexFactory factory;
+
     private String groupId;
 
     private String artifactId;
@@ -70,7 +91,7 @@ public class ShowArtifactAction
 
     private Model model;
 
-    private List dependencies;
+    private Collection dependencies;
 
     public String artifact()
         throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
@@ -100,9 +121,76 @@ public class ShowArtifactAction
         model = project.getModel();
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
-        dependencies = project.getModel().getDependencies();
+
+        List dependencies = new ArrayList();
+
+        for ( Iterator i = project.getModel().getDependencies().iterator(); i.hasNext(); )
+        {
+            Dependency dependency = (Dependency) i.next();
+
+            dependencies.add( new DependencyWrapper( dependency ) );
+        }
+
+        this.dependencies = dependencies;
 
         return SUCCESS;
+    }
+
+    public String dependees()
+        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException,
+        RepositoryIndexException, RepositoryIndexSearchException
+    {
+        if ( !checkParameters() )
+        {
+            return ERROR;
+        }
+
+        MavenProject project = readProject();
+
+        model = project.getModel();
+
+        RepositoryArtifactIndex index = getIndex();
+
+        String id = createId( groupId, artifactId, version );
+        List records = index.search( new LuceneQuery( new TermQuery( new Term( "dependencies", id ) ) ) );
+
+        Map dependees = new LinkedHashMap();
+
+        for ( Iterator i = records.iterator(); i.hasNext(); )
+        {
+            StandardArtifactIndexRecord record = (StandardArtifactIndexRecord) i.next();
+
+            String key = record.getGroupId() + ":" + record.getArtifactId();
+            if ( dependees.containsKey( key ) )
+            {
+                DependencyWrapper wrapper = (DependencyWrapper) dependees.get( key );
+                wrapper.addVersion( record.getVersion() );
+            }
+            else
+            {
+                DependencyWrapper wrapper = new DependencyWrapper( record );
+
+                dependees.put( key, wrapper );
+            }
+        }
+
+        dependencies = dependees.values();
+
+        return SUCCESS;
+    }
+
+    private static String createId( String groupId, String artifactId, String version )
+    {
+        return groupId + ":" + artifactId + ":" + version;
+    }
+
+    private RepositoryArtifactIndex getIndex()
+        throws ConfigurationStoreException, RepositoryIndexException
+    {
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        File indexPath = new File( configuration.getIndexPath() );
+
+        return factory.createStandardIndex( indexPath );
     }
 
     private MavenProject readProject()
@@ -149,7 +237,7 @@ public class ShowArtifactAction
         return model;
     }
 
-    public List getDependencies()
+    public Collection getDependencies()
     {
         return dependencies;
     }
@@ -182,5 +270,88 @@ public class ShowArtifactAction
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public static class DependencyWrapper
+    {
+        private final String groupId;
+
+        private final String artifactId;
+
+        private List versions = new ArrayList();
+
+        private String version;
+
+        private String scope;
+
+        private String classifier;
+
+        public DependencyWrapper( StandardArtifactIndexRecord record )
+        {
+            this.groupId = record.getGroupId();
+
+            this.artifactId = record.getArtifactId();
+
+            addVersion( record.getVersion() );
+        }
+
+        public DependencyWrapper( Dependency dependency )
+        {
+            this.groupId = dependency.getGroupId();
+
+            this.artifactId = dependency.getArtifactId();
+
+            this.scope = dependency.getScope();
+
+            this.classifier = dependency.getClassifier();
+
+            addVersion( dependency.getVersion() );
+        }
+
+        public String getScope()
+        {
+            return scope;
+        }
+
+        public String getClassifier()
+        {
+            return classifier;
+        }
+
+        public void addVersion( String version )
+        {
+            versions.add( version );
+
+            if ( versions.size() == 1 )
+            {
+                this.version = version;
+            }
+            else
+            {
+                this.version = null;
+                // TODO: use version comparator!
+                Collections.sort( versions );
+            }
+        }
+
+        public String getGroupId()
+        {
+            return groupId;
+        }
+
+        public String getArtifactId()
+        {
+            return artifactId;
+        }
+
+        public List getVersions()
+        {
+            return versions;
+        }
+
+        public String getVersion()
+        {
+            return version;
+        }
     }
 }

@@ -53,11 +53,13 @@
     <ul>
       <ww:set name="versions" value="versions"/>
       <c:forEach items="${versions}" var="version">
-        <ww:url id="url" action="showArtifact" namespace="/">
-          <ww:param name="groupId" value="%{'${groupId}'}"/>
-          <ww:param name="artifactId" value="%{'${artifactId}'}"/>
-          <ww:param name="version" value="%{'${version}'}"/>
-        </ww:url>
+        <c:set var="url">
+          <ww:url action="showArtifact" namespace="/">
+            <ww:param name="groupId" value="%{'${groupId}'}"/>
+            <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+            <ww:param name="version" value="%{'${version}'}"/>
+          </ww:url>
+        </c:set>
         <li><a href="${url}">${version}/</a></li>
       </c:forEach>
     </ul>

@@ -19,10 +19,11 @@
 <%@ attribute name="action" %>
 <%@ attribute name="namespace" %>
 <%@ attribute name="url" %>
+
 <c:set var="currentUrl">
   <ww:url/>
 </c:set>
-<c:if test="${empty(url)}">
+<c:if test="${!empty(action) && !empty(namespace)}">
   <c:set var="url">
     <ww:url action="${action}" namespace="${namespace}"/>
   </c:set>

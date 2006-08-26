@@ -67,8 +67,15 @@
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependencies</my:currentWWUrl>
+      <c:set var="url">
+        <ww:url action="showArtifactDependees">
+          <ww:param name="groupId" value="%{groupId}"/>
+          <ww:param name="artifactId" value="%{artifactId}"/>
+          <ww:param name="version" value="%{version}"/>
+        </ww:url>
+      </c:set>
+      <my:currentWWUrl url="${url}">Depended On By</my:currentWWUrl>
       <%-- TODO:
-          <a href="TODO">Depended On</a>
           <a href="TODO">Mailing Lists</a>
       --%>
     </p>

@@ -56,6 +56,11 @@ public class RepositoryActionMapper
             return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
                 params.remove( "version" ) + "/dependencies";
         }
+        else if ( "showArtifactDependees".equals( actionMapping.getName() ) )
+        {
+            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
+                params.remove( "version" ) + "/dependedonby";
+        }
         else if ( "proxy".equals( actionMapping.getName() ) )
         {
             return PROXY_PREFIX + params.remove( "path" );
@@ -108,6 +113,10 @@ public class RepositoryActionMapper
                     if ( "dependencies".equals( parts[3] ) )
                     {
                         return new ActionMapping( "showArtifactDependencies", "/", "", params );
+                    }
+                    else if ( "dependedonby".equals( parts[3] ) )
+                    {
+                        return new ActionMapping( "showArtifactDependees", "/", "", params );
                     }
                 }
             }

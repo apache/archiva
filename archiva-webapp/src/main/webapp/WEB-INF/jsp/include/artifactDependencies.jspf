@@ -1,13 +1,19 @@
+<%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%-- TODO: paginate --%>
 <c:forEach items="${dependencies}" var="dependency">
   <h3>
     <c:set var="url">
       <ww:url action="showArtifact" namespace="/">
         <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
         <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
-        <ww:param name="version" value="%{'${dependency.version}'}"/>
+        <c:if test="${!empty(dependency.version)}">
+          <ww:param name="version" value="%{'${dependency.version}'}"/>
+        </c:if>
       </ww:url>
     </c:set>
-    <%-- TODO: showing the name and description would be nice, but that would require loading the POMs --%>
+      <%-- TODO: showing the name and description would be nice, but that would require loading the POMs --%>
     <a href="${url}">${dependency.artifactId}</a>
   </h3>
 
@@ -32,7 +38,34 @@
                 <a href="${url}">${part}</a> /
               </c:forTokens>
               <strong>${dependency.artifactId}</strong>
-              | <strong>Version(s):</strong> ${dependency.version}
+              | <strong>Version(s):</strong>
+              <c:choose>
+                <c:when test="${!empty(dependency.version)}">
+                  <c:set var="url">
+                    <ww:url action="showArtifact" namespace="/">
+                      <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
+                      <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
+                      <c:if test="${!empty(dependency.version)}">
+                        <ww:param name="version" value="%{'${dependency.version}'}"/>
+                      </c:if>
+                    </ww:url>
+                  </c:set>
+                  <a href="${url}">${dependency.version}</a>
+                </c:when>
+                <c:otherwise>
+                  <c:forEach items="${dependency.versions}" var="version" varStatus="i">
+                    <c:set var="url">
+                      <ww:url action="showArtifact" namespace="/">
+                        <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
+                        <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
+                        <ww:param name="version" value="%{'${version}'}"/>
+                      </ww:url>
+                    </c:set>
+                    <a href="${url}">${version}</a>
+                    <c:if test="${!i.last}">,</c:if>
+                  </c:forEach>
+                </c:otherwise>
+              </c:choose>
               <c:if test="${!empty(dependency.scope)}">
                 | <strong>Scope:</strong> ${dependency.scope}
               </c:if>
@@ -42,3 +75,6 @@
             </span>
   </p>
 </c:forEach>
+<c:if test="${empty(dependencies)}">
+  <strong>No results</strong>
+</c:if>

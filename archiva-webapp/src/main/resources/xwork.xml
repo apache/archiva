@@ -115,6 +115,10 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
+    <action name="showArtifactDependees" class="showArtifactAction" method="dependees">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
     <action name="proxy" class="proxyAction">
       <result type="stream">
         <param name="contentType">${contentType}</param>
