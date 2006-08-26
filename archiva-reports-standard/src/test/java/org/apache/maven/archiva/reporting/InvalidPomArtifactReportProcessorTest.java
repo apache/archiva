@@ -83,27 +83,4 @@ public class InvalidPomArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
         assertEquals( 1, reporter.getWarnings() );
     }
-
-    /**
-     * Test the InvalidPomArtifactReportProcessor when the pom is located in 
-     * a remote repository.
-     */
-    /* public void testRemotePomArtifactReportProcessorSuccess(){
-        try{
-            ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
-            VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
-            Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version, remoteArtifactScope,
-                                                     "pom", "", handler );
-            ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
-                                                                           new DefaultRepositoryLayout() );
-        
-            artifactReportProcessor.processArtifact(null, artifact, reporter, repository);
-            if(reporter.getSuccesses() == 1)
-                assertTrue(reporter.getSuccesses() == 1);
-                        
-        }catch(Exception e){
-            
-        }
-    }
-    */
 }

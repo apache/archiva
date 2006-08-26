@@ -186,39 +186,4 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
         assertEquals( 1, reporter.getFailures() );
     }
-
-    /**
-     * Test the LocationArtifactReportProcessor when the artifact is located in the remote repository.
-     */
-    /*  public void testRemoteArtifactReportProcessorFailure()
-    {
-
-        ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
-        VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
-        Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version, remoteArtifactScope,
-                                                 remoteArtifactType, "", handler );
-        ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
-                                                                       new DefaultRepositoryLayout() );
-        try
-        {
-            URL url = new URL( remoteRepoUrl + remoteArtifactGroup + "/" + remoteArtifactId + "/"
-                + remoteArtifactVersion + "/" + remoteArtifactId + "-" + remoteArtifactVersion + ".pom" );
-            InputStream is = url.openStream();
-            Reader reader = new InputStreamReader( is );
-            Model model = pomReader.read( reader );
-
-            artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-            if ( reporter.getFailures() > 0 )
-                assertTrue( reporter.getFailures() == 1 );
-
-            if ( reporter.getSuccesses() > 0 )
-                assertTrue( reporter.getSuccesses() == 1 );
-
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-    }
-    */
 }

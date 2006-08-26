@@ -136,62 +136,6 @@ public class ChecksumArtifactReporterTest
     }
 
     /**
-     * Test the checksum of an artifact located in a remote location.
-     */
-    /*   public void testChecksumArtifactRemote()
-    {
-        ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
-        VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
-        Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version, remoteArtifactScope,
-                                                 remoteArtifactType, "", handler );
-        ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
-                                                                       new DefaultRepositoryLayout() );
-
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        if ( reporter.getFailures() == 2 )
-            assertTrue( reporter.getFailures() == 2 );
-
-        if ( reporter.getSuccesses() == 2 )
-            assertTrue( reporter.getSuccesses() == 2 );
-
-    }
-    */
-
-    /**
-     * Test the checksum of a metadata file located in a remote location.
-     */
-    /*   public void testChecksumMetadataRemote()
-    {
-
-        try
-        {
-            ArtifactHandler handler = new DefaultArtifactHandler( remoteArtifactType );
-            VersionRange version = VersionRange.createFromVersion( remoteArtifactVersion );
-            Artifact artifact = new DefaultArtifact( remoteArtifactGroup, remoteArtifactId, version,
-                                                     remoteArtifactScope, remoteArtifactType, "", handler );
-            ArtifactRepository repository = new DefaultArtifactRepository( remoteRepoId, remoteRepoUrl,
-                                                                           new DefaultRepositoryLayout() );
-
-            RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
-
-            metadataReportProcessor.processMetadata( metadata, repository, reporter );
-            Iterator iter = reporter.getRepositoryMetadataFailureIterator();
-            if ( iter.hasNext() )
-                assertTrue( "check if there is a failure", iter.hasNext() );
-
-            iter = reporter.getRepositoryMetadataSuccessIterator();
-            if ( iter.hasNext() )
-                assertTrue( "check if there is a success", iter.hasNext() );
-
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
-    }
-    */
-
-    /**
      * Test the conditional when the checksum files of the artifact & metadata do not exist.
      */
     public void testChecksumFilesDoNotExist()
