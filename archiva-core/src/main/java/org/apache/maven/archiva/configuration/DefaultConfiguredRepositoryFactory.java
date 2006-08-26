@@ -38,7 +38,7 @@ public class DefaultConfiguredRepositoryFactory
     implements ConfiguredRepositoryFactory
 {
     /**
-     * @plexus.requirement role="org.apache.maven.artifact.archiva.layout.ArtifactRepositoryLayout"
+     * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
      */
     private Map repositoryLayouts;
 
@@ -70,6 +70,12 @@ public class DefaultConfiguredRepositoryFactory
             new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
+
+        if ( layout == null )
+        {
+            throw new IllegalArgumentException( "Invalid layout: " + configuration.getLayout() );
+        }
+
         ArtifactRepository artifactRepository = repoFactory.createArtifactRepository( configuration.getId(),
                                                                                       configuration.getUrl(), layout,
                                                                                       snapshotsPolicy, releasesPolicy );
