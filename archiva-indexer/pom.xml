@@ -17,13 +17,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.apache.maven.repository</groupId>
-    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>maven-repository-indexer</artifactId>
-  <name>Maven Repository Indexer</name>
+  <artifactId>archiva-indexer</artifactId>
+  <name>Archiva Repository Indexer</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -55,8 +55,8 @@
       <artifactId>plexus-container-default</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-utils</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-utils</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>

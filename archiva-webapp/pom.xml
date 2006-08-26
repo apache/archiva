@@ -18,13 +18,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.repository</groupId>
-    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>maven-repository-webapp</artifactId>
+  <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
-  <name>Maven Repository Manager Web Application</name>
+  <name>Archiva Web Application</name>
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -75,28 +75,28 @@
       <version>1.0-alpha-10-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-indexer</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-indexer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-discovery</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-discoverer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-configuration</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-proxy</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-proxy</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-core</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-artifact-applet</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-applet</artifactId>
       <!-- TODO: actually, just exclude from WAR plugin -->
       <scope>provided</scope>
     </dependency>
@@ -106,7 +106,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>maven-repository-webapp</finalName>
+    <finalName>archiva-webapp</finalName>
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
@@ -136,10 +136,10 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>${project.groupId}</groupId>
-                  <artifactId>maven-repository-artifact-applet</artifactId>
+                  <artifactId>archiva-applet</artifactId>
                   <version>${project.version}</version>
                   <outputDirectory>src/main/webapp</outputDirectory>
-                  <destFileName>maven-repository-artifact-applet.jar</destFileName>
+                  <destFileName>archiva-applet.jar</destFileName>
                 </artifactItem>
               </artifactItems>
             </configuration>

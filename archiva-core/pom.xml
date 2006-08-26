@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <project>
   <parent>
-    <artifactId>maven-repository-manager</artifactId>
-    <groupId>org.apache.maven.repository</groupId>
+    <artifactId>archiva</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>maven-repository-core</artifactId>
-  <name>Maven Repository Manager Core</name>
+  <artifactId>archiva-core</artifactId>
+  <name>Archiva Core</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-configuration</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-converter</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-converter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-discovery</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-discoverer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-proxy</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-proxy</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-reports-standard</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-reports-standard</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

@@ -17,53 +17,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.apache.maven.repository</groupId>
-    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>maven-repository-reports-standard</artifactId>
-  <name>Maven Repository Standard Reports</name>
+  <artifactId>archiva-utils</artifactId>
+  <name>Archiva Digester Utilities</name>
   <dependencies>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-container-default</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-repository-metadata</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-indexer</artifactId>
     </dependency>
   </dependencies>
 </project>

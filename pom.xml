@@ -22,13 +22,13 @@
     <version>1</version>
     <relativePath>../pom/maven/pom.xml</relativePath>
   </parent>
-  <groupId>org.apache.maven.repository</groupId>
-  <artifactId>maven-repository-manager</artifactId>
+  <groupId>org.apache.maven.archiva</groupId>
+  <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
-  <name>Maven Repository Manager</name>
+  <name>Archiva</name>
   <version>1.0-SNAPSHOT</version>
   <description>
-    The Maven Repository Manager is an application for managing one or more remote repositories, including
+    Archiva is an application for managing one or more remote repositories, including
     administration, artifact handling,
     browsing and searching.
   </description>
@@ -115,19 +115,17 @@
     </pluginManagement>
   </build>
   <modules>
-    <!--
-    <module>maven-repository-application</module>
-    -->
-    <module>maven-repository-artifact-applet</module>
-    <module>maven-repository-converter</module>
-    <module>maven-repository-discovery</module>
-    <module>maven-repository-reports-standard</module>
-    <module>maven-repository-indexer</module>
-    <module>maven-repository-utils</module>
-    <module>maven-repository-webapp</module>
-    <module>maven-repository-proxy</module>
-    <module>maven-repository-core</module>
-    <module>maven-repository-configuration</module>
+    <module>archiva-applet</module>
+    <module>archiva-converter</module>
+    <module>archiva-discoverer</module>
+    <module>archiva-reports-standard</module>
+    <module>archiva-indexer</module>
+    <module>archiva-utils</module>
+    <module>archiva-webapp</module>
+    <module>archiva-proxy</module>
+    <module>archiva-core</module>
+    <module>archiva-configuration</module>
+    <module>maven-meeper</module>
   </modules>
   <dependencies>
     <dependency>
@@ -200,48 +198,48 @@
         <version>1.0-alpha-6</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-core</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-core</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-reports-standard</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-reports-standard</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-discovery</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-discoverer</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-indexer</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-indexer</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-proxy</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-proxy</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-utils</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-utils</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-artifact-applet</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-applet</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-configuration</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-configuration</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven.repository</groupId>
-        <artifactId>maven-repository-converter</artifactId>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-converter</artifactId>
         <version>${pom.version}</version>
       </dependency>
     </dependencies>

@@ -18,12 +18,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.repository</groupId>
-    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>maven-repository-artifact-applet</artifactId>
-  <name>Maven Repository Manager Artifact Applet</name>
+  <artifactId>archiva-applet</artifactId>
+  <name>Archiva Applet</name>
   <description>
     Applet for performing local operations on files such as creating a checksum of an artifact
     before uploading it.

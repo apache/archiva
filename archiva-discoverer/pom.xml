@@ -17,17 +17,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>org.apache.maven.repository</groupId>
-    <artifactId>maven-repository-manager</artifactId>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>maven-repository-converter</artifactId>
-  <name>Maven Repository Converter</name>
+  <artifactId>archiva-discoverer</artifactId>
+  <name>Archiva Artifact Discoverer</name>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-utils</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -35,16 +43,15 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model-converter</artifactId>
+      <artifactId>maven-repository-metadata</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.repository</groupId>
-      <artifactId>maven-repository-reports-standard</artifactId>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact-manager</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-i18n</artifactId>
-      <version>1.0-beta-6</version>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
     </dependency>
   </dependencies>
 </project>
