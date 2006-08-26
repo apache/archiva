@@ -254,6 +254,12 @@ public class StandardArtifactIndexRecordFactoryTest
         record = factory.createRecord( artifact );
 
         assertNull( "Check no record", record );
+
+        artifact = createArtifact( "test-skin", "1.0", "pom" );
+
+        record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
     }
 
     public void testIndexedPlugin()
@@ -312,6 +318,34 @@ public class StandardArtifactIndexRecordFactoryTest
             "archetype-resources/src/main/java/App.java", "archetype-resources/src/test/java/AppTest.java"} ) );
         expectedRecord.setPackaging( "jar" );
         expectedRecord.setProjectName( "Archetype - test-archetype" );
+
+        assertEquals( "check record", expectedRecord, record );
+    }
+
+    public void testIndexedSkin()
+        throws RepositoryIndexException, IOException, XmlPullParserException
+    {
+        Artifact artifact = createArtifact( "test-skin" );
+
+        RepositoryIndexRecord record = factory.createRecord( artifact );
+
+        StandardArtifactIndexRecord expectedRecord = new StandardArtifactIndexRecord();
+        expectedRecord.setMd5Checksum( "ba2d8a722f763db2950ad63119585f45" );
+        expectedRecord.setFilename( repository.pathOf( artifact ) );
+        expectedRecord.setLastModified( artifact.getFile().lastModified() );
+        expectedRecord.setSize( artifact.getFile().length() );
+        expectedRecord.setArtifactId( "test-skin" );
+        expectedRecord.setGroupId( TEST_GROUP_ID );
+        expectedRecord.setBaseVersion( "1.0" );
+        expectedRecord.setVersion( "1.0" );
+        expectedRecord.setSha1Checksum( "44855e3e56c18ce766db315a2d4c114d7a8c8ab0" );
+        expectedRecord.setType( "maven-skin" );
+        expectedRecord.setRepository( "test" );
+        expectedRecord.setFiles( Arrays.asList( new String[]{"META-INF/MANIFEST.MF", "css/maven-theme.css",
+            "META-INF/maven/org.apache.maven.skins/test-skin/pom.xml",
+            "META-INF/maven/org.apache.maven.skins/test-skin/pom.properties"} ) );
+        expectedRecord.setPackaging( "jar" );
+        expectedRecord.setProjectName( "Skin - test-skin" );
 
         assertEquals( "check record", expectedRecord, record );
     }

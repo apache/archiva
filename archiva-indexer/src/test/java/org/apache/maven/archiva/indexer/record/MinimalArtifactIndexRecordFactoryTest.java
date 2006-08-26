@@ -168,6 +168,12 @@ public class MinimalArtifactIndexRecordFactoryTest
         record = factory.createRecord( artifact );
 
         assertNull( "Check no record", record );
+
+        artifact = createArtifact( "test-skin", "1.0", "pom" );
+
+        record = factory.createRecord( artifact );
+
+        assertNull( "Check no record", record );
     }
 
     public void testIndexedPlugin()

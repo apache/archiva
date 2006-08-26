@@ -81,6 +81,10 @@ public class StandardArtifactIndexRecordFactory
      */
     protected Digester md5Digester;
 
+    private static final String SITE_TEMPLATE_NAME = "META-INF/maven/site.vm";
+
+    private static final String SITE_CSS_NAME = "css/maven-theme.css";
+
     private static final String PLUGIN_METADATA_NAME = "META-INF/maven/plugin.xml";
 
     private static final String ARCHETYPE_METADATA_NAME = "META-INF/maven/archetype.xml";
@@ -236,6 +240,10 @@ public class StandardArtifactIndexRecordFactory
                 {
                     populateArchetypeEntries( record );
                 }
+                else if ( SITE_TEMPLATE_NAME.equals( name ) || SITE_CSS_NAME.equals( name ) )
+                {
+                    populateSkinEntries( record );
+                }
             }
         }
 
@@ -253,6 +261,12 @@ public class StandardArtifactIndexRecordFactory
     {
         // Typically discovered as a JAR
         record.setType( "maven-archetype" );
+    }
+
+    private void populateSkinEntries( StandardArtifactIndexRecord record )
+    {
+        // Typically discovered as a JAR
+        record.setType( "maven-skin" );
     }
 
     private Xpp3Dom readXmlMetadataFileInJar( File file, String name )
