@@ -70,46 +70,88 @@ public class ShowArtifactAction
 
     private Model model;
 
-    public String execute()
+    private List dependencies;
+
+    public String artifact()
         throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
     {
-        if ( StringUtils.isEmpty( groupId ) )
+        if ( !checkParameters() )
         {
-            // TODO: i18n
-            addActionError( "You must specify a group ID to browse" );
             return ERROR;
         }
 
-        if ( StringUtils.isEmpty( artifactId ) )
-        {
-            // TODO: i18n
-            addActionError( "You must specify a artifact ID to browse" );
-            return ERROR;
-        }
-
-        if ( StringUtils.isEmpty( version ) )
-        {
-            // TODO: i18n
-            addActionError( "You must specify a version to browse" );
-            return ERROR;
-        }
-
-        Configuration configuration = configurationStore.getConfigurationFromStore();
-        List repositories = repositoryFactory.createRepositories( configuration );
-
-        Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
-        // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
-        ArtifactRepository localRepository = repositoryFactory.createLocalRepository( configuration );
-        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, localRepository );
+        MavenProject project = readProject();
 
         model = project.getModel();
 
         return SUCCESS;
     }
 
+    public String dependencies()
+        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
+    {
+        if ( !checkParameters() )
+        {
+            return ERROR;
+        }
+
+        MavenProject project = readProject();
+
+        model = project.getModel();
+
+        // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
+        dependencies = project.getModel().getDependencies();
+
+        return SUCCESS;
+    }
+
+    private MavenProject readProject()
+        throws ConfigurationStoreException, ProjectBuildingException
+    {
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        List repositories = repositoryFactory.createRepositories( configuration );
+
+        Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
+        // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
+        ArtifactRepository localRepository = repositoryFactory.createLocalRepository( configuration );
+        return projectBuilder.buildFromRepository( artifact, repositories, localRepository );
+    }
+
+    private boolean checkParameters()
+    {
+        boolean result = true;
+
+        if ( StringUtils.isEmpty( groupId ) )
+        {
+            // TODO: i18n
+            addActionError( "You must specify a group ID to browse" );
+            result = false;
+        }
+
+        else if ( StringUtils.isEmpty( artifactId ) )
+        {
+            // TODO: i18n
+            addActionError( "You must specify a artifact ID to browse" );
+            result = false;
+        }
+
+        else if ( StringUtils.isEmpty( version ) )
+        {
+            // TODO: i18n
+            addActionError( "You must specify a version to browse" );
+            result = false;
+        }
+        return result;
+    }
+
     public Model getModel()
     {
         return model;
+    }
+
+    public List getDependencies()
+    {
+        return dependencies;
     }
 
     public String getGroupId()

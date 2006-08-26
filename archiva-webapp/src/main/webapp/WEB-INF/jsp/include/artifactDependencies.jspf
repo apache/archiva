@@ -1,0 +1,44 @@
+<c:forEach items="${dependencies}" var="dependency">
+  <h3>
+    <c:set var="url">
+      <ww:url action="showArtifact" namespace="/">
+        <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
+        <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
+        <ww:param name="version" value="%{'${dependency.version}'}"/>
+      </ww:url>
+    </c:set>
+    <%-- TODO: showing the name and description would be nice, but that would require loading the POMs --%>
+    <a href="${url}">${dependency.artifactId}</a>
+  </h3>
+
+  <%-- TODO! use CSS, share with search results --%>
+  <p>
+            <span style="font-size: x-small">
+              <%-- TODO! share with browse as a tag --%>
+              <c:forTokens items="${dependency.groupId}" delims="." var="part">
+                <c:choose>
+                  <c:when test="${empty(cumulativeGroup)}">
+                    <c:set var="cumulativeGroup" value="${part}"/>
+                  </c:when>
+                  <c:otherwise>
+                    <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
+                  </c:otherwise>
+                </c:choose>
+                <c:set var="url">
+                  <ww:url action="browseGroup" namespace="/">
+                    <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
+                  </ww:url>
+                </c:set>
+                <a href="${url}">${part}</a> /
+              </c:forTokens>
+              <strong>${dependency.artifactId}</strong>
+              | <strong>Version(s):</strong> ${dependency.version}
+              <c:if test="${!empty(dependency.scope)}">
+                | <strong>Scope:</strong> ${dependency.scope}
+              </c:if>
+              <c:if test="${!empty(dependency.classifier)}">
+                | <strong>Classifier:</strong> ${dependency.classifier}
+              </c:if>
+            </span>
+  </p>
+</c:forEach>

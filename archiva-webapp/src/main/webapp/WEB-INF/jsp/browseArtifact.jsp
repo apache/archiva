@@ -20,7 +20,7 @@
 <html>
 <head>
   <title>Browse Repository</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -33,15 +33,17 @@
       <c:forTokens items="${groupId}" delims="./" var="part">
         <c:choose>
           <c:when test="${empty(cumulativeGroup)}">
-            <c:set var="cumulativeGroup" value="${part}" />
+            <c:set var="cumulativeGroup" value="${part}"/>
           </c:when>
           <c:otherwise>
-            <c:set var="cumulativeGroup" value="${cumulativeGroup}/${part}" />
+            <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
           </c:otherwise>
         </c:choose>
-        <ww:url id="url" action="browseGroup" namespace="/">
-          <ww:param name="groupId" value="%{'${cumulativeGroup}'}" />
-        </ww:url>
+        <c:set var="url">
+          <ww:url action="browseGroup" namespace="/">
+            <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
+          </ww:url>
+        </c:set>
         <a href="${url}">${part}</a> /
       </c:forTokens>
       <strong>${artifactId}</strong>
@@ -49,12 +51,12 @@
 
     <h2>Versions</h2>
     <ul>
-      <ww:set name="versions" value="versions" />
+      <ww:set name="versions" value="versions"/>
       <c:forEach items="${versions}" var="version">
         <ww:url id="url" action="showArtifact" namespace="/">
-          <ww:param name="groupId" value="%{'${groupId}'}" />
-          <ww:param name="artifactId" value="%{'${artifactId}'}" />
-          <ww:param name="version" value="%{'${version}'}" />
+          <ww:param name="groupId" value="%{'${groupId}'}"/>
+          <ww:param name="artifactId" value="%{'${artifactId}'}"/>
+          <ww:param name="version" value="%{'${version}'}"/>
         </ww:url>
         <li><a href="${url}">${version}/</a></li>
       </c:forEach>

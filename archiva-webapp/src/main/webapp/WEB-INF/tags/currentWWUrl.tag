@@ -16,23 +16,26 @@
 
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ attribute name="action" required="true" %>
-<%@ attribute name="namespace" required="true" %>
+<%@ attribute name="action" %>
+<%@ attribute name="namespace" %>
+<%@ attribute name="url" %>
 <c:set var="currentUrl">
-  <ww:url />
+  <ww:url/>
 </c:set>
-<c:set var="url">
-  <ww:url action="${action}" namespace="${namespace}" />
-</c:set>
+<c:if test="${empty(url)}">
+  <c:set var="url">
+    <ww:url action="${action}" namespace="${namespace}"/>
+  </c:set>
+</c:if>
 <c:choose>
   <c:when test="${currentUrl == url}">
     <strong>
-      <jsp:doBody />
+      <jsp:doBody/>
     </strong>
   </c:when>
   <c:otherwise>
     <a href="${url}">
-      <jsp:doBody />
+      <jsp:doBody/>
     </a>
   </c:otherwise>
 </c:choose>

@@ -107,7 +107,11 @@
       <result>/WEB-INF/jsp/browseArtifact.jsp</result>
     </action>
 
-    <action name="showArtifact" class="showArtifactAction">
+    <action name="showArtifact" class="showArtifactAction" method="artifact">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifactDependencies" class="showArtifactAction" method="dependencies">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
