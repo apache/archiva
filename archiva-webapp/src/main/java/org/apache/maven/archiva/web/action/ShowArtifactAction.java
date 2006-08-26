@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.manager.web.action;
+package org.apache.maven.archiva.web.action;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

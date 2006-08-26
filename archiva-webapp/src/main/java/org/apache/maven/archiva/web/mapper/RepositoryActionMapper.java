@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.manager.web.mapper;
+package org.apache.maven.archiva.web.mapper;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

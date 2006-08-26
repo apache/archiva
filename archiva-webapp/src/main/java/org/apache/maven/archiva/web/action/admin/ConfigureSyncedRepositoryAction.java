@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.manager.web.action.admin;
+package org.apache.maven.archiva.web.action.admin;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -17,7 +17,6 @@ package org.apache.maven.archiva.manager.web.action.admin;
  */
 
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.SyncedRepositoryConfiguration;
 
 import java.io.IOException;
@@ -25,24 +24,31 @@ import java.io.IOException;
 /**
  * Configures the application repositories.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteSyncedRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureSyncedRepositoryAction"
  */
-public class DeleteSyncedRepositoryAction
-    extends AbstractDeleteRepositoryAction
+public class ConfigureSyncedRepositoryAction
+    extends AbstractConfigureRepositoryAction
 {
-    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
-    {
-        return configuration.getSyncedRepositoryById( repoId );
-    }
-
-    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
+    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
     {
         configuration.removeSyncedRepository( (SyncedRepositoryConfiguration) existingRepository );
     }
 
-    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
+    protected AbstractRepositoryConfiguration getRepository( String id )
+    {
+        return configuration.getSyncedRepositoryById( id );
+    }
+
+    protected void addRepository()
         throws IOException
     {
-        // TODO!
+        SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) getRepository();
+
+        configuration.addSyncedRepository( repository );
+    }
+
+    protected AbstractRepositoryConfiguration createRepository()
+    {
+        return new SyncedRepositoryConfiguration();
     }
 }

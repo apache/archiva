@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.manager.web.action.admin;
+package org.apache.maven.archiva.web.action.admin;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -7,7 +7,7 @@ package org.apache.maven.archiva.manager.web.action.admin;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,50 +17,38 @@ package org.apache.maven.archiva.manager.web.action.admin;
  */
 
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
  * Configures the application repositories.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureProxiedRepositoryAction"
  */
-public class ConfigureRepositoryAction
+public class ConfigureProxiedRepositoryAction
     extends AbstractConfigureRepositoryAction
 {
     protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
     {
-        configuration.removeRepository( (RepositoryConfiguration) existingRepository );
+        configuration.removeProxiedRepository( (ProxiedRepositoryConfiguration) existingRepository );
     }
 
     protected AbstractRepositoryConfiguration getRepository( String id )
     {
-        return configuration.getRepositoryById( id );
+        return configuration.getProxiedRepositoryById( id );
     }
 
     protected void addRepository()
         throws IOException
     {
-        RepositoryConfiguration repository = (RepositoryConfiguration) getRepository();
+        ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) getRepository();
 
-        // Normalize the path
-        File file = new File( repository.getDirectory() );
-        repository.setDirectory( file.getCanonicalPath() );
-        if ( !file.exists() )
-        {
-            file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory
-        }
-
-        configuration.addRepository( repository );
+        configuration.addProxiedRepository( repository );
     }
 
     protected AbstractRepositoryConfiguration createRepository()
     {
-        RepositoryConfiguration repository = new RepositoryConfiguration();
-        repository.setIndexed( false );
-        return repository;
+        return new ProxiedRepositoryConfiguration();
     }
 }

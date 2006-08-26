@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.manager.web.interceptor;
+package org.apache.maven.archiva.web.interceptor;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
