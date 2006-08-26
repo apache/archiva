@@ -69,7 +69,18 @@ public class DefaultConfigurationStore
 
             if ( file == null )
             {
-                file = new File( System.getProperty( "user.home" ), "/.m2/archiva-manager.xml" );
+                file = new File( System.getProperty( "user.home" ), "/.m2/archiva.xml" );
+
+                // migration for those with the old file
+                if ( !file.exists() )
+                {
+                    File file = new File( System.getProperty( "user.home" ), "/.m2/repository-manager.xml" );
+                    if ( file.exists() )
+                    {
+                        getLogger().info( "Migrating " + file + " to " + this.file );
+                        file.renameTo( this.file );
+                    }
+                }
             }
 
             FileReader fileReader;
