@@ -24,8 +24,8 @@ import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.indexing.RepositoryIndexException;
-import org.apache.maven.archiva.indexing.RepositoryIndexSearchException;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 
 import java.io.File;
 import java.io.IOException;

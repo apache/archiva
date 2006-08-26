@@ -10,7 +10,7 @@
           <role-hint>md5</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.indexing.RepositoryArtifactIndexFactory</role>
+          <role>org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory</role>
         </requirement>
       </requirements>
       <configuration>

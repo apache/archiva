@@ -16,9 +16,9 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.indexing.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexing.RepositoryArtifactIndexFactory;
-import org.apache.maven.archiva.indexing.record.RepositoryIndexRecordFactory;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
+import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Model;

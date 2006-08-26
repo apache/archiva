@@ -26,12 +26,12 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.indexing.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexing.RepositoryArtifactIndexFactory;
-import org.apache.maven.archiva.indexing.RepositoryIndexException;
-import org.apache.maven.archiva.indexing.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexing.lucene.LuceneQuery;
-import org.apache.maven.archiva.indexing.record.StandardIndexRecordFields;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
+import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
+import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 
 import java.io.File;
 import java.net.MalformedURLException;
