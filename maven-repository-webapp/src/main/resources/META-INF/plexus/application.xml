@@ -30,16 +30,12 @@
         <appenders>
           <appender>
             <id>console</id>
-            <threshold>DEBUG</threshold>
+            <threshold>WARN</threshold>
             <type>org.apache.log4j.ConsoleAppender</type>
             <conversion-pattern>%d [%t] %-5p %-30c{1} - %m%n</conversion-pattern>
           </appender>
         </appenders>
         <levels>
-          <level>
-            <hierarchy>org.codehaus.plexus.velocity</hierarchy>
-            <level>WARN</level>
-          </level>
           <level>
             <hierarchy>org.codehaus.plexus.mailsender.MailSender</hierarchy>
             <level>INFO</level>
@@ -55,6 +51,10 @@
           <level>
             <hierarchy>com.opensymphony.webwork</hierarchy>
             <level>INFO</level>
+          </level>
+          <level>
+            <hierarchy>org.apache.maven.repository</hierarchy>
+            <level>DEBUG</level>
           </level>
         </levels>
       </configuration>

@@ -52,10 +52,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An implementation of the proxy handler.
+ * An implementation of the proxy handler. This class is not thread safe (the class itself is, but the wagons it uses
+ * are not) - it is declared <code>per-lookup</code> for that reason.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @plexus.component
+ * @plexus.component instantiation-strategy="per-lookup"
  * @todo use wagonManager for cache use file:// as URL
  * @todo this currently duplicates a lot of the wagon manager, and doesn't do things like snapshot resolution, etc.
  * The checksum handling is inconsistent with that of the wagon manager.
@@ -81,11 +82,6 @@ public class DefaultProxyRequestHandler
      * @plexus.requirement role="org.apache.maven.wagon.Wagon"
      */
     private Map/*<String,Wagon>*/ wagons;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.repository.digest.Digester"
-     */
-    private Map/*<String,Digester>*/ digesters;
 
     public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException

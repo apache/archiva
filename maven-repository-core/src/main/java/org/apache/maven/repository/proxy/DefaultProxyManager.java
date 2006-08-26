@@ -36,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Default implementation of the proxy manager that bridges the repository configuration classes to the proxy API.
+ * Default implementation of the proxy manager that bridges the repository configuration classes to the proxy API. This
+ * class is not thread safe (due to the request handler being a non-thread safe requirement).
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @todo we should be able to configure "views" that sit in front of this (ie, prefix = /legacy, appears as layout maven-1.x, path gets translated before being passed on)
- * @plexus.component
+ * @plexus.component instantiation-strategy="per-lookup"
  */
 public class DefaultProxyManager
     implements ProxyManager
@@ -64,12 +65,12 @@ public class DefaultProxyManager
     /**
      * The proxy groups for each managed repository.
      */
-    private Map/*<String,ProxiedRepositoryGroup>*/ proxyGroups;
+    private static Map/*<String,ProxiedRepositoryGroup>*/ proxyGroups;
 
     /**
      * The default proxy group/managed repository.
      */
-    private ProxiedRepositoryGroup defaultProxyGroup;
+    private static ProxiedRepositoryGroup defaultProxyGroup;
 
     public File get( String path )
         throws ProxyException, ResourceDoesNotExistException
