@@ -19,7 +19,7 @@
 <html>
 <head>
   <title>Find Artifact</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body onload="document.checksumSearch.file.disabled = false">
@@ -56,11 +56,11 @@
       <tr>
         <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
         <td>
-          <input type="file" name="file" size="50" value="" id="checksumSearch_file" />
+          <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
         </td>
       </tr>
-      <ww:textfield label="Checksum" size="50" name="md5" />
-      <ww:submit value="Go!" />
+      <ww:textfield label="Checksum" size="50" name="md5"/>
+      <ww:submit value="Go!"/>
     </ww:form>
 
     <p>
@@ -69,12 +69,12 @@
       <b>not</b>
       be uploaded to the server. See the progress bar below for progress of
       locally creating a checksum that is uploaded to the server after you hit "Go!".
-      <ww:actionerror />
+      <ww:actionerror/>
     </p>
 
     <p>
-      <applet code="org/apache/maven/repository/applet/ChecksumApplet.class"
-              archive="maven-repository-artifact-applet.jar"
+      <applet code="org/apache/maven/archiva/applet/ChecksumApplet.class"
+              archive="archiva-applet.jar"
               width="400" height="20" name="ChecksumApplet">
       </applet>
     </p>

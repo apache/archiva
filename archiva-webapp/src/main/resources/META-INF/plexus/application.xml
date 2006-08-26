@@ -94,7 +94,7 @@
 
   <load-on-start>
     <component>
-      <role>org.apache.maven.repository.scheduler.RepositoryTaskScheduler</role>
+      <role>org.apache.maven.archiva.scheduler.RepositoryTaskScheduler</role>
     </component>
   </load-on-start>
 </plexus>

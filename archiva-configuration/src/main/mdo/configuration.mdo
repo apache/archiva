@@ -7,7 +7,7 @@
   <defaults>
     <default>
       <key>package</key>
-      <value>org.apache.maven.repository.configuration</value>
+      <value>org.apache.maven.archiva.configuration</value>
     </default>
   </defaults>
   <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist -->

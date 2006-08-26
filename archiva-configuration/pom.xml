@@ -51,10 +51,10 @@
           <instrumentation>
             <!-- exclude generated -->
             <excludes>
-              <exclude>org/apache/maven/repository/configuration/io/**</exclude>
-              <exclude>org/apache/maven/repository/configuration/*RepositoryConfiguration.*</exclude>
-              <exclude>org/apache/maven/repository/configuration/Configuration.*</exclude>
-              <exclude>org/apache/maven/repository/configuration/Proxy.*</exclude>
+              <exclude>org/apache/maven/archiva/configuration/io/**</exclude>
+              <exclude>org/apache/maven/archiva/configuration/*RepositoryConfiguration.*</exclude>
+              <exclude>org/apache/maven/archiva/configuration/Configuration.*</exclude>
+              <exclude>org/apache/maven/archiva/configuration/Proxy.*</exclude>
             </excludes>
           </instrumentation>
         </configuration>

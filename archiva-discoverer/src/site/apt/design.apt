@@ -13,9 +13,9 @@ Discoverer Design
 
   There are two plexus components available:
 
-    * {{{../apidocs/org/apache/maven/repository/discovery/ArtifactDiscoverer.html} ArtifactDiscoverer}}
+    * {{{../apidocs/org/apache/maven/archiva/discoverer/ArtifactDiscoverer.html} ArtifactDiscoverer}}
 
-    * {{{../apidocs/org/apache/maven/repository/discovery/MetadataDiscoverer.html} MetadataDiscoverer}}
+    * {{{../apidocs/org/apache/maven/archiva/discoverer/MetadataDiscoverer.html} MetadataDiscoverer}}
 
   Each of these components currently have an implementation for the both <<<legacy>>> and <<<default>>> repository
   layouts.

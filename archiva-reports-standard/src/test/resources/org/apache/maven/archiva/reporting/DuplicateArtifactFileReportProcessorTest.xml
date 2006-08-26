@@ -1,0 +1,21 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.archiva.reporting.ArtifactReportProcessor</role>
+      <role-hint>duplicate</role-hint>
+      <implementation>org.apache.maven.archiva.reporting.DuplicateArtifactFileReportProcessor</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.digest.Digester</role>
+          <role-hint>md5</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.indexing.RepositoryArtifactIndexFactory</role>
+        </requirement>
+      </requirements>
+      <configuration>
+        <indexDirectory>${basedir}/target/indexDirectory</indexDirectory>
+      </configuration>
+    </component>
+  </components>
+</component-set>
