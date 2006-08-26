@@ -25,12 +25,12 @@
       <lifecycle-handler>basic</lifecycle-handler>
 
       <configuration>
-        <threshold>DEBUG</threshold>
+        <threshold>WARN</threshold>
         <default-appender>console</default-appender>
         <appenders>
           <appender>
             <id>console</id>
-            <threshold>WARN</threshold>
+            <threshold>DEBUG</threshold>
             <type>org.apache.log4j.ConsoleAppender</type>
             <conversion-pattern>%d [%t] %-5p %-30c{1} - %m%n</conversion-pattern>
           </appender>
@@ -53,7 +53,7 @@
             <level>INFO</level>
           </level>
           <level>
-            <hierarchy>org.apache.maven.repository</hierarchy>
+            <hierarchy>org.apache.maven</hierarchy>
             <level>DEBUG</level>
           </level>
         </levels>
