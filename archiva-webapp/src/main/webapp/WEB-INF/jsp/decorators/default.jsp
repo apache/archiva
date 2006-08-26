@@ -110,9 +110,11 @@
           <li class="none">
             <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
           </li>
-          <li class="none">
-            <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
-          </li>
+          <%-- TODO: add back after synced repos are implemented
+                    <li class="none">
+                      <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
+                    </li>
+          --%>
         </ul>
       </li>
     </ul>
