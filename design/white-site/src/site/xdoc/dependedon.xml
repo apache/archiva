@@ -17,7 +17,7 @@
 
 <document>
   <properties>
-    <title>Maven Repository Manager</title>
+    <title>Archiva</title>
   </properties>
   <body>
     <div id="sidebar">
@@ -51,8 +51,10 @@
             <strong>Artifact ID:</strong>
             <a href="browse3.html">maven-artifact</a>
             <strong>Version(s):</strong>
-            <a href="artifact.html">2.0</a>,
-            <a href="artifact.html">2.0.1</a>,
+            <a href="artifact.html">2.0</a>
+            ,
+            <a href="artifact.html">2.0.1</a>
+            ,
             <a href="artifact.html">2.0.4</a>
           </span>
         </p>
@@ -70,8 +72,10 @@
             <strong>Artifact ID:</strong>
             <a href="browse3.html">maven-project</a>
             <strong>Version(s):</strong>
-            <a href="artifact.html">2.0</a>,
-            <a href="artifact.html">2.0.1</a>,
+            <a href="artifact.html">2.0</a>
+            ,
+            <a href="artifact.html">2.0.1</a>
+            ,
             <a href="artifact.html">2.0.4</a>
           </span>
         </p>

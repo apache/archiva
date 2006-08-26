@@ -54,10 +54,6 @@
       <artifactId>wagon-provider-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact-manager</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-utils</artifactId>
     </dependency>

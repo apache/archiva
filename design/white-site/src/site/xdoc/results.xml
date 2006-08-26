@@ -1,6 +1,6 @@
 <document>
   <properties>
-    <title>Maven Repository Manager</title>
+    <title>Archiva</title>
   </properties>
   <body>
     <div id="sidebar">
@@ -13,13 +13,13 @@
         <div id="feed">
           <p>
             <a href="">
-              <img src="images/feed-icon32x32.png" width="28" height="28" />
+              <img src="images/feed-icon32x32.png" width="28" height="28"/>
             </a>
           </p>
         </div>
         <form action="results.html">
           <p>
-            <input type="text" size="50" value="maven" />
+            <input type="text" size="50" value="maven"/>
             <input type="submit" name="Go!"/>
           </p>
           <p>
@@ -30,20 +30,37 @@
         <div id="resultsBox">
           <p>
             <span style="font-size: x-small; background-color: silver; display: block; text-align: right">
-              <b>Page: </b>
-              <b>1</b> |
-              <a href="#">2</a> |
-              <a href="#">3</a> |
-              <a href="#">Next &gt;&gt;</a> 
+              <b>Page:</b>
+              <b>1</b>
+              |
+              <a href="#">2</a>
+              |
+              <a href="#">3</a>
+              |
+              <a href="#">Next &gt;&gt;</a>
             </span>
           </p>
           <h3>
-            <a href="artifact.html">Maven Site Plugin</a> <span style="font-size: x-small">(98%)</span>
+            <a href="artifact.html">Maven Site Plugin</a>
+            <span style="font-size: x-small">(98%)</span>
           </h3>
           <ul>
-            <li><b>Packaging:</b> <i>maven</i>-plugin</li>
-            <li><b>Artifact ID:</b> <i>maven</i>-site-plugin</li>
-            <li><b>Group ID:</b> org.apache.<i>maven</i>.plugins</li>
+            <li>
+              <b>Packaging:</b>
+              <i>maven</i>
+              -plugin
+            </li>
+            <li>
+              <b>Artifact ID:</b>
+              <i>maven</i>
+              -site-plugin
+            </li>
+            <li>
+              <b>Group ID:</b>
+              org.apache.
+              <i>maven</i>
+              .plugins
+            </li>
           </ul>
           <p>
             <span style="font-size: x-small">
@@ -60,11 +77,21 @@
             </span>
           </p>
           <h3>
-            <a href="artifact.html">Maven Project</a> <span style="font-size: x-small">(85%)</span>
+            <a href="artifact.html">Maven Project</a>
+            <span style="font-size: x-small">(85%)</span>
           </h3>
           <ul>
-            <li><b>Package:</b> org.apache.<i>maven</i>.project</li>
-            <li><b>Class:</b> <i>Maven</i>ProjectBuilder</li>
+            <li>
+              <b>Package:</b>
+              org.apache.
+              <i>maven</i>
+              .project
+            </li>
+            <li>
+              <b>Class:</b>
+              <i>Maven</i>
+              ProjectBuilder
+            </li>
           </ul>
           <p>
             <span style="font-size: x-small">
@@ -80,13 +107,16 @@
               <a href="artifact.html">2.0</a>
             </span>
           </p>
-          <h2> ... more results ... </h2>
+          <h2>... more results ...</h2>
           <p>
             <span style="font-size: x-small; background-color: silver; display: block; text-align: right">
-              <b>Page: </b>
-              <b>1</b> |
-              <a href="#">2</a> |
-              <a href="#">3</a> |
+              <b>Page:</b>
+              <b>1</b>
+              |
+              <a href="#">2</a>
+              |
+              <a href="#">3</a>
+              |
               <a href="#">Next &gt;&gt;</a>
             </span>
           </p>

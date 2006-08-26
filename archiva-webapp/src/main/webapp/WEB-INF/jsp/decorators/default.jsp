@@ -20,8 +20,8 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
-  <title>Maven Repository Manager ::
-    <decorator:title default="Maven Repository Manager" />
+  <title>Maven Archiva ::
+    <decorator:title default="Maven Archiva"/>
   </title>
 
   <style type="text/css" media="all">
@@ -29,15 +29,15 @@
     @import url( "<%= request.getContextPath() %>/css/maven-theme.css" );
     @import url( "<%= request.getContextPath() %>/css/site.css" );
   </style>
-  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/print.css" type="text/css" media="print" />
-  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/print.css" type="text/css" media="print"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
 </head>
 
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
 <div id="banner">
   <span id="bannerLeft">
-    <a href="http://maven.apache.org/repository-manager/">
-      <img src="http://maven.apache.org/images/maven.jpg" alt="" width="267" height="70" />
+    <a href="http://maven.apache.org/archiva/">
+      <img src="http://maven.apache.org/images/maven.jpg" alt="" width="267" height="70"/>
       <%-- TODO: logo instead
             <img src="http://ci.codehaus.org/continuum_logo_75.gif" alt="" width="188" height="89" />
       --%>
@@ -52,7 +52,7 @@
   </span>
 
   <div class="clear">
-    <hr />
+    <hr/>
   </div>
 </div>
 
@@ -62,13 +62,13 @@
   </div>
 
   <div class="xright">
-    <a href="http://maven.apache.org/repository-manager">Repository Manager</a> |
+    <a href="http://maven.apache.org/archiva">Archiva</a> |
     <a href="http://maven.apache.org/">Maven</a> |
     <a href="http://www.apache.org/">Apache</a>
   </div>
 
   <div class="clear">
-    <hr />
+    <hr/>
   </div>
 </div>
 
@@ -117,18 +117,18 @@
       </li>
     </ul>
 
-    <br />
+    <br/>
   </div>
 </div>
 
 <div id="bodyColumn">
   <div id="contentBox">
-    <decorator:body />
+    <decorator:body/>
   </div>
 </div>
 
 <div class="clear">
-  <hr />
+  <hr/>
 </div>
 
 <div id="footer">
@@ -137,7 +137,7 @@
   </div>
 
   <div class="clear">
-    <hr />
+    <hr/>
 
   </div>
 </div>

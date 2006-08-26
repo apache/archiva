@@ -1,6 +1,6 @@
 <document>
   <properties>
-    <title>Maven Repository Manager</title>
+    <title>Archiva</title>
   </properties>
   <body>
     <div id="sidebar">
@@ -12,7 +12,8 @@
     <div id="contentArea">
       <div id="nameColumn">
         <p>
-          <a href="#">org</a> /
+          <a href="#">org</a>
+          /
           <strong>apache</strong>
         </p>
         <h2>Groups</h2>

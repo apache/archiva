@@ -1,6 +1,6 @@
 <document>
   <properties>
-    <title>Maven Repository Manager</title>
+    <title>Archiva</title>
   </properties>
   <body>
     <h1>Synchronisation</h1>
@@ -10,7 +10,10 @@
       <table>
         <tr>
           <th>Last Sync completed</th>
-          <td>1 February 13:01:04 (<a href="#">View Report</a>)</td>
+          <td>1 February 13:01:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
         </tr>
         <tr>
           <th>Next sync</th>
@@ -18,7 +21,9 @@
         </tr>
         <tr>
           <th>Status</th>
-          <td><span class="statusOk">Success</span></td>
+          <td>
+            <span class="statusOk">Success</span>
+          </td>
         </tr>
       </table>
       <p>
@@ -28,7 +33,10 @@
       <table>
         <tr>
           <th>Last Sync completed</th>
-          <td>1 February 13:05:04 (<a href="#">View Report</a>)</td>
+          <td>1 February 13:05:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
         </tr>
         <tr>
           <th>Next sync</th>
@@ -36,7 +44,10 @@
         </tr>
         <tr>
           <th>Status</th>
-          <td><span class="statusFailed">FAILED</span>: confluence wouldn't share CPU cycles with me</td>
+          <td>
+            <span class="statusFailed">FAILED</span>
+            : confluence wouldn't share CPU cycles with me
+          </td>
         </tr>
       </table>
       <p>
@@ -46,7 +57,10 @@
       <table>
         <tr>
           <th>Last Sync completed</th>
-          <td>1 February 13:11:04 (<a href="#">View Report</a>)</td>
+          <td>1 February 13:11:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
         </tr>
         <tr>
           <th>Next sync</th>
@@ -54,7 +68,10 @@
         </tr>
         <tr>
           <th>Status</th>
-          <td><span class="statusWarn">WARNING</span>: some warnings occurred during the conversion</td>
+          <td>
+            <span class="statusWarn">WARNING</span>
+            : some warnings occurred during the conversion
+          </td>
         </tr>
       </table>
       <p>

@@ -1,6 +1,6 @@
 <document>
   <properties>
-    <title>Maven Repository Manager</title>
+    <title>Archiva</title>
   </properties>
   <body>
     <h1>Administration</h1>
@@ -9,15 +9,24 @@
       <h2>Delete Remote Repository</h2>
 
       <blockquote>
-        <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
+        <strong>
+          <span class="statusFailed">WARNING:</span>
+          This operation can not be undone.
+        </strong>
       </blockquote>
 
       <form action="sync.html">
-        <input type="radio"/> Remove the repository and delete its contents from managed repositories<br/>
-        <input type="radio" /> Remove the repository from the available list, but leave the contents in the managed
-        repositories<br/>
-        <input type="radio" checked="checked" /> Leave the repository unmodified<br/>
-        <input type="submit" />
+        <input type="radio"/>
+        Remove the repository and delete its contents from managed repositories
+        <br/>
+        <input type="radio"/>
+        Remove the repository from the available list, but leave the contents in the managed
+        repositories
+        <br/>
+        <input type="radio" checked="checked"/>
+        Leave the repository unmodified
+        <br/>
+        <input type="submit"/>
       </form>
     </div>
   </body>

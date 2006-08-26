@@ -19,7 +19,7 @@
 <html>
 <head>
   <title>Configuration</title>
-  <ww:head />
+  <ww:head/>
 </head>
 
 <body>
@@ -35,12 +35,12 @@
   </blockquote>
 
   <ww:form method="post" action="deleteSyncedRepository" namespace="/admin" validate="true">
-    <ww:hidden name="repoId" />
+    <ww:hidden name="repoId"/>
     <ww:radio list="#@java.util.LinkedHashMap@{
     'delete-contents' : 'Remove the repository and delete its contents from managed repositories',
     'delete-entry' : 'Remove the repository from the available list, but leave the contents in the managed repositories',
-    'unmodified' : 'Leave the repository unmodified'}" name="operation" theme="repository-manager" />
-    <ww:submit value="Go" />
+    'unmodified' : 'Leave the repository unmodified'}" name="operation" theme="archiva"/>
+    <ww:submit value="Go"/>
   </ww:form>
 </div>
 
