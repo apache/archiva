@@ -170,7 +170,7 @@ public class DefaultProxyManager
                             new ProxiedRepositoryGroup( proxiedRepositories, managedRepository, wagonProxy ) );
             }
 
-            // TODO: ability to configure default proxy separately
+            // TODO: ability to configure default proxy separately!
 
             if ( groups.size() == 1 )
             {

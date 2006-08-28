@@ -32,13 +32,11 @@ import java.util.Map;
  * Test the default artifact discoverer.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
- * @todo test location of poms, checksums
+ * @version $Id:DefaultArtifactDiscovererTest.java 437105 2006-08-26 17:22:22 +1000 (Sat, 26 Aug 2006) brett $
  */
 public class DefaultArtifactDiscovererTest
     extends AbstractArtifactDiscovererTest
 {
-
     protected String getLayout()
     {
         return "default";

@@ -17,6 +17,7 @@
 <!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
+<!-- TODO! see MRM-150 for progress on these -->
 <validators>
   <!-- TODO: constrain more -->
   <field name="method">

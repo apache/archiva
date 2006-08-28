@@ -329,7 +329,7 @@ public class ProxyRequestHandlerTest
             assertTrue( "Check failure", proxiedArtifactRepository1.isCachedFailure( path ) );
             assertTrue( "Check failure", proxiedArtifactRepository2.isCachedFailure( path ) );
 
-            // TODO: do we really want failures to present as a not found?
+            // TODO: do not want failures to present as a not found!
             // TODO: How much information on each failure should we pass back to the user vs. logging in the proxy? 
         }
     }
@@ -528,8 +528,6 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-
-        // TODO: is this the correct behaviour, or should it be considered removed too?
     }
 
     public void testGetAlwaysWithCachedFailure()

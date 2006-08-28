@@ -28,9 +28,6 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 
 import java.util.Iterator;
 
-/**
- * @todo??? should use MetadataXpp3Reader instead ?
- */
 public class BadMetadataReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {

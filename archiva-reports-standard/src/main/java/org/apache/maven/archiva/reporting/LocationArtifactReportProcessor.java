@@ -152,12 +152,12 @@ public class LocationArtifactReportProcessor
         }
         catch ( IOException e )
         {
-            // TODO: should just warn and continue?
+            // TODO: should just warn and continue!
             throw new ReportProcessorException( "Unable to read artifact to extract model", e );
         }
         catch ( XmlPullParserException e )
         {
-            // TODO: should just warn and continue?
+            // TODO: should just warn and continue!
             throw new ReportProcessorException( "Unable to read artifact to extract model", e );
         }
         finally

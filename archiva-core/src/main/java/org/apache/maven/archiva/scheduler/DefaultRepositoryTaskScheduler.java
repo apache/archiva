@@ -109,7 +109,7 @@ public class DefaultRepositoryTaskScheduler
                 new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
             scheduler.scheduleJob( jobDetail, trigger );
 
-            // TODO: run as a job so it doesn't block startup/configuration saving
+            // TODO: run as a job so it doesn't block startup/configuration saving!
             try
             {
                 indexerTask.executeNowIfNeeded();
@@ -123,8 +123,6 @@ public class DefaultRepositoryTaskScheduler
         {
             getLogger().info( "Not scheduling indexer - index path is not configured" );
         }
-
-        // TODO: wire in the converter
     }
 
     public void stop()

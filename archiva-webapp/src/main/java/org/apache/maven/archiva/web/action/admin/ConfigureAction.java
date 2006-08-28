@@ -62,7 +62,7 @@ public class ConfigureAction
         if ( !file.exists() )
         {
             file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory
+            // TODO: error handling when this fails, or is not a directory!
         }
 
         // Just double checking that our validation routines line up with what is expected in the configuration
@@ -70,7 +70,7 @@ public class ConfigureAction
 
         configurationStore.storeConfiguration( configuration );
 
-        // TODO: if the repository has changed, we need to check if indexing is needed
+        // TODO: if the repository has changed, we need to check if indexing is needed!
 
         addActionMessage( "Successfully saved configuration" );
 

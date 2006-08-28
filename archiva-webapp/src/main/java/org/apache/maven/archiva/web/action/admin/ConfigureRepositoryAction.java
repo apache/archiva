@@ -51,7 +51,7 @@ public class ConfigureRepositoryAction
         if ( !file.exists() )
         {
             file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory
+            // TODO: error handling when this fails, or is not a directory!
         }
 
         configuration.addRepository( repository );

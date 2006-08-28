@@ -31,7 +31,7 @@ public interface RepositoryQueryLayer
     boolean containsArtifact( Artifact artifact );
 
     /**
-     * @todo I believe we can remove this [BP] - artifact should contain all the necessary version info
+     * @todo I believe we can remove this [BP] - artifact should contain all the necessary version info!
      */
     boolean containsArtifact( Artifact artifact, Snapshot snapshot );
 

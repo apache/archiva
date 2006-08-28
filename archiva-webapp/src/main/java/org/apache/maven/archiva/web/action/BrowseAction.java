@@ -51,7 +51,7 @@ import java.util.TreeSet;
 /**
  * Browse the repository.
  *
- * @todo the tree part probably belongs in a browsing component, and the indexer could optimize how it retrieves the terms rather than querying everything
+ * @todo the tree part probably belongs in a browsing component, and the indexer could optimize how it retrieves the terms rather than querying everything!
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="browseAction"
  */
 public class BrowseAction
@@ -208,7 +208,7 @@ public class BrowseAction
     {
         // TODO: give action message if indexing is in progress
 
-        // TODO: this will be inefficient over a very large number of artifacts, should be cached
+        // TODO: this will be inefficient over a very large number of artifacts, should be cached!
 
         List records = index.search( new LuceneQuery( new MatchAllDocsQuery() ) );
 

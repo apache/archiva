@@ -18,7 +18,7 @@
     "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
 
 <xwork>
-  <!-- TODO: better error handling for exceptions needed -->
+  <!-- TODO: better error handling for exceptions needed! -->
 
   <!-- Include webwork defaults (from WebWork JAR). -->
   <include file="webwork-default.xml"/>
@@ -40,7 +40,7 @@
     <default-interceptor-ref name="configuredStack"/>
 
     <global-results>
-      <!-- TODO: might want an extra message on the configure page when this first happens -->
+      <!-- TODO: want an extra message on the configure page when this first happens! -->
       <!-- TODO: can we send them back to the original location afterwards? -->
       <result name="config-needed" type="redirect-action">
         <param name="namespace">/admin</param>
@@ -48,8 +48,8 @@
       </result>
       <result name="config-repository-needed" type="redirect-action">
         <param name="namespace">/admin</param>
-        <!-- TODO should use param name=method, but WW 2.2.2 doesn't recognise it -->
-        <param name="actionName">addRepository!input</param>
+        <param name="actionName">addRepository</param>
+        <param name="method">input</param>
       </result>
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
     </global-results>

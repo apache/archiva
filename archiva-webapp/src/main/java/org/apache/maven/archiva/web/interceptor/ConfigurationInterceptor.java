@@ -26,7 +26,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * An interceptor that makes the application configuration available
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @todo might be a generally useful thing in plexus-xwork-integration
  * @plexus.component role="com.opensymphony.xwork.interceptor.Interceptor" role-hint="configurationInterceptor"
  */
 public class ConfigurationInterceptor
