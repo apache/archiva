@@ -57,7 +57,7 @@
   </tr>
   <tr>
     <th>Type</th>
-    <!-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this -->
+      <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
     <td>
       <c:choose>
         <c:when test="${repository.layout == 'default'}">
@@ -72,7 +72,7 @@
   <tr>
     <th>Snapshots</th>
     <td>
-      <!-- TODO! turn into a tag -->
+        <%-- TODO! turn into a tag --%>
       <c:choose>
         <c:when test="${repository.snapshotsPolicy == 'disabled'}">
           Disabled
@@ -95,7 +95,7 @@
   <tr>
     <th>Releases</th>
     <td>
-      <!-- TODO! turn into a tag -->
+        <%-- TODO! turn into a tag --%>
       <c:choose>
         <c:when test="${repository.releasesPolicy == 'disabled'}">
           Disabled
@@ -118,7 +118,7 @@
   <tr>
     <th>Proxied through</th>
     <td>
-      <!-- TODO: this is the hard way! would be nice if there was a ref in the model so it was directly linked -->
+        <%-- TODO: this is the hard way! would be nice if there was a ref in the model so it was directly linked --%>
         ${repositoriesMap[repository.managedRepository].name}
       (<code>${repositoriesMap[repository.managedRepository].id}</code>)
     </td>

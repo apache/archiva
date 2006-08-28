@@ -28,10 +28,10 @@
   <a href="${url}">${model.artifactId}</a> /
   <strong>${model.version}</strong>
 
-  <!-- TODO: new versions?
+  <%-- TODO: new versions?
     (<strong class="statusFailed">Newer version available:</strong>
     <a href="artifact.html">2.0.3</a>)
-  -->
+  --%>
 </p>
 
 <p>${mode.description}</p>
@@ -87,14 +87,14 @@
       </td>
     </tr>
   --%>
-  <!-- TODO: origin
+  <%-- TODO: origin
     <tr>
       <th>Origin</th>
       <td>
         <a href="TODO">Apache Repository</a>
       </td>
     </tr>
-  -->
+  --%>
 </table>
 
 <c:if test="${!empty(model.url) || model.organization != null || !empty(model.licenses)

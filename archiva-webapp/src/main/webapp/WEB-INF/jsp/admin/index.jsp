@@ -102,7 +102,7 @@
       </tr>
       <tr>
         <th>Type</th>
-        <!-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this -->
+          <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
         <td>
           <c:choose>
             <c:when test="${repository.layout == 'default'}">
