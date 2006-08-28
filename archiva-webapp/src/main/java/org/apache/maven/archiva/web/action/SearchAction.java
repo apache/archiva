@@ -75,8 +75,6 @@ public class SearchAction
      */
     private ConfigurationStore configurationStore;
 
-    private static final String NO_RESULTS = "noResults";
-
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
@@ -97,13 +95,18 @@ public class SearchAction
             return ERROR;
         }
 
-        // TODO! this is correct, but ugly
         MultiFieldQueryParser parser = new MultiFieldQueryParser( new String[]{StandardIndexRecordFields.GROUPID,
             StandardIndexRecordFields.ARTIFACTID, StandardIndexRecordFields.BASE_VERSION,
             StandardIndexRecordFields.CLASSIFIER, StandardIndexRecordFields.CLASSES, StandardIndexRecordFields.FILES,
             StandardIndexRecordFields.TYPE, StandardIndexRecordFields.PROJECT_NAME,
             StandardIndexRecordFields.PROJECT_DESCRIPTION}, new StandardAnalyzer() );
         searchResults = index.search( new LuceneQuery( parser.parse( q ) ) );
+
+        if ( searchResults.isEmpty() )
+        {
+            addActionError( "No results found" );
+            return INPUT;
+        }
 
         return SUCCESS;
     }
@@ -128,7 +131,8 @@ public class SearchAction
 
         if ( searchResults.isEmpty() )
         {
-            return NO_RESULTS;
+            addActionError( "No results found" );
+            return INPUT;
         }
         if ( searchResults.size() == 1 )
         {

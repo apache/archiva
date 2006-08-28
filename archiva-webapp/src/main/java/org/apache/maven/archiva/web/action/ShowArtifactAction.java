@@ -32,6 +32,7 @@ import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
@@ -45,10 +46,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Browse the repository.
@@ -278,7 +281,10 @@ public class ShowArtifactAction
 
         private final String artifactId;
 
-        private List versions = new ArrayList();
+        /**
+         * Versions added. We ignore duplicates since you might add those with varying classifiers.
+         */
+        private Set versions = new HashSet();
 
         private String version;
 
@@ -318,9 +324,77 @@ public class ShowArtifactAction
             return classifier;
         }
 
+        private static class Ver
+        {
+            private int buildNumber;
+
+            private int major;
+
+            private int minor;
+
+            private int incremental;
+
+            private String qualifier;
+
+
+        }
+
         public void addVersion( String version )
         {
-            versions.add( version );
+            // We use DefaultArtifactVersion to get the correct sorting order later, however it does not have
+            // hashCode properly implemented, so we add it here.
+            // TODO: add these methods to the actual DefaultArtifactVersion and use that.
+            versions.add( new DefaultArtifactVersion( version )
+            {
+                public int hashCode()
+                {
+                    int result;
+                    result = getBuildNumber();
+                    result = 31 * result + getMajorVersion();
+                    result = 31 * result + getMinorVersion();
+                    result = 31 * result + getIncrementalVersion();
+                    result = 31 * result + ( getQualifier() != null ? getQualifier().hashCode() : 0 );
+                    return result;
+                }
+
+                public boolean equals( Object o )
+                {
+                    if ( this == o )
+                    {
+                        return true;
+                    }
+                    if ( o == null || getClass() != o.getClass() )
+                    {
+                        return false;
+                    }
+
+                    DefaultArtifactVersion that = (DefaultArtifactVersion) o;
+
+                    if ( getBuildNumber() != that.getBuildNumber() )
+                    {
+                        return false;
+                    }
+                    if ( getIncrementalVersion() != that.getIncrementalVersion() )
+                    {
+                        return false;
+                    }
+                    if ( getMajorVersion() != that.getMajorVersion() )
+                    {
+                        return false;
+                    }
+                    if ( getMinorVersion() != that.getMinorVersion() )
+                    {
+                        return false;
+                    }
+                    if ( getQualifier() != null ? !getQualifier().equals( that.getQualifier() )
+                        : that.getQualifier() != null )
+                    {
+                        return false;
+                    }
+
+                    return true;
+                }
+            } );
 
             if ( versions.size() == 1 )
             {
@@ -329,8 +403,6 @@ public class ShowArtifactAction
             else
             {
                 this.version = null;
-                // TODO: use version comparator!
-                Collections.sort( versions );
             }
         }
 
@@ -346,6 +418,8 @@ public class ShowArtifactAction
 
         public List getVersions()
         {
+            List versions = new ArrayList( this.versions );
+            Collections.sort( versions );
             return versions;
         }
 

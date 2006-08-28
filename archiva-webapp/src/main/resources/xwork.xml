@@ -76,8 +76,6 @@
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
-      <result name="noResults">/WEB-INF/jsp/noResults.jsp</result>
-      <!-- TODO! -->
     </action>
 
     <action name="findArtifact" class="searchAction" method="input">
@@ -88,8 +86,6 @@
       <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
       <result name="results">/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
-      <result name="noResults">/WEB-INF/jsp/noResults.jsp</result>
-      <!-- TODO! -->
       <result name="artifact" type="redirect">
         /browse/${searchResults[0].groupId}/${searchResults[0].artifactId}/${searchResults[0].version}
       </result>
