@@ -31,6 +31,7 @@ import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.query.Query;
+import org.apache.maven.archiva.indexer.record.MinimalIndexRecordFields;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecord;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 
@@ -62,6 +63,8 @@ public class LuceneRepositoryArtifactIndex
     private LuceneIndexRecordConverter converter;
 
     private static final String FLD_PK = "pk";
+
+    private static Analyzer luceneAnalyzer = new LuceneAnalyzer();
 
     public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {
@@ -134,12 +137,12 @@ public class LuceneRepositoryArtifactIndex
         }
     }
 
-    public Analyzer getAnalyzer()
+    public static Analyzer getAnalyzer()
     {
-        return new MyAnalyzer();
+        return luceneAnalyzer;
     }
 
-    private static class MyAnalyzer
+    private static class LuceneAnalyzer
         extends Analyzer
     {
         private static final Analyzer STANDARD = new StandardAnalyzer();
@@ -154,6 +157,69 @@ public class LuceneRepositoryArtifactIndex
                     protected boolean isTokenChar( char c )
                     {
                         return c != '\n';
+                    }
+                };
+            }
+            else if ( StandardIndexRecordFields.FILES.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '\n' && c != '/';
+                    }
+                };
+            }
+            else
+            if ( StandardIndexRecordFields.CLASSES.equals( field ) || MinimalIndexRecordFields.CLASSES.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '\n' && c != '.';
+                    }
+
+                    protected char normalize( char c )
+                    {
+                        return Character.toLowerCase( c );
+                    }
+                };
+            }
+            else if ( StandardIndexRecordFields.GROUPID.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '.';
+                    }
+
+                    protected char normalize( char c )
+                    {
+                        return Character.toLowerCase( c );
+                    }
+                };
+            }
+            else if ( StandardIndexRecordFields.VERSION.equals( field ) ||
+                StandardIndexRecordFields.BASE_VERSION.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '-';
+                    }
+                };
+            }
+            else if ( StandardIndexRecordFields.FILENAME.equals( field ) ||
+                MinimalIndexRecordFields.FILENAME.equals( field ) )
+            {
+                return new CharTokenizer( reader )
+                {
+                    protected boolean isTokenChar( char c )
+                    {
+                        return c != '-' && c != '.' && c != '/';
                     }
                 };
             }

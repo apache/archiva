@@ -17,7 +17,6 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
@@ -31,6 +30,7 @@ import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
+import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 
 import java.io.File;
@@ -99,7 +99,7 @@ public class SearchAction
             StandardIndexRecordFields.ARTIFACTID, StandardIndexRecordFields.BASE_VERSION,
             StandardIndexRecordFields.CLASSIFIER, StandardIndexRecordFields.CLASSES, StandardIndexRecordFields.FILES,
             StandardIndexRecordFields.TYPE, StandardIndexRecordFields.PROJECT_NAME,
-            StandardIndexRecordFields.PROJECT_DESCRIPTION}, new StandardAnalyzer() );
+            StandardIndexRecordFields.PROJECT_DESCRIPTION}, LuceneRepositoryArtifactIndex.getAnalyzer() );
         searchResults = index.search( new LuceneQuery( parser.parse( q ) ) );
 
         if ( searchResults.isEmpty() )

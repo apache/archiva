@@ -16,7 +16,6 @@ package org.apache.maven.archiva.indexer.lucene;
  * limitations under the License.
  */
 
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.NumberTools;
 import org.apache.lucene.index.IndexReader;
@@ -320,7 +319,7 @@ public class LuceneStandardArtifactIndexTest
     private void createIndex( List docments )
         throws IOException
     {
-        IndexWriter writer = new IndexWriter( indexLocation, new StandardAnalyzer(), true );
+        IndexWriter writer = new IndexWriter( indexLocation, LuceneRepositoryArtifactIndex.getAnalyzer(), true );
         for ( Iterator i = docments.iterator(); i.hasNext(); )
         {
             Document document = (Document) i.next();

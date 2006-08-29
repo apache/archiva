@@ -17,6 +17,8 @@ package org.apache.maven.archiva.indexer.lucene;
  */
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
@@ -107,7 +109,7 @@ public class LuceneMinimalArtifactIndexSearchTest
     public void testExactMatchMd5()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( MinimalIndexRecordFields.MD5, "3a0adc365f849366cd8b633cad155cb7" ) );
+        Query query = createExactMatchQuery( MinimalIndexRecordFields.MD5, "3a0adc365f849366cd8b633cad155cb7" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -118,16 +120,16 @@ public class LuceneMinimalArtifactIndexSearchTest
         assertEquals( "Check results size", 5, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( MinimalIndexRecordFields.MD5, "foo" ) );
+        query = createExactMatchQuery( MinimalIndexRecordFields.MD5, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchFilename()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( MinimalIndexRecordFields.FILENAME, "maven" ) );
+        Query query = createMatchQuery( MinimalIndexRecordFields.FILENAME, "maven" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "test-pom" ) ) );
@@ -135,14 +137,13 @@ public class LuceneMinimalArtifactIndexSearchTest
         assertFalse( "Check result", results.contains( records.get( "test-dll" ) ) );
         assertEquals( "Check results size", 7, results.size() );
 
-/* TODO: if this is a result we want, we need to change the analyzer. Currently, it is tokenizing it as plugin-1.0 and plugin/1.0 in the path
-        query = new TermQuery( new Term( MinimalIndexRecordFields.FILENAME, "plugin" ) );
+        query = createMatchQuery( MinimalIndexRecordFields.FILENAME, "plugin" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
-*/
-        query = new TermQuery( new Term( MinimalIndexRecordFields.FILENAME, "test" ) );
+
+        query = createMatchQuery( MinimalIndexRecordFields.FILENAME, "test" );
         results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "parent-pom" ) ) );
@@ -151,17 +152,16 @@ public class LuceneMinimalArtifactIndexSearchTest
         assertEquals( "Check results size", 7, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( MinimalIndexRecordFields.FILENAME, "foo" ) );
+        query = createMatchQuery( MinimalIndexRecordFields.FILENAME, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchClass()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        // TODO: should be preserving case!
-        Query query = new TermQuery( new Term( MinimalIndexRecordFields.CLASSES, "b.c.c" ) );
+        Query query = createMatchQuery( MinimalIndexRecordFields.CLASSES, "b.c.C" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
@@ -171,28 +171,38 @@ public class LuceneMinimalArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
         assertEquals( "Check results size", 5, results.size() );
 
-/* TODO!: need to change the analyzer if we want partial classes (split on '.')
-        query = new TermQuery( new Term( MinimalIndexRecordFields.CLASSES, "C" ) );
+        query = createMatchQuery( MinimalIndexRecordFields.CLASSES, "C" );
         results = index.search( new LuceneQuery( query ) );
 
+        assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-jdk14" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
-        assertEquals( "Check results size", 4, results.size() );
+        assertEquals( "Check results size", 5, results.size() );
 
-        query = new TermQuery( new Term( MinimalIndexRecordFields.CLASSES, "MyMojo" ) );
+        query = createMatchQuery( MinimalIndexRecordFields.CLASSES, "MyMojo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
-*/
 
         // test non-match fails
-        query = new TermQuery( new Term( MinimalIndexRecordFields.CLASSES, "foo" ) );
+        query = createMatchQuery( MinimalIndexRecordFields.CLASSES, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
+    }
+
+    private static Query createExactMatchQuery( String field, String value )
+    {
+        return new TermQuery( new Term( field, value ) );
+    }
+
+    private static Query createMatchQuery( String field, String value )
+        throws ParseException
+    {
+        return new QueryParser( field, LuceneRepositoryArtifactIndex.getAnalyzer() ).parse( value );
     }
 
     private Artifact createArtifact( String artifactId )

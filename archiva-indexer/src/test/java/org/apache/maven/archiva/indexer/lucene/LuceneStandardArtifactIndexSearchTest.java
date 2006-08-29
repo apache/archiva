@@ -17,6 +17,8 @@ package org.apache.maven.archiva.indexer.lucene;
  */
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MatchAllDocsQuery;
@@ -110,7 +112,7 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchVersion()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.VERSION_EXACT, "1.0" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.VERSION_EXACT, "1.0" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -120,19 +122,24 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
         assertEquals( "Check results size", 5, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION_EXACT, "1.0-SNAPSHOT" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.VERSION_EXACT, "1.0-SNAPSHOT" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION_EXACT, "1.0-20060728.121314-1" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.VERSION_EXACT, "1.0-snapshot" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createExactMatchQuery( StandardIndexRecordFields.VERSION_EXACT, "1.0-20060728.121314-1" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION_EXACT, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.VERSION_EXACT, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -141,7 +148,7 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchBaseVersion()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -151,19 +158,24 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
         assertEquals( "Check results size", 5, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0-SNAPSHOT" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0-SNAPSHOT" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0-20060728.121314-1" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0-snapshot" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createExactMatchQuery( StandardIndexRecordFields.BASE_VERSION_EXACT, "1.0-20060728.121314-1" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION_EXACT, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.BASE_VERSION_EXACT, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -173,19 +185,19 @@ public class LuceneStandardArtifactIndexSearchTest
         throws RepositoryIndexSearchException
     {
         Query query =
-            new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, "org.apache.maven.archiva.record" ) );
+            createExactMatchQuery( StandardIndexRecordFields.GROUPID_EXACT, "org.apache.maven.archiva.record" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertEquals( "Check results size", 10, results.size() );
 
         // test partial match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, "org.apache.maven" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.GROUPID_EXACT, "org.apache.maven" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.GROUPID_EXACT, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -194,7 +206,7 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchArtifactId()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, "test-jar" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.ARTIFACTID_EXACT, "test-jar" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -202,13 +214,13 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 2, results.size() );
 
         // test partial match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, "test" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.ARTIFACTID_EXACT, "test" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.ARTIFACTID_EXACT, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -217,13 +229,13 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchType()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.TYPE, "maven-plugin" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.TYPE, "maven-plugin" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.TYPE, "jar" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.TYPE, "jar" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -233,20 +245,20 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertEquals( "Check results size", 5, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.TYPE, "dll" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.TYPE, "dll" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-dll" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.TYPE, "maven-archetype" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.TYPE, "maven-archetype" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.TYPE, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.TYPE, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -255,13 +267,13 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchPackaging()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.PACKAGING, "maven-plugin" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.PACKAGING, "maven-plugin" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.PACKAGING, "jar" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.PACKAGING, "jar" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
@@ -270,18 +282,18 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertEquals( "Check results size", 4, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.PACKAGING, "dll" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.PACKAGING, "dll" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.PACKAGING, "maven-archetype" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.PACKAGING, "maven-archetype" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.PACKAGING, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.PACKAGING, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -290,14 +302,14 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchPluginPrefix()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.PLUGIN_PREFIX, "test" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.PLUGIN_PREFIX, "test" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.PLUGIN_PREFIX, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.PLUGIN_PREFIX, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -306,13 +318,13 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchRepository()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.REPOSITORY, "test" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.REPOSITORY, "test" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertEquals( "Check results size", 10, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.REPOSITORY, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.REPOSITORY, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -321,7 +333,7 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchMd5()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.MD5, "3a0adc365f849366cd8b633cad155cb7" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.MD5, "3a0adc365f849366cd8b633cad155cb7" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -332,7 +344,7 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 5, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.MD5, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.MD5, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -342,7 +354,7 @@ public class LuceneStandardArtifactIndexSearchTest
         throws RepositoryIndexSearchException
     {
         Query query =
-            new TermQuery( new Term( StandardIndexRecordFields.SHA1, "c66f18bf192cb613fc2febb4da541a34133eedc2" ) );
+            createExactMatchQuery( StandardIndexRecordFields.SHA1, "c66f18bf192cb613fc2febb4da541a34133eedc2" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -353,7 +365,7 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 5, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.SHA1, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.SHA1, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -362,7 +374,7 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchInceptionYear()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.INCEPTION_YEAR, "2005" ) );
+        Query query = createExactMatchQuery( StandardIndexRecordFields.INCEPTION_YEAR, "2005" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
@@ -371,95 +383,105 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 3, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.INCEPTION_YEAR, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.INCEPTION_YEAR, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchFilename()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.FILENAME, "maven" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.FILENAME, "maven" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertEquals( "Check results size", 10, results.size() );
 
-/* TODO: if this is a result we want, we need to change the analyzer. Currently, it is tokenizing it as plugin-1.0 and plugin/1.0 in the path
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILENAME, "plugin" ) );
+        query = createMatchQuery( StandardIndexRecordFields.FILENAME, "plugin" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
-*/
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILENAME, "test" ) );
+
+        query = createMatchQuery( StandardIndexRecordFields.FILENAME, "pLuGiN" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createMatchQuery( StandardIndexRecordFields.FILENAME, "test" );
         results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "parent-pom" ) ) );
         assertEquals( "Check results size", 9, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILENAME, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.FILENAME, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchGroupId()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.GROUPID, "org.apache.maven.archiva.record" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.GROUPID, "org.apache.maven.archiva.record" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertEquals( "Check results size", 10, results.size() );
 
-/* TODO: if we want this result, must change the analyzer to split on '.'
-        query = new TermQuery( new Term( StandardIndexRecordFields.GROUPID, "maven" ) );
+        query = createMatchQuery( StandardIndexRecordFields.GROUPID, "maven" );
         results = index.search( new LuceneQuery( query ) );
 
         assertEquals( "Check results size", 10, results.size() );
-*/
+
+        query = createMatchQuery( StandardIndexRecordFields.GROUPID, "Maven" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertEquals( "Check results size", 10, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.GROUPID, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.GROUPID, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchArtifactId()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID, "plugin" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.ARTIFACTID, "plugin" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID, "test" ) );
+        query = createMatchQuery( StandardIndexRecordFields.ARTIFACTID, "test" );
         results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "parent-pom" ) ) );
         assertEquals( "Check results size", 9, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID, "maven" ) );
+        query = createMatchQuery( StandardIndexRecordFields.ARTIFACTID, "maven" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchVersion()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
         // If partial matches are desired, need to change the analyzer for versions to split on '.'
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.VERSION, "1" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.VERSION, "1" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "parent-pom" ) ) );
-        assertEquals( "Check results size", 1, results.size() );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
+        assertEquals( "Check results size", 4, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION, "1.0" ) );
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "1.0" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -467,40 +489,55 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
-        assertEquals( "Check results size", 5, results.size() );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
+        assertEquals( "Check results size", 8, results.size() );
 
-/* TODO: need to change analyzer to split on - if we want this
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION, "snapshot" ) );
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "snapshot" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION, "alpha" ) );
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "SNAPSHOT" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "alpha" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
         assertEquals( "Check results size", 2, results.size() );
-*/
+
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "1.0-alpha-1" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertEquals( "Check results size", 2, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.VERSION, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.VERSION, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchBaseVersion()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
         // If partial matches are desired, need to change the analyzer for versions to split on '.'
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION, "1" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "1" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "parent-pom" ) ) );
-        assertEquals( "Check results size", 1, results.size() );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertEquals( "Check results size", 3, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION, "1.0" ) );
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "1.0" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
@@ -508,37 +545,54 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-archetype" ) ) );
-        assertEquals( "Check results size", 5, results.size() );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
+        assertEquals( "Check results size", 8, results.size() );
 
-/* TODO: need to change analyzer to split on - if we want this
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION, "snapshot" ) );
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "SNAPSHOT" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION, "alpha" ) );
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "SnApShOt" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "snapshot" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check results size", results.isEmpty() );
+
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "alpha" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
         assertEquals( "Check results size", 2, results.size() );
-*/
+
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "1.0-alpha-1" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
+        assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
+        assertEquals( "Check results size", 2, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.BASE_VERSION, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.BASE_VERSION, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchClassifier()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
         BooleanQuery bQuery = new BooleanQuery();
         bQuery.add( new MatchAllDocsQuery(), BooleanClause.Occur.MUST );
-        bQuery.add( new TermQuery( new Term( StandardIndexRecordFields.CLASSIFIER, "jdk14" ) ),
-                    BooleanClause.Occur.MUST_NOT );
+        bQuery.add( createMatchQuery( StandardIndexRecordFields.CLASSIFIER, "jdk14" ), BooleanClause.Occur.MUST_NOT );
         List results = index.search( new LuceneQuery( bQuery ) );
 
         assertFalse( "Check result", results.contains( records.get( "test-jar-jdk14" ) ) );
@@ -547,7 +601,7 @@ public class LuceneStandardArtifactIndexSearchTest
 
         // TODO: can we search for "anything with no classifier" ?
 
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.CLASSIFIER, "jdk14" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.CLASSIFIER, "jdk14" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-jar-jdk14" ) ) );
@@ -555,17 +609,16 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 2, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.CLASSIFIER, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.CLASSIFIER, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchClass()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        // TODO: should be preserving case!
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.CLASSES, "b.c.c" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.CLASSES, "b.c.C" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
@@ -575,35 +628,45 @@ public class LuceneStandardArtifactIndexSearchTest
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
         assertEquals( "Check results size", 5, results.size() );
 
-/* TODO!: need to change the analyzer if we want partial classes (split on '.')
-        query = new TermQuery( new Term( StandardIndexRecordFields.CLASSES, "C" ) );
+        query = createMatchQuery( StandardIndexRecordFields.CLASSES, "C" );
         results = index.search( new LuceneQuery( query ) );
 
+        assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-jdk14" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom" ) ) );
         assertTrue( "Check result", results.contains( records.get( "test-jar-and-pom-jdk14" ) ) );
-        assertEquals( "Check results size", 4, results.size() );
+        assertEquals( "Check results size", 5, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.CLASSES, "MyMojo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.CLASSES, "MyMojo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
-*/
+
+        query = createMatchQuery( StandardIndexRecordFields.CLASSES, "MYMOJO" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
+        assertEquals( "Check results size", 1, results.size() );
+
+        query = createMatchQuery( StandardIndexRecordFields.CLASSES, "mymojo" );
+        results = index.search( new LuceneQuery( query ) );
+
+        assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
+        assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.CLASSES, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.CLASSES, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchFiles()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        // TODO: should be preserving case!
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.FILES, "manifest.mf" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.FILES, "MANIFEST.MF" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "test-pom" ) ) );
@@ -611,25 +674,22 @@ public class LuceneStandardArtifactIndexSearchTest
         assertFalse( "Check result", results.contains( records.get( "test-dll" ) ) );
         assertEquals( "Check results size", 7, results.size() );
 
-/*
-        // TODO: should be preserving case, and '-inf'!
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILES, "meta-inf" ) );
+        query = createMatchQuery( StandardIndexRecordFields.FILES, "META-INF" );
         results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "test-pom" ) ) );
         assertFalse( "Check result", results.contains( records.get( "parent-pom" ) ) );
         assertFalse( "Check result", results.contains( records.get( "test-dll" ) ) );
         assertEquals( "Check results size", 7, results.size() );
-*/
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILES, "plugin.xml" ) );
+        query = createMatchQuery( StandardIndexRecordFields.FILES, "plugin.xml" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.FILES, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.FILES, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
@@ -638,30 +698,30 @@ public class LuceneStandardArtifactIndexSearchTest
     public void testExactMatchDependency()
         throws RepositoryIndexSearchException
     {
-        Query query = new TermQuery(
-            new Term( StandardIndexRecordFields.DEPENDENCIES, "org.apache.maven:maven-plugin-api:2.0" ) );
+        Query query =
+            createExactMatchQuery( StandardIndexRecordFields.DEPENDENCIES, "org.apache.maven:maven-plugin-api:2.0" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.DEPENDENCIES, "foo" ) );
+        query = createExactMatchQuery( StandardIndexRecordFields.DEPENDENCIES, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchProjectName()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.PROJECT_NAME, "mojo" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.PROJECT_NAME, "mojo" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-plugin" ) ) );
         assertEquals( "Check results size", 1, results.size() );
 
-        query = new TermQuery( new Term( StandardIndexRecordFields.PROJECT_NAME, "maven" ) );
+        query = createMatchQuery( StandardIndexRecordFields.PROJECT_NAME, "maven" );
         results = index.search( new LuceneQuery( query ) );
 
         assertFalse( "Check result", results.contains( records.get( "parent-pom" ) ) );
@@ -669,16 +729,16 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 2, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.PROJECT_NAME, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.PROJECT_NAME, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
     }
 
     public void testMatchProjectDescription()
-        throws RepositoryIndexSearchException
+        throws RepositoryIndexSearchException, ParseException
     {
-        Query query = new TermQuery( new Term( StandardIndexRecordFields.PROJECT_DESCRIPTION, "description" ) );
+        Query query = createMatchQuery( StandardIndexRecordFields.PROJECT_DESCRIPTION, "description" );
         List results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check result", results.contains( records.get( "test-child-pom" ) ) );
@@ -687,10 +747,21 @@ public class LuceneStandardArtifactIndexSearchTest
         assertEquals( "Check results size", 3, results.size() );
 
         // test non-match fails
-        query = new TermQuery( new Term( StandardIndexRecordFields.PROJECT_DESCRIPTION, "foo" ) );
+        query = createMatchQuery( StandardIndexRecordFields.PROJECT_DESCRIPTION, "foo" );
         results = index.search( new LuceneQuery( query ) );
 
         assertTrue( "Check results size", results.isEmpty() );
+    }
+
+    private static Query createExactMatchQuery( String field, String value )
+    {
+        return new TermQuery( new Term( field, value ) );
+    }
+
+    private static Query createMatchQuery( String field, String value )
+        throws ParseException
+    {
+        return new QueryParser( field, LuceneRepositoryArtifactIndex.getAnalyzer() ).parse( value );
     }
 
     private Artifact createArtifact( String artifactId )
