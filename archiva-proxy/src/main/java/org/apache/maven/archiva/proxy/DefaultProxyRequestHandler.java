@@ -665,7 +665,7 @@ public class DefaultProxyRequestHandler
 
                 String remoteChecksum = DigestUtils.cleanChecksum( FileUtils.fileRead( tempChecksumFile ),
                                                                    checksumExt.toUpperCase(),
-                                                                   path.substring( path.lastIndexOf( '/' ) ) );
+                                                                   path.substring( path.lastIndexOf( '/' ) + 1 ) );
 
                 String actualChecksum = checksum.getActualChecksum();
 
