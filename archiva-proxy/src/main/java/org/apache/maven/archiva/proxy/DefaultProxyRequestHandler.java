@@ -18,8 +18,8 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.maven.archiva.digest.DigestUtils;
 import org.apache.maven.archiva.digest.DigesterException;
-import org.apache.maven.archiva.discovery.ArtifactDiscoverer;
-import org.apache.maven.archiva.discovery.DiscovererException;
+import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
+import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;

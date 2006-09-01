@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.discovery;
+package org.apache.maven.archiva.discoverer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -29,13 +29,13 @@ import java.util.StringTokenizer;
  *
  * @author John Casey
  * @author Brett Porter
- * @plexus.component role="org.apache.maven.archiva.discovery.ArtifactDiscoverer" role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.discoverer.ArtifactDiscoverer" role-hint="default"
  */
 public class DefaultArtifactDiscoverer
     extends AbstractArtifactDiscoverer
 {
     /**
-     * @see org.apache.maven.archiva.discovery.ArtifactDiscoverer#buildArtifact(String)
+     * @see org.apache.maven.archiva.discoverer.ArtifactDiscoverer#buildArtifact(String)
      */
     public Artifact buildArtifact( String path )
         throws DiscovererException

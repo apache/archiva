@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.discovery;
+package org.apache.maven.archiva.discoverer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

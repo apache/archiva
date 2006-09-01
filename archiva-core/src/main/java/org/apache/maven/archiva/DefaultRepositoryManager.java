@@ -2,8 +2,8 @@ package org.apache.maven.archiva;
 
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.RepositoryConverter;
-import org.apache.maven.archiva.discovery.ArtifactDiscoverer;
-import org.apache.maven.archiva.discovery.DiscovererException;
+import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
+import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.reporting.ArtifactReporter;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;

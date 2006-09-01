@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.discovery;
+package org.apache.maven.archiva.discoverer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -19,31 +19,16 @@ package org.apache.maven.archiva.discovery;
 /**
  * @author Edwin Punzalan
  */
-public class DiscovererPath
+public class DiscovererException
+    extends Exception
 {
-    /**
-     * The path discovered.
-     */
-    private final String path;
-
-    /**
-     * A comment about why the path is being processed.
-     */
-    private final String comment;
-
-    public DiscovererPath( String path, String comment )
+    public DiscovererException( String message )
     {
-        this.path = path;
-        this.comment = comment;
+        super( message );
     }
 
-    public String getPath()
+    public DiscovererException( String message, Throwable cause )
     {
-        return path;
-    }
-
-    public String getComment()
-    {
-        return comment;
+        super( message, cause );
     }
 }

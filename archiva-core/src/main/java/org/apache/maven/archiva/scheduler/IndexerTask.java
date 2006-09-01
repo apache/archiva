@@ -21,8 +21,8 @@ import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.discovery.ArtifactDiscoverer;
-import org.apache.maven.archiva.discovery.DiscovererException;
+import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
+import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
@@ -65,7 +65,7 @@ public class IndexerTask
     private ConfiguredRepositoryFactory repoFactory;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.discovery.ArtifactDiscoverer"
+     * @plexus.requirement role="org.apache.maven.archiva.discoverer.ArtifactDiscoverer"
      */
     private Map artifactDiscoverers;
 

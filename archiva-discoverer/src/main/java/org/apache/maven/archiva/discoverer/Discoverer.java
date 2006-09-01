@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.discovery;
+package org.apache.maven.archiva.discoverer;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 

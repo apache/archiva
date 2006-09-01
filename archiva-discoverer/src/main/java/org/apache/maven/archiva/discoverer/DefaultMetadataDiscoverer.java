@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.discovery;
+package org.apache.maven.archiva.discoverer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
 /**
  * This class gets all the paths that contain the metadata files.
  *
- * @plexus.component role="org.apache.maven.archiva.discovery.MetadataDiscoverer" role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.discoverer.MetadataDiscoverer" role-hint="default"
  */
 public class DefaultMetadataDiscoverer
     extends AbstractDiscoverer
@@ -74,7 +74,7 @@ public class DefaultMetadataDiscoverer
         long comparisonTimestamp = readComparisonTimestamp( repository, operation, dom );
 
         // Note that last checked time is deliberately set to the start of the process so that anything added
-        // mid-discovery and missed by the scanner will get checked next time.
+        // mid-discoverer and missed by the scanner will get checked next time.
         // Due to this, there must be no negative side-effects of discovering something twice.
         Date newLastCheckedTime = new Date();
 
@@ -83,7 +83,7 @@ public class DefaultMetadataDiscoverer
                                                    STANDARD_DISCOVERY_INCLUDES, null, comparisonTimestamp );
 
         // Also note that the last check time, while set at the start, is saved at the end, so that if any exceptions
-        // occur, then the timestamp is not updated so that the discovery is attempted again
+        // occur, then the timestamp is not updated so that the discoverer is attempted again
         // TODO: under the list-return behaviour we have now, exceptions might occur later and the timestamp will not be reset - see MRM-83
         try
         {

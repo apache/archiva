@@ -1,7 +1,7 @@
 package org.apache.maven.archiva;
 
 import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.discovery.DiscovererException;
+import org.apache.maven.archiva.discoverer.DiscovererException;
 
 import java.io.File;
 
