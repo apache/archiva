@@ -110,7 +110,7 @@ public class ProxyRequestHandlerTest
         ArtifactRepositoryLayout legacyLayout =
             (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
 
-        legacyManagedRepository = createRepository( "managed-repository", repoLocation );
+        legacyManagedRepository = createRepository( "managed-repository", repoLocation, legacyLayout );
 
         File location = getTestFile( "src/test/repositories/proxied1" );
         proxiedRepository1 = createRepository( "proxied1", location );
@@ -1590,6 +1590,38 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
+    }
+
+    public void testLegacyRequestConvertedToDefaultPathInManagedRepo()
+        throws Exception
+    {
+        // Check that a Maven1 legacy request is translated to a maven2 path in
+        // the managed repository.
+
+        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( legacyPath, legacyProxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+    }
+
+    public void testDefaultRequestConvertedToLegacyPathInManagedRepo()
+        throws Exception
+    {
+        // Check that a Maven2 default request is translated to a legacy path in
+        // the managed repository.
+
+        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), legacyPath );
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
     }
 
     private static Versioning getVersioning( List versions )

@@ -124,7 +124,7 @@ public class DefaultProxyRequestHandler
             }
             else
             {
-                get( path, target, repository, managedRepository, wagonProxy, force );
+                target = get( path, target, repository, managedRepository, wagonProxy, force );
             }
         }
 
@@ -136,7 +136,11 @@ public class DefaultProxyRequestHandler
         return target;
     }
 
-    private void get( String path, File target, ProxiedArtifactRepository repository,
+    /**
+     * @return the target File may not be same as the target argument, if a
+     *         maven1 to maven2 path convertion occured.
+     */
+    private File get( String path, File target, ProxiedArtifactRepository repository,
                       ArtifactRepository managedRepository, ProxyInfo wagonProxy, boolean force )
         throws ProxyException
     {
@@ -192,6 +196,8 @@ public class DefaultProxyRequestHandler
 
             if ( artifact != null )
             {
+                target = new File( managedRepository.getBasedir(), managedRepository.pathOf( artifact ) );
+
                 ArtifactRepository artifactRepository = repository.getRepository();
 
                 // we use the release policy for tracking failures, but only check for updates on snapshots
@@ -227,6 +233,7 @@ public class DefaultProxyRequestHandler
             // in case it previously failed and we've since found it
             repository.clearFailure( path );
         }
+        return target;
     }
 
     private void mergeMetadataFiles( File target, File metadataFile )
