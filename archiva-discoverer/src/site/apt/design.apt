@@ -23,15 +23,11 @@ Discoverer Design
   The artifact discoverer will find all artifacts in the repository, while metadata discovery finds any
   <<<maven-metadata.xml>>> files (both remote and local repository formats).
 
-  * Limitations
+  Note that POMs will be identified as separate artifacts to their related artifacts, as will each
+  individual derivative artifact at present. Currently, it has been decided not to link them - MRM-40 was closed as
+  won't fix as a result.
 
-    * In the artifact discoverer, POMs will be identified as separate artifacts to their related artifacts, as will each
-      individual derivative artifact at present. Later, these will be linked - see
-      {{{http://jira.codehaus.org/browse/MRM-40} MRM-40}}.
+  * Limitations
 
     * Currently, deleted artifacts are not tracked. This requires a separate event - see
       {{{http://jira.codehaus.org/browse/MRM-37} MRM-37}}.
-
-    * Currently, all artifacts are discovered instead of just those changed since the last discovery for a particular
-      operation - see {{{http://jira.codehaus.org/browse/MRM-125} MRM-125}}.
-
