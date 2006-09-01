@@ -1,5 +1,7 @@
 package org.apache.maven.archiva.indexer.record;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /*
@@ -174,10 +176,25 @@ public class StandardArtifactIndexRecord
         {
             return false;
         }
-        if ( dependencies != null ? !dependencies.equals( that.dependencies ) : that.dependencies != null )
+        
+        if ( dependencies != null && that.dependencies != null )
+        {
+            List sorted = new ArrayList( dependencies );
+            Collections.sort( sorted );
+            
+            List sortedOther = new ArrayList( that.dependencies );
+            Collections.sort( sortedOther );
+            
+            if ( !sorted.equals( sortedOther ) )
+            {
+                return false;
+            }
+        }
+        else if ( !( dependencies == null && that.dependencies == null ) )
         {
             return false;
         }
+        
         if ( developers != null ? !developers.equals( that.developers ) : that.developers != null )
         {
             return false;
@@ -247,7 +264,15 @@ public class StandardArtifactIndexRecord
         result = 31 * result + ( type != null ? type.hashCode() : 0 );
         result = 31 * result + ( files != null ? files.hashCode() : 0 );
         result = 31 * result + ( developers != null ? developers.hashCode() : 0 );
-        result = 31 * result + ( dependencies != null ? dependencies.hashCode() : 0 );
+        
+        if ( dependencies != null )
+        {
+            List sorted = new ArrayList( dependencies );
+            Collections.sort( sorted );
+            
+            result = 31 * result + sorted.hashCode();
+        }
+        
         result = 31 * result + ( repository != null ? repository.hashCode() : 0 );
         result = 31 * result + ( packaging != null ? packaging.hashCode() : 0 );
         result = 31 * result + ( pluginPrefix != null ? pluginPrefix.hashCode() : 0 );
