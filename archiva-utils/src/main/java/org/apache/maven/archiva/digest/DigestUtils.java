@@ -42,7 +42,7 @@ public class DigestUtils
         if ( m.matches() )
         {
             String filename = m.group( 1 );
-            if ( !path.endsWith( filename ) )
+            if ( !filename.endsWith( path ) )
             {
                 throw new DigesterException( "Supplied checksum does not match checksum pattern" );
             }
@@ -55,7 +55,7 @@ public class DigestUtils
             if ( m.matches() )
             {
                 String filename = m.group( 2 );
-                if ( !path.endsWith( filename ) )
+                if ( !filename.endsWith( path ) )
                 {
                     throw new DigesterException( "Supplied checksum does not match checksum pattern" );
                 }
