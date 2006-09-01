@@ -8,6 +8,7 @@ RewriteEngine on
 
 RewriteBase /maven/
 
+RewriteRule org.codehaus.modello/jars/modello-plugin-xpp3-(.+).jar(.*)$ /maven2/maven/org/codehaus/modello/$1/modello-plugin-xpp3-$1.jar$2 [L]
 RewriteRule maven/jars/dom4j-(.+).jar(.*)$ /maven2/maven/dom4j/$1/dom4j-$1.jar$2 [L]
 RewriteRule dom4j/jars/dom4j-(.+).jar(.*)$ /maven2/dom4j/dom4j/$1/dom4j-$1.jar$2 [L]
 RewriteRule jaxen/jars/jaxen-1.0-FCS-full.jar$ /maven2/jaxen/jaxen/1.0-FCS/jaxen-1.0-FCS-full.jar [L]
