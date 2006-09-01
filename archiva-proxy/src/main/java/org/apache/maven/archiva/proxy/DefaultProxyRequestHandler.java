@@ -21,11 +21,16 @@ import org.apache.maven.archiva.digest.DigesterException;
 import org.apache.maven.archiva.discovery.ArtifactDiscoverer;
 import org.apache.maven.archiva.discovery.DiscovererException;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
+import org.apache.maven.model.DistributionManagement;
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Relocation;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -44,6 +49,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Iterator;
@@ -67,6 +73,11 @@ public class DefaultProxyRequestHandler
     extends AbstractLogEnabled
     implements ProxyRequestHandler
 {
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactFactory factory;
+
     /**
      * @plexus.requirement role-hint="default"
      * @todo use a map, and have priorities in them
@@ -114,17 +125,74 @@ public class DefaultProxyRequestHandler
     {
         File target = new File( managedRepository.getBasedir(), path );
 
-        for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
+        if ( path.endsWith( "maven-metadata.xml" ) )
         {
-            ProxiedArtifactRepository repository = (ProxiedArtifactRepository) i.next();
-
-            if ( !force && repository.isCachedFailure( path ) )
+            // Request for managed repository metadatas
+            getMetadata( path, target, proxiedRepositories, managedRepository, wagonProxy, force );
+        }
+        else
+        {
+            boolean checksum = false;
+            String checksumExtension = null;
+            String artifactPath = path;
+            if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
             {
-                processCachedRepositoryFailure( repository, "Cached failure found for: " + path );
+                int index = path.lastIndexOf( '.' );
+                checksumExtension = path.substring( index + 1 );
+                checksum = true;
+                artifactPath = path.substring( 0, index );
             }
-            else
+
+            // Request for artifact: parse the requested path to build an Artifact.
+            Artifact artifact = null;
+            try
             {
-                target = get( path, target, repository, managedRepository, wagonProxy, force );
+                artifact = defaultArtifactDiscoverer.buildArtifact( artifactPath );
+            }
+            catch ( DiscovererException e )
+            {
+                getLogger().debug( "Failed to build artifact using default layout with message: " + e.getMessage() );
+            }
+
+            if ( artifact == null )
+            {
+                try
+                {
+                    artifact = legacyArtifactDiscoverer.buildArtifact( artifactPath );
+                }
+                catch ( DiscovererException e )
+                {
+                    getLogger().debug( "Failed to build artifact using legacy layout with message: " + e.getMessage() );
+                }
+            }
+
+            if ( artifact != null )
+            {
+                applyRelocation( managedRepository, artifact, proxiedRepositories, wagonProxy, force );
+
+                if ( !checksum )
+                {
+                    // Build the target file name
+                    target = new File( managedRepository.getBasedir(), managedRepository.pathOf( artifact ) );
+
+                    // Get the requested artifact from proxiedRepositories
+                    getArtifactFromRepository( managedRepository, target, artifact, proxiedRepositories, wagonProxy,
+                                               force );
+                }
+                else
+                {
+                    // Just adjust the filename for relocation, don't actualy get it
+                    target = new File( managedRepository.getBasedir(),
+                                       managedRepository.pathOf( artifact ) + "." + checksumExtension );
+                }
+            }
+            else if ( !checksum )
+            {
+                // Some other unknown file in the repository, proxy as is, unless it was a checksum
+                if ( force || !target.exists() )
+                {
+                    getFileFromRepository( managedRepository, target, path, proxiedRepositories, wagonProxy, force );
+                }
             }
         }
 
@@ -136,25 +204,139 @@ public class DefaultProxyRequestHandler
         return target;
     }
 
-    /**
-     * @return the target File may not be same as the target argument, if a
-     *         maven1 to maven2 path convertion occured.
-     */
-    private File get( String path, File target, ProxiedArtifactRepository repository,
-                      ArtifactRepository managedRepository, ProxyInfo wagonProxy, boolean force )
+    private void getFileFromRepository( ArtifactRepository managedRepository, File target, String path,
+                                        List proxiedRepositories, ProxyInfo wagonProxy, boolean force )
+        throws ProxyException, ResourceDoesNotExistException
+    {
+        for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
+        {
+            ProxiedArtifactRepository repository = (ProxiedArtifactRepository) i.next();
+
+            if ( !force && repository.isCachedFailure( path ) )
+            {
+                processCachedRepositoryFailure( repository, "Cached failure found for: " + path );
+            }
+            else
+            {
+                ArtifactRepositoryPolicy policy = repository.getRepository().getReleases();
+                getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy,
+                                       force );
+            }
+        }
+    }
+
+    private void getArtifactFromRepository( ArtifactRepository managedRepository, File target, Artifact artifact,
+                                            List proxiedRepositories, ProxyInfo wagonProxy, boolean force )
+        throws ProxyException, ResourceDoesNotExistException
+    {
+        for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
+        {
+            ProxiedArtifactRepository repository = (ProxiedArtifactRepository) i.next();
+            String path = repository.getRepository().getLayout().pathOf( artifact );
+
+            if ( !force && repository.isCachedFailure( path ) )
+            {
+                processCachedRepositoryFailure( repository, "Cached failure found for: " + path );
+            }
+            else
+            {
+                get( artifact, target, repository, managedRepository, wagonProxy, force );
+            }
+        }
+    }
+
+    private void applyRelocation( ArtifactRepository managedRepository, Artifact artifact, List proxiedRepositories,
+                                  ProxyInfo wagonProxy, boolean force )
+    {
+        Artifact pomArtifact =
+            factory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+
+        File pomFile = new File( managedRepository.getBasedir(), managedRepository.pathOf( pomArtifact ) );
+        try
+        {
+            getArtifactFromRepository( managedRepository, pomFile, pomArtifact, proxiedRepositories, wagonProxy,
+                                       force );
+        }
+        catch ( ProxyException e )
+        {
+            getLogger().warn( "Error getting POM for artifact - not relocating: " + e.getMessage() );
+            getLogger().debug( "Cause", e );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            getLogger().debug( "Remote POM not found for artifact - not relocating" );
+        }
+
+        if ( pomFile.exists() )
+        {
+            Model model = null;
+            try
+            {
+                // Parse the pom and look at relocation metadata
+                Reader reader = new FileReader( pomFile );
+                model = new MavenXpp3Reader().read( reader );
+            }
+            catch ( IOException e )
+            {
+                getLogger().warn( "Error reading POM for artifact - not relocating: " + e.getMessage() );
+                getLogger().debug( "Cause", e );
+            }
+            catch ( XmlPullParserException e )
+            {
+                getLogger().warn( "Error parsing POM for artifact - not relocating: " + e.getMessage() );
+                getLogger().debug( "Cause", e );
+            }
+
+            if ( model != null )
+            {
+                DistributionManagement dist;
+                dist = model.getDistributionManagement();
+
+                if ( dist != null )
+                {
+                    Relocation relocation = dist.getRelocation();
+                    if ( relocation != null )
+                    {
+                        String requestedId =
+                            artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion();
+
+                        // artifact is relocated : update the artifact
+                        if ( relocation.getGroupId() != null )
+                        {
+                            artifact.setGroupId( relocation.getGroupId() );
+                        }
+                        if ( relocation.getArtifactId() != null )
+                        {
+                            artifact.setArtifactId( relocation.getArtifactId() );
+                        }
+                        if ( relocation.getVersion() != null )
+                        {
+                            artifact.setVersion( relocation.getVersion() );
+                        }
+
+                        String relocatedId =
+                            artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion();
+
+                        getLogger().debug( "Artifact " + requestedId + " has been relocated to " + relocatedId +
+                            ( relocation.getMessage() != null ? ": " + relocation.getMessage() : "" ) );
+
+                        applyRelocation( managedRepository, artifact, proxiedRepositories, wagonProxy, force );
+                    }
+                }
+            }
+        }
+    }
+
+    private void getMetadata( String path, File target, List proxiedRepositories, ArtifactRepository managedRepository,
+                              ProxyInfo wagonProxy, boolean force )
         throws ProxyException
     {
-        ArtifactRepositoryPolicy policy;
-
-        if ( path.endsWith( ".md5" ) || path.endsWith( ".sha1" ) )
+        for ( Iterator i = proxiedRepositories.iterator(); i.hasNext(); )
         {
-            // always read from the managed repository, no need to make remote request
-        }
-        else if ( path.endsWith( "maven-metadata.xml" ) )
-        {
+            ProxiedArtifactRepository repository = (ProxiedArtifactRepository) i.next();
             File metadataFile = new File( target.getParentFile(), ".metadata-" + repository.getRepository().getId() );
 
-            policy = repository.getRepository().getReleases();
+            ArtifactRepositoryPolicy policy = repository.getRepository().getReleases();
 
             // if it is snapshot metadata, use a different policy
             if ( path.endsWith( "-SNAPSHOT/maven-metadata.xml" ) )
@@ -170,70 +352,30 @@ public class DefaultProxyRequestHandler
                 mergeMetadataFiles( target, metadataFile );
             }
         }
-        else
+    }
+
+    private void get( Artifact artifact, File target, ProxiedArtifactRepository repository,
+                      ArtifactRepository managedRepository, ProxyInfo wagonProxy, boolean force )
+        throws ProxyException
+    {
+        ArtifactRepository artifactRepository = repository.getRepository();
+
+        // we use the release policy for tracking failures, but only check for updates on snapshots
+        // also, we don't look for updates on timestamp snapshot files, only non-unique-version ones
+        ArtifactRepositoryPolicy policy =
+            artifact.isSnapshot() ? artifactRepository.getSnapshots() : artifactRepository.getReleases();
+
+        boolean needsUpdate = false;
+        if ( artifact.getVersion().endsWith( "-SNAPSHOT" ) && isOutOfDate( policy, target ) )
         {
-            Artifact artifact = null;
-            try
-            {
-                artifact = defaultArtifactDiscoverer.buildArtifact( path );
-            }
-            catch ( DiscovererException e )
-            {
-                getLogger().debug( "Failed to build artifact using default layout with message: " + e.getMessage() );
-            }
-
-            if ( artifact == null )
-            {
-                try
-                {
-                    artifact = legacyArtifactDiscoverer.buildArtifact( path );
-                }
-                catch ( DiscovererException e )
-                {
-                    getLogger().debug( "Failed to build artifact using legacy layout with message: " + e.getMessage() );
-                }
-            }
-
-            if ( artifact != null )
-            {
-                target = new File( managedRepository.getBasedir(), managedRepository.pathOf( artifact ) );
-
-                ArtifactRepository artifactRepository = repository.getRepository();
-
-                // we use the release policy for tracking failures, but only check for updates on snapshots
-                // also, we don't look for updates on timestamp snapshot files, only non-unique-version ones
-                policy = artifact.isSnapshot() ? artifactRepository.getSnapshots() : artifactRepository.getReleases();
-
-                boolean needsUpdate = false;
-                if ( artifact.getVersion().endsWith( "-SNAPSHOT" ) && isOutOfDate( policy, target ) )
-                {
-                    needsUpdate = true;
-                }
-
-                if ( needsUpdate || force || !target.exists() )
-                {
-                    getFileFromRepository( artifactRepository.pathOf( artifact ), repository,
-                                           managedRepository.getBasedir(), wagonProxy, target, policy, force );
-                }
-            }
-            else
-            {
-                // Some other unknown file in the repository, proxy as is
-                if ( force || !target.exists() )
-                {
-                    policy = repository.getRepository().getReleases();
-                    getFileFromRepository( path, repository, managedRepository.getBasedir(), wagonProxy, target, policy,
-                                           force );
-                }
-            }
+            needsUpdate = true;
         }
 
-        if ( target.exists() )
+        if ( needsUpdate || force || !target.exists() )
         {
-            // in case it previously failed and we've since found it
-            repository.clearFailure( path );
+            getFileFromRepository( artifactRepository.pathOf( artifact ), repository, managedRepository.getBasedir(),
+                                   wagonProxy, target, policy, force );
         }
-        return target;
     }
 
     private void mergeMetadataFiles( File target, File metadataFile )
@@ -525,10 +667,11 @@ public class DefaultProxyRequestHandler
                                                                    checksumExt.toUpperCase(),
                                                                    path.substring( path.lastIndexOf( '/' ) ) );
 
-                String actualChecksum = checksum.getActualChecksum().toUpperCase();
+                String actualChecksum = checksum.getActualChecksum();
+
                 remoteChecksum = remoteChecksum.toUpperCase();
 
-                if ( remoteChecksum.equals( actualChecksum ) )
+                if ( actualChecksum != null && remoteChecksum.equals( actualChecksum.toUpperCase() ) )
                 {
                     moveTempToTarget( tempChecksumFile, checksumFile );
 

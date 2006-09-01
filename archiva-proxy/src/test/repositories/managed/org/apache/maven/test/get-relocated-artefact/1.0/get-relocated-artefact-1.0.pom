@@ -1,0 +1,13 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.test</groupId>
+  <artifactId>get-relocated-artefact</artifactId>
+  <version>1.0</version>
+
+  <distributionManagement>
+    <relocation>
+      <artifactId>get-default-layout-present</artifactId>
+    </relocation>
+  </distributionManagement>
+
+</project>

@@ -1624,6 +1624,136 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
     }
 
+    public void testRelocateMaven1Request()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-relocated-artefact-1.0.jar";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+    }
+
+    public void testDoublyRelocateMaven1Request()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-doubly-relocated-artefact-1.0.jar";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+    }
+
+    public void testRelocateMaven1PomRequest()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/poms/get-relocated-artefact-with-pom-1.0.pom";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present-with-pom/1.0/get-default-layout-present-with-pom-1.0.pom";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+
+        assertTrue( expectedFile.exists() );
+    }
+
+    public void testRelocateMaven1PomRequestMissingTarget()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/poms/get-relocated-artefact-1.0.pom";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.pom";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertFalse( expectedFile.exists() );
+
+        try
+        {
+            requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Should have failed to find target POM" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            assertTrue( true );
+        }
+    }
+
+    public void testRelocateMaven1ChecksumRequest()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org.apache.maven.test/jars/get-relocated-artefact-1.0.jar.md5";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar.md5";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+
+        assertTrue( expectedFile.exists() );
+
+        path = "org.apache.maven.test/jars/get-relocated-artefact-1.0.jar.sha1";
+        relocatedPath = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar.sha1";
+        expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertFalse( expectedFile.exists() );
+
+        try
+        {
+            requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+            fail( "Checksum was not present, should not be found" );
+        }
+        catch ( ResourceDoesNotExistException e )
+        {
+            assertTrue( true );
+        }
+    }
+
+    public void testRelocateMaven2Request()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-relocated-artefact/1.0/get-relocated-artefact-1.0.jar";
+        String relocatedPath =
+            "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( defaultManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+    }
+
+    public void testRelocateMaven2RequestInLegacyManagedRepo()
+        throws IOException, ResourceDoesNotExistException, ProxyException
+    {
+        String path = "org/apache/maven/test/get-relocated-artefact/1.0/get-relocated-artefact-1.0.jar";
+        String relocatedPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( legacyManagedRepository.getBasedir(), relocatedPath );
+
+        assertTrue( expectedFile.exists() );
+
+        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
+
+        assertEquals( "Check file matches", expectedFile, file );
+    }
+
     private static Versioning getVersioning( List versions )
     {
         Versioning versioning = new Versioning();
