@@ -22,7 +22,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.Xpp3DomWriter;
@@ -89,7 +88,7 @@ public abstract class AbstractDiscoverer
         return kickedOutPaths.iterator();
     }
 
-    protected List scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, String[] includes,
+    protected List scanForArtifactPaths( File repositoryBase, List blacklistedPatterns, String[] includes,
                                          String[] excludes, long comparisonTimestamp )
     {
         List allExcludes = new ArrayList();
@@ -98,10 +97,9 @@ public abstract class AbstractDiscoverer
         {
             allExcludes.addAll( Arrays.asList( excludes ) );
         }
-
-        if ( !StringUtils.isEmpty( blacklistedPatterns ) )
+        if ( blacklistedPatterns != null )
         {
-            allExcludes.addAll( Arrays.asList( blacklistedPatterns.split( "," ) ) );
+            allExcludes.addAll( blacklistedPatterns );
         }
 
         DirectoryScanner scanner = new DirectoryScanner();

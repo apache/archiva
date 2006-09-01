@@ -46,13 +46,13 @@ public abstract class AbstractArtifactDiscoverer
         "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
         "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
 
-    private List scanForArtifactPaths( File repositoryBase, String blacklistedPatterns, long comparisonTimestamp )
+    private List scanForArtifactPaths( File repositoryBase, List blacklistedPatterns, long comparisonTimestamp )
     {
         return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES,
                                      comparisonTimestamp );
     }
 
-    public List discoverArtifacts( ArtifactRepository repository, String operation, String blacklistedPatterns,
+    public List discoverArtifacts( ArtifactRepository repository, String operation, List blacklistedPatterns,
                                    boolean includeSnapshots )
         throws DiscovererException
     {

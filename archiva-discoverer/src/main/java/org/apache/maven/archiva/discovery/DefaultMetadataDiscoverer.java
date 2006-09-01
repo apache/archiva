@@ -62,7 +62,7 @@ public class DefaultMetadataDiscoverer
      */
     private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/maven-metadata.xml"};
 
-    public List discoverMetadata( ArtifactRepository repository, String operation, String blacklistedPatterns )
+    public List discoverMetadata( ArtifactRepository repository, String operation, List blacklistedPatterns )
         throws DiscovererException
     {
         if ( !"file".equals( repository.getProtocol() ) )

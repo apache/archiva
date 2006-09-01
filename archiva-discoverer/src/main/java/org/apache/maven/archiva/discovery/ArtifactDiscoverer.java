@@ -47,7 +47,7 @@ public interface ArtifactDiscoverer
      * @return the list of artifacts discovered
      * @throws DiscovererException if there was an unrecoverable problem discovering artifacts or recording progress
      */
-    List discoverArtifacts( ArtifactRepository repository, String operation, String blacklistedPatterns,
+    List discoverArtifacts( ArtifactRepository repository, String operation, List blacklistedPatterns,
                             boolean includeSnapshots )
         throws DiscovererException;
 

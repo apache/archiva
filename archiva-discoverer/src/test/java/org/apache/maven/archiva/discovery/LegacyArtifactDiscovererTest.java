@@ -21,6 +21,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,11 +29,13 @@ import java.util.List;
  * Test the legacy artifact discoverer.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
+ * @version $Id:LegacyArtifactDiscovererTest.java 437105 2006-08-26 17:22:22 +1000 (Sat, 26 Aug 2006) brett $
  */
 public class LegacyArtifactDiscovererTest
     extends AbstractArtifactDiscovererTest
 {
+    private static final List JAVAX_SQL_BLACKLIST = Collections.singletonList( "javax.sql/**" );
+
     protected String getLayout()
     {
         return "legacy";
@@ -100,7 +103,7 @@ public class LegacyArtifactDiscovererTest
     public void testBlacklistedExclude()
         throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, "javax.sql/**", false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, JAVAX_SQL_BLACKLIST, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )

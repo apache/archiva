@@ -10,7 +10,6 @@
       <value>org.apache.maven.archiva.configuration</value>
     </default>
   </defaults>
-  <!-- TODO! break out subtypes such as <discovery> and create a list of blacklist -->
   <classes>
     <class rootElement="true" xml.tagName="configuration">
       <name>Configuration</name>
@@ -83,8 +82,11 @@
         <field>
           <name>globalBlackListPatterns</name>
           <version>1.0.0</version>
-          <type>String</type>
           <description>Blacklisted patterns in the discovery process</description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
         <field>
           <name>proxy</name>
@@ -287,8 +289,11 @@
         <field>
           <name>blackListPatterns</name>
           <version>1.0.0</version>
-          <type>String</type>
           <description>Blacklisted patterns in the discovery process</description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
       </fields>
     </class>

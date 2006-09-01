@@ -106,8 +106,15 @@ public class IndexerTask
 
                 if ( repositoryConfiguration.isIndexed() )
                 {
-                    // TODO! include global ones
-                    String blacklistedPatterns = repositoryConfiguration.getBlackListPatterns();
+                    List blacklistedPatterns = new ArrayList();
+                    if ( repositoryConfiguration.getBlackListPatterns() != null )
+                    {
+                        blacklistedPatterns.addAll( repositoryConfiguration.getBlackListPatterns() );
+                    }
+                    if ( configuration.getGlobalBlackListPatterns() != null )
+                    {
+                        blacklistedPatterns.addAll( configuration.getGlobalBlackListPatterns() );
+                    }
                     boolean includeSnapshots = repositoryConfiguration.isIncludeSnapshots();
 
                     ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );

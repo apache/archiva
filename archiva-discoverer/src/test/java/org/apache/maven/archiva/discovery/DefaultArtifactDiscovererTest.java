@@ -37,6 +37,8 @@ import java.util.Map;
 public class DefaultArtifactDiscovererTest
     extends AbstractArtifactDiscovererTest
 {
+    private static final List JAVAX_BLACKLIST = Collections.singletonList( "javax/**" );
+
     protected String getLayout()
     {
         return "default";
@@ -105,7 +107,7 @@ public class DefaultArtifactDiscovererTest
     public void testBlacklistedExclude()
         throws DiscovererException
     {
-        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, "javax/**", false );
+        List artifacts = discoverer.discoverArtifacts( repository, TEST_OPERATION, JAVAX_BLACKLIST, false );
         assertNotNull( "Check artifacts not null", artifacts );
         boolean found = false;
         for ( Iterator i = discoverer.getExcludedPathsIterator(); i.hasNext() && !found; )

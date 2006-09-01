@@ -43,6 +43,6 @@ public class DeleteProxiedRepositoryAction
     protected void removeContents( AbstractRepositoryConfiguration existingRepository )
         throws IOException
     {
-        // TODO!
+        // TODO! delete it
     }
 }

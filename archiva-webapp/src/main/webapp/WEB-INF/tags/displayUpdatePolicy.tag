@@ -1,4 +1,3 @@
-<%@ taglib prefix="ww" uri="/webwork" %>
 <%--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -15,18 +14,25 @@
   ~ limitations under the License.
   --%>
 
-<div id="searchBox">
-  <ww:form method="get" action="quickSearch" validate="true">
-    <ww:textfield label="Search for" size="50" name="q"/>
-    <ww:submit label="Go!"/>
-  </ww:form>
+<%-- TODO: this could perhaps just be a i18n call --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ attribute name="policy" required="true" %>
+<%@ attribute name="interval" %>
 
-  <script type="text/javascript">
-    document.getElementById("quickSearch_q").focus();
-  </script>
-
-  <p>
-    Enter your search terms. A variety of data will be searched for your keywords.
-    <ww:actionerror/>
-  </p>
-</div>
+<c:choose>
+  <c:when test="${policy == 'disabled'}">
+    Disabled
+  </c:when>
+  <c:when test="${policy == 'always'}">
+    Updated every request
+  </c:when>
+  <c:when test="${policy == 'hourly'}">
+    Updated hourly
+  </c:when>
+  <c:when test="${policy == 'daily'}">
+    Updated daily
+  </c:when>
+  <c:when test="${policy == 'interval'}">
+    Updated every ${interval} minutes
+  </c:when>
+</c:choose>
