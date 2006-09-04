@@ -18,16 +18,12 @@ package org.apache.maven.archiva.discoverer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Base class for artifact discoverers.
@@ -46,14 +42,12 @@ public abstract class AbstractArtifactDiscoverer
         "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
         "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
 
-    private List scanForArtifactPaths( File repositoryBase, List blacklistedPatterns, long comparisonTimestamp )
+    private List scanForArtifactPaths( File repositoryBase, List blacklistedPatterns )
     {
-        return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES,
-                                     comparisonTimestamp );
+        return scanForArtifactPaths( repositoryBase, blacklistedPatterns, null, STANDARD_DISCOVERY_EXCLUDES );
     }
 
-    public List discoverArtifacts( ArtifactRepository repository, String operation, List blacklistedPatterns,
-                                   boolean includeSnapshots )
+    public List discoverArtifacts( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
         throws DiscovererException
     {
         if ( !"file".equals( repository.getProtocol() ) )
@@ -61,31 +55,11 @@ public abstract class AbstractArtifactDiscoverer
             throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
         }
 
-        Xpp3Dom dom = getLastArtifactDiscoveryDom( readRepositoryMetadataDom( repository ) );
-        long comparisonTimestamp = readComparisonTimestamp( repository, operation, dom );
-
-        // Note that last checked time is deliberately set to the start of the process so that anything added
-        // mid-discoverer and missed by the scanner will get checked next time.
-        // Due to this, there must be no negative side-effects of discovering something twice.
-        Date newLastCheckedTime = new Date();
-
         File repositoryBase = new File( repository.getBasedir() );
 
         List artifacts = new ArrayList();
 
-        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns, comparisonTimestamp );
-
-        // Also note that the last check time, while set at the start, is saved at the end, so that if any exceptions
-        // occur, then the timestamp is not updated so that the discoverer is attempted again
-        // TODO: under the list-return behaviour we have now, exceptions might occur later and the timestamp will not be reset - see MRM-83
-        try
-        {
-            setLastCheckedTime( repository, operation, newLastCheckedTime );
-        }
-        catch ( IOException e )
-        {
-            throw new DiscovererException( "Error writing metadata: " + e.getMessage(), e );
-        }
+        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
 
         for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
         {
@@ -95,10 +69,12 @@ public abstract class AbstractArtifactDiscoverer
             {
                 Artifact artifact = buildArtifactFromPath( path, repository );
 
-                if ( includeSnapshots || !artifact.isSnapshot() )
+                if ( filter.include( artifact ) )
                 {
                     artifacts.add( artifact );
                 }
+                // TODO: else add to excluded? [!]
+                // TODO! excluded/kickout tracking should be optional
             }
             catch ( DiscovererException e )
             {
@@ -129,21 +105,5 @@ public abstract class AbstractArtifactDiscoverer
         }
 
         return artifact;
-    }
-
-    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
-        throws IOException
-    {
-        // see notes in resetLastCheckedTime
-
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-
-        Xpp3Dom dom = readDom( file );
-
-        String dateString = new SimpleDateFormat( DATE_FMT, Locale.US ).format( date );
-
-        setEntry( getLastArtifactDiscoveryDom( dom ), operation, dateString );
-
-        saveDom( file, dom );
     }
 }

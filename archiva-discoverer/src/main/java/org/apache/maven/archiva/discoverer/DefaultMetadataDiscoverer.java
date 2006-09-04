@@ -25,7 +25,6 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -35,13 +34,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.StringTokenizer;
 
 /**
@@ -70,29 +66,9 @@ public class DefaultMetadataDiscoverer
             throw new UnsupportedOperationException( "Only filesystem repositories are supported" );
         }
 
-        Xpp3Dom dom = getLastMetadataDiscoveryDom( readRepositoryMetadataDom( repository ) );
-        long comparisonTimestamp = readComparisonTimestamp( repository, operation, dom );
-
-        // Note that last checked time is deliberately set to the start of the process so that anything added
-        // mid-discoverer and missed by the scanner will get checked next time.
-        // Due to this, there must be no negative side-effects of discovering something twice.
-        Date newLastCheckedTime = new Date();
-
         List metadataFiles = new ArrayList();
         List metadataPaths = scanForArtifactPaths( new File( repository.getBasedir() ), blacklistedPatterns,
-                                                   STANDARD_DISCOVERY_INCLUDES, null, comparisonTimestamp );
-
-        // Also note that the last check time, while set at the start, is saved at the end, so that if any exceptions
-        // occur, then the timestamp is not updated so that the discoverer is attempted again
-        // TODO: under the list-return behaviour we have now, exceptions might occur later and the timestamp will not be reset - see MRM-83
-        try
-        {
-            setLastCheckedTime( repository, operation, newLastCheckedTime );
-        }
-        catch ( IOException e )
-        {
-            throw new DiscovererException( "Error writing metadata: " + e.getMessage(), e );
-        }
+                                                   STANDARD_DISCOVERY_INCLUDES, null );
 
         for ( Iterator i = metadataPaths.iterator(); i.hasNext(); )
         {
@@ -234,21 +210,5 @@ public class DefaultMetadataDiscoverer
         }
 
         return metadata;
-    }
-
-    public void setLastCheckedTime( ArtifactRepository repository, String operation, Date date )
-        throws IOException
-    {
-        // see notes in resetLastCheckedTime
-
-        File file = new File( repository.getBasedir(), "maven-metadata.xml" );
-
-        Xpp3Dom dom = readDom( file );
-
-        String dateString = new SimpleDateFormat( DATE_FMT, Locale.US ).format( date );
-
-        setEntry( getLastMetadataDiscoveryDom( dom ), operation, dateString );
-
-        saveDom( file, dom );
     }
 }

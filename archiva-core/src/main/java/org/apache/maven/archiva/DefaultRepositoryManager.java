@@ -4,10 +4,13 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.RepositoryConverter;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
+import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.reporting.ArtifactReporter;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -73,8 +76,9 @@ public class DefaultRepositoryManager
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }
 
-        List legacyArtifacts =
-            artifactDiscoverer.discoverArtifacts( legacyRepository, "converter", null, includeSnapshots );
+        ArtifactFilter filter =
+            includeSnapshots ? new AcceptAllArtifactFilter() : (ArtifactFilter) new SnapshotArtifactFilter();
+        List legacyArtifacts = artifactDiscoverer.discoverArtifacts( legacyRepository, null, filter );
 
         repositoryConverter.convert( legacyArtifacts, repository, reporter );
     }

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.scheduler;
+package org.apache.maven.archiva.scheduler.task;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -23,16 +23,20 @@ import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
-import org.apache.maven.artifact.Artifact;
+import org.apache.maven.archiva.scheduler.TaskExecutionException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +45,7 @@ import java.util.Map;
  * Task for discovering changes in the repository.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @plexus.component role="org.apache.maven.archiva.scheduler.RepositoryTask" role-hint="indexer"
+ * @plexus.component role=org.apache.maven.archiva.scheduler.task.RepositoryTaskk" role-hint="indexer"
  */
 public class IndexerTask
     extends AbstractLogEnabled
@@ -98,8 +102,20 @@ public class IndexerTask
         long time = System.currentTimeMillis();
         getLogger().info( "Starting repository discovery process" );
 
+        RepositoryArtifactIndex index = indexFactory.createStandardIndex( indexPath );
+
         try
         {
+            Collection keys;
+            if ( index.exists() )
+            {
+                keys = index.getAllRecordKeys();
+            }
+            else
+            {
+                keys = Collections.EMPTY_LIST;
+            }
+
             for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
             {
                 RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
@@ -121,12 +137,23 @@ public class IndexerTask
 
                     String layoutProperty = repositoryConfiguration.getLayout();
                     ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
-                    List artifacts =
-                        discoverer.discoverArtifacts( repository, "indexer", blacklistedPatterns, includeSnapshots );
+                    AndArtifactFilter filter = new AndArtifactFilter();
+                    filter.add( new IndexRecordExistsArtifactFilter( keys ) );
+                    if ( !includeSnapshots )
+                    {
+                        filter.add( new SnapshotArtifactFilter() );
+                    }
+
+                    // Save some memory by not tracking paths we won't use
+                    // TODO: Plexus CDC should be able to inject this configuration
+                    discoverer.setTrackOmittedPaths( false );
+
+                    getLogger().info( "Searching repository " + repositoryConfiguration.getName() );
+                    List artifacts = discoverer.discoverArtifacts( repository, blacklistedPatterns, filter );
                     if ( !artifacts.isEmpty() )
                     {
                         getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
-                        indexArtifacts( artifacts, indexPath );
+                        index.indexArtifacts( artifacts, recordFactory );
                     }
                 }
             }
@@ -171,19 +198,5 @@ public class IndexerTask
         {
             throw new TaskExecutionException( e.getMessage(), e );
         }
-    }
-
-    private void indexArtifacts( List artifacts, File indexPath )
-        throws RepositoryIndexException
-    {
-        List records = new ArrayList();
-        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
-        {
-            Artifact a = (Artifact) i.next();
-            records.add( recordFactory.createRecord( a ) );
-        }
-
-        RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
-        artifactIndex.indexRecords( records );
     }
 }

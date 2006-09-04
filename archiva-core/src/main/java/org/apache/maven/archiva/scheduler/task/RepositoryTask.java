@@ -1,4 +1,6 @@
-package org.apache.maven.archiva.scheduler;
+package org.apache.maven.archiva.scheduler.task;
+
+import org.apache.maven.archiva.scheduler.TaskExecutionException;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

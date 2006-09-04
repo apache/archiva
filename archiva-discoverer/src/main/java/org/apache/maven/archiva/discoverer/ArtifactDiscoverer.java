@@ -18,6 +18,7 @@ package org.apache.maven.archiva.discoverer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
 import java.util.List;
 
@@ -41,14 +42,12 @@ public interface ArtifactDiscoverer
      * consecutively even if unchanged, so any users of this list must handle such a situation gracefully.
      *
      * @param repository          the location of the repository
-     * @param operation           the operation being used to discover for timestamp checking
      * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
-     * @param includeSnapshots    whether to discover snapshots
+     * @param filter              filter for artifacts to include in the discovered list
      * @return the list of artifacts discovered
      * @throws DiscovererException if there was an unrecoverable problem discovering artifacts or recording progress
      */
-    List discoverArtifacts( ArtifactRepository repository, String operation, List blacklistedPatterns,
-                            boolean includeSnapshots )
+    List discoverArtifacts( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
         throws DiscovererException;
 
     /**

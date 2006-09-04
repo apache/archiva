@@ -16,6 +16,7 @@ package org.apache.maven.archiva.scheduler;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

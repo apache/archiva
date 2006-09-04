@@ -401,4 +401,9 @@ public class StandardArtifactIndexRecord
     {
         return dependencies;
     }
+
+    public String getPrimaryKey()
+    {
+        return groupId + ":" + artifactId + ":" + version + ( classifier != null ? ":" + classifier : "" );
+    }
 }

@@ -22,18 +22,24 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.query.Query;
 import org.apache.maven.archiva.indexer.record.MinimalIndexRecordFields;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecord;
+import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.project.MavenProjectBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +47,11 @@ import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Lucene implementation of a repository index.
@@ -66,10 +75,20 @@ public class LuceneRepositoryArtifactIndex
 
     private static Analyzer luceneAnalyzer = new LuceneAnalyzer();
 
+    private MavenProjectBuilder projectBuilder;
+
     public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {
         this.indexLocation = indexPath;
         this.converter = converter;
+    }
+
+    public LuceneRepositoryArtifactIndex( File indexLocation, LuceneIndexRecordConverter converter,
+                                          MavenProjectBuilder projectBuilder )
+    {
+        this.indexLocation = indexLocation;
+        this.converter = converter;
+        this.projectBuilder = projectBuilder;
     }
 
     public void indexRecords( Collection records )
@@ -117,23 +136,7 @@ public class LuceneRepositoryArtifactIndex
         }
         finally
         {
-            close( indexWriter );
-        }
-    }
-
-    private void close( IndexWriter indexWriter )
-        throws RepositoryIndexException
-    {
-        try
-        {
-            if ( indexWriter != null )
-            {
-                indexWriter.close();
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( e.getMessage(), e );
+            closeQuietly( indexWriter );
         }
     }
 
@@ -241,9 +244,9 @@ public class LuceneRepositoryArtifactIndex
             {
                 indexReader = IndexReader.open( indexLocation );
 
-                for ( Iterator artifacts = records.iterator(); artifacts.hasNext(); )
+                for ( Iterator i = records.iterator(); i.hasNext(); )
                 {
-                    RepositoryIndexRecord record = (RepositoryIndexRecord) artifacts.next();
+                    RepositoryIndexRecord record = (RepositoryIndexRecord) i.next();
 
                     if ( record != null )
                     {
@@ -259,11 +262,124 @@ public class LuceneRepositoryArtifactIndex
             }
             finally
             {
-                if ( indexReader != null )
+                closeQuietly( indexReader );
+            }
+        }
+    }
+
+    public Collection getAllRecords()
+        throws RepositoryIndexSearchException
+    {
+        return search( new LuceneQuery( new MatchAllDocsQuery() ) );
+    }
+
+    public Collection getAllRecordKeys()
+        throws RepositoryIndexException
+    {
+        Set keys = new HashSet();
+
+        if ( exists() )
+        {
+            IndexReader indexReader = null;
+            TermEnum terms = null;
+            try
+            {
+                indexReader = IndexReader.open( indexLocation );
+
+                terms = indexReader.terms( new Term( FLD_PK, "" ) );
+                while ( FLD_PK.equals( terms.term().field() ) )
                 {
-                    closeQuietly( indexReader );
+                    keys.add( terms.term().text() );
+
+                    if ( !terms.next() )
+                    {
+                        break;
+                    }
                 }
             }
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
+            }
+            finally
+            {
+                closeQuietly( indexReader );
+                closeQuietly( terms );
+            }
+        }
+        return keys;
+    }
+
+    public void indexArtifacts( List artifacts, RepositoryIndexRecordFactory factory )
+        throws RepositoryIndexException
+    {
+        IndexModifier indexModifier = null;
+        try
+        {
+            indexModifier = new IndexModifier( indexLocation, getAnalyzer(), !exists() );
+
+            int count = 0;
+            for ( Iterator i = artifacts.iterator(); i.hasNext(); count++ )
+            {
+                Artifact artifact = (Artifact) i.next();
+                RepositoryIndexRecord record = factory.createRecord( artifact );
+
+                if ( record != null )
+                {
+                    Term term = new Term( FLD_PK, record.getPrimaryKey() );
+
+                    indexModifier.deleteDocuments( term );
+
+                    Document document = converter.convert( record );
+                    document.add(
+                        new Field( FLD_PK, record.getPrimaryKey(), Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+
+                    indexModifier.addDocument( document );
+                }
+
+                if ( count % 100 == 0 )
+                {
+                    // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
+                    // around that. TODO: remove when it is configurable
+                    flushProjectBuilderCacheHack();
+                }
+            }
+            indexModifier.optimize();
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
+        }
+        finally
+        {
+            closeQuietly( indexModifier );
+        }
+    }
+
+    private void flushProjectBuilderCacheHack()
+    {
+        try
+        {
+            if ( projectBuilder != null )
+            {
+                java.lang.reflect.Field f = projectBuilder.getClass().getDeclaredField( "rawProjectCache" );
+                f.setAccessible( true );
+                Map cache = (Map) f.get( projectBuilder );
+                cache.clear();
+
+                f = projectBuilder.getClass().getDeclaredField( "processedProjectCache" );
+                f.setAccessible( true );
+                cache = (Map) f.get( projectBuilder );
+                cache.clear();
+            }
+        }
+        catch ( NoSuchFieldException e )
+        {
+            throw new RuntimeException( e );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new RuntimeException( e );
         }
     }
 
@@ -351,6 +467,54 @@ public class LuceneRepositoryArtifactIndex
         catch ( IOException e )
         {
             // ignore
+        }
+    }
+
+    private static void closeQuietly( TermEnum terms )
+        throws RepositoryIndexException
+    {
+        if ( terms != null )
+        {
+            try
+            {
+                terms.close();
+            }
+            catch ( IOException e )
+            {
+                // ignore
+            }
+        }
+    }
+
+    private static void closeQuietly( IndexWriter indexWriter )
+        throws RepositoryIndexException
+    {
+        try
+        {
+            if ( indexWriter != null )
+            {
+                indexWriter.close();
+            }
+        }
+        catch ( IOException e )
+        {
+            // write should compain if it can't be closed, data probably not persisted
+            throw new RepositoryIndexException( e.getMessage(), e );
+        }
+    }
+
+    private static void closeQuietly( IndexModifier indexModifier )
+    {
+        if ( indexModifier != null )
+        {
+            try
+            {
+                indexModifier.close();
+            }
+            catch ( IOException e )
+            {
+                // ignore
+            }
         }
     }
 

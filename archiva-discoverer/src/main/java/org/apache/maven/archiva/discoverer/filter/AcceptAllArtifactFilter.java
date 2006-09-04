@@ -1,6 +1,4 @@
-package org.apache.maven.archiva.discoverer;
-
-import java.util.Iterator;
+package org.apache.maven.archiva.discoverer.filter;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -18,24 +16,17 @@ import java.util.Iterator;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+
 /**
- * @author Edwin Punzalan
+ * Filter that accepts all.
  */
-public interface Discoverer
+public class AcceptAllArtifactFilter
+    implements ArtifactFilter
 {
-    /**
-     * Get the list of paths kicked out during the discovery process.
-     *
-     * @return the paths as Strings.
-     */
-    Iterator getKickedOutPathsIterator();
-
-    /**
-     * Get the list of paths excluded during the discovery process.
-     *
-     * @return the paths as Strings.
-     */
-    Iterator getExcludedPathsIterator();
-
-    void setTrackOmittedPaths( boolean trackOmittedPaths );
+    public boolean include( Artifact artifact )
+    {
+        return true;
+    }
 }

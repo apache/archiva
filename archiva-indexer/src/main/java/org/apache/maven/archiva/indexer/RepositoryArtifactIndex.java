@@ -17,6 +17,7 @@ package org.apache.maven.archiva.indexer;
  */
 
 import org.apache.maven.archiva.indexer.query.Query;
+import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +33,7 @@ public interface RepositoryArtifactIndex
      * Indexes the artifacts found within the specified list of index records. If the artifacts are already in the
      * repository they are updated.
      *
-     * @param records the artifacts to index
+     * @param records the records to index
      * @throws RepositoryIndexException if there is a problem indexing the records
      */
     void indexRecords( Collection records )
@@ -65,5 +66,35 @@ public interface RepositoryArtifactIndex
      * @throws RepositoryIndexException if there is a problem removing the record
      */
     void deleteRecords( Collection records )
+        throws RepositoryIndexException;
+
+    /**
+     * Retrieve all records in the index.
+     *
+     * @return the records
+     * @throws RepositoryIndexSearchException if there was an error searching the index
+     */
+    Collection getAllRecords()
+        throws RepositoryIndexSearchException;
+
+    /**
+     * Retrieve all primary keys of records in the index.
+     *
+     * @return the keys
+     * @throws RepositoryIndexSearchException if there was an error searching the index
+     */
+    Collection getAllRecordKeys()
+        throws RepositoryIndexException;
+
+    /**
+     * Indexes the artifacts found within the specified list. If the artifacts are already in the
+     * repository they are updated. This method should use less memory than indexRecords as the records can be
+     * created and disposed of on the fly.
+     *
+     * @param artifacts the artifacts to index
+     * @param factory   the artifact to record factory
+     * @throws RepositoryIndexException if there is a problem indexing the artifacts
+     */
+    void indexArtifacts( List artifacts, RepositoryIndexRecordFactory factory )
         throws RepositoryIndexException;
 }

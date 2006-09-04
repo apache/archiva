@@ -18,6 +18,7 @@ package org.apache.maven.archiva.indexer.lucene;
 
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
+import org.apache.maven.project.MavenProjectBuilder;
 
 import java.io.File;
 
@@ -30,13 +31,19 @@ import java.io.File;
 public class LuceneRepositoryArtifactIndexFactory
     implements RepositoryArtifactIndexFactory
 {
+    /**
+     * @plexus.requirement
+     * @todo remove when MNG-142 is fixed
+     */
+    private MavenProjectBuilder projectBuilder;
+
     public RepositoryArtifactIndex createStandardIndex( File indexPath )
     {
-        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneStandardIndexRecordConverter() );
+        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneStandardIndexRecordConverter(), projectBuilder );
     }
 
     public RepositoryArtifactIndex createMinimalIndex( File indexPath )
     {
-        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneMinimalIndexRecordConverter() );
+        return new LuceneRepositoryArtifactIndex( indexPath, new LuceneMinimalIndexRecordConverter(), projectBuilder );
     }
 }
