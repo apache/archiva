@@ -45,7 +45,7 @@ import java.util.Map;
  * Task for discovering changes in the repository.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @plexus.component role=org.apache.maven.archiva.scheduler.task.RepositoryTaskk" role-hint="indexer"
+ * @plexus.component role="org.apache.maven.archiva.scheduler.task.RepositoryTask" role-hint="indexer"
  */
 public class IndexerTask
     extends AbstractLogEnabled

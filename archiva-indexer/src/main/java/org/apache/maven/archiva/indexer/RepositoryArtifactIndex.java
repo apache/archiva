@@ -81,7 +81,7 @@ public interface RepositoryArtifactIndex
      * Retrieve all primary keys of records in the index.
      *
      * @return the keys
-     * @throws RepositoryIndexSearchException if there was an error searching the index
+     * @throws RepositoryIndexException if there was an error searching the index
      */
     Collection getAllRecordKeys()
         throws RepositoryIndexException;
@@ -97,4 +97,42 @@ public interface RepositoryArtifactIndex
      */
     void indexArtifacts( List artifacts, RepositoryIndexRecordFactory factory )
         throws RepositoryIndexException;
+
+    /**
+     * Get all the group IDs in the index.
+     *
+     * @return list of groups as strings
+     * @throws RepositoryIndexException if there is a problem searching for the group ID
+     */
+    List getAllGroupIds()
+        throws RepositoryIndexException;
+
+    /**
+     * Get the list of artifact IDs in a group in the index.
+     *
+     * @param groupId the group ID to search
+     * @return the list of artifact ID strings
+     * @throws RepositoryIndexSearchException if there is a problem searching for the group ID
+     */
+    List getArtifactIds( String groupId )
+        throws RepositoryIndexSearchException;
+
+    /**
+     * Get the list of available versions for a given artifact.
+     *
+     * @param groupId    the group ID to search for
+     * @param artifactId the artifact ID to search for
+     * @return the list of version strings
+     * @throws RepositoryIndexSearchException if there is a problem searching for the artifact
+     */
+    List getVersions( String groupId, String artifactId )
+        throws RepositoryIndexSearchException;
+
+    /**
+     * Get the time when the index was last updated. Note that this does not monitor external processes or multiple
+     * instances of the index.
+     *
+     * @return the last updated time, or 0 if it has not been updated since the class was instantiated.
+     */
+    long getLastUpdatedTime();
 }

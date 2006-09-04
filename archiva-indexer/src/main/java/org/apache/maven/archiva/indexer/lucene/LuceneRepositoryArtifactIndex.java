@@ -27,9 +27,12 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
@@ -47,8 +50,8 @@ import java.io.Reader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +79,8 @@ public class LuceneRepositoryArtifactIndex
     private static Analyzer luceneAnalyzer = new LuceneAnalyzer();
 
     private MavenProjectBuilder projectBuilder;
+
+    private long lastUpdatedTime = 0;
 
     public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {
@@ -137,6 +142,7 @@ public class LuceneRepositoryArtifactIndex
         finally
         {
             closeQuietly( indexWriter );
+            lastUpdatedTime = System.currentTimeMillis();
         }
     }
 
@@ -276,7 +282,13 @@ public class LuceneRepositoryArtifactIndex
     public Collection getAllRecordKeys()
         throws RepositoryIndexException
     {
-        Set keys = new HashSet();
+        return getAllFieldValues( FLD_PK );
+    }
+
+    private List getAllFieldValues( String fieldName )
+        throws RepositoryIndexException
+    {
+        List keys = new ArrayList();
 
         if ( exists() )
         {
@@ -286,8 +298,8 @@ public class LuceneRepositoryArtifactIndex
             {
                 indexReader = IndexReader.open( indexLocation );
 
-                terms = indexReader.terms( new Term( FLD_PK, "" ) );
-                while ( FLD_PK.equals( terms.term().field() ) )
+                terms = indexReader.terms( new Term( fieldName, "" ) );
+                while ( fieldName.equals( terms.term().field() ) )
                 {
                     keys.add( terms.term().text() );
 
@@ -353,7 +365,74 @@ public class LuceneRepositoryArtifactIndex
         finally
         {
             closeQuietly( indexModifier );
+            lastUpdatedTime = System.currentTimeMillis();
         }
+    }
+
+    public List getAllGroupIds()
+        throws RepositoryIndexException
+    {
+        return getAllFieldValues( StandardIndexRecordFields.GROUPID_EXACT );
+    }
+
+    public List getArtifactIds( String groupId )
+        throws RepositoryIndexSearchException
+    {
+        return searchField( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
+                            StandardIndexRecordFields.ARTIFACTID );
+    }
+
+    public List getVersions( String groupId, String artifactId )
+        throws RepositoryIndexSearchException
+    {
+        BooleanQuery query = new BooleanQuery();
+        query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
+                   BooleanClause.Occur.MUST );
+        query.add( new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, artifactId ) ),
+                   BooleanClause.Occur.MUST );
+
+        return searchField( query, StandardIndexRecordFields.VERSION );
+    }
+
+    public long getLastUpdatedTime()
+    {
+        return lastUpdatedTime;
+    }
+
+    private List searchField( org.apache.lucene.search.Query luceneQuery, String fieldName )
+        throws RepositoryIndexSearchException
+    {
+        Set results = new LinkedHashSet();
+
+        IndexSearcher searcher;
+        try
+        {
+            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
+        }
+
+        try
+        {
+            Hits hits = searcher.search( luceneQuery );
+            for ( int i = 0; i < hits.length(); i++ )
+            {
+                Document doc = hits.doc( i );
+
+                results.add( doc.get( fieldName ) );
+            }
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
+        }
+        finally
+        {
+            closeQuietly( searcher );
+        }
+        return new ArrayList( results );
     }
 
     private void flushProjectBuilderCacheHack()

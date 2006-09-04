@@ -58,7 +58,7 @@
 
     <ww:set name="groups" value="groups"/>
     <c:if test="${!empty(groups)}">
-      <h2>Group / Artifact</h2>
+      <h2>Groups</h2>
       <ul>
         <c:forEach items="${groups}" var="groupId">
           <c:set var="url">
