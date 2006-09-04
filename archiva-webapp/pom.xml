@@ -111,7 +111,6 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>archiva-webapp</finalName>
     <plugins>
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
