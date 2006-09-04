@@ -52,13 +52,6 @@ public abstract class AbstractDiscoverer
      */
     private boolean trackOmittedPaths;
 
-    /** TODO!
-     * @plexus.configuration default-value="60000"
-    protected int blackoutPeriod;
-
-    protected static final String DATE_FMT = "yyyyMMddHHmmss";
-     */
-
     /**
      * Add a path to the list of files that were kicked out due to being invalid.
      *

@@ -74,7 +74,6 @@ public abstract class AbstractArtifactDiscoverer
                     artifacts.add( artifact );
                 }
                 // TODO: else add to excluded? [!]
-                // TODO! excluded/kickout tracking should be optional
             }
             catch ( DiscovererException e )
             {
