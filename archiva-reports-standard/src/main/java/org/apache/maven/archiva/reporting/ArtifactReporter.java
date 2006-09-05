@@ -29,7 +29,6 @@ import java.util.Iterator;
  * web interface, send them via mail, and so on.
  *
  * @todo i18n, including message formatting and parameterisation
- * @todo remove no longer used reports!
  */
 public interface ArtifactReporter
 {
