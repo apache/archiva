@@ -4,6 +4,10 @@
   </properties>
   <body>
     <h1>Configuration</h1>
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
 
     <div id="contentArea">
       <div id="searchBox">

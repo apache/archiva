@@ -5,6 +5,10 @@
   <body>
     <h1>Find Artifact</h1>
 
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
     <div id="contentArea">
       <div id="searchBox">
         <form action="artifact.html">

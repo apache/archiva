@@ -3,11 +3,11 @@
     <title>Archiva</title>
   </properties>
   <body>
+    <h1>Search</h1>
+
     <div id="sidebar">
       <p>reserved sidebar</p>
     </div>
-
-    <h1>Search</h1>
 
     <div id="contentArea">
       <div id="searchBox">

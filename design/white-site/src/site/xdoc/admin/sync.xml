@@ -20,6 +20,10 @@
   </properties>
   <body>
     <h1>Administration</h1>
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
 
     <div id="contentArea">
       <h2>Synced Repositories</h2>

@@ -20,21 +20,21 @@
     <title>Archiva</title>
   </properties>
   <body>
+    <img src="images/pom.gif" width="66" height="66" title="POM" style="float: left"/>
+    <h1>Maven Model</h1>
+
     <div id="sidebar">
       <p>reserved sidebar</p>
     </div>
 
-    <img src="images/jar.png" width="100" height="100" alt="jar" style="float: left"/>
-    <h1>Maven Model</h1>
-
     <div id="contentArea">
       <div id="tabs">
-        <p>
+        <span>
           <a href="artifact.html">Info</a>
           <b>Dependencies</b>
           <a href="dependedon.html">Depended On By</a>
           <a href="mail-lists.html">Mailing Lists</a>
-        </p>
+        </span>
       </div>
       <div id="tabArea">
         <h3>

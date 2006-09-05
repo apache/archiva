@@ -5,6 +5,10 @@
   <body>
     <h1>Repository Health</h1>
 
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
     <div id="contentArea">
       <h2>Status</h2>
       <table>
