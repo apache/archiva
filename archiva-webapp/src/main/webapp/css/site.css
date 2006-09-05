@@ -14,79 +14,73 @@
  * limitations under the License.
  */
 
+.sidebar3 {
+    width: 10em;
+    float: right;
+    text-align: center;
+}
+
+#sidebarb {
+    font-size: small;
+    text-align: center;
+    padding: 10px 10px 10px 10px;
+    border: 1px #DFDEDE solid;
+    width: 10em;
+}
+
 #sidebar {
     float: right;
     font-size: small;
     margin: 10px;
     padding: 10px;
-    border: 1px black solid;
+    border: 1px #DFDEDE solid;
     width: 10em;
 }
 
+#download {
+    background-image: url( ../images/dl.gif );
+    background-repeat: no-repeat;
+    float: right;
+    font-size: small;
+    font-weight: bold;
+    margin: 10px;
+    padding: 10px;
+    height: auto;
+    width: 10em;
+    display: block;
+}
+
+#download a {
+    text-decoration: none;
+}
+
 #contentArea {
-    border: 1px solid black;
     margin-right: 15em;
     padding: 1em;
 }
 
-#tabs strong {
-    border: 1px solid black;
+#tabs b {
+    border: 1px #DFDEDE solid;
     padding-left: 1em;
     padding-right: 1em;
 }
 
 #tabs a {
-    border: 1px solid black;
+    border: 1px #DFDEDE solid;
     padding-left: 1em;
     padding-right: 1em;
     text-decoration: none;
 }
 
 #tabArea {
-    border: 1px solid black;
+    border-top: 1px solid #DFDEDE;
     padding: 1em;
-}
-
-#searchBox p {
-    font-size: x-small;
-    text-align: center;
-    color: gray;
 }
 
 #searchTypes {
     text-align: right;
     font-size: xx-small;
 }
-
-/* TODO: remove if they aren't used
-#feed {
-    float: right;
-}
-
-.downloadButton {
-    background-color: green;
-    border: double white;
-    float: right;
-    padding: 5px;
-}
-
-.downloadButton a {
-    font-size: large;
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-}
-
-#labels {
-    background-color: #f2f2f2;
-    padding: 0.5em 1em 0.5em 1em;
-}
-
-.statusWarn {
-    color: orange;
-    font-weight: bold;
-}
-*/
 
 .statusOk {
     color: green;
@@ -95,21 +89,6 @@
 
 .statusFailed {
     color: red;
-    font-weight: bold;
-}
-
-/* WebWork validation failures */
-.errorMessage {
-    color: red;
-    font-weight: bold;
-}
-
-.actionMessage {
-    font-weight: bold;
-}
-
-sWarn {
-    color: orange;
     font-weight: bold;
 }
 

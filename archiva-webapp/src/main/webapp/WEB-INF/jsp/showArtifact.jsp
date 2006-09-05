@@ -26,17 +26,37 @@
 
 <body>
 
-<%-- TODO: image by type
-<img src="images/jar.png" width="100" height="100" alt="jar" style="float: left" />
---%>
-
-<%-- TODO: download link
-<div class="downloadButton">
-  <a href="#">Download</a>
-</div>
---%>
-
 <ww:set name="model" value="model"/>
+<c:choose>
+  <c:when test="${model.packaging == 'maven-plugin'}">
+    <c:url var="imageUrl" value="/images/mavenplugin.gif"/>
+    <c:set var="packageName">Maven Plugin</c:set>
+  </c:when>
+  <c:when test="${model.packaging == 'pom'}">
+    <c:url var="imageUrl" value="/images/pom.gif"/>
+    <c:set var="packageName">POM</c:set>
+  </c:when>
+  <%-- These types aren't usually set in the POM yet, so we fudge them for the well known ones --%>
+  <c:when test="${model.packaging == 'maven-archetype' or model.groupId == 'org.apache.maven.archetypes'}">
+    <c:url var="imageUrl" value="/images/archetype.gif"/>
+    <c:set var="packageName">Maven Archetype</c:set>
+  </c:when>
+  <c:when test="${model.packaging == 'maven-skin' or model.groupId == 'org.apache.maven.skins'}">
+    <c:url var="imageUrl" value="/images/skin.gif"/>
+    <c:set var="packageName">Maven Skin</c:set>
+  </c:when>
+  <%-- Must be last so that the above get picked up if possible --%>
+  <c:when test="${model.packaging == 'jar'}">
+    <c:url var="imageUrl" value="/images/jar.gif"/>
+    <c:set var="packageName">JAR</c:set>
+  </c:when>
+  <c:otherwise>
+    <c:url var="imageUrl" value="/images/other.gif"/>
+    <c:set var="packageName"></c:set>
+  </c:otherwise>
+</c:choose>
+<img src="${imageUrl}" width="66" height="66" alt="${packageName}" title="${packageName}" style="float: left"/>
+
 <h1>
   <c:choose>
     <c:when test="${empty(model.name)}">
@@ -48,9 +68,15 @@
   </c:choose>
 </h1>
 
+<div class="sidebar3">
+  <%-- TODO! download URL
+  <div id="download"><a href="#">Download</a></div>
+  --%>
+</div>
+
 <div id="contentArea">
   <div id="tabs">
-    <p>
+    <span>
       <c:set var="url">
         <ww:url action="showArtifact">
           <ww:param name="groupId" value="%{groupId}"/>
@@ -78,7 +104,7 @@
       <%-- TODO:
           <a href="TODO">Mailing Lists</a>
       --%>
-    </p>
+    </span>
   </div>
 
   <%-- TODO: perhaps using ajax? --%>

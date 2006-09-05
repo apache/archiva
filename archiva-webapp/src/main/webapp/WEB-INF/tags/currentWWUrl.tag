@@ -28,15 +28,14 @@
     <ww:url action="${action}" namespace="${namespace}"/>
   </c:set>
 </c:if>
+<c:set var="text">
+  <jsp:doBody/>
+</c:set>
 <c:choose>
   <c:when test="${currentUrl == url}">
-    <strong>
-      <jsp:doBody/>
-    </strong>
+    <b>${text}</b>
   </c:when>
   <c:otherwise>
-    <a href="${url}">
-      <jsp:doBody/>
-    </a>
+    <a href="${url}">${text}</a>
   </c:otherwise>
 </c:choose>

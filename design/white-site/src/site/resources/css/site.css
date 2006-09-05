@@ -17,12 +17,12 @@
 .sidebar3 {
     width: 10em;
     float: right;
-    text-align:center;
+    text-align: center;
 }
 
 #sidebarb {
     font-size: small;
-    text-align:center;
+    text-align: center;
     padding: 10px 10px 10px 10px;
     border: 1px #DFDEDE solid;
     width: 10em;
@@ -38,20 +38,19 @@
 }
 
 #download {
-    font-size: 11px;
     background-image: url( ../images/dl.gif );
-    background-repeat:no-repeat;
+    background-repeat: no-repeat;
     float: right;
     font-size: small;
-    font-weight:bold;
+    font-weight: bold;
     margin: 10px;
     padding: 10px;
-    height:auto;
+    height: auto;
     width: 10em;
     display: block;
 }
 
-#download a:link, a:visited {
+#download a {
     text-decoration: none;
 }
 

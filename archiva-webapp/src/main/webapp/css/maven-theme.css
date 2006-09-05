@@ -15,7 +15,7 @@
  */
 
 body {
-    padding: 0px 0px 10px 0px;
+    padding: 0 0 10px 0;
 }
 
 body, td, select, input, li {
@@ -27,6 +27,36 @@ select, input {
     font-size: x-small;
 }
 
+#contentBox h1 {
+    background-image: url( ../images/arrow.gif );
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 23px;
+    margin-bottom: 7px;
+    color: #333;
+    voice-family: inherit;
+    font-size: small !important;
+}
+
+#contentBox h2 {
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 0;
+    margin-bottom: 7px;
+    color: #333;
+    voice-family: inherit;
+    font-size: small !important;
+}
+
+#contentBox h3 {
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 0;
+    margin-bottom: 7px;
+    color: #333;
+    voice-family: inherit;
+    font-size: small !important;
+}
+
 table {
     width: auto;
 }
@@ -34,10 +64,6 @@ table {
 code {
     font-family: Courier, monospace;
     font-size: 13px;
-}
-
-a {
-    text-decoration: none;
 }
 
 #legend li.externalLink {
@@ -76,26 +102,7 @@ p {
     color: gray;
     font-weight: bold;
     font-size: 11px;
-    padding: 10px 0px 1px 19px;
-}
-
-table.bodyTable th {
-    color: white;
-    background-color: #bbb;
-    text-align: left;
-    font-weight: bold;
-}
-
-table.bodyTable th, table.bodyTable td {
-    font-size: 1em;
-}
-
-table.bodyTable tr.a {
-    background-color: #ddd;
-}
-
-table.bodyTable tr.b {
-    background-color: #eee;
+    padding: 10px 0 1px 19px;
 }
 
 .source {
@@ -133,10 +140,6 @@ dt {
 #breadcrumbs a:hover {
     text-decoration: none;
     color: white
-}
-
-a:link {
-    color: #333;
 }
 
 .errormark, .warningmark, .donemark, .infomark {
@@ -195,6 +198,10 @@ a:link {
     display: block;
 }
 
+#navcolumn li.collapsed {
+    background-image: url( ../images/super.gif );
+}
+
 #navcolumn li.expanded {
     background-image: url( ../images/super.gif );
     height: inherit;
@@ -222,9 +229,41 @@ a:link {
     display: block;
 }
 
+#navcolumn li ul li {
+    color: #333 !important;
+    text-indent: 30px !important;
+    line-height: 20px !important;
+    height: 20px !important;
+    background-image: url( ../images/supersub.gif ) !important;
+    font-size: 9px;
+    width: 161px;
+    background-repeat: no-repeat;
+    display: block;
+    padding-left: 0;
+}
+
+#navcolumn li ul li a:hover {
+    color: #fff !important;
+    background: url( ../images/super_hl_sub.gif ) 0 -20px no-repeat;
+    background-position: right;
+    width: 161px;
+    display: block;
+}
+
 #footer {
     background: url( ../images/footerborder.gif ) 0 5px repeat-x;
     padding: 14px 4px 12px 4px;
     margin-top: 2em;
 }
 
+a:link, a:visited {
+    color: #333;
+}
+
+#navcolumn a {
+    text-decoration: none;
+}
+
+a:active, a:hover {
+    color: #f30;
+}
