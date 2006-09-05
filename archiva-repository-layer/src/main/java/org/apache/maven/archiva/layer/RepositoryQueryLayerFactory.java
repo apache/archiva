@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.reporting;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -22,7 +22,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
  * Gets the preferred implementation of a repository query layer for the given repository.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
+ * @version $Id:RepositoryQueryLayerFactory.java 437105 2006-08-26 17:22:22 +1000 (Sat, 26 Aug 2006) brett $
  */
 public interface RepositoryQueryLayerFactory
 {

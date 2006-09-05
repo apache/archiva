@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.reporting;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -23,7 +23,7 @@ import org.apache.maven.artifact.repository.metadata.Snapshot;
 
 
 /**
- * 
+ *
  */
 public class CachedRepositoryQueryLayer
     extends AbstractRepositoryQueryLayer

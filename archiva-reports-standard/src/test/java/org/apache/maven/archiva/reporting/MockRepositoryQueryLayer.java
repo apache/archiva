@@ -16,6 +16,7 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.layer.RepositoryQueryLayer;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 
@@ -25,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * 
+ *
  */
 public class MockRepositoryQueryLayer
     implements RepositoryQueryLayer

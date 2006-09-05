@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.reporting;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -30,9 +30,6 @@ public interface RepositoryQueryLayer
 
     boolean containsArtifact( Artifact artifact );
 
-    /**
-     * @todo I believe we can remove this [BP] - artifact should contain all the necessary version info!
-     */
     boolean containsArtifact( Artifact artifact, Snapshot snapshot );
 
     List getVersions( Artifact artifact )

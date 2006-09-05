@@ -17,6 +17,7 @@ package org.apache.maven.archiva.reporting;
  */
 
 import junit.framework.TestCase;
+import org.apache.maven.archiva.layer.Cache;
 
 /**
  *

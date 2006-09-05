@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.reporting;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

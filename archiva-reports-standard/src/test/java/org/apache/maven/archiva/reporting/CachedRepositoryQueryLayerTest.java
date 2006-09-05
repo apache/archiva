@@ -1,5 +1,7 @@
 package org.apache.maven.archiva.reporting;
 
+import org.apache.maven.archiva.layer.CachedRepositoryQueryLayer;
+
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
