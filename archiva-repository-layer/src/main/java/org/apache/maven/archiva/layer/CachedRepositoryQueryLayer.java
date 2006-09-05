@@ -18,25 +18,33 @@ package org.apache.maven.archiva.layer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.Metadata;
-import org.apache.maven.artifact.repository.metadata.Snapshot;
+
+import java.util.List;
 
 
 /**
  *
  */
 public class CachedRepositoryQueryLayer
-    extends AbstractRepositoryQueryLayer
+    implements RepositoryQueryLayer
 {
     private Cache cache;
 
     public static final double CACHE_HIT_RATIO = 0.5;
 
-    public CachedRepositoryQueryLayer( ArtifactRepository repository )
+    private RepositoryQueryLayer layer;
+
+    public CachedRepositoryQueryLayer( RepositoryQueryLayer layer )
     {
-        this.repository = repository;
+        this.layer = layer;
 
         cache = new Cache( CACHE_HIT_RATIO );
+    }
+
+    public CachedRepositoryQueryLayer( RepositoryQueryLayer layer, Cache cache )
+    {
+        this.cache = cache;
+        this.layer = layer;
     }
 
     public double getCacheHitRate()
@@ -48,11 +56,11 @@ public class CachedRepositoryQueryLayer
     {
         boolean artifactFound = true;
 
-        String artifactPath = repository.getBasedir() + "/" + repository.pathOf( artifact );
+        String artifactPath = layer.getRepository().pathOf( artifact );
 
         if ( cache.get( artifactPath ) == null )
         {
-            artifactFound = super.containsArtifact( artifact );
+            artifactFound = layer.containsArtifact( artifact );
             if ( artifactFound )
             {
                 cache.put( artifactPath, artifactPath );
@@ -62,38 +70,22 @@ public class CachedRepositoryQueryLayer
         return artifactFound;
     }
 
-    public boolean containsArtifact( Artifact artifact, Snapshot snapshot )
-    {
-        boolean artifactFound = true;
-
-        String path = getSnapshotArtifactRepositoryPath( artifact, snapshot );
-
-        if ( cache.get( path ) == null )
-        {
-            artifactFound = super.containsArtifact( artifact, snapshot );
-            if ( artifactFound )
-            {
-                cache.put( path, path );
-            }
-        }
-
-        return artifactFound;
-    }
-
-    /**
-     * Override method to utilize the cache
-     */
-    protected Metadata getMetadata( Artifact artifact )
+    public List getVersions( Artifact artifact )
         throws RepositoryQueryLayerException
     {
-        Metadata metadata = (Metadata) cache.get( artifact.getId() );
+        List list = (List) cache.get( artifact.getId() );
 
-        if ( metadata == null )
+        if ( list == null )
         {
-            metadata = super.getMetadata( artifact );
-            cache.put( artifact.getId(), metadata );
+            list = layer.getVersions( artifact );
+            cache.put( artifact.getId(), list );
         }
 
-        return metadata;
+        return list;
+    }
+
+    public ArtifactRepository getRepository()
+    {
+        return layer.getRepository();
     }
 }

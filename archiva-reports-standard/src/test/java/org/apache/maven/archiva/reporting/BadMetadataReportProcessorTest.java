@@ -316,7 +316,8 @@ public class BadMetadataReportProcessorTest
         RepositoryMetadataResult result = (RepositoryMetadataResult) failures.next();
         assertEquals( "check metadata", metadata, result.getMetadata() );
         // TODO: should be more robust
-        assertEquals( "check reason", "Snapshot artifact 20050611.202024-2 does not exist.", result.getReason() );
+        assertEquals( "check reason", "Snapshot artifact 1.0-alpha-1-20050611.202024-2 does not exist.",
+                      result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 

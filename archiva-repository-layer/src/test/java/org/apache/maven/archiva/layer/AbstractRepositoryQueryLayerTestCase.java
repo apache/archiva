@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.reporting;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -16,14 +16,11 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.layer.CachedRepositoryQueryLayer;
-import org.apache.maven.archiva.layer.RepositoryQueryLayerException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -39,7 +36,7 @@ public abstract class AbstractRepositoryQueryLayerTestCase
 
     protected ArtifactRepository repository;
 
-    protected CachedRepositoryQueryLayer queryLayer;
+    protected RepositoryQueryLayer queryLayer;
 
     protected void setUp()
         throws Exception
@@ -71,25 +68,17 @@ public abstract class AbstractRepositoryQueryLayerTestCase
 
     public void testContainsSnapshotArtifactTrue()
     {
-        Snapshot snapshot = new Snapshot();
-        snapshot.setTimestamp( "20050611.202024" );
-        snapshot.setBuildNumber( 1 );
-
-        Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT" );
-        assertTrue( "check for snapshot artifact", queryLayer.containsArtifact( artifact, snapshot ) );
+        Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-20050611.202024-1" );
+        assertTrue( "check for snapshot artifact", queryLayer.containsArtifact( artifact ) );
     }
 
     public void testContainsSnapshotArtifactFalse()
     {
-        Snapshot snapshot = new Snapshot();
-        snapshot.setTimestamp( "20050611.202024" );
-        snapshot.setBuildNumber( 2 );
-
-        Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT" );
-        assertFalse( "check for non-existent snapshot artifact", queryLayer.containsArtifact( artifact, snapshot ) );
+        Artifact artifact = getArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-20050611.202024-2" );
+        assertFalse( "check for non-existent snapshot artifact", queryLayer.containsArtifact( artifact ) );
     }
 
-    public void testArtifactVersionsTrue()
+    public void testArtifactVersions()
         throws Exception
     {
         Artifact artifact = getArtifact( "groupId", "artifactId", "ignored" );
@@ -97,20 +86,7 @@ public abstract class AbstractRepositoryQueryLayerTestCase
         List versions = queryLayer.getVersions( artifact );
 
         assertTrue( "check version 1.0-alpha-1", versions.contains( "1.0-alpha-1" ) );
-        assertTrue( "check version 1.0-alpha-2", versions.contains( "1.0-alpha-2" ) );
-        assertFalse( "check version 1.0-alpha-3", versions.contains( "1.0-alpha-3" ) );
-    }
-
-    public void testArtifactVersionsFalse()
-        throws Exception
-    {
-        Artifact artifact = getArtifact( "groupId", "artifactId", "ignored" );
-
-        List versions = queryLayer.getVersions( artifact );
-
-        assertTrue( "check version 1.0-alpha-1", versions.contains( "1.0-alpha-1" ) );
-        assertTrue( "check version 1.0-alpha-2", versions.contains( "1.0-alpha-2" ) );
-        assertFalse( "check version 1.0-alpha-3", versions.contains( "1.0-alpha-3" ) );
+        assertFalse( "check version 1.0-alpha-2", versions.contains( "1.0-alpha-2" ) );
     }
 
     public void testArtifactVersionsError()
@@ -130,15 +106,8 @@ public abstract class AbstractRepositoryQueryLayerTestCase
 
     private Artifact getArtifact( String groupId, String artifactId, String version )
     {
-        return artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" );
-    }
-
-    protected void tearDown()
-        throws Exception
-    {
-        release( artifactFactory );
-        super.tearDown();
-        artifactFactory = null;
-        repository = null;
+        Artifact projectArtifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
+        projectArtifact.isSnapshot();
+        return projectArtifact;
     }
 }

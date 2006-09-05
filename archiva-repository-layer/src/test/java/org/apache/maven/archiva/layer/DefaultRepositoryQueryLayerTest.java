@@ -16,22 +16,14 @@ package org.apache.maven.archiva.layer;
  * limitations under the License.
  */
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-
-import java.util.List;
-
-/**
- * The transitive and metadata validation reports will need to query the repository for artifacts.
- */
-public interface RepositoryQueryLayer
+public class DefaultRepositoryQueryLayerTest
+    extends AbstractRepositoryQueryLayerTestCase
 {
-    String ROLE = RepositoryQueryLayer.class.getName();
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
 
-    boolean containsArtifact( Artifact artifact );
-
-    List getVersions( Artifact artifact )
-        throws RepositoryQueryLayerException;
-
-    ArtifactRepository getRepository();
+        queryLayer = new DefaultRepositoryQueryLayer( repository );
+    }
 }

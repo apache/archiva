@@ -16,16 +16,84 @@ package org.apache.maven.archiva.layer;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
+import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.List;
 
 /**
  *
  */
 public class DefaultRepositoryQueryLayer
-    extends AbstractRepositoryQueryLayer
+    implements RepositoryQueryLayer
 {
+    protected ArtifactRepository repository;
+
     public DefaultRepositoryQueryLayer( ArtifactRepository repository )
     {
         this.repository = repository;
+    }
+
+    public boolean containsArtifact( Artifact artifact )
+    {
+        File f = new File( repository.getBasedir(), repository.pathOf( artifact ) );
+        return f.exists();
+    }
+
+    public List getVersions( Artifact artifact )
+        throws RepositoryQueryLayerException
+    {
+        Metadata metadata = getMetadata( artifact );
+
+        return metadata.getVersioning().getVersions();
+    }
+
+    public ArtifactRepository getRepository()
+    {
+        return repository;
+    }
+
+    private Metadata getMetadata( Artifact artifact )
+        throws RepositoryQueryLayerException
+    {
+        Metadata metadata;
+
+        ArtifactRepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
+        String path = repository.pathOfRemoteRepositoryMetadata( repositoryMetadata );
+        File metadataFile = new File( repository.getBasedir(), path );
+        if ( metadataFile.exists() )
+        {
+            MetadataXpp3Reader reader = new MetadataXpp3Reader();
+            try
+            {
+                metadata = reader.read( new FileReader( metadataFile ) );
+            }
+            catch ( FileNotFoundException e )
+            {
+                throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
+            }
+            catch ( XmlPullParserException e )
+            {
+                throw new RepositoryQueryLayerException( "Error occurred while attempting to read metadata file", e );
+            }
+        }
+        else
+        {
+            throw new RepositoryQueryLayerException( "Metadata not found: " + metadataFile.getAbsolutePath() );
+        }
+
+        return metadata;
     }
 }

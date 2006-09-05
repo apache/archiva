@@ -17,9 +17,12 @@ package org.apache.maven.archiva.reporting;
  */
 
 import org.apache.maven.archiva.layer.RepositoryQueryLayer;
+import org.apache.maven.archiva.layer.RepositoryQueryLayerFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 
@@ -32,94 +35,54 @@ import java.util.List;
 public class DefaultArtifactReportProcessor
     implements ArtifactReportProcessor
 {
-    private static final String EMPTY_STRING = "";
-
-    // plexus components
+    /**
+     * @plexus.requirement
+     */
     private ArtifactFactory artifactFactory;
 
-    private RepositoryQueryLayer repositoryQueryLayer;
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryQueryLayerFactory layerFactory;
 
     public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
                                  ArtifactRepository repository )
     {
-        if ( artifact == null )
-        {
-            reporter.addFailure( artifact, ArtifactReporter.NULL_ARTIFACT );
-        }
-        else
-        {
-            processArtifact( artifact, reporter );
-        }
+        RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( repository );
+        processArtifact( artifact, reporter, queryLayer );
 
-        if ( model == null )
-        {
-            reporter.addFailure( artifact, ArtifactReporter.NULL_MODEL );
-        }
-        else
-        {
-            List dependencies = model.getDependencies();
-            processDependencies( dependencies, reporter );
-        }
+        List dependencies = model.getDependencies();
+        processDependencies( dependencies, reporter, queryLayer );
     }
 
-    private void processArtifact( Artifact artifact, ArtifactReporter reporter )
+    private void processArtifact( Artifact artifact, ArtifactReporter reporter,
+                                  RepositoryQueryLayer repositoryQueryLayer )
     {
-        boolean hasFailed = false;
-        if ( EMPTY_STRING.equals( artifact.getGroupId() ) || artifact.getGroupId() == null )
+        if ( repositoryQueryLayer.containsArtifact( artifact ) )
         {
-            reporter.addFailure( artifact, ArtifactReporter.EMPTY_GROUP_ID );
-            hasFailed = true;
+            reporter.addSuccess( artifact );
         }
-        if ( EMPTY_STRING.equals( artifact.getArtifactId() ) || artifact.getArtifactId() == null )
+        else
         {
-            reporter.addFailure( artifact, ArtifactReporter.EMPTY_ARTIFACT_ID );
-            hasFailed = true;
-        }
-        if ( EMPTY_STRING.equals( artifact.getVersion() ) || artifact.getVersion() == null )
-        {
-            reporter.addFailure( artifact, ArtifactReporter.EMPTY_VERSION );
-            hasFailed = true;
-        }
-        if ( !hasFailed )
-        {
-            if ( repositoryQueryLayer.containsArtifact( artifact ) )
-            {
-                reporter.addSuccess( artifact );
-            }
-            else
-            {
-                reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
-            }
+            reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
         }
     }
 
-    private void processDependencies( List dependencies, ArtifactReporter reporter )
+    private void processDependencies( List dependencies, ArtifactReporter reporter,
+                                      RepositoryQueryLayer repositoryQueryLayer )
     {
         if ( dependencies.size() > 0 )
         {
             Iterator iterator = dependencies.iterator();
             while ( iterator.hasNext() )
             {
-                boolean hasFailed = false;
                 Dependency dependency = (Dependency) iterator.next();
-                Artifact artifact = createArtifact( dependency );
-                if ( EMPTY_STRING.equals( dependency.getGroupId() ) || dependency.getGroupId() == null )
+
+                Artifact artifact = null;
+                try
                 {
-                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_GROUP_ID );
-                    hasFailed = true;
-                }
-                if ( EMPTY_STRING.equals( dependency.getArtifactId() ) || dependency.getArtifactId() == null )
-                {
-                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_ARTIFACT_ID );
-                    hasFailed = true;
-                }
-                if ( EMPTY_STRING.equals( dependency.getVersion() ) || dependency.getVersion() == null )
-                {
-                    reporter.addFailure( artifact, ArtifactReporter.EMPTY_DEPENDENCY_VERSION );
-                    hasFailed = true;
-                }
-                if ( !hasFailed )
-                {
+                    artifact = createArtifact( dependency );
+
                     if ( repositoryQueryLayer.containsArtifact( artifact ) )
                     {
                         reporter.addSuccess( artifact );
@@ -129,34 +92,20 @@ public class DefaultArtifactReportProcessor
                         reporter.addFailure( artifact, ArtifactReporter.DEPENDENCY_NOT_FOUND );
                     }
                 }
+                catch ( InvalidVersionSpecificationException e )
+                {
+                    reporter.addFailure( artifact, ArtifactReporter.DEPENDENCY_INVALID_VERSION );
+                }
             }
         }
-
-    }
-
-    /**
-     * Only used for passing a mock object when unit testing
-     *
-     * @param repositoryQueryLayer
-     */
-    protected void setRepositoryQueryLayer( RepositoryQueryLayer repositoryQueryLayer )
-    {
-        this.repositoryQueryLayer = repositoryQueryLayer;
-    }
-
-    /**
-     * Only used for passing a mock object when unit testing
-     *
-     * @param artifactFactory
-     */
-    protected void setArtifactFactory( ArtifactFactory artifactFactory )
-    {
-        this.artifactFactory = artifactFactory;
     }
 
     private Artifact createArtifact( Dependency dependency )
+        throws InvalidVersionSpecificationException
     {
-        return artifactFactory.createBuildArtifact( dependency.getGroupId(), dependency.getArtifactId(),
-                                                    dependency.getVersion(), "pom" );
+        return artifactFactory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(),
+                                                         VersionRange.createFromVersionSpec( dependency.getVersion() ),
+                                                         dependency.getType(), dependency.getClassifier(),
+                                                         dependency.getScope() );
     }
 }

@@ -212,13 +212,16 @@ public class BadMetadataReportProcessor
         boolean hasFailures = false;
 
         Snapshot snapshot = metadata.getMetadata().getVersioning().getSnapshot();
-        String timestamp = snapshot.getTimestamp();
-        String buildNumber = String.valueOf( snapshot.getBuildNumber() );
 
-        Artifact artifact = createArtifact( metadata );
-        if ( !repositoryQueryLayer.containsArtifact( artifact, snapshot ) )
+        String version = metadata.getBaseVersion().replace( Artifact.SNAPSHOT_VERSION,
+                                                            snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
+        Artifact artifact =
+            artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
+        artifact.isSnapshot(); // trigger baseVersion correction
+
+        if ( !repositoryQueryLayer.containsArtifact( artifact ) )
         {
-            reporter.addFailure( metadata, "Snapshot artifact " + timestamp + "-" + buildNumber + " does not exist." );
+            reporter.addFailure( metadata, "Snapshot artifact " + version + " does not exist." );
             hasFailures = true;
         }
 
@@ -244,7 +247,8 @@ public class BadMetadataReportProcessor
         {
             String version = (String) versions.next();
 
-            Artifact artifact = createArtifact( metadata, version );
+            Artifact artifact =
+                artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
 
             if ( !repositoryQueryLayer.containsArtifact( artifact ) )
             {
@@ -287,20 +291,9 @@ public class BadMetadataReportProcessor
         return hasFailures;
     }
 
-    /**
-     * Used to create an artifact object from a metadata base version
-     */
-    private Artifact createArtifact( RepositoryMetadata metadata )
+    private Artifact createArtifact( RepositoryMetadata metadata, Snapshot snapshot )
     {
-        return artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(),
-                                                      metadata.getBaseVersion() );
-    }
-
-    /**
-     * Used to create an artifact object with a specified version
-     */
-    private Artifact createArtifact( RepositoryMetadata metadata, String version )
-    {
+        String version = metadata.getBaseVersion();
         return artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
     }
 

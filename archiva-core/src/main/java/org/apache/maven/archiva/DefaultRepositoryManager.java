@@ -49,7 +49,7 @@ public class DefaultRepositoryManager
     private RepositoryConverter repositoryConverter;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
     private ArtifactReporter reporter;
 

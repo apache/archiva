@@ -1,6 +1,4 @@
-package org.apache.maven.archiva.reporting;
-
-import org.apache.maven.archiva.layer.CachedRepositoryQueryLayer;
+package org.apache.maven.archiva.layer;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -24,37 +22,40 @@ import org.apache.maven.archiva.layer.CachedRepositoryQueryLayer;
 public class CachedRepositoryQueryLayerTest
     extends AbstractRepositoryQueryLayerTestCase
 {
+    private Cache cache;
 
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        queryLayer = new CachedRepositoryQueryLayer( repository );
+        cache = new Cache( CachedRepositoryQueryLayer.CACHE_HIT_RATIO );
+
+        queryLayer = new CachedRepositoryQueryLayer( new DefaultRepositoryQueryLayer( repository ), cache );
     }
 
     public void testUseFileCache()
     {
         testContainsArtifactTrue();
-        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( 0, cache.getHitRate(), 0 );
         testContainsArtifactTrue();
-        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, cache.getHitRate(), 0 );
     }
 
     public void testUseMetadataCache()
         throws Exception
     {
-        testArtifactVersionsTrue();
-        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
-        testArtifactVersionsTrue();
-        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
+        testArtifactVersions();
+        assertEquals( 0, cache.getHitRate(), 0 );
+        testArtifactVersions();
+        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, cache.getHitRate(), 0 );
     }
 
     public void testUseFileCacheOnSnapshot()
     {
         testContainsSnapshotArtifactTrue();
-        assertEquals( 0, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( 0, cache.getHitRate(), 0 );
         testContainsSnapshotArtifactTrue();
-        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, queryLayer.getCacheHitRate(), 0 );
+        assertEquals( CachedRepositoryQueryLayer.CACHE_HIT_RATIO, cache.getHitRate(), 0 );
     }
 }

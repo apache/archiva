@@ -28,33 +28,18 @@ import java.util.Iterator;
  * failures and successes for checking assertions. Later, implementations will be made to present reports on the
  * web interface, send them via mail, and so on.
  *
- * @todo i18n
+ * @todo i18n, including message formatting and parameterisation
+ * @todo remove no longer used reports!
  */
 public interface ArtifactReporter
 {
     String ROLE = ArtifactReporter.class.getName();
 
-    String NULL_MODEL = "Provided model was null";
-
-    String NULL_ARTIFACT = "Provided artifact was null";
-
-    String EMPTY_GROUP_ID = "Group id was empty or null";
-
-    String EMPTY_ARTIFACT_ID = "Artifact id was empty or null";
-
-    String EMPTY_VERSION = "Version was empty or null";
-
-    String EMPTY_DEPENDENCY_GROUP_ID = "Group id was empty or null";
-
-    String EMPTY_DEPENDENCY_ARTIFACT_ID = "Artifact id was empty or null";
-
-    String EMPTY_DEPENDENCY_VERSION = "Version was empty or null";
-
-    String NO_DEPENDENCIES = "Artifact has no dependencies";
-
     String ARTIFACT_NOT_FOUND = "Artifact does not exist in the repository";
 
     String DEPENDENCY_NOT_FOUND = "Artifact's dependency does not exist in the repository";
+
+    String DEPENDENCY_INVALID_VERSION = "Artifact's dependency contains an invalid version";
 
     void addFailure( Artifact artifact, String reason );
 
