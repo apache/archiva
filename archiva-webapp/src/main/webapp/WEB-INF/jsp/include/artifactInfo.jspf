@@ -34,7 +34,9 @@
   --%>
 </p>
 
-<p>${mode.description}</p>
+<c:if test="${!empty(model.description)}">
+  <blockquote>${model.description}</blockquote>
+</c:if>
 
 <table>
   <tr>

@@ -267,3 +267,8 @@ a:link, a:visited {
 a:active, a:hover {
     color: #f30;
 }
+
+blockquote {
+    border-left: 1px solid #DFDEDE;
+    padding-left: 1em;
+}
