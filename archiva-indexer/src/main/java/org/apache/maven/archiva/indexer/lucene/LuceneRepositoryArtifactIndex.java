@@ -80,7 +80,7 @@ public class LuceneRepositoryArtifactIndex
 
     private MavenProjectBuilder projectBuilder;
 
-    private long lastUpdatedTime = 0;
+    private static long lastUpdatedTime = 0;
 
     public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {

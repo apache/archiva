@@ -129,8 +129,7 @@ public interface RepositoryArtifactIndex
         throws RepositoryIndexSearchException;
 
     /**
-     * Get the time when the index was last updated. Note that this does not monitor external processes or multiple
-     * instances of the index.
+     * Get the time when the index was last updated. Note that this does not monitor external processes.
      *
      * @return the last updated time, or 0 if it has not been updated since the class was instantiated.
      */
