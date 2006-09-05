@@ -31,6 +31,8 @@
 
   <h2>Edit Synced Repository</h2>
 
+  <%@ include file="errorMessages.jsp" %>
+  
   <ww:actionmessage/>
   <ww:form method="post" action="editSyncedRepository" namespace="/admin" validate="true">
     <ww:hidden name="id"/>

@@ -24,5 +24,9 @@
     <field-validator type="requiredstring">
       <message>You must enter the synchronization method.</message>
     </field-validator>
+    <field-validator type="fieldexpression">
+      <param name="expression">method in { "rsync", "cvs", "svn", "file" }</param>
+      <message>Invalid method.</message>
+    </field-validator>
   </field>
 </validators>

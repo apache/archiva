@@ -16,8 +16,8 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ww:textfield name="name" label="Name" size="50" />
-<ww:textfield name="directory" label="Directory" size="100" />
+<ww:textfield name="name" label="Name" size="50" required="true" />
+<ww:textfield name="directory" label="Directory" size="100" required="true"/>
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="layout" label="Type" />
 <ww:checkbox name="includeSnapshots" fieldValue="true" label="Snapshots Included" />

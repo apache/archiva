@@ -31,9 +31,11 @@
 
   <h2>Add Synced Repository</h2>
 
+  <%@ include file="errorMessages.jsp" %>
+
   <ww:actionmessage/>
   <ww:form method="post" action="addSelectedSyncedRepository" namespace="/admin" validate="true">
-    <ww:textfield name="id" label="Identifier" size="10"/>
+    <ww:textfield name="id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/syncedRepositoryForm.jspf" %>
 
     <ww:submit value="Add Repository"/>

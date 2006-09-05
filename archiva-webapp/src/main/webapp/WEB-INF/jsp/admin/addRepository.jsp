@@ -32,7 +32,7 @@
 
   <ww:actionmessage/>
   <ww:form method="post" action="addRepository" namespace="/admin" validate="true">
-    <ww:textfield name="id" label="Identifier" size="10"/>
+    <ww:textfield name="id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
     <ww:checkbox name="indexed" fieldValue="true" value="true" label="Indexed"/>
     <ww:submit value="Add Repository"/>

@@ -15,8 +15,8 @@
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
-<ww:textfield name="name" label="Name" size="50" />
-<ww:textfield name="url" label="URL" size="50" />
+<ww:textfield name="name" label="Name" size="50" required="true"/>
+<ww:textfield name="url" label="URL" size="50" required="true"/>
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="layout" label="Type" />
 <ww:select name="snapshotsPolicy" label="Snapshots" list="#@java.util.LinkedHashMap@{

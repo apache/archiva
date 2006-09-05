@@ -30,10 +30,16 @@
       <message>You must enter the repository name.</message>
     </field-validator>
   </field>
+  <!-- deng todo: validate if the specified directory exists -->
   <field name="directory">
     <field-validator type="requiredstring">
       <message>You must enter the repository directory.</message>
     </field-validator>
   </field>
-  <!-- TODO: validate layout -->
+  <field name="layout">
+    <field-validator type="fieldexpression">
+      <param name="expression">layout in {"legacy", "default"} </param>
+      <message>Invalid repository type.</message>
+    </field-validator>
+  </field>
 </validators>

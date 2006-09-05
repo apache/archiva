@@ -24,17 +24,69 @@
     <field-validator type="requiredstring">
       <message>You must enter the repository identifier.</message>
     </field-validator>
+    <!--field-validator type="regex">
+      <param name="expression"><![CDATA[([A-Z][a-z][0-9])]]></param>
+      <message>Id must not have special characters.</message>
+    </field-validator-->
   </field>
   <field name="name">
     <field-validator type="requiredstring">
       <message>You must enter the repository name.</message>
     </field-validator>
   </field>
+
+  <!-- deng todo: check if the entered repo url exists -->
   <field name="url">
     <field-validator type="requiredstring">
       <message>You must enter the repository URL.</message>
     </field-validator>
   </field>
+    <field name="snapshotsInterval">
+    <field-validator type="regex">
+      <param name="expression"><![CDATA[([0-9])]]></param>
+      <message>The value must be numeric</message>
+    </field-validator>
+  </field>
+  <field name="releasesInterval">
+    <field-validator type="regex">
+      <param name="expression"><![CDATA[([0-9])]]></param>
+      <message>The value must be numeric</message>
+    </field-validator>
+  </field>
+
+  <!-- deng todo: check if the interval validator is still valid -->
+  <validator type="interval">
+    <message/>
+  </validator>
+
+  <field name="layout">
+    <field-validator type="required">
+      <message>Repository type is required.</message>
+    </field-validator>
+    <field-validator type="fieldexpression">
+      <param name="expression">layout in {"legacy", "default"} </param>
+      <message>Invalid repository type.</message>
+    </field-validator>
+  </field>
+  <field name="snapshotsPolicy">
+    <field-validator type="fieldexpression">
+      <param name="expression">snapshotsPolicy in { "disabled", "daily", "hourly", "never", "interval" }</param>
+      <message>Invalid snapshot policy.</message>
+    </field-validator>
+  </field>
+    <field name="releasesPolicy">
+    <field-validator type="fieldexpression">
+      <param name="expression">releasesPolicy in { "disabled", "daily", "hourly", "never", "interval" }</param>
+      <message>Invalid releases policy.</message>
+    </field-validator>
+  </field>
+
+  <field name="managedRepository">
+    <field-validator type="requiredstring">
+      <message>A managed repository must be selected.</message>
+    </field-validator>
+  </field>
+
   <!-- TODO: validate managed repository -->
   <!-- TODO: validate layout -->
   <!-- TODO: validate policies -->

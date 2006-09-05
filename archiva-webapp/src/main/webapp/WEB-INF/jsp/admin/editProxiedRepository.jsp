@@ -30,6 +30,8 @@
 
   <h2>Edit Proxied Repository</h2>
 
+  <%@ include file="errorMessages.jsp" %>
+  
   <ww:actionmessage/>
   <ww:form method="post" action="editProxiedRepository" namespace="/admin" validate="true">
     <ww:hidden name="id"/>
