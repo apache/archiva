@@ -27,6 +27,7 @@ import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -42,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Task for discovering changes in the repository.
+ * Task for discovering changes in the repository and updating the index accordingly.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @plexus.component role="org.apache.maven.archiva.scheduler.task.RepositoryTask" role-hint="indexer"
@@ -100,7 +101,7 @@ public class IndexerTask
         throws TaskExecutionException
     {
         long time = System.currentTimeMillis();
-        getLogger().info( "Starting repository discovery process" );
+        getLogger().info( "Starting repository indexing process" );
 
         RepositoryArtifactIndex index = indexFactory.createStandardIndex( indexPath );
 

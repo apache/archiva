@@ -73,11 +73,11 @@
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
         <field>
-          <name>converterCronExpression</name>
+          <name>reporterCronExpression</name>
           <version>1.0.0</version>
           <type>String</type>
-          <description>When to run the converter mechanism. Default is every 4 hours, on the half hour.</description>
-          <defaultValue>0 30 0/4 * * ?</defaultValue>
+          <description>When to run the indexing mechanism. Default is every hour on the half hour.</description>
+          <defaultValue>0 30 * * * ?</defaultValue>
         </field>
         <field>
           <name>globalBlackListPatterns</name>

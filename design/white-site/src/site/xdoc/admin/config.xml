@@ -17,6 +17,10 @@
             <input type="text"/>
           </p>
           <p>
+            Reporting Cron Expression:
+            <input type="text"/>
+          </p>
+          <p>
             <input type="submit" value="Save Configuration"/>
           </p>
         </form>

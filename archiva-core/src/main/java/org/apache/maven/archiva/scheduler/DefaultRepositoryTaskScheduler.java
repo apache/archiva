@@ -61,10 +61,17 @@ public class DefaultRepositoryTaskScheduler
 
     private static final String INDEXER_JOB = "indexerTask";
 
+    private static final String REPORTER_JOB = "reporterTask";
+
     /**
      * @plexus.requirement role-hint="indexer"
      */
     private RepositoryTask indexerTask;
+
+    /**
+     * @plexus.requirement role-hint="reporter"
+     */
+    private RepositoryTask reporterTask;
 
     public void start()
         throws StartingException
@@ -97,13 +104,10 @@ public class DefaultRepositoryTaskScheduler
     private void scheduleJobs( Configuration configuration )
         throws ParseException, SchedulerException
     {
+        // TODO! would be nice to queue jobs that are triggered so we could avoid two running at the same time (so have a queue for discovery based jobs so they didn't thrash the repo)
         if ( configuration.getIndexPath() != null )
         {
-            JobDetail jobDetail = new JobDetail( INDEXER_JOB, DISCOVERER_GROUP, RepositoryTaskJob.class );
-            JobDataMap dataMap = new JobDataMap();
-            dataMap.put( AbstractJob.LOGGER, getLogger() );
-            dataMap.put( RepositoryTaskJob.TASK_KEY, indexerTask );
-            jobDetail.setJobDataMap( dataMap );
+            JobDetail jobDetail = createJobDetail( INDEXER_JOB, indexerTask );
 
             getLogger().info( "Scheduling indexer: " + configuration.getIndexerCronExpression() );
             CronTrigger trigger =
@@ -124,6 +128,23 @@ public class DefaultRepositoryTaskScheduler
         {
             getLogger().info( "Not scheduling indexer - index path is not configured" );
         }
+
+        JobDetail jobDetail = createJobDetail( REPORTER_JOB, reporterTask );
+
+        getLogger().info( "Scheduling reporter: " + configuration.getReporterCronExpression() );
+        CronTrigger trigger =
+            new CronTrigger( REPORTER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getReporterCronExpression() );
+        scheduler.scheduleJob( jobDetail, trigger );
+    }
+
+    private JobDetail createJobDetail( String jobName, RepositoryTask task )
+    {
+        JobDetail jobDetail = new JobDetail( jobName, DISCOVERER_GROUP, RepositoryTaskJob.class );
+        JobDataMap dataMap = new JobDataMap();
+        dataMap.put( AbstractJob.LOGGER, getLogger() );
+        dataMap.put( RepositoryTaskJob.TASK_KEY, task );
+        jobDetail.setJobDataMap( dataMap );
+        return jobDetail;
     }
 
     public void stop()
@@ -132,6 +153,7 @@ public class DefaultRepositoryTaskScheduler
         try
         {
             scheduler.unscheduleJob( INDEXER_JOB, DISCOVERER_GROUP );
+            scheduler.unscheduleJob( REPORTER_JOB, DISCOVERER_GROUP );
         }
         catch ( SchedulerException e )
         {
@@ -166,5 +188,11 @@ public class DefaultRepositoryTaskScheduler
         throws TaskExecutionException
     {
         indexerTask.execute();
+    }
+
+    public void runReporter()
+        throws TaskExecutionException
+    {
+        reporterTask.execute();
     }
 }

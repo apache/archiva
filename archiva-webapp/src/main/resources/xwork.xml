@@ -208,7 +208,11 @@
       <interceptor-ref name="defaultStack"/>
     </action>
 
-    <action name="runIndexer" class="runIndexerAction">
+    <action name="runIndexer" class="runRepositoryTaskAction" method="runIndexer">
+      <result type="redirect-action">index</result>
+    </action>
+
+    <action name="runReporter" class="runRepositoryTaskAction" method="runReporter">
       <result type="redirect-action">index</result>
     </action>
   </package>

@@ -23,9 +23,9 @@ import org.apache.maven.archiva.scheduler.TaskExecutionException;
 /**
  * Configures the application.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="runIndexerAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="runRepositoryTaskAction"
  */
-public class RunIndexerAction
+public class RunRepositoryTaskAction
     extends ActionSupport
 {
     /**
@@ -33,10 +33,18 @@ public class RunIndexerAction
      */
     private RepositoryTaskScheduler taskScheduler;
 
-    public String execute()
+    public String runIndexer()
         throws TaskExecutionException
     {
         taskScheduler.runIndexer();
+
+        return SUCCESS;
+    }
+
+    public String runReporter()
+        throws TaskExecutionException
+    {
+        taskScheduler.runReporter();
 
         return SUCCESS;
     }

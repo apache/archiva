@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.scheduler.task;
+package org.apache.maven.archiva.indexer.record;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.

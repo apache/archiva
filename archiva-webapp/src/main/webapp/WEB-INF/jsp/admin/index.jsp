@@ -43,9 +43,15 @@
     <td>
       <ww:property value="indexerCronExpression"/>
     </td>
-    <%-- TODO: a "run now without timestamp checking" operation should be here too, to pick up any stragglers (in the event of a bug) --%>
     <%-- TODO: a "delete index and run now" operation should be here too (really clean, remove deletions that didn't get picked up) --%>
     <td><a href="<ww:url action="runIndexer" />">Run Now</a></td>
+  </tr>
+  <tr>
+    <th>Reporting Schedule</th>
+    <td>
+      <ww:property value="reporterCronExpression"/>
+    </td>
+    <td><a href="<ww:url action="runReporter" />">Run Now</a></td>
   </tr>
 </table>
 
