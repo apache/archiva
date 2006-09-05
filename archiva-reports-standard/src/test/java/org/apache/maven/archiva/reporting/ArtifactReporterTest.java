@@ -24,7 +24,7 @@ import org.apache.maven.model.Model;
 import java.util.Iterator;
 
 /**
- * 
+ *
  */
 public class ArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
@@ -57,7 +57,7 @@ public class ArtifactReporterTest
         processor.processArtifact( model, artifact, reporter, null );
         Iterator success = reporter.getArtifactSuccessIterator();
         assertTrue( success.hasNext() );
-        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getNumSuccesses() );
         Artifact result = ( (ArtifactResult) success.next() ).getArtifact();
         assertEquals( "groupId", result.getGroupId() );
         assertEquals( "artifactId", result.getArtifactId() );
@@ -81,9 +81,9 @@ public class ArtifactReporterTest
             success.next();
         }
         assertEquals( 3, i );
-        assertEquals( 3, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 3, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testArtifactReporterSingleFailure()
@@ -94,9 +94,9 @@ public class ArtifactReporterTest
         assertTrue( failure.hasNext() );
         failure.next();
         assertFalse( failure.hasNext() );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testArtifactReporterMultipleFailure()
@@ -113,9 +113,9 @@ public class ArtifactReporterTest
             failure.next();
         }
         assertEquals( 3, i );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 3, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 3, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testFailureMessages()
@@ -138,9 +138,9 @@ public class ArtifactReporterTest
         assertTrue( warning.hasNext() );
         warning.next();
         assertFalse( warning.hasNext() );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 1, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 1, reporter.getNumWarnings() );
     }
 
     public void testArtifactReporterMultipleWarning()
@@ -157,9 +157,9 @@ public class ArtifactReporterTest
             warning.next();
         }
         assertEquals( 3, i );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 3, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 3, reporter.getNumWarnings() );
     }
 
     public void testWarningMessages()

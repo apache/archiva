@@ -38,9 +38,9 @@ public class DefaultArtifactReporterTest
 
     public void testEmptyArtifactReporter()
     {
-        assertEquals( "No failures", 0, reporter.getFailures() );
-        assertEquals( "No warnings", 0, reporter.getWarnings() );
-        assertEquals( "No successes", 0, reporter.getSuccesses() );
+        assertEquals( "No failures", 0, reporter.getNumFailures() );
+        assertEquals( "No warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "No successes", 0, reporter.getNumSuccesses() );
         assertFalse( "No artifact failures", reporter.getArtifactFailureIterator().hasNext() );
         assertFalse( "No artifact warnings", reporter.getArtifactWarningIterator().hasNext() );
         assertFalse( "No artifact successes", reporter.getArtifactSuccessIterator().hasNext() );
@@ -52,9 +52,9 @@ public class DefaultArtifactReporterTest
     public void testMetadataSingleFailure()
     {
         reporter.addFailure( metadata, "Single Failure Reason" );
-        assertEquals( "failures count", 1, reporter.getFailures() );
-        assertEquals( "warnings count", 0, reporter.getWarnings() );
-        assertEquals( "successes count", 0, reporter.getSuccesses() );
+        assertEquals( "failures count", 1, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
+        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataFailureIterator();
         assertTrue( "must have failures", results.hasNext() );
@@ -68,9 +68,9 @@ public class DefaultArtifactReporterTest
     {
         reporter.addFailure( metadata, "First Failure Reason" );
         reporter.addFailure( metadata, "Second Failure Reason" );
-        assertEquals( "failures count", 2, reporter.getFailures() );
-        assertEquals( "warnings count", 0, reporter.getWarnings() );
-        assertEquals( "successes count", 0, reporter.getSuccesses() );
+        assertEquals( "failures count", 2, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
+        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataFailureIterator();
         assertTrue( "must have failures", results.hasNext() );
@@ -87,9 +87,9 @@ public class DefaultArtifactReporterTest
     public void testMetadataSingleWarning()
     {
         reporter.addWarning( metadata, "Single Warning Message" );
-        assertEquals( "failures count", 0, reporter.getFailures() );
-        assertEquals( "warnings count", 1, reporter.getWarnings() );
-        assertEquals( "successes count", 0, reporter.getSuccesses() );
+        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 1, reporter.getNumWarnings() );
+        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataWarningIterator();
         assertTrue( "must have failures", results.hasNext() );
@@ -103,9 +103,9 @@ public class DefaultArtifactReporterTest
     {
         reporter.addWarning( metadata, "First Warning" );
         reporter.addWarning( metadata, "Second Warning" );
-        assertEquals( "failures count", 0, reporter.getFailures() );
-        assertEquals( "warnings count", 2, reporter.getWarnings() );
-        assertEquals( "successes count", 0, reporter.getSuccesses() );
+        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 2, reporter.getNumWarnings() );
+        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataWarningIterator();
         assertTrue( "must have warnings", results.hasNext() );
@@ -122,9 +122,9 @@ public class DefaultArtifactReporterTest
     public void testMetadataSingleSuccess()
     {
         reporter.addSuccess( metadata );
-        assertEquals( "failures count", 0, reporter.getFailures() );
-        assertEquals( "warnings count", 0, reporter.getWarnings() );
-        assertEquals( "successes count", 1, reporter.getSuccesses() );
+        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
+        assertEquals( "successes count", 1, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataSuccessIterator();
         assertTrue( "must have successes", results.hasNext() );
@@ -143,9 +143,9 @@ public class DefaultArtifactReporterTest
 
         reporter.addSuccess( metadata );
         reporter.addSuccess( metadata2 );
-        assertEquals( "failures count", 0, reporter.getFailures() );
-        assertEquals( "warnings count", 0, reporter.getWarnings() );
-        assertEquals( "successes count", 2, reporter.getSuccesses() );
+        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
+        assertEquals( "successes count", 2, reporter.getNumSuccesses() );
 
         Iterator results = reporter.getRepositoryMetadataSuccessIterator();
         assertTrue( "must have successes", results.hasNext() );

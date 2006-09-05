@@ -43,6 +43,8 @@ public class DuplicateArtifactFileReportProcessorTest
 
     File indexDirectory;
 
+    private DefaultArtifactReporter reporter = new DefaultArtifactReporter();
+
     protected void setUp()
         throws Exception
     {
@@ -73,38 +75,32 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         artifact.setFile( null );
 
-        MockArtifactReporter reporter = new MockArtifactReporter();
-
         processor.processArtifact( model, artifact, reporter, repository );
 
-        assertEquals( "Check no successes", 0, reporter.getSuccesses() );
-        assertEquals( "Check warnings", 1, reporter.getWarnings() );
-        assertEquals( "Check no failures", 0, reporter.getFailures() );
+        assertEquals( "Check no successes", 0, reporter.getNumSuccesses() );
+        assertEquals( "Check warnings", 1, reporter.getNumWarnings() );
+        assertEquals( "Check no failures", 0, reporter.getNumFailures() );
     }
 
     public void testSuccessOnAlreadyIndexedArtifact()
         throws Exception
     {
-        MockArtifactReporter reporter = new MockArtifactReporter();
-
         processor.processArtifact( model, artifact, reporter, repository );
 
-        assertEquals( "Check no successes", 1, reporter.getSuccesses() );
-        assertEquals( "Check warnings", 0, reporter.getWarnings() );
-        assertEquals( "Check no failures", 0, reporter.getFailures() );
+        assertEquals( "Check no successes", 1, reporter.getNumSuccesses() );
+        assertEquals( "Check warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "Check no failures", 0, reporter.getNumFailures() );
     }
 
     public void testSuccessOnDifferentGroupId()
         throws Exception
     {
-        MockArtifactReporter reporter = new MockArtifactReporter();
-
         artifact.setGroupId( "different.groupId" );
         processor.processArtifact( model, artifact, reporter, repository );
 
-        assertEquals( "Check no successes", 1, reporter.getSuccesses() );
-        assertEquals( "Check warnings", 0, reporter.getWarnings() );
-        assertEquals( "Check no failures", 0, reporter.getFailures() );
+        assertEquals( "Check no successes", 1, reporter.getNumSuccesses() );
+        assertEquals( "Check warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "Check no failures", 0, reporter.getNumFailures() );
     }
 
     public void testSuccessOnNewArtifact()
@@ -112,13 +108,11 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         Artifact newArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "pom" );
 
-        MockArtifactReporter reporter = new MockArtifactReporter();
-
         processor.processArtifact( model, newArtifact, reporter, repository );
 
-        assertEquals( "Check no successes", 1, reporter.getSuccesses() );
-        assertEquals( "Check warnings", 0, reporter.getWarnings() );
-        assertEquals( "Check no failures", 0, reporter.getFailures() );
+        assertEquals( "Check no successes", 1, reporter.getNumSuccesses() );
+        assertEquals( "Check warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "Check no failures", 0, reporter.getNumFailures() );
     }
 
     public void testFailure()
@@ -128,13 +122,11 @@ public class DuplicateArtifactFileReportProcessorTest
                                              artifact.getVersion(), artifact.getType() );
         duplicate.setFile( artifact.getFile() );
 
-        MockArtifactReporter reporter = new MockArtifactReporter();
-
         processor.processArtifact( model, duplicate, reporter, repository );
 
-        assertEquals( "Check no successes", 0, reporter.getSuccesses() );
-        assertEquals( "Check warnings", 0, reporter.getWarnings() );
-        assertEquals( "Check no failures", 1, reporter.getFailures() );
+        assertEquals( "Check no successes", 0, reporter.getNumSuccesses() );
+        assertEquals( "Check warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "Check no failures", 1, reporter.getNumFailures() );
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,

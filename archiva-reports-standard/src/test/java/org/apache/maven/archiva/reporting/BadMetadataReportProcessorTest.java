@@ -35,6 +35,8 @@ public class BadMetadataReportProcessorTest
 
     private MetadataReportProcessor badMetadataReportProcessor;
 
+    private ArtifactReporter reporter = new DefaultArtifactReporter();
+
     protected void setUp()
         throws Exception
     {
@@ -48,8 +50,6 @@ public class BadMetadataReportProcessorTest
     public void testMetadataMissingLastUpdated()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
@@ -71,8 +71,6 @@ public class BadMetadataReportProcessorTest
     public void testMetadataValidVersions()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
@@ -91,8 +89,6 @@ public class BadMetadataReportProcessorTest
     public void testMetadataMissingADirectory()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
@@ -117,8 +113,6 @@ public class BadMetadataReportProcessorTest
     public void testMetadataInvalidArtifactVersion()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
@@ -145,8 +139,6 @@ public class BadMetadataReportProcessorTest
     public void testMoreThanOneMetadataVersionErrors()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
@@ -178,8 +170,6 @@ public class BadMetadataReportProcessorTest
     public void testValidPluginMetadata()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
@@ -193,8 +183,6 @@ public class BadMetadataReportProcessorTest
     public void testMissingMetadataPlugin()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
@@ -214,8 +202,6 @@ public class BadMetadataReportProcessorTest
     public void testIncompletePluginMetadata()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
 
@@ -234,8 +220,6 @@ public class BadMetadataReportProcessorTest
     public void testInvalidPluginArtifactId()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
@@ -259,8 +243,6 @@ public class BadMetadataReportProcessorTest
     public void testInvalidPluginPrefix()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", null ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "" ) );
@@ -283,8 +265,6 @@ public class BadMetadataReportProcessorTest
     public void testDuplicatePluginPrefixes()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default" ) );
@@ -302,8 +282,6 @@ public class BadMetadataReportProcessorTest
     public void testValidSnapshotMetadata()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact =
             artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
 
@@ -322,8 +300,6 @@ public class BadMetadataReportProcessorTest
     public void testInvalidSnapshotMetadata()
         throws ReportProcessorException
     {
-        ArtifactReporter reporter = new MockArtifactReporter();
-
         Artifact artifact =
             artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
 

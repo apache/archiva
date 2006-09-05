@@ -30,7 +30,7 @@ public class InvalidPomArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new MockArtifactReporter();
+    private ArtifactReporter reporter = new DefaultArtifactReporter();
 
     public void setUp()
         throws Exception
@@ -51,7 +51,7 @@ public class InvalidPomArtifactReportProcessorTest
             new DefaultArtifact( "org.apache.maven", "artifactId", version, "compile", "pom", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 1, reporter.getNumFailures() );
     }
 
 
@@ -66,7 +66,7 @@ public class InvalidPomArtifactReportProcessorTest
         Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "pom", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getNumSuccesses() );
     }
 
 
@@ -81,6 +81,6 @@ public class InvalidPomArtifactReportProcessorTest
         Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 1, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumWarnings() );
     }
 }

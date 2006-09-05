@@ -101,17 +101,17 @@ public class DefaultArtifactReporter
         return metadataWarnings.iterator();
     }
 
-    public int getFailures()
+    public int getNumFailures()
     {
         return artifactFailures.size() + metadataFailures.size();
     }
 
-    public int getSuccesses()
+    public int getNumSuccesses()
     {
         return artifactSuccesses.size() + metadataSuccesses.size();
     }
 
-    public int getWarnings()
+    public int getNumWarnings()
     {
         return artifactWarnings.size() + metadataWarnings.size();
     }

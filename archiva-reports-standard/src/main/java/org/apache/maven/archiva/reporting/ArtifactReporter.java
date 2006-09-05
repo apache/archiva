@@ -80,9 +80,9 @@ public interface ArtifactReporter
 
     Iterator getRepositoryMetadataWarningIterator();
 
-    int getFailures();
+    int getNumFailures();
 
-    int getSuccesses();
+    int getNumSuccesses();
 
-    int getWarnings();
+    int getNumWarnings();
 }

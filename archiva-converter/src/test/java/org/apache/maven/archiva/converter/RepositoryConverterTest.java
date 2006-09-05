@@ -282,9 +282,9 @@ public class RepositoryConverterTest
         versionMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository, reporter );
-        assertEquals( "check no errors", 0, reporter.getFailures() );
-        assertEquals( "check number of warnings", 2, reporter.getWarnings() );
-        assertEquals( "check success", 1, reporter.getSuccesses() );
+        assertEquals( "check no errors", 0, reporter.getNumFailures() );
+        assertEquals( "check number of warnings", 2, reporter.getNumWarnings() );
+        assertEquals( "check success", 1, reporter.getNumSuccesses() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -453,9 +453,9 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
         repositoryConverter.convert( artifact, targetRepository, reporter );
-        assertEquals( "check no errors", 0, reporter.getFailures() );
-        assertEquals( "check no warnings", 1, reporter.getWarnings() );
-        assertEquals( "check success", 1, reporter.getSuccesses() );
+        assertEquals( "check no errors", 0, reporter.getNumFailures() );
+        assertEquals( "check no warnings", 1, reporter.getNumWarnings() );
+        assertEquals( "check success", 1, reporter.getNumSuccesses() );
         assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -733,9 +733,9 @@ public class RepositoryConverterTest
         artifacts.add( createArtifact( "test", "artifact-two", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-three", "1.0.0" ) );
         repositoryConverter.convert( artifacts, targetRepository, reporter );
-        assertEquals( "check no errors", 0, reporter.getFailures() );
-        assertEquals( "check no warnings", 0, reporter.getWarnings() );
-        assertEquals( "check successes", 3, reporter.getSuccesses() );
+        assertEquals( "check no errors", 0, reporter.getNumFailures() );
+        assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "check successes", 3, reporter.getNumSuccesses() );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -906,16 +906,16 @@ public class RepositoryConverterTest
 
     private void checkSuccess()
     {
-        assertEquals( "check no errors", 0, reporter.getFailures() );
-        assertEquals( "check no warnings", 0, reporter.getWarnings() );
-        assertEquals( "check success", 1, reporter.getSuccesses() );
+        assertEquals( "check no errors", 0, reporter.getNumFailures() );
+        assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "check success", 1, reporter.getNumSuccesses() );
     }
 
     private void checkFailure()
     {
-        assertEquals( "check num errors", 1, reporter.getFailures() );
-        assertEquals( "check no warnings", 0, reporter.getWarnings() );
-        assertEquals( "check no success", 0, reporter.getSuccesses() );
+        assertEquals( "check num errors", 1, reporter.getNumFailures() );
+        assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
+        assertEquals( "check no success", 0, reporter.getNumSuccesses() );
     }
 
     private String getI18nString( String key )

@@ -38,7 +38,7 @@ public class LocationArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new MockArtifactReporter();
+    private ArtifactReporter reporter = new DefaultArtifactReporter();
 
     private MavenXpp3Reader pomReader;
 
@@ -74,7 +74,7 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getNumSuccesses() );
     }
 
     /**
@@ -92,7 +92,7 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getSuccesses() );
+        assertEquals( 1, reporter.getNumSuccesses() );
     }
 
     /**
@@ -110,7 +110,7 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 1, reporter.getNumFailures() );
     }
 
     /**
@@ -129,7 +129,7 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 1, reporter.getNumFailures() );
     }
 
     private Model readPom( String path )
@@ -165,7 +165,7 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 1, reporter.getNumFailures() );
     }
 
     /**
@@ -184,6 +184,6 @@ public class LocationArtifactReportProcessorTest
         Model model = readPom( path );
 
         artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getFailures() );
+        assertEquals( 1, reporter.getNumFailures() );
     }
 }

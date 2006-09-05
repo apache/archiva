@@ -290,8 +290,8 @@ public class BadMetadataReportProcessor
      */
     private Artifact createArtifact( RepositoryMetadata metadata )
     {
-        return artifactFactory.createBuildArtifact( metadata.getGroupId(), metadata.getArtifactId(),
-                                                    metadata.getBaseVersion(), "pom" );
+        return artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(),
+                                                      metadata.getBaseVersion() );
     }
 
     /**
@@ -299,7 +299,7 @@ public class BadMetadataReportProcessor
      */
     private Artifact createArtifact( RepositoryMetadata metadata, String version )
     {
-        return artifactFactory.createBuildArtifact( metadata.getGroupId(), metadata.getArtifactId(), version, "pom" );
+        return artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
     }
 
     /**

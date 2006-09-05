@@ -23,7 +23,7 @@ import org.apache.maven.model.Model;
 import java.util.Iterator;
 
 /**
- * 
+ *
  */
 public class ArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase
@@ -32,7 +32,7 @@ public class ArtifactReportProcessorTest
 
     private static final String VALID = "temp";
 
-    private MockArtifactReporter reporter;
+    private ArtifactReporter reporter;
 
     private Artifact artifact;
 
@@ -48,7 +48,7 @@ public class ArtifactReportProcessorTest
         throws Exception
     {
         super.setUp();
-        reporter = new MockArtifactReporter();
+        reporter = new DefaultArtifactReporter();
         artifact = new MockArtifact();
         model = new Model();
         processor = new DefaultArtifactReportProcessor();
@@ -57,9 +57,9 @@ public class ArtifactReportProcessorTest
     public void testNullArtifact()
     {
         processor.processArtifact( model, null, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
         assertEquals( ArtifactReporter.NULL_ARTIFACT, result.getReason() );
@@ -72,9 +72,9 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( null, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
         assertEquals( ArtifactReporter.NULL_MODEL, result.getReason() );
@@ -87,9 +87,9 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testArtifactNotFound()
@@ -99,9 +99,9 @@ public class ArtifactReportProcessorTest
         processor.setRepositoryQueryLayer( queryLayer );
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
         assertEquals( ArtifactReporter.ARTIFACT_NOT_FOUND, result.getReason() );
@@ -123,9 +123,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 2, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 2, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testValidArtifactWithValidSingleDependency()
@@ -144,9 +144,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 2, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 2, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testValidArtifactWithValidMultipleDependencies()
@@ -173,9 +173,9 @@ public class ArtifactReportProcessorTest
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 6, reporter.getSuccesses() );
-        assertEquals( 0, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 6, reporter.getNumSuccesses() );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testValidArtifactWithAnInvalidDependency()
@@ -202,9 +202,9 @@ public class ArtifactReportProcessorTest
         setRequiredElements( artifact, VALID, VALID, VALID );
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 5, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 5, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -219,9 +219,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, EMPTY_STRING, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -236,9 +236,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, EMPTY_STRING, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -253,9 +253,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, EMPTY_STRING );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -270,9 +270,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, null, VALID, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -287,9 +287,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, null, VALID );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -304,9 +304,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, VALID, VALID, null );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -321,9 +321,9 @@ public class ArtifactReportProcessorTest
 
         setRequiredElements( artifact, null, null, null );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 0, reporter.getSuccesses() );
-        assertEquals( 3, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 0, reporter.getNumSuccesses() );
+        assertEquals( 3, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -350,9 +350,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -375,9 +375,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -400,9 +400,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 1, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();
@@ -425,9 +425,9 @@ public class ArtifactReportProcessorTest
 
         processor.setRepositoryQueryLayer( queryLayer );
         processor.processArtifact( model, artifact, reporter, null );
-        assertEquals( 1, reporter.getSuccesses() );
-        assertEquals( 3, reporter.getFailures() );
-        assertEquals( 0, reporter.getWarnings() );
+        assertEquals( 1, reporter.getNumSuccesses() );
+        assertEquals( 3, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
 
         Iterator failures = reporter.getArtifactFailureIterator();
         ArtifactResult result = (ArtifactResult) failures.next();

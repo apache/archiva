@@ -40,7 +40,7 @@ public class ChecksumArtifactReporterTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new MockArtifactReporter();
+    private ArtifactReporter reporter = new DefaultArtifactReporter();
 
     private MetadataReportProcessor metadataReportProcessor;
 
@@ -67,7 +67,7 @@ public class ChecksumArtifactReporterTest
             new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getSuccesses() );
+        assertEquals( 2, reporter.getNumSuccesses() );
     }
 
     /**
@@ -82,7 +82,7 @@ public class ChecksumArtifactReporterTest
             new DefaultArtifact( "checksumTest", "invalidArtifact", version, "compile", "jar", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getFailures() );
+        assertEquals( 2, reporter.getNumFailures() );
     }
 
     /**
@@ -151,7 +151,7 @@ public class ChecksumArtifactReporterTest
             new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "", handler );
 
         artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getFailures() );
+        assertEquals( 2, reporter.getNumFailures() );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
         metadataReportProcessor.processMetadata( metadata, repository, reporter );
