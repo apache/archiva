@@ -26,6 +26,7 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.Snapshot;
 import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -213,8 +214,8 @@ public class BadMetadataReportProcessor
 
         Snapshot snapshot = metadata.getMetadata().getVersioning().getSnapshot();
 
-        String version = metadata.getBaseVersion().replace( Artifact.SNAPSHOT_VERSION,
-                                                            snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
+        String version = StringUtils.replace( metadata.getBaseVersion(), Artifact.SNAPSHOT_VERSION,
+                                              snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
         Artifact artifact =
             artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
         artifact.isSnapshot(); // trigger baseVersion correction
