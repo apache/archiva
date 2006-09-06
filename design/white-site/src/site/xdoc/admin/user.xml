@@ -41,9 +41,9 @@
           </p>
           <p>
             <select>
-              <option>manager of X</option>
-              <option>obverser of X</option>
-              <option>manager of Y</option>
+              <option>manager of central-plugins</option>
+              <option>obverser of central-plugins</option>
+              <option>manager of central</option>
             </select>
           </p> 
           <p>
