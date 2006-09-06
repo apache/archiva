@@ -1,0 +1,34 @@
+<document>
+  <properties>
+    <title>Archiva</title>
+  </properties>
+  <body>
+    <h1>Confirm Role Assignment</h1>
+
+    <div id="sidebar">
+      <p>this could be a long list depending on the expression input, too long?</p>
+    </div>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <form action="user.html">
+          <p>
+            Please confirm the Role X will be granted for these projects:
+          </p>
+          <p>
+            <ul>
+              <li>org.apache.maven.archiva</li>
+              <li>org.apache.maven.continuum</li>
+              <li>org.apache.maven.shared</li>
+              <li>org.apache.maven.sandbox</li>                     
+            </ul>
+          </p>
+          <p>
+            <input type="submit" name="Confirm"/>
+          </p>
+        
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
