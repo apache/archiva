@@ -22,9 +22,10 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
  * A result of the report for a given artifact being processed.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @version $Id$
+ * @version $Id:RepositoryMetadataResult.java 437105 2006-08-26 17:22:22 +1000 (Sat, 26 Aug 2006) brett $
  */
 public class RepositoryMetadataResult
+    implements Result
 {
     private final RepositoryMetadata metadata;
 
