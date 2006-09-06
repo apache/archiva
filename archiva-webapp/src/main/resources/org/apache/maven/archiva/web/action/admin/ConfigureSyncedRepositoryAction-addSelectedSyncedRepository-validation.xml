@@ -47,8 +47,5 @@
   <validator type="syncedrepo">
     <message/>
   </validator>
-
-  <!-- TODO: validate managed repository -->
-  <!-- TODO: validate layout -->
-  <!-- TODO: validate sync settings, depending on what method -->
+    
 </validators>

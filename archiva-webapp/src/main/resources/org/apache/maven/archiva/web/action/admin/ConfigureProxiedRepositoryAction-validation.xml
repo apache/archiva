@@ -19,7 +19,6 @@
 
 <!-- TODO! see MRM-150 for progress on these -->
 <validators>
-  <!-- TODO: constrain more -->
   <field name="id">
     <field-validator type="requiredstring">
       <message>You must enter the repository identifier.</message>
@@ -35,7 +34,6 @@
     </field-validator>
   </field>
 
-  <!-- deng todo: check if the entered repo url exists -->
   <field name="url">
     <field-validator type="requiredstring">
       <message>You must enter the repository URL.</message>
@@ -54,7 +52,7 @@
     </field-validator>
   </field>
 
-  <!-- deng todo: check if the interval validator is still valid -->
+  <!-- TODO: is the validation correct? -->
   <validator type="interval">
     <message/>
   </validator>
@@ -87,9 +85,4 @@
     </field-validator>
   </field>
 
-  <!-- TODO: validate managed repository -->
-  <!-- TODO: validate layout -->
-  <!-- TODO: validate policies -->
-  <!-- TODO: validate that intervals are integers -->
-  <!-- TODO: validate that intervals are empty if policy is not interval -->
 </validators>

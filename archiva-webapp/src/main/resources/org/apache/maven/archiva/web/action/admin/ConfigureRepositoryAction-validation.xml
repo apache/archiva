@@ -18,8 +18,7 @@
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
 <!-- TODO! see MRM-150 for progress on these -->
-<validators>
-  <!-- TODO: constrain more -->
+<validators>  
   <field name="id">
     <field-validator type="requiredstring">
       <message>You must enter the repository identifier.</message>
@@ -30,7 +29,6 @@
       <message>You must enter the repository name.</message>
     </field-validator>
   </field>
-  <!-- deng todo: validate if the specified directory exists -->
   <field name="directory">
     <field-validator type="requiredstring">
       <message>You must enter the repository directory.</message>
