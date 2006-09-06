@@ -29,7 +29,13 @@
 <h1>Administration</h1>
 
 <div id="contentArea">
-  <h2>Proxied Repositories</h2>
+  <div>
+    <%-- TODO replace with icons --%>
+    <div style="float: right">
+      <a href="<ww:url action="addProxiedRepository" method="input" />">Add Repository</a>
+    </div>
+    <h2>Proxied Repositories</h2>
+  </div>
 
   <ww:set name="proxiedRepositories" value="proxiedRepositories"/>
   <c:if test="${empty(proxiedRepositories)}">
@@ -105,10 +111,6 @@
       </table>
     </div>
   </c:forEach>
-
-  <p>
-    <a href="<ww:url action="addProxiedRepository" method="input" />">Add Repository</a>
-  </p>
 </div>
 
 </body>

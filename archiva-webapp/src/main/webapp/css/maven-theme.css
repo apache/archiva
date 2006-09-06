@@ -30,6 +30,7 @@ select, input {
 th {
     text-align: right;
     padding-right: 1em;
+    font-size: x-small;
 }
 
 .infoTable th {
@@ -42,16 +43,16 @@ th {
     background-position: left bottom;
     border-bottom: 1px solid #DFDEDE;
     padding: 0 0 1px 23px;
-    margin-bottom: 7px;
+    margin-bottom: 0.5em;
     color: #333;
     voice-family: inherit;
-    font-size: small !important;
+    font-size: medium !important;
 }
 
 #contentBox h2 {
     border-bottom: 1px solid #DFDEDE;
     padding: 0 0 1px 0;
-    margin-bottom: 7px;
+    margin-bottom: 0.5em;
     color: #333;
     voice-family: inherit;
     font-size: small !important;
@@ -60,10 +61,11 @@ th {
 #contentBox h3 {
     border-bottom: 1px solid #DFDEDE;
     padding: 0 0 1px 0;
-    margin-bottom: 7px;
+    margin-bottom: 0.5em;
     color: #333;
     voice-family: inherit;
     font-size: small !important;
+    margin-left: 2em;
 }
 
 table {

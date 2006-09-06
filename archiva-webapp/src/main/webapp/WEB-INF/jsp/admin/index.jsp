@@ -28,7 +28,13 @@
 <h1>Administration</h1>
 
 <div id="contentArea">
-<h2>Configuration</h2>
+<div>
+  <div style="float: right">
+    <%-- TODO replace with icons --%>
+    <a href="<ww:url action="configure" />">Edit Configuration</a>
+  </div>
+  <h2>Configuration</h2>
+</div>
 
 <table class="infoTable">
   <tr>
@@ -75,11 +81,12 @@
   </table>
 </c:if>
 
-<p>
-  <a href="<ww:url action="configure" />">Edit Configuration</a>
-</p>
-
-<h2>Managed Repositories</h2>
+<div>
+  <div style="float: right">
+    <%-- TODO replace with icons --%>
+    <a href="<ww:url action="addRepository" method="input" />">Add Repository</a></div>
+  <h2>Managed Repositories</h2>
+</div>
 
 <ww:set name="repositories" value="repositories"/>
 <c:if test="${empty(repositories)}">
@@ -131,10 +138,6 @@
     </table>
   </div>
 </c:forEach>
-
-<p>
-  <a href="<ww:url action="addRepository" method="input" />">Add Repository</a>
-</p>
 </div>
 
 </body>

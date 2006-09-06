@@ -69,9 +69,18 @@
 </h1>
 
 <div class="sidebar3">
-  <%-- TODO! download URL
-  <div id="download"><a href="#">Download</a></div>
-  --%>
+  <div id="download">
+    <c:set var="url">
+      <ww:url action="proxy">
+        <%-- TODO! create a tag for this, include classifier for javadoc, sources below --%>
+        <%-- TODO: what about other repositories? --%>
+        <%-- TODO! extension probably doesn't match type --%>
+        <ww:param name="path"
+                  value="%{'${model.groupId}/${model.artifactId}/${model.version}/${model.artifactId}-${model.version}.${model.packaging}'}"/>
+      </ww:url>
+    </c:set>
+    <a href="${url}">Download</a>
+  </div>
 </div>
 
 <div id="contentArea">

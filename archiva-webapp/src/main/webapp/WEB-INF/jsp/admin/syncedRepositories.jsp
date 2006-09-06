@@ -28,7 +28,13 @@
 <h1>Administration</h1>
 
 <div id="contentArea">
-<h2>Synced Repositories</h2>
+<div>
+  <%-- TODO replace with icons --%>
+  <div style="float: right">
+    <a href="<ww:url action="addSyncedRepository" method="input" />">Add Repository</a>
+  </div>
+  <h2>Synced Repositories</h2>
+</div>
 
 <ww:set name="syncedRepositories" value="syncedRepositories"/>
 <c:if test="${empty(syncedRepositories)}">
@@ -135,10 +141,6 @@
     </table>
   </div>
 </c:forEach>
-
-<p>
-  <a href="<ww:url action="addSyncedRepository" method="input" />">Add Repository</a>
-</p>
 </div>
 
 </body>
