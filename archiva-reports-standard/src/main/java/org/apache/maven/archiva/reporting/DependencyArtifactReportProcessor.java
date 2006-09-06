@@ -30,9 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @plexus.component role="org.apache.maven.archiva.reporting.ArtifactReportProcessor" role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.reporting.ArtifactReportProcessor" role-hint="dependency"
  */
-public class DefaultArtifactReportProcessor
+public class DependencyArtifactReportProcessor
     implements ArtifactReportProcessor
 {
     /**

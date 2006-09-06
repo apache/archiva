@@ -26,7 +26,7 @@ import java.util.Iterator;
 /**
  *
  */
-public class ArtifactReportProcessorTest
+public class DependencyArtifactReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
     private static final String VALID_GROUP_ID = "groupId";
@@ -51,7 +51,7 @@ public class ArtifactReportProcessorTest
         super.setUp();
         reporter = (ArtifactReporter) lookup( ArtifactReporter.ROLE );
         model = new Model();
-        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "default" );
+        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "dependency" );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
     }

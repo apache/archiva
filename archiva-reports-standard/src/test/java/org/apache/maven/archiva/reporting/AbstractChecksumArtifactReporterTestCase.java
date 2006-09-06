@@ -33,7 +33,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 
 /**
- * This class creates the artifact and metadata files used for testing the ChecksumArtifactReporter.
+ * This class creates the artifact and metadata files used for testing the ChecksumArtifactReportProcessor.
  * It is extended by ChecksumArtifactReporterTest class.
  */
 public abstract class AbstractChecksumArtifactReporterTestCase

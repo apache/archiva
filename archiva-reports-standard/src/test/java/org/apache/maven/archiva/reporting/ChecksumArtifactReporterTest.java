@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
- * This class tests the ChecksumArtifactReporter.
+ * This class tests the ChecksumArtifactReportProcessor.
  * It extends the AbstractChecksumArtifactReporterTestCase class.
  */
 public class ChecksumArtifactReporterTest
@@ -53,7 +53,7 @@ public class ChecksumArtifactReporterTest
     }
 
     /**
-     * Test the ChecksumArtifactReporter when the checksum files are valid.
+     * Test the ChecksumArtifactReportProcessor when the checksum files are valid.
      */
     public void testChecksumArtifactReporterSuccess()
         throws ReportProcessorException, IOException, DigesterException
@@ -71,7 +71,7 @@ public class ChecksumArtifactReporterTest
     }
 
     /**
-     * Test the ChecksumArtifactReporter when the checksum files are invalid.
+     * Test the ChecksumArtifactReportProcessor when the checksum files are invalid.
      */
     public void testChecksumArtifactReporterFailed()
         throws ReportProcessorException

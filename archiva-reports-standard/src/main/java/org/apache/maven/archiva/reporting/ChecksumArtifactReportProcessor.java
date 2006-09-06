@@ -18,8 +18,9 @@ package org.apache.maven.archiva.reporting;
 
 import org.apache.maven.archiva.digest.Digester;
 import org.apache.maven.archiva.digest.DigesterException;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
+import org.apache.maven.model.Model;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -29,10 +30,10 @@ import java.io.IOException;
  * This class reports invalid and mismatched checksums of artifacts and metadata files.
  * It validates MD5 and SHA-1 checksums.
  *
- * @plexus.component role="org.apache.maven.archiva.reporting.MetadataReportProcessor" role-hint="checksum-metadata"
+ * @plexus.component role="org.apache.maven.archiva.reporting.ArtifactReportProcessor" role-hint="checksum"
  */
-public class ChecksumMetadataReporter
-    implements MetadataReportProcessor
+public class ChecksumArtifactReportProcessor
+    implements ArtifactReportProcessor
 {
     /**
      * @plexus.requirement role-hint="sha1"
@@ -44,11 +45,8 @@ public class ChecksumMetadataReporter
      */
     private Digester md5Digester;
 
-    /**
-     * Validate the checksums of the metadata. Get the metadata file from the
-     * repository then validate the checksum.
-     */
-    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
+    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
+                                 ArtifactRepository repository )
     {
         if ( !"file".equals( repository.getProtocol() ) )
         {
@@ -58,15 +56,15 @@ public class ChecksumMetadataReporter
         }
 
         //check if checksum files exist
-        String path = repository.pathOfRemoteRepositoryMetadata( metadata );
+        String path = repository.pathOf( artifact );
         File file = new File( repository.getBasedir(), path );
 
-        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, metadata );
-        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, metadata );
+        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, artifact );
+        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, artifact );
     }
 
     private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
-                                 ArtifactReporter reporter, RepositoryMetadata metadata )
+                                 ArtifactReporter reporter, Artifact artifact )
     {
         File checksumFile = new File( repository.getBasedir(), path );
         if ( checksumFile.exists() )
@@ -75,21 +73,20 @@ public class ChecksumMetadataReporter
             {
                 digester.verify( file, FileUtils.fileRead( checksumFile ) );
 
-                reporter.addSuccess( metadata );
+                reporter.addSuccess( artifact );
             }
             catch ( DigesterException e )
             {
-                reporter.addFailure( metadata, e.getMessage() );
+                reporter.addFailure( artifact, e.getMessage() );
             }
             catch ( IOException e )
             {
-                reporter.addFailure( metadata, "Read file error: " + e.getMessage() );
+                reporter.addFailure( artifact, "Read file error: " + e.getMessage() );
             }
         }
         else
         {
-            reporter.addFailure( metadata, digester.getAlgorithm() + " checksum file does not exist." );
+            reporter.addFailure( artifact, digester.getAlgorithm() + " checksum file does not exist." );
         }
     }
-
 }

@@ -291,14 +291,12 @@ public class BadMetadataReportProcessor
         return hasFailures;
     }
 
-    private Artifact createArtifact( RepositoryMetadata metadata, Snapshot snapshot )
-    {
-        String version = metadata.getBaseVersion();
-        return artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
-    }
-
     /**
-     * Used to gather artifactIds from a groupId directory
+     * Used to gather artifactIds from a groupId directory.
+     *
+     * @param groupIdDir the directory of the group
+     * @return the list of artifact ID File objects for each directory
+     * @throws IOException if there was a failure to read the directories
      */
     private List getArtifactIdFiles( File groupIdDir )
         throws IOException
