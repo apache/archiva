@@ -1,0 +1,33 @@
+<document>
+  <properties>
+    <title>Archiva</title>
+  </properties>
+  <body>
+    <h1>Users Management</h1>
+
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <p>
+            Select a user to administer:
+        </p>
+        <form action="user.html">
+          <p>
+            <select name="user">
+              <option>user1</option>
+              <option>user2</option>
+            </select>
+          </p>
+          <p>
+            <input type="submit" name="Manage"/>
+          </p>
+        
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
+

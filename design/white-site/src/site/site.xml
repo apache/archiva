@@ -10,6 +10,7 @@
   <publishDate position="none"/>
   <body>
     <links>
+      <item name="Login" href="/admin/login.html"/>
       <item name="Archiva" href="http://maven.apache.org/archiva/"/>
       <item name="Maven" href="http://maven.apache.org/"/>
       <item name="Apache" href="http://www.apache.org/"/>
@@ -23,6 +24,7 @@
       <item name="Reports" href="/reports.html"/>
       <item name="Synchronisation" href="/sync.html"/>
       <item name="Administration" href="/admin/index.html">
+      <item name="User Management" href="/admin/users.html"/>
         <item name="Proxied Repositories" href="/admin/proxies.html"/>
         <item name="Synced Repositories" href="/admin/sync.html"/>
       </item>

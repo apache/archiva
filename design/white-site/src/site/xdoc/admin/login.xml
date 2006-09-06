@@ -1,0 +1,44 @@
+<document>
+  <properties>
+    <title>Archiva</title>
+  </properties>
+  <body>
+    <h1>login</h1>
+
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <form action="../results.html">
+          <p>
+            <table>
+                <tr>
+                    <td>
+                        Username:
+                    </td>
+                    <td>
+                        <input type="text" size="50"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Password:
+                    </td>
+                    <td>
+                        <input type="password" size="50"/>
+                    </td>
+                </tr>
+              </table>
+          </p>
+          <p>
+            <input type="submit" name="Go!"/>
+          </p>
+        
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
+
