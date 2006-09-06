@@ -73,13 +73,6 @@
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
         <field>
-          <name>reporterCronExpression</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <description>When to run the indexing mechanism. Default is every hour on the half hour.</description>
-          <defaultValue>0 30 * * * ?</defaultValue>
-        </field>
-        <field>
           <name>globalBlackListPatterns</name>
           <version>1.0.0</version>
           <description>Blacklisted patterns in the discovery process</description>

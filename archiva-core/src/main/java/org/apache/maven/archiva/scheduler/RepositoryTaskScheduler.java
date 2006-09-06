@@ -31,6 +31,4 @@ public interface RepositoryTaskScheduler
     void runIndexer()
         throws TaskExecutionException;
 
-    void runReporter()
-        throws TaskExecutionException;
 }

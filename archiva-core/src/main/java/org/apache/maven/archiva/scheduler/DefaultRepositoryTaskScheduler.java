@@ -61,17 +61,10 @@ public class DefaultRepositoryTaskScheduler
 
     private static final String INDEXER_JOB = "indexerTask";
 
-    private static final String REPORTER_JOB = "reporterTask";
-
     /**
      * @plexus.requirement role-hint="indexer"
      */
     private RepositoryTask indexerTask;
-
-    /**
-     * @plexus.requirement role-hint="reporter"
-     */
-    private RepositoryTask reporterTask;
 
     public void start()
         throws StartingException
@@ -128,13 +121,6 @@ public class DefaultRepositoryTaskScheduler
         {
             getLogger().info( "Not scheduling indexer - index path is not configured" );
         }
-
-        JobDetail jobDetail = createJobDetail( REPORTER_JOB, reporterTask );
-
-        getLogger().info( "Scheduling reporter: " + configuration.getReporterCronExpression() );
-        CronTrigger trigger =
-            new CronTrigger( REPORTER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getReporterCronExpression() );
-        scheduler.scheduleJob( jobDetail, trigger );
     }
 
     private JobDetail createJobDetail( String jobName, RepositoryTask task )
@@ -153,7 +139,6 @@ public class DefaultRepositoryTaskScheduler
         try
         {
             scheduler.unscheduleJob( INDEXER_JOB, DISCOVERER_GROUP );
-            scheduler.unscheduleJob( REPORTER_JOB, DISCOVERER_GROUP );
         }
         catch ( SchedulerException e )
         {
@@ -190,9 +175,4 @@ public class DefaultRepositoryTaskScheduler
         indexerTask.execute();
     }
 
-    public void runReporter()
-        throws TaskExecutionException
-    {
-        reporterTask.execute();
-    }
 }

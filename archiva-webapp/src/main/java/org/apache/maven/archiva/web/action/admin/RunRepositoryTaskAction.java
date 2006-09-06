@@ -40,12 +40,4 @@ public class RunRepositoryTaskAction
 
         return SUCCESS;
     }
-
-    public String runReporter()
-        throws TaskExecutionException
-    {
-        taskScheduler.runReporter();
-
-        return SUCCESS;
-    }
 }

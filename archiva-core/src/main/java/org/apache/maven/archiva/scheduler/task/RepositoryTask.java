@@ -1,7 +1,5 @@
 package org.apache.maven.archiva.scheduler.task;
 
-import org.apache.maven.archiva.scheduler.TaskExecutionException;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -17,6 +15,8 @@ import org.apache.maven.archiva.scheduler.TaskExecutionException;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.archiva.scheduler.TaskExecutionException;
 
 /**
  * A repository task.

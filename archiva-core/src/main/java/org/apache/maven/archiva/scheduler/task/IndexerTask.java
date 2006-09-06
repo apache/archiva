@@ -153,6 +153,8 @@ public class IndexerTask
                     List artifacts = discoverer.discoverArtifacts( repository, blacklistedPatterns, filter );
                     if ( !artifacts.isEmpty() )
                     {
+                        // TODO! reporting
+
                         getLogger().info( "Indexing " + artifacts.size() + " new artifacts" );
                         index.indexArtifacts( artifacts, recordFactory );
                     }
