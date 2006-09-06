@@ -18,13 +18,22 @@ body {
     padding: 0 0 10px 0;
 }
 
-body, td, select, input, li {
+body, td, th, select, input, li {
     font-family: Verdana, Helvetica, Arial, sans-serif;
     font-size: 13px;
 }
 
 select, input {
     font-size: x-small;
+}
+
+th {
+    text-align: right;
+    padding-right: 1em;
+}
+
+.infoTable th {
+    width: 15em;
 }
 
 #contentBox h1 {

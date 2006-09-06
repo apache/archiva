@@ -82,11 +82,6 @@
     font-size: xx-small;
 }
 
-.statusOk {
-    color: green;
-    font-weight: bold;
-}
-
 .statusFailed {
     color: red;
     font-weight: bold;

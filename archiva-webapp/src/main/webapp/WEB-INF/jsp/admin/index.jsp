@@ -30,7 +30,7 @@
 <div id="contentArea">
 <h2>Configuration</h2>
 
-<table>
+<table class="infoTable">
   <tr>
     <th>Index Directory</th>
     <td>
@@ -59,7 +59,7 @@
 <c:if test="${!empty(proxy.host)}">
   <h3>HTTP Proxy</h3>
 
-  <table>
+  <table class="infoTable">
     <tr>
       <th>Host</th>
       <td>${proxy.host}</td>
@@ -95,7 +95,7 @@
       Repository</a>
     </div>
     <h3>${repository.name}</h3>
-    <table>
+    <table class="infoTable">
       <tr>
         <th>Identifier</th>
         <td>

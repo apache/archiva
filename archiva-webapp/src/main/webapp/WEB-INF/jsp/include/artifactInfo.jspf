@@ -38,7 +38,7 @@
   <blockquote>${model.description}</blockquote>
 </c:if>
 
-<table>
+<table class="infoTable">
   <tr>
     <th>Group ID</th>
     <td>${model.groupId}</td>
@@ -103,7 +103,7 @@
     || model.issueManagement != null || model.ciManagement != null}">
 
   <h2>Other Details</h2>
-  <table>
+  <table class="infoTable">
     <c:if test="${!empty(model.url)}">
       <tr>
         <th>URL</th>
@@ -179,7 +179,7 @@
 
 <c:if test="${model.scm != null}">
   <h2>SCM</h2>
-  <table>
+  <table class="infoTable">
     <c:if test="${!empty(model.scm.connection)}">
       <tr>
         <th>Connection</th>

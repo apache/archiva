@@ -44,7 +44,7 @@
       Repository</a>
     </div>
     <h3>${repository.name}</h3>
-    <table>
+    <table class="infoTable">
       <tr>
         <th>Identifier</th>
         <td>
