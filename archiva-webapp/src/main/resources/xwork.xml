@@ -124,6 +124,21 @@
       </result>
       <result name="notFound" type="httpheader">404</result>
     </action>
+
+    <!-- plexus security actions -->
+    <action name="login" class="session" method="login">
+      <result name="input">/WEB-INF/jsp/login.jsp</result>
+      <result name="success" type="redirect-action">browse</result>
+    </action>
+
+    <action name="logout" class="session" method="logout">
+      <result>/WEB-INF/jsp/logout.jsp</result>
+    </action>
+
+    <action name="register" class="registerUser" method="createUser">
+      <result name="input">/WEB-INF/jsp/register.jsp</result>
+      <result name="success" type="redirect-action">login</result>
+    </action>
   </package>
 
   <!-- Configuration for the admin package. -->

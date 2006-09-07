@@ -59,6 +59,42 @@
         </levels>
       </configuration>
     </component>
+
+
+    <!-- plexus security components -->
+    <component>
+      <role>org.codehaus.plexus.security.system.SecuritySystem</role>
+      <implementation>org.codehaus.plexus.security.system.DefaultSecuritySystem</implementation>
+      <role-hint>default</role-hint>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.authentication.Authenticator</role>
+          <role-hint>memory</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.security.authorization.Authorizer</role>
+          <role-hint>rbac</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.security.user.UserManager</role>
+          <role-hint>memory</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.security.authorization.Authorizer</role>
+      <role-hint>rbac</role-hint>
+      <implementation>org.codehaus.plexus.security.authorization.rbac.RbacAuthorizer</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.authorization.rbac.store.RbacStore</role>
+          <role-hint>memory</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+
+
   </components>
 
   <!-- Override default configuration of components -->

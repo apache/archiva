@@ -58,7 +58,15 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <%-- TODO: login --%>
+    <ww:url id="loginUrl" action="login" namespace="/"/>
+    <ww:url id="logoutUrl" action="logout" namespace="/"/>
+    <ww:url id="registerUrl" action="register" namespace="/"/>
+    <ww:if test="${sessionScope.authStatus != true}">
+      <ww:a href="%{loginUrl}">Login</ww:a> or <ww:a href="%{registerUrl}">Register</ww:a> 
+    </ww:if>
+    <ww:else>
+      Welcome, <b>${sessionScope.user.username}</b> - <ww:a href="%{logoutUrl}">Logout</ww:a>
+    </ww:else>
   </div>
 
   <div class="xright">
