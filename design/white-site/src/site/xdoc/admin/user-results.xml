@@ -27,13 +27,27 @@
 
     <div id="contentArea">
       <div id="searchBox">
-        <form action="user-results.html">
-          <p>
-            Find a user:
-            <input type="text"/>
-            <input type="submit" name="Search"/>
-          </p>
-        </form>
+        <table>
+          <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+          <tr>
+            <th>
+              <a href="user-details.html">brett</a>
+            </th>
+            <td>Brett Porter</td>
+            <td>brett@apache.org</td>
+          </tr>
+          <tr>
+            <th>
+              <a href="user-details.html">jesse</a>
+            </th>
+            <td>Jesse McConnell</td>
+            <td>jesse@apache.org</td>
+          </tr>
+        </table>
       </div>
     </div>
   </body>

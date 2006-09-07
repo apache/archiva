@@ -1,9 +1,25 @@
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
 <document>
   <properties>
     <title>Archiva</title>
   </properties>
   <body>
-    <h1>login</h1>
+    <h1>Login</h1>
 
     <div id="sidebar">
       <p>reserved sidebar</p>
@@ -11,31 +27,90 @@
 
     <div id="contentArea">
       <div id="searchBox">
-        <form action="../results.html">
-          <p>
-            <table>
-                <tr>
-                    <td>
-                        Username:
-                    </td>
-                    <td>
-                        <input type="text" size="50"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        Password:
-                    </td>
-                    <td>
-                        <input type="password" size="50"/>
-                    </td>
-                </tr>
-              </table>
-          </p>
-          <p>
-            <input type="submit" name="Go!"/>
-          </p>
-        
+        <div style="float: right">
+          <a href="#">Forgotten your Password?</a>
+        </div>
+        <h2>Already Registered?</h2>
+        <form action="../index.html">
+          <table>
+            <tr>
+              <th>
+                Username
+              </th>
+              <td>
+                <input type="text" size="30"/>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Password
+              </th>
+              <td>
+                <input type="password" size="20"/>
+              </td>
+            </tr>
+            <tr>
+              <td/>
+              <td>
+                <input type="submit" value="Login"/>
+              </td>
+            </tr>
+          </table>
+        </form>
+        <h2>Request an Account</h2>
+        <form action="../index.html">
+          <table>
+            <tr>
+              <th>
+                Username
+              </th>
+              <td>
+                <input type="text" size="30"/>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Password
+              </th>
+              <td>
+                <input type="password" size="20"/>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Confirm Password
+              </th>
+              <td>
+                <input type="confirmPassword" size="20"/>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Full Name
+              </th>
+              <td>
+                <input type="text" size="30"/>
+              </td>
+            </tr>
+            <tr>
+              <th>
+                Email
+              </th>
+              <td>
+                <input type="text" size="30"/>
+                <br/>
+                <span style="font-size: x-small">(Only administrators will be able to view this, and it will be used to
+                  send you information about your project)
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td/>
+              <td>
+                <input type="submit" value="Register"/>
+              </td>
+            </tr>
+          </table>
         </form>
       </div>
     </div>
