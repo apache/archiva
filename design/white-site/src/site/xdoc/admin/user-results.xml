@@ -27,6 +27,10 @@
 
     <div id="contentArea">
       <div id="searchBox">
+        <style type="text/css">
+          th { text-align: left; border-bottom: 1px solid #DFDEDE; }
+          table { border-bottom: 1px solid #DFDEDE; }
+        </style>
         <table>
           <tr>
             <th>Username</th>
@@ -34,16 +38,16 @@
             <th>Email</th>
           </tr>
           <tr>
-            <th>
+            <td>
               <a href="user-details.html">brett</a>
-            </th>
+            </td>
             <td>Brett Porter</td>
             <td>brett@apache.org</td>
           </tr>
           <tr>
-            <th>
+            <td>
               <a href="user-details.html">jesse</a>
-            </th>
+            </td>
             <td>Jesse McConnell</td>
             <td>jesse@apache.org</td>
           </tr>

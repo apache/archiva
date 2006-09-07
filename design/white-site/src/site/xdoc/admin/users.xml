@@ -31,7 +31,7 @@
           <p>
             Find a user:
             <input type="text"/>
-            <input type="submit" name="Search"/>
+            <input type="submit" value="Search"/>
           </p>
         </form>
       </div>
