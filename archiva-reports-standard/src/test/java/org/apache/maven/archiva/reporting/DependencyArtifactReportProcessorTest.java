@@ -243,11 +243,16 @@ public class DependencyArtifactReportProcessorTest
 
     private String getDependencyVersionInvalidMessage( Dependency dependency, String version )
     {
-        return "Artifact's dependency " + dependency + " contains an invalid version " + version;
+        return "Artifact's dependency " + getDependencyString( dependency ) + " contains an invalid version " + version;
+    }
+
+    private static String getDependencyString( Dependency dependency )
+    {
+        return DependencyArtifactReportProcessor.getDependencyString( dependency );
     }
 
     private String getDependencyNotFoundMessage( Dependency dependency )
     {
-        return "Artifact's dependency " + dependency.toString() + " does not exist in the repository";
+        return "Artifact's dependency " + getDependencyString( dependency ) + " does not exist in the repository";
     }
 }

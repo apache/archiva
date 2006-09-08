@@ -86,19 +86,33 @@ public class DependencyArtifactReportProcessor
                     {
                         String reason = MessageFormat.format(
                             "Artifact''s dependency {0} does not exist in the repository",
-                            new String[]{dependency.toString()} );
+                            new String[]{getDependencyString( dependency )} );
                         reporter.addFailure( sourceArtifact, reason );
                     }
                 }
                 catch ( InvalidVersionSpecificationException e )
                 {
                     String reason = MessageFormat.format( "Artifact''s dependency {0} contains an invalid version {1}",
-                                                          new String[]{dependency.toString(),
+                                                          new String[]{getDependencyString( dependency ),
                                                               dependency.getVersion()} );
                     reporter.addFailure( sourceArtifact, reason );
                 }
             }
         }
+    }
+
+    static String getDependencyString( Dependency dependency )
+    {
+        String str = "(group=" + dependency.getGroupId();
+        str += ", artifact=" + dependency.getArtifactId();
+        str += ", version=" + dependency.getVersion();
+        str += ", type=" + dependency.getType();
+        if ( dependency.getClassifier() != null )
+        {
+            str += ", classifier=" + dependency.getClassifier();
+        }
+        str += ")";
+        return str;
     }
 
     private Artifact createArtifact( Dependency dependency )
