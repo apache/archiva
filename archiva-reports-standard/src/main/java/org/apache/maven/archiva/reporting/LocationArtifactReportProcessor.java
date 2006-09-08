@@ -18,6 +18,7 @@ package org.apache.maven.archiva.reporting;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -81,6 +82,8 @@ public class LocationArtifactReportProcessor
                 "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
         }
 
+        adjustDistributionArtifactHandler( artifact );
+
         String artifactPath = repository.pathOf( artifact );
 
         if ( model != null )
@@ -97,6 +100,7 @@ public class LocationArtifactReportProcessor
                                                                                        artifact.getType(),
                                                                                        artifact.getClassifier() );
 
+                adjustDistributionArtifactHandler( modelArtifact );
                 String modelPath = repository.pathOf( modelArtifact );
                 if ( !modelPath.equals( artifactPath ) )
                 {
@@ -135,6 +139,19 @@ public class LocationArtifactReportProcessor
         else
         {
             throw new IllegalStateException( "Couldn't find artifact " + file );
+        }
+    }
+
+    private static void adjustDistributionArtifactHandler( Artifact artifact )
+    {
+        // need to tweak these as they aren't currently in the known type converters. TODO - add them in Maven
+        if ( "distribution-zip".equals( artifact.getType() ) )
+        {
+            artifact.setArtifactHandler( new DefaultArtifactHandler( "zip" ) );
+        }
+        else if ( "distribution-tgz".equals( artifact.getType() ) )
+        {
+            artifact.setArtifactHandler( new DefaultArtifactHandler( "tar.gz" ) );
         }
     }
 

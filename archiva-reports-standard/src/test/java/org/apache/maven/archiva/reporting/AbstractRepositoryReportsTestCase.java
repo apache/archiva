@@ -64,4 +64,13 @@ public abstract class AbstractRepositoryReportsTestCase
         return artifact;
     }
 
+    protected Artifact createArtifactWithClassifier( String groupId, String artifactId, String version, String type,
+                                                     String classifier )
+    {
+        Artifact artifact =
+            artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
+        artifact.setRepository( repository );
+        return artifact;
+    }
+
 }

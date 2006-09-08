@@ -46,14 +46,6 @@ public class LocationArtifactReportProcessorTest
         pomReader = new MavenXpp3Reader();
     }
 
-    public void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-        artifactReportProcessor = null;
-        pomReader = null;
-    }
-
     /**
      * Test the LocationArtifactReporter when the artifact's physical location matches the location specified
      * both in the file system pom and in the pom included in the package.
@@ -107,6 +99,40 @@ public class LocationArtifactReportProcessorTest
         throws IOException, XmlPullParserException
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "java-source" );
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
+
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+    }
+
+    /**
+     * Test the LocationArtifactReporter when the artifact is in the location specified in the
+     * file system pom, with a classifier.
+     */
+    public void testLocationArtifactReporterSuccessZip()
+        throws IOException, XmlPullParserException
+    {
+        Artifact artifact =
+            createArtifactWithClassifier( "groupId", "artifactId", "1.0-alpha-1", "distribution-zip", "src" );
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
+
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+    }
+
+    /**
+     * Test the LocationArtifactReporter when the artifact is in the location specified in the
+     * file system pom, with a classifier.
+     */
+    public void testLocationArtifactReporterSuccessTgz()
+        throws IOException, XmlPullParserException
+    {
+        Artifact artifact =
+            createArtifactWithClassifier( "groupId", "artifactId", "1.0-alpha-1", "distribution-tgz", "src" );
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
