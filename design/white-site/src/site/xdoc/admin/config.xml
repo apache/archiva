@@ -24,67 +24,60 @@
               <td>
                 <table width="100%">
                   <tr>
-                    <th><i>Seconds:</i></th>
-                    <td><input type="text" size="10" value="0" align="right"/></td>
+                    <th>
+                      <i>Seconds:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="0" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Minutes:</i></th>
-                    <td><input type="text" size="10" value="0" align="right"/></td>
+                    <th>
+                      <i>Minutes:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="0" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Hours:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
+                    <th>
+                      <i>Hours:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="*" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Day of Month:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
+                    <th>
+                      <i>Day of Month:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="*" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Month:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
+                    <th>
+                      <i>Month:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="*" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Day of Week:</i></th>
-                    <td><input type="text" size="10" value="?" align="right"/></td>
+                    <th>
+                      <i>Day of Week:</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="?" align="right"/>
+                    </td>
                   </tr>
                   <tr>
-                    <th><i>Year: (optional)</i></th>
-                    <td><input type="text" size="10" value="2006" align="right"/></td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <th>Reporting Schedule:</th>
-              <td>
-                <table width="100%">
-                  <tr>
-                    <th><i>Seconds:</i></th>
-                    <td><input type="text" size="10" value="0" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Minutes:</i></th>
-                    <td><input type="text" size="10" value="0" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Hours:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Day of Month:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Month:</i></th>
-                    <td><input type="text" size="10" value="*" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Day of Week:</i></th>
-                    <td><input type="text" size="10" value="?" align="right"/></td>
-                  </tr>
-                  <tr>
-                    <th><i>Year: (optional)</i></th>
-                    <td><input type="text" size="10" value="2006" align="right"/></td>
+                    <th>
+                      <i>Year: (optional)</i>
+                    </th>
+                    <td>
+                      <input type="text" size="10" value="2006" align="right"/>
+                    </td>
                   </tr>
                 </table>
               </td>
@@ -94,7 +87,10 @@
             <input type="submit" value="Save Configuration"/>
           </p>
           <p>
-          <i>* For valid cron expression values, see <a href="http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html">here</a>.</i>
+            <i>* For valid cron expression values, see
+              <a href="http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html">here</a>
+              .
+            </i>
           </p>
         </form>
       </div>
