@@ -32,6 +32,7 @@ import java.io.Reader;
 /**
  * This class validates well-formedness of pom xml file.
  *
+ * @todo nice to have this a specific, tested report - however it is likely to double up with project building exceptions from IndexerTask. Resolve [!]
  * @plexus.component role="org.apache.maven.archiva.reporting.ArtifactReportProcessor" role-hint="invalid-pom"
  */
 public class InvalidPomArtifactReportProcessor
@@ -89,10 +90,6 @@ public class InvalidPomArtifactReportProcessor
                     IOUtil.close( reader );
                 }
             }
-        }
-        else
-        {
-            reporter.addWarning( artifact, "The artifact is not a pom xml file." );
         }
     }
 }

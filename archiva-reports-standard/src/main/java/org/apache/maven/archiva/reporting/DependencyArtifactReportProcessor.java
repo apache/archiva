@@ -45,12 +45,14 @@ public class DependencyArtifactReportProcessor
      */
     private RepositoryQueryLayerFactory layerFactory;
 
+    private static final String POM = "pom";
+
     public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
         RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( artifact.getRepository() );
         processArtifact( artifact, reporter, queryLayer );
 
-        if ( model != null )
+        if ( model != null && POM.equals( artifact.getType() ) )
         {
             List dependencies = model.getDependencies();
             processDependencies( dependencies, reporter, queryLayer, artifact );

@@ -69,6 +69,6 @@ public class InvalidPomArtifactReportProcessorTest
 
         artifactReportProcessor.processArtifact( artifact, null, reporter );
         assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 1, reporter.getNumWarnings() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 }

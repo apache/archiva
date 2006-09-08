@@ -76,8 +76,41 @@ public class LocationArtifactReportProcessorTest
         throws IOException, XmlPullParserException
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1" );
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+    }
+
+    /**
+     * Test the LocationArtifactReporter when the artifact is in the location specified in the
+     * file system pom, but the pom itself is passed in.
+     */
+    public void testLocationArtifactReporterSuccessPom()
+        throws IOException, XmlPullParserException
+    {
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
+
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( pomArtifact, model, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+    }
+
+    /**
+     * Test the LocationArtifactReporter when the artifact is in the location specified in the
+     * file system pom, with a classifier.
+     */
+    public void testLocationArtifactReporterSuccessClassifier()
+        throws IOException, XmlPullParserException
+    {
+        Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "java-source" );
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
+
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reporter );
         assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
     }
@@ -90,9 +123,18 @@ public class LocationArtifactReportProcessorTest
         throws IOException, XmlPullParserException
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2" );
+        Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        try
+        {
+            Model model = readPom( repository.pathOf( pomArtifact ) );
+            artifactReportProcessor.processArtifact( artifact, model, reporter );
+            fail( "Should not have passed the artifact" );
+        }
+        catch ( IllegalStateException e )
+        {
+            // correct!
+        }
     }
 
     /**

@@ -60,6 +60,8 @@ public class LocationArtifactReportProcessor
      */
     private MavenProjectBuilder projectBuilder;
 
+    private static final String POM = "pom";
+
     /**
      * Check whether the artifact is in its proper location. The location of the artifact
      * is validated first against the groupId, artifactId and versionId in the specified model
@@ -83,16 +85,25 @@ public class LocationArtifactReportProcessor
 
         if ( model != null )
         {
-            //check if the artifact is located in its proper location based on the info
-            //specified in the model object/pom
-            Artifact modelArtifact = artifactFactory.createBuildArtifact( model.getGroupId(), model.getArtifactId(),
-                                                                          model.getVersion(), model.getPackaging() );
-
-            String modelPath = repository.pathOf( modelArtifact );
-            if ( !modelPath.equals( artifactPath ) )
+            // only check if it is a standalone POM, or an artifact other than a POM
+            // ie, don't check the location of the POM for another artifact matches that of the artifact
+            if ( !POM.equals( artifact.getType() ) || POM.equals( model.getPackaging() ) )
             {
-                reporter.addFailure( artifact,
-                                     "The artifact is out of place. It does not match the specified location in the repository pom." );
+                //check if the artifact is located in its proper location based on the info
+                //specified in the model object/pom
+                Artifact modelArtifact = artifactFactory.createArtifactWithClassifier( model.getGroupId(),
+                                                                                       model.getArtifactId(),
+                                                                                       model.getVersion(),
+                                                                                       artifact.getType(),
+                                                                                       artifact.getClassifier() );
+
+                String modelPath = repository.pathOf( modelArtifact );
+                if ( !modelPath.equals( artifactPath ) )
+                {
+                    reporter.addFailure( artifact,
+                                         "The artifact is out of place. It does not match the specified location in the repository pom: " +
+                                             modelPath );
+                }
             }
         }
 
@@ -123,8 +134,7 @@ public class LocationArtifactReportProcessor
         }
         else
         {
-            reporter.addFailure( artifact,
-                                 "The artifact is out of place. It does not exist at the specified location in the repository pom." );
+            throw new IllegalStateException( "Couldn't find artifact " + file );
         }
     }
 

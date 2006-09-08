@@ -62,55 +62,58 @@ public class DuplicateArtifactFileReportProcessor
     {
         ArtifactRepository repository = artifact.getRepository();
         // TODO! always null currently, need to configure this properly
-        if ( artifact.getFile() != null && indexDirectory != null )
+        if ( indexDirectory != null )
         {
-            RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ) );
+            if ( artifact.getFile() != null )
+            {
+                RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ) );
 
-            String checksum = null;
-            try
-            {
-                checksum = digester.calc( artifact.getFile() );
-            }
-            catch ( DigesterException e )
-            {
-                reporter.addWarning( artifact, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
-            }
-
-            if ( checksum != null )
-            {
+                String checksum = null;
                 try
                 {
-                    List results = index.search( new LuceneQuery(
-                        new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
+                    checksum = digester.calc( artifact.getFile() );
+                }
+                catch ( DigesterException e )
+                {
+                    reporter.addWarning( artifact, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
+                }
 
-                    if ( !results.isEmpty() )
+                if ( checksum != null )
+                {
+                    try
                     {
-                        for ( Iterator i = results.iterator(); i.hasNext(); )
-                        {
-                            StandardArtifactIndexRecord result = (StandardArtifactIndexRecord) i.next();
+                        List results = index.search( new LuceneQuery(
+                            new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
 
-                            //make sure it is not the same artifact
-                            if ( !result.getFilename().equals( repository.pathOf( artifact ) ) )
+                        if ( !results.isEmpty() )
+                        {
+                            for ( Iterator i = results.iterator(); i.hasNext(); )
                             {
-                                //report only duplicates from the same groupId
-                                String groupId = artifact.getGroupId();
-                                if ( groupId.equals( result.getGroupId() ) )
+                                StandardArtifactIndexRecord result = (StandardArtifactIndexRecord) i.next();
+
+                                //make sure it is not the same artifact
+                                if ( !result.getFilename().equals( repository.pathOf( artifact ) ) )
                                 {
-                                    reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
+                                    //report only duplicates from the same groupId
+                                    String groupId = artifact.getGroupId();
+                                    if ( groupId.equals( result.getGroupId() ) )
+                                    {
+                                        reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                catch ( RepositoryIndexSearchException e )
-                {
-                    reporter.addWarning( artifact, "Failed to search in index" + e );
+                    catch ( RepositoryIndexSearchException e )
+                    {
+                        reporter.addWarning( artifact, "Failed to search in index" + e );
+                    }
                 }
             }
-        }
-        else
-        {
-            reporter.addWarning( artifact, "Artifact file is null" );
+            else
+            {
+                reporter.addWarning( artifact, "Artifact file is null" );
+            }
         }
     }
 }
