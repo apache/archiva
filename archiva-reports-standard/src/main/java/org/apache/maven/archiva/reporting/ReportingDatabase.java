@@ -278,4 +278,5 @@ public class ReportingDatabase
     {
         return repository;
     }
+
 }

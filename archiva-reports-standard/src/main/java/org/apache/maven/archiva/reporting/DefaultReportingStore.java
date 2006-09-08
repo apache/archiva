@@ -120,4 +120,9 @@ public class DefaultReportingStore
             IOUtil.close( fileWriter );
         }
     }
+
+    public void removeReportDatabase( ArtifactRepository repository )
+    {
+        reports.remove( repository );
+    }
 }

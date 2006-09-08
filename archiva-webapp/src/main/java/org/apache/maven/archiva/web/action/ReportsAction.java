@@ -21,9 +21,13 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
+import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
+import org.apache.maven.archiva.reporting.ReportExecutor;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,6 +58,13 @@ public class ReportsAction
 
     private List databases;
 
+    private String repositoryId;
+
+    /**
+     * @plexus.requirement
+     */
+    private ReportExecutor executor;
+
     public String execute()
         throws Exception
     {
@@ -72,6 +83,51 @@ public class ReportsAction
             databases.add( database );
         }
         return SUCCESS;
+    }
+
+    public String runReport()
+        throws Exception
+    {
+        // TODO: this should be one that runs in the background - see the showcase
+
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+
+        RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
+        ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
+
+        List blacklistedPatterns = new ArrayList();
+        if ( repositoryConfiguration.getBlackListPatterns() != null )
+        {
+            blacklistedPatterns.addAll( repositoryConfiguration.getBlackListPatterns() );
+        }
+        if ( configuration.getGlobalBlackListPatterns() != null )
+        {
+            blacklistedPatterns.addAll( configuration.getGlobalBlackListPatterns() );
+        }
+
+        ArtifactFilter filter;
+        if ( repositoryConfiguration.isIncludeSnapshots() )
+        {
+            filter = new AcceptAllArtifactFilter();
+        }
+        else
+        {
+            filter = new SnapshotArtifactFilter();
+        }
+
+        executor.runReports( repository, blacklistedPatterns, filter );
+
+        return execute();
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
     }
 
     public List getDatabases()

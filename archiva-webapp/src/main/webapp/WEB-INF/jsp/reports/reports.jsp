@@ -32,6 +32,19 @@
 
 <ww:set name="databases" value="databases"/>
 <c:forEach items="${databases}" var="database">
+<div>
+<div style="float: right">
+    <%-- TODO!
+  <a href="#">Repair all</a>
+  |
+    --%>
+  <c:set var="url">
+    <ww:url action="reports" namespace="/" method="runReport">
+      <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
+    </ww:url>
+  </c:set>
+  <a href="${url}">Regenerate Report</a>
+</div>
 <h2>Repository: ${database.repository.name}</h2>
 
 <p>
@@ -40,13 +53,10 @@
     ${database.numFailures}
   <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
     ${database.numWarnings}
-    <%-- TODO!
-          (<a href="#">Repair all</a>)
-    --%>
 </p>
 
-<%-- TODO! factor out common parts, especially artifact rendering tag --%>
-<%-- TODO! paginate --%>
+  <%-- TODO! factor out common parts, especially artifact rendering tag --%>
+  <%-- TODO! paginate --%>
 <c:if test="${!empty(database.reporting.artifacts)}">
   <h3>Artifacts</h3>
   <c:forEach items="${database.reporting.artifacts}" var="artifact" begin="0" end="2">
@@ -174,6 +184,7 @@
     </p>
   </c:if>
 </c:if>
+</div>
 </c:forEach>
 </div>
 

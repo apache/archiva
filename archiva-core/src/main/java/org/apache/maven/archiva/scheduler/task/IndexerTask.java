@@ -31,22 +31,13 @@ import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
-import org.apache.maven.archiva.reporting.ArtifactReportProcessor;
-import org.apache.maven.archiva.reporting.MetadataReportProcessor;
-import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.ReportExecutor;
 import org.apache.maven.archiva.reporting.ReportingMetadataFilter;
-import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
-import org.apache.maven.model.Model;
-import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
@@ -90,19 +81,9 @@ public class IndexerTask
     private Map artifactDiscoverers;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.ArtifactReportProcessor"
-     */
-    private List artifactReports;
-
-    /**
      * @plexus.requirement role="org.apache.maven.archiva.discoverer.MetadataDiscoverer"
      */
     private Map metadataDiscoverers;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.MetadataReportProcessor"
-     */
-    private List metadataReports;
 
     /**
      * @plexus.requirement role-hint="standard"
@@ -112,14 +93,9 @@ public class IndexerTask
     /**
      * @plexus.requirement
      */
-    private ArtifactFactory artifactFactory;
+    private ReportExecutor reportExecutor;
 
     private static final int ARTIFACT_BUFFER_SIZE = 1000;
-
-    /**
-     * @plexus.requirement
-     */
-    private ReportingStore reportingStore;
 
     public void execute()
         throws TaskExecutionException
@@ -178,10 +154,6 @@ public class IndexerTask
 
                     ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
 
-                    getLogger().debug(
-                        "Reading previous report database from repository " + repositoryConfiguration.getName() );
-                    ReportingDatabase reporter = reportingStore.getReportsFromStore( repository );
-
                     // Discovery process
                     String layoutProperty = repositoryConfiguration.getLayout();
                     ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
@@ -210,12 +182,9 @@ public class IndexerTask
                             List currentArtifacts =
                                 artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
 
-                            // run the reports
-                            runArtifactReports( currentArtifacts, reporter );
-
-                            // store intermittently because if anything crashes out after indexing then we will have
-                            // lost track of these artifact's reports
-                            reportingStore.storeReports( reporter, repository );
+                            // run the reports. Done intermittently to avoid losing track of what is indexed since
+                            // that is what the filter is based on.
+                            reportExecutor.runArtifactReports( currentArtifacts, repository );
 
                             index.indexArtifacts( currentArtifacts, recordFactory );
                         }
@@ -225,7 +194,8 @@ public class IndexerTask
                         flushProjectBuilderCacheHack();
                     }
 
-                    MetadataFilter metadataFilter = new ReportingMetadataFilter( reporter );
+                    MetadataFilter metadataFilter =
+                        new ReportingMetadataFilter( reportExecutor.getReportDatabase( repository ) );
 
                     MetadataDiscoverer metadataDiscoverer =
                         (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
@@ -237,10 +207,8 @@ public class IndexerTask
                         getLogger().info( "Discovered " + metadata.size() + " unprocessed metadata files" );
 
                         // run the reports
-                        runMetadataReports( metadata, repository, reporter );
+                        reportExecutor.runMetadataReports( metadata, repository );
                     }
-
-                    reportingStore.storeReports( reporter, repository );
                 }
             }
         }
@@ -259,73 +227,6 @@ public class IndexerTask
 
         time = System.currentTimeMillis() - time;
         getLogger().info( "Finished repository indexing process in " + time + "ms" );
-    }
-
-    private void runMetadataReports( List metadata, ArtifactRepository repository, ReportingDatabase reporter )
-    {
-        for ( Iterator i = metadata.iterator(); i.hasNext(); )
-        {
-            RepositoryMetadata repositoryMetadata = (RepositoryMetadata) i.next();
-
-            File file =
-                new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
-            reporter.cleanMetadata( repositoryMetadata, file.lastModified() );
-
-            // TODO: should the report set be limitable by configuration?
-            runMetadataReports( repositoryMetadata, repository, reporter );
-        }
-    }
-
-    private void runMetadataReports( RepositoryMetadata repositoryMetadata, ArtifactRepository repository,
-                                     ReportingDatabase reporter )
-    {
-        for ( Iterator i = metadataReports.iterator(); i.hasNext(); )
-        {
-            MetadataReportProcessor report = (MetadataReportProcessor) i.next();
-
-            report.processMetadata( repositoryMetadata, repository, reporter );
-        }
-    }
-
-    private void runArtifactReports( List artifacts, ReportingDatabase reporter )
-    {
-        for ( Iterator i = artifacts.iterator(); i.hasNext(); )
-        {
-            Artifact artifact = (Artifact) i.next();
-
-            ArtifactRepository repository = artifact.getRepository();
-
-            Model model = null;
-            try
-            {
-                Artifact pomArtifact = artifactFactory.createProjectArtifact( artifact.getGroupId(),
-                                                                              artifact.getArtifactId(),
-                                                                              artifact.getVersion() );
-                MavenProject project =
-                    projectBuilder.buildFromRepository( pomArtifact, Collections.EMPTY_LIST, repository );
-
-                model = project.getModel();
-            }
-            catch ( ProjectBuildingException e )
-            {
-                reporter.addWarning( artifact, "Error reading project model: " + e );
-            }
-
-            reporter.removeArtifact( artifact );
-
-            runArtifactReports( artifact, model, reporter );
-        }
-    }
-
-    private void runArtifactReports( Artifact artifact, Model model, ReportingDatabase reporter )
-    {
-        // TODO: should the report set be limitable by configuration?
-        for ( Iterator i = artifactReports.iterator(); i.hasNext(); )
-        {
-            ArtifactReportProcessor report = (ArtifactReportProcessor) i.next();
-
-            report.processArtifact( artifact, model, reporter );
-        }
     }
 
     public void executeNowIfNeeded()
