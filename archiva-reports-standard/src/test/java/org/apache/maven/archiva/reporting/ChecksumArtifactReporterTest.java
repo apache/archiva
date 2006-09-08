@@ -17,15 +17,12 @@ package org.apache.maven.archiva.reporting;
  */
 
 import org.apache.maven.archiva.digest.DigesterException;
+import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
-import org.apache.maven.artifact.versioning.VersionRange;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +37,7 @@ public class ChecksumArtifactReporterTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new DefaultArtifactReporter();
+    private ReportingDatabase reporter = new ReportingDatabase();
 
     private MetadataReportProcessor metadataReportProcessor;
 
@@ -56,33 +53,30 @@ public class ChecksumArtifactReporterTest
      * Test the ChecksumArtifactReportProcessor when the checksum files are valid.
      */
     public void testChecksumArtifactReporterSuccess()
-        throws ReportProcessorException, IOException, DigesterException
+        throws DigesterException, IOException
     {
         createChecksumFile( "VALID" );
         createChecksumFile( "INVALID" );
 
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0" );
-        Artifact artifact =
-            new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getNumSuccesses() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     /**
      * Test the ChecksumArtifactReportProcessor when the checksum files are invalid.
      */
     public void testChecksumArtifactReporterFailed()
-        throws ReportProcessorException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0" );
-        Artifact artifact =
-            new DefaultArtifact( "checksumTest", "invalidArtifact", version, "compile", "jar", "", handler );
+        String s = "invalidArtifact";
+        String s1 = "1.0";
+        Artifact artifact = createArtifact( "checksumTest", s, s1 );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     /**
@@ -90,15 +84,12 @@ public class ChecksumArtifactReporterTest
      * The reporter should report 2 success validation.
      */
     public void testChecksumMetadataReporterSuccess()
-        throws ReportProcessorException, DigesterException, IOException
+        throws DigesterException, IOException
     {
         createMetadataFile( "VALID" );
         createMetadataFile( "INVALID" );
 
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0" );
-        Artifact artifact =
-            new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
         //Version level metadata
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
@@ -111,9 +102,6 @@ public class ChecksumArtifactReporterTest
         //Group level metadata
         metadata = new GroupRepositoryMetadata( "checksumTest" );
         metadataReportProcessor.processMetadata( metadata, repository, reporter );
-
-        Iterator iter = reporter.getRepositoryMetadataSuccessIterator();
-        assertTrue( "check if there is a success", iter.hasNext() );
     }
 
     /**
@@ -121,43 +109,42 @@ public class ChecksumArtifactReporterTest
      * The reporter must report 2 failures.
      */
     public void testChecksumMetadataReporterFailure()
-        throws ReportProcessorException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0" );
-        Artifact artifact =
-            new DefaultArtifact( "checksumTest", "invalidArtifact", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "checksumTest", "invalidArtifact", "1.0" );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
         metadataReportProcessor.processMetadata( metadata, repository, reporter );
 
-        Iterator iter = reporter.getRepositoryMetadataFailureIterator();
-        assertTrue( "check if there is a failure", iter.hasNext() );
+        Iterator failures = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        MetadataResults results = (MetadataResults) failures.next();
+        failures = results.getFailures().iterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
     }
 
     /**
      * Test the conditional when the checksum files of the artifact & metadata do not exist.
      */
     public void testChecksumFilesDoNotExist()
-        throws ReportProcessorException, DigesterException, IOException
+        throws DigesterException, IOException
     {
         createChecksumFile( "VALID" );
         createMetadataFile( "VALID" );
         deleteChecksumFiles( "jar" );
 
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0" );
-        Artifact artifact =
-            new DefaultArtifact( "checksumTest", "validArtifact", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 2, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 1, reporter.getNumFailures() );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
         metadataReportProcessor.processMetadata( metadata, repository, reporter );
 
-        Iterator iter = reporter.getRepositoryMetadataFailureIterator();
-        assertTrue( "check if there is a failure", iter.hasNext() );
+        Iterator failures = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        MetadataResults results = (MetadataResults) failures.next();
+        failures = results.getFailures().iterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
 
         deleteTestDirectory( new File( repository.getBasedir() + "checksumTest" ) );
     }

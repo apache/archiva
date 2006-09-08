@@ -73,7 +73,10 @@ public abstract class AbstractArtifactDiscoverer
                 {
                     artifacts.add( artifact );
                 }
-                // TODO: else add to excluded? [!]
+                else
+                {
+                    addExcludedPath( path, "Omitted by filter" );
+                }
             }
             catch ( DiscovererException e )
             {

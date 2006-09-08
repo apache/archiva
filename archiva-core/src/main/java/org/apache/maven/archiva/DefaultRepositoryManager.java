@@ -6,7 +6,9 @@ import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
-import org.apache.maven.archiva.reporting.ArtifactReporter;
+import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.ReportingStore;
+import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
@@ -51,7 +53,7 @@ public class DefaultRepositoryManager
     /**
      * @plexus.requirement
      */
-    private ArtifactReporter reporter;
+    private ReportingStore reportingStore;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          boolean includeSnapshots )
@@ -80,6 +82,18 @@ public class DefaultRepositoryManager
             includeSnapshots ? new AcceptAllArtifactFilter() : (ArtifactFilter) new SnapshotArtifactFilter();
         List legacyArtifacts = artifactDiscoverer.discoverArtifacts( legacyRepository, null, filter );
 
-        repositoryConverter.convert( legacyArtifacts, repository, reporter );
+        ReportingDatabase reporter;
+        try
+        {
+            reporter = reportingStore.getReportsFromStore( repository );
+
+            repositoryConverter.convert( legacyArtifacts, repository, reporter );
+
+            reportingStore.storeReports( reporter, repository );
+        }
+        catch ( ReportingStoreException e )
+        {
+            throw new RepositoryConversionException( "Error convering legacy repository.", e );
+        }
     }
 }

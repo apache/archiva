@@ -42,7 +42,6 @@ import org.apache.maven.archiva.indexer.record.RepositoryIndexRecord;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.project.MavenProjectBuilder;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,7 +52,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -78,22 +76,12 @@ public class LuceneRepositoryArtifactIndex
 
     private static Analyzer luceneAnalyzer = new LuceneAnalyzer();
 
-    private MavenProjectBuilder projectBuilder;
-
     private static long lastUpdatedTime = 0;
 
     public LuceneRepositoryArtifactIndex( File indexPath, LuceneIndexRecordConverter converter )
     {
         this.indexLocation = indexPath;
         this.converter = converter;
-    }
-
-    public LuceneRepositoryArtifactIndex( File indexLocation, LuceneIndexRecordConverter converter,
-                                          MavenProjectBuilder projectBuilder )
-    {
-        this.indexLocation = indexLocation;
-        this.converter = converter;
-        this.projectBuilder = projectBuilder;
     }
 
     public void indexRecords( Collection records )
@@ -330,8 +318,7 @@ public class LuceneRepositoryArtifactIndex
         {
             indexModifier = new IndexModifier( indexLocation, getAnalyzer(), !exists() );
 
-            int count = 0;
-            for ( Iterator i = artifacts.iterator(); i.hasNext(); count++ )
+            for ( Iterator i = artifacts.iterator(); i.hasNext(); )
             {
                 Artifact artifact = (Artifact) i.next();
                 RepositoryIndexRecord record = factory.createRecord( artifact );
@@ -347,13 +334,6 @@ public class LuceneRepositoryArtifactIndex
                         new Field( FLD_PK, record.getPrimaryKey(), Field.Store.NO, Field.Index.UN_TOKENIZED ) );
 
                     indexModifier.addDocument( document );
-                }
-
-                if ( count % 100 == 0 )
-                {
-                    // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
-                    // around that. TODO: remove when it is configurable
-                    flushProjectBuilderCacheHack();
                 }
             }
             indexModifier.optimize();
@@ -433,33 +413,6 @@ public class LuceneRepositoryArtifactIndex
             closeQuietly( searcher );
         }
         return new ArrayList( results );
-    }
-
-    private void flushProjectBuilderCacheHack()
-    {
-        try
-        {
-            if ( projectBuilder != null )
-            {
-                java.lang.reflect.Field f = projectBuilder.getClass().getDeclaredField( "rawProjectCache" );
-                f.setAccessible( true );
-                Map cache = (Map) f.get( projectBuilder );
-                cache.clear();
-
-                f = projectBuilder.getClass().getDeclaredField( "processedProjectCache" );
-                f.setAccessible( true );
-                cache = (Map) f.get( projectBuilder );
-                cache.clear();
-            }
-        }
-        catch ( NoSuchFieldException e )
-        {
-            throw new RuntimeException( e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw new RuntimeException( e );
-        }
     }
 
     public boolean exists()

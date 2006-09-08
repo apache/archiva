@@ -20,12 +20,12 @@ import org.apache.maven.archiva.layer.RepositoryQueryLayer;
 import org.apache.maven.archiva.layer.RepositoryQueryLayerFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,31 +45,29 @@ public class DependencyArtifactReportProcessor
      */
     private RepositoryQueryLayerFactory layerFactory;
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
-                                 ArtifactRepository repository )
+    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
-        RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( repository );
+        RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( artifact.getRepository() );
         processArtifact( artifact, reporter, queryLayer );
 
-        List dependencies = model.getDependencies();
-        processDependencies( dependencies, reporter, queryLayer );
+        if ( model != null )
+        {
+            List dependencies = model.getDependencies();
+            processDependencies( dependencies, reporter, queryLayer, artifact );
+        }
     }
 
-    private void processArtifact( Artifact artifact, ArtifactReporter reporter,
+    private void processArtifact( Artifact artifact, ReportingDatabase reporter,
                                   RepositoryQueryLayer repositoryQueryLayer )
     {
-        if ( repositoryQueryLayer.containsArtifact( artifact ) )
+        if ( !repositoryQueryLayer.containsArtifact( artifact ) )
         {
-            reporter.addSuccess( artifact );
-        }
-        else
-        {
-            reporter.addFailure( artifact, ArtifactReporter.ARTIFACT_NOT_FOUND );
+            reporter.addFailure( artifact, "Artifact does not exist in the repository" );
         }
     }
 
-    private void processDependencies( List dependencies, ArtifactReporter reporter,
-                                      RepositoryQueryLayer repositoryQueryLayer )
+    private void processDependencies( List dependencies, ReportingDatabase reporter,
+                                      RepositoryQueryLayer repositoryQueryLayer, Artifact sourceArtifact )
     {
         if ( dependencies.size() > 0 )
         {
@@ -78,23 +76,24 @@ public class DependencyArtifactReportProcessor
             {
                 Dependency dependency = (Dependency) iterator.next();
 
-                Artifact artifact = null;
                 try
                 {
-                    artifact = createArtifact( dependency );
+                    Artifact artifact = createArtifact( dependency );
 
-                    if ( repositoryQueryLayer.containsArtifact( artifact ) )
+                    if ( !repositoryQueryLayer.containsArtifact( artifact ) )
                     {
-                        reporter.addSuccess( artifact );
-                    }
-                    else
-                    {
-                        reporter.addFailure( artifact, ArtifactReporter.DEPENDENCY_NOT_FOUND );
+                        String reason = MessageFormat.format(
+                            "Artifact''s dependency {0} does not exist in the repository",
+                            new String[]{dependency.toString()} );
+                        reporter.addFailure( sourceArtifact, reason );
                     }
                 }
                 catch ( InvalidVersionSpecificationException e )
                 {
-                    reporter.addFailure( artifact, ArtifactReporter.DEPENDENCY_INVALID_VERSION );
+                    String reason = MessageFormat.format( "Artifact''s dependency {0} contains an invalid version {1}",
+                                                          new String[]{dependency.toString(),
+                                                              dependency.getVersion()} );
+                    reporter.addFailure( sourceArtifact, reason );
                 }
             }
         }

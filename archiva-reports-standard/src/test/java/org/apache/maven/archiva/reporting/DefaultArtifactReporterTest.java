@@ -16,6 +16,8 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.reporting.model.MetadataResults;
+import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -30,9 +32,7 @@ import java.util.Iterator;
 public class DefaultArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
-    private ArtifactReporter reporter;
-
-    private Artifact artifact;
+    private ReportingDatabase reporter;
 
     private RepositoryMetadata metadata;
 
@@ -40,13 +40,8 @@ public class DefaultArtifactReporterTest
     {
         assertEquals( "No failures", 0, reporter.getNumFailures() );
         assertEquals( "No warnings", 0, reporter.getNumWarnings() );
-        assertEquals( "No successes", 0, reporter.getNumSuccesses() );
-        assertFalse( "No artifact failures", reporter.getArtifactFailureIterator().hasNext() );
-        assertFalse( "No artifact warnings", reporter.getArtifactWarningIterator().hasNext() );
-        assertFalse( "No artifact successes", reporter.getArtifactSuccessIterator().hasNext() );
-        assertFalse( "No metadata failures", reporter.getRepositoryMetadataFailureIterator().hasNext() );
-        assertFalse( "No metadata warnings", reporter.getRepositoryMetadataWarningIterator().hasNext() );
-        assertFalse( "No metadata successes", reporter.getRepositoryMetadataSuccessIterator().hasNext() );
+        assertFalse( "No artifact failures", reporter.getArtifactIterator().hasNext() );
+        assertFalse( "No metadata failures", reporter.getMetadataIterator().hasNext() );
     }
 
     public void testMetadataSingleFailure()
@@ -54,14 +49,23 @@ public class DefaultArtifactReporterTest
         reporter.addFailure( metadata, "Single Failure Reason" );
         assertEquals( "failures count", 1, reporter.getNumFailures() );
         assertEquals( "warnings count", 0, reporter.getNumWarnings() );
-        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
-        Iterator results = reporter.getRepositoryMetadataFailureIterator();
-        assertTrue( "must have failures", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        Iterator failures = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        MetadataResults results = (MetadataResults) failures.next();
+        failures = results.getFailures().iterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        Result result = (Result) failures.next();
+        assertMetadata( results );
         assertEquals( "check failure reason", "Single Failure Reason", result.getReason() );
-        assertFalse( "no more failures", results.hasNext() );
+        assertFalse( "no more failures", failures.hasNext() );
+    }
+
+    private void assertMetadata( MetadataResults result )
+    {
+        assertEquals( "check failure cause", metadata.getGroupId(), result.getGroupId() );
+        assertEquals( "check failure cause", metadata.getArtifactId(), result.getArtifactId() );
+        assertEquals( "check failure cause", metadata.getBaseVersion(), result.getVersion() );
     }
 
     public void testMetadataMultipleFailures()
@@ -70,93 +74,57 @@ public class DefaultArtifactReporterTest
         reporter.addFailure( metadata, "Second Failure Reason" );
         assertEquals( "failures count", 2, reporter.getNumFailures() );
         assertEquals( "warnings count", 0, reporter.getNumWarnings() );
-        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
-        Iterator results = reporter.getRepositoryMetadataFailureIterator();
-        assertTrue( "must have failures", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        Iterator failures = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        MetadataResults results = (MetadataResults) failures.next();
+        failures = results.getFailures().iterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        Result result = (Result) failures.next();
+        assertMetadata( results );
         assertEquals( "check failure reason", "First Failure Reason", result.getReason() );
-        assertTrue( "must have 2nd failure", results.hasNext() );
-        result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        assertTrue( "must have 2nd failure", failures.hasNext() );
+        result = (Result) failures.next();
         assertEquals( "check failure reason", "Second Failure Reason", result.getReason() );
-        assertFalse( "no more failures", results.hasNext() );
+        assertFalse( "no more failures", failures.hasNext() );
     }
 
     public void testMetadataSingleWarning()
     {
         reporter.addWarning( metadata, "Single Warning Message" );
-        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumFailures() );
         assertEquals( "warnings count", 1, reporter.getNumWarnings() );
-        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
-        Iterator results = reporter.getRepositoryMetadataWarningIterator();
-        assertTrue( "must have failures", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        Iterator warnings = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", warnings.hasNext() );
+        MetadataResults results = (MetadataResults) warnings.next();
+        warnings = results.getWarnings().iterator();
+        assertTrue( "check there is a failure", warnings.hasNext() );
+        Result result = (Result) warnings.next();
+        assertMetadata( results );
         assertEquals( "check failure reason", "Single Warning Message", result.getReason() );
-        assertFalse( "no more failures", results.hasNext() );
+        assertFalse( "no more warnings", warnings.hasNext() );
     }
 
     public void testMetadataMultipleWarnings()
     {
         reporter.addWarning( metadata, "First Warning" );
         reporter.addWarning( metadata, "Second Warning" );
-        assertEquals( "failures count", 0, reporter.getNumFailures() );
+        assertEquals( "warnings count", 0, reporter.getNumFailures() );
         assertEquals( "warnings count", 2, reporter.getNumWarnings() );
-        assertEquals( "successes count", 0, reporter.getNumSuccesses() );
 
-        Iterator results = reporter.getRepositoryMetadataWarningIterator();
-        assertTrue( "must have warnings", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        Iterator warnings = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", warnings.hasNext() );
+        MetadataResults results = (MetadataResults) warnings.next();
+        warnings = results.getWarnings().iterator();
+        assertTrue( "check there is a failure", warnings.hasNext() );
+        Result result = (Result) warnings.next();
+        assertMetadata( results );
         assertEquals( "check failure reason", "First Warning", result.getReason() );
-        assertTrue( "must have 2nd warning", results.hasNext() );
-        result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check failure cause", metadata, result.getMetadata() );
+        assertTrue( "must have 2nd warning", warnings.hasNext() );
+        result = (Result) warnings.next();
         assertEquals( "check failure reason", "Second Warning", result.getReason() );
-        assertFalse( "no more failures", results.hasNext() );
-    }
-
-    public void testMetadataSingleSuccess()
-    {
-        reporter.addSuccess( metadata );
-        assertEquals( "failures count", 0, reporter.getNumFailures() );
-        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
-        assertEquals( "successes count", 1, reporter.getNumSuccesses() );
-
-        Iterator results = reporter.getRepositoryMetadataSuccessIterator();
-        assertTrue( "must have successes", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check success metadata", metadata, result.getMetadata() );
-        assertNull( "check no reason", result.getReason() );
-        assertFalse( "no more failures", results.hasNext() );
-    }
-
-    public void testMetadataMultipleSuccesses()
-    {
-        Versioning versioning = new Versioning();
-        versioning.addVersion( "1.0-beta-1" );
-        versioning.addVersion( "1.0-beta-2" );
-        RepositoryMetadata metadata2 = new ArtifactRepositoryMetadata( artifact, versioning );
-
-        reporter.addSuccess( metadata );
-        reporter.addSuccess( metadata2 );
-        assertEquals( "failures count", 0, reporter.getNumFailures() );
-        assertEquals( "warnings count", 0, reporter.getNumWarnings() );
-        assertEquals( "successes count", 2, reporter.getNumSuccesses() );
-
-        Iterator results = reporter.getRepositoryMetadataSuccessIterator();
-        assertTrue( "must have successes", results.hasNext() );
-        RepositoryMetadataResult result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check success metadata", metadata, result.getMetadata() );
-        assertNull( "check no reason", result.getReason() );
-        assertTrue( "must have 2nd success", results.hasNext() );
-        result = (RepositoryMetadataResult) results.next();
-        assertEquals( "check success metadata", metadata2, result.getMetadata() );
-        assertNull( "check no reason", result.getReason() );
-        assertFalse( "no more successes", results.hasNext() );
+        assertFalse( "no more warnings", warnings.hasNext() );
     }
 
     protected void setUp()
@@ -164,21 +132,14 @@ public class DefaultArtifactReporterTest
     {
         super.setUp();
 
-        reporter = new DefaultArtifactReporter();
+        reporter = new ReportingDatabase();
         ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
-        artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
+        Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
 
         Versioning versioning = new Versioning();
         versioning.addVersion( "1.0-alpha-1" );
         versioning.addVersion( "1.0-alpha-2" );
-    }
 
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-
-        reporter = null;
-        metadata = null;
+        metadata = new ArtifactRepositoryMetadata( artifact, versioning );
     }
 }

@@ -66,4 +66,38 @@
       <artifactId>archiva-indexer</artifactId>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.modello</groupId>
+        <artifactId>modello-maven-plugin</artifactId>
+        <version>1.0-alpha-10</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>xpp3-writer</goal>
+              <goal>java</goal>
+              <goal>xpp3-reader</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <version>1.0.0</version>
+          <model>src/main/mdo/reporting.mdo</model>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <configuration>
+          <instrumentation>
+            <!-- exclude generated -->
+            <excludes>
+              <exclude>org/apache/maven/archiva/reporting/model/**</exclude>
+            </excludes>
+          </instrumentation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

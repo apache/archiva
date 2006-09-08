@@ -38,14 +38,13 @@ public class InvalidPomArtifactReportProcessor
     implements ArtifactReportProcessor
 {
     /**
-     * @param model
-     * @param artifact   The pom xml file to be validated, passed as an artifact object.
-     * @param reporter   The artifact reporter object.
-     * @param repository the repository where the artifact is located.
+     * @param artifact The pom xml file to be validated, passed as an artifact object.
+     * @param reporter The artifact reporter object.
      */
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
-                                 ArtifactRepository repository )
+    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
+        ArtifactRepository repository = artifact.getRepository();
+
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
@@ -71,7 +70,6 @@ public class InvalidPomArtifactReportProcessor
                 {
                     reader = new FileReader( f );
                     pomReader.read( reader );
-                    reporter.addSuccess( artifact );
                 }
                 catch ( XmlPullParserException e )
                 {
@@ -97,5 +95,4 @@ public class InvalidPomArtifactReportProcessor
             reporter.addWarning( artifact, "The artifact is not a pom xml file." );
         }
     }
-
 }

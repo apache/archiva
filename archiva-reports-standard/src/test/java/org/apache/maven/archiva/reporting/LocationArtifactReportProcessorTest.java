@@ -17,10 +17,6 @@ package org.apache.maven.archiva.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -38,7 +34,7 @@ public class LocationArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new DefaultArtifactReporter();
+    private ReportingDatabase reporter = new ReportingDatabase();
 
     private MavenXpp3Reader pomReader;
 
@@ -63,18 +59,13 @@ public class LocationArtifactReportProcessorTest
      * both in the file system pom and in the pom included in the package.
      */
     public void testPackagedPomLocationArtifactReporterSuccess()
-        throws ReportProcessorException, IOException, XmlPullParserException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "2.0" );
-        Artifact artifact =
-            new DefaultArtifact( "org.apache.maven", "maven-model", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "org.apache.maven", "maven-model", "2.0" );
 
-        String path = "org/apache/maven/maven-model/2.0/maven-model-2.0.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     /**
@@ -82,17 +73,13 @@ public class LocationArtifactReportProcessorTest
      * file system pom (but the jar file does not have a pom included in its package).
      */
     public void testLocationArtifactReporterSuccess()
-        throws ReportProcessorException, IOException, XmlPullParserException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
-        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1" );
 
-        String path = "groupId/artifactId/1.0-alpha-1/artifactId-1.0-alpha-1.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
     /**
@@ -100,16 +87,11 @@ public class LocationArtifactReportProcessorTest
      * in the file system pom.
      */
     public void testLocationArtifactReporterFailure()
-        throws IOException, XmlPullParserException, ReportProcessorException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
-        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2" );
 
-        String path = "groupId/artifactId/1.0-alpha-2/artifactId-1.0-alpha-2.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
         assertEquals( 1, reporter.getNumFailures() );
     }
 
@@ -118,17 +100,13 @@ public class LocationArtifactReportProcessorTest
      * location in the file system pom but instead matches the specified location in the packaged pom.
      */
     public void testFsPomArtifactMatchFailure()
-        throws IOException, ReportProcessorException, XmlPullParserException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "2.0" );
-        Artifact artifact =
-            new DefaultArtifact( "org.apache.maven", "maven-archiver", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "org.apache.maven", "maven-archiver", "2.0" );
 
-        String path = "org/apache/maven/maven-archiver/2.0/maven-archiver-2.0.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        Artifact pomArtifact = createArtifact( "org.apache.maven", "maven-archiver", "2.0", "pom" );
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
     }
 
@@ -154,17 +132,11 @@ public class LocationArtifactReportProcessorTest
      * location specified in the packaged pom but matches the location specified in the file system pom.
      */
     public void testPkgPomArtifactMatchFailure()
-        throws IOException, XmlPullParserException, ReportProcessorException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "2.1" );
-        Artifact artifact =
-            new DefaultArtifact( "org.apache.maven", "maven-monitor", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "org.apache.maven", "maven-monitor", "2.1" );
 
-        String path = "org/apache/maven/maven-monitor/2.1/maven-monitor-2.1.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
         assertEquals( 1, reporter.getNumFailures() );
     }
 
@@ -173,17 +145,12 @@ public class LocationArtifactReportProcessorTest
      * location specified in the packaged pom and the location specified in the file system pom.
      */
     public void testBothPomArtifactMatchFailure()
-        throws IOException, XmlPullParserException, ReportProcessorException
+        throws IOException, XmlPullParserException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "2.1" );
-        Artifact artifact =
-            new DefaultArtifact( "org.apache.maven", "maven-project", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "org.apache.maven", "maven-project", "2.1" );
 
-        String path = "org/apache/maven/maven-project/2.1/maven-project-2.1.pom";
-        Model model = readPom( path );
-
-        artifactReportProcessor.processArtifact( model, artifact, reporter, repository );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
         assertEquals( 1, reporter.getNumFailures() );
     }
+
 }

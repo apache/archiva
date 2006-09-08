@@ -52,13 +52,6 @@
     <%-- TODO: a "delete index and run now" operation should be here too (really clean, remove deletions that didn't get picked up) --%>
     <td><a href="<ww:url action="runIndexer" />">Run Now</a></td>
   </tr>
-  <tr>
-    <th>Reporting Schedule</th>
-    <td>
-      <ww:property value="reporterCronExpression"/>
-    </td>
-    <td><a href="<ww:url action="runReporter" />">Run Now</a></td>
-  </tr>
 </table>
 
 <ww:set name="proxy" value="proxy"/>

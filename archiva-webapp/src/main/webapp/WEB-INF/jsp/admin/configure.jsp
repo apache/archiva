@@ -31,7 +31,6 @@
   <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
     <ww:textfield name="indexPath" label="Index Directory" size="100" required="true"/>
     <ww:textfield name="indexerCronExpression" label="Indexing Schedule"/>
-    <ww:textfield name="reporterCronExpression" label="Reporting Schedule"/>
     <ww:hidden name="proxy.protocol" value="http"/>
     <ww:textfield name="proxy.host" label="HTTP Proxy Host"/>
     <ww:textfield name="proxy.port" label="HTTP Proxy Port"/>

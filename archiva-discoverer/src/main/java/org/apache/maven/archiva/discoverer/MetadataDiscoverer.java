@@ -32,11 +32,10 @@ public interface MetadataDiscoverer
      * Search for metadata files in the repository.
      *
      * @param repository          The repository.
-     * @param operation           the operation being performed (used for timestamp comparison)
      * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
      * @return the list of artifacts found
      * @throws DiscovererException if there is a problem during the discovery process
      */
-    List discoverMetadata( ArtifactRepository repository, String operation, List blacklistedPatterns )
+    List discoverMetadata( ArtifactRepository repository, List blacklistedPatterns )
         throws DiscovererException;
 }

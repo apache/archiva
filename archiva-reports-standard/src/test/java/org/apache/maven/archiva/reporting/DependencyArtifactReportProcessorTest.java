@@ -16,6 +16,8 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.reporting.model.ArtifactResults;
+import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Dependency;
@@ -35,7 +37,7 @@ public class DependencyArtifactReportProcessorTest
 
     private static final String VALID_VERSION = "1.0-alpha-1";
 
-    private ArtifactReporter reporter;
+    private ReportingDatabase reporter;
 
     private Model model;
 
@@ -49,7 +51,7 @@ public class DependencyArtifactReportProcessorTest
         throws Exception
     {
         super.setUp();
-        reporter = (ArtifactReporter) lookup( ArtifactReporter.ROLE );
+        reporter = new ReportingDatabase();
         model = new Model();
         processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "dependency" );
 
@@ -57,43 +59,44 @@ public class DependencyArtifactReportProcessorTest
     }
 
     public void testArtifactFoundButNoDirectDependencies()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
     }
 
     private Artifact createValidArtifact()
     {
-        return artifactFactory.createProjectArtifact( VALID_GROUP_ID, VALID_ARTIFACT_ID, VALID_VERSION );
+        Artifact projectArtifact =
+            artifactFactory.createProjectArtifact( VALID_GROUP_ID, VALID_ARTIFACT_ID, VALID_VERSION );
+        projectArtifact.setRepository( repository );
+        return projectArtifact;
     }
 
     public void testArtifactNotFound()
-        throws ReportProcessorException
     {
         Artifact artifact = artifactFactory.createProjectArtifact( INVALID, INVALID, INVALID );
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 0, reporter.getNumSuccesses() );
+        artifact.setRepository( repository );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.ARTIFACT_NOT_FOUND, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( "Artifact does not exist in the repository", result.getReason() );
     }
 
     public void testValidArtifactWithNullDependency()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 2, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
     }
@@ -104,21 +107,18 @@ public class DependencyArtifactReportProcessorTest
     }
 
     public void testValidArtifactWithValidSingleDependency()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 2, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testValidArtifactWithValidMultipleDependencies()
-        throws ReportProcessorException
     {
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
@@ -128,14 +128,12 @@ public class DependencyArtifactReportProcessorTest
         model.addDependency( dependency );
 
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 6, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
     }
 
     public void testValidArtifactWithAnInvalidDependency()
-        throws ReportProcessorException
     {
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
@@ -145,32 +143,36 @@ public class DependencyArtifactReportProcessorTest
         model.addDependency( createDependency( INVALID, INVALID, INVALID ) );
 
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 5, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
 
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.DEPENDENCY_NOT_FOUND, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyNotFoundMessage( createDependency( INVALID, INVALID, INVALID ) ),
+                      result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyGroupId()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createDependency( INVALID, VALID_ARTIFACT_ID, VALID_VERSION );
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
 
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.DEPENDENCY_NOT_FOUND, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
     private Dependency createDependency( String o, String valid, String s )
@@ -183,56 +185,69 @@ public class DependencyArtifactReportProcessorTest
     }
 
     public void testValidArtifactWithInvalidDependencyArtifactId()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createDependency( VALID_GROUP_ID, INVALID, VALID_VERSION );
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
 
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.DEPENDENCY_NOT_FOUND, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
     public void testValidArtifactWithIncorrectDependencyVersion()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, INVALID );
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
 
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.DEPENDENCY_NOT_FOUND, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyVersion()
-        throws ReportProcessorException
     {
         Artifact artifact = createValidArtifact();
 
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, "[" );
         model.addDependency( dependency );
 
-        processor.processArtifact( model, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        processor.processArtifact( artifact, model, reporter );
         assertEquals( 1, reporter.getNumFailures() );
         assertEquals( 0, reporter.getNumWarnings() );
 
-        Iterator failures = reporter.getArtifactFailureIterator();
-        ArtifactResult result = (ArtifactResult) failures.next();
-        assertEquals( ArtifactReporter.DEPENDENCY_INVALID_VERSION, result.getReason() );
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyVersionInvalidMessage( dependency, "[" ), result.getReason() );
+    }
+
+    private String getDependencyVersionInvalidMessage( Dependency dependency, String version )
+    {
+        return "Artifact's dependency " + dependency + " contains an invalid version " + version;
+    }
+
+    private String getDependencyNotFoundMessage( Dependency dependency )
+    {
+        return "Artifact's dependency " + dependency.toString() + " does not exist in the repository";
     }
 }

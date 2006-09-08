@@ -16,7 +16,7 @@ package org.apache.maven.archiva.converter;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.reporting.ArtifactReporter;
+import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
@@ -38,7 +38,7 @@ public interface RepositoryConverter
      * @param targetRepository the target repository
      * @param reporter         reporter to track the results of the conversion
      */
-    void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    void convert( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter )
         throws RepositoryConversionException;
 
     /**
@@ -48,6 +48,6 @@ public interface RepositoryConverter
      * @param targetRepository the target repository
      * @param reporter         reporter to track the results of the conversions
      */
-    void convert( List artifacts, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    void convert( List artifacts, ArtifactRepository targetRepository, ReportingDatabase reporter )
         throws RepositoryConversionException;
 }

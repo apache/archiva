@@ -58,62 +58,54 @@ public class DuplicateArtifactFileReportProcessor
      */
     private String indexDirectory;
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
-                                 ArtifactRepository repository )
-        throws ReportProcessorException
+    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
-        if ( artifact.getFile() != null )
+        ArtifactRepository repository = artifact.getRepository();
+        // TODO! always null currently, need to configure this properly
+        if ( artifact.getFile() != null && indexDirectory != null )
         {
             RepositoryArtifactIndex index = indexFactory.createStandardIndex( new File( indexDirectory ) );
 
-            String checksum;
+            String checksum = null;
             try
             {
                 checksum = digester.calc( artifact.getFile() );
             }
             catch ( DigesterException e )
             {
-                throw new ReportProcessorException( "Failed to generate checksum", e );
+                reporter.addWarning( artifact, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
             }
 
-            try
+            if ( checksum != null )
             {
-                List results = index.search( new LuceneQuery(
-                    new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
+                try
+                {
+                    List results = index.search( new LuceneQuery(
+                        new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
 
-                if ( results.isEmpty() )
-                {
-                    reporter.addSuccess( artifact );
-                }
-                else
-                {
-                    boolean hasDuplicates = false;
-                    for ( Iterator i = results.iterator(); i.hasNext(); )
+                    if ( !results.isEmpty() )
                     {
-                        StandardArtifactIndexRecord result = (StandardArtifactIndexRecord) i.next();
-
-                        //make sure it is not the same artifact
-                        if ( !result.getFilename().equals( repository.pathOf( artifact ) ) )
+                        for ( Iterator i = results.iterator(); i.hasNext(); )
                         {
-                            //report only duplicates from the same groupId
-                            String groupId = artifact.getGroupId();
-                            if ( groupId.equals( result.getGroupId() ) )
+                            StandardArtifactIndexRecord result = (StandardArtifactIndexRecord) i.next();
+
+                            //make sure it is not the same artifact
+                            if ( !result.getFilename().equals( repository.pathOf( artifact ) ) )
                             {
-                                hasDuplicates = true;
-                                reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
+                                //report only duplicates from the same groupId
+                                String groupId = artifact.getGroupId();
+                                if ( groupId.equals( result.getGroupId() ) )
+                                {
+                                    reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
+                                }
                             }
                         }
                     }
-
-                    if ( !hasDuplicates )
-                    {
-                        reporter.addSuccess( artifact );
-                    }
                 }
-            }
-            catch ( RepositoryIndexSearchException e )
-            {
-                throw new ReportProcessorException( "Failed to search in index", e );
+                catch ( RepositoryIndexSearchException e )
+                {
+                    reporter.addWarning( artifact, "Failed to search in index" + e );
+                }
             }
         }
         else

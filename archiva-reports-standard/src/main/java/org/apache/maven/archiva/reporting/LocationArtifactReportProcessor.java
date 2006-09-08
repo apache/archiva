@@ -21,6 +21,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.project.MavenProjectBuilder;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -29,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -47,6 +51,15 @@ public class LocationArtifactReportProcessor
      */
     private ArtifactFactory artifactFactory;
 
+    // TODO: share with other code with the same
+    private static final Set JAR_FILE_TYPES =
+        new HashSet( Arrays.asList( new String[]{"jar", "war", "par", "ejb", "ear", "rar", "sar"} ) );
+
+    /**
+     * @plexus.requirement
+     */
+    private MavenProjectBuilder projectBuilder;
+
     /**
      * Check whether the artifact is in its proper location. The location of the artifact
      * is validated first against the groupId, artifactId and versionId in the specified model
@@ -54,16 +67,11 @@ public class LocationArtifactReportProcessor
      * included in the package. If a model exists inside the package, then check if the artifact's
      * location is valid based on the location specified in the pom. Check if the both the location
      * specified in the file system pom and in the pom included in the package is the same.
-     *
-     * @param model      Represents the pom in the file system.
-     * @param artifact
-     * @param reporter
-     * @param repository
      */
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
-                                 ArtifactRepository repository )
-        throws ReportProcessorException
+    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
+        ArtifactRepository repository = artifact.getRepository();
+
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
@@ -71,24 +79,33 @@ public class LocationArtifactReportProcessor
                 "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
         }
 
-        //check if the artifact is located in its proper location based on the info
-        //specified in the model object/pom
-        Artifact modelArtifact = artifactFactory.createBuildArtifact( model.getGroupId(), model.getArtifactId(),
-                                                                      model.getVersion(), model.getPackaging() );
-
-        boolean failed = false;
-        String modelPath = repository.pathOf( modelArtifact );
         String artifactPath = repository.pathOf( artifact );
-        if ( modelPath.equals( artifactPath ) )
-        {
-            //get the location of the artifact itself
-            File file = new File( repository.getBasedir(), artifactPath );
 
-            if ( file.exists() )
+        if ( model != null )
+        {
+            //check if the artifact is located in its proper location based on the info
+            //specified in the model object/pom
+            Artifact modelArtifact = artifactFactory.createBuildArtifact( model.getGroupId(), model.getArtifactId(),
+                                                                          model.getVersion(), model.getPackaging() );
+
+            String modelPath = repository.pathOf( modelArtifact );
+            if ( !modelPath.equals( artifactPath ) )
+            {
+                reporter.addFailure( artifact,
+                                     "The artifact is out of place. It does not match the specified location in the repository pom." );
+            }
+        }
+
+        //get the location of the artifact itself
+        File file = new File( repository.getBasedir(), artifactPath );
+
+        if ( file.exists() )
+        {
+            if ( JAR_FILE_TYPES.contains( artifact.getType() ) )
             {
                 //unpack the artifact (using the groupId, artifactId & version specified in the artifact object itself
                 //check if the pom is included in the package
-                Model extractedModel = readArtifactModel( file, artifact.getGroupId(), artifact.getArtifactId() );
+                Model extractedModel = readArtifactModel( file, artifact, reporter );
 
                 if ( extractedModel != null )
                 {
@@ -100,39 +117,18 @@ public class LocationArtifactReportProcessor
                     {
                         reporter.addFailure( artifact,
                                              "The artifact is out of place. It does not match the specified location in the packaged pom." );
-                        failed = true;
                     }
                 }
-            }
-            else
-            {
-                reporter.addFailure( artifact,
-                                     "The artifact is out of place. It does not exist at the specified location in the repository pom." );
-                failed = true;
             }
         }
         else
         {
             reporter.addFailure( artifact,
-                                 "The artifact is out of place. It does not match the specified location in the repository pom." );
-            failed = true;
-        }
-
-        if ( !failed )
-        {
-            reporter.addSuccess( artifact );
+                                 "The artifact is out of place. It does not exist at the specified location in the repository pom." );
         }
     }
 
-    /**
-     * Extract the contents of the artifact/jar file.
-     *
-     * @param file
-     * @param groupId
-     * @param artifactId
-     */
-    private Model readArtifactModel( File file, String groupId, String artifactId )
-        throws ReportProcessorException
+    private Model readArtifactModel( File file, Artifact artifact, ReportingDatabase reporter )
     {
         Model model = null;
 
@@ -142,23 +138,31 @@ public class LocationArtifactReportProcessor
             jar = new JarFile( file );
 
             //Get the entry and its input stream.
-            JarEntry entry = jar.getJarEntry( "META-INF/maven/" + groupId + "/" + artifactId + "/pom.xml" );
+            JarEntry entry = jar.getJarEntry(
+                "META-INF/maven/" + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/pom.xml" );
 
             // If the entry is not null, extract it.
             if ( entry != null )
             {
                 model = readModel( jar.getInputStream( entry ) );
+
+                if ( model.getGroupId() == null )
+                {
+                    model.setGroupId( model.getParent().getGroupId() );
+                }
+                if ( model.getVersion() == null )
+                {
+                    model.setVersion( model.getParent().getVersion() );
+                }
             }
         }
         catch ( IOException e )
         {
-            // TODO: should just warn and continue!
-            throw new ReportProcessorException( "Unable to read artifact to extract model", e );
+            reporter.addWarning( artifact, "Unable to read artifact to extract model: " + e );
         }
         catch ( XmlPullParserException e )
         {
-            // TODO: should just warn and continue!
-            throw new ReportProcessorException( "Unable to read artifact to extract model", e );
+            reporter.addWarning( artifact, "Unable to parse extracted model: " + e );
         }
         finally
         {

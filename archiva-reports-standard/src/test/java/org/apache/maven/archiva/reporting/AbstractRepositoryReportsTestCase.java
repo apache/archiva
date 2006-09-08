@@ -16,6 +16,8 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
@@ -24,7 +26,7 @@ import org.codehaus.plexus.PlexusTestCase;
 import java.io.File;
 
 /**
- * 
+ *
  */
 public abstract class AbstractRepositoryReportsTestCase
     extends PlexusTestCase
@@ -33,6 +35,8 @@ public abstract class AbstractRepositoryReportsTestCase
      * This should only be used for the few that can't use the query layer.
      */
     protected ArtifactRepository repository;
+
+    private ArtifactFactory artifactFactory;
 
     protected void setUp()
         throws Exception
@@ -45,6 +49,19 @@ public abstract class AbstractRepositoryReportsTestCase
 
         repository = factory.createArtifactRepository( "repository", repositoryDirectory.toURL().toString(), layout,
                                                        null, null );
+        artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+    }
+
+    protected Artifact createArtifact( String groupId, String artifactId, String version )
+    {
+        return createArtifact( groupId, artifactId, version, "jar" );
+    }
+
+    protected Artifact createArtifact( String groupId, String artifactId, String version, String type )
+    {
+        Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, type );
+        artifact.setRepository( repository );
+        return artifact;
     }
 
 }

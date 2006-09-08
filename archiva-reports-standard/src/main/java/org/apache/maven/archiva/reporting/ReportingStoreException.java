@@ -17,16 +17,20 @@ package org.apache.maven.archiva.reporting;
  */
 
 /**
- * A result record during the reporting.
+ * Exception occurring using the reporting store.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface Result
+public class ReportingStoreException
+    extends Exception
 {
-    /**
-     * The reason given for the result.
-     *
-     * @return the message
-     */
-    String getReason();
+    public ReportingStoreException( String message )
+    {
+        super( message );
+    }
+
+    public ReportingStoreException( String message, Throwable e )
+    {
+        super( message, e );
+    }
 }

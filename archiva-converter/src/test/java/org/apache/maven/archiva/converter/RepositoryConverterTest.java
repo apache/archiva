@@ -16,9 +16,9 @@ package org.apache.maven.archiva.converter;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.reporting.ArtifactReporter;
-import org.apache.maven.archiva.reporting.ArtifactResult;
-import org.apache.maven.archiva.reporting.DefaultArtifactReporter;
+import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.model.ArtifactResults;
+import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
@@ -61,7 +61,7 @@ public class RepositoryConverterTest
 
     private ArtifactFactory artifactFactory;
 
-    private ArtifactReporter reporter;
+    private ReportingDatabase reporter;
 
     private static final int SLEEP_MILLIS = 100;
 
@@ -94,7 +94,7 @@ public class RepositoryConverterTest
 
         i18n = (I18N) lookup( I18N.ROLE );
 
-        reporter = new DefaultArtifactReporter();
+        reporter = new ReportingDatabase();
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -284,7 +284,6 @@ public class RepositoryConverterTest
         repositoryConverter.convert( artifact, targetRepository, reporter );
         assertEquals( "check no errors", 0, reporter.getNumFailures() );
         assertEquals( "check number of warnings", 2, reporter.getNumWarnings() );
-        assertEquals( "check success", 1, reporter.getNumSuccesses() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -455,7 +454,6 @@ public class RepositoryConverterTest
         repositoryConverter.convert( artifact, targetRepository, reporter );
         assertEquals( "check no errors", 0, reporter.getNumFailures() );
         assertEquals( "check no warnings", 1, reporter.getNumWarnings() );
-        assertEquals( "check success", 1, reporter.getNumSuccesses() );
         assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -735,7 +733,6 @@ public class RepositoryConverterTest
         repositoryConverter.convert( artifacts, targetRepository, reporter );
         assertEquals( "check no errors", 0, reporter.getNumFailures() );
         assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
-        assertEquals( "check successes", 3, reporter.getNumSuccesses() );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -908,14 +905,12 @@ public class RepositoryConverterTest
     {
         assertEquals( "check no errors", 0, reporter.getNumFailures() );
         assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
-        assertEquals( "check success", 1, reporter.getNumSuccesses() );
     }
 
     private void checkFailure()
     {
         assertEquals( "check num errors", 1, reporter.getNumFailures() );
         assertEquals( "check no warnings", 0, reporter.getNumWarnings() );
-        assertEquals( "check no success", 0, reporter.getNumSuccesses() );
     }
 
     private String getI18nString( String key )
@@ -923,14 +918,16 @@ public class RepositoryConverterTest
         return i18n.getString( repositoryConverter.getClass().getName(), Locale.getDefault(), key );
     }
 
-    private ArtifactResult getFailure()
+    private Result getFailure()
     {
-        return (ArtifactResult) reporter.getArtifactFailureIterator().next();
+        ArtifactResults artifact = (ArtifactResults) reporter.getArtifactIterator().next();
+        return (Result) artifact.getFailures().get( 0 );
     }
 
-    private ArtifactResult getWarning()
+    private Result getWarning()
     {
-        return (ArtifactResult) reporter.getArtifactWarningIterator().next();
+        ArtifactResults artifact = (ArtifactResults) reporter.getArtifactIterator().next();
+        return (Result) artifact.getWarnings().get( 0 );
     }
 
     private void createModernSourceRepository()

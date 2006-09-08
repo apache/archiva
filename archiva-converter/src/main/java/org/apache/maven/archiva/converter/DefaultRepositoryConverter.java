@@ -19,7 +19,7 @@ package org.apache.maven.archiva.converter;
 import org.apache.maven.archiva.converter.transaction.FileTransaction;
 import org.apache.maven.archiva.digest.Digester;
 import org.apache.maven.archiva.digest.DigesterException;
-import org.apache.maven.archiva.reporting.ArtifactReporter;
+import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -105,7 +105,7 @@ public class DefaultRepositoryConverter
      */
     private I18N i18n;
 
-    public void convert( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    public void convert( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter )
         throws RepositoryConversionException
     {
         if ( artifact.getRepository().getUrl().equals( targetRepository.getUrl() ) )
@@ -150,7 +150,6 @@ public class DefaultRepositoryConverter
                     {
                         transaction.commit();
                     }
-                    reporter.addSuccess( artifact );
                 }
             }
         }
@@ -239,7 +238,7 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private boolean validateMetadata( Artifact artifact, ArtifactReporter reporter )
+    private boolean validateMetadata( Artifact artifact, ReportingDatabase reporter )
         throws RepositoryConversionException
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -267,7 +266,7 @@ public class DefaultRepositoryConverter
     }
 
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
-                                      ArtifactReporter reporter )
+                                      ReportingDatabase reporter )
     {
         String groupIdKey;
         String artifactIdKey = null;
@@ -368,7 +367,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter,
                              FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -572,7 +571,7 @@ public class DefaultRepositoryConverter
         return i18n.getString( getClass().getName(), Locale.getDefault(), key );
     }
 
-    private boolean testChecksums( Artifact artifact, File file, ArtifactReporter reporter )
+    private boolean testChecksums( Artifact artifact, File file, ReportingDatabase reporter )
         throws IOException
     {
 
@@ -583,7 +582,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean verifyChecksum( File file, String fileName, Digester digester, ArtifactReporter reporter,
+    private boolean verifyChecksum( File file, String fileName, Digester digester, ReportingDatabase reporter,
                                     Artifact artifact, String key )
         throws IOException
     {
@@ -606,7 +605,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ArtifactReporter reporter,
+    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter,
                                   FileTransaction transaction )
         throws RepositoryConversionException
     {
@@ -649,7 +648,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    public void convert( List artifacts, ArtifactRepository targetRepository, ArtifactReporter reporter )
+    public void convert( List artifacts, ArtifactRepository targetRepository, ReportingDatabase reporter )
         throws RepositoryConversionException
     {
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )

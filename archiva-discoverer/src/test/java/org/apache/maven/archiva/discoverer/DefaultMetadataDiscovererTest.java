@@ -91,7 +91,7 @@ public class DefaultMetadataDiscovererTest
     public void testKickoutWrongDirectory()
         throws DiscovererException
     {
-        discoverer.discoverMetadata( repository, TEST_OPERATION, null );
+        discoverer.discoverMetadata( repository, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )
@@ -116,7 +116,7 @@ public class DefaultMetadataDiscovererTest
     public void testKickoutBlankMetadata()
         throws DiscovererException
     {
-        discoverer.discoverMetadata( repository, TEST_OPERATION, null );
+        discoverer.discoverMetadata( repository, null );
         Iterator iter = discoverer.getKickedOutPathsIterator();
         boolean found = false;
         while ( iter.hasNext() && !found )
@@ -148,7 +148,7 @@ public class DefaultMetadataDiscovererTest
     public void testDiscoverMetadata()
         throws DiscovererException
     {
-        List metadataPaths = discoverer.discoverMetadata( repository, TEST_OPERATION, null );
+        List metadataPaths = discoverer.discoverMetadata( repository, null );
         assertNotNull( "Check metadata not null", metadataPaths );
 
         RepositoryMetadata metadata =

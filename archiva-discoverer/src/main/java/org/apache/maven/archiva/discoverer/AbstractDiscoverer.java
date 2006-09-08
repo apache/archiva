@@ -67,6 +67,17 @@ public abstract class AbstractDiscoverer
     }
 
     /**
+     * Add a path to the list of files that were excluded.
+     *
+     * @param path   the path to add
+     * @param reason the reason why the path is excluded
+     */
+    protected void addExcludedPath( String path, String reason )
+    {
+        excludedPaths.add( new DiscovererPath( path, reason ) );
+    }
+
+    /**
      * Returns an iterator for the list if DiscovererPaths that were found to not represent a searched object
      *
      * @return Iterator for the DiscovererPath List

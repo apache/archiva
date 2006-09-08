@@ -17,10 +17,6 @@ package org.apache.maven.archiva.reporting;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
-import org.apache.maven.artifact.handler.DefaultArtifactHandler;
-import org.apache.maven.artifact.versioning.VersionRange;
 
 /**
  * This class tests the InvalidPomArtifactReportProcessor class.
@@ -30,7 +26,7 @@ public class InvalidPomArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ArtifactReporter reporter = new DefaultArtifactReporter();
+    private ReportingDatabase reporter = new ReportingDatabase();
 
     public void setUp()
         throws Exception
@@ -43,14 +39,10 @@ public class InvalidPomArtifactReportProcessorTest
      * Test the InvalidPomArtifactReportProcessor when the artifact is an invalid pom.
      */
     public void testInvalidPomArtifactReportProcessorFailure()
-        throws ReportProcessorException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
-        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-3" );
-        Artifact artifact =
-            new DefaultArtifact( "org.apache.maven", "artifactId", version, "compile", "pom", "", handler );
+        Artifact artifact = createArtifact( "org.apache.maven", "artifactId", "1.0-alpha-3", "pom" );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
         assertEquals( 1, reporter.getNumFailures() );
     }
 
@@ -59,14 +51,12 @@ public class InvalidPomArtifactReportProcessorTest
      * Test the InvalidPomArtifactReportProcessor when the artifact is a valid pom.
      */
     public void testInvalidPomArtifactReportProcessorSuccess()
-        throws ReportProcessorException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "pom" );
-        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-2" );
-        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "pom", "", handler );
+        Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
-        assertEquals( 1, reporter.getNumSuccesses() );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
     }
 
 
@@ -74,13 +64,11 @@ public class InvalidPomArtifactReportProcessorTest
      * Test the InvalidPomArtifactReportProcessor when the artifact is not a pom.
      */
     public void testNotAPomArtifactReportProcessorSuccess()
-        throws ReportProcessorException
     {
-        ArtifactHandler handler = new DefaultArtifactHandler( "jar" );
-        VersionRange version = VersionRange.createFromVersion( "1.0-alpha-1" );
-        Artifact artifact = new DefaultArtifact( "groupId", "artifactId", version, "compile", "jar", "", handler );
+        Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "jar" );
 
-        artifactReportProcessor.processArtifact( null, artifact, reporter, repository );
+        artifactReportProcessor.processArtifact( artifact, null, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
         assertEquals( 1, reporter.getNumWarnings() );
     }
 }

@@ -48,7 +48,8 @@ public class ChecksumMetadataReportProcessor
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
      */
-    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ArtifactReporter reporter )
+    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
+                                 ReportingDatabase reporter )
     {
         if ( !"file".equals( repository.getProtocol() ) )
         {
@@ -66,7 +67,7 @@ public class ChecksumMetadataReportProcessor
     }
 
     private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
-                                 ArtifactReporter reporter, RepositoryMetadata metadata )
+                                 ReportingDatabase reporter, RepositoryMetadata metadata )
     {
         File checksumFile = new File( repository.getBasedir(), path );
         if ( checksumFile.exists() )
@@ -74,8 +75,6 @@ public class ChecksumMetadataReportProcessor
             try
             {
                 digester.verify( file, FileUtils.fileRead( checksumFile ) );
-
-                reporter.addSuccess( metadata );
             }
             catch ( DigesterException e )
             {

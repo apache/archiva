@@ -45,9 +45,10 @@ public class ChecksumArtifactReportProcessor
      */
     private Digester md5Digester;
 
-    public void processArtifact( Model model, Artifact artifact, ArtifactReporter reporter,
-                                 ArtifactRepository repository )
+    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
+        ArtifactRepository repository = artifact.getRepository();
+
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
@@ -59,12 +60,13 @@ public class ChecksumArtifactReportProcessor
         String path = repository.pathOf( artifact );
         File file = new File( repository.getBasedir(), path );
 
-        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, artifact );
+        // TODO: make md5 configurable
+//        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, artifact );
         verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, artifact );
     }
 
     private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
-                                 ArtifactReporter reporter, Artifact artifact )
+                                 ReportingDatabase reporter, Artifact artifact )
     {
         File checksumFile = new File( repository.getBasedir(), path );
         if ( checksumFile.exists() )
@@ -72,8 +74,6 @@ public class ChecksumArtifactReportProcessor
             try
             {
                 digester.verify( file, FileUtils.fileRead( checksumFile ) );
-
-                reporter.addSuccess( artifact );
             }
             catch ( DigesterException e )
             {
