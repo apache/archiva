@@ -17,7 +17,6 @@
 <!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<!-- TODO! see MRM-150 for progress on these -->
 <validators>
   <field name="id">
     <field-validator type="requiredstring">
@@ -39,7 +38,7 @@
       <message>You must enter the repository URL.</message>
     </field-validator>
   </field>
-    <field name="snapshotsInterval">
+  <field name="snapshotsInterval">
     <field-validator type="regex">
       <param name="expression"><![CDATA[([0-9])]]></param>
       <message>The value must be numeric</message>
@@ -62,7 +61,7 @@
       <message>Repository type is required.</message>
     </field-validator>
     <field-validator type="fieldexpression">
-      <param name="expression">layout in {"legacy", "default"} </param>
+      <param name="expression">layout in {"legacy", "default"}</param>
       <message>Invalid repository type.</message>
     </field-validator>
   </field>
@@ -72,7 +71,7 @@
       <message>Invalid snapshot policy.</message>
     </field-validator>
   </field>
-    <field name="releasesPolicy">
+  <field name="releasesPolicy">
     <field-validator type="fieldexpression">
       <param name="expression">releasesPolicy in { "disabled", "daily", "hourly", "never", "interval" }</param>
       <message>Invalid releases policy.</message>

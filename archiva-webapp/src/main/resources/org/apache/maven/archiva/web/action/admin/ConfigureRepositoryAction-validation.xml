@@ -17,8 +17,7 @@
 <!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<!-- TODO! see MRM-150 for progress on these -->
-<validators>  
+<validators>
   <field name="id">
     <field-validator type="requiredstring">
       <message>You must enter the repository identifier.</message>
@@ -36,7 +35,7 @@
   </field>
   <field name="layout">
     <field-validator type="fieldexpression">
-      <param name="expression">layout in {"legacy", "default"} </param>
+      <param name="expression">layout in {"legacy", "default"}</param>
       <message>Invalid repository type.</message>
     </field-validator>
   </field>

@@ -17,7 +17,6 @@
 <!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<!-- TODO! see MRM-150 for progress on these -->
 <validators>
   <field name="id">
     <field-validator type="requiredstring">
@@ -34,7 +33,7 @@
       <message>Select repository type.</message>
     </field-validator>
     <field-validator type="fieldexpression">
-      <param name="expression">layout in {"legacy", "default"} </param>
+      <param name="expression">layout in {"legacy", "default"}</param>
       <message>Invalid repository type.</message>
     </field-validator>
   </field>
@@ -47,5 +46,5 @@
   <validator type="syncedrepo">
     <message/>
   </validator>
-    
+
 </validators>
