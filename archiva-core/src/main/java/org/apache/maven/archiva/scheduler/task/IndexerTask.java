@@ -24,6 +24,7 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.MetadataDiscoverer;
+import org.apache.maven.archiva.discoverer.filter.MetadataFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
@@ -31,13 +32,16 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.reporting.ArtifactReportProcessor;
+import org.apache.maven.archiva.reporting.MetadataReportProcessor;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.ReportingMetadataFilter;
 import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
@@ -209,6 +213,10 @@ public class IndexerTask
                             // run the reports
                             runArtifactReports( currentArtifacts, reporter );
 
+                            // store intermittently because if anything crashes out after indexing then we will have
+                            // lost track of these artifact's reports
+                            reportingStore.storeReports( reporter, repository );
+
                             index.indexArtifacts( currentArtifacts, recordFactory );
                         }
 
@@ -217,12 +225,20 @@ public class IndexerTask
                         flushProjectBuilderCacheHack();
                     }
 
-                    // TODO! use reporting manager as a filter
+                    MetadataFilter metadataFilter = new ReportingMetadataFilter( reporter );
+
                     MetadataDiscoverer metadataDiscoverer =
                         (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
-                    metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns );
+                    List metadata =
+                        metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns, metadataFilter );
 
-                    //TODO! metadata reporting
+                    if ( !metadata.isEmpty() )
+                    {
+                        getLogger().info( "Discovered " + metadata.size() + " unprocessed metadata files" );
+
+                        // run the reports
+                        runMetadataReports( metadata, repository, reporter );
+                    }
 
                     reportingStore.storeReports( reporter, repository );
                 }
@@ -243,6 +259,32 @@ public class IndexerTask
 
         time = System.currentTimeMillis() - time;
         getLogger().info( "Finished repository indexing process in " + time + "ms" );
+    }
+
+    private void runMetadataReports( List metadata, ArtifactRepository repository, ReportingDatabase reporter )
+    {
+        for ( Iterator i = metadata.iterator(); i.hasNext(); )
+        {
+            RepositoryMetadata repositoryMetadata = (RepositoryMetadata) i.next();
+
+            File file =
+                new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+            reporter.cleanMetadata( repositoryMetadata, file.lastModified() );
+
+            // TODO: should the report set be limitable by configuration?
+            runMetadataReports( repositoryMetadata, repository, reporter );
+        }
+    }
+
+    private void runMetadataReports( RepositoryMetadata repositoryMetadata, ArtifactRepository repository,
+                                     ReportingDatabase reporter )
+    {
+        for ( Iterator i = metadataReports.iterator(); i.hasNext(); )
+        {
+            MetadataReportProcessor report = (MetadataReportProcessor) i.next();
+
+            report.processMetadata( repositoryMetadata, repository, reporter );
+        }
     }
 
     private void runArtifactReports( List artifacts, ReportingDatabase reporter )
@@ -268,6 +310,9 @@ public class IndexerTask
             {
                 reporter.addWarning( artifact, "Error reading project model: " + e );
             }
+
+            reporter.removeArtifact( artifact );
+
             runArtifactReports( artifact, model, reporter );
         }
     }

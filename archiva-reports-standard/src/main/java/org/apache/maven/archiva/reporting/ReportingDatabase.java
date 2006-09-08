@@ -125,37 +125,16 @@ public class ReportingDatabase
 
     public void addFailure( RepositoryMetadata metadata, String reason )
     {
-        MetadataResults results = getMetadataResults( metadata );
+        MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addFailure( createResults( reason ) );
         totalFailures++;
     }
 
     public void addWarning( RepositoryMetadata metadata, String reason )
     {
-        MetadataResults results = getMetadataResults( metadata );
+        MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addWarning( createResults( reason ) );
         totalWarnings++;
-    }
-
-    private MetadataResults getMetadataResults( RepositoryMetadata metadata )
-    {
-        Map metadataMap = getMetadataMap();
-
-        String key = getMetadataKey( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion() );
-
-        MetadataResults results = (MetadataResults) metadataMap.get( key );
-        if ( results == null )
-        {
-            results = new MetadataResults();
-            results.setArtifactId( metadata.getArtifactId() );
-            results.setGroupId( metadata.getGroupId() );
-            results.setVersion( metadata.getBaseVersion() );
-
-            metadataMap.put( key, results );
-            reporting.getMetadata().add( results );
-        }
-
-        return results;
     }
 
     private Map getMetadataMap()
@@ -207,5 +186,72 @@ public class ReportingDatabase
     public Iterator getMetadataIterator()
     {
         return reporting.getMetadata().iterator();
+    }
+
+    public boolean isMetadataUpToDate( RepositoryMetadata metadata, long timestamp )
+    {
+        String key = getMetadataKey( metadata );
+        Map map = getMetadataMap();
+        MetadataResults results = (MetadataResults) map.get( key );
+        return results != null && results.getLastModified() >= timestamp;
+    }
+
+    /**
+     * Make sure the metadata record exists, but remove any previous reports in preparation for adding new ones.
+     *
+     * @param metadata     the metadata
+     * @param lastModified the modification time of the file being tracked
+     */
+    public void cleanMetadata( RepositoryMetadata metadata, long lastModified )
+    {
+        MetadataResults results = getMetadataResults( metadata, lastModified );
+
+        results.setLastModified( lastModified );
+        results.getFailures().clear();
+        results.getWarnings().clear();
+    }
+
+    private MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
+    {
+        String key = getMetadataKey( metadata );
+        Map metadataMap = getMetadataMap();
+        MetadataResults results = (MetadataResults) metadataMap.get( key );
+        if ( results == null )
+        {
+            results = new MetadataResults();
+            results.setArtifactId( metadata.getArtifactId() );
+            results.setGroupId( metadata.getGroupId() );
+            results.setVersion( metadata.getBaseVersion() );
+            results.setLastModified( lastModified );
+
+            metadataMap.put( key, results );
+            reporting.getMetadata().add( results );
+        }
+        return results;
+    }
+
+    private static String getMetadataKey( RepositoryMetadata metadata )
+    {
+        return getMetadataKey( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion() );
+    }
+
+    public void removeArtifact( Artifact artifact )
+    {
+        Map map = getArtifactMap();
+
+        String key = getArtifactKey( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                                     artifact.getType(), artifact.getClassifier() );
+        ArtifactResults results = (ArtifactResults) map.get( key );
+        if ( results != null )
+        {
+            for ( Iterator i = reporting.getArtifacts().iterator(); i.hasNext(); )
+            {
+                if ( results.equals( i.next() ) )
+                {
+                    i.remove();
+                }
+            }
+            map.remove( key );
+        }
     }
 }

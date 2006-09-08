@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -79,8 +80,17 @@ public class BadMetadataReportProcessor
         }
         else
         {
-            String lastUpdated = metadata.getMetadata().getVersioning().getLastUpdated();
-            if ( lastUpdated == null || lastUpdated.length() == 0 )
+            Versioning versioning = metadata.getMetadata().getVersioning();
+            boolean found = false;
+            if ( versioning != null )
+            {
+                String lastUpdated = versioning.getLastUpdated();
+                if ( lastUpdated != null && lastUpdated.length() != 0 )
+                {
+                    found = true;
+                }
+            }
+            if ( !found )
             {
                 reporter.addFailure( metadata, "Missing lastUpdated element inside the metadata." );
             }
@@ -215,17 +225,20 @@ public class BadMetadataReportProcessor
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
 
         Versioning versioning = metadata.getMetadata().getVersioning();
-        for ( Iterator versions = versioning.getVersions().iterator(); versions.hasNext(); )
+        if ( versioning != null )
         {
-            String version = (String) versions.next();
-
-            Artifact artifact =
-                artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
-
-            if ( !repositoryQueryLayer.containsArtifact( artifact ) )
+            for ( Iterator versions = versioning.getVersions().iterator(); versions.hasNext(); )
             {
-                reporter.addFailure( metadata, "Artifact version " + version + " is present in metadata but " +
-                    "missing in the repository." );
+                String version = (String) versions.next();
+
+                Artifact artifact =
+                    artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
+
+                if ( !repositoryQueryLayer.containsArtifact( artifact ) )
+                {
+                    reporter.addFailure( metadata, "Artifact version " + version + " is present in metadata but " +
+                        "missing in the repository." );
+                }
             }
         }
     }
@@ -243,6 +256,7 @@ public class BadMetadataReportProcessor
         throws IOException
     {
         Versioning versioning = metadata.getMetadata().getVersioning();
+        List metadataVersions = versioning != null ? versioning.getVersions() : Collections.EMPTY_LIST;
         File versionsDir =
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
         List versions = FileUtils.getFileNames( versionsDir, "*/*.pom", null, false );
@@ -250,7 +264,7 @@ public class BadMetadataReportProcessor
         {
             File path = new File( (String) i.next() );
             String version = path.getParentFile().getName();
-            if ( !versioning.getVersions().contains( version ) )
+            if ( !metadataVersions.contains( version ) )
             {
                 reporter.addFailure( metadata, "Artifact version " + version + " found in the repository but " +
                     "missing in the metadata." );

@@ -16,6 +16,8 @@ package org.apache.maven.archiva.discoverer;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.discoverer.filter.AcceptAllMetadataFilter;
+import org.apache.maven.archiva.discoverer.filter.MetadataFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -28,12 +30,9 @@ import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,7 +57,7 @@ public class DefaultMetadataDiscoverer
      */
     private static final String[] STANDARD_DISCOVERY_INCLUDES = {"**/maven-metadata.xml"};
 
-    public List discoverMetadata( ArtifactRepository repository, List blacklistedPatterns )
+    public List discoverMetadata( ArtifactRepository repository, List blacklistedPatterns, MetadataFilter filter )
         throws DiscovererException
     {
         if ( !"file".equals( repository.getProtocol() ) )
@@ -76,7 +75,15 @@ public class DefaultMetadataDiscoverer
             try
             {
                 RepositoryMetadata metadata = buildMetadata( repository.getBasedir(), metadataPath );
-                metadataFiles.add( metadata );
+                File f = new File( repository.getBasedir(), metadataPath );
+                if ( filter.include( metadata, f.lastModified() ) )
+                {
+                    metadataFiles.add( metadata );
+                }
+                else
+                {
+                    addExcludedPath( metadataPath, "Metadata excluded by filter" );
+                }
             }
             catch ( DiscovererException e )
             {
@@ -87,33 +94,31 @@ public class DefaultMetadataDiscoverer
         return metadataFiles;
     }
 
+    public List discoverMetadata( ArtifactRepository repository, List blacklistedPatterns )
+        throws DiscovererException
+    {
+        return discoverMetadata( repository, blacklistedPatterns, new AcceptAllMetadataFilter() );
+    }
+
     private RepositoryMetadata buildMetadata( String repo, String metadataPath )
         throws DiscovererException
     {
         Metadata m;
-        String repoPath = repo + "/" + metadataPath;
+        File f = new File( repo, metadataPath );
         try
         {
-            URL url = new File( repoPath ).toURI().toURL();
-            InputStream is = url.openStream();
-            Reader reader = new InputStreamReader( is );
+            Reader reader = new FileReader( f );
             MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
             m = metadataReader.read( reader );
         }
         catch ( XmlPullParserException e )
         {
-            throw new DiscovererException( "Error parsing metadata file '" + repoPath + "': " + e.getMessage(), e );
-        }
-        catch ( MalformedURLException e )
-        {
-            // shouldn't happen
-            throw new DiscovererException( "Error constructing metadata file '" + repoPath + "': " + e.getMessage(),
-                                           e );
+            throw new DiscovererException( "Error parsing metadata file '" + f + "': " + e.getMessage(), e );
         }
         catch ( IOException e )
         {
-            throw new DiscovererException( "Error reading metadata file '" + repoPath + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error reading metadata file '" + f + "': " + e.getMessage(), e );
         }
 
         RepositoryMetadata repositoryMetadata = buildMetadata( m, metadataPath );

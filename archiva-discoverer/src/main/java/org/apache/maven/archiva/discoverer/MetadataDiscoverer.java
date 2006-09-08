@@ -16,6 +16,7 @@ package org.apache.maven.archiva.discoverer;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.discoverer.filter.MetadataFilter;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.util.List;
@@ -27,6 +28,18 @@ public interface MetadataDiscoverer
     extends Discoverer
 {
     String ROLE = MetadataDiscoverer.class.getName();
+
+    /**
+     * Search for metadata files in the repository.
+     *
+     * @param repository          The repository.
+     * @param blacklistedPatterns Patterns that are to be excluded from the discovery process.
+     * @param metadataFilter      filter to use on the discovered metadata before returning
+     * @return the list of artifacts found
+     * @throws DiscovererException if there is a problem during the discovery process
+     */
+    List discoverMetadata( ArtifactRepository repository, List blacklistedPatterns, MetadataFilter metadataFilter )
+        throws DiscovererException;
 
     /**
      * Search for metadata files in the repository.

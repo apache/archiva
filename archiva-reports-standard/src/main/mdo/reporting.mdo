@@ -168,6 +168,15 @@
             The version of the metadata in the result.
           </description>
         </field>
+        <field xml.attribute="true">
+          <name>lastModified</name>
+          <version>1.0.0</version>
+          <type>long</type>
+          <identity>true</identity>
+          <description>
+            The time that the metadata was last modified.
+          </description>
+        </field>
       </fields>
     </class>
     <class>
