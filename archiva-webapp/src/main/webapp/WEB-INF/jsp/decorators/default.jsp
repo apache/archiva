@@ -25,11 +25,11 @@
   </title>
 
   <style type="text/css" media="all">
-    @import url( "<%= request.getContextPath() %>/css/maven-base.css" );
-    @import url( "<%= request.getContextPath() %>/css/maven-theme.css" );
-    @import url( "<%= request.getContextPath() %>/css/site.css" );
+    @import url( "<c:url value="/css/maven-base.css" />" );
+    @import url( "<c:url value="/css/maven-theme.css" />" );
+    @import url( "<c:url value="/css/site.css" />" );
   </style>
-  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/print.css" type="text/css" media="print"/>
+  <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
 </head>
 
@@ -62,10 +62,13 @@
     <ww:url id="logoutUrl" action="logout" namespace="/"/>
     <ww:url id="registerUrl" action="register" namespace="/"/>
     <ww:if test="${sessionScope.authStatus != true}">
-      <ww:a href="%{loginUrl}">Login</ww:a> or <ww:a href="%{registerUrl}">Register</ww:a> 
+      <ww:a href="%{loginUrl}">Login</ww:a>
+      or
+      <ww:a href="%{registerUrl}">Register</ww:a>
     </ww:if>
     <ww:else>
-      Welcome, <b>${sessionScope.user.username}</b> - <ww:a href="%{logoutUrl}">Logout</ww:a>
+      Welcome, <b>${sessionScope.user.username}</b> -
+      <ww:a href="%{logoutUrl}">Logout</ww:a>
     </ww:else>
   </div>
 
@@ -101,12 +104,11 @@
     </ul>
     <h5>Manage</h5>
     <ul>
+      <li class="none">
+        <my:currentWWUrl action="reports" namespace="/">Reports</my:currentWWUrl>
+      </li>
 
       <%-- TODO
-            <li class="none">
-              <a href="#">Reports</a>
-            </li>
-
             <li class="none">
               <a href="#">Synchronisation</a>
             </li>

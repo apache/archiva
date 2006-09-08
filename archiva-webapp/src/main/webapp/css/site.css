@@ -96,3 +96,11 @@
 .actionMessage {
     font-weight: bold;
 }
+
+.errorBullet {
+    list-style-image: url( "../images/icon_error_sml.gif" );
+}
+
+.warningBullet {
+    list-style-image: url( "../images/icon_warning_sml.gif" );
+}

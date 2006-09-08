@@ -67,7 +67,7 @@ public class DefaultReportingStore
             }
             catch ( FileNotFoundException e )
             {
-                database = new ReportingDatabase();
+                database = new ReportingDatabase( repository );
             }
 
             if ( database == null )
@@ -75,7 +75,7 @@ public class DefaultReportingStore
                 getLogger().info( "Reading report database from " + file );
                 try
                 {
-                    database = new ReportingDatabase( reader.read( fileReader, false ) );
+                    database = new ReportingDatabase( reader.read( fileReader, false ), repository );
                 }
                 catch ( IOException e )
                 {

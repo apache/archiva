@@ -21,6 +21,7 @@ import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.archiva.reporting.model.Reporting;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
 import java.util.HashMap;
@@ -38,37 +39,55 @@ public class ReportingDatabase
 
     private Map metadataMap;
 
-    private int totalFailures;
+    private int numFailures;
 
-    private int totalWarnings;
+    private int numWarnings;
+
+    private ArtifactRepository repository;
 
     public ReportingDatabase()
     {
-        reporting = new Reporting();
+        this( new Reporting(), null );
     }
 
     public ReportingDatabase( Reporting reporting )
     {
+        this( reporting, null );
+    }
+
+    public ReportingDatabase( ArtifactRepository repository )
+    {
+        this( new Reporting(), repository );
+    }
+
+    public ReportingDatabase( Reporting reporting, ArtifactRepository repository )
+    {
         this.reporting = reporting;
+
+        this.repository = repository;
+
+        initArtifactMap();
+
+        initMetadataMap();
     }
 
     public void addFailure( Artifact artifact, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
         results.addFailure( createResults( reason ) );
-        totalFailures++;
+        numFailures++;
     }
 
     public void addWarning( Artifact artifact, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
         results.addWarning( createResults( reason ) );
-        totalWarnings++;
+        numWarnings++;
     }
 
     private ArtifactResults getArtifactResults( Artifact artifact )
     {
-        Map artifactMap = getArtifactMap();
+        Map artifactMap = this.artifactMap;
 
         String key = getArtifactKey( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                      artifact.getType(), artifact.getClassifier() );
@@ -89,25 +108,21 @@ public class ReportingDatabase
         return results;
     }
 
-    private Map getArtifactMap()
+    private void initArtifactMap()
     {
-        if ( artifactMap == null )
+        Map map = new HashMap();
+        for ( Iterator i = reporting.getArtifacts().iterator(); i.hasNext(); )
         {
-            Map map = new HashMap();
-            for ( Iterator i = reporting.getArtifacts().iterator(); i.hasNext(); )
-            {
-                ArtifactResults result = (ArtifactResults) i.next();
+            ArtifactResults result = (ArtifactResults) i.next();
 
-                String key = getArtifactKey( result.getGroupId(), result.getArtifactId(), result.getVersion(),
-                                             result.getType(), result.getClassifier() );
-                map.put( key, result );
+            String key = getArtifactKey( result.getGroupId(), result.getArtifactId(), result.getVersion(),
+                                         result.getType(), result.getClassifier() );
+            map.put( key, result );
 
-                totalFailures += result.getFailures().size();
-                totalWarnings += result.getWarnings().size();
-            }
-            artifactMap = map;
+            numFailures += result.getFailures().size();
+            numWarnings += result.getWarnings().size();
         }
-        return artifactMap;
+        artifactMap = map;
     }
 
     private static String getArtifactKey( String groupId, String artifactId, String version, String type,
@@ -127,35 +142,31 @@ public class ReportingDatabase
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addFailure( createResults( reason ) );
-        totalFailures++;
+        numFailures++;
     }
 
     public void addWarning( RepositoryMetadata metadata, String reason )
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addWarning( createResults( reason ) );
-        totalWarnings++;
+        numWarnings++;
     }
 
-    private Map getMetadataMap()
+    private void initMetadataMap()
     {
-        if ( metadataMap == null )
+        Map map = new HashMap();
+        for ( Iterator i = reporting.getMetadata().iterator(); i.hasNext(); )
         {
-            Map map = new HashMap();
-            for ( Iterator i = reporting.getMetadata().iterator(); i.hasNext(); )
-            {
-                MetadataResults result = (MetadataResults) i.next();
+            MetadataResults result = (MetadataResults) i.next();
 
-                String key = getMetadataKey( result.getGroupId(), result.getArtifactId(), result.getVersion() );
+            String key = getMetadataKey( result.getGroupId(), result.getArtifactId(), result.getVersion() );
 
-                map.put( key, result );
+            map.put( key, result );
 
-                totalFailures += result.getFailures().size();
-                totalWarnings += result.getWarnings().size();
-            }
-            metadataMap = map;
+            numFailures += result.getFailures().size();
+            numWarnings += result.getWarnings().size();
         }
-        return metadataMap;
+        metadataMap = map;
     }
 
     private static String getMetadataKey( String groupId, String artifactId, String version )
@@ -165,12 +176,12 @@ public class ReportingDatabase
 
     public int getNumFailures()
     {
-        return totalFailures;
+        return numFailures;
     }
 
     public int getNumWarnings()
     {
-        return totalWarnings;
+        return numWarnings;
     }
 
     public Reporting getReporting()
@@ -191,7 +202,7 @@ public class ReportingDatabase
     public boolean isMetadataUpToDate( RepositoryMetadata metadata, long timestamp )
     {
         String key = getMetadataKey( metadata );
-        Map map = getMetadataMap();
+        Map map = metadataMap;
         MetadataResults results = (MetadataResults) map.get( key );
         return results != null && results.getLastModified() >= timestamp;
     }
@@ -207,14 +218,18 @@ public class ReportingDatabase
         MetadataResults results = getMetadataResults( metadata, lastModified );
 
         results.setLastModified( lastModified );
+
+        numFailures -= results.getFailures().size();
         results.getFailures().clear();
+
+        numWarnings -= results.getWarnings().size();
         results.getWarnings().clear();
     }
 
     private MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
     {
         String key = getMetadataKey( metadata );
-        Map metadataMap = getMetadataMap();
+        Map metadataMap = this.metadataMap;
         MetadataResults results = (MetadataResults) metadataMap.get( key );
         if ( results == null )
         {
@@ -237,7 +252,7 @@ public class ReportingDatabase
 
     public void removeArtifact( Artifact artifact )
     {
-        Map map = getArtifactMap();
+        Map map = artifactMap;
 
         String key = getArtifactKey( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                      artifact.getType(), artifact.getClassifier() );
@@ -251,7 +266,16 @@ public class ReportingDatabase
                     i.remove();
                 }
             }
+
+            numFailures -= results.getFailures().size();
+            numWarnings -= results.getWarnings().size();
+
             map.remove( key );
         }
+    }
+
+    public ArtifactRepository getRepository()
+    {
+        return repository;
     }
 }

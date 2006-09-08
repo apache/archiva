@@ -10,74 +10,112 @@
     </div>
 
     <div id="contentArea">
-      <h2>Status</h2>
-      <table>
-        <tr>
-          <th>Last run</th>
-          <td>1 February 13:01:04</td>
-        </tr>
-        <tr>
-          <th>Next run</th>
-          <td>1 February 17:00:00</td>
-        </tr>
-        <tr>
-          <th>Status</th>
-          <td>
-            <span class="statusWarn">WARNING</span>
-            : some warnings were found.
-          </td>
-        </tr>
-      </table>
-      <h2>Errors</h2>
+      <h2>Repository 1</h2>
+
       <p>
-        No errors found.
-      </p>
-      <h2>Warnings</h2>
-      <p>
-        3 warnings found. (
+        Status:
+        <img src="images/icon_error_sml.gif" width="15" height="15" alt=""/>
+        2
+        <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
+        0
+        (
         <a href="#">Repair all</a>
         )
       </p>
+
+      <h3>Artifacts</h3>
       <table>
         <tr>
-          <th>Group ID</th>
-          <th>Artifact ID</th>
-          <th>Version</th>
-          <th>Message</th>
-          <th></th>
-        </tr>
-        <tr>
-          <td>org.apache.maven</td>
-          <td>maven-model</td>
-          <td>2.0.1</td>
-          <td>File is missing SHA1 checksum</td>
+          <td>
+            <img src="images/icon_error_sml.gif" width="15" height="15" alt=""/>
+          </td>
+          <td>
+            File is missing SHA1 checksum
+            <p>
+              <span style="font-size: x-small">
+                <strong>Group ID:</strong>
+                <a href="browse2.html">org</a>
+                /
+                <a href="browse2.html">apache</a>
+                /
+                <a href="browse2.html">maven</a>
+                <strong>Artifact ID:</strong>
+                <a href="browse3.html">maven-artifact</a>
+                <strong>Version(s):</strong>
+                <a href="artifact.html">2.0</a>
+              </span>
+            </p>
+          </td>
           <td>
             <a href="#">Repair</a>
           </td>
         </tr>
         <tr>
-          <td>org.apache.maven</td>
-          <td>maven-model</td>
-          <td>2.0.2</td>
-          <td>File is missing SHA1 checksum</td>
           <td>
-            <span
-                style="color: green; font-weight: bold">Fixed
-            </span>
+            <img src="images/icon_error_sml.gif" width="15" height="15" alt=""/>
+          </td>
+          <td>File is missing SHA1 checksum
+            <p>
+              <span style="font-size: x-small">
+                <strong>Group ID:</strong>
+                <a href="browse2.html">org</a>
+                /
+                <a href="browse2.html">apache</a>
+                /
+                <a href="browse2.html">maven</a>
+                <strong>Artifact ID:</strong>
+                <a href="browse3.html">maven-artifact</a>
+                <strong>Version(s):</strong>
+                <a href="artifact.html">2.0.1</a>
+              </span>
+            </p>
+          </td>
+          <td>
+            <a href="#">Repair</a>
           </td>
         </tr>
+      </table>
+
+      <h2>Repository 2</h2>
+
+      <p>
+        Status:
+        <img src="images/icon_error_sml.gif" width="15" height="15" alt=""/>
+        0
+        <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
+        1
+        (
+        <a href="#">Repair all</a>
+        )
+      </p>
+
+      <h3>Artifacts</h3>
+      <table>
         <tr>
-          <td>org.apache.maven</td>
-          <td>maven-model</td>
-          <td>2.0.2</td>
-          <td>File is missing a digital signature</td>
+          <td>
+            <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
+          </td>
+          <td>
+            File is missing a digital signature
+            <p>
+              <span style="font-size: x-small">
+                <strong>Group ID:</strong>
+                <a href="browse2.html">org</a>
+                /
+                <a href="browse2.html">apache</a>
+                /
+                <a href="browse2.html">maven</a>
+                <strong>Artifact ID:</strong>
+                <a href="browse3.html">maven-artifact</a>
+                <strong>Version(s):</strong>
+                <a href="artifact.html">2.0.1</a>
+              </span>
+            </p>
+          </td>
           <td>
             <span style="color: gray">No fix available</span>
           </td>
         </tr>
-      </table>
-      <table>
-
       </table>
     </div>
   </body>
