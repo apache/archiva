@@ -33,7 +33,6 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -586,7 +585,7 @@ public class RepositoryConverterTest
     }
 
     public void testForcedUnmodifiedArtifact()
-        throws Exception, IOException
+        throws Exception
     {
         // test unmodified artifact is still converted when set to force
 
@@ -777,7 +776,7 @@ public class RepositoryConverterTest
     }
 
     public void testInvalidSourceSnapshotMetadata()
-        throws Exception, MalformedURLException
+        throws Exception
     {
         // test artifact is not converted when source snapshot metadata is invalid and returns failure
 
