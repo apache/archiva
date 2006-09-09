@@ -32,7 +32,12 @@
 
 <div id="contentArea">
 
-<%-- TODO!: select report, repository and filter --%>
+<%-- TODO!: select report, filter --%>
+<ww:form action="reports" namespace="/admin">
+  <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
+             headerValue="(All repositories)" name="repositoryId"/>
+  <ww:submit value="Get Report"/>
+</ww:form>
 
 <ww:set name="databases" value="databases"/>
 <c:forEach items="${databases}" var="database">

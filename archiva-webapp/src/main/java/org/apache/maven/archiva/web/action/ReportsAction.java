@@ -17,6 +17,7 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
@@ -26,6 +27,7 @@ import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.reporting.ReportExecutor;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStore;
+import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
@@ -40,6 +42,7 @@ import java.util.List;
  */
 public class ReportsAction
     extends ActionSupport
+    implements Preparable
 {
     /**
      * @plexus.requirement
@@ -65,32 +68,44 @@ public class ReportsAction
      */
     private ReportExecutor executor;
 
+    private Configuration configuration;
+
     public String execute()
         throws Exception
     {
         databases = new ArrayList();
 
-        Configuration configuration = configurationStore.getConfigurationFromStore();
-
-        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+        if ( repositoryId != null && !repositoryId.equals( "-" ) )
         {
-            RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
+            RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
+            getReport( repositoryConfiguration );
+        }
+        else
+        {
+            for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+            {
+                RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
 
-            ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
-
-            ReportingDatabase database = reportingStore.getReportsFromStore( repository );
-
-            databases.add( database );
+                getReport( repositoryConfiguration );
+            }
         }
         return SUCCESS;
+    }
+
+    private void getReport( RepositoryConfiguration repositoryConfiguration )
+        throws ReportingStoreException
+    {
+        ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
+
+        ReportingDatabase database = reportingStore.getReportsFromStore( repository );
+
+        databases.add( database );
     }
 
     public String runReport()
         throws Exception
     {
         // TODO: this should be one that runs in the background - see the showcase
-
-        Configuration configuration = configurationStore.getConfigurationFromStore();
 
         RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
@@ -148,5 +163,16 @@ public class ReportsAction
     public List getDatabases()
     {
         return databases;
+    }
+
+    public void prepare()
+        throws Exception
+    {
+        configuration = configurationStore.getConfigurationFromStore();
+    }
+
+    public Configuration getConfiguration()
+    {
+        return configuration;
     }
 }
