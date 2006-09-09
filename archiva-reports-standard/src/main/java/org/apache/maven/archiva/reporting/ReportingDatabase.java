@@ -45,6 +45,8 @@ public class ReportingDatabase
 
     private ArtifactRepository repository;
 
+    private boolean inProgress;
+
     public ReportingDatabase()
     {
         this( new Reporting(), null );
@@ -279,4 +281,26 @@ public class ReportingDatabase
         return repository;
     }
 
+    public boolean isInProgress()
+    {
+        return inProgress;
+    }
+
+    public void setInProgress( boolean inProgress )
+    {
+        this.inProgress = inProgress;
+    }
+
+    public void clear()
+    {
+        // clear the values rather than destroy the instance so that the "inProgress" indicator is in tact.
+        numWarnings = 0;
+        numFailures = 0;
+
+        artifactMap.clear();
+        metadataMap.clear();
+
+        reporting.getArtifacts().clear();
+        reporting.getMetadata().clear();
+    }
 }

@@ -68,6 +68,9 @@ public interface ReportExecutor
      * @param repository          the repository to run from
      * @param blacklistedPatterns the patterns to exclude during discovery
      * @param filter              the filter to use during discovery to get a consistent list of artifacts
+     * @throws ReportingStoreException if there is a problem reading/writing the report database
+     * @throws org.apache.maven.archiva.discoverer.DiscovererException
+     *                                 if there is a problem finding the artifacts and metadata to report on
      */
     public void runReports( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
         throws DiscovererException, ReportingStoreException;

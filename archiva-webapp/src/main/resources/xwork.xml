@@ -111,6 +111,13 @@
       <result>/WEB-INF/jsp/reports/reports.jsp</result>
     </action>
 
+    <action name="runReport" class="reportsAction" method="runReport">
+      <interceptor-ref name="configuredStack"/>
+      <interceptor-ref name="execAndWait"/>
+      <result name="wait" type="redirect-action">reports</result>
+      <result name="success" type="redirect-action">reports</result>
+    </action>
+
     <action name="showArtifactDependencies" class="showArtifactAction" method="dependencies">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>

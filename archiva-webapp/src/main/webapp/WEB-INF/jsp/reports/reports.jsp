@@ -30,6 +30,8 @@
 
 <div id="contentArea">
 
+<ww:actionerror/>
+
 <ww:set name="databases" value="databases"/>
 <c:forEach items="${databases}" var="database">
 <div>
@@ -38,12 +40,21 @@
   <a href="#">Repair all</a>
   |
     --%>
-  <c:set var="url">
-    <ww:url action="reports" namespace="/" method="runReport">
-      <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
-    </ww:url>
-  </c:set>
-  <a href="${url}">Regenerate Report</a>
+  <c:choose>
+    <c:when test="${!database.inProgress}">
+      <c:set var="url">
+        <ww:url action="runReport" namespace="/">
+          <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
+        </ww:url>
+      </c:set>
+      <a href="${url}">Regenerate Report</a>
+    </c:when>
+    <c:otherwise>
+      <!-- TODO: would be good to have a generic task/job mechanism that tracked progress and ability to run
+      concurrently -->
+      <span style="color: gray;">Report in progress</span>
+    </c:otherwise>
+  </c:choose>
 </div>
 <h2>Repository: ${database.repository.name}</h2>
 
@@ -55,8 +66,9 @@
     ${database.numWarnings}
 </p>
 
+  <%-- TODO need to protect iterations against concurrent modification exceptions by cloning the lists synchronously --%>
   <%-- TODO! factor out common parts, especially artifact rendering tag --%>
-  <%-- TODO! paginate --%>
+  <%-- TODO! paginate (displaytag?) --%>
 <c:if test="${!empty(database.reporting.artifacts)}">
   <h3>Artifacts</h3>
   <c:forEach items="${database.reporting.artifacts}" var="artifact" begin="0" end="2">

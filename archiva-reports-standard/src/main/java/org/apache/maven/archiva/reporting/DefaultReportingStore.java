@@ -121,8 +121,4 @@ public class DefaultReportingStore
         }
     }
 
-    public void removeReportDatabase( ArtifactRepository repository )
-    {
-        reports.remove( repository );
-    }
 }

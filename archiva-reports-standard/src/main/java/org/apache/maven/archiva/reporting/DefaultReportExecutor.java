@@ -85,6 +85,8 @@ public class DefaultReportExecutor
      */
     private Map metadataDiscoverers;
 
+    private static final int ARTIFACT_BUFFER_SIZE = 1000;
+
     public void runMetadataReports( List metadata, ArtifactRepository repository )
         throws ReportingStoreException
     {
@@ -160,7 +162,8 @@ public class DefaultReportExecutor
         throws DiscovererException, ReportingStoreException
     {
         // Flush (as in toilet, not store) the report database
-        reportingStore.removeReportDatabase( repository );
+        ReportingDatabase database = getReportDatabase( repository );
+        database.clear();
 
         // Discovery process
         String layoutProperty = getRepositoryLayout( repository.getLayout() );
@@ -176,8 +179,21 @@ public class DefaultReportExecutor
         {
             getLogger().info( "Discovered " + artifacts.size() + " artifacts" );
 
-            // run the reports
-            runArtifactReports( artifacts, repository );
+            // Work through these in batches, then flush the project cache.
+            for ( int j = 0; j < artifacts.size(); j += ARTIFACT_BUFFER_SIZE )
+            {
+                int end = j + ARTIFACT_BUFFER_SIZE;
+                List currentArtifacts = artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
+
+                // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
+
+                // run the reports.
+                runArtifactReports( currentArtifacts, repository );
+            }
+
+            // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
+            // around that. TODO: remove when it is configurable
+            flushProjectBuilderCacheHack();
         }
 
         MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
@@ -218,6 +234,33 @@ public class DefaultReportExecutor
             ArtifactReportProcessor report = (ArtifactReportProcessor) i.next();
 
             report.processArtifact( artifact, model, reporter );
+        }
+    }
+
+    private void flushProjectBuilderCacheHack()
+    {
+        try
+        {
+            if ( projectBuilder != null )
+            {
+                java.lang.reflect.Field f = projectBuilder.getClass().getDeclaredField( "rawProjectCache" );
+                f.setAccessible( true );
+                Map cache = (Map) f.get( projectBuilder );
+                cache.clear();
+
+                f = projectBuilder.getClass().getDeclaredField( "processedProjectCache" );
+                f.setAccessible( true );
+                cache = (Map) f.get( projectBuilder );
+                cache.clear();
+            }
+        }
+        catch ( NoSuchFieldException e )
+        {
+            throw new RuntimeException( e );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new RuntimeException( e );
         }
     }
 }

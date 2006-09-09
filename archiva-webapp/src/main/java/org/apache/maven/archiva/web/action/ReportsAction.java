@@ -95,6 +95,14 @@ public class ReportsAction
         RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
 
+        ReportingDatabase database = executor.getReportDatabase( repository );
+        if ( database.isInProgress() )
+        {
+            return SUCCESS;
+        }
+
+        database.setInProgress( true );
+
         List blacklistedPatterns = new ArrayList();
         if ( repositoryConfiguration.getBlackListPatterns() != null )
         {
@@ -115,9 +123,16 @@ public class ReportsAction
             filter = new SnapshotArtifactFilter();
         }
 
-        executor.runReports( repository, blacklistedPatterns, filter );
+        try
+        {
+            executor.runReports( repository, blacklistedPatterns, filter );
+        }
+        finally
+        {
+            database.setInProgress( false );
+        }
 
-        return execute();
+        return SUCCESS;
     }
 
     public String getRepositoryId()

@@ -51,10 +51,4 @@ public interface ReportingStore
     void storeReports( ReportingDatabase database, ArtifactRepository repository )
         throws ReportingStoreException;
 
-    /**
-     * Remove the report database from the memory cache.
-     *
-     * @param repository the repository of the database to remove
-     */
-    void removeReportDatabase( ArtifactRepository repository );
 }

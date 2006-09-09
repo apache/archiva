@@ -182,6 +182,8 @@ public class IndexerTask
                             List currentArtifacts =
                                 artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
 
+                            // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
+
                             // run the reports. Done intermittently to avoid losing track of what is indexed since
                             // that is what the filter is based on.
                             reportExecutor.runArtifactReports( currentArtifacts, repository );
