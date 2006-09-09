@@ -99,6 +99,26 @@ public class BadMetadataReportProcessorTest
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
+    public void testSnapshotMetadataMissingVersioning()
+    {
+        Artifact artifact =
+            artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
+
+        RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
+
+        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+
+        Iterator failures = reporter.getMetadataIterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        MetadataResults results = (MetadataResults) failures.next();
+        failures = results.getFailures().iterator();
+        assertTrue( "check there is a failure", failures.hasNext() );
+        assertMetadata( metadata, results );
+        Result result = (Result) failures.next();
+        assertEquals( "check reason", "Missing lastUpdated element inside the metadata.", result.getReason() );
+        assertFalse( "check no more failures", failures.hasNext() );
+    }
+
     public void testMetadataValidVersions()
     {
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );

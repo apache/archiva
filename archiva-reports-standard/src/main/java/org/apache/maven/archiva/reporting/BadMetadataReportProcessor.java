@@ -197,17 +197,21 @@ public class BadMetadataReportProcessor
         RepositoryQueryLayer repositoryQueryLayer =
             repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
 
-        Snapshot snapshot = metadata.getMetadata().getVersioning().getSnapshot();
-
-        String version = StringUtils.replace( metadata.getBaseVersion(), Artifact.SNAPSHOT_VERSION,
-                                              snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
-        Artifact artifact =
-            artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
-        artifact.isSnapshot(); // trigger baseVersion correction
-
-        if ( !repositoryQueryLayer.containsArtifact( artifact ) )
+        Versioning versioning = metadata.getMetadata().getVersioning();
+        if ( versioning != null )
         {
-            reporter.addFailure( metadata, "Snapshot artifact " + version + " does not exist." );
+            Snapshot snapshot = versioning.getSnapshot();
+
+            String version = StringUtils.replace( metadata.getBaseVersion(), Artifact.SNAPSHOT_VERSION,
+                                                  snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
+            Artifact artifact =
+                artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
+            artifact.isSnapshot(); // trigger baseVersion correction
+
+            if ( !repositoryQueryLayer.containsArtifact( artifact ) )
+            {
+                reporter.addFailure( metadata, "Snapshot artifact " + version + " does not exist." );
+            }
         }
     }
 

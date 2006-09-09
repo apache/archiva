@@ -241,6 +241,37 @@ public class DependencyArtifactReportProcessorTest
         assertEquals( getDependencyVersionInvalidMessage( dependency, "[" ), result.getReason() );
     }
 
+    public void testValidArtifactWithInvalidDependencyVersionRange()
+    {
+        Artifact artifact = createValidArtifact();
+
+        Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, "[1.0,)" );
+        model.addDependency( dependency );
+
+        processor.processArtifact( artifact, model, reporter );
+        assertEquals( 0, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+    }
+
+    public void testValidArtifactWithMissingDependencyVersion()
+    {
+        Artifact artifact = createValidArtifact();
+
+        Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, null );
+        model.addDependency( dependency );
+
+        processor.processArtifact( artifact, model, reporter );
+        assertEquals( 1, reporter.getNumFailures() );
+        assertEquals( 0, reporter.getNumWarnings() );
+
+        Iterator failures = reporter.getArtifactIterator();
+        ArtifactResults results = (ArtifactResults) failures.next();
+        assertFalse( failures.hasNext() );
+        failures = results.getFailures().iterator();
+        Result result = (Result) failures.next();
+        assertEquals( getDependencyVersionInvalidMessage( dependency, null ), result.getReason() );
+    }
+
     private String getDependencyVersionInvalidMessage( Dependency dependency, String version )
     {
         return "Artifact's dependency " + getDependencyString( dependency ) + " contains an invalid version " + version;

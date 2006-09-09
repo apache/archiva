@@ -82,6 +82,15 @@ public class DependencyArtifactReportProcessor
                 {
                     Artifact artifact = createArtifact( dependency );
 
+                    // TODO: handle ranges properly. We should instead be mapping out all the artifacts in the
+                    // repository and mapping out the graph
+
+                    if ( artifact.getVersion() == null )
+                    {
+                        // it was a range, for now presume it exists
+                        continue;
+                    }
+
                     if ( !repositoryQueryLayer.containsArtifact( artifact ) )
                     {
                         String reason = MessageFormat.format(
@@ -118,8 +127,14 @@ public class DependencyArtifactReportProcessor
     private Artifact createArtifact( Dependency dependency )
         throws InvalidVersionSpecificationException
     {
-        return artifactFactory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(),
-                                                         VersionRange.createFromVersionSpec( dependency.getVersion() ),
+        VersionRange spec = VersionRange.createFromVersionSpec( dependency.getVersion() );
+
+        if ( spec == null )
+        {
+            throw new InvalidVersionSpecificationException( "Dependency version was null" );
+        }
+
+        return artifactFactory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), spec,
                                                          dependency.getType(), dependency.getClassifier(),
                                                          dependency.getScope() );
     }
