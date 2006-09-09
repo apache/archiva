@@ -3,13 +3,46 @@
     <title>Archiva</title>
   </properties>
   <body>
-    <h1>Repository Health</h1>
+    <h1>Reports</h1>
 
     <div id="sidebar">
       <p>reserved sidebar</p>
     </div>
 
     <div id="contentArea">
+      <h2>Select Report</h2>
+      <table>
+        <tr>
+          <td>Report:</td>
+          <td>
+            <select>
+              <option>Repository Health</option>
+              <option>Old Snapshots</option>
+              <option>Old Releases</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Repository:</td>
+          <td>
+            <select>
+              <option>Repository 1</option>
+              <option>Repository 2</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <input type="submit" value="Get Report"/>
+          </td>
+        </tr>
+      </table>
+
+      <p>
+        <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
+        </span>
+      </p>
       <div>
         <div style="float: right">
           <a href="#">Repair all</a>
