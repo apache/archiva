@@ -43,7 +43,7 @@
   <c:choose>
     <c:when test="${!database.inProgress}">
       <c:set var="url">
-        <ww:url action="runReport" namespace="/">
+        <ww:url action="runReport" namespace="/admin">
           <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
         </ww:url>
       </c:set>

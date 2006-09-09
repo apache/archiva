@@ -105,7 +105,7 @@
     <h5>Manage</h5>
     <ul>
       <li class="none">
-        <my:currentWWUrl action="reports" namespace="/">Reports</my:currentWWUrl>
+        <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
       </li>
 
       <%-- TODO
