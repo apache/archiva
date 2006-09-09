@@ -38,9 +38,10 @@ public abstract class AbstractArtifactDiscoverer
     /**
      * Standard patterns to exclude from discovery as they are not artifacts.
      */
-    private static final String[] STANDARD_DISCOVERY_EXCLUDES = {"bin/**", "reports/**", ".maven/**", "**/*.md5",
-        "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**", "*/licenses/**", "*/licences/**",
-        "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*", "**/CHANGELOG*", "**/KEYS*"};
+    private static final String[] STANDARD_DISCOVERY_EXCLUDES = {"bin/**", "reports/**", ".index", ".reports/**",
+        ".maven/**", "**/*.md5", "**/*.MD5", "**/*.sha1", "**/*.SHA1", "**/*snapshot-version", "*/website/**",
+        "*/licenses/**", "*/licences/**", "**/.htaccess", "**/*.html", "**/*.asc", "**/*.txt", "**/*.xml", "**/README*",
+        "**/CHANGELOG*", "**/KEYS*"};
 
     private List scanForArtifactPaths( File repositoryBase, List blacklistedPatterns )
     {
@@ -87,8 +88,8 @@ public abstract class AbstractArtifactDiscoverer
         return artifacts;
     }
 
-    /**
-     * Returns an artifact object that is represented by the specified path in a repository
+/**
+ * Returns an artifact object that is represented by the specified path in a repository
      *
      * @param path       The path that is pointing to an artifact
      * @param repository The repository of the artifact
