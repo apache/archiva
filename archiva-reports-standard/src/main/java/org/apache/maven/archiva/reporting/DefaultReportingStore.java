@@ -99,6 +99,8 @@ public class DefaultReportingStore
     public void storeReports( ReportingDatabase database, ArtifactRepository repository )
         throws ReportingStoreException
     {
+        database.updateTimings();
+
         ReportingXpp3Writer writer = new ReportingXpp3Writer();
 
         File file = new File( repository.getBasedir(), "report-database.xml" );
@@ -120,5 +122,4 @@ public class DefaultReportingStore
             IOUtil.close( fileWriter );
         }
     }
-
 }

@@ -51,10 +51,6 @@
         </tr>
       </table>
 
-      <p>
-        <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
-        </span>
-      </p>
       <div>
         <div style="float: right">
           <a href="#">Repair all</a>
@@ -69,6 +65,8 @@
           2
           <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
           1
+          <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
+          </span>
         </p>
 
         <h3>Artifacts</h3>
@@ -136,6 +134,8 @@
           2
           <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
           0
+          <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
+          </span>
         </p>
 
         <h3>Artifacts</h3>

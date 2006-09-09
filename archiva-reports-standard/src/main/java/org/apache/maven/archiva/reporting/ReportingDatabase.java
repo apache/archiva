@@ -24,6 +24,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,6 +47,8 @@ public class ReportingDatabase
     private ArtifactRepository repository;
 
     private boolean inProgress;
+
+    private long startTime;
 
     public ReportingDatabase()
     {
@@ -78,6 +81,7 @@ public class ReportingDatabase
         ArtifactResults results = getArtifactResults( artifact );
         results.addFailure( createResults( reason ) );
         numFailures++;
+        updateTimings();
     }
 
     public void addWarning( Artifact artifact, String reason )
@@ -85,6 +89,7 @@ public class ReportingDatabase
         ArtifactResults results = getArtifactResults( artifact );
         results.addWarning( createResults( reason ) );
         numWarnings++;
+        updateTimings();
     }
 
     private ArtifactResults getArtifactResults( Artifact artifact )
@@ -145,6 +150,7 @@ public class ReportingDatabase
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addFailure( createResults( reason ) );
         numFailures++;
+        updateTimings();
     }
 
     public void addWarning( RepositoryMetadata metadata, String reason )
@@ -152,6 +158,7 @@ public class ReportingDatabase
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         results.addWarning( createResults( reason ) );
         numWarnings++;
+        updateTimings();
     }
 
     private void initMetadataMap()
@@ -289,6 +296,11 @@ public class ReportingDatabase
     public void setInProgress( boolean inProgress )
     {
         this.inProgress = inProgress;
+
+        if ( inProgress )
+        {
+            startTime = System.currentTimeMillis();
+        }
     }
 
     public void clear()
@@ -302,5 +314,28 @@ public class ReportingDatabase
 
         reporting.getArtifacts().clear();
         reporting.getMetadata().clear();
+
+        updateTimings();
+    }
+
+    public void setStartTime( long startTime )
+    {
+        this.startTime = startTime;
+    }
+
+    public long getStartTime()
+    {
+        return startTime;
+    }
+
+    public void updateTimings()
+    {
+        long startTime = getStartTime();
+        Date endTime = new Date();
+        if ( startTime > 0 )
+        {
+            getReporting().setExecutionTime( endTime.getTime() - startTime );
+        }
+        getReporting().setLastModified( endTime );
     }
 }

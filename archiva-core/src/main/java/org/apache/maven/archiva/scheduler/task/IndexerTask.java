@@ -32,6 +32,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.reporting.ReportExecutor;
+import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingMetadataFilter;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
@@ -153,6 +154,11 @@ public class IndexerTask
                     boolean includeSnapshots = repositoryConfiguration.isIncludeSnapshots();
 
                     ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
+                    ReportingDatabase reporter = reportExecutor.getReportDatabase( repository );
+
+                    // keep original value in case there is another process under way
+                    long origStartTime = reporter.getStartTime();
+                    reporter.setStartTime( System.currentTimeMillis() );
 
                     // Discovery process
                     String layoutProperty = repositoryConfiguration.getLayout();
@@ -196,8 +202,7 @@ public class IndexerTask
                         }
                     }
 
-                    MetadataFilter metadataFilter =
-                        new ReportingMetadataFilter( reportExecutor.getReportDatabase( repository ) );
+                    MetadataFilter metadataFilter = new ReportingMetadataFilter( reporter );
 
                     MetadataDiscoverer metadataDiscoverer =
                         (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
@@ -211,6 +216,8 @@ public class IndexerTask
                         // run the reports
                         reportExecutor.runMetadataReports( metadata, repository );
                     }
+
+                    reporter.setStartTime( origStartTime );
                 }
             }
         }

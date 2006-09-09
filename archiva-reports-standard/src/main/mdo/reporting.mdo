@@ -47,6 +47,16 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
+        <field xml.attribute="true">
+          <name>lastModified</name>
+          <version>1.0.0</version>
+          <type>Date</type>
+        </field>
+        <field xml.attribute="true">
+          <name>executionTime</name>
+          <version>1.0.0</version>
+          <type>long</type>
+        </field>
       </fields>
     </class>
     <class>

@@ -16,11 +16,13 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
 <head>
-  <title>Repository Health</title>
+  <%-- TODO! change the name --%>
+  <title>Report: Repository Health</title>
   <ww:head/>
 </head>
 
@@ -30,7 +32,7 @@
 
 <div id="contentArea">
 
-<ww:actionerror/>
+<%-- TODO!: select report, repository and filter --%>
 
 <ww:set name="databases" value="databases"/>
 <c:forEach items="${databases}" var="database">
@@ -64,6 +66,13 @@
     ${database.numFailures}
   <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
     ${database.numWarnings}
+
+  <span style="font-size: x-small">
+    <%-- TODO! use better formatting here --%>
+    Last updated: ${database.reporting.lastModified},
+    execution time: <fmt:formatNumber maxFractionDigits="0" value="${database.reporting.executionTime / 60000}"/> minutes
+    <fmt:formatNumber maxFractionDigits="0" value="${(database.reporting.executionTime / 1000) % 60}"/> seconds
+  </span>
 </p>
 
   <%-- TODO need to protect iterations against concurrent modification exceptions by cloning the lists synchronously --%>
