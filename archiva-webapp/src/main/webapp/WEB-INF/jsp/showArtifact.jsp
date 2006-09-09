@@ -74,7 +74,7 @@
       <ww:url action="proxy">
         <%-- TODO! create a tag for this, include classifier for javadoc, sources below --%>
         <%-- TODO: what about other repositories? --%>
-        <%-- TODO! extension probably doesn't match type --%>
+        <%-- TODO! extension probably doesn't match type. Use artifact handler instead. --%>
         <ww:param name="path"
                   value="%{'${model.groupId}/${model.artifactId}/${model.version}/${model.artifactId}-${model.version}.${model.packaging}'}"/>
       </ww:url>

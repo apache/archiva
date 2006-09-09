@@ -97,7 +97,7 @@ public class DefaultRepositoryTaskScheduler
     private void scheduleJobs( Configuration configuration )
         throws ParseException, SchedulerException
     {
-        // TODO! would be nice to queue jobs that are triggered so we could avoid two running at the same time (so have a queue for discovery based jobs so they didn't thrash the repo)
+        // TODO: would be nice to queue jobs that are triggered so we could avoid two running at the same time (so have a queue for discovery based jobs so they didn't thrash the repo)
         if ( configuration.getIndexPath() != null )
         {
             JobDetail jobDetail = createJobDetail( INDEXER_JOB, indexerTask );
@@ -107,7 +107,7 @@ public class DefaultRepositoryTaskScheduler
                 new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
             scheduler.scheduleJob( jobDetail, trigger );
 
-            // TODO: run as a job so it doesn't block startup/configuration saving!
+            // TODO: run as a job so it doesn't block startup/configuration saving
             try
             {
                 indexerTask.executeNowIfNeeded();

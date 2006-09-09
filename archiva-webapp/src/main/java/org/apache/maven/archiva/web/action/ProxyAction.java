@@ -58,7 +58,7 @@ public class ProxyAction
 
             artifactStream = new FileInputStream( file );
 
-            // TODO: could be better!
+            // TODO: set the correct content type and other headers!
             contentType = "application/octet-stream";
 
             filename = file.getName();

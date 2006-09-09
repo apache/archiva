@@ -264,7 +264,7 @@ public class BadMetadataReportProcessor
         File versionsDir =
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
 
-        // TODO! I don't know how this condition can happen, but it was seen on the main repository.
+        // TODO: I don't know how this condition can happen, but it was seen on the main repository.
         // Avoid hard failure
         if ( versionsDir.exists() )
         {

@@ -43,6 +43,6 @@ public class DeleteSyncedRepositoryAction
     protected void removeContents( AbstractRepositoryConfiguration existingRepository )
         throws IOException
     {
-        // TODO!
+        // TODO! remove the contents
     }
 }
