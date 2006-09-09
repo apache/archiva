@@ -263,16 +263,26 @@ public class BadMetadataReportProcessor
         List metadataVersions = versioning != null ? versioning.getVersions() : Collections.EMPTY_LIST;
         File versionsDir =
             new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
-        List versions = FileUtils.getFileNames( versionsDir, "*/*.pom", null, false );
-        for ( Iterator i = versions.iterator(); i.hasNext(); )
+
+        // TODO! I don't know how this condition can happen, but it was seen on the main repository.
+        // Avoid hard failure
+        if ( versionsDir.exists() )
         {
-            File path = new File( (String) i.next() );
-            String version = path.getParentFile().getName();
-            if ( !metadataVersions.contains( version ) )
+            List versions = FileUtils.getFileNames( versionsDir, "*/*.pom", null, false );
+            for ( Iterator i = versions.iterator(); i.hasNext(); )
             {
-                reporter.addFailure( metadata, "Artifact version " + version + " found in the repository but " +
-                    "missing in the metadata." );
+                File path = new File( (String) i.next() );
+                String version = path.getParentFile().getName();
+                if ( !metadataVersions.contains( version ) )
+                {
+                    reporter.addFailure( metadata, "Artifact version " + version + " found in the repository but " +
+                        "missing in the metadata." );
+                }
             }
+        }
+        else
+        {
+            reporter.addFailure( metadata, "Metadata's directory did not exist: " + versionsDir );
         }
     }
 
