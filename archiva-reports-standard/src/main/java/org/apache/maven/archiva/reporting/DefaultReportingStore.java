@@ -58,7 +58,7 @@ public class DefaultReportingStore
         {
             ReportingXpp3Reader reader = new ReportingXpp3Reader();
 
-            File file = new File( repository.getBasedir(), "report-database.xml" );
+            File file = getReportFilename( repository, "health" );
 
             FileReader fileReader = null;
             try
@@ -96,6 +96,12 @@ public class DefaultReportingStore
         return database;
     }
 
+    private static File getReportFilename( ArtifactRepository repository, String s )
+    {
+        File file = new File( repository.getBasedir(), ".reports/" + s + ".xml" );
+        return file;
+    }
+
     public void storeReports( ReportingDatabase database, ArtifactRepository repository )
         throws ReportingStoreException
     {
@@ -103,7 +109,7 @@ public class DefaultReportingStore
 
         ReportingXpp3Writer writer = new ReportingXpp3Writer();
 
-        File file = new File( repository.getBasedir(), "report-database.xml" );
+        File file = getReportFilename( repository, "health" );
         getLogger().info( "Writing reports to " + file );
         FileWriter fileWriter = null;
         try
