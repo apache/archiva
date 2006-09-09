@@ -26,8 +26,20 @@
           <td>Repository:</td>
           <td>
             <select>
+              <option>(All repositories)</option>
               <option>Repository 1</option>
               <option>Repository 2</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Filter:</td>
+          <td>
+            <select>
+              <option>(All problems)</option>
+              <option>Checksum problems</option>
+              <option>Dependency problems</option>
+              <option>Location problems</option>
             </select>
           </td>
         </tr>
