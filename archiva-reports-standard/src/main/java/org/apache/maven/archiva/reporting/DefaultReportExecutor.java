@@ -189,11 +189,11 @@ public class DefaultReportExecutor
 
                 // run the reports.
                 runArtifactReports( currentArtifacts, repository );
-            }
 
-            // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
-            // around that. TODO: remove when it is configurable
-            flushProjectBuilderCacheHack();
+                // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
+                // around that. TODO: remove when it is configurable
+                flushProjectBuilderCacheHack();
+            }
         }
 
         MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );

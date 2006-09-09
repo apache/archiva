@@ -189,11 +189,11 @@ public class IndexerTask
                             reportExecutor.runArtifactReports( currentArtifacts, repository );
 
                             index.indexArtifacts( currentArtifacts, recordFactory );
-                        }
 
-                        // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
-                        // around that. TODO: remove when it is configurable
-                        flushProjectBuilderCacheHack();
+                            // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
+                            // around that. TODO: remove when it is configurable
+                            flushProjectBuilderCacheHack();
+                        }
                     }
 
                     MetadataFilter metadataFilter =
