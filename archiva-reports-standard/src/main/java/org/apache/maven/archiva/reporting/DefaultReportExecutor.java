@@ -43,6 +43,7 @@ import java.util.Map;
 /**
  * Report executor implementation.
  *
+ * @todo should the report set be limitable by configuration?
  * @plexus.component
  */
 public class DefaultReportExecutor
@@ -65,17 +66,6 @@ public class DefaultReportExecutor
     private ArtifactFactory artifactFactory;
 
     /**
-     * @todo replace with a ReportGroup that is identified as "health" and has requirements on the specific health reports
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.ArtifactReportProcessor"
-     */
-    private List artifactReports;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.MetadataReportProcessor"
-     */
-    private List metadataReports;
-
-    /**
      * @plexus.requirement role="org.apache.maven.archiva.discoverer.ArtifactDiscoverer"
      */
     private Map artifactDiscoverers;
@@ -87,10 +77,10 @@ public class DefaultReportExecutor
 
     private static final int ARTIFACT_BUFFER_SIZE = 1000;
 
-    public void runMetadataReports( List metadata, ArtifactRepository repository )
+    public void runMetadataReports( ReportGroup reportGroup, List metadata, ArtifactRepository repository )
         throws ReportingStoreException
     {
-        ReportingDatabase reporter = getReportDatabase( repository );
+        ReportingDatabase reporter = getReportDatabase( repository, reportGroup );
 
         for ( Iterator i = metadata.iterator(); i.hasNext(); )
         {
@@ -100,28 +90,16 @@ public class DefaultReportExecutor
                 new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
             reporter.cleanMetadata( repositoryMetadata, file.lastModified() );
 
-            // TODO: should the report set be limitable by configuration?
-            runMetadataReports( repositoryMetadata, repository, reporter );
+            reportGroup.processMetadata( repositoryMetadata, repository, reporter );
         }
 
         reportingStore.storeReports( reporter, repository );
     }
 
-    private void runMetadataReports( RepositoryMetadata repositoryMetadata, ArtifactRepository repository,
-                                     ReportingDatabase reporter )
-    {
-        for ( Iterator i = metadataReports.iterator(); i.hasNext(); )
-        {
-            MetadataReportProcessor report = (MetadataReportProcessor) i.next();
-
-            report.processMetadata( repositoryMetadata, repository, reporter );
-        }
-    }
-
-    public void runArtifactReports( List artifacts, ArtifactRepository repository )
+    public void runArtifactReports( ReportGroup reportGroup, List artifacts, ArtifactRepository repository )
         throws ReportingStoreException
     {
-        ReportingDatabase reporter = getReportDatabase( repository );
+        ReportingDatabase reporter = getReportDatabase( repository, reportGroup );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -145,24 +123,26 @@ public class DefaultReportExecutor
 
             reporter.removeArtifact( artifact );
 
-            runArtifactReports( artifact, model, reporter );
+            reportGroup.processArtifact( artifact, model, reporter );
         }
 
         reportingStore.storeReports( reporter, repository );
     }
 
-    public ReportingDatabase getReportDatabase( ArtifactRepository repository )
+    public ReportingDatabase getReportDatabase( ArtifactRepository repository, ReportGroup reportGroup )
         throws ReportingStoreException
     {
-        getLogger().debug( "Reading previous report database from repository " + repository.getId() );
-        return reportingStore.getReportsFromStore( repository );
+        getLogger().debug(
+            "Reading previous report database " + reportGroup.getName() + " from repository " + repository.getId() );
+        return reportingStore.getReportsFromStore( repository, reportGroup );
     }
 
-    public void runReports( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
+    public void runReports( ReportGroup reportGroup, ArtifactRepository repository, List blacklistedPatterns,
+                            ArtifactFilter filter )
         throws DiscovererException, ReportingStoreException
     {
         // Flush (as in toilet, not store) the report database
-        ReportingDatabase database = getReportDatabase( repository );
+        ReportingDatabase database = getReportDatabase( repository, reportGroup );
         database.clear();
 
         // Discovery process
@@ -188,7 +168,7 @@ public class DefaultReportExecutor
                 // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
 
                 // run the reports.
-                runArtifactReports( currentArtifacts, repository );
+                runArtifactReports( reportGroup, currentArtifacts, repository );
 
                 // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
                 // around that. TODO: remove when it is configurable
@@ -205,7 +185,7 @@ public class DefaultReportExecutor
             getLogger().info( "Discovered " + metadata.size() + " metadata files" );
 
             // run the reports
-            runMetadataReports( metadata, repository );
+            runMetadataReports( reportGroup, metadata, repository );
         }
     }
 
@@ -223,17 +203,6 @@ public class DefaultReportExecutor
         else
         {
             throw new IllegalArgumentException( "Unknown layout: " + layout );
-        }
-    }
-
-    private void runArtifactReports( Artifact artifact, Model model, ReportingDatabase reporter )
-    {
-        // TODO: should the report set be limitable by configuration?
-        for ( Iterator i = artifactReports.iterator(); i.hasNext(); )
-        {
-            ArtifactReportProcessor report = (ArtifactReportProcessor) i.next();
-
-            report.processArtifact( artifact, model, reporter );
         }
     }
 

@@ -35,31 +35,34 @@ public interface ReportExecutor
     /**
      * Run reports on a set of metadata.
      *
-     * @param metadata   the RepositoryMetadata objects to report on
-     * @param repository the repository that they come from
+     * @param reportGroup the report set to run
+     * @param metadata    the RepositoryMetadata objects to report on
+     * @param repository  the repository that they come from
      * @throws ReportingStoreException if there is a problem reading/writing the report database
      */
-    public void runMetadataReports( List metadata, ArtifactRepository repository )
+    public void runMetadataReports( ReportGroup reportGroup, List metadata, ArtifactRepository repository )
         throws ReportingStoreException;
 
     /**
      * Run reports on a set of artifacts.
      *
-     * @param artifacts  the Artifact objects to report on
-     * @param repository the repository that they come from
+     * @param reportGroup the report set to run
+     * @param artifacts   the Artifact objects to report on
+     * @param repository  the repository that they come from
      * @throws ReportingStoreException if there is a problem reading/writing the report database
      */
-    public void runArtifactReports( List artifacts, ArtifactRepository repository )
+    public void runArtifactReports( ReportGroup reportGroup, List artifacts, ArtifactRepository repository )
         throws ReportingStoreException;
 
     /**
      * Get the report database in use for a given repository.
      *
-     * @param repository the repository
+     * @param repository  the repository
+     * @param reportGroup the report set to run
      * @return the report database
      * @throws ReportingStoreException if there is a problem reading the report database
      */
-    ReportingDatabase getReportDatabase( ArtifactRepository repository )
+    ReportingDatabase getReportDatabase( ArtifactRepository repository, ReportGroup reportGroup )
         throws ReportingStoreException;
 
     /**
@@ -68,10 +71,12 @@ public interface ReportExecutor
      * @param repository          the repository to run from
      * @param blacklistedPatterns the patterns to exclude during discovery
      * @param filter              the filter to use during discovery to get a consistent list of artifacts
+     * @param reportGroup         the report set to run
      * @throws ReportingStoreException if there is a problem reading/writing the report database
      * @throws org.apache.maven.archiva.discoverer.DiscovererException
      *                                 if there is a problem finding the artifacts and metadata to report on
      */
-    public void runReports( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
+    public void runReports( ReportGroup reportGroup, ArtifactRepository repository, List blacklistedPatterns,
+                            ArtifactFilter filter )
         throws DiscovererException, ReportingStoreException;
 }

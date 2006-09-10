@@ -37,7 +37,7 @@ public class BadMetadataReportProcessorTest
 
     private MetadataReportProcessor badMetadataReportProcessor;
 
-    private ReportingDatabase reporter = new ReportingDatabase();
+    private ReportingDatabase reportingDatabase;
 
     protected void setUp()
         throws Exception
@@ -47,6 +47,9 @@ public class BadMetadataReportProcessorTest
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
         badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE );
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportingDatabase = new ReportingDatabase( reportGroup );
     }
 
     public void testMetadataMissingLastUpdated()
@@ -59,9 +62,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -78,9 +81,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, null );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -106,9 +109,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -130,9 +133,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
@@ -146,9 +149,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -174,9 +177,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -201,9 +204,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -229,9 +232,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
@@ -242,9 +245,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "missing-plugin", "default3" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -261,9 +264,9 @@ public class BadMetadataReportProcessorTest
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -284,9 +287,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( null, "default3" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "", "default4" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -309,9 +312,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", null ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -333,9 +336,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -357,9 +360,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact, snapshot );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
@@ -374,9 +377,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact, snapshot );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reporter );
+        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();

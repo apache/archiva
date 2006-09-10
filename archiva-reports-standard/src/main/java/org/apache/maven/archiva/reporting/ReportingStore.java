@@ -34,11 +34,12 @@ public interface ReportingStore
     /**
      * Get the reports from the store. A cached version may be used.
      *
-     * @param repository the repository to load the reports for
+     * @param repository  the repository to load the reports for
+     * @param reportGroup the report group to get the report for
      * @return the reporting database
      * @throws ReportingStoreException if there was a problem reading the store
      */
-    ReportingDatabase getReportsFromStore( ArtifactRepository repository )
+    ReportingDatabase getReportsFromStore( ArtifactRepository repository, ReportGroup reportGroup )
         throws ReportingStoreException;
 
     /**

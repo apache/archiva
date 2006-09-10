@@ -50,23 +50,27 @@ public class ReportingDatabase
 
     private long startTime;
 
-    public ReportingDatabase()
+    private final ReportGroup reportGroup;
+
+    public ReportingDatabase( ReportGroup reportGroup )
     {
-        this( new Reporting(), null );
+        this( reportGroup, new Reporting() );
     }
 
-    public ReportingDatabase( Reporting reporting )
+    public ReportingDatabase( ReportGroup reportGroup, Reporting reporting )
     {
-        this( reporting, null );
+        this( reportGroup, reporting, null );
     }
 
-    public ReportingDatabase( ArtifactRepository repository )
+    public ReportingDatabase( ReportGroup reportGroup, ArtifactRepository repository )
     {
-        this( new Reporting(), repository );
+        this( reportGroup, new Reporting(), repository );
     }
 
-    public ReportingDatabase( Reporting reporting, ArtifactRepository repository )
+    public ReportingDatabase( ReportGroup reportGroup, Reporting reporting, ArtifactRepository repository )
     {
+        this.reportGroup = reportGroup;
+
         this.reporting = reporting;
 
         this.repository = repository;
@@ -337,5 +341,10 @@ public class ReportingDatabase
             getReporting().setExecutionTime( endTime.getTime() - startTime );
         }
         getReporting().setLastModified( endTime );
+    }
+
+    public ReportGroup getReportGroup()
+    {
+        return reportGroup;
     }
 }

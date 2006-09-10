@@ -16,6 +16,7 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
+import org.apache.maven.archiva.reporting.model.Reporting;
 import org.apache.maven.archiva.reporting.model.io.xpp3.ReportingXpp3Reader;
 import org.apache.maven.archiva.reporting.model.io.xpp3.ReportingXpp3Writer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -47,18 +48,19 @@ public class DefaultReportingStore
     /**
      * The cached reports for given repositories.
      */
-    private Map/*<ArtifactRepository,ReportingDatabase>*/ reports = new HashMap();
+    private Map/*<String,ReportingDatabase>*/ reports = new HashMap();
 
-    public ReportingDatabase getReportsFromStore( ArtifactRepository repository )
+    public ReportingDatabase getReportsFromStore( ArtifactRepository repository, ReportGroup reportGroup )
         throws ReportingStoreException
     {
-        ReportingDatabase database = (ReportingDatabase) reports.get( repository );
+        String key = getKey( repository, reportGroup );
+        ReportingDatabase database = (ReportingDatabase) reports.get( key );
 
         if ( database == null )
         {
             ReportingXpp3Reader reader = new ReportingXpp3Reader();
 
-            File file = getReportFilename( repository, "health" );
+            File file = getReportFilename( repository, reportGroup );
 
             FileReader fileReader = null;
             try
@@ -67,7 +69,7 @@ public class DefaultReportingStore
             }
             catch ( FileNotFoundException e )
             {
-                database = new ReportingDatabase( repository );
+                database = new ReportingDatabase( reportGroup, repository );
             }
 
             if ( database == null )
@@ -75,7 +77,8 @@ public class DefaultReportingStore
                 getLogger().info( "Reading report database from " + file );
                 try
                 {
-                    database = new ReportingDatabase( reader.read( fileReader, false ), repository );
+                    Reporting reporting = reader.read( fileReader, false );
+                    database = new ReportingDatabase( reportGroup, reporting, repository );
                 }
                 catch ( IOException e )
                 {
@@ -91,15 +94,19 @@ public class DefaultReportingStore
                 }
             }
 
-            reports.put( repository, database );
+            reports.put( key, database );
         }
         return database;
     }
 
-    private static File getReportFilename( ArtifactRepository repository, String s )
+    private static String getKey( ArtifactRepository repository, ReportGroup reportGroup )
     {
-        File file = new File( repository.getBasedir(), ".reports/" + s + ".xml" );
-        return file;
+        return repository.getId() + "/" + reportGroup.getFilename();
+    }
+
+    private static File getReportFilename( ArtifactRepository repository, ReportGroup reportGroup )
+    {
+        return new File( repository.getBasedir(), ".reports/" + reportGroup.getFilename() );
     }
 
     public void storeReports( ReportingDatabase database, ArtifactRepository repository )
@@ -109,7 +116,7 @@ public class DefaultReportingStore
 
         ReportingXpp3Writer writer = new ReportingXpp3Writer();
 
-        File file = getReportFilename( repository, "health" );
+        File file = getReportFilename( repository, database.getReportGroup() );
         getLogger().info( "Writing reports to " + file );
         FileWriter fileWriter = null;
         try

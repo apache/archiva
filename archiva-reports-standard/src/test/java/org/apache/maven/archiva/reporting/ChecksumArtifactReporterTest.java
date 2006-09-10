@@ -37,7 +37,7 @@ public class ChecksumArtifactReporterTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reporter = new ReportingDatabase();
+    private ReportingDatabase reportingDatabase;
 
     private MetadataReportProcessor metadataReportProcessor;
 
@@ -47,6 +47,9 @@ public class ChecksumArtifactReporterTest
         super.setUp();
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "checksum" );
         metadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "checksum-metadata" );
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportingDatabase = new ReportingDatabase( reportGroup );
     }
 
     /**
@@ -60,9 +63,9 @@ public class ChecksumArtifactReporterTest
 
         Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, null, reportingDatabase );
+        assertEquals( 0, reportingDatabase.getNumFailures() );
+        assertEquals( 0, reportingDatabase.getNumWarnings() );
     }
 
     /**
@@ -74,14 +77,14 @@ public class ChecksumArtifactReporterTest
         String s1 = "1.0";
         Artifact artifact = createArtifact( "checksumTest", s, s1 );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, null, reportingDatabase );
+        assertEquals( 1, reportingDatabase.getNumFailures() );
+        assertEquals( 0, reportingDatabase.getNumWarnings() );
     }
 
     /**
      * Test the valid checksum of a metadata file.
-     * The reporter should report 2 success validation.
+     * The reportingDatabase should report 2 success validation.
      */
     public void testChecksumMetadataReporterSuccess()
         throws DigesterException, IOException
@@ -93,29 +96,29 @@ public class ChecksumArtifactReporterTest
 
         //Version level metadata
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        metadataReportProcessor.processMetadata( metadata, repository, reporter );
+        metadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
         //Artifact level metadata
         metadata = new ArtifactRepositoryMetadata( artifact );
-        metadataReportProcessor.processMetadata( metadata, repository, reporter );
+        metadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
         //Group level metadata
         metadata = new GroupRepositoryMetadata( "checksumTest" );
-        metadataReportProcessor.processMetadata( metadata, repository, reporter );
+        metadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
     }
 
     /**
      * Test the corrupted checksum of a metadata file.
-     * The reporter must report 2 failures.
+     * The reportingDatabase must report 2 failures.
      */
     public void testChecksumMetadataReporterFailure()
     {
         Artifact artifact = createArtifact( "checksumTest", "invalidArtifact", "1.0" );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        metadataReportProcessor.processMetadata( metadata, repository, reporter );
+        metadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -134,13 +137,13 @@ public class ChecksumArtifactReporterTest
 
         Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reportingDatabase );
+        assertEquals( 1, reportingDatabase.getNumFailures() );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        metadataReportProcessor.processMetadata( metadata, repository, reporter );
+        metadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
 
-        Iterator failures = reporter.getMetadataIterator();
+        Iterator failures = reportingDatabase.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();

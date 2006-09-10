@@ -30,7 +30,7 @@ import java.util.Iterator;
 public class ArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
-    private ReportingDatabase reporter;
+    private ReportingDatabase reportingDatabase;
 
     private Artifact artifact;
 
@@ -38,19 +38,21 @@ public class ArtifactReporterTest
         throws Exception
     {
         super.setUp();
-        reporter = new ReportingDatabase();
         ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
         Versioning versioning = new Versioning();
         versioning.addVersion( "1.0-alpha-1" );
         versioning.setLastUpdated( "20050611.202020" );
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportingDatabase = new ReportingDatabase( reportGroup );
     }
 
     public void testArtifactReporterSingleFailure()
     {
-        reporter.addFailure( artifact, "failed once" );
+        reportingDatabase.addFailure( artifact, "failed once" );
 
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
 
@@ -60,17 +62,17 @@ public class ArtifactReporterTest
             i.next();
         }
         assertEquals( 1, count );
-        assertEquals( 1, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        assertEquals( 1, reportingDatabase.getNumFailures() );
+        assertEquals( 0, reportingDatabase.getNumWarnings() );
     }
 
     public void testArtifactReporterMultipleFailure()
     {
-        reporter.addFailure( artifact, "failed once" );
-        reporter.addFailure( artifact, "failed twice" );
-        reporter.addFailure( artifact, "failed thrice" );
+        reportingDatabase.addFailure( artifact, "failed once" );
+        reportingDatabase.addFailure( artifact, "failed twice" );
+        reportingDatabase.addFailure( artifact, "failed thrice" );
 
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
 
@@ -80,16 +82,16 @@ public class ArtifactReporterTest
             i.next();
         }
         assertEquals( 3, count );
-        assertEquals( 3, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        assertEquals( 3, reportingDatabase.getNumFailures() );
+        assertEquals( 0, reportingDatabase.getNumWarnings() );
     }
 
     public void testFailureMessages()
     {
-        reporter.addFailure( artifact, "failed once" );
-        reporter.addFailure( artifact, "failed twice" );
-        reporter.addFailure( artifact, "failed thrice" );
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        reportingDatabase.addFailure( artifact, "failed once" );
+        reportingDatabase.addFailure( artifact, "failed twice" );
+        reportingDatabase.addFailure( artifact, "failed thrice" );
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
         Iterator failure = results.getFailures().iterator();
@@ -100,8 +102,8 @@ public class ArtifactReporterTest
 
     public void testArtifactReporterSingleWarning()
     {
-        reporter.addWarning( artifact, "you've been warned" );
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        reportingDatabase.addWarning( artifact, "you've been warned" );
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
 
@@ -111,17 +113,17 @@ public class ArtifactReporterTest
             i.next();
         }
         assertEquals( 1, count );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 1, reporter.getNumWarnings() );
+        assertEquals( 0, reportingDatabase.getNumFailures() );
+        assertEquals( 1, reportingDatabase.getNumWarnings() );
     }
 
     public void testArtifactReporterMultipleWarning()
     {
-        reporter.addWarning( artifact, "i'm warning you" );
-        reporter.addWarning( artifact, "you have to stop now" );
-        reporter.addWarning( artifact, "all right... that does it!" );
+        reportingDatabase.addWarning( artifact, "i'm warning you" );
+        reportingDatabase.addWarning( artifact, "you have to stop now" );
+        reportingDatabase.addWarning( artifact, "all right... that does it!" );
 
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
 
@@ -131,17 +133,17 @@ public class ArtifactReporterTest
             i.next();
         }
         assertEquals( 3, count );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 3, reporter.getNumWarnings() );
+        assertEquals( 0, reportingDatabase.getNumFailures() );
+        assertEquals( 3, reportingDatabase.getNumWarnings() );
     }
 
     public void testWarningMessages()
     {
-        reporter.addWarning( artifact, "i'm warning you" );
-        reporter.addWarning( artifact, "you have to stop now" );
-        reporter.addWarning( artifact, "all right... that does it!" );
+        reportingDatabase.addWarning( artifact, "i'm warning you" );
+        reportingDatabase.addWarning( artifact, "you have to stop now" );
+        reportingDatabase.addWarning( artifact, "all right... that does it!" );
 
-        Iterator artifactIterator = reporter.getArtifactIterator();
+        Iterator artifactIterator = reportingDatabase.getArtifactIterator();
         ArtifactResults results = (ArtifactResults) artifactIterator.next();
         assertFalse( artifactIterator.hasNext() );
         Iterator warning = results.getWarnings().iterator();

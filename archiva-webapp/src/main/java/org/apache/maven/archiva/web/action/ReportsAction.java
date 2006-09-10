@@ -25,6 +25,7 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.reporting.ReportExecutor;
+import org.apache.maven.archiva.reporting.ReportGroup;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
@@ -34,6 +35,7 @@ import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Repository reporting.
@@ -70,15 +72,26 @@ public class ReportsAction
 
     private Configuration configuration;
 
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.reporting.ReportGroup"
+     */
+    private Map reports;
+
+    private String reportGroup = DEFAULT_REPORT_GROUP;
+
+    private static final String DEFAULT_REPORT_GROUP = "health";
+
     public String execute()
         throws Exception
     {
+        ReportGroup reportGroup = (ReportGroup) reports.get( this.reportGroup );
+
         databases = new ArrayList();
 
         if ( repositoryId != null && !repositoryId.equals( "-" ) )
         {
             RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
-            getReport( repositoryConfiguration );
+            getReport( repositoryConfiguration, reportGroup );
         }
         else
         {
@@ -86,18 +99,18 @@ public class ReportsAction
             {
                 RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
 
-                getReport( repositoryConfiguration );
+                getReport( repositoryConfiguration, reportGroup );
             }
         }
         return SUCCESS;
     }
 
-    private void getReport( RepositoryConfiguration repositoryConfiguration )
+    private void getReport( RepositoryConfiguration repositoryConfiguration, ReportGroup reportGroup )
         throws ReportingStoreException
     {
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
 
-        ReportingDatabase database = reportingStore.getReportsFromStore( repository );
+        ReportingDatabase database = reportingStore.getReportsFromStore( repository, reportGroup );
 
         databases.add( database );
     }
@@ -105,12 +118,12 @@ public class ReportsAction
     public String runReport()
         throws Exception
     {
-        // TODO: this should be one that runs in the background - see the showcase
+        ReportGroup reportGroup = (ReportGroup) reports.get( this.reportGroup );
 
         RepositoryConfiguration repositoryConfiguration = configuration.getRepositoryById( repositoryId );
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
 
-        ReportingDatabase database = executor.getReportDatabase( repository );
+        ReportingDatabase database = executor.getReportDatabase( repository, reportGroup );
         if ( database.isInProgress() )
         {
             return SUCCESS;
@@ -140,7 +153,7 @@ public class ReportsAction
 
         try
         {
-            executor.runReports( repository, blacklistedPatterns, filter );
+            executor.runReports( reportGroup, repository, blacklistedPatterns, filter );
         }
         finally
         {
@@ -148,6 +161,16 @@ public class ReportsAction
         }
 
         return SUCCESS;
+    }
+
+    public void setReportGroup( String reportGroup )
+    {
+        this.reportGroup = reportGroup;
+    }
+
+    public String getReportGroup()
+    {
+        return reportGroup;
     }
 
     public String getRepositoryId()
@@ -174,5 +197,10 @@ public class ReportsAction
     public Configuration getConfiguration()
     {
         return configuration;
+    }
+
+    public Map getReports()
+    {
+        return reports;
     }
 }

@@ -43,7 +43,7 @@ public class DuplicateArtifactFileReportProcessorTest
 
     File indexDirectory;
 
-    private ReportingDatabase reportDatabase = new ReportingDatabase();
+    private ReportingDatabase reportDatabase;
 
     protected void setUp()
         throws Exception
@@ -68,6 +68,9 @@ public class DuplicateArtifactFileReportProcessorTest
         index.indexRecords( Collections.singletonList( recordFactory.createRecord( artifact ) ) );
 
         processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     public void testNullArtifactFile()

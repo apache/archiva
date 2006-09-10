@@ -32,6 +32,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.reporting.ReportExecutor;
+import org.apache.maven.archiva.reporting.ReportGroup;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingMetadataFilter;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
@@ -96,6 +97,11 @@ public class IndexerTask
      */
     private ReportExecutor reportExecutor;
 
+    /**
+     * @plexus.requirement role-hint="health"
+     */
+    private ReportGroup reportGroup;
+
     private static final int ARTIFACT_BUFFER_SIZE = 1000;
 
     public void execute()
@@ -154,7 +160,7 @@ public class IndexerTask
                     boolean includeSnapshots = repositoryConfiguration.isIncludeSnapshots();
 
                     ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
-                    ReportingDatabase reporter = reportExecutor.getReportDatabase( repository );
+                    ReportingDatabase reporter = reportExecutor.getReportDatabase( repository, reportGroup );
 
                     // keep original value in case there is another process under way
                     long origStartTime = reporter.getStartTime();
@@ -192,7 +198,7 @@ public class IndexerTask
 
                             // run the reports. Done intermittently to avoid losing track of what is indexed since
                             // that is what the filter is based on.
-                            reportExecutor.runArtifactReports( currentArtifacts, repository );
+                            reportExecutor.runArtifactReports( reportGroup, currentArtifacts, repository );
 
                             index.indexArtifacts( currentArtifacts, recordFactory );
 
@@ -214,7 +220,7 @@ public class IndexerTask
                         getLogger().info( "Discovered " + metadata.size() + " unprocessed metadata files" );
 
                         // run the reports
-                        reportExecutor.runMetadataReports( metadata, repository );
+                        reportExecutor.runMetadataReports( reportGroup, metadata, repository );
                     }
 
                     reporter.setStartTime( origStartTime );

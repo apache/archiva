@@ -21,8 +21,9 @@
 
 <html>
 <head>
-  <%-- TODO! change the name --%>
-  <title>Report: Repository Health</title>
+  <ww:set name="reports" value="reports"/>
+  <ww:set name="reportGroup" value="reportGroup"/>
+  <title>Report: ${reports[reportGroup].name}</title>
   <ww:head/>
 </head>
 
@@ -32,8 +33,9 @@
 
 <div id="contentArea">
 
-<%-- TODO!: select report, filter --%>
+<%-- TODO!: select filter --%>
 <ww:form action="reports" namespace="/admin">
+  <ww:select list="reports" label="Report" name="reportGroup"/>
   <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
              headerValue="(All repositories)" name="repositoryId"/>
   <ww:submit value="Get Report"/>

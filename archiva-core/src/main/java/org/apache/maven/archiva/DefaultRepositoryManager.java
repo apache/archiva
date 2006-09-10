@@ -6,6 +6,7 @@ import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
+import org.apache.maven.archiva.reporting.ReportGroup;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
@@ -55,6 +56,11 @@ public class DefaultRepositoryManager
      */
     private ReportingStore reportingStore;
 
+    /**
+     * @plexus.requirement role-hint="health"
+     */
+    private ReportGroup reportGroup;
+
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          boolean includeSnapshots )
         throws RepositoryConversionException, DiscovererException
@@ -85,7 +91,7 @@ public class DefaultRepositoryManager
         ReportingDatabase reporter;
         try
         {
-            reporter = reportingStore.getReportsFromStore( repository );
+            reporter = reportingStore.getReportsFromStore( repository, reportGroup );
 
             repositoryConverter.convert( legacyArtifacts, repository, reporter );
 

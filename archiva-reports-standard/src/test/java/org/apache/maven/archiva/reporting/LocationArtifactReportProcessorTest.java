@@ -34,16 +34,16 @@ public class LocationArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reporter = new ReportingDatabase();
-
-    private MavenXpp3Reader pomReader;
+    private ReportingDatabase reportDatabase;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "artifact-location" );
-        pomReader = new MavenXpp3Reader();
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     /**
@@ -55,9 +55,9 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-model", "2.0" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -71,9 +71,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -86,9 +86,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( pomArtifact, model, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( pomArtifact, model, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -102,9 +102,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -119,9 +119,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -136,9 +136,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
     /**
@@ -154,7 +154,7 @@ public class LocationArtifactReportProcessorTest
         try
         {
             Model model = readPom( repository.pathOf( pomArtifact ) );
-            artifactReportProcessor.processArtifact( artifact, model, reporter );
+            artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
             fail( "Should not have passed the artifact" );
         }
         catch ( IllegalStateException e )
@@ -174,15 +174,15 @@ public class LocationArtifactReportProcessorTest
 
         Artifact pomArtifact = createArtifact( "org.apache.maven", "maven-archiver", "2.0", "pom" );
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        assertEquals( 1, reportDatabase.getNumFailures() );
     }
 
     private Model readPom( String path )
         throws IOException, XmlPullParserException
     {
         Reader reader = new FileReader( new File( repository.getBasedir(), path ) );
-        Model model = pomReader.read( reader );
+        Model model = new MavenXpp3Reader().read( reader );
         // hokey inheritence to avoid some errors right now
         if ( model.getGroupId() == null )
         {
@@ -204,8 +204,8 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-monitor", "2.1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 1, reportDatabase.getNumFailures() );
     }
 
     /**
@@ -217,8 +217,8 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-project", "2.1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 1, reportDatabase.getNumFailures() );
     }
 
 }

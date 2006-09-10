@@ -26,13 +26,16 @@ public class InvalidPomArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reporter = new ReportingDatabase();
+    private ReportingDatabase reportDatabase;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "invalid-pom" );
+
+        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
+        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     /**
@@ -42,8 +45,8 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "artifactId", "1.0-alpha-3", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 1, reporter.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 1, reportDatabase.getNumFailures() );
     }
 
 
@@ -54,9 +57,9 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 
 
@@ -67,8 +70,8 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "jar" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reporter );
-        assertEquals( 0, reporter.getNumFailures() );
-        assertEquals( 0, reporter.getNumWarnings() );
+        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+        assertEquals( 0, reportDatabase.getNumFailures() );
+        assertEquals( 0, reportDatabase.getNumWarnings() );
     }
 }
