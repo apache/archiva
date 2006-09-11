@@ -17,18 +17,19 @@ package org.apache.maven.archiva.web.action.admin;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ModelDriven;
-import com.opensymphony.xwork.Preparable;
 import org.codehaus.plexus.security.rbac.RBACManager;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
+import org.codehaus.plexus.security.user.UserNotFoundException;
+import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LoginAction:
+ * UserManagementAction: pulled from the class of the same name in plexus-security-ui-web
+ * for integrating rbac with user information
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @version $Id:$
@@ -37,7 +38,6 @@ import java.util.List;
  */
 public class UserManagementAction
     extends PlexusActionSupport
-    implements ModelDriven, Preparable
 {
 
     /**
@@ -52,6 +52,12 @@ public class UserManagementAction
 
     private User user;
 
+    private String email;
+
+    private String fullName;
+
+    private boolean locked;
+
     private String username;
 
     private String principal;
@@ -64,41 +70,58 @@ public class UserManagementAction
 
     private String resourceName;
 
-    public void prepare()
+    /**
+     * for this method username should be populated
+     * 
+     * @return
+     */
+    public String findUser()
+    {
+        try
+        {
+            user = userManager.findUser( username );                 
+            return SUCCESS;
+        }
+        catch ( UserNotFoundException ne )
+        {
+            addActionError( "user could not be found "  + username );
+            return ERROR;
+        }
+    }
+
+    /**
+     * For this method, principal should be populated
+     *
+     * @throws Exception
+     */
+    public String display()
         throws Exception
     {
-        if ( username == null )
+        if ( principal == null )
         {
-            username = ( (User) session.get( "user" ) ).getUsername();
-            user = userManager.findUser( username );
-        }
-        else
-        {
-            user = userManager.findUser( username );
+            addActionError( "a principal is required for this operation" );
+            return ERROR;
         }
 
+        // for displaying the potential repositories to be displayed, remove the global resource
+        // from the list
         resources = rbacManager.getAllResources();
+        resources.remove( rbacManager.getGlobalResource() );
 
-        availableRoles = rbacManager.getAllAssignableRoles();
-
-        principal = ( (User) session.get( "user" ) ).getPrincipal().toString();
-
+        // check if the user has any roles assigned to them, and populate the lists for
+        // rendering assign and remove roles links
         if ( principal != null && rbacManager.userAssignmentExists( principal ) )
         {
-            getLogger().info( "recovering assigned roles" );
             assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
             availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
         }
         else
         {
-            getLogger().info( "new assigned roles" );
             assignedRoles = new ArrayList();
             availableRoles = rbacManager.getAllAssignableRoles();
-
         }
 
-        getLogger().info( "assigned roles: " + assignedRoles.size() );
-        getLogger().info( "available roles: " + availableRoles.size() );
+        return SUCCESS;
     }
 
     public String save()
@@ -106,18 +129,21 @@ public class UserManagementAction
     {
         User temp = userManager.findUser( username );
 
-        temp.setEmail( user.getEmail() );
-        temp.setFullName( user.getFullName() );
-        temp.setLocked( user.isLocked() );
+        temp.setEmail( email );
+        temp.setFullName( fullName );
+        temp.setLocked( locked );
 
-        userManager.updateUser( temp );
+        temp = userManager.updateUser( temp );
+
+        // overwrite the user in the session with the saved one if and only if it is the
+        // save user as the person currently logged in
+        User activeUser = (User) session.get( SecuritySession.USERKEY );
+        if ( temp.getPrincipal().toString().equals( activeUser.getPrincipal().toString() ) )
+        {
+            session.put( SecuritySession.USERKEY, temp );
+        }
 
         return SUCCESS;
-    }
-
-    public Object getModel()
-    {
-        return user;
     }
 
     public String getUsername()
@@ -133,6 +159,41 @@ public class UserManagementAction
     public User getUser()
     {
         return user;
+    }
+
+    public void setUser( User user )
+    {
+        this.user = user;
+    }
+
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail( String email )
+    {
+        this.email = email;
+    }
+
+    public String getFullName()
+    {
+        return fullName;
+    }
+
+    public void setFullName( String fullName )
+    {
+        this.fullName = fullName;
+    }
+
+    public boolean isLocked()
+    {
+        return locked;
+    }
+
+    public void setLocked( boolean locked )
+    {
+        this.locked = locked;
     }
 
     public String getPrincipal()

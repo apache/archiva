@@ -59,16 +59,19 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <ww:url id="loginUrl" action="login" namespace="/"/>
-    <ww:url id="logoutUrl" action="logout" namespace="/"/>
-    <ww:url id="manageUserUrl" action="user" namespace="/admin"/>
+    <ww:url id="loginUrl" action="login" namespace="/" includeParams="none"/>
 
     <ww:if test="${sessionScope.authStatus != true}">
       <ww:a href="%{loginUrl}">Login/Register</ww:a>
 
     </ww:if>
     <ww:else>
-      Welcome, <b>${sessionScope.user.username}</b> -
+      <ww:url id="logoutUrl" action="logout" namespace="/" includeParams="none"/>
+      <ww:url id="manageUserUrl" action="user" namespace="/admin">
+        <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+      </ww:url>
+
+      Welcome, <b>${sessionScope.SecuritySessionUser.username}</b> -
       <ww:a href="%{manageUserUrl}">Settings</ww:a> -
       <ww:a href="%{logoutUrl}">Logout</ww:a>
     </ww:else>

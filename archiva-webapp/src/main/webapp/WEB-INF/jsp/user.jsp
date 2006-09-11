@@ -29,23 +29,23 @@
         <div style="float: right">
           <pss:ifAnyAuthorized permissions="edit-all-users,edit-user" resource="${username}">
             <ww:url id="userDetailsUrl" action="userDetails">
-              <ww:param name="username">${username}</ww:param>
+              <ww:param name="username">${sessionScope.SecuritySessionUser.username}</ww:param>
             </ww:url>
             <ww:a href="%{userDetailsUrl}">Edit details</ww:a>
           </pss:ifAnyAuthorized>
         </div>
 
-        <h2>${user.fullName}</h2>
+        <h2>${sessionScope.SecuritySessionUser.fullName}</h2>
 
         <table class="bodyTable">
           <tr class="a">
             <th>Username</th>
 
-            <td>${user.username}</td>
+            <td>${sessionScope.SecuritySessionUser.username}</td>
           </tr>
           <tr class="b">
             <th>Email</th>
-            <td>${user.email}</td>
+            <td>${sessionScope.SecuritySessionUser.email}</td>
           </tr>
         </table>
 
@@ -54,8 +54,8 @@
         <table class="bodyTable">
           <ww:iterator id="role" value="assignedRoles">
             <ww:url id="removeAssignedRoleUrl" action="removeRoleFromUser">
-              <ww:param name="principal">${principal}</ww:param>
-              <ww:param name="roleName">${role.name}</ww:param>
+              <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+              <ww:param name="roleName">${sessionScope.SecuritySessionUser.name}</ww:param>
             </ww:url>
             <tr class="a">
              <td>
@@ -73,13 +73,13 @@
         <p>
           <ww:iterator id="role" value="availableRoles">
             <ww:url id="addRoleUrl" action="assignRoleToUser">
-              <ww:param name="principal">${sessionScope.user.principal}</ww:param>
+              <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
               <ww:param name="roleName">${role.name}</ww:param>
             </ww:url>
             <ww:a href="%{addRoleUrl}">${role.name}</ww:a><br/>
           </ww:iterator>
            </p>
-
+           <%--
           <p>
             This following screen needs have the various roles worked into it.
           </p>
@@ -114,7 +114,7 @@
                 of
                 <ww:select name="resourceName" list="resources" listKey="identifier" listValue="identifier" headerKey="" headerValue="(Please Select)"/>
               </td>
-            </tr>
+            </tr> --%>
                  <%--  add in for project level security
             <tr class="b">
               <td>

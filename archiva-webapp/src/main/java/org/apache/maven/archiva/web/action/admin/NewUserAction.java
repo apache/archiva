@@ -1,22 +1,22 @@
 package org.apache.maven.archiva.web.action.admin;
 
-
 /*
- * Copyright 2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2005 The Apache Software Foundation.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
+import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.security.system.SecuritySystem;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
@@ -24,7 +24,6 @@ import org.codehaus.plexus.security.user.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.security.user.policy.PasswordRuleViolations;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-import org.apache.maven.archiva.web.util.RoleManager;
 
 import java.util.Iterator;
 import java.util.List;
@@ -90,31 +89,38 @@ public class NewUserAction
 
         UserManager um = securitySystem.getUserManager();
 
-        User user = um.createUser( username, fullName, email );
-
-        user.setPassword( password );
-
-        try
+        if ( um.userExists( username ) )
         {
-            um.addUser( user );
+            addActionError( "User already exists!" );
         }
-        catch ( PasswordRuleViolationException e )
+        else
         {
-            PasswordRuleViolations violations = e.getViolations();
-            List violationList = violations.getLocalizedViolations();
-            Iterator it = violationList.iterator();
-            while ( it.hasNext() )
+            User user = um.createUser( username, fullName, email );
+
+            user.setPassword( password );
+
+            try
             {
-                addActionError( (String) it.next() );
+                um.addUser( user );
             }
-        }
+            catch ( PasswordRuleViolationException e )
+            {
+                PasswordRuleViolations violations = e.getViolations();
+                List violationList = violations.getLocalizedViolations();
+                Iterator it = violationList.iterator();
+                while ( it.hasNext() )
+                {
+                    addActionError( (String) it.next() );
+                }
+            }
+            roleManager.addUser( user.getPrincipal().toString() );
 
+        }
+        
         if ( hasActionErrors() )
         {
             return ERROR;
         }
-
-        roleManager.addUser( user.getPrincipal().toString() );
 
         return SUCCESS;
     }

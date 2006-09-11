@@ -244,12 +244,13 @@
 
     <!-- plexus security actions -->
 
-    <action name="userDetails" class="plexusSecurityUserManagement" method="save">
+    <action name="userDetails" class="userManagement" method="save">
       <result name="success">/WEB-INF/jsp/userDetails.jsp</result>
     </action>
 
-    <action name="userManagement" class="plexusSecurityUserManagement">
-      <result name="success">/WEB-INF/jsp/findUser.jsp</result>
+    <action name="userManagement" class="userManagement" method="findUser">
+      <result name="input">/WEB-INF/jsp/findUser.jsp</result>
+      <result name="success" type="redirect-action">user</result>
     </action>
 
     <action name="assignRoleToUser" class="plexusSecurityUserAssignment" method="assignRole">
