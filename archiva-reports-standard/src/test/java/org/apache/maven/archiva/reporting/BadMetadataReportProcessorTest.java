@@ -92,13 +92,36 @@ public class BadMetadataReportProcessorTest
         Result result = (Result) failures.next();
         assertEquals( "check reason", "Missing lastUpdated element inside the metadata.", result.getReason() );
         result = (Result) failures.next();
-        assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.",
-                      result.getReason() );
+        boolean alpha1First = false;
+        if ( result.getReason().indexOf( "alpha-1" ) > 0 )
+        {
+            alpha1First = true;
+        }
+        if ( alpha1First )
+        {
+            assertEquals( "check reason",
+                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.",
+                          result.getReason() );
+        }
+        else
+        {
+            assertEquals( "check reason",
+                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
+                          result.getReason() );
+        }
         result = (Result) failures.next();
-        assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
-                      result.getReason() );
+        if ( !alpha1First )
+        {
+            assertEquals( "check reason",
+                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.",
+                          result.getReason() );
+        }
+        else
+        {
+            assertEquals( "check reason",
+                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
+                          result.getReason() );
+        }
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
