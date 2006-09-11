@@ -16,7 +16,6 @@ package org.apache.maven.archiva.web.action.admin;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
@@ -25,6 +24,8 @@ import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
+import org.apache.maven.archiva.web.util.RoleManager;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.IOException;
 
@@ -34,13 +35,18 @@ import java.io.IOException;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public abstract class AbstractConfigureRepositoryAction
-    extends ActionSupport
+    extends PlexusActionSupport
     implements ModelDriven, Preparable
 {
     /**
      * @plexus.requirement
      */
     private ConfigurationStore configurationStore;
+
+    /**
+     * @plexus.requirement
+     */
+    protected RoleManager roleManager;
 
     /**
      * The repository.
@@ -91,6 +97,8 @@ public abstract class AbstractConfigureRepositoryAction
         throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException
     {
         addRepository();
+
+        roleManager.addRepository( getRepoId() );
 
         configurationStore.storeConfiguration( configuration );
 

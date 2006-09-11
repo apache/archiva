@@ -16,6 +16,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
 
 <html>
 <head>
@@ -26,7 +27,6 @@
 <body>
 
 <h1>Browse Repository</h1>
-
 <div id="contentArea">
   <div id="nameColumn">
     <h2>Groups</h2>
@@ -42,6 +42,8 @@
       </c:forEach>
     </ul>
   </div>
+
+
 
   <%-- TODO: later, when supported in metadata
   <div id="categoryColumn">

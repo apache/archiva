@@ -16,9 +16,9 @@ package org.apache.maven.archiva.web.action.admin;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.archiva.scheduler.RepositoryTaskScheduler;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Configures the application.
@@ -26,7 +26,7 @@ import org.apache.maven.archiva.scheduler.TaskExecutionException;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="runRepositoryTaskAction"
  */
 public class RunRepositoryTaskAction
-    extends ActionSupport
+    extends PlexusActionSupport
 {
     /**
      * @plexus.requirement

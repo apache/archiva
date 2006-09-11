@@ -15,43 +15,38 @@
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
 <html>
 <head>
-  <title>Login Page</title>
-  <ww:head/>
+  <title>User Management - Find a User</title>
+  <ww:head />
 </head>
 
 <body>
 
-<h1>Login</h1>
+    <div id="contentArea">
+      <div id="searchBox">
+        <div style="float: right">
 
-<div id="contentArea">
-  <div id="nameColumn">
-    <ww:form action="login">
-      <table>
-        <tr>
-          <td>Username:</td>
-          <td><ww:textfield name="username"/></td>
-        </tr>
-        <tr>
-          <td>Password:</td>
-          <td><ww:password name="password"/></td>
-        </tr>
-        <tr>
-          <td><ww:submit name="Login"/></td>
-          <td></td>
-        </tr>
-      </table>
-    </ww:form>
-    <p>
-      <ww:url id="registerUrl" action="register" namespace="/"/>
+        </div>
 
-      New user? - <ww:a href="%{registerUrl}">Register!</ww:a>
-    </p>
-  </div>
-</div>
+        <h2>Modify User Details</h2>
+
+        <ww:form action="userDetails" method="post">
+          <ww:textfield label="Full Name" name="fullName"/>
+          <ww:textfield label="Email Address" name="email"/>
+
+          <ww:checkbox label="Account Locked" name="locked"/>
+
+          <ww:submit/>
+        </ww:form>
+      </div>
+    </div>
+
+
+
+      <div class="clear">
+        <hr/>
+      </div>
 
 </body>
 </html>

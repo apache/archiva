@@ -18,6 +18,7 @@
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
 <html>
 <head>
   <title>Maven Archiva ::
@@ -60,14 +61,15 @@
   <div class="xleft">
     <ww:url id="loginUrl" action="login" namespace="/"/>
     <ww:url id="logoutUrl" action="logout" namespace="/"/>
-    <ww:url id="registerUrl" action="register" namespace="/"/>
+    <ww:url id="manageUserUrl" action="user" namespace="/admin"/>
+
     <ww:if test="${sessionScope.authStatus != true}">
-      <ww:a href="%{loginUrl}">Login</ww:a>
-      or
-      <ww:a href="%{registerUrl}">Register</ww:a>
+      <ww:a href="%{loginUrl}">Login/Register</ww:a>
+
     </ww:if>
     <ww:else>
       Welcome, <b>${sessionScope.user.username}</b> -
+      <ww:a href="%{manageUserUrl}">Settings</ww:a> -
       <ww:a href="%{logoutUrl}">Logout</ww:a>
     </ww:else>
   </div>
@@ -120,11 +122,17 @@
           <li class="none">
             <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
           </li>
+
           <%-- TODO: add back after synced repos are implemented
                     <li class="none">
                       <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
                     </li>
           --%>
+          <pss:ifAuthorized permission="edit-all-users">
+            <li class="none">
+              <my:currentWWUrl action="userManagement" namespace="/admin">User Management</my:currentWWUrl>
+            </li>
+          </pss:ifAuthorized>
         </ul>
       </li>
     </ul>

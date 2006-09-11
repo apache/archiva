@@ -127,17 +127,22 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authentication-provider-memory</artifactId>
+      <artifactId>plexus-security-authentication-provider-user-manager</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-user-management-provider-memory</artifactId>
+      <artifactId>plexus-security-user-management-api</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authorization-rbac-store-memory</artifactId>
+      <artifactId>plexus-security-user-management-provider-jdo</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.security</groupId>
+      <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -149,6 +154,43 @@
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authorization-rbac-authorizer</artifactId>
       <version>1.0-SNAPSHOT</version>
+    </dependency>
+        <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-jdo2</artifactId>
+      <version>1.0-alpha-7-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xmlParserAPIs</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>1.2</version>
+    </dependency>
+     <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+       <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>jpox</groupId>
+      <artifactId>jpox</artifactId>
+      <version>1.1.1</version>
+      <exclusions>
+        <!-- targeting JDK 1.4 we don't need this -->
+        <exclusion>
+          <groupId>javax.sql</groupId>
+          <artifactId>jdbc-stdext</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
   <build>

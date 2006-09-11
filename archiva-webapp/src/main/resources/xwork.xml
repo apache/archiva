@@ -126,17 +126,16 @@
     </action>
 
     <!-- plexus security actions -->
-    <action name="login" class="session" method="login">
-      <result name="input">/WEB-INF/jsp/login.jsp</result>
+    <action name="login" class="plexusSecurityLogin" method="login">
+      <result name="input">/WEB-INF/jsp/loginRegister.jsp</result>
       <result name="success" type="redirect-action">browse</result>
     </action>
 
-    <action name="logout" class="session" method="logout">
-      <result>/WEB-INF/jsp/logout.jsp</result>
+    <action name="logout" class="plexusSecurityLogin" method="logout">
+      <result name="success">/WEB-INF/jsp/logout.jsp</result>
     </action>
 
-    <action name="register" class="registerUser" method="createUser">
-      <result name="input">/WEB-INF/jsp/register.jsp</result>
+    <action name="register" class="newUser" method="createUser">
       <result name="success" type="redirect-action">login</result>
     </action>
   </package>
@@ -237,6 +236,112 @@
       <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
       <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
     </action>
+
+
+    <action name="user" class="userManagement">
+      <result name="success">/WEB-INF/jsp/user.jsp</result>
+    </action>
+
+    <!-- plexus security actions -->
+
+    <action name="userDetails" class="plexusSecurityUserManagement" method="save">
+      <result name="success">/WEB-INF/jsp/userDetails.jsp</result>
+    </action>
+
+    <action name="userManagement" class="plexusSecurityUserManagement">
+      <result name="success">/WEB-INF/jsp/findUser.jsp</result>
+    </action>
+
+    <action name="assignRoleToUser" class="plexusSecurityUserAssignment" method="assignRole">
+      <result name="success" type="redirect-action">user</result>
+    </action>
+
+    <action name="removeRoleFromUser" class="plexusSecurityUserAssignment" method="removeRole">
+      <result name="success" type="redirect-action">user</result>
+    </action>
+
+    <action name="permissions" class="plexusSecuritySummary" method="permissionSummary">
+      <result name="success">/WEB-INF/jsp/admin/rbac/permissions.jsp</result>
+    </action>
+
+    <action name="permission" class="plexusSecurityPermission">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success">/WEB-INF/jsp/admin/rbac/permission.jsp</result>
+    </action>
+
+    <action name="savePermission" class="plexusSecurityPermission" method="save">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success" type="redirect-action">permissions</result>
+    </action>
+
+    <action name="removePermission" class="plexusSecurityPermission" method="remove">
+      <result name="success" type="redirect-action">permissions</result>
+    </action>
+
+    <action name="operations" class="plexusSecuritySummary" method="operationSummary">
+      <result name="success">/WEB-INF/jsp/admin/rbac/operations.jsp</result>
+    </action>
+
+    <action name="operation" class="plexusSecurityOperation">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success">/WEB-INF/jsp/admin/rbac/operation.jsp</result>
+    </action>
+
+    <action name="saveOperation" class="plexusSecurityOperation" method="save">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success" type="redirect-action">operations</result>
+    </action>
+
+    <action name="removeOperation" class="plexusSecurityOperation" method="remove">
+      <result name="success" type="redirect-action">operations</result>
+    </action>
+
+    <action name="resources" class="plexusSecuritySummary" method="resourceSummary">
+      <result name="success">/WEB-INF/jsp/admin/rbac/resources.jsp</result>
+    </action>
+
+    <action name="resource" class="plexusSecurityResource">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success">/WEB-INF/jsp/admin/rbac/resource.jsp</result>
+    </action>
+
+    <action name="saveResource" class="plexusSecurityResource" method="save">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success" type="redirect-action">resources</result>
+    </action>
+
+    <action name="removeResource" class="plexusSecurityResource" method="remove">
+      <result name="success">/WEB-INF/jsp/admin/rbac/resources.jsp</result>
+    </action>
+
+    <action name="roles" class="plexusSecuritySummary" method="roleSummary">
+      <result name="success">/WEB-INF/jsp/admin/rbac/roles.jsp</result>
+    </action>
+
+    <action name="role" class="plexusSecurityRole">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success">/WEB-INF/jsp/admin/rbac/role.jsp</result>
+    </action>
+
+    <action name="saveRole" class="plexusSecurityRole" method="save">
+      <interceptor-ref name="paramsPrepareParamsStack"/>
+      <result name="success" type="redirect-action">roles</result>
+    </action>
+
+    <action name="removeRole" class="plexusSecurityRole" method="remove">
+      <result name="success" type="redirect-action">roles</result>
+    </action>
+
+    <action name="removeAssignedRole" class="plexusSecurityRole" method="removeAssignedRole">
+      <result name="success" type="chain">role</result>
+    </action>
+
+    <action name="removeAssignedPermission" class="plexusSecurityRole" method="removeAssignedPermission">
+      <result name="success" type="chain">role</result>
+    </action>
+
+
+
   </package>
 </xwork>
 

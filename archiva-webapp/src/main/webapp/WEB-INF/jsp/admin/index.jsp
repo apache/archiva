@@ -16,6 +16,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
 
 <html>
 <head>
@@ -50,7 +51,11 @@
       <ww:property value="indexerCronExpression"/>
     </td>
     <%-- TODO: a "delete index and run now" operation should be here too (really clean, remove deletions that didn't get picked up) --%>
-    <td><a href="<ww:url action="runIndexer" />">Run Now</a></td>
+    <td>
+      <pss:ifAuthorized permission="run-indexer">
+        <a href="<ww:url action="runIndexer" />">Run Now</a>
+      </pss:ifAuthorized>
+    </td>
   </tr>
 </table>
 
@@ -77,7 +82,11 @@
 <div>
   <div style="float: right">
     <%-- TODO replace with icons --%>
-    <a href="<ww:url action="addRepository" method="input" />">Add Repository</a></div>
+    <pss:ifAuthorized permission="add-repository">
+      <ww:url id="addRepositoryUrl" action="addRepository" method="input"/>
+      <ww:a href="%{addRepositoryUrl}">Add Repository</ww:a>
+    </pss:ifAuthorized>
+  </div>
   <h2>Managed Repositories</h2>
 </div>
 

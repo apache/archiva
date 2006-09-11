@@ -20,6 +20,7 @@ import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
+import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -37,6 +38,17 @@ public class ConfigurationInterceptor
      */
     private ConfigurationStore configurationStore;
 
+    /**
+     * @plexus.requirement
+     */
+    private RoleManager roleManager;
+
+    /**
+     *
+     * @param actionInvocation
+     * @return
+     * @throws Exception
+     */
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {

@@ -16,7 +16,6 @@ package org.apache.maven.archiva.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -40,6 +39,7 @@ import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +59,7 @@ import java.util.Set;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="showArtifactAction"
  */
 public class ShowArtifactAction
-    extends ActionSupport
+    extends PlexusActionSupport
 {
     /**
      * @plexus.requirement

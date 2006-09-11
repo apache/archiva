@@ -16,10 +16,10 @@ package org.apache.maven.archiva.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.ProxyManager;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ import java.io.InputStream;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="proxyAction"
  */
 public class ProxyAction
-    extends ActionSupport
+    extends PlexusActionSupport
 {
     /**
      * @plexus.requirement

@@ -16,7 +16,6 @@ package org.apache.maven.archiva.web.action.admin;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -26,6 +25,7 @@ import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureAction"
  */
 public class ConfigureAction
-    extends ActionSupport
+    extends PlexusActionSupport
     implements ModelDriven, Preparable
 {
     /**

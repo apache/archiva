@@ -56,20 +56,24 @@
             <hierarchy>org.apache.maven</hierarchy>
             <level>DEBUG</level>
           </level>
+          <level>
+            <hierarchy>org.codehaus.plexus.security</hierarchy>
+            <level>INFO</level>
+          </level>
         </levels>
       </configuration>
     </component>
 
 
     <!-- plexus security components -->
-    <component>
+     <component>
       <role>org.codehaus.plexus.security.system.SecuritySystem</role>
       <implementation>org.codehaus.plexus.security.system.DefaultSecuritySystem</implementation>
       <role-hint>default</role-hint>
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.security.authentication.Authenticator</role>
-          <role-hint>memory</role-hint>
+          <role-hint>user-manager</role-hint>
         </requirement>
         <requirement>
           <role>org.codehaus.plexus.security.authorization.Authorizer</role>
@@ -77,7 +81,7 @@
         </requirement>
         <requirement>
           <role>org.codehaus.plexus.security.user.UserManager</role>
-          <role-hint>memory</role-hint>
+          <role-hint>jdo</role-hint>
         </requirement>
       </requirements>
     </component>
@@ -88,12 +92,85 @@
       <implementation>org.codehaus.plexus.security.authorization.rbac.RbacAuthorizer</implementation>
       <requirements>
         <requirement>
-          <role>org.codehaus.plexus.security.authorization.rbac.store.RbacStore</role>
-          <role-hint>memory</role-hint>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+          <role-hint>jdo</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.security.authorization.rbac.evaluator.PermissionEvaluator</role>
+          <role-hint>default</role-hint>
         </requirement>
       </requirements>
     </component>
 
+
+    <component>
+      <role>org.codehaus.plexus.jdo.JdoFactory</role>
+      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
+      <configuration>
+
+        <!-- HSQLDB Configuration -->
+        <!--
+          NOTE: NO NOT USE THIS CONFIGURATION FOR A PRODUCTION SYSTEM.
+          HSQLDB keeps all data in memory at all times.
+
+          NOTE: JPOX 1.1.1 won't create the tables on start
+          http://www.jpox.org/servlet/jira/browse/CORE-2946
+        -->
+        <!--
+        <driverName>org.hsqldb.jdbcDriver</driverName>
+        <url>jdbc:hsqldb:mem:test</url>
+        <userName>sa</userName>
+        <password></password>
+            -->
+
+        <!-- Apache Derby Configuration -->
+        <driverName>org.apache.derby.jdbc.EmbeddedDriver</driverName>
+        <url>jdbc:derby:${plexus.home}/database;create=true</url>
+        <userName>sa</userName>
+        <password></password>
+
+        <!-- Postgresql Configuration -->
+        <!--
+        <driverName>org.postgresql.Driver</driverName>
+        <url>jdbc:postgresql://localhost/continuum</url>
+        <userName>username</userName>
+        <password></password>
+        -->
+
+        <!-- JPOX and JDO configuration -->
+        <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
+        <otherProperties>
+          <property>
+            <name>org.jpox.autoCreateSchema</name>
+            <value>true</value>
+          </property>
+          <property>
+            <name>org.jpox.autoStartMechanism</name>
+            <value>SchemaTable</value>
+          </property>
+          <property>
+            <name>org.jpox.autoStartMechanismMode</name>
+            <value>Ignored</value>
+          </property>
+          <property>
+            <name>org.jpox.validateTables</name>
+            <value>false</value>
+          </property>
+          <property>
+            <name>org.jpox.validateConstraints</name>
+            <value>false</value>
+          </property>
+          <property>
+            <name>org.jpox.transactionIsolation</name>
+            <value>READ_UNCOMMITTED</value>
+          </property>
+          <property>
+            <name>org.jpox.poid.transactionIsolation</name>
+            <value>READ_UNCOMMITTED</value>
+          </property>
+        </otherProperties>
+      </configuration>
+    </component>
 
   </components>
 

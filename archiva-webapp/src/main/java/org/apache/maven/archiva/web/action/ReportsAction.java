@@ -31,6 +31,7 @@ import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ import java.util.Map;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="reportsAction"
  */
 public class ReportsAction
-    extends ActionSupport
+    extends PlexusActionSupport
     implements Preparable
 {
     /**
