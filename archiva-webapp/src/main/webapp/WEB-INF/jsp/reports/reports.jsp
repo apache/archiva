@@ -77,6 +77,8 @@
       ${database.numFailures}
       <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
       ${database.numWarnings}
+      <img src="<c:url value="/images/icon_info_sml.gif"/>" width="15" height="15" alt=""/>
+      ${database.numNotices}
 
       <span style="font-size: x-small">
         <%-- TODO! use better formatting here --%>
@@ -105,6 +107,9 @@
       </c:forEach>
       <c:forEach items="${artifact.warnings}" var="result">
         <li class="warningBullet">${result.reason}</li>
+      </c:forEach>
+      <c:forEach items="${artifact.notices}" var="result">
+        <li class="infoBullet">${result.reason}</li>
       </c:forEach>
     </ul>
     <p style="text-indent: 3em;">
@@ -165,6 +170,9 @@
       </c:forEach>
       <c:forEach items="${metadata.warnings}" var="result">
         <li class="warningBullet">${result.reason}</li>
+      </c:forEach>
+      <c:forEach items="${metadata.notices}" var="result">
+        <li class="infoBullet">${result.reason}</li>
       </c:forEach>
     </ul>
     <p style="text-indent: 3em;">

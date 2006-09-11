@@ -79,6 +79,14 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
+        <field>
+          <name>notices</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
         <field xml.attribute="true">
           <name>groupId</name>
           <identity>true</identity>
@@ -144,6 +152,14 @@
         </field>
         <field>
           <name>warnings</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>notices</name>
           <version>1.0.0</version>
           <association>
             <type>Result</type>

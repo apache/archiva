@@ -66,6 +66,7 @@ public class ChecksumArtifactReporterTest
         artifactReportProcessor.processArtifact( artifact, null, reportingDatabase );
         assertEquals( 0, reportingDatabase.getNumFailures() );
         assertEquals( 0, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
     }
 
     /**
@@ -80,6 +81,7 @@ public class ChecksumArtifactReporterTest
         artifactReportProcessor.processArtifact( artifact, null, reportingDatabase );
         assertEquals( 1, reportingDatabase.getNumFailures() );
         assertEquals( 0, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
     }
 
     /**

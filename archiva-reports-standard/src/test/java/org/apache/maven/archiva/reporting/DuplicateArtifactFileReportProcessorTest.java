@@ -80,6 +80,7 @@ public class DuplicateArtifactFileReportProcessorTest
 
         processor.processArtifact( artifact, model, reportDatabase );
 
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
         assertEquals( "Check warnings", 1, reportDatabase.getNumWarnings() );
         assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
     }
@@ -89,6 +90,7 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         processor.processArtifact( artifact, model, reportDatabase );
 
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
         assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
         assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
     }
@@ -99,6 +101,7 @@ public class DuplicateArtifactFileReportProcessorTest
         artifact.setGroupId( "different.groupId" );
         processor.processArtifact( artifact, model, reportDatabase );
 
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
         assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
         assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
     }
@@ -110,6 +113,7 @@ public class DuplicateArtifactFileReportProcessorTest
 
         processor.processArtifact( newArtifact, model, reportDatabase );
 
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
         assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
         assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
     }
@@ -124,6 +128,7 @@ public class DuplicateArtifactFileReportProcessorTest
         processor.processArtifact( duplicate, model, reportDatabase );
 
         assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
         assertEquals( "Check no failures", 1, reportDatabase.getNumFailures() );
     }
 

@@ -65,6 +65,8 @@
           2
           <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
           1
+          <img src="images/icon_info_sml.gif" width="15" height="15" alt=""/>
+          0
           <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
           </span>
         </p>
@@ -134,6 +136,8 @@
           2
           <img src="images/icon_warning_sml.gif" width="15" height="15" alt=""/>
           0
+          <img src="images/icon_info_sml.gif" width="15" height="15" alt=""/>
+          1
           <span style="font-size: x-small">Report finished: 12 Jun 2006 10:11:12, execution time: 10 minutes 15 seconds
           </span>
         </p>
@@ -163,6 +167,10 @@
         <ul>
           <li class="errorBullet">File is missing SHA1 checksum (
             <a href="#">Repair</a>
+            )
+          </li>
+          <li class="infoBullet">Your coffee is ready (
+            <a href="#">Pick up</a>
             )
           </li>
         </ul>

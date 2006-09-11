@@ -285,6 +285,7 @@ public class RepositoryConverterTest
         repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check number of warnings", 2, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -454,8 +455,9 @@ public class RepositoryConverterTest
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
         repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "check no warnings", 1, reportingDatabase.getNumWarnings() );
+        assertEquals( "check warnings", 1, reportingDatabase.getNumWarnings() );
         assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -734,6 +736,7 @@ public class RepositoryConverterTest
         repositoryConverter.convert( artifacts, targetRepository, reportingDatabase );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -906,12 +909,14 @@ public class RepositoryConverterTest
     {
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
     }
 
     private void checkFailure()
     {
         assertEquals( "check num errors", 1, reportingDatabase.getNumFailures() );
         assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
+        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
     }
 
     private String getI18nString( String key )

@@ -58,6 +58,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**
@@ -74,6 +75,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**
@@ -89,6 +91,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( pomArtifact, model, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**
@@ -105,6 +108,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**
@@ -122,6 +126,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**
@@ -139,6 +144,7 @@ public class LocationArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
     /**

@@ -104,3 +104,7 @@
 .warningBullet {
     list-style-image: url( "../images/icon_warning_sml.gif" );
 }
+
+.infoBullet {
+    list-style-image: url( "../images/icon_info_sml.gif" );
+}

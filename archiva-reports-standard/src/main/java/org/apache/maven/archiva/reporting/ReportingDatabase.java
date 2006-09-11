@@ -58,6 +58,8 @@ public class ReportingDatabase
 
     private Map filteredDatabases = new HashMap();
 
+    private int numNotices;
+
     public ReportingDatabase( ReportGroup reportGroup )
     {
         this( reportGroup, new Reporting() );
@@ -98,6 +100,21 @@ public class ReportingDatabase
             ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
 
             reportingDatabase.addFailure( artifact, processor, problem, reason );
+        }
+    }
+
+    public void addNotice( Artifact artifact, String processor, String problem, String reason )
+    {
+        ArtifactResults results = getArtifactResults( artifact );
+        results.addNotice( createResult( processor, problem, reason ) );
+        numNotices++;
+        updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addNotice( artifact, processor, problem, reason );
         }
     }
 
@@ -158,6 +175,7 @@ public class ReportingDatabase
 
             numFailures += result.getFailures().size();
             numWarnings += result.getWarnings().size();
+            numNotices += result.getNotices().size();
         }
         artifactMap = map;
     }
@@ -215,6 +233,25 @@ public class ReportingDatabase
         }
     }
 
+    public void addNotice( RepositoryMetadata metadata, String processor, String problem, String reason )
+    {
+        MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
+        if ( !metadataWithProblems.contains( results ) )
+        {
+            metadataWithProblems.add( results );
+        }
+        results.addNotice( createResult( processor, problem, reason ) );
+        numNotices++;
+        updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addNotice( metadata, processor, problem, reason );
+        }
+    }
+
     public Set getMetadataWithProblems()
     {
         return metadataWithProblems;
@@ -235,8 +272,9 @@ public class ReportingDatabase
 
             numFailures += result.getFailures().size();
             numWarnings += result.getWarnings().size();
+            numNotices += result.getNotices().size();
 
-            if ( !result.getFailures().isEmpty() || !result.getWarnings().isEmpty() )
+            if ( !result.getFailures().isEmpty() || !result.getWarnings().isEmpty() || !result.getNotices().isEmpty() )
             {
                 problems.add( result );
             }
@@ -301,6 +339,9 @@ public class ReportingDatabase
         numWarnings -= results.getWarnings().size();
         results.getWarnings().clear();
 
+        numNotices -= results.getWarnings().size();
+        results.getNotices().clear();
+
         metadataWithProblems.remove( results );
     }
 
@@ -349,6 +390,7 @@ public class ReportingDatabase
 
             numFailures -= results.getFailures().size();
             numWarnings -= results.getWarnings().size();
+            numNotices -= results.getNotices().size();
 
             map.remove( key );
         }
@@ -378,6 +420,7 @@ public class ReportingDatabase
     {
         // clear the values rather than destroy the instance so that the "inProgress" indicator is in tact.
         numWarnings = 0;
+        numNotices = 0;
         numFailures = 0;
 
         artifactMap.clear();
@@ -465,6 +508,22 @@ public class ReportingDatabase
                         reportingDatabase.numWarnings++;
                     }
                 }
+                for ( Iterator j = results.getNotices().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createArtifactResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addNotice( result );
+                        reportingDatabase.numNotices++;
+                    }
+                }
             }
             for ( Iterator i = this.reporting.getMetadata().iterator(); i.hasNext(); )
             {
@@ -502,6 +561,22 @@ public class ReportingDatabase
                         reportingDatabase.numWarnings++;
                     }
                 }
+                for ( Iterator j = results.getNotices().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createMetadataResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addNotice( result );
+                        reportingDatabase.numNotices++;
+                    }
+                }
             }
 
             filteredDatabases.put( filter, reportingDatabase );
@@ -524,5 +599,10 @@ public class ReportingDatabase
     {
         return reportingDatabase.getArtifactResults( results.getGroupId(), results.getArtifactId(),
                                                      results.getVersion(), results.getType(), results.getClassifier() );
+    }
+
+    public int getNumNotices()
+    {
+        return numNotices;
     }
 }

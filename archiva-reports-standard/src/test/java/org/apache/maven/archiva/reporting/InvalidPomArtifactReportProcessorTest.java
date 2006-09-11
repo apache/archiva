@@ -60,6 +60,7 @@ public class InvalidPomArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 
 
@@ -73,5 +74,6 @@ public class InvalidPomArtifactReportProcessorTest
         artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
         assertEquals( 0, reportDatabase.getNumFailures() );
         assertEquals( 0, reportDatabase.getNumWarnings() );
+        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
     }
 }
