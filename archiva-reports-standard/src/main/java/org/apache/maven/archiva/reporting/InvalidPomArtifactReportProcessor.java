@@ -24,7 +24,6 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -38,6 +37,8 @@ import java.io.Reader;
 public class InvalidPomArtifactReportProcessor
     implements ArtifactReportProcessor
 {
+    private static final String ROLE_HINT = "invalid-pom";
+
     /**
      * @param artifact The pom xml file to be validated, passed as an artifact object.
      * @param reporter The artifact reporter object.
@@ -59,7 +60,7 @@ public class InvalidPomArtifactReportProcessor
 
             if ( !f.exists() )
             {
-                reporter.addFailure( artifact, "Artifact not found." );
+                addFailure( reporter, artifact, "pom-missing", "POM not found." );
             }
             else
             {
@@ -74,16 +75,13 @@ public class InvalidPomArtifactReportProcessor
                 }
                 catch ( XmlPullParserException e )
                 {
-                    reporter.addFailure( artifact, "The pom xml file is not well-formed. Error while parsing: " +
-                        e.getMessage() );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    reporter.addFailure( artifact, "Error while reading the pom xml file: " + e.getMessage() );
+                    addFailure( reporter, artifact, "pom-parse-exception",
+                                "The pom xml file is not well-formed. Error while parsing: " + e.getMessage() );
                 }
                 catch ( IOException e )
                 {
-                    reporter.addFailure( artifact, "Error while reading the pom xml file: " + e.getMessage() );
+                    addFailure( reporter, artifact, "pom-io-exception",
+                                "Error while reading the pom xml file: " + e.getMessage() );
                 }
                 finally
                 {
@@ -91,5 +89,11 @@ public class InvalidPomArtifactReportProcessor
                 }
             }
         }
+    }
+
+    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 }

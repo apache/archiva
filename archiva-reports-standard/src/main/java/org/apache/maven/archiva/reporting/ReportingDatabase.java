@@ -56,6 +56,8 @@ public class ReportingDatabase
 
     private Set metadataWithProblems;
 
+    private Map filteredDatabases = new HashMap();
+
     public ReportingDatabase( ReportGroup reportGroup )
     {
         this( reportGroup, new Reporting() );
@@ -84,37 +86,57 @@ public class ReportingDatabase
         initMetadataMap();
     }
 
-    public void addFailure( Artifact artifact, String reason )
+    public void addFailure( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        results.addFailure( createResults( reason ) );
+        results.addFailure( createResult( processor, problem, reason ) );
         numFailures++;
         updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addFailure( artifact, processor, problem, reason );
+        }
     }
 
-    public void addWarning( Artifact artifact, String reason )
+    public void addWarning( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        results.addWarning( createResults( reason ) );
+        results.addWarning( createResult( processor, problem, reason ) );
         numWarnings++;
         updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addWarning( artifact, processor, problem, reason );
+        }
     }
 
     private ArtifactResults getArtifactResults( Artifact artifact )
     {
+        return getArtifactResults( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                                   artifact.getType(), artifact.getClassifier() );
+    }
+
+    private ArtifactResults getArtifactResults( String groupId, String artifactId, String version, String type,
+                                                String classifier )
+    {
         Map artifactMap = this.artifactMap;
 
-        String key = getArtifactKey( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                     artifact.getType(), artifact.getClassifier() );
+        String key = getArtifactKey( groupId, artifactId, version, type, classifier );
         ArtifactResults results = (ArtifactResults) artifactMap.get( key );
         if ( results == null )
         {
             results = new ArtifactResults();
-            results.setArtifactId( artifact.getArtifactId() );
-            results.setClassifier( artifact.getClassifier() );
-            results.setGroupId( artifact.getGroupId() );
-            results.setType( artifact.getType() );
-            results.setVersion( artifact.getVersion() );
+            results.setArtifactId( artifactId );
+            results.setClassifier( classifier );
+            results.setGroupId( groupId );
+            results.setType( type );
+            results.setVersion( version );
 
             artifactMap.put( key, results );
             reporting.getArtifacts().add( results );
@@ -146,35 +168,51 @@ public class ReportingDatabase
         return groupId + ":" + artifactId + ":" + version + ":" + type + ":" + classifier;
     }
 
-    private static Result createResults( String reason )
+    private static Result createResult( String processor, String problem, String reason )
     {
         Result result = new Result();
+        result.setProcessor( processor );
+        result.setProblem( problem );
         result.setReason( reason );
         return result;
     }
 
-    public void addFailure( RepositoryMetadata metadata, String reason )
+    public void addFailure( RepositoryMetadata metadata, String processor, String problem, String reason )
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         if ( !metadataWithProblems.contains( results ) )
         {
             metadataWithProblems.add( results );
         }
-        results.addFailure( createResults( reason ) );
+        results.addFailure( createResult( processor, problem, reason ) );
         numFailures++;
         updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addFailure( metadata, processor, problem, reason );
+        }
     }
 
-    public void addWarning( RepositoryMetadata metadata, String reason )
+    public void addWarning( RepositoryMetadata metadata, String processor, String problem, String reason )
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
         if ( !metadataWithProblems.contains( results ) )
         {
             metadataWithProblems.add( results );
         }
-        results.addWarning( createResults( reason ) );
+        results.addWarning( createResult( processor, problem, reason ) );
         numWarnings++;
         updateTimings();
+
+        if ( filteredDatabases.containsKey( problem ) )
+        {
+            ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( problem );
+
+            reportingDatabase.addWarning( metadata, processor, problem, reason );
+        }
     }
 
     public Set getMetadataWithProblems()
@@ -239,7 +277,7 @@ public class ReportingDatabase
 
     public boolean isMetadataUpToDate( RepositoryMetadata metadata, long timestamp )
     {
-        String key = getMetadataKey( metadata );
+        String key = getMetadataKey( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion() );
         Map map = metadataMap;
         MetadataResults results = (MetadataResults) map.get( key );
         return results != null && results.getLastModified() >= timestamp;
@@ -268,26 +306,28 @@ public class ReportingDatabase
 
     private MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
     {
-        String key = getMetadataKey( metadata );
+        return getMetadataResults( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion(),
+                                   lastModified );
+    }
+
+    private MetadataResults getMetadataResults( String groupId, String artifactId, String baseVersion,
+                                                long lastModified )
+    {
+        String key = getMetadataKey( groupId, artifactId, baseVersion );
         Map metadataMap = this.metadataMap;
         MetadataResults results = (MetadataResults) metadataMap.get( key );
         if ( results == null )
         {
             results = new MetadataResults();
-            results.setArtifactId( metadata.getArtifactId() );
-            results.setGroupId( metadata.getGroupId() );
-            results.setVersion( metadata.getBaseVersion() );
+            results.setArtifactId( artifactId );
+            results.setGroupId( groupId );
+            results.setVersion( baseVersion );
             results.setLastModified( lastModified );
 
             metadataMap.put( key, results );
             reporting.getMetadata().add( results );
         }
         return results;
-    }
-
-    private static String getMetadataKey( RepositoryMetadata metadata )
-    {
-        return getMetadataKey( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion() );
     }
 
     public void removeArtifact( Artifact artifact )
@@ -343,6 +383,7 @@ public class ReportingDatabase
         artifactMap.clear();
         metadataMap.clear();
         metadataWithProblems.clear();
+        filteredDatabases.clear();
 
         reporting.getArtifacts().clear();
         reporting.getMetadata().clear();
@@ -374,5 +415,114 @@ public class ReportingDatabase
     public ReportGroup getReportGroup()
     {
         return reportGroup;
+    }
+
+    public ReportingDatabase getFilteredDatabase( String filter )
+    {
+        ReportingDatabase reportingDatabase = (ReportingDatabase) filteredDatabases.get( filter );
+
+        if ( reportingDatabase == null )
+        {
+            reportingDatabase = new ReportingDatabase( reportGroup, repository );
+
+            Reporting reporting = reportingDatabase.getReporting();
+            reporting.setExecutionTime( this.reporting.getExecutionTime() );
+            reporting.setLastModified( this.reporting.getLastModified() );
+
+            for ( Iterator i = this.reporting.getArtifacts().iterator(); i.hasNext(); )
+            {
+                ArtifactResults results = (ArtifactResults) i.next();
+                ArtifactResults targetResults = null;
+                for ( Iterator j = results.getFailures().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createArtifactResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addFailure( result );
+                        reportingDatabase.numFailures++;
+                    }
+                }
+                for ( Iterator j = results.getWarnings().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createArtifactResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addWarning( result );
+                        reportingDatabase.numWarnings++;
+                    }
+                }
+            }
+            for ( Iterator i = this.reporting.getMetadata().iterator(); i.hasNext(); )
+            {
+                MetadataResults results = (MetadataResults) i.next();
+                MetadataResults targetResults = null;
+                for ( Iterator j = results.getFailures().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createMetadataResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addFailure( result );
+                        reportingDatabase.numFailures++;
+                    }
+                }
+                for ( Iterator j = results.getWarnings().iterator(); j.hasNext(); )
+                {
+                    Result result = (Result) j.next();
+
+                    if ( filter.equals( result.getProcessor() ) )
+                    {
+                        if ( targetResults == null )
+                        {
+                            // lazily create so it is not added unless it has to be
+                            targetResults = createMetadataResults( reportingDatabase, results );
+                        }
+
+                        targetResults.addWarning( result );
+                        reportingDatabase.numWarnings++;
+                    }
+                }
+            }
+
+            filteredDatabases.put( filter, reportingDatabase );
+        }
+
+        return reportingDatabase;
+    }
+
+    private static MetadataResults createMetadataResults( ReportingDatabase reportingDatabase, MetadataResults results )
+    {
+        MetadataResults targetResults = reportingDatabase.getMetadataResults( results.getGroupId(),
+                                                                              results.getArtifactId(),
+                                                                              results.getVersion(),
+                                                                              results.getLastModified() );
+        reportingDatabase.metadataWithProblems.add( targetResults );
+        return targetResults;
+    }
+
+    private static ArtifactResults createArtifactResults( ReportingDatabase reportingDatabase, ArtifactResults results )
+    {
+        return reportingDatabase.getArtifactResults( results.getGroupId(), results.getArtifactId(),
+                                                     results.getVersion(), results.getType(), results.getClassifier() );
     }
 }

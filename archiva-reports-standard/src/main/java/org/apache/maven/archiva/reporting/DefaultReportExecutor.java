@@ -118,7 +118,7 @@ public class DefaultReportExecutor
             }
             catch ( ProjectBuildingException e )
             {
-                reporter.addWarning( artifact, "Error reading project model: " + e );
+                reporter.addWarning( artifact, null, null, "Error reading project model: " + e );
             }
 
             reporter.removeArtifact( artifact );

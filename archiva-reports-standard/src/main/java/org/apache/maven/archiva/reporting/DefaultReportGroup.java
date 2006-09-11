@@ -16,10 +16,8 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The default report set, for repository health.
@@ -32,18 +30,27 @@ public class DefaultReportGroup
 {
     /**
      * Role hints of the reports to include in this set.
-     *
-     * @todo re-enable duplicate, once a way to populate the index is determined!
      */
-    private static final Set reports = new LinkedHashSet( Arrays.asList( new String[]{"checksum", "dependency"
-/*, "duplicate"*/, "invalid-pom", "artifact-location", "bad-metadata", "checksum-metadata"} ) );
+    private static final Map reports = new LinkedHashMap();
+
+    static
+    {
+        reports.put( "checksum", "Checksum Problems" );
+        reports.put( "dependency", "Dependency Problems" );
+        // TODO re-enable duplicate, once a way to populate the index is determined!
+//        reports.put( "duplicate", "Duplicate Artifact Problems" );
+        reports.put( "invalid-pom", "POM Problems" );
+        reports.put( "bad-metadata", "Metadata Problems" );
+        reports.put( "checksum-metadata", "Metadata Checksum Problems" );
+        reports.put( "artifact-location", "Artifact Location Problems" );
+    }
 
     public boolean includeReport( String key )
     {
-        return reports.contains( key );
+        return reports.containsKey( key );
     }
 
-    public Collection getReportIds()
+    public Map getReports()
     {
         return reports;
     }

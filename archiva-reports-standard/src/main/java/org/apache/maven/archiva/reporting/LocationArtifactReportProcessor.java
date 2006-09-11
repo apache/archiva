@@ -63,6 +63,8 @@ public class LocationArtifactReportProcessor
 
     private static final String POM = "pom";
 
+    private static final String ROLE_HINT = "artifact-location";
+
     /**
      * Check whether the artifact is in its proper location. The location of the artifact
      * is validated first against the groupId, artifactId and versionId in the specified model
@@ -104,9 +106,9 @@ public class LocationArtifactReportProcessor
                 String modelPath = repository.pathOf( modelArtifact );
                 if ( !modelPath.equals( artifactPath ) )
                 {
-                    reporter.addFailure( artifact,
-                                         "The artifact is out of place. It does not match the specified location in the repository pom: " +
-                                             modelPath );
+                    addFailure( reporter, artifact, "repository-pom-location",
+                                "The artifact is out of place. It does not match the specified location in the repository pom: " +
+                                    modelPath );
                 }
             }
         }
@@ -130,8 +132,8 @@ public class LocationArtifactReportProcessor
                                                                                       extractedModel.getPackaging() );
                     if ( !repository.pathOf( extractedArtifact ).equals( artifactPath ) )
                     {
-                        reporter.addFailure( artifact,
-                                             "The artifact is out of place. It does not match the specified location in the packaged pom." );
+                        addFailure( reporter, artifact, "packaged-pom-location",
+                                    "The artifact is out of place. It does not match the specified location in the packaged pom." );
                     }
                 }
             }
@@ -140,6 +142,12 @@ public class LocationArtifactReportProcessor
         {
             throw new IllegalStateException( "Couldn't find artifact " + file );
         }
+    }
+
+    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 
     private static void adjustDistributionArtifactHandler( Artifact artifact )
@@ -185,11 +193,11 @@ public class LocationArtifactReportProcessor
         }
         catch ( IOException e )
         {
-            reporter.addWarning( artifact, "Unable to read artifact to extract model: " + e );
+            addWarning( reporter, artifact, "Unable to read artifact to extract model: " + e );
         }
         catch ( XmlPullParserException e )
         {
-            reporter.addWarning( artifact, "Unable to parse extracted model: " + e );
+            addWarning( reporter, artifact, "Unable to parse extracted model: " + e );
         }
         finally
         {
@@ -207,6 +215,12 @@ public class LocationArtifactReportProcessor
             }
         }
         return model;
+    }
+
+    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addWarning( artifact, ROLE_HINT, null, reason );
     }
 
     private Model readModel( InputStream entryStream )

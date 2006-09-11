@@ -45,6 +45,8 @@ public class ChecksumArtifactReportProcessor
      */
     private Digester md5Digester;
 
+    private static final String ROLE_HINT = "checksum";
+
     public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -77,16 +79,23 @@ public class ChecksumArtifactReportProcessor
             }
             catch ( DigesterException e )
             {
-                reporter.addFailure( artifact, e.getMessage() );
+                addFailure( reporter, artifact, "checksum-wrong", e.getMessage() );
             }
             catch ( IOException e )
             {
-                reporter.addFailure( artifact, "Read file error: " + e.getMessage() );
+                addFailure( reporter, artifact, "checksum-io-exception", "Read file error: " + e.getMessage() );
             }
         }
         else
         {
-            reporter.addFailure( artifact, digester.getAlgorithm() + " checksum file does not exist." );
+            addFailure( reporter, artifact, "checksum-missing",
+                        digester.getAlgorithm() + " checksum file does not exist." );
         }
+    }
+
+    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 }

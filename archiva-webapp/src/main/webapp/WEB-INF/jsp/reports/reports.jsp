@@ -33,11 +33,12 @@
 
 <div id="contentArea">
 
-<%-- TODO!: select filter --%>
 <ww:form action="reports" namespace="/admin">
-  <ww:select list="reports" label="Report" name="reportGroup"/>
+  <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
   <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
-             headerValue="(All repositories)" name="repositoryId"/>
+             headerValue="(All repositories)" name="repositoryId" onchange="document.reports.submit();"/>
+  <ww:select list="reports[reportGroup].reports" label="Filter" headerKey="-" headerValue="(All Problems)"
+             name="filter" onchange="document.reports.submit();"/>
   <ww:submit value="Get Report"/>
 </ww:form>
 

@@ -295,14 +295,14 @@ public class DefaultRepositoryConverter
 
         if ( !metadata.getGroupId().equals( artifact.getGroupId() ) )
         {
-            reporter.addFailure( artifact, getI18NString( groupIdKey ) );
+            addFailure( reporter, artifact, groupIdKey );
             result = false;
         }
         if ( !repositoryMetadata.storedInGroupDirectory() )
         {
             if ( !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
             {
-                reporter.addFailure( artifact, getI18NString( artifactIdKey ) );
+                addFailure( reporter, artifact, artifactIdKey );
                 result = false;
             }
             if ( !repositoryMetadata.storedInArtifactVersionDirectory() )
@@ -325,7 +325,7 @@ public class DefaultRepositoryConverter
 
                 if ( !foundVersion )
                 {
-                    reporter.addFailure( artifact, getI18NString( versionsKey ) );
+                    addFailure( reporter, artifact, versionsKey );
                     result = false;
                 }
             }
@@ -334,7 +334,7 @@ public class DefaultRepositoryConverter
                 // snapshot metadata
                 if ( !artifact.getBaseVersion().equals( metadata.getVersion() ) )
                 {
-                    reporter.addFailure( artifact, getI18NString( versionKey ) );
+                    addFailure( reporter, artifact, versionKey );
                     result = false;
                 }
 
@@ -357,7 +357,7 @@ public class DefaultRepositoryConverter
 
                         if ( !correct )
                         {
-                            reporter.addFailure( artifact, getI18NString( snapshotKey ) );
+                            addFailure( reporter, artifact, snapshotKey );
                             result = false;
                         }
                     }
@@ -365,6 +365,24 @@ public class DefaultRepositoryConverter
             }
         }
         return result;
+    }
+
+    private void addFailure( ReportingDatabase reporter, Artifact artifact, String key )
+    {
+        addFailureWithReason( reporter, artifact, getI18NString( key ) );
+
+    }
+
+    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String message )
+    {
+        // TODO: should we be able to identify/fix these?
+        reporter.addWarning( artifact, null, null, message );
+    }
+
+    private static void addFailureWithReason( ReportingDatabase reporter, Artifact artifact, String reason )
+    {
+        // TODO: should we be able to identify/fix these?
+        reporter.addFailure( artifact, null, null, reason );
     }
 
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter,
@@ -452,12 +470,13 @@ public class DefaultRepositoryConverter
                     for ( Iterator i = warnings.iterator(); i.hasNext(); )
                     {
                         String message = (String) i.next();
-                        reporter.addWarning( artifact, message );
+                        addWarning( reporter, artifact, message );
                     }
                 }
                 catch ( XmlPullParserException e )
                 {
-                    reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    addFailureWithReason( reporter, artifact,
+                                          getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
                 catch ( IOException e )
@@ -466,7 +485,8 @@ public class DefaultRepositoryConverter
                 }
                 catch ( PomTranslationException e )
                 {
-                    reporter.addFailure( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    addFailureWithReason( reporter, artifact,
+                                          getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
                 finally
@@ -477,7 +497,7 @@ public class DefaultRepositoryConverter
         }
         else
         {
-            reporter.addWarning( artifact, getI18NString( "warning.missing.pom" ) );
+            addWarning( reporter, artifact, getI18NString( "warning.missing.pom" ) );
         }
         return result;
     }
@@ -598,7 +618,7 @@ public class DefaultRepositoryConverter
             }
             catch ( DigesterException e )
             {
-                reporter.addFailure( artifact, getI18NString( key ) );
+                addFailure( reporter, artifact, key );
                 result = false;
             }
         }
@@ -622,7 +642,7 @@ public class DefaultRepositoryConverter
                 matching = FileUtils.contentEquals( sourceFile, targetFile );
                 if ( !matching )
                 {
-                    reporter.addFailure( artifact, getI18NString( "failure.target.already.exists" ) );
+                    addFailure( reporter, artifact, "failure.target.already.exists" );
                     result = false;
                 }
             }

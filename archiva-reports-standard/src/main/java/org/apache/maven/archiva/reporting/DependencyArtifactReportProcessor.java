@@ -47,10 +47,16 @@ public class DependencyArtifactReportProcessor
 
     private static final String POM = "pom";
 
+    private static final String ROLE_HINT = "dependency";
+
     public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
         RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( artifact.getRepository() );
-        processArtifact( artifact, reporter, queryLayer );
+        if ( !queryLayer.containsArtifact( artifact ) )
+        {
+            // TODO: is this even possible?
+            addFailure( reporter, artifact, "missing-artifact", "Artifact does not exist in the repository" );
+        }
 
         if ( model != null && POM.equals( artifact.getType() ) )
         {
@@ -59,13 +65,10 @@ public class DependencyArtifactReportProcessor
         }
     }
 
-    private void processArtifact( Artifact artifact, ReportingDatabase reporter,
-                                  RepositoryQueryLayer repositoryQueryLayer )
+    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
     {
-        if ( !repositoryQueryLayer.containsArtifact( artifact ) )
-        {
-            reporter.addFailure( artifact, "Artifact does not exist in the repository" );
-        }
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 
     private void processDependencies( List dependencies, ReportingDatabase reporter,
@@ -96,7 +99,8 @@ public class DependencyArtifactReportProcessor
                         String reason = MessageFormat.format(
                             "Artifact''s dependency {0} does not exist in the repository",
                             new String[]{getDependencyString( dependency )} );
-                        reporter.addFailure( sourceArtifact, reason );
+                        addFailure( reporter, sourceArtifact, "missing-dependency:" + getDependencyKey( dependency ),
+                                    reason );
                     }
                 }
                 catch ( InvalidVersionSpecificationException e )
@@ -104,10 +108,23 @@ public class DependencyArtifactReportProcessor
                     String reason = MessageFormat.format( "Artifact''s dependency {0} contains an invalid version {1}",
                                                           new String[]{getDependencyString( dependency ),
                                                               dependency.getVersion()} );
-                    reporter.addFailure( sourceArtifact, reason );
+                    addFailure( reporter, sourceArtifact, "bad-version:" + getDependencyKey( dependency ), reason );
                 }
             }
         }
+    }
+
+    private String getDependencyKey( Dependency dependency )
+    {
+        String str = dependency.getGroupId();
+        str += ":" + dependency.getArtifactId();
+        str += ":" + dependency.getVersion();
+        str += ":" + dependency.getType();
+        if ( dependency.getClassifier() != null )
+        {
+            str += ":" + dependency.getClassifier();
+        }
+        return str;
     }
 
     static String getDependencyString( Dependency dependency )

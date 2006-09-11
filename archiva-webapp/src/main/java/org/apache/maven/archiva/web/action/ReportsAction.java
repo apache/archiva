@@ -76,6 +76,8 @@ public class ReportsAction
 
     private static final String DEFAULT_REPORT_GROUP = "health";
 
+    private String filter;
+
     public String execute()
         throws Exception
     {
@@ -106,6 +108,11 @@ public class ReportsAction
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
 
         ReportingDatabase database = executor.getReportDatabase( repository, reportGroup );
+
+        if ( filter != null && !filter.equals( "-" ) )
+        {
+            database = database.getFilteredDatabase( filter );
+        }
 
         databases.add( database );
     }
@@ -204,5 +211,15 @@ public class ReportsAction
     public Map getReports()
     {
         return reports;
+    }
+
+    public String getFilter()
+    {
+        return filter;
+    }
+
+    public void setFilter( String filter )
+    {
+        this.filter = filter;
     }
 }

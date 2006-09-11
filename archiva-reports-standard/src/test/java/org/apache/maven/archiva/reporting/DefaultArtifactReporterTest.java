@@ -36,6 +36,10 @@ public class DefaultArtifactReporterTest
 
     private RepositoryMetadata metadata;
 
+    private static final String PROCESSOR = "processor";
+
+    private static final String PROBLEM = "problem";
+
     public void testEmptyArtifactReporter()
     {
         assertEquals( "No failures", 0, reportingDatabase.getNumFailures() );
@@ -46,7 +50,7 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataSingleFailure()
     {
-        reportingDatabase.addFailure( metadata, "Single Failure Reason" );
+        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "Single Failure Reason" );
         assertEquals( "failures count", 1, reportingDatabase.getNumFailures() );
         assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
 
@@ -58,6 +62,8 @@ public class DefaultArtifactReporterTest
         Result result = (Result) failures.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "Single Failure Reason", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertFalse( "no more failures", failures.hasNext() );
     }
 
@@ -70,8 +76,8 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataMultipleFailures()
     {
-        reportingDatabase.addFailure( metadata, "First Failure Reason" );
-        reportingDatabase.addFailure( metadata, "Second Failure Reason" );
+        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "First Failure Reason" );
+        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "Second Failure Reason" );
         assertEquals( "failures count", 2, reportingDatabase.getNumFailures() );
         assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
 
@@ -83,15 +89,19 @@ public class DefaultArtifactReporterTest
         Result result = (Result) failures.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "First Failure Reason", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd failure", failures.hasNext() );
         result = (Result) failures.next();
         assertEquals( "check failure reason", "Second Failure Reason", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertFalse( "no more failures", failures.hasNext() );
     }
 
     public void testMetadataSingleWarning()
     {
-        reportingDatabase.addWarning( metadata, "Single Warning Message" );
+        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "Single Warning Message" );
         assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
         assertEquals( "warnings count", 1, reportingDatabase.getNumWarnings() );
 
@@ -103,13 +113,15 @@ public class DefaultArtifactReporterTest
         Result result = (Result) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "Single Warning Message", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertFalse( "no more warnings", warnings.hasNext() );
     }
 
     public void testMetadataMultipleWarnings()
     {
-        reportingDatabase.addWarning( metadata, "First Warning" );
-        reportingDatabase.addWarning( metadata, "Second Warning" );
+        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "First Warning" );
+        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "Second Warning" );
         assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
         assertEquals( "warnings count", 2, reportingDatabase.getNumWarnings() );
 
@@ -121,9 +133,13 @@ public class DefaultArtifactReporterTest
         Result result = (Result) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "First Warning", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd warning", warnings.hasNext() );
         result = (Result) warnings.next();
         assertEquals( "check failure reason", "Second Warning", result.getReason() );
+        assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
+        assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertFalse( "no more warnings", warnings.hasNext() );
     }
 

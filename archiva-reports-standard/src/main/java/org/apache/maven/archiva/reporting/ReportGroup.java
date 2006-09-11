@@ -5,7 +5,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.model.Model;
 
-import java.util.Collection;
+import java.util.Map;
 
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
@@ -62,11 +62,12 @@ public interface ReportGroup
     boolean includeReport( String key );
 
     /**
-     * Get a list of the report processors in this set.
+     * Get the report processors in this set. The map is keyed by the report's role hint, and the value is it's
+     * display name.
      *
-     * @return the report IDs
+     * @return the reports
      */
-    Collection getReportIds();
+    Map getReports();
 
     /**
      * Get the user-friendly name of this report.

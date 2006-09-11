@@ -58,6 +58,8 @@ public class DuplicateArtifactFileReportProcessor
      */
     private String indexDirectory;
 
+    private static final String ROLE_HINT = "duplicate";
+
     public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -72,7 +74,8 @@ public class DuplicateArtifactFileReportProcessor
             }
             catch ( DigesterException e )
             {
-                reporter.addWarning( artifact, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
+                addWarning( reporter, artifact, null,
+                            "Unable to generate checksum for " + artifact.getFile() + ": " + e );
             }
 
             if ( checksum != null )
@@ -95,7 +98,8 @@ public class DuplicateArtifactFileReportProcessor
                                 String groupId = artifact.getGroupId();
                                 if ( groupId.equals( result.getGroupId() ) )
                                 {
-                                    reporter.addFailure( artifact, "Found duplicate for " + artifact.getId() );
+                                    addFailures( reporter, artifact, "duplicate",
+                                                 "Found duplicate for " + artifact.getId() );
                                 }
                             }
                         }
@@ -103,13 +107,25 @@ public class DuplicateArtifactFileReportProcessor
                 }
                 catch ( RepositoryIndexSearchException e )
                 {
-                    reporter.addWarning( artifact, "Failed to search in index" + e );
+                    addWarning( reporter, artifact, null, "Failed to search in index" + e );
                 }
             }
         }
         else
         {
-            reporter.addWarning( artifact, "Artifact file is null" );
+            addWarning( reporter, artifact, null, "Artifact file is null" );
         }
+    }
+
+    private static void addFailures( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+    }
+
+    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addWarning( artifact, ROLE_HINT, problem, reason );
     }
 }

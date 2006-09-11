@@ -200,6 +200,26 @@
           <description>
             The reason given for the result.
           </description>
+          <required>true</required>
+        </field>
+        <field xml.attribute="true">
+          <name>processor</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The processor identifier for the report that triggered the problem. This matches the role-hint of a report
+            processor.
+          </description>
+          <required>true</required>
+        </field>
+        <field xml.attribute="true">
+          <name>problem</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The problem identifier for the problem that occurred. This is so that the processor can identify how to
+            fix the problem. It may be null if it cannot be fixed automatically.
+          </description>
         </field>
       </fields>
     </class>

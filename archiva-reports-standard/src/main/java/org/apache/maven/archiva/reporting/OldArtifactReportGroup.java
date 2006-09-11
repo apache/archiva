@@ -16,10 +16,8 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * The report set for finding old artifacts (both snapshot and release)
@@ -34,15 +32,20 @@ public class OldArtifactReportGroup
      *
      * @todo implement these report processors!
      */
-    private static final Set reports =
-        new LinkedHashSet( Arrays.asList( new String[]{"old-artifact", "old-snapshot-artifact"} ) );
+    private static final Map reports = new LinkedHashMap();
+
+    static
+    {
+        reports.put( "old-artifact", "Old Artifacts" );
+        reports.put( "old-snapshot-artifact", "Old Snapshot Artifacts" );
+    }
 
     public boolean includeReport( String key )
     {
-        return reports.contains( key );
+        return reports.containsKey( key );
     }
 
-    public Collection getReportIds()
+    public Map getReports()
     {
         return reports;
     }

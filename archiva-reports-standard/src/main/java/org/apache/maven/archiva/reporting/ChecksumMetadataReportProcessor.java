@@ -44,6 +44,8 @@ public class ChecksumMetadataReportProcessor
      */
     private Digester md5Digester;
 
+    private static final String ROLE_HINT = "checksum-metadata";
+
     /**
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
@@ -78,17 +80,25 @@ public class ChecksumMetadataReportProcessor
             }
             catch ( DigesterException e )
             {
-                reporter.addFailure( metadata, e.getMessage() );
+                addFailure( reporter, metadata, "checksum-wrong", e.getMessage() );
             }
             catch ( IOException e )
             {
-                reporter.addFailure( metadata, "Read file error: " + e.getMessage() );
+                addFailure( reporter, metadata, "checksum-io-exception", "Read file error: " + e.getMessage() );
             }
         }
         else
         {
-            reporter.addFailure( metadata, digester.getAlgorithm() + " checksum file does not exist." );
+            addFailure( reporter, metadata, "checksum-missing",
+                        digester.getAlgorithm() + " checksum file does not exist." );
         }
+    }
+
+    private static void addFailure( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
+                                    String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( metadata, ROLE_HINT, problem, reason );
     }
 
 }

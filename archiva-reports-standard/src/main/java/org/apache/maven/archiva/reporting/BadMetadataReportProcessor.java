@@ -57,6 +57,8 @@ public class BadMetadataReportProcessor
      */
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
+    private static final String ROLE_HINT = "bad-metadata";
+
     /**
      * Process the metadata encountered in the repository and report all errors found, if any.
      *
@@ -75,7 +77,7 @@ public class BadMetadataReportProcessor
             }
             catch ( IOException e )
             {
-                reporter.addWarning( metadata, "Error getting plugin artifact directories versions: " + e );
+                addWarning( reporter, metadata, null, "Error getting plugin artifact directories versions: " + e );
             }
         }
         else
@@ -92,7 +94,8 @@ public class BadMetadataReportProcessor
             }
             if ( !found )
             {
-                reporter.addFailure( metadata, "Missing lastUpdated element inside the metadata." );
+                addFailure( reporter, metadata, "missing-last-updated",
+                            "Missing lastUpdated element inside the metadata." );
             }
 
             if ( metadata.storedInArtifactVersionDirectory() )
@@ -109,10 +112,18 @@ public class BadMetadataReportProcessor
                 }
                 catch ( IOException e )
                 {
-                    reporter.addWarning( metadata, "Error getting plugin artifact directories versions: " + e );
+                    String reason = "Error getting plugin artifact directories versions: " + e;
+                    addWarning( reporter, metadata, null, reason );
                 }
             }
         }
+    }
+
+    private static void addWarning( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
+                                    String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addWarning( metadata, ROLE_HINT, problem, reason );
     }
 
     /**
@@ -138,20 +149,22 @@ public class BadMetadataReportProcessor
             String artifactId = plugin.getArtifactId();
             if ( artifactId == null || artifactId.length() == 0 )
             {
-                reporter.addFailure( metadata,
-                                     "Missing or empty artifactId in group metadata for plugin " + plugin.getPrefix() );
+                addFailure( reporter, metadata, "missing-artifact-id:" + plugin.getPrefix(),
+                            "Missing or empty artifactId in group metadata for plugin " + plugin.getPrefix() );
             }
 
             String prefix = plugin.getPrefix();
             if ( prefix == null || prefix.length() == 0 )
             {
-                reporter.addFailure( metadata, "Missing or empty plugin prefix for artifactId " + artifactId + "." );
+                addFailure( reporter, metadata, "missing-plugin-prefix:" + artifactId,
+                            "Missing or empty plugin prefix for artifactId " + artifactId + "." );
             }
             else
             {
                 if ( prefixes.containsKey( prefix ) )
                 {
-                    reporter.addFailure( metadata, "Duplicate plugin prefix found: " + prefix + "." );
+                    addFailure( reporter, metadata, "duplicate-plugin-prefix:" + prefix,
+                                "Duplicate plugin prefix found: " + prefix + "." );
                 }
                 else
                 {
@@ -164,7 +177,8 @@ public class BadMetadataReportProcessor
                 File pluginDir = new File( metadataDir, artifactId );
                 if ( !pluginDirs.contains( pluginDir ) )
                 {
-                    reporter.addFailure( metadata, "Metadata plugin " + artifactId + " not found in the repository" );
+                    addFailure( reporter, metadata, "missing-plugin-from-repository:" + artifactId,
+                                "Metadata plugin " + artifactId + " not found in the repository" );
                 }
                 else
                 {
@@ -178,8 +192,8 @@ public class BadMetadataReportProcessor
             for ( Iterator plugins = pluginDirs.iterator(); plugins.hasNext(); )
             {
                 File plugin = (File) plugins.next();
-                reporter.addFailure( metadata, "Plugin " + plugin.getName() + " is present in the repository but " +
-                    "missing in the metadata." );
+                addFailure( reporter, metadata, "missing-plugin-from-metadata:" + plugin.getName(), "Plugin " +
+                    plugin.getName() + " is present in the repository but " + "missing in the metadata." );
             }
         }
     }
@@ -210,7 +224,8 @@ public class BadMetadataReportProcessor
 
             if ( !repositoryQueryLayer.containsArtifact( artifact ) )
             {
-                reporter.addFailure( metadata, "Snapshot artifact " + version + " does not exist." );
+                addFailure( reporter, metadata, "missing-snapshot-artifact-from-repository:" + version,
+                            "Snapshot artifact " + version + " does not exist." );
             }
         }
     }
@@ -240,8 +255,8 @@ public class BadMetadataReportProcessor
 
                 if ( !repositoryQueryLayer.containsArtifact( artifact ) )
                 {
-                    reporter.addFailure( metadata, "Artifact version " + version + " is present in metadata but " +
-                        "missing in the repository." );
+                    addFailure( reporter, metadata, "missing-artifact-from-repository:" + version, "Artifact version " +
+                        version + " is present in metadata but " + "missing in the repository." );
                 }
             }
         }
@@ -254,6 +269,7 @@ public class BadMetadataReportProcessor
      * @param metadata   the metadata to be processed.
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ReportingDatabase to receive processing results
+     * @throws java.io.IOException if there is a problem reading from the file system
      */
     private void checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
                                           ReportingDatabase reporter )
@@ -275,14 +291,14 @@ public class BadMetadataReportProcessor
                 String version = path.getParentFile().getName();
                 if ( !metadataVersions.contains( version ) )
                 {
-                    reporter.addFailure( metadata, "Artifact version " + version + " found in the repository but " +
-                        "missing in the metadata." );
+                    addFailure( reporter, metadata, "missing-artifact-from-metadata:" + version, "Artifact version " +
+                        version + " found in the repository but " + "missing in the metadata." );
                 }
             }
         }
         else
         {
-            reporter.addFailure( metadata, "Metadata's directory did not exist: " + versionsDir );
+            addFailure( reporter, metadata, null, "Metadata's directory did not exist: " + versionsDir );
         }
     }
 
@@ -317,5 +333,12 @@ public class BadMetadataReportProcessor
         }
 
         return artifactIdFiles;
+    }
+
+    private static void addFailure( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
+                                    String reason )
+    {
+        // TODO: reason could be an i18n key derived from the processor and the problem ID and the
+        reporter.addFailure( metadata, ROLE_HINT, problem, reason );
     }
 }
