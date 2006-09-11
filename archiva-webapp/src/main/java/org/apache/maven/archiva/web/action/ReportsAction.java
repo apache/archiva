@@ -22,12 +22,12 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
 import org.apache.maven.archiva.reporting.ReportExecutor;
 import org.apache.maven.archiva.reporting.ReportGroup;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
-import org.apache.maven.archiva.reporting.ReportingStore;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
@@ -46,11 +46,6 @@ public class ReportsAction
     extends ActionSupport
     implements Preparable
 {
-    /**
-     * @plexus.requirement
-     */
-    private ReportingStore reportingStore;
-
     /**
      * @plexus.requirement
      */
@@ -110,7 +105,7 @@ public class ReportsAction
     {
         ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
 
-        ReportingDatabase database = reportingStore.getReportsFromStore( repository, reportGroup );
+        ReportingDatabase database = executor.getReportDatabase( repository, reportGroup );
 
         databases.add( database );
     }
@@ -129,6 +124,15 @@ public class ReportsAction
             return SUCCESS;
         }
 
+        generateReport( database, repositoryConfiguration, reportGroup, repository );
+
+        return SUCCESS;
+    }
+
+    private void generateReport( ReportingDatabase database, RepositoryConfiguration repositoryConfiguration,
+                                 ReportGroup reportGroup, ArtifactRepository repository )
+        throws DiscovererException, ReportingStoreException
+    {
         database.setInProgress( true );
 
         List blacklistedPatterns = new ArrayList();
@@ -159,8 +163,6 @@ public class ReportsAction
         {
             database.setInProgress( false );
         }
-
-        return SUCCESS;
     }
 
     public void setReportGroup( String reportGroup )

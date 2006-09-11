@@ -54,6 +54,7 @@
       <c:set var="url">
         <ww:url action="runReport" namespace="/admin">
           <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
+          <ww:param name="reportGroup" value="reportGroup"/>
         </ww:url>
       </c:set>
       <a href="${url}">Regenerate Report</a>
@@ -68,18 +69,27 @@
 <h2>Repository: ${database.repository.name}</h2>
 
 <p>
-  Status:
-  <img src="<c:url value="/images/icon_error_sml.gif"/>" width="15" height="15" alt=""/>
-    ${database.numFailures}
-  <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
-    ${database.numWarnings}
+  <c:choose>
+    <c:when test="${!empty(database.reporting.lastModified)}">
+      Status:
+      <img src="<c:url value="/images/icon_error_sml.gif"/>" width="15" height="15" alt=""/>
+      ${database.numFailures}
+      <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
+      ${database.numWarnings}
 
-  <span style="font-size: x-small">
-    <%-- TODO! use better formatting here --%>
-    Last updated: ${database.reporting.lastModified},
-    execution time: <fmt:formatNumber maxFractionDigits="0" value="${database.reporting.executionTime / 60000}"/> minutes
-    <fmt:formatNumber maxFractionDigits="0" value="${(database.reporting.executionTime / 1000) % 60}"/> seconds
-  </span>
+      <span style="font-size: x-small">
+        <%-- TODO! use better formatting here --%>
+        Last updated: ${database.reporting.lastModified},
+        execution time: <fmt:formatNumber maxFractionDigits="0" value="${database.reporting.executionTime / 60000}"/> minutes
+        <fmt:formatNumber maxFractionDigits="0" value="${(database.reporting.executionTime / 1000) % 60}"/> seconds
+      </span>
+    </c:when>
+    <c:otherwise>
+      <b>
+        This report has not yet been generated. <a href="${url}">Generate Report</a>
+      </b>
+    </c:otherwise>
+  </c:choose>
 </p>
 
   <%-- TODO need to protect iterations against concurrent modification exceptions by cloning the lists synchronously --%>
@@ -145,9 +155,9 @@
     </p>
   </c:if>
 </c:if>
-<c:if test="${!empty(database.reporting.metadata)}">
+<c:if test="${!empty(database.metadataWithProblems)}">
   <h3>Metadata</h3>
-  <c:forEach items="${database.reporting.metadata}" var="metadata" begin="0" end="2">
+  <c:forEach items="${database.metadataWithProblems}" var="metadata" begin="0" end="2">
     <ul>
       <c:forEach items="${metadata.failures}" var="result">
         <li class="errorBullet">${result.reason}</li>
@@ -206,7 +216,7 @@
               </td>
     --%>
   </c:forEach>
-  <c:if test="${fn:length(database.reporting.metadata) gt 3}">
+  <c:if test="${fn:length(database.metadataWithProblems) gt 3}">
     <p>
       <b>... more ...</b>
     </p>

@@ -27,7 +27,9 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @todo i18n, including message formatting and parameterisation
@@ -51,6 +53,8 @@ public class ReportingDatabase
     private long startTime;
 
     private final ReportGroup reportGroup;
+
+    private Set metadataWithProblems;
 
     public ReportingDatabase( ReportGroup reportGroup )
     {
@@ -152,6 +156,10 @@ public class ReportingDatabase
     public void addFailure( RepositoryMetadata metadata, String reason )
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
+        if ( !metadataWithProblems.contains( results ) )
+        {
+            metadataWithProblems.add( results );
+        }
         results.addFailure( createResults( reason ) );
         numFailures++;
         updateTimings();
@@ -160,14 +168,25 @@ public class ReportingDatabase
     public void addWarning( RepositoryMetadata metadata, String reason )
     {
         MetadataResults results = getMetadataResults( metadata, System.currentTimeMillis() );
+        if ( !metadataWithProblems.contains( results ) )
+        {
+            metadataWithProblems.add( results );
+        }
         results.addWarning( createResults( reason ) );
         numWarnings++;
         updateTimings();
     }
 
+    public Set getMetadataWithProblems()
+    {
+        return metadataWithProblems;
+    }
+
     private void initMetadataMap()
     {
         Map map = new HashMap();
+        Set problems = new LinkedHashSet();
+
         for ( Iterator i = reporting.getMetadata().iterator(); i.hasNext(); )
         {
             MetadataResults result = (MetadataResults) i.next();
@@ -178,8 +197,14 @@ public class ReportingDatabase
 
             numFailures += result.getFailures().size();
             numWarnings += result.getWarnings().size();
+
+            if ( !result.getFailures().isEmpty() || !result.getWarnings().isEmpty() )
+            {
+                problems.add( result );
+            }
         }
         metadataMap = map;
+        metadataWithProblems = problems;
     }
 
     private static String getMetadataKey( String groupId, String artifactId, String version )
@@ -237,6 +262,8 @@ public class ReportingDatabase
 
         numWarnings -= results.getWarnings().size();
         results.getWarnings().clear();
+
+        metadataWithProblems.remove( results );
     }
 
     private MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
@@ -315,6 +342,7 @@ public class ReportingDatabase
 
         artifactMap.clear();
         metadataMap.clear();
+        metadataWithProblems.clear();
 
         reporting.getArtifacts().clear();
         reporting.getMetadata().clear();
