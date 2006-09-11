@@ -122,42 +122,46 @@ public class DefaultRoleManager
         {
             if ( !manager.permissionExists( "Edit Configuration" ) )
             {
-                Permission editConfiguration =
-                    manager.createPermission( "Edit Configuration", "edit-configuration", manager.getGlobalResource().getIdentifier() );
+                Permission editConfiguration = manager.createPermission( "Edit Configuration", "edit-configuration",
+                                                                         manager.getGlobalResource().getIdentifier() );
                 manager.savePermission( editConfiguration );
             }
 
             if ( !manager.permissionExists( "Run Indexer" ) )
             {
-                Permission runIndexer = manager.createPermission( "Run Indexer", "run-indexer", manager.getGlobalResource().getIdentifier()  );
+                Permission runIndexer = manager.createPermission( "Run Indexer", "run-indexer",
+                                                                  manager.getGlobalResource().getIdentifier() );
 
                 manager.savePermission( runIndexer );
             }
 
             if ( !manager.permissionExists( "Add Repository" ) )
             {
-                Permission runIndexer = manager.createPermission( "Add Repository", "add-repository", manager.getGlobalResource().getIdentifier() );
+                Permission runIndexer = manager.createPermission( "Add Repository", "add-repository",
+                                                                  manager.getGlobalResource().getIdentifier() );
                 manager.savePermission( runIndexer );
             }
 
             if ( !manager.permissionExists( "Edit All Users" ) )
             {
-                Permission editAllUsers = manager.createPermission( "Edit All Users", "edit-all-users", manager.getGlobalResource().getIdentifier()  );
+                Permission editAllUsers = manager.createPermission( "Edit All Users", "edit-all-users",
+                                                                    manager.getGlobalResource().getIdentifier() );
 
                 manager.savePermission( editAllUsers );
             }
 
             if ( !manager.permissionExists( "Remove Roles" ) )
             {
-                Permission editAllUsers = manager.createPermission( "Remove Roles", "remove-roles", manager.getGlobalResource().getIdentifier()  );
+                Permission editAllUsers = manager.createPermission( "Remove Roles", "remove-roles",
+                                                                    manager.getGlobalResource().getIdentifier() );
 
                 manager.savePermission( editAllUsers );
             }
 
-
             if ( !manager.permissionExists( "Regenerate Index" ) )
             {
-                Permission regenIndex = manager.createPermission( "Regenerate Index", "regenerate-index", manager.getGlobalResource().getIdentifier()  );
+                Permission regenIndex = manager.createPermission( "Regenerate Index", "regenerate-index",
+                                                                  manager.getGlobalResource().getIdentifier() );
 
                 manager.savePermission( regenIndex );
             }
@@ -174,15 +178,14 @@ public class DefaultRoleManager
             if ( !manager.roleExists( "System Administrator" ) )
             {
                 Role admin = manager.createRole( "System Administrator" );
-                admin.addChildRole( manager.getRole( "User Administrator" ) ) ;
+                admin.addChildRole( manager.getRole( "User Administrator" ) );
                 admin.addPermission( manager.getPermission( "Edit Configuration" ) );
                 admin.addPermission( manager.getPermission( "Run Indexer" ) );
-                admin.addPermission( manager.getPermission( "Add Repository") );
+                admin.addPermission( manager.getPermission( "Add Repository" ) );
                 admin.addPermission( manager.getPermission( "Regenerate Index" ) );
                 admin.setAssignable( true );
                 manager.saveRole( admin );
             }
-
 
 
         }
@@ -197,31 +200,23 @@ public class DefaultRoleManager
     public void addUser( String principal )
         throws RbacStoreException
     {
-        try
-        {
-            // make the resource
-            Resource usernameResource = manager.createResource( principal );
-            manager.saveResource( usernameResource );
 
-            Permission editUser = manager.createPermission( "Edit Myself" );
-            editUser.setOperation( manager.getOperation( "edit-user" ) );
-            editUser.setResource( manager.getResource( principal ) );
-            editUser = manager.savePermission( editUser );
+        // make the resource
+        Resource usernameResource = manager.createResource( principal );
+        manager.saveResource( usernameResource );
 
-            // todo this one role a user will go away when we have expressions in the resources
-            Role userRole = manager.createRole( "Personal Role - " + principal );
-            userRole.addPermission( editUser );
-            userRole = manager.saveRole( userRole );
+        Permission editUser = manager.createPermission( "Edit Myself - " + principal, "edit-user", principal );
+        editUser = manager.savePermission( editUser );
 
-            UserAssignment assignment = manager.createUserAssignment( principal );
-            assignment.addRole( userRole );
-            manager.saveUserAssignment( assignment );
+        // todo this one role a user will go away when we have expressions in the resources
+        Role userRole = manager.createRole( "Personal Role - " + principal );
+        userRole.addPermission( editUser );
+        userRole = manager.saveRole( userRole );
 
-        }
-        catch ( RbacObjectNotFoundException ne )
-        {
-            throw new RbacStoreException( "rbac object not found in repo role creation", ne );
-        }
+        UserAssignment assignment = manager.createUserAssignment( principal );
+        assignment.addRole( userRole );
+        manager.saveUserAssignment( assignment );
+
     }
 
     public void addRepository( String repositoryName )
@@ -244,8 +239,7 @@ public class DefaultRoleManager
             deleteRepo.setResource( repoResource );
             deleteRepo = manager.savePermission( deleteRepo );
 
-            Permission getReports =
-                manager.createPermission( "Get Reports - " + repositoryName );
+            Permission getReports = manager.createPermission( "Get Reports - " + repositoryName );
             getReports.setOperation( manager.getOperation( "get-reports" ) );
             getReports.setResource( repoResource );
             getReports = manager.savePermission( getReports );
