@@ -46,7 +46,7 @@ public class BadMetadataReportProcessorTest
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
-        badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE );
+        badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "bad-metadata" );
 
         ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
         reportingDatabase = new ReportingDatabase( reportGroup );
