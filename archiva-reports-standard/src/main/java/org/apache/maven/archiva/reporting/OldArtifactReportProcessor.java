@@ -27,6 +27,7 @@ import java.io.File;
  * Find artifacts in the repository that are considered old.
  *
  * @plexus.component role="org.apache.maven.archiva.reporting.ArtifactReportProcessor" role-hint="old-artifact"
+ * @todo make this configurable from the web interface
  */
 public class OldArtifactReportProcessor
     implements ArtifactReportProcessor

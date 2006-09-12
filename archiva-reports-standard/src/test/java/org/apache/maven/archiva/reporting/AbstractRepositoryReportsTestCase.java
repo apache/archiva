@@ -66,6 +66,8 @@ public abstract class AbstractRepositoryReportsTestCase
         artifact.setRepository(
             factory.createArtifactRepository( "repository", repository.toURL().toString(), layout, null, null ) );
 
+        artifact.isSnapshot();
+
         return artifact;
     }
 
@@ -78,6 +80,7 @@ public abstract class AbstractRepositoryReportsTestCase
     {
         Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, type );
         artifact.setRepository( repository );
+        artifact.isSnapshot();
         return artifact;
     }
 
