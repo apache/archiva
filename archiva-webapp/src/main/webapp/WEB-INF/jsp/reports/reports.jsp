@@ -18,6 +18,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
 
 <html>
 <head>
@@ -33,14 +34,16 @@
 
 <div id="contentArea">
 
-<ww:form action="reports" namespace="/admin">
-  <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
-  <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
-             headerValue="(All repositories)" name="repositoryId" onchange="document.reports.submit();"/>
-  <ww:select list="reports[reportGroup].reports" label="Filter" headerKey="-" headerValue="(All Problems)"
-             name="filter" onchange="document.reports.submit();"/>
-  <ww:submit value="Get Report"/>
-</ww:form>
+<pss:ifAnyAuthorized permissions="generate-reports">
+  <ww:form action="reports" namespace="/admin">
+    <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
+    <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
+               headerValue="(All repositories)" name="repositoryId" onchange="document.reports.submit();"/>
+    <ww:select list="reports[reportGroup].reports" label="Filter" headerKey="-" headerValue="(All Problems)"
+               name="filter" onchange="document.reports.submit();"/>
+    <ww:submit value="Get Report"/>
+  </ww:form>
+</pss:ifAnyAuthorized>
 
 <ww:set name="databases" value="databases"/>
 <c:forEach items="${databases}" var="database">
@@ -52,13 +55,13 @@
     --%>
   <c:choose>
     <c:when test="${!database.inProgress}">
-      <c:set var="url">
-        <ww:url action="runReport" namespace="/admin">
-          <ww:param name="repositoryId" value="%{'${database.repository.id}'}"/>
+      <pss:ifAuthorized permission="generate-reports">
+        <ww:url id="regenerateReportUrl" action="runReport" namespace="/admin">
+          <ww:param name="repositoryId">${database.repository.id}</ww:param>
           <ww:param name="reportGroup" value="reportGroup"/>
         </ww:url>
-      </c:set>
-      <a href="${url}">Regenerate Report</a>
+        <ww:a href="%{regenerateReportUrl}">Regenerate Report</ww:a>
+      </pss:ifAuthorized>
     </c:when>
     <c:otherwise>
       <!-- TODO: would be good to have a generic task/job mechanism that tracked progress and ability to run

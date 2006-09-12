@@ -45,7 +45,7 @@ public class DefaultRoleManager
     private RBACManager manager;
 
     private boolean initialized;
-
+                           
     public void initialize()
         throws InitializationException
     {
@@ -164,13 +164,13 @@ public class DefaultRoleManager
                 manager.savePermission( editAllUsers );
             }
 
-            if ( !manager.permissionExists( "Generate All Reports" ) )
+            if ( !manager.permissionExists( "Generate Reports" ) )
             {
-                Permission editAllUsers = manager.createPermission( "Generate All Reports", "generate-reports",
+                Permission editAllUsers = manager.createPermission( "Generate Reports", "generate-reports",
                                                                     manager.getGlobalResource().getIdentifier() );
 
                 manager.savePermission( editAllUsers );
-            }
+            }           
 
             if ( !manager.permissionExists( "Grant Roles" ) )
             {
@@ -214,7 +214,7 @@ public class DefaultRoleManager
                 admin.addPermission( manager.getPermission( "Run Indexer" ) );
                 admin.addPermission( manager.getPermission( "Add Repository" ) );
                 admin.addPermission( manager.getPermission( "Access Reports") );
-                admin.addPermission( manager.getPermission( "Generate All Reports") );
+                admin.addPermission( manager.getPermission( "Generate Reports") );
                 admin.addPermission( manager.getPermission( "Regenerate Index" ) );
                 admin.setAssignable( true );
                 manager.saveRole( admin );
@@ -273,26 +273,16 @@ public class DefaultRoleManager
             deleteRepo.setResource( repoResource );
             deleteRepo = manager.savePermission( deleteRepo );
 
-            Permission getReports = manager.createPermission( "Access Reports - " + repositoryName );
-            getReports.setOperation( manager.getOperation( "access-reports" ) );
-            getReports.setResource( repoResource );
-            getReports = manager.savePermission( getReports );
-
-            Permission regenReports = manager.createPermission( "generate Reports - " + repositoryName );
-            regenReports.setOperation( manager.getOperation( "generate-reports" ) );
-            regenReports.setResource( repoResource );
-            regenReports = manager.savePermission( regenReports );
-
             // make the roles
             Role repositoryObserver = manager.createRole( "Repository Observer - " + repositoryName );
-            repositoryObserver.addPermission( getReports );
+            repositoryObserver.addPermission( manager.getPermission( "Access Reports" ) );
             repositoryObserver.setAssignable( true );
             repositoryObserver = manager.saveRole( repositoryObserver );
 
             Role repositoryManager = manager.createRole( "Repository Manager - " + repositoryName );
             repositoryManager.addPermission( editRepo );
             repositoryManager.addPermission( deleteRepo );
-            repositoryManager.addPermission( regenReports );
+            repositoryManager.addPermission( manager.getPermission( "Generate Reports" ) );
             repositoryManager.addChildRoleName( repositoryObserver.getName() );
             repositoryManager.setAssignable( true );
             manager.saveRole( repositoryManager );

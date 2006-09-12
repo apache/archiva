@@ -108,10 +108,10 @@
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
     </ul>
-    <pss:ifAnyAuthorized permissions="edit-all-users,get-reports,edit-configuration">
+    <pss:ifAnyAuthorized permissions="edit-all-users,access-reports,edit-configuration">
       <h5>Manage</h5>
       <ul>
-        <pss:ifAuthorized permission="get-reports">
+        <pss:ifAuthorized permission="access-reports">
           <li class="none">
             <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
           </li>
