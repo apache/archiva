@@ -71,18 +71,6 @@
           </ww:iterator>
         </table>
 
-        <%-- this is for debug purposes only --%>
-         <div id="sidebar">
-           <ww:iterator id="role" value="availableRoles">
-              <ww:url id="addRoleUrl" action="assignRoleToUser">
-                <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
-                <ww:param name="roleName">${role.name}</ww:param>
-              </ww:url>
-              <ww:a href="%{addRoleUrl}">${role.name}</ww:a>
-              <br/>
-           </ww:iterator>
-         </div>
-
         <h2>Grant Roles</h2>
 
         <pss:ifAuthorized permission="grant-roles">
