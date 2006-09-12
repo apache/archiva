@@ -49,7 +49,7 @@
           </tr>
         </table>
 
-        <h2>My Roles</h2>
+        <h2>Assigned Roles</h2>
 
         <table class="bodyTable">
           <ww:iterator id="role" value="assignedRoles">
@@ -76,7 +76,6 @@
         <pss:ifAuthorized permission="grant-roles">
           <table class="bodyTable">
             <ww:iterator id="role" value="availableRoles">
-
               <tr class="a">
                 <td>
                   <em>${role.name}</em><br/>
@@ -86,7 +85,7 @@
                     <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
                     <ww:param name="roleName">${role.name}</ww:param>
                   </ww:url>
-                  <ww:a href="%{addRoleUrl}">add</ww:a>
+                  <ww:a href="%{addRoleUrl}">Add</ww:a>
                 </td>
               </tr>
             </ww:iterator>
