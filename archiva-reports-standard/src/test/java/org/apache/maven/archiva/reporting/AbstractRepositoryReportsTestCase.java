@@ -38,18 +38,35 @@ public abstract class AbstractRepositoryReportsTestCase
 
     private ArtifactFactory artifactFactory;
 
+    private ArtifactRepositoryFactory factory;
+
+    private ArtifactRepositoryLayout layout;
+
     protected void setUp()
         throws Exception
     {
         super.setUp();
+
         File repositoryDirectory = getTestFile( "src/test/repository" );
 
-        ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
+        factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
+        layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         repository = factory.createArtifactRepository( "repository", repositoryDirectory.toURL().toString(), layout,
                                                        null, null );
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+    }
+
+    protected Artifact createArtifactFromRepository( File repository, String groupId, String artifactId,
+                                                     String version )
+        throws Exception
+    {
+        Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, "jar" );
+
+        artifact.setRepository(
+            factory.createArtifactRepository( "repository", repository.toURL().toString(), layout, null, null ) );
+
+        return artifact;
     }
 
     protected Artifact createArtifact( String groupId, String artifactId, String version )
