@@ -278,8 +278,8 @@ public class DefaultRoleManager
             getReports.setResource( repoResource );
             getReports = manager.savePermission( getReports );
 
-            Permission regenReports = manager.createPermission( "Regenerate Reports - " + repositoryName );
-            regenReports.setOperation( manager.getOperation( "regenerate-reports" ) );
+            Permission regenReports = manager.createPermission( "generate Reports - " + repositoryName );
+            regenReports.setOperation( manager.getOperation( "generate-reports" ) );
             regenReports.setResource( repoResource );
             regenReports = manager.savePermission( regenReports );
 
