@@ -273,8 +273,8 @@ public class DefaultRoleManager
             deleteRepo.setResource( repoResource );
             deleteRepo = manager.savePermission( deleteRepo );
 
-            Permission getReports = manager.createPermission( "Get Reports - " + repositoryName );
-            getReports.setOperation( manager.getOperation( "get-reports" ) );
+            Permission getReports = manager.createPermission( "Access Reports - " + repositoryName );
+            getReports.setOperation( manager.getOperation( "access-reports" ) );
             getReports.setResource( repoResource );
             getReports = manager.savePermission( getReports );
 
