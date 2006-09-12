@@ -46,6 +46,11 @@
         <param name="namespace">/admin</param>
         <param name="actionName">configure</param>
       </result>
+      <result name="admin-account-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <param name="actionName">registerAdminAccount</param>
+        <param name="method">input</param>
+      </result>
       <result name="config-repository-needed" type="redirect-action">
         <param name="namespace">/admin</param>
         <param name="actionName">addRepository</param>
@@ -145,6 +150,13 @@
 
   <!-- Configuration for the admin package. -->
   <package name="admin" namespace="/admin" extends="base">
+    <action name="registerAdminAccount" class="newUser" method="createAdminUser">
+      <result name="input">/WEB-INF/jsp/admin/registerAdmin.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/registerAdmin.jsp</result>
+      <result type="redirect-action">index</result>
+      <interceptor-ref name="defaultStack"/>
+    </action>
+
     <action name="index" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
     </action>

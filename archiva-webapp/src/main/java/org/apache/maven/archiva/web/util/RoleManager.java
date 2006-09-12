@@ -35,5 +35,8 @@ public interface RoleManager
     public void addUser( String principal )
         throws RbacStoreException;
 
+    public void addAdminUser( String principal )
+        throws RbacStoreException;
+
     public boolean isInitialized();
 }

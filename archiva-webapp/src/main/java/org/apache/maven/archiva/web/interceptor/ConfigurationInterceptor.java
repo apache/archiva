@@ -22,6 +22,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.security.rbac.RBACManager;
 
 /**
  * An interceptor that makes the application configuration available
@@ -44,6 +45,11 @@ public class ConfigurationInterceptor
     private RoleManager roleManager;
 
     /**
+     * @plexus.requirement
+     */
+    private RBACManager rbacManager;
+
+    /**
      *
      * @param actionInvocation
      * @return
@@ -52,6 +58,13 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
+
+        if ( rbacManager.getAllUserAssignments().size() == 0 )
+        {
+            getLogger().info( "no accounts setup, create user account, forwarding to registration" );
+            return "admin-account-needed";
+        }
+
         Configuration configuration = configurationStore.getConfigurationFromStore();
 
         if ( !configuration.isValid() )

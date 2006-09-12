@@ -22,6 +22,7 @@ import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
 import org.codehaus.plexus.security.user.policy.PasswordRuleViolationException;
 import org.codehaus.plexus.security.user.policy.PasswordRuleViolations;
+import org.codehaus.plexus.security.rbac.RBACManager;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
@@ -50,6 +51,11 @@ public class NewUserAction
      * @plexus.requirement
      */
     private RoleManager roleManager;
+
+    /**
+     * @plexus.requirement
+     */
+    private RBACManager rbacManager;
 
     private String username;
 
@@ -118,11 +124,82 @@ public class NewUserAction
                     addActionError( (String) it.next() );
                 }
             }
+
             roleManager.addUser( user.getPrincipal().toString() );
 
             addActionMessage( "user " + username + " was successfully registered!");
         }
         
+        if ( hasActionErrors() )
+        {
+            return INPUT;
+        }
+
+        return SUCCESS;
+    }
+
+    public String createAdminUser()
+    {
+        if ( username == null )
+        {
+            return INPUT;
+        }
+
+        // TODO: use commons-validator for these fields.
+
+        if ( StringUtils.isEmpty( username ) )
+        {
+            addActionError( "User Name is required." );
+        }
+
+        if ( StringUtils.isEmpty( fullName ) )
+        {
+            addActionError( "Full Name is required." );
+        }
+
+        if ( StringUtils.isEmpty( email ) )
+        {
+            addActionError( "Email Address is required." );
+        }
+
+        // TODO: Validate Email Address (use commons-validator)
+
+        if ( StringUtils.equals( password, passwordConfirm ) )
+        {
+            addActionError( "Passwords do not match." );
+        }
+
+        UserManager um = securitySystem.getUserManager();
+
+        if ( um.userExists( username ) )
+        {
+            addActionError( "User already exists!" );
+        }
+        else
+        {
+            User user = um.createUser( username, fullName, email );
+
+            user.setPassword( password );
+
+            try
+            {
+                um.addUser( user );
+            }
+            catch ( PasswordRuleViolationException e )
+            {
+                PasswordRuleViolations violations = e.getViolations();
+                List violationList = violations.getLocalizedViolations();
+                Iterator it = violationList.iterator();
+                while ( it.hasNext() )
+                {
+                    addActionError( (String) it.next() );
+                }
+            }
+
+            roleManager.addAdminUser( user.getPrincipal().toString() );
+            
+        }
+
         if ( hasActionErrors() )
         {
             return INPUT;

@@ -253,6 +253,28 @@ public class DefaultRoleManager
 
     }
 
+    /**
+     * helper method for just creating an admin user assignment
+     *
+     * @param principal
+     * @throws RbacStoreException
+     * @throws RbacObjectNotFoundException
+     */
+    public void addAdminUser( String principal )
+        throws RbacStoreException
+    {
+        try
+        {
+            UserAssignment assignment = manager.createUserAssignment( principal );
+            assignment.addRole( manager.getRole( "System Administrator" ) );
+            manager.saveUserAssignment( assignment );
+        }
+        catch ( RbacObjectNotFoundException ne )
+        {
+            throw new RbacStoreException( "unable to find administrator role, this of course is bad", ne );
+        }
+    }
+
     public void addRepository( String repositoryName )
         throws RbacStoreException
     {
