@@ -104,7 +104,7 @@
         <ww:param name="repoId" value="%{'${repository.id}'}" />
       </ww:url>
       <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized> | <pss:ifAuthorized permission="delete-repository" resource="${repository.id}"><ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
+      <pss:ifAuthorized permission="edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized><pss:ifAuthorized permission="delete-repository" resource="${repository.id}"> <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
     </div>
     <h3>${repository.name}</h3>
     <table class="infoTable">

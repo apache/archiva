@@ -33,7 +33,7 @@
     </p>
 
     <h2>Register for an Account</h2>
-    <ww:form action="register">
+    <ww:form action="register" method="post">
       <table class="bodyTable">
         <tr class="b">
           <th>

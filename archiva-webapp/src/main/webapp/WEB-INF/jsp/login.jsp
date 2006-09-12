@@ -38,7 +38,7 @@
     </p>
 
     <h2>Login</h2>
-    <ww:form action="login">
+    <ww:form action="login" method="post">
       <table class="bodyTable">
         <tr class="a">
           <th>
@@ -66,6 +66,11 @@
       </table>
 
     </ww:form>
+
+    <p>
+      <ww:url id="registerUrl" action="register"/>
+      Need an Account? <ww:a href="%{registerUrl}">Register!</ww:a>
+    </p>
   </div>
 </div>
 

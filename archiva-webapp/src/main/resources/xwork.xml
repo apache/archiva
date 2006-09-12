@@ -253,15 +253,15 @@
 
     <action name="userManagement" class="userManagement" method="findUser">
       <result name="input">/WEB-INF/jsp/findUser.jsp</result>
-      <result name="success" type="redirect-action">user</result>
+      <result name="success" type="chain">user</result>
     </action>
 
     <action name="assignRoleToUser" class="plexusSecurityUserAssignment" method="assignRole">
-      <result name="success" type="redirect-action">user</result>
+      <result name="success" type="chain">user</result>
     </action>
 
     <action name="removeRoleFromUser" class="plexusSecurityUserAssignment" method="removeRole">
-      <result name="success" type="redirect-action">user</result>
+      <result name="success" type="chain">user</result>
     </action>
 
     <action name="permissions" class="plexusSecuritySummary" method="permissionSummary">

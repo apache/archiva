@@ -88,15 +88,15 @@ public class DefaultRoleManager
             manager.saveOperation( operation );
         }
 
-        if ( !manager.operationExists( "get-reports" ) )
+        if ( !manager.operationExists( "access-reports" ) )
         {
-            Operation operation = manager.createOperation( "get-reports" );
+            Operation operation = manager.createOperation( "access-reports" );
             manager.saveOperation( operation );
         }
 
-        if ( !manager.operationExists( "regenerate-reports" ) )
+        if ( !manager.operationExists( "generate-reports" ) )
         {
-            Operation operation = manager.createOperation( "regenerate-reports" );
+            Operation operation = manager.createOperation( "generate-reports" );
             manager.saveOperation( operation );
         }
 
@@ -156,6 +156,22 @@ public class DefaultRoleManager
                 manager.savePermission( editAllUsers );
             }
 
+            if ( !manager.permissionExists( "Access Reports" ) )
+            {
+                Permission editAllUsers = manager.createPermission( "Access Reports", "access-reports",
+                                                                    manager.getGlobalResource().getIdentifier() );
+
+                manager.savePermission( editAllUsers );
+            }
+
+            if ( !manager.permissionExists( "Generate All Reports" ) )
+            {
+                Permission editAllUsers = manager.createPermission( "Generate All Reports", "generate-reports",
+                                                                    manager.getGlobalResource().getIdentifier() );
+
+                manager.savePermission( editAllUsers );
+            }
+
             if ( !manager.permissionExists( "Grant Roles" ) )
             {
                 Permission granRoles = manager.createPermission( "Grant Roles", "grant-roles",
@@ -197,6 +213,8 @@ public class DefaultRoleManager
                 admin.addPermission( manager.getPermission( "Edit Configuration" ) );
                 admin.addPermission( manager.getPermission( "Run Indexer" ) );
                 admin.addPermission( manager.getPermission( "Add Repository" ) );
+                admin.addPermission( manager.getPermission( "Access Reports") );
+                admin.addPermission( manager.getPermission( "Generate All Reports") );
                 admin.addPermission( manager.getPermission( "Regenerate Index" ) );
                 admin.setAssignable( true );
                 manager.saveRole( admin );
@@ -206,6 +224,7 @@ public class DefaultRoleManager
         }
         catch ( RbacObjectNotFoundException ne )
         {
+            ne.printStackTrace();
             throw new InitializationException( "error in role initialization", ne );
         }
 
@@ -266,7 +285,7 @@ public class DefaultRoleManager
 
             // make the roles
             Role repositoryObserver = manager.createRole( "Repository Observer - " + repositoryName );
-            repositoryObserver.addPermission( editRepo );
+            repositoryObserver.addPermission( getReports );
             repositoryObserver.setAssignable( true );
             repositoryObserver = manager.saveRole( repositoryObserver );
 
