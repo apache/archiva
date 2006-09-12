@@ -127,7 +127,8 @@
 
     <!-- plexus security actions -->
     <action name="login" class="plexusSecurityLogin" method="login">
-      <result name="input">/WEB-INF/jsp/loginRegister.jsp</result>
+      <result name="input">/WEB-INF/jsp/login.jsp</result>
+      <result name="error">/WEB-INF/jsp/login.jsp</result>
       <result name="success" type="redirect-action">browse</result>
     </action>
 
@@ -136,7 +137,9 @@
     </action>
 
     <action name="register" class="newUser" method="createUser">
-      <result name="success" type="redirect-action">login</result>
+      <result name="input">/WEB-INF/jsp/register.jsp</result>
+      <result name="success">/WEB-INF/jsp/register.jsp</result> 
+      <result name="error">/WEB-INF/jsp/register.jsp</result>
     </action>
   </package>
 

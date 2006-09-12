@@ -85,19 +85,27 @@
 
         <h2>Grant Roles</h2>
 
-        <p>
-
-           </p>
-         <pss:ifAuthorized permission="grant-roles">
+        <pss:ifAuthorized permission="grant-roles">
+          <table class="bodyTable">
             <ww:iterator id="role" value="availableRoles">
-              <ww:url id="addRoleUrl" action="assignRoleToUser">
-                <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
-                <ww:param name="roleName">${role.name}</ww:param>
-              </ww:url>
-              <ww:a href="%{addRoleUrl}">${role.name}</ww:a>
-              <br/>
+
+              <tr class="a">
+                <td>
+                  <em>${role.name}</em><br/>
+                </td>
+                <td>
+                  <ww:url id="addRoleUrl" action="assignRoleToUser">
+                    <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                    <ww:param name="roleName">${role.name}</ww:param>
+                  </ww:url>
+                  <ww:a href="%{addRoleUrl}">add</ww:a>
+                </td>
+              </tr>
             </ww:iterator>
-          </pss:ifAuthorized>
+          </table>
+        </pss:ifAuthorized>
+
+
            <%--
           <p>
             This following screen needs have the various roles worked into it.

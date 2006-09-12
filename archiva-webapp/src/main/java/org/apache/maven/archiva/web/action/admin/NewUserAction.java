@@ -63,6 +63,11 @@ public class NewUserAction
 
     public String createUser()
     {
+        if ( username == null )
+        {
+            return INPUT;
+        }
+
         // TODO: use commons-validator for these fields.
 
         if ( StringUtils.isEmpty( username ) )
@@ -120,7 +125,7 @@ public class NewUserAction
         
         if ( hasActionErrors() )
         {
-            return ERROR;
+            return INPUT;
         }
 
         return SUCCESS;

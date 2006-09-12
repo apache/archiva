@@ -34,6 +34,7 @@
 
     <p>
       <ww:actionmessage/>
+      <ww:actionerror/>
     </p>
 
     <h2>Login</h2>
@@ -65,66 +66,6 @@
       </table>
 
     </ww:form>
-    <h2>Request an Account</h2>
-    <ww:form action="register">
-      <table class="bodyTable">
-        <tr class="b">
-          <th>
-            Username
-          </th>
-          <td>
-            <ww:textfield name="username" size="30"/>
-          </td>
-        </tr>
-        <tr class="a">
-          <th>
-            Password
-          </th>
-          <td>
-            <ww:password name="password" size="20"/>
-
-          </td>
-        </tr>
-        <tr class="b">
-          <th>
-            Confirm Password
-          </th>
-          <td>
-            <ww:password name="confirmPassword" size="20"/>
-          </td>
-
-        </tr>
-        <tr class="a">
-          <th>
-            Full Name
-          </th>
-          <td>
-            <ww:textfield name="fullName" size="30"/>
-          </td>
-        </tr>
-
-        <tr class="b">
-          <th>
-            Email
-          </th>
-          <td>
-            <ww:textfield name="email" size="50 "/>
-            <br></br>
-                <span style="font-size: x-small">(Only administrators will be able to view this, and it will be used to
-                  send you information about your project)
-                </span>
-          </td>
-
-        </tr>
-        <tr class="a">
-          <td></td>
-          <td>
-            <ww:submit value="Register"/>
-          </td>
-        </tr>
-      </table>
-    </ww:form>
-
   </div>
 </div>
 
