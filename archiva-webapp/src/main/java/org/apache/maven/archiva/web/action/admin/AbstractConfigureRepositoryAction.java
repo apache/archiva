@@ -98,7 +98,7 @@ public abstract class AbstractConfigureRepositoryAction
     {
         addRepository();
 
-        roleManager.addRepository( getRepoId() );
+        roleManager.addRepository( repository.getId() );
 
         configurationStore.storeConfiguration( configuration );
 

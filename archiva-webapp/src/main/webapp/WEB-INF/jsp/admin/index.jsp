@@ -97,11 +97,14 @@
 <c:forEach items="${repositories}" var="repository" varStatus="i">
   <div>
     <div style="float: right">
-        <%-- TODO replace with icons --%>
-      <a href="<ww:url action="editRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Edit
-        Repository</a> | <a
-        href="<ww:url action="deleteRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Delete
-      Repository</a>
+      <ww:url id="editRepositoryUrl" action="editRepository" method="input">
+        <ww:param name="repoId" value="%{'${repository.id}'}" />
+      </ww:url>
+      <ww:url id="deleteRepositoryUrl" action="deleteRepository" method="input">
+        <ww:param name="repoId" value="%{'${repository.id}'}" />
+      </ww:url>
+      <%-- TODO replace with icons --%>
+      <pss:ifAuthorized permission="edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized> | <pss:ifAuthorized permission="delete-repository" resource="${repository.id}"><ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
     </div>
     <h3>${repository.name}</h3>
     <table class="infoTable">

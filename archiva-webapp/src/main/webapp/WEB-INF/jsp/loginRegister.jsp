@@ -32,6 +32,10 @@
 
     </div>
 
+    <p>
+      <ww:actionmessage/>
+    </p>
+
     <h2>Login</h2>
     <ww:form action="login">
       <table class="bodyTable">

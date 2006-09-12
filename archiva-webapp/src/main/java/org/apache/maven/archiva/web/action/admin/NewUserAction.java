@@ -115,6 +115,7 @@ public class NewUserAction
             }
             roleManager.addUser( user.getPrincipal().toString() );
 
+            addActionMessage( "user " + username + " was successfully registered!");
         }
         
         if ( hasActionErrors() )

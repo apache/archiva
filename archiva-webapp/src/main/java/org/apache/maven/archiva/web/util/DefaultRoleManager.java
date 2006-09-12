@@ -112,6 +112,12 @@ public class DefaultRoleManager
             manager.saveOperation( operation );
         }
 
+        if ( !manager.operationExists( "grant-roles" ) )
+        {
+            Operation operation = manager.createOperation( "grant-roles" );
+            manager.saveOperation( operation );
+        }
+
         if ( !manager.operationExists( "remove-roles" ) )
         {
             Operation operation = manager.createOperation( "remove-roles" );
@@ -150,12 +156,20 @@ public class DefaultRoleManager
                 manager.savePermission( editAllUsers );
             }
 
-            if ( !manager.permissionExists( "Remove Roles" ) )
+            if ( !manager.permissionExists( "Grant Roles" ) )
             {
-                Permission editAllUsers = manager.createPermission( "Remove Roles", "remove-roles",
+                Permission granRoles = manager.createPermission( "Grant Roles", "grant-roles",
                                                                     manager.getGlobalResource().getIdentifier() );
 
-                manager.savePermission( editAllUsers );
+                manager.savePermission( granRoles );
+            }
+            
+            if ( !manager.permissionExists( "Remove Roles" ) )
+            {
+                Permission removeRoles = manager.createPermission( "Remove Roles", "remove-roles",
+                                                                    manager.getGlobalResource().getIdentifier() );
+
+                manager.savePermission( removeRoles );
             }
 
             if ( !manager.permissionExists( "Regenerate Index" ) )
@@ -171,6 +185,7 @@ public class DefaultRoleManager
                 Role userAdmin = manager.createRole( "User Administrator" );
                 userAdmin.addPermission( manager.getPermission( "Edit All Users" ) );
                 userAdmin.addPermission( manager.getPermission( "Remove Roles" ) );
+                userAdmin.addPermission( manager.getPermission( "Grant Roles" ) );
                 userAdmin.setAssignable( true );
                 manager.saveRole( userAdmin );
             }
@@ -178,7 +193,7 @@ public class DefaultRoleManager
             if ( !manager.roleExists( "System Administrator" ) )
             {
                 Role admin = manager.createRole( "System Administrator" );
-                admin.addChildRole( manager.getRole( "User Administrator" ) );
+                admin.addChildRoleName( manager.getRole( "User Administrator" ).getName() );
                 admin.addPermission( manager.getPermission( "Edit Configuration" ) );
                 admin.addPermission( manager.getPermission( "Run Indexer" ) );
                 admin.addPermission( manager.getPermission( "Add Repository" ) );
@@ -250,7 +265,7 @@ public class DefaultRoleManager
             regenReports = manager.savePermission( regenReports );
 
             // make the roles
-            Role repositoryObserver = manager.createRole( "Repository Manager - " + repositoryName );
+            Role repositoryObserver = manager.createRole( "Repository Observer - " + repositoryName );
             repositoryObserver.addPermission( editRepo );
             repositoryObserver.setAssignable( true );
             repositoryObserver = manager.saveRole( repositoryObserver );
@@ -259,7 +274,7 @@ public class DefaultRoleManager
             repositoryManager.addPermission( editRepo );
             repositoryManager.addPermission( deleteRepo );
             repositoryManager.addPermission( regenReports );
-            repositoryManager.addChildRole( repositoryObserver );
+            repositoryManager.addChildRoleName( repositoryObserver.getName() );
             repositoryManager.setAssignable( true );
             manager.saveRole( repositoryManager );
 

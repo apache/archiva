@@ -106,7 +106,7 @@ public class UserManagementAction
         // for displaying the potential repositories to be displayed, remove the global resource
         // from the list
         resources = rbacManager.getAllResources();
-        resources.remove( rbacManager.getGlobalResource() );
+        //resources.remove( rbacManager.getGlobalResource() );
 
         // check if the user has any roles assigned to them, and populate the lists for
         // rendering assign and remove roles links

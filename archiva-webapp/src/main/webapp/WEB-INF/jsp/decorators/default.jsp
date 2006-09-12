@@ -107,39 +107,45 @@
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
     </ul>
-    <h5>Manage</h5>
-    <ul>
-      <li class="none">
-        <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
-      </li>
-
-      <%-- TODO
-            <li class="none">
-              <a href="#">Synchronisation</a>
-            </li>
-      --%>
-
-      <li class="expanded">
-        <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
-        <ul>
+    <pss:ifAnyAuthorized permissions="edit-all-users,get-reports,edit-configuration">
+      <h5>Manage</h5>
+      <ul>
+        <pss:ifAuthorized permission="get-reports">
           <li class="none">
-            <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
+            <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
           </li>
-
-          <%-- TODO: add back after synced repos are implemented
-                    <li class="none">
-                      <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
-                    </li>
+        </pss:ifAuthorized>
+          <%-- TODO
+                <li class="none">
+                  <a href="#">Synchronisation</a>
+                </li>
           --%>
-          <pss:ifAuthorized permission="edit-all-users">
-            <li class="none">
-              <my:currentWWUrl action="userManagement" namespace="/admin">User Management</my:currentWWUrl>
-            </li>
-          </pss:ifAuthorized>
-        </ul>
-      </li>
-    </ul>
+        <pss:ifAnyAuthorized permissions="edit-configuration,edit-all-users">
+          <li class="expanded">
+            <pss:ifAuthorized permission="edit-all-users">
+              <my:currentWWUrl action="userManagement" namespace="/admin">User Management</my:currentWWUrl>               
+            </pss:ifAuthorized>
+          </li>
+          <li>
+            <pss:ifAuthorized permission="edit-configuration">
+              <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
+            </pss:ifAuthorized>
 
+            <ul>
+              <li class="none">
+                <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
+              </li>
+
+                <%-- TODO: add back after synced repos are implemented
+                          <li class="none">
+                            <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
+                          </li>
+                --%>
+            </ul>
+          </li>
+        </pss:ifAnyAuthorized>
+      </ul>
+    </pss:ifAnyAuthorized>
     <br/>
   </div>
 </div>

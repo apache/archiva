@@ -238,7 +238,7 @@
     </action>
 
 
-    <action name="user" class="userManagement">
+    <action name="user" class="userManagement" method="display">
       <result name="success">/WEB-INF/jsp/user.jsp</result>
     </action>
 

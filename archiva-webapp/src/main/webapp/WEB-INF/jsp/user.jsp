@@ -53,32 +53,51 @@
 
         <table class="bodyTable">
           <ww:iterator id="role" value="assignedRoles">
-            <ww:url id="removeAssignedRoleUrl" action="removeRoleFromUser">
-              <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
-              <ww:param name="roleName">${sessionScope.SecuritySessionUser.name}</ww:param>
-            </ww:url>
+
             <tr class="a">
              <td>
                <em>${role.name}</em><br/>
              </td>
               <td>
-                <ww:a href="%{removeAssignedRoleUrl}">Delete</ww:a>
+                <pss:ifAuthorized permission="remove-roles">
+                  <ww:url id="removeAssignedRoleUrl" action="removeRoleFromUser">
+                    <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                    <ww:param name="roleName">${role.name}</ww:param>
+                  </ww:url>
+                  <ww:a href="%{removeAssignedRoleUrl}">Delete</ww:a>
+                </pss:ifAuthorized>
               </td>
             </tr>
           </ww:iterator>
         </table>
 
+        <%-- this is for debug purposes only --%>
+         <div id="sidebar">
+           <ww:iterator id="role" value="availableRoles">
+              <ww:url id="addRoleUrl" action="assignRoleToUser">
+                <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                <ww:param name="roleName">${role.name}</ww:param>
+              </ww:url>
+              <ww:a href="%{addRoleUrl}">${role.name}</ww:a>
+              <br/>
+           </ww:iterator>
+         </div>
+
         <h2>Grant Roles</h2>
 
         <p>
-          <ww:iterator id="role" value="availableRoles">
-            <ww:url id="addRoleUrl" action="assignRoleToUser">
-              <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
-              <ww:param name="roleName">${role.name}</ww:param>
-            </ww:url>
-            <ww:a href="%{addRoleUrl}">${role.name}</ww:a><br/>
-          </ww:iterator>
+
            </p>
+         <pss:ifAuthorized permission="grant-roles">
+            <ww:iterator id="role" value="availableRoles">
+              <ww:url id="addRoleUrl" action="assignRoleToUser">
+                <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                <ww:param name="roleName">${role.name}</ww:param>
+              </ww:url>
+              <ww:a href="%{addRoleUrl}">${role.name}</ww:a>
+              <br/>
+            </ww:iterator>
+          </pss:ifAuthorized>
            <%--
           <p>
             This following screen needs have the various roles worked into it.
@@ -145,7 +164,7 @@
 
               </td>
             </tr>
-            --%>
+
             <tr class="a">
               <td></td>
               <td>
@@ -155,7 +174,7 @@
             </tr>
 
           </table>
-
+             --%>
       </div>
   </div>
 
