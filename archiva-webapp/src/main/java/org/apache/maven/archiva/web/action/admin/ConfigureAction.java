@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,12 +50,42 @@ public class ConfigureAction
      */
     private Configuration configuration;
 
+    private CronExpressionValidator cronValidator;
+
+    private String second = "0";
+
+    private String minute = "0";
+
+    private String hour = "*";
+
+    private String dayOfMonth = "*";
+
+    private String month = "*";
+
+    private String dayOfWeek = "?";
+
+    private String year;
+
+
     public String execute()
         throws IOException, RepositoryIndexException, RepositoryIndexSearchException, ConfigurationStoreException,
         InvalidConfigurationException, ConfigurationChangeException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
+
+        String cronEx = ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
+            " " + dayOfWeek + " " + year ).trim();
+
+        //validate cron expression
+        cronValidator = new CronExpressionValidator();
+        if( !cronValidator.validate( cronEx ) )
+        {
+            addActionError( "Invalid Cron Expression" );
+            return ERROR;
+        }
+
+        configuration.setIndexerCronExpression( cronEx );
 
         // Normalize the path
         File file = new File( configuration.getIndexPath() );
@@ -79,6 +110,24 @@ public class ConfigureAction
 
     public String input()
     {
+        String[] cronEx = configuration.getIndexerCronExpression().split( " " );
+        int i = 0;
+
+        while ( i < cronEx.length )
+        {
+            switch( i )
+            {
+                case 0 : second = cronEx[i]; break;
+                case 1 : minute = cronEx[i]; break;
+                case 2 : hour = cronEx[i]; break;
+                case 3 : dayOfMonth = cronEx[i]; break;
+                case 4 : month = cronEx[i]; break;
+                case 5 : dayOfWeek = cronEx[i]; break;
+                case 6 : year = cronEx[i]; break;
+            }
+            i++;
+        }
+
         return INPUT;
     }
 
@@ -91,5 +140,75 @@ public class ConfigureAction
         throws ConfigurationStoreException
     {
         configuration = configurationStore.getConfigurationFromStore();
+    }
+
+    public String getSecond()
+    {
+        return second;
+    }
+
+    public void setSecond( String second )
+    {
+        this.second = second;
+    }
+
+    public String getMinute()
+    {
+        return minute;
+    }
+
+    public void setMinute( String minute )
+    {
+        this.minute = minute;
+    }
+
+    public String getHour()
+    {
+        return hour;
+    }
+
+    public void setHour( String hour )
+    {
+        this.hour = hour;
+    }
+
+    public String getDayOfMonth()
+    {
+        return dayOfMonth;
+    }
+
+    public void setDayOfMonth( String dayOfMonth )
+    {
+        this.dayOfMonth = dayOfMonth;
+    }
+
+    public String getYear()
+    {
+        return year;
+    }
+
+    public void setYear( String year )
+    {
+        this.year = year;
+    }
+
+    public String getMonth()
+    {
+        return month;
+    }
+
+    public void setMonth( String month )
+    {
+        this.month = month;
+    }
+
+    public String getDayOfWeek()
+    {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek( String dayOfWeek )
+    {
+        this.dayOfWeek = dayOfWeek;
     }
 }
