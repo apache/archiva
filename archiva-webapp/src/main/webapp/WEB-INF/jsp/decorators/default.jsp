@@ -59,8 +59,8 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <ww:url id="loginUrl" action="login" namespace="/" includeParams="none"/>
-    <ww:url id="registerUrl" action="register" namespace="/" includeParams="none"/>
+    <ww:url id="loginUrl" action="login" method="input" namespace="/" includeParams="none"/>
+    <ww:url id="registerUrl" action="register" method="input" namespace="/" includeParams="none"/>
 
     <ww:if test="${sessionScope.authStatus != true}">
       <ww:a href="%{loginUrl}">Login</ww:a> - <ww:a href="%{registerUrl}">Register</ww:a>

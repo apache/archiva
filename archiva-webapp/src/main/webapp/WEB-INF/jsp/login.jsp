@@ -27,50 +27,46 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <div style="float: right">
-      <a href="#">Forgotten your Password?</a>
-
+    
+    <div id="results">
+      <%-- This is where the "Account Created Successfully" type message goes. --%>
+      <div class="success">
+	    <ww:actionmessage />
+      </div>
+      <%-- This is where errors from the action and other non-form field specific errors appear. --%>
+      <div class="errors">
+      	<ww:actionerror />
+      </div>
     </div>
 
-    <p>
-      <ww:actionmessage/>
-      <ww:actionerror/>
-    </p>
-
     <h2>Login</h2>
+
+	<%-- You don't need a table to wrap form elements in,
+	     the ww:form creates the table, labels, context sensitive actionerrors, requirements indicators, etc...
+	       - Joakim --%>
+
     <ww:form action="login" method="post">
-      <table class="bodyTable">
-        <tr class="a">
-          <th>
-            Username
-          </th>
-          <td>
-            <ww:textfield name="username" size="30"/>
-          </td>
-        </tr>
-        <tr class="b">
-          <th>
-            Password
-          </th>
-          <td>
-            <ww:password name="password" size="20"/>
-
-          </td>
-        </tr>
-        <tr class="a">
-          <td></td>
-          <td>
-            <ww:submit value="Login"/>
-          </td>
-        </tr>
-      </table>
-
+      <ww:textfield label="Username" name="username" size="30" required="true" />
+      <ww:password  label="Password" name="password" size="20" required="true" />
+      <ww:submit value="Login"/>
     </ww:form>
-
-    <p>
-      <ww:url id="registerUrl" action="register"/>
-      Need an Account? <ww:a href="%{registerUrl}">Register!</ww:a>
-    </p>
+       
+    <ul class="tips">
+      <li>
+         Forgot your Username? 
+         <ww:url id="forgottenAccount" action="findAccount" />
+         <ww:a href="%{forgottenAccount}">Email me my account information.</ww:a>
+      </li>
+      <li>
+         Forgot your Password? 
+         <ww:url id="forgottenPassword" action="resetPassword" />
+         <ww:a href="%{forgottenPassword}">Request a password reset.</ww:a>
+      </li>
+      <li>
+        Need an Account?
+        <ww:url id="registerUrl" action="register" />
+        <ww:a href="%{registerUrl}">Register!</ww:a>
+    </ul>
   </div>
 </div>
 

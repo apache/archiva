@@ -27,63 +27,31 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <p>
-      <ww:actionmessage/>
-      <ww:actionerror/>
-    </p>
+  
+    <div id="results">
+      <%-- This is where the "Account Created Successfully" type message goes. --%>
+      <div class="success">
+	    <ww:actionmessage />
+      </div>
+      <%-- This is where errors from the action and other non-form field specific errors appear. --%>
+      <div class="errors">
+      	<ww:actionerror />
+      </div>
+    </div>
 
     <h2>Register for an Account</h2>
+
+	<%-- You don't need a table to wrap form elements in,
+	     the ww:form creates the table, labels, context sensitive actionerrors, requirements indicators, etc...
+	       - Joakim --%>
+    
     <ww:form action="register" method="post">
-      <table class="bodyTable">
-        <tr class="b">
-          <th>
-            Username
-          </th>
-          <td>
-            <ww:textfield name="username" size="30"/>
-          </td>
-        </tr>
-        <tr class="a">
-          <th>
-            Password
-          </th>
-          <td>
-            <ww:password name="password" size="20"/>
-          </td>
-        </tr>
-        <tr class="b">
-          <th>
-            Confirm Password
-          </th>
-          <td>
-            <ww:password name="confirmPassword" size="20"/>
-          </td>
-
-        </tr>
-        <tr class="a">
-          <th>
-            Full Name
-          </th>
-          <td>
-            <ww:textfield name="fullName" size="30"/>
-          </td>
-        </tr>
-
-        <tr class="b">
-          <th>
-            Email
-          </th>
-          <td>
-            <ww:textfield name="email" size="50 "/>
-          </td>
-        </tr>
-        <tr class="a">
-          <td></td>
-          <td>
-            <ww:submit value="Register"/>
-          </td>
-        </tr>
-      </table>
+		<ww:textfield label="Username"         name="username" size="30" required="true"/>
+		<ww:password  label="Password"         name="password" size="20" required="true"/>
+		<ww:password  label="Confirm Password" name="confirmPassword" size="20" required="true"/>
+        <ww:textfield label="Full Name"        name="fullName" size="30" required="true"/>
+        <ww:textfield label="Email Address"    name="email" size="50"    required="true"/>
+        <ww:submit    value="Register"/>
     </ww:form>
 
   </div>
