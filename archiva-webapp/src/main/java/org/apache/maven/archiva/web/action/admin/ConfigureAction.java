@@ -18,6 +18,7 @@ package org.apache.maven.archiva.web.action.admin;
 
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork.Validateable;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
@@ -38,7 +39,7 @@ import java.io.IOException;
  */
 public class ConfigureAction
     extends PlexusActionSupport
-    implements ModelDriven, Preparable
+    implements ModelDriven, Preparable, Validateable
 {
     /**
      * @plexus.requirement
@@ -66,6 +67,21 @@ public class ConfigureAction
 
     private String year;
 
+    private String cronEx = "";
+
+    public void validate()
+    {
+        cronEx = ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
+                    " " + dayOfWeek + " " + year ).trim();
+
+        //validate cron expression
+        cronValidator = new CronExpressionValidator();
+
+        if( !cronValidator.validate( cronEx ) )
+        {
+            addActionError( "Invalid Cron Expression" );
+        }              
+    }
 
     public String execute()
         throws IOException, RepositoryIndexException, RepositoryIndexSearchException, ConfigurationStoreException,

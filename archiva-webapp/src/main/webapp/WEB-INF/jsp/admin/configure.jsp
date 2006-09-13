@@ -26,95 +26,47 @@
 
 <h1>Configuration</h1>
 
+<div class="errors">
+  <ww:actionerror />
+</div>
+
 <div id="contentArea">
   <ww:actionmessage/>
   <ww:form method="post" action="saveConfiguration" namespace="/admin" validate="true">
+    <ww:textfield name="indexPath" label="Index Directory" size="100" required="true"/>
+    <!--ww:textfield name="indexerCronExpression" label="Indexing Schedule"/-->
 
-    <div>
-    <table>
-        <tbody>
-          <tr>
-            <th><font size="2"><ww:label theme="simple" value="Indexing Directory*:"/></font></th>
-            <td><ww:textfield name="indexPath" theme="simple" size="140" required="true"/></td>
-          </tr>
-          <tr>
-            <th><font size="2"><ww:label theme="simple" value="Indexing Schedule:"/></font></th>
-            <td>
-              <table>
-                <tr>
-                  <th><ww:label theme="simple" value="Second:"/></th>
-                  <td><ww:textfield name="second" theme="simple" size="2"/></td>
+    <ww:label value="Indexing Schedule" labelposition="top"/>
+      <ww:div>
+        <ww:textfield name="second" label="Second" size="2"/>
+        <ww:textfield name="minute" label="Minute" labelposition="left" size="2"/>
+        <ww:textfield name="hour" label="Hour" size="2"/>
+        <ww:textfield name="dayOfMonth" label="Day Of Month" size="2"/>
+        <ww:textfield name="month" label="Month" size="2"/>
+        <ww:textfield name="dayOfWeek" label="Day Of Week" size="2"/>
+        <ww:textfield name="year" label="Year" size="4"/>
+      </ww:div>
 
-                  <th><ww:label theme="simple" value="Minute:"/></th>
-                  <td><ww:textfield name="minute" theme="simple" size="2"/></td>
+    <ww:hidden name="proxy.protocol" value="http"/>
+    <ww:textfield name="proxy.host" label="HTTP Proxy Host"/>
+    <ww:textfield name="proxy.port" label="HTTP Proxy Port"/>
+    <ww:textfield name="proxy.username" label="HTTP Proxy Username"/>
+    <ww:password name="proxy.password" label="HTTP Proxy Password"/>
 
-                  <th><ww:label theme="simple" value="Hour:"/></th>
-                  <td><ww:textfield name="hour" theme="simple" size="2"/></td>
-
-                  <th><ww:label theme="simple" value="Day of Month:"/></th>
-                  <td><ww:textfield name="dayOfMonth" theme="simple" size="2"/></td>
-
-                  <th><ww:label theme="simple" value="Month:"/></th>
-                  <td><ww:textfield name="month" theme="simple" size="2"/></td>
-
-                  <th><ww:label theme="simple" value="Day of Week:"/></th>
-                  <td><ww:textfield name="dayOfWeek" theme="simple" size="2"/></td>
-
-                  <th><ww:label theme="simple" value="Year [optional]:"/></th>
-                  <td><ww:textfield name="year" theme="simple" size="4"/></td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        <ww:hidden name="proxy.protocol" value="http"/>
-        <tr>
-            <th><font size="2"><ww:label theme="simple" value="HTTP Proxy Host:"/></font></th>
-            <td><ww:textfield name="proxy.host" theme="simple"/></td>
-        </tr>
-        <tr>
-            <th><font size="2"><ww:label theme="simple" value="HTTP Proxy Port:"/></font></th>
-            <td><ww:textfield name="proxy.port" theme="simple"/></td>
-        </tr>
-        <tr>
-            <th><font size="2"><ww:label theme="simple" value="HTTP Proxy Username:"/></font></th>
-            <td><ww:textfield name="proxy.username" theme="simple"/></td>
-        </tr>
-        <tr>
-            <th><font size="2"><ww:label theme="simple" value="HTTP Proxy Password:"/></font></th>
-            <td><ww:textfield name="proxy.password" theme="simple"/></td>
-        </tr>
-        </tbody>
-    </table>
-    </div>
-
-    <div>
-      <p><i>For valid cron expression values for the Indexing Schedule, see <ww:a href="http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html">here</ww:a></i></p>
-    </div>
-    <div>
-      <table>
-        <tr>
-          <b>Indexing Schedule Keys:</b>
-        </tr>
-        <tr>
-          <th>*</th>
-          <td>every</td>
-        </tr>
-        <tr>
-          <th>?</th>
-          <td>any</td>
-        </tr>
-        <tr>
-          <th>-</th>
-          <td>ranges</td>
-        </tr>
-        <tr>
-          <th>/</th>
-          <td>increments</td>
-        </tr>
-      </table>
-    </div>
     <ww:submit value="Save Configuration"/>
+
+    <ww:div>
+      <ww:label value="Indexing Schedule Keys:" labelposition="top"/>
+      <ww:label value="* = every" labelposition="top"/>
+      <ww:label value="? = any" labelposition="top"/>
+      <ww:label value="- = ranges" labelposition="top"/>
+      <ww:label value="/ = increments" labelposition="top"/>
+    </ww:div>
   </ww:form>
+
+  <ww:div>
+    <p><i>For valid cron expression values for the Indexing Schedule, see <ww:a href="http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html">here</ww:a></i></p>
+  </ww:div>
 
   <script type="text/javascript">
     document.getElementById("saveConfiguration_indexPath").focus();
