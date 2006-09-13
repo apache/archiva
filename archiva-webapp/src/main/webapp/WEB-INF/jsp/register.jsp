@@ -45,13 +45,9 @@
 	     the ww:form creates the table, labels, context sensitive actionerrors, requirements indicators, etc...
 	       - Joakim --%>
     
-    <ww:form action="register" method="post">
-		<ww:textfield label="Username"         name="username" size="30" required="true"/>
-		<ww:password  label="Password"         name="password" size="20" required="true"/>
-		<ww:password  label="Confirm Password" name="confirmPassword" size="20" required="true"/>
-        <ww:textfield label="Full Name"        name="fullName" size="30" required="true"/>
-        <ww:textfield label="Email Address"    name="email" size="50"    required="true"/>
-        <ww:submit    value="Register"/>
+    <ww:form action="register" method="post">   	
+      <%@ include file="/WEB-INF/jsp/admin/include/registerUserForm.jspf" %>
+      <ww:submit    value="Register"/>
     </ww:form>
 
   </div>
