@@ -253,18 +253,22 @@
     </action>
 
 
-    <action name="user" class="userManagement" method="display">
-      <result name="success">/WEB-INF/jsp/user.jsp</result>
+    <action name="user" class="userManagement">
+      <result name="success">/WEB-INF/jsp/admin/user.jsp</result>
+      <result name="input" type="chain">userManagement</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <!-- plexus security actions -->
 
-    <action name="userDetails" class="userManagement" method="display">
-      <result name="success">/WEB-INF/jsp/userDetails.jsp</result>
+    <action name="userDetails" class="userManagement" method="save">
+      <result name="input">/WEB-INF/jsp/admin/userDetails.jsp</result>
+      <result name="success" type="chain">user</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="userManagement" class="userManagement" method="findUser">
-      <result name="input">/WEB-INF/jsp/findUser.jsp</result>
+    <action name="userManagement" class="userManagement" method="input">
+      <result name="input">/WEB-INF/jsp/admin/findUser.jsp</result>
       <result name="success" type="chain">user</result>
     </action>
 
@@ -275,7 +279,7 @@
     <action name="removeRoleFromUser" class="plexusSecurityUserAssignment" method="removeRole">
       <result name="success" type="chain">user</result>
     </action>
-    
+
   </package>
 </xwork>
 

@@ -17,11 +17,12 @@ package org.apache.maven.archiva.web.action.admin;
  * limitations under the License.
  */
 
+import com.opensymphony.xwork.Preparable;
 import org.codehaus.plexus.security.rbac.RBACManager;
+import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
 import org.codehaus.plexus.security.user.UserNotFoundException;
-import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
@@ -37,9 +38,8 @@ import java.util.List;
  * role-hint="userManagement"
  */
 public class UserManagementAction
-    extends PlexusActionSupport
+    extends PlexusActionSupport implements Preparable
 {
-
     /**
      * @plexus.requirement
      */
@@ -52,11 +52,11 @@ public class UserManagementAction
 
     private User user;
 
+    private boolean save = false;
+
     private String email;
 
     private String fullName;
-
-    private boolean locked;
 
     private String username;
 
@@ -70,23 +70,48 @@ public class UserManagementAction
 
     private String resourceName;
 
+    public void prepare()
+        throws Exception
+    {
+
+        if ( username != null )
+        {
+            user = userManager.findUser( username );
+
+            principal = user.getPrincipal().toString();
+            fullName = user.getFullName();
+            email = user.getEmail();
+
+            if ( principal != null && rbacManager.userAssignmentExists( principal ) )
+            {
+                assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
+                availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
+            }
+            else
+            {
+                assignedRoles = new ArrayList();
+                availableRoles = rbacManager.getAllAssignableRoles();
+            }
+        }
+    }
+
     /**
      * for this method username should be populated
      * 
      * @return
      */
-    public String findUser()
+    public String input()
     {
         try
         {
-            if ( username == null )
-            {
-                return INPUT;
-            }
-            else
+            if ( username != null )
             {
                 user = userManager.findUser( username );
                 return SUCCESS;
+            }
+            else
+            {
+                return INPUT;
             }
         }
         catch ( UserNotFoundException ne )
@@ -96,51 +121,25 @@ public class UserManagementAction
         }
     }
 
-    /**
-     * For this method, principal should be populated
-     *
-     * @throws Exception
-     */
-    public String display()
-        throws Exception
-    {
-
-        user = userManager.findUser( username );
-
-        principal = user.getPrincipal().toString();
-        fullName = user.getFullName();
-        email = user.getEmail();
-        locked = user.isLocked();
-
-        // for displaying the potential repositories to be displayed, remove the global resource
-        // from the list
-        resources = rbacManager.getAllResources();
-        //resources.remove( rbacManager.getGlobalResource() );
-
-        // check if the user has any roles assigned to them, and populate the lists for
-        // rendering assign and remove roles links
-        if ( principal != null && rbacManager.userAssignmentExists( principal ) )
-        {
-            assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
-            availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
-        }
-        else
-        {
-            assignedRoles = new ArrayList();
-            availableRoles = rbacManager.getAllAssignableRoles();
-        }
-
-        return SUCCESS;
-    }
-
     public String save()
         throws Exception
     {
+        if ( !save )
+        {
+            return INPUT;
+        }
+
         User temp = userManager.findUser( username );
 
-        temp.setEmail( email );
-        temp.setFullName( fullName );
-        temp.setLocked( locked );
+        if ( email != null )
+        {
+            temp.setEmail( email );
+        }
+
+        if ( fullName != null )
+        {
+            temp.setFullName( fullName );
+        }
 
         temp = userManager.updateUser( temp );
 
@@ -195,16 +194,6 @@ public class UserManagementAction
         this.fullName = fullName;
     }
 
-    public boolean isLocked()
-    {
-        return locked;
-    }
-
-    public void setLocked( boolean locked )
-    {
-        this.locked = locked;
-    }
-
     public String getPrincipal()
     {
         return principal;
@@ -253,5 +242,15 @@ public class UserManagementAction
     public void setResourceName( String resourceName )
     {
         this.resourceName = resourceName;
+    }
+
+    public boolean isSave()
+    {
+        return save;
+    }
+
+    public void setSave( boolean save )
+    {
+        this.save = save;
     }
 }
