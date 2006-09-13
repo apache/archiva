@@ -79,8 +79,15 @@ public class UserManagementAction
     {
         try
         {
-            user = userManager.findUser( username );                 
-            return SUCCESS;
+            if ( username == null )
+            {
+                return INPUT;
+            }
+            else
+            {
+                user = userManager.findUser( username );
+                return SUCCESS;
+            }
         }
         catch ( UserNotFoundException ne )
         {
@@ -97,11 +104,13 @@ public class UserManagementAction
     public String display()
         throws Exception
     {
-        if ( principal == null )
-        {
-            addActionError( "a principal is required for this operation" );
-            return ERROR;
-        }
+
+        user = userManager.findUser( username );
+
+        principal = user.getPrincipal().toString();
+        fullName = user.getFullName();
+        email = user.getEmail();
+        locked = user.isLocked();
 
         // for displaying the potential repositories to be displayed, remove the global resource
         // from the list

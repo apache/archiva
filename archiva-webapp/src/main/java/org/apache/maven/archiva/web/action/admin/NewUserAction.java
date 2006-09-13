@@ -73,7 +73,8 @@ public class NewUserAction
         {
             return INPUT;
         }
-
+        
+/*
         // TODO: use commons-validator for these fields.
 
         if ( StringUtils.isEmpty( username ) )
@@ -97,6 +98,8 @@ public class NewUserAction
         {
             addActionError( "Passwords do not match." );
         }
+        
+        */
 
         UserManager um = securitySystem.getUserManager();
 

@@ -259,7 +259,7 @@
 
     <!-- plexus security actions -->
 
-    <action name="userDetails" class="userManagement" method="save">
+    <action name="userDetails" class="userManagement" method="display">
       <result name="success">/WEB-INF/jsp/userDetails.jsp</result>
     </action>
 

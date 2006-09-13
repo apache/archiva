@@ -17,7 +17,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <html>
 <head>
-  <title>User Management - Find a User</title>
+  <title>User Management - User Details</title>
   <ww:head />
 </head>
 
@@ -29,7 +29,7 @@
 
         </div>
 
-        <h2>Modify User Details</h2>
+        <h2>Modify User Details - ${username}</h2>
 
         <ww:form action="userDetails" method="post">
           <ww:textfield label="Full Name" name="fullName"/>

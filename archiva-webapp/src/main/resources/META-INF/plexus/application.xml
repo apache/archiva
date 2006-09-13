@@ -36,29 +36,47 @@
           </appender>
         </appenders>
         <levels>
-          <level>
-            <hierarchy>org.codehaus.plexus.mailsender.MailSender</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.apache.jasper</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.xwork</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.webwork</hierarchy>
-            <level>INFO</level>
-          </level>
+          <!-- Help identify bugs during testing -->
           <level>
             <hierarchy>org.apache.maven</hierarchy>
             <level>DEBUG</level>
           </level>
           <level>
             <hierarchy>org.codehaus.plexus.security</hierarchy>
+            <level>DEBUG</level>
+          </level>
+          <!-- squelch noisy objects (for now) -->
+          <level>
+            <hierarchy>org.codehaus.plexus.mailsender.MailSender</hierarchy>
             <level>INFO</level>
+          </level>
+          <level>
+            <hierarchy>org.quartz</hierarchy>
+            <level>INFO</level>
+         </level>
+          <level>
+            <hierarchy>org.apache.jasper</hierarchy>
+            <level>INFO</level>
+          </level>
+          <level>
+           <hierarchy>com.opensymphony.xwork</hierarchy>
+           <level>INFO</level>
+          </level>
+          <level>
+            <hierarchy>com.opensymphony.webwork</hierarchy>
+            <level>INFO</level>
+          </level>
+          <level>
+            <hierarchy>org.codehaus.plexus.PlexusContainer</hierarchy>
+            <level>INFO</level>
+          </level>
+          <level>
+            <hierarchy>JPOX</hierarchy>
+            <level>WARN</level>
+          </level>
+          <level>
+            <hierarchy>freemarker</hierarchy>
+            <level>WARN</level>
           </level>
         </levels>
       </configuration>

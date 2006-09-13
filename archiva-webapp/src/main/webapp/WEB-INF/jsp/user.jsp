@@ -18,7 +18,7 @@
 <%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
 <html>
 <head>
-  <title>User Management - Find a User</title>
+  <title>User Management</title>
   <ww:head />
 </head>
 
@@ -41,11 +41,11 @@
           <tr class="a">
             <th>Username</th>
 
-            <td>${sessionScope.SecuritySessionUser.username}</td>
+            <td>${username}</td>
           </tr>
           <tr class="b">
             <th>Email</th>
-            <td>${sessionScope.SecuritySessionUser.email}</td>
+            <td>${email}</td>
           </tr>
         </table>
 
@@ -61,7 +61,7 @@
               <td>
                 <pss:ifAuthorized permission="remove-roles">
                   <ww:url id="removeAssignedRoleUrl" action="removeRoleFromUser">
-                    <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                    <ww:param name="principal">${username}</ww:param>
                     <ww:param name="roleName">${role.name}</ww:param>
                   </ww:url>
                   <ww:a href="%{removeAssignedRoleUrl}">Delete</ww:a>
@@ -82,7 +82,7 @@
                 </td>
                 <td>
                   <ww:url id="addRoleUrl" action="assignRoleToUser">
-                    <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+                    <ww:param name="principal">${username}</ww:param>
                     <ww:param name="roleName">${role.name}</ww:param>
                   </ww:url>
                   <ww:a href="%{addRoleUrl}">Add</ww:a>

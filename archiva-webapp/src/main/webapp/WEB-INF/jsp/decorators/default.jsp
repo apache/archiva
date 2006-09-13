@@ -69,7 +69,7 @@
     <ww:else>
       <ww:url id="logoutUrl" action="logout" namespace="/" includeParams="none"/>
       <ww:url id="manageUserUrl" action="user" namespace="/admin">
-        <ww:param name="principal">${sessionScope.SecuritySessionUser.principal}</ww:param>
+        <ww:param name="username">${sessionScope.SecuritySessionUser.username}</ww:param>
       </ww:url>
 
       Welcome, <b>${sessionScope.SecuritySessionUser.username}</b> -

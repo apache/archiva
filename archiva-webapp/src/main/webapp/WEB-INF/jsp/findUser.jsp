@@ -28,9 +28,9 @@
 
     <div id="contentArea">
       <div id="searchBox">
-        <ww:form action="userDetails">
+        <ww:form action="userManagement" method="post" namespace="/admin">
           <p>
-            <ww:textfield label="Find a user" name="user"/>
+            <ww:textfield label="Find a user" name="username"/>
             <ww:submit value="Search"/>
           </p>
         </ww:form>
