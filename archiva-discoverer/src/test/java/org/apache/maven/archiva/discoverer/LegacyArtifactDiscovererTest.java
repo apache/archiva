@@ -482,6 +482,37 @@ public class LegacyArtifactDiscovererTest
         assertEquals( createArtifact( "javax.sql", "jdbc", "2.0" ), artifact );
     }
 
+    public void testJavadoc()
+        throws ComponentLookupException, DiscovererException
+    {
+        String testPath = "javax.sql/javadoc.jars/jdbc-2.0-javadoc.jar";
+    
+        Artifact artifact = discoverer.buildArtifact( testPath );
+    
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0", "javadoc.jar", "javadoc" ), artifact );
+    }
+
+    public void testSources()
+        throws ComponentLookupException, DiscovererException
+    {
+        String testPath = "javax.sql/java-sources/jdbc-2.0-sources.jar";
+    
+        Artifact artifact = discoverer.buildArtifact( testPath );
+    
+        assertEquals( createArtifact( "javax.sql", "jdbc", "2.0", "java-source", "sources" ), artifact );
+    }
+
+    public void testPlugin()
+        throws ComponentLookupException, DiscovererException
+    {
+        String testPath = "maven/plugins/maven-test-plugin-1.8.jar";
+    
+        Artifact artifact = discoverer.buildArtifact( testPath );
+    
+        assertEquals( createArtifact( "maven", "maven-test-plugin", "1.8", "plugin" ), artifact );
+    }
+
+    
     private List discoverArtifacts()
         throws DiscovererException
     {

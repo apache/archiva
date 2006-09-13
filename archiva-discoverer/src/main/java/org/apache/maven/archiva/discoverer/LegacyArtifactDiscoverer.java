@@ -90,6 +90,14 @@ public class LegacyArtifactDiscoverer
 
                     avceTokenList.addLast( lastAvceToken );
                 }
+                else if ( lastAvceToken.endsWith( "javadoc.jar" ) )
+                {
+                    type = "javadoc.jar";
+
+                    lastAvceToken = lastAvceToken.substring( 0, lastAvceToken.length() - ".jar".length() );
+
+                    avceTokenList.addLast( lastAvceToken );
+                }                
                 else if ( lastAvceToken.endsWith( ".zip" ) )
                 {
                     type = "distribution-zip";
@@ -105,7 +113,7 @@ public class LegacyArtifactDiscoverer
                     if ( extPos > 0 )
                     {
                         String ext = lastAvceToken.substring( extPos + 1 );
-                        if ( type.equals( ext ) )
+                        if ( type.equals( ext ) || "plugin".equals( type ) )
                         {
                             lastAvceToken = lastAvceToken.substring( 0, extPos );
 
