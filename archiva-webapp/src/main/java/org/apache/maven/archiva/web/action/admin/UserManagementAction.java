@@ -1,21 +1,20 @@
 package org.apache.maven.archiva.web.action.admin;
 
-
 /*
- * Copyright 2005 The Apache Software Foundation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2005 The Apache Software Foundation.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 import com.opensymphony.xwork.Preparable;
 import org.codehaus.plexus.security.rbac.RBACManager;
@@ -23,6 +22,9 @@ import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
 import org.codehaus.plexus.security.user.UserNotFoundException;
+import org.codehaus.plexus.security.user.UserManagerException;
+import org.codehaus.plexus.security.authorization.rbac.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.authorization.rbac.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
@@ -38,7 +40,8 @@ import java.util.List;
  * role-hint="userManagement"
  */
 public class UserManagementAction
-    extends PlexusActionSupport implements Preparable
+    extends PlexusActionSupport
+    implements Preparable, SecureAction
 {
     /**
      * @plexus.requirement
@@ -73,38 +76,51 @@ public class UserManagementAction
     public void prepare()
         throws Exception
     {
-        if ( username == null || "".equals( username ) )
+        try
         {
-            user = userManager.findUser( (String) session.get( "MANAGED_USERNAME" ) );
-            username = user.getUsername();
+            if ( username == null || "".equals( username ) )
+            {
+                user = userManager.findUser( (String) session.get( "MANAGED_USERNAME" ) );
+                username = user.getUsername();
+            }
+            else
+            {
+                user = userManager.findUser( username );
+            }
+
+            session.put( "MANAGED_USERNAME", username );
+
+            principal = user.getPrincipal().toString();
+            fullName = user.getFullName();
+            email = user.getEmail();
+
+            if ( principal != null && rbacManager.userAssignmentExists( principal ) )
+            {
+                assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
+                availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
+            }
+            else
+            {
+                assignedRoles = new ArrayList();
+                availableRoles = rbacManager.getAllAssignableRoles();
+            }
         }
-        else
+        catch ( UserNotFoundException ne )
         {
-            user = userManager.findUser( username );
+            addActionError( "user cound not found" );
+            assignedRoles = new ArrayList();
+            availableRoles = new ArrayList();
         }
-
-        session.put( "MANAGED_USERNAME", username );
-
-        principal = user.getPrincipal().toString();
-        fullName = user.getFullName();
-        email = user.getEmail();
-
-        if ( principal != null && rbacManager.userAssignmentExists( principal ) )
-        {
-            assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
-            availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
-        }
-        else
+        catch ( UserManagerException ume )
         {
             assignedRoles = new ArrayList();
-            availableRoles = rbacManager.getAllAssignableRoles();
+            availableRoles = new ArrayList();
         }
-
     }
 
     /**
      * for this method username should be populated
-     * 
+     *
      * @return
      */
     public String findUser()
@@ -124,7 +140,7 @@ public class UserManagementAction
         }
         catch ( UserNotFoundException ne )
         {
-            addActionError( "user could not be found "  + username );
+            addActionError( "user could not be found " + username );
             return ERROR;
         }
     }
@@ -160,6 +176,39 @@ public class UserManagementAction
         }
 
         return SUCCESS;
+    }
+
+
+    public List getRequiredOperations()
+        throws SecureActionException
+    {
+        List operations = new ArrayList();
+        operations.add( "edit-all-users" );
+        operations.add( "edit-user" );
+        return operations;
+    }
+
+    public String getRequiredResource()
+        throws SecureActionException
+    {
+        SecuritySession securitySession = (SecuritySession) session.get( SecuritySession.ROLE );
+
+        User user = securitySession.getUser();
+
+        if ( user != null )
+        {
+            return user.getPrincipal().toString();
+        }
+        else
+        {
+            throw new SecureActionException( "unable to obtain principal from users session" );
+        }
+    }
+
+    public boolean authenticationRequired()
+        throws SecureActionException
+    {
+        return true;
     }
 
     public String getUsername()

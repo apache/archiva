@@ -15,37 +15,28 @@
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <html>
 <head>
-  <title>User Management - Find a User</title>
-  <ww:head />
+  <title>Security Alert Page</title>
+  <ww:head/>
 </head>
 
 <body>
 
-
-    <h1>User Management</h1>
-
-    <div id="contentArea">
-      <div id="searchBox">
-        <div id="results">
-          <ww:actionerror/>  
-        </div>
-        <ww:form action="userManagement" method="post" namespace="/admin">
-          <p>
-            <ww:textfield label="Find a user" name="username"/>
-            <ww:submit value="Search"/>
-          </p>
-        </ww:form>
-      </div>
+<div id="contentArea">
+  <div id="searchBox">
+    <div id="results">
+      You are not authorized for this activity.
     </div>
+  </div>
+</div>
 
-
-
-    <div class="clear">
-      <hr/>
-    </div>
-
+<div class="clear">
+  <hr/>
+</div>
 
 </body>
+
 </html>

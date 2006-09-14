@@ -26,13 +26,16 @@
   <package name="base" extends="webwork-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
+      <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor-stack name="configuredStack">
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="configuration"/>
+        <interceptor-ref name="pssSecureActions"/>
       </interceptor-stack>
       <interceptor-stack name="configuredPrepareParamsStack">
         <interceptor-ref name="paramsPrepareParamsStack"/>
         <interceptor-ref name="configuration"/>
+        <interceptor-ref name="pssSecureActions"/>
       </interceptor-stack>
     </interceptors>
 
@@ -57,6 +60,8 @@
         <param name="method">input</param>
       </result>
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
+      <result name="requires-authentication">/WEB-INF/jsp/alert.jsp</result>
+      <result name="requires-authorization">/WEB-INF/jsp/alert.jsp</result>
     </global-results>
   </package>
 
@@ -67,6 +72,7 @@
       <interceptor-stack name="configuredStack">
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="configuration"/>
+        <interceptor-ref name="pssSecureActions"/>
       </interceptor-stack>
     </interceptors>
 
