@@ -255,29 +255,29 @@
 
     <action name="user" class="userManagement">
       <result name="success">/WEB-INF/jsp/admin/user.jsp</result>
-      <result name="input" type="chain">userManagement</result>
+      <result name="input" type="redirect-action">userManagement</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <!-- plexus security actions -->
-
+    <!--
     <action name="userDetails" class="userManagement" method="save">
       <result name="input">/WEB-INF/jsp/admin/userDetails.jsp</result>
       <result name="success" type="chain">user</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-
-    <action name="userManagement" class="userManagement" method="input">
+    -->
+    <action name="userManagement" class="userManagement" method="findUser">
       <result name="input">/WEB-INF/jsp/admin/findUser.jsp</result>
-      <result name="success" type="chain">user</result>
+      <result name="success" type="redirect-action">user</result>
     </action>
 
     <action name="assignRoleToUser" class="plexusSecurityUserAssignment" method="assignRole">
-      <result name="success" type="chain">user</result>
+      <result name="success" type="redirect-action">user</result>
     </action>
 
     <action name="removeRoleFromUser" class="plexusSecurityUserAssignment" method="removeRole">
-      <result name="success" type="chain">user</result>
+      <result name="success" type="redirect-action">user</result>
     </action>
 
   </package>

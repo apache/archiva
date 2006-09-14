@@ -73,26 +73,33 @@ public class UserManagementAction
     public void prepare()
         throws Exception
     {
-
-        if ( username != null )
+        if ( username == null || "".equals( username ) )
+        {
+            user = userManager.findUser( (String) session.get( "MANAGED_USERNAME" ) );
+            username = user.getUsername();
+        }
+        else
         {
             user = userManager.findUser( username );
-
-            principal = user.getPrincipal().toString();
-            fullName = user.getFullName();
-            email = user.getEmail();
-
-            if ( principal != null && rbacManager.userAssignmentExists( principal ) )
-            {
-                assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
-                availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
-            }
-            else
-            {
-                assignedRoles = new ArrayList();
-                availableRoles = rbacManager.getAllAssignableRoles();
-            }
         }
+
+        session.put( "MANAGED_USERNAME", username );
+
+        principal = user.getPrincipal().toString();
+        fullName = user.getFullName();
+        email = user.getEmail();
+
+        if ( principal != null && rbacManager.userAssignmentExists( principal ) )
+        {
+            assignedRoles = new ArrayList( rbacManager.getAssignedRoles( principal ) );
+            availableRoles = new ArrayList( rbacManager.getUnassignedRoles( principal ) );
+        }
+        else
+        {
+            assignedRoles = new ArrayList();
+            availableRoles = rbacManager.getAllAssignableRoles();
+        }
+
     }
 
     /**
@@ -100,13 +107,14 @@ public class UserManagementAction
      * 
      * @return
      */
-    public String input()
+    public String findUser()
     {
         try
         {
             if ( username != null )
             {
                 user = userManager.findUser( username );
+                session.put( "MANAGED_USERNAME", username );
                 return SUCCESS;
             }
             else

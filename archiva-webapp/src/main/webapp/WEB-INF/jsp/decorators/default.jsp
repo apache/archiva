@@ -124,7 +124,7 @@
         <pss:ifAnyAuthorized permissions="edit-configuration,edit-all-users">
           <li class="expanded">
             <pss:ifAuthorized permission="edit-all-users">
-              <my:currentWWUrl action="userManagement" namespace="/admin">User Management</my:currentWWUrl>               
+              <my:currentWWUrl action="userManagement!input" namespace="/admin">User Management</my:currentWWUrl>               
             </pss:ifAuthorized>
           </li>
           <li>
