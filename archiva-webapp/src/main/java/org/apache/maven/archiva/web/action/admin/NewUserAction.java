@@ -17,14 +17,14 @@ package org.apache.maven.archiva.web.action.admin;
 */
 
 import org.apache.maven.archiva.web.util.RoleManager;
-import org.codehaus.plexus.security.system.SecuritySystem;
-import org.codehaus.plexus.security.user.User;
-import org.codehaus.plexus.security.user.UserManager;
-import org.codehaus.plexus.security.user.policy.PasswordRuleViolationException;
-import org.codehaus.plexus.security.user.policy.PasswordRuleViolations;
-import org.codehaus.plexus.security.rbac.RBACManager;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.security.system.SecuritySystem;
+import org.codehaus.plexus.security.rbac.RBACManager;
+import org.codehaus.plexus.security.user.UserManager;
+import org.codehaus.plexus.security.user.User;
+import org.codehaus.plexus.security.policy.PasswordRuleViolationException;
+import org.codehaus.plexus.security.policy.PasswordRuleViolations;
 
 import java.util.Iterator;
 import java.util.List;
