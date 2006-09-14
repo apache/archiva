@@ -67,17 +67,12 @@ public class ConfigureAction
 
     private String year;
 
-    private String cronEx = "";
-
     public void validate()
     {
-        cronEx = ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
-                    " " + dayOfWeek + " " + year ).trim();
-
         //validate cron expression
         cronValidator = new CronExpressionValidator();
 
-        if( !cronValidator.validate( cronEx ) )
+        if( !cronValidator.validate( getCronExpression() ) )
         {
             addActionError( "Invalid Cron Expression" );
         }              
@@ -89,19 +84,7 @@ public class ConfigureAction
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
-
-        String cronEx = ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
-            " " + dayOfWeek + " " + year ).trim();
-
-        //validate cron expression
-        cronValidator = new CronExpressionValidator();
-        if( !cronValidator.validate( cronEx ) )
-        {
-            addActionError( "Invalid Cron Expression" );
-            return ERROR;
-        }
-
-        configuration.setIndexerCronExpression( cronEx );
+        configuration.setIndexerCronExpression( getCronExpression() );
 
         // Normalize the path
         File file = new File( configuration.getIndexPath() );
@@ -227,4 +210,11 @@ public class ConfigureAction
     {
         this.dayOfWeek = dayOfWeek;
     }
+
+    private String getCronExpression()
+    {
+        return ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
+                    " " + dayOfWeek + " " + year ).trim();
+    }
+
 }
