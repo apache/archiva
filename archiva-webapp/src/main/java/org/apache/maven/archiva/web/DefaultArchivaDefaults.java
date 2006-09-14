@@ -17,6 +17,8 @@ package org.apache.maven.archiva.web;
  */
 
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.security.rbac.Operation;
 import org.codehaus.plexus.security.rbac.Permission;
 import org.codehaus.plexus.security.rbac.RBACManager;
@@ -24,6 +26,7 @@ import org.codehaus.plexus.security.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.security.rbac.Role;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
+import org.codehaus.plexus.security.user.UserNotFoundException;
 
 /**
  * DefaultArchivaDefaults 
@@ -34,7 +37,7 @@ import org.codehaus.plexus.security.user.UserManager;
  */
 public class DefaultArchivaDefaults
     extends AbstractLogEnabled
-    implements ArchivaDefaults
+    implements ArchivaDefaults, Initializable
 {
     /**
      * @plexus.requirement
@@ -61,6 +64,7 @@ public class DefaultArchivaDefaults
         ensurePermissionsExist();
         ensureRolesExist();
         ensureUsersExist();
+        
         initialized = true;
     }
 
@@ -160,15 +164,32 @@ public class DefaultArchivaDefaults
 
     public void ensureUsersExist()
     {
-        if ( !userManager.userExists( GUEST_USERNAME ) )
+        if( !userManager.userExists( GUEST_USERNAME ))
         {
             this.guestUser = userManager.createUser( GUEST_USERNAME, "Guest User", "" );
             this.guestUser = userManager.addUser( this.guestUser );
+        }
+        else
+        {
+            try
+            {
+                this.guestUser = userManager.findUser( GUEST_USERNAME );
+            }
+            catch ( UserNotFoundException e )
+            {
+                throw new RuntimeException( "Unable to find user '" + GUEST_USERNAME + "'", e );
+            }
         }
     }
 
     public User getGuestUser()
     {
         return this.guestUser;
+    }
+
+    public void initialize()
+        throws InitializationException
+    {
+        ensureDefaultsExist();
     }
 }

@@ -135,7 +135,7 @@ public class RepositoryAccess
             routeToErrorPage( response, "Invalid Repository ID." );
             return;
         }
-
+        
         // Authentication Tests.
 
         AuthenticationResult result;
@@ -147,7 +147,8 @@ public class RepositoryAccess
             if ( !result.isAuthenticated() )
             {
                 // Must Authenticate.
-                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), null );
+                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
+                                    new AuthenticationException("User Credentials Invalid") );
                 return;
             }
         }
