@@ -27,9 +27,10 @@ import org.codehaus.plexus.security.rbac.Role;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
 import org.codehaus.plexus.security.user.UserNotFoundException;
+import org.codehaus.plexus.security.policy.UserSecurityPolicy;
 
 /**
- * DefaultArchivaDefaults 
+ * DefaultArchivaDefaults
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -49,6 +50,11 @@ public class DefaultArchivaDefaults
      */
     private UserManager userManager;
 
+    /**
+     * @plexus.requirement
+     */
+    private UserSecurityPolicy securityPolicy;
+
     private boolean initialized;
 
     private User guestUser;
@@ -64,7 +70,7 @@ public class DefaultArchivaDefaults
         ensurePermissionsExist();
         ensureRolesExist();
         ensureUsersExist();
-        
+
         initialized = true;
     }
 
@@ -110,18 +116,18 @@ public class DefaultArchivaDefaults
         String globalResource = rbacManager.getGlobalResource().getIdentifier();
 
         ensurePermissionExists( USERS_EDIT_ALL_PERMISSION, USERS_EDIT_ALL_OPERATION, globalResource );
-        
+
         ensurePermissionExists( CONFIGURATION_EDIT_PERMISSION, CONFIGURATION_EDIT_OPERATION, globalResource );
-        
+
         ensurePermissionExists( ROLES_GRANT_PERMISSION, ROLES_GRANT_OPERATION, globalResource );
         ensurePermissionExists( ROLES_REMOVE_PERMISSION, ROLES_REMOVE_OPERATION, globalResource );
-        
+
         ensurePermissionExists( REPORTS_ACCESS_PERMISSION, REPORTS_ACCESS_OPERATION, globalResource );
         ensurePermissionExists( REPORTS_GENERATE_PERMISSION, REPORTS_GENERATE_OPERATION, globalResource );
-        
+
         ensurePermissionExists( INDEX_RUN_PERMISSION, INDEX_RUN_OPERATION, globalResource );
         ensurePermissionExists( INDEX_REGENERATE_PERMISSION, INDEX_REGENERATE_OPERATION, globalResource );
-        
+
         ensurePermissionExists( REPOSITORY_ADD_PERMISSION, REPOSITORY_ADD_OPERATION, globalResource );
         ensurePermissionExists( REPOSITORY_ACCESS, "access-repository", globalResource );
         ensurePermissionExists( REPOSITORY_UPLOAD, REPOSITORY_UPLOAD_OPERATION, globalResource );
@@ -166,8 +172,10 @@ public class DefaultArchivaDefaults
     {
         if( !userManager.userExists( GUEST_USERNAME ))
         {
+            securityPolicy.setEnabled( false );
             this.guestUser = userManager.createUser( GUEST_USERNAME, "Guest User", "" );
             this.guestUser = userManager.addUser( this.guestUser );
+            securityPolicy.setEnabled( true );
         }
         else
         {
