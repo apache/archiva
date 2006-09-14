@@ -54,4 +54,19 @@
   <listener>
     <listener-class>org.codehaus.plexus.xwork.PlexusLifecycleListener</listener-class>
   </listener>
+  
+  <servlet>
+    <servlet-name>RepositoryAccessServlet</servlet-name>
+    <servlet-class>org.apache.maven.archiva.web.servlet.PlexusComponentServlet</servlet-class>
+    <init-param>
+      <param-name>key</param-name>
+      <param-value>repositoryAccess</param-value>
+    </init-param>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>RepositoryAccessServlet</servlet-name>
+    <url-pattern>/repository/*</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

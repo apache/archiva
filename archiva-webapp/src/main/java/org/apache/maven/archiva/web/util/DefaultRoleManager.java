@@ -1,24 +1,24 @@
 package org.apache.maven.archiva.web.util;
 
 /*
-* Copyright 2005 The Apache Software Foundation.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright 2001-2006 The Apache Software Foundation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
+import org.apache.maven.archiva.web.ArchivaDefaults;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.security.rbac.Operation;
 import org.codehaus.plexus.security.rbac.Permission;
 import org.codehaus.plexus.security.rbac.RBACManager;
 import org.codehaus.plexus.security.rbac.RbacObjectNotFoundException;
@@ -43,191 +43,18 @@ public class DefaultRoleManager
      * @plexus.requirement
      */
     private RBACManager manager;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaDefaults archivaDefaults;
 
     private boolean initialized;
                            
     public void initialize()
         throws InitializationException
     {
-
-        // initialize the operations
-
-        if ( !manager.operationExists( "add-repository" ) )
-        {
-            Operation operation = manager.createOperation( "add-repository" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "edit-repository" ) )
-        {
-            Operation operation = manager.createOperation( "edit-repository" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "delete-repository" ) )
-        {
-            Operation operation = manager.createOperation( "delete-repository" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "edit-configuration" ) )
-        {
-            Operation operation = manager.createOperation( "edit-configuration" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "run-indexer" ) )
-        {
-            Operation operation = manager.createOperation( "run-indexer" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "regenerate-index" ) )
-        {
-            Operation operation = manager.createOperation( "regenerate-index" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "access-reports" ) )
-        {
-            Operation operation = manager.createOperation( "access-reports" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "generate-reports" ) )
-        {
-            Operation operation = manager.createOperation( "generate-reports" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "edit-user" ) )
-        {
-            Operation operation = manager.createOperation( "edit-user" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "edit-all-users" ) )
-        {
-            Operation operation = manager.createOperation( "edit-all-users" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "grant-roles" ) )
-        {
-            Operation operation = manager.createOperation( "grant-roles" );
-            manager.saveOperation( operation );
-        }
-
-        if ( !manager.operationExists( "remove-roles" ) )
-        {
-            Operation operation = manager.createOperation( "remove-roles" );
-            manager.saveOperation( operation );
-        }
-
-        try
-        {
-            if ( !manager.permissionExists( "Edit Configuration" ) )
-            {
-                Permission editConfiguration = manager.createPermission( "Edit Configuration", "edit-configuration",
-                                                                         manager.getGlobalResource().getIdentifier() );
-                manager.savePermission( editConfiguration );
-            }
-
-            if ( !manager.permissionExists( "Run Indexer" ) )
-            {
-                Permission runIndexer = manager.createPermission( "Run Indexer", "run-indexer",
-                                                                  manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( runIndexer );
-            }
-
-            if ( !manager.permissionExists( "Add Repository" ) )
-            {
-                Permission runIndexer = manager.createPermission( "Add Repository", "add-repository",
-                                                                  manager.getGlobalResource().getIdentifier() );
-                manager.savePermission( runIndexer );
-            }
-
-            if ( !manager.permissionExists( "Edit All Users" ) )
-            {
-                Permission editAllUsers = manager.createPermission( "Edit All Users", "edit-all-users",
-                                                                    manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( editAllUsers );
-            }
-
-            if ( !manager.permissionExists( "Access Reports" ) )
-            {
-                Permission editAllUsers = manager.createPermission( "Access Reports", "access-reports",
-                                                                    manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( editAllUsers );
-            }
-
-            if ( !manager.permissionExists( "Generate Reports" ) )
-            {
-                Permission editAllUsers = manager.createPermission( "Generate Reports", "generate-reports",
-                                                                    manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( editAllUsers );
-            }           
-
-            if ( !manager.permissionExists( "Grant Roles" ) )
-            {
-                Permission granRoles = manager.createPermission( "Grant Roles", "grant-roles",
-                                                                    manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( granRoles );
-            }
-            
-            if ( !manager.permissionExists( "Remove Roles" ) )
-            {
-                Permission removeRoles = manager.createPermission( "Remove Roles", "remove-roles",
-                                                                    manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( removeRoles );
-            }
-
-            if ( !manager.permissionExists( "Regenerate Index" ) )
-            {
-                Permission regenIndex = manager.createPermission( "Regenerate Index", "regenerate-index",
-                                                                  manager.getGlobalResource().getIdentifier() );
-
-                manager.savePermission( regenIndex );
-            }
-
-            if ( !manager.roleExists( "User Administrator" ) )
-            {
-                Role userAdmin = manager.createRole( "User Administrator" );
-                userAdmin.addPermission( manager.getPermission( "Edit All Users" ) );
-                userAdmin.addPermission( manager.getPermission( "Remove Roles" ) );
-                userAdmin.addPermission( manager.getPermission( "Grant Roles" ) );
-                userAdmin.setAssignable( true );
-                manager.saveRole( userAdmin );
-            }
-
-            if ( !manager.roleExists( "System Administrator" ) )
-            {
-                Role admin = manager.createRole( "System Administrator" );
-                admin.addChildRoleName( manager.getRole( "User Administrator" ).getName() );
-                admin.addPermission( manager.getPermission( "Edit Configuration" ) );
-                admin.addPermission( manager.getPermission( "Run Indexer" ) );
-                admin.addPermission( manager.getPermission( "Add Repository" ) );
-                admin.addPermission( manager.getPermission( "Access Reports") );
-                admin.addPermission( manager.getPermission( "Generate Reports") );
-                admin.addPermission( manager.getPermission( "Regenerate Index" ) );
-                admin.setAssignable( true );
-                manager.saveRole( admin );
-            }
-
-
-        }
-        catch ( RbacObjectNotFoundException ne )
-        {
-            ne.printStackTrace();
-            throw new InitializationException( "error in role initialization", ne );
-        }
-
+        archivaDefaults.ensureDefaultsExist();
         initialized = true;
     }
 
@@ -250,7 +77,6 @@ public class DefaultRoleManager
         UserAssignment assignment = manager.createUserAssignment( principal );
         assignment.addRole( userRole );
         manager.saveUserAssignment( assignment );
-
     }
 
     /**
@@ -285,30 +111,41 @@ public class DefaultRoleManager
             repoResource = manager.saveResource( repoResource );
 
             // make the permissions
-            Permission editRepo = manager.createPermission( "Edit Repository - " + repositoryName );
-            editRepo.setOperation( manager.getOperation( "edit-repository" ) );
+            Permission editRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_EDIT + " - " + repositoryName );
+            editRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_EDIT_OPERATION ) );
             editRepo.setResource( repoResource );
             editRepo = manager.savePermission( editRepo );
 
-            Permission deleteRepo = manager.createPermission( "Delete Repository - " + repositoryName );
-            deleteRepo.setOperation( manager.getOperation( "delete-repository" ) );
+            Permission deleteRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_DELETE + " - " + repositoryName );
+            deleteRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_DELETE_OPERATION ) );
             deleteRepo.setResource( repoResource );
             deleteRepo = manager.savePermission( deleteRepo );
+            
+            Permission accessRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_ACCESS + " - " + repositoryName );
+            accessRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_ACCESS_OPERATION ) );
+            accessRepo.setResource( repoResource );
+            accessRepo = manager.savePermission( accessRepo );
+            
+            Permission uploadRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_UPLOAD + " - " + repositoryName );
+            uploadRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_UPLOAD_OPERATION ) );
+            uploadRepo.setResource( repoResource );
+            uploadRepo = manager.savePermission( uploadRepo );
 
             // make the roles
             Role repositoryObserver = manager.createRole( "Repository Observer - " + repositoryName );
-            repositoryObserver.addPermission( manager.getPermission( "Access Reports" ) );
+            repositoryObserver.addPermission( manager.getPermission( ArchivaDefaults.REPORTS_ACCESS_PERMISSION ) );
             repositoryObserver.setAssignable( true );
             repositoryObserver = manager.saveRole( repositoryObserver );
 
             Role repositoryManager = manager.createRole( "Repository Manager - " + repositoryName );
             repositoryManager.addPermission( editRepo );
             repositoryManager.addPermission( deleteRepo );
-            repositoryManager.addPermission( manager.getPermission( "Generate Reports" ) );
+            repositoryManager.addPermission( accessRepo );
+            repositoryManager.addPermission( uploadRepo );
+            repositoryManager.addPermission( manager.getPermission( ArchivaDefaults.REPORTS_GENERATE_PERMISSION ) );
             repositoryManager.addChildRoleName( repositoryObserver.getName() );
             repositoryManager.setAssignable( true );
             manager.saveRole( repositoryManager );
-
         }
         catch ( RbacObjectNotFoundException ne )
         {

@@ -1,3 +1,5 @@
+<?xml version="1.0" ?>
+
 <!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -191,6 +193,11 @@
           <artifactId>jdbc-stdext</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>it.could</groupId>
+      <artifactId>webdav</artifactId>
+      <version>0.4</version>
     </dependency>
   </dependencies>
   <build>
