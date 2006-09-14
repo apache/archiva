@@ -70,12 +70,13 @@ public class DefaultRoleManager
         editUser = manager.savePermission( editUser );
 
         // todo this one role a user will go away when we have expressions in the resources
-        Role userRole = manager.createRole( "Personal Role - " + principal );
+        String personalRoleName = "Personal Role - " + principal;
+        Role userRole = manager.createRole( personalRoleName );
         userRole.addPermission( editUser );
         userRole = manager.saveRole( userRole );
 
         UserAssignment assignment = manager.createUserAssignment( principal );
-        assignment.addRole( userRole );
+        assignment.addRoleName( personalRoleName );
         manager.saveUserAssignment( assignment );
     }
 
@@ -89,16 +90,9 @@ public class DefaultRoleManager
     public void addAdminUser( String principal )
         throws RbacStoreException
     {
-        try
-        {
-            UserAssignment assignment = manager.createUserAssignment( principal );
-            assignment.addRole( manager.getRole( "System Administrator" ) );
-            manager.saveUserAssignment( assignment );
-        }
-        catch ( RbacObjectNotFoundException ne )
-        {
-            throw new RbacStoreException( "unable to find administrator role, this of course is bad", ne );
-        }
+        UserAssignment assignment = manager.createUserAssignment( principal );
+        assignment.addRoleName( ArchivaDefaults.SYSTEM_ADMINISTRATOR );
+        manager.saveUserAssignment( assignment );
     }
 
     public void addRepository( String repositoryName )

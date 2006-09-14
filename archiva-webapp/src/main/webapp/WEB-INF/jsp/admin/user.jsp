@@ -57,7 +57,7 @@
           <ww:iterator id="role" value="assignedRoles">
             <tr class="a">
              <td>
-               <em>${role.name}</em><br/>
+               <em>${role}</em><br/>
              </td>
             </tr>
           </ww:iterator>
@@ -82,7 +82,7 @@
             <ww:form action="removeRoleFromUser" method="post">
               <ww:hidden name="principal" value="${username}"/>
               <ww:hidden name="username" value="${username}"/>
-              <ww:radio name="roleName" list="assignedRoles" listKey="name" listValue="name" labelposition="left"/>
+              <ww:radio name="roleName" list="assignedRoles" labelposition="left"/>
               <ww:submit value="Remove"/>
             </ww:form>
           </pss:ifAuthorized>
