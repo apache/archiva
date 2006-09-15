@@ -18,6 +18,7 @@ package org.apache.maven.archiva.web.action.admin;
 
 import com.opensymphony.xwork.Preparable;
 import org.codehaus.plexus.security.rbac.RBACManager;
+import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
@@ -25,6 +26,7 @@ import org.codehaus.plexus.security.user.UserNotFoundException;
 import org.codehaus.plexus.security.user.UserManagerException;
 import org.codehaus.plexus.security.authorization.rbac.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.authorization.rbac.web.interceptor.SecureActionException;
+import org.codehaus.plexus.security.authorization.rbac.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
@@ -179,36 +181,30 @@ public class UserManagementAction
     }
 
 
-    public List getRequiredOperations()
+    public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        List operations = new ArrayList();
-        operations.add( "edit-all-users" );
-        operations.add( "edit-user" );
-        return operations;
-    }
+        // actions are per lookup and this will only be executed once per action instance
+        // so no need to cache it or convert to class field.
+        SecureActionBundle bundle = new SecureActionBundle();
 
-    public String getRequiredResource()
-        throws SecureActionException
-    {
+        bundle.setRequiresAuthentication( true );
+        bundle.requiresAuthorization( "edit-all-users", Resource.GLOBAL);
+        
         SecuritySession securitySession = (SecuritySession) session.get( SecuritySession.ROLE );
 
         User user = securitySession.getUser();
 
         if ( user != null )
         {
-            return user.getPrincipal().toString();
+           bundle.requiresAuthorization( "edit-user", user.getPrincipal().toString() );
         }
         else
         {
             throw new SecureActionException( "unable to obtain principal from users session" );
         }
-    }
 
-    public boolean authenticationRequired()
-        throws SecureActionException
-    {
-        return true;
+        return bundle;
     }
 
     public String getUsername()
