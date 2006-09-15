@@ -190,9 +190,14 @@ public class UserManagementAction
 
         bundle.setRequiresAuthentication( true );
         bundle.requiresAuthorization( "edit-all-users", Resource.GLOBAL);
-        
+     
         SecuritySession securitySession = (SecuritySession) session.get( SecuritySession.ROLE );
 
+        if ( securitySession == null )
+        {
+            throw new SecureActionException( "no session, not authenticated, not allowed access" );
+        }
+        
         User user = securitySession.getUser();
 
         if ( user != null )
