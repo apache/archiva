@@ -103,6 +103,14 @@
       </c:set>
       <my:currentWWUrl url="${url}">Dependencies</my:currentWWUrl>
       <c:set var="url">
+        <ww:url action="showArtifactDependencyTree">
+          <ww:param name="groupId" value="%{groupId}"/>
+          <ww:param name="artifactId" value="%{artifactId}"/>
+          <ww:param name="version" value="%{version}"/>
+        </ww:url>
+      </c:set>
+      <my:currentWWUrl url="${url}">Dependency Tree</my:currentWWUrl>
+      <c:set var="url">
         <ww:url action="showArtifactDependees">
           <ww:param name="groupId" value="%{groupId}"/>
           <ww:param name="artifactId" value="%{artifactId}"/>
@@ -122,6 +130,9 @@
     <c:choose>
       <c:when test="${dependencies != null}">
         <%@ include file="/WEB-INF/jsp/include/artifactDependencies.jspf" %>
+      </c:when>
+      <c:when test="${dependencyTree != null}">
+        <%@ include file="/WEB-INF/jsp/include/dependencyTree.jspf" %>
       </c:when>
       <c:otherwise>
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>

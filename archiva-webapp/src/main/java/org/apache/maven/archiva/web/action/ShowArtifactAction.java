@@ -30,13 +30,19 @@ import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactCollector;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.project.artifact.InvalidDependencyVersionException;
+import org.apache.maven.report.projectinfo.dependencies.Dependencies;
+import org.apache.maven.report.projectinfo.dependencies.ReportResolutionListener;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
@@ -49,6 +55,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -86,6 +93,16 @@ public class ShowArtifactAction
      */
     private RepositoryArtifactIndexFactory factory;
 
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactMetadataSource artifactMetadataSource;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactCollector collector;
+
     private String groupId;
 
     private String artifactId;
@@ -95,6 +112,8 @@ public class ShowArtifactAction
     private Model model;
 
     private Collection dependencies;
+
+    private List dependencyTree;
 
     public String artifact()
         throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
@@ -182,6 +201,65 @@ public class ShowArtifactAction
         return SUCCESS;
     }
 
+    public String dependencyTree()
+        throws ConfigurationStoreException, ProjectBuildingException, InvalidDependencyVersionException,
+        ArtifactResolutionException
+    {
+        if ( !checkParameters() )
+        {
+            return ERROR;
+        }
+
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        List repositories = repositoryFactory.createRepositories( configuration );
+
+        Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
+        // TODO: maybe we can decouple the assembly parts of the project builder from the repository handling to get rid of the temp repo
+        ArtifactRepository localRepository = repositoryFactory.createLocalRepository( configuration );
+        MavenProject project = projectBuilder.buildFromRepository( artifact, repositories, localRepository );
+
+        model = project.getModel();
+
+        getLogger().debug( " processing : " + groupId + ":" + artifactId + ":" + version );
+
+        Dependencies dependencies =
+            collectDependencies( project, artifact, localRepository, repositories );
+
+        dependencyTree = new LinkedList();
+        populateFlatTreeList( dependencies.getResolvedRoot(), dependencyTree );
+
+        return SUCCESS;
+    }
+
+    private void populateFlatTreeList( ReportResolutionListener.Node currentNode, List dependencyList )
+    {
+        ReportResolutionListener.Node childNode;
+
+        for ( Iterator iterator = currentNode.getChildren().iterator(); iterator.hasNext(); )
+        {
+            childNode = (ReportResolutionListener.Node) iterator.next();
+            dependencyList.add( childNode );
+            populateFlatTreeList( childNode, dependencyList );
+        }
+    }
+
+    private Dependencies collectDependencies( MavenProject project, Artifact artifact,
+                                              ArtifactRepository localRepository, List repositories )
+        throws ArtifactResolutionException, ProjectBuildingException, InvalidDependencyVersionException,
+        ConfigurationStoreException
+    {
+        Map managedDependencyMap = Dependencies.getManagedVersionMap( project, artifactFactory );
+
+        ReportResolutionListener listener = new ReportResolutionListener();
+
+        project.setDependencyArtifacts( project.createArtifacts( artifactFactory, null, null ) );
+
+        collector.collect( project.getDependencyArtifacts(), artifact, managedDependencyMap, localRepository,
+                           repositories, artifactMetadataSource, null, Collections.singletonList( listener ) );
+
+        return new Dependencies( project, listener, null );
+    }
+
     private static String createId( String groupId, String artifactId, String version )
     {
         return groupId + ":" + artifactId + ":" + version;
@@ -243,6 +321,11 @@ public class ShowArtifactAction
     public Collection getDependencies()
     {
         return dependencies;
+    }
+
+    public List getDependencyTree()
+    {
+        return dependencyTree;
     }
 
     public String getGroupId()
@@ -322,21 +405,6 @@ public class ShowArtifactAction
         public String getClassifier()
         {
             return classifier;
-        }
-
-        private static class Ver
-        {
-            private int buildNumber;
-
-            private int major;
-
-            private int minor;
-
-            private int incremental;
-
-            private String qualifier;
-
-
         }
 
         public void addVersion( String version )

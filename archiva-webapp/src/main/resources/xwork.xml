@@ -133,6 +133,10 @@
     <action name="showArtifactDependees" class="showArtifactAction" method="dependees">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
+    
+    <action name="showArtifactDependencyTree" class="showArtifactAction" method="dependencyTree">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
 
     <action name="proxy" class="proxyAction">
       <result type="stream">
