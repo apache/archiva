@@ -1,0 +1,95 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>archiva-plexus-runtime</artifactId>
+  <name>Archiva Runtime Generator</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-appserver-host</artifactId>
+      <version>2.0-alpha-3-SNAPSHOT</version>
+    </dependency>
+    <!-- Services -->
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-appserver-service-jetty</artifactId>
+      <version>2.0-alpha-3-SNAPSHOT</version>
+      <type>plexus-service</type>
+    </dependency>
+    <!-- Plexus applications -->
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-plexus-application</artifactId>
+      <version>${project.version}</version>
+      <type>plexus-application</type>
+    </dependency>
+
+    <!-- Additional Core Artifacts -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.8</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging-api</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-appserver-maven-plugin</artifactId>
+        <version>2.0-alpha-3-SNAPSHOT</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <goals>
+              <goal>assemble-runtime</goal>
+              <goal>add-services</goal>
+              <goal>add-apps</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <runtimeConfiguration>src/conf/plexus.xml</runtimeConfiguration>
+          <runtimeConfigurationProperties>src/plexus.properties</runtimeConfigurationProperties>
+          <runtimePath>target/plexus-archiva-runtime</runtimePath>
+          <additionalCoreArtifacts>
+            <additionalCoreArtifact>commons-logging:commons-logging-api</additionalCoreArtifact>
+          </additionalCoreArtifacts>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>src/main/assembly/bin.xml</descriptor>
+          <finalName>archiva</finalName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
