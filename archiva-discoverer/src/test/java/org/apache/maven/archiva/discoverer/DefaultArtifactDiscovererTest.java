@@ -63,7 +63,7 @@ public class DefaultArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            boolean b = path.indexOf( ".svn" ) >= 0;
+            boolean b = path.indexOf( "CVS" ) >= 0;
             if ( b )
             {
                 found = true;
@@ -75,6 +75,7 @@ public class DefaultArtifactDiscovererTest
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
+            assertFalse( "Check not CVS", a.getFile().getPath().indexOf( "CVS" ) >= 0 );
             assertFalse( "Check not .svn", a.getFile().getPath().indexOf( ".svn" ) >= 0 );
         }
     }

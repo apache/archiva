@@ -60,7 +60,7 @@ public class LegacyArtifactDiscovererTest
 
             String path = dPath.getPath();
 
-            if ( path.indexOf( ".svn" ) >= 0 )
+            if ( path.indexOf( "CVS" ) >= 0 )
             {
                 found = true;
                 assertEquals( "Check comment", "Artifact was in the specified list of exclusions", dPath.getComment() );
@@ -71,6 +71,7 @@ public class LegacyArtifactDiscovererTest
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
             Artifact a = (Artifact) i.next();
+            assertFalse( "Check not CVS", a.getFile().getPath().indexOf( "CVS" ) >= 0 );
             assertFalse( "Check not .svn", a.getFile().getPath().indexOf( ".svn" ) >= 0 );
         }
     }
