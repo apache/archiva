@@ -23,25 +23,22 @@
   <!-- Include webwork defaults (from WebWork JAR). -->
   <include file="webwork-default.xml"/>
 
+  <!-- Include plexus-security xwork configurations. -->  
+  <include file="xwork-security.xml" />
+
   <package name="base" extends="webwork-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
-<!-- commenting this out for now because some people are having CNFE for this interceptor, which I can't reproduce atm.
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
--->
       <interceptor-stack name="configuredStack">
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="configuration"/>
-<!--
         <interceptor-ref name="pssSecureActions"/>
--->
       </interceptor-stack>
       <interceptor-stack name="configuredPrepareParamsStack">
         <interceptor-ref name="paramsPrepareParamsStack"/>
         <interceptor-ref name="configuration"/>
-<!--
         <interceptor-ref name="pssSecureActions"/>
--->
       </interceptor-stack>
     </interceptors>
 
@@ -55,19 +52,30 @@
         <param name="namespace">/admin</param>
         <param name="actionName">configure</param>
       </result>
-      <result name="admin-account-needed" type="redirect-action">
-        <param name="namespace">/admin</param>
-        <param name="actionName">registerAdminAccount</param>
-        <param name="method">input</param>
-      </result>
+      
+      <!-- This redirect is triggered by the configuration interceptor -->
       <result name="config-repository-needed" type="redirect-action">
         <param name="namespace">/admin</param>
         <param name="actionName">addRepository</param>
         <param name="method">input</param>
       </result>
-      <result name="error">/WEB-INF/jsp/generalError.jsp</result>
+      
+      <!-- The following security-* result names arrive from the plexus-security package -->
+      <result name="security-login-success" type="redirect-action">browse</result>
+      <result name="security-login-cancel" type="redirect-action">browse</result>
+      <result name="security-logout" type="redirect-action">browse</result>
+      <result name="security-register-success" type="redirect-action">browse</result>
+      <result name="security-register-cancel" type="redirect-action">browse</result>
+      <result name="security-account-success" type="redirect-action">browse</result>
+      <result name="security-account-cancel" type="redirect-action">browse</result>
+      
+      <!-- These results are names that the SecuredActionInterceptor utilizes -->
       <result name="requires-authentication">/WEB-INF/jsp/alert.jsp</result>
       <result name="requires-authorization">/WEB-INF/jsp/alert.jsp</result>
+      
+      <!-- Generic Catchall for those action configurations that forget to 
+           include a result for 'error' -->
+      <result name="error">/WEB-INF/jsp/generalError.jsp</result>
     </global-results>
   </package>
 
@@ -78,14 +86,19 @@
       <interceptor-stack name="configuredStack">
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="configuration"/>
-<!--
         <interceptor-ref name="pssSecureActions"/>
--->
       </interceptor-stack>
     </interceptors>
 
     <!-- Default interceptor stack. -->
     <default-interceptor-ref name="configuredStack"/>
+    
+    <!-- This is the redirection facility for plexus-security, 
+         allowing plexus-security to call out from its own set of actions
+         into the application webapp, using global result names. -->
+    <action name="pssRedirect" class="pss-redirect" method="redirect">
+      <result type="redirect-action">browse</result>
+    </action>    
 
     <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
@@ -147,34 +160,11 @@
       </result>
       <result name="notFound" type="httpheader">404</result>
     </action>
-
-    <!-- plexus security actions -->
-    <action name="login" class="plexusSecurityLogin" method="login">
-      <result name="input">/WEB-INF/jsp/login.jsp</result>
-      <result name="error">/WEB-INF/jsp/login.jsp</result>
-      <result name="success" type="redirect-action">browse</result>
-    </action>
-
-    <action name="logout" class="plexusSecurityLogin" method="logout">
-      <result name="success">/WEB-INF/jsp/logout.jsp</result>
-    </action>
-
-    <action name="register" class="newUser" method="createUser">
-      <result name="input">/WEB-INF/jsp/register.jsp</result>
-      <result name="success">/WEB-INF/jsp/register.jsp</result> 
-      <result name="error">/WEB-INF/jsp/register.jsp</result>
-    </action>
   </package>
 
   <!-- Configuration for the admin package. -->
   <package name="admin" namespace="/admin" extends="base">
-    <action name="registerAdminAccount" class="newUser" method="createAdminUser">
-      <result name="input">/WEB-INF/jsp/admin/registerAdmin.jsp</result>
-      <result name="error">/WEB-INF/jsp/admin/registerAdmin.jsp</result>
-      <result type="redirect-action">index</result>
-      <interceptor-ref name="defaultStack"/>
-    </action>
-
+  
     <action name="index" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
     </action>
@@ -269,35 +259,6 @@
       <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
       <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
     </action>
-
-
-    <action name="user" class="userManagement">
-      <result name="success">/WEB-INF/jsp/admin/user.jsp</result>
-      <result name="input" type="redirect-action">userManagement</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-
-    <!-- plexus security actions -->
-    <!--
-    <action name="userDetails" class="userManagement" method="save">
-      <result name="input">/WEB-INF/jsp/admin/userDetails.jsp</result>
-      <result name="success" type="chain">user</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-    -->
-    <action name="userManagement" class="userManagement" method="findUser">
-      <result name="input">/WEB-INF/jsp/admin/findUser.jsp</result>
-      <result name="success" type="redirect-action">user</result>
-    </action>
-
-    <action name="assignRoleToUser" class="plexusSecurityUserAssignment" method="assignRole">
-      <result name="success" type="redirect-action">user</result>
-    </action>
-
-    <action name="removeRoleFromUser" class="plexusSecurityUserAssignment" method="removeRole">
-      <result name="success" type="redirect-action">user</result>
-    </action>
-
   </package>
 </xwork>
 

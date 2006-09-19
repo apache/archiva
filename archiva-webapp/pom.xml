@@ -120,8 +120,8 @@
             <groupId>plexus</groupId>
             <artifactId>plexus-utils</artifactId>
         </exclusion>
-      </exclusions>      
-    </dependency>    
+      </exclusions>
+    </dependency>
     <!-- Plexus Security Dependencies -->
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
@@ -131,6 +131,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.security</groupId>
+      <artifactId>plexus-security-ui-web-integration</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -214,6 +220,52 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.1.1-20060724.192148-1</version>
+        <!-- This configuration is added to cleanup from war:inplace -->
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}/</directory>
+              <includes>
+                <include>derby.log</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${basedir}/src/main/webapp</directory>
+              <includes>
+                <include>META-INF</include>
+                <include>WEB-INF/classes</include>
+                <include>WEB-INF/lib</include>
+                <include>WEB-INF/database</include>
+                <include>WEB-INF/logs</include>
+                <include>WEB-INF/temp</include>
+                <include>WEB-INF/jsp/pss</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0.1</version>
+        <configuration>
+          <archiveClasses>true</archiveClasses>
+          <dependentWarExcludes>WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <!-- Needed to get the plexus-security war overlay to do its thing before jetty:run -->
+              <goal>inplace</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
         <configuration>
@@ -284,4 +336,22 @@
       <url>http://snapshots.repository.codehaus.org</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus.org</id>
+      <name>Codehaus Snapshot Development Repository</name>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>apache.org</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

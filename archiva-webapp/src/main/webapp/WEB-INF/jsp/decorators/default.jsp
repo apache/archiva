@@ -59,23 +59,7 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <ww:url id="loginUrl" action="login" method="input" namespace="/" includeParams="none"/>
-    <ww:url id="registerUrl" action="register" method="input" namespace="/" includeParams="none"/>
-
-    <ww:if test="${sessionScope.authStatus != true}">
-      <ww:a href="%{loginUrl}">Login</ww:a> - <ww:a href="%{registerUrl}">Register</ww:a>
-
-    </ww:if>
-    <ww:else>
-      <ww:url id="logoutUrl" action="logout" namespace="/" includeParams="none"/>
-      <ww:url id="manageUserUrl" action="user" namespace="/admin">
-        <ww:param name="username">${sessionScope.SecuritySessionUser.username}</ww:param>
-      </ww:url>
-
-      Welcome, <b>${sessionScope.SecuritySessionUser.username}</b> -
-      <ww:a href="%{manageUserUrl}">Settings</ww:a> -
-      <ww:a href="%{logoutUrl}">Logout</ww:a>
-    </ww:else>
+    <c:import url="/WEB-INF/jsp/pss/include/securityLinks.jspf" />
   </div>
 
   <div class="xright">

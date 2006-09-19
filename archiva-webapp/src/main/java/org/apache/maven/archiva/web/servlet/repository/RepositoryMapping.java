@@ -77,6 +77,6 @@ public class RepositoryMapping implements DAVListener
                 message = "Resource modified";
                 break;
         }
-        logger.debug(message + ": " + this.repositoryConfiguration.getId() + " : \"" + resource.getRelativePath() + "\"");
+        logger.info(message + ": " + this.repositoryConfiguration.getId() + " : \"" + resource.getRelativePath() + "\"");
     }
 }

@@ -59,11 +59,11 @@ public class ConfigurationInterceptor
         throws Exception
     {
 
-        if ( rbacManager.getAllUserAssignments().size() == 0 )
-        {
-            getLogger().info( "no accounts setup, create user account, forwarding to registration" );
-            return "admin-account-needed";
-        }
+//        if ( rbacManager.getAllUserAssignments().size() == 0 )
+//        {
+//            getLogger().info( "no accounts setup, create user account, forwarding to registration" );
+//            return "admin-account-needed";
+//        }
 
         Configuration configuration = configurationStore.getConfigurationFromStore();
 

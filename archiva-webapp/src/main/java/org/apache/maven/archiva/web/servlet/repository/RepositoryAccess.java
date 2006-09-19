@@ -27,6 +27,8 @@ import org.apache.maven.archiva.web.servlet.AbstractPlexusServlet;
 import org.codehaus.plexus.security.authentication.AuthenticationException;
 import org.codehaus.plexus.security.authentication.AuthenticationResult;
 import org.codehaus.plexus.security.authorization.AuthorizationException;
+import org.codehaus.plexus.security.policy.AccountLockedException;
+import org.codehaus.plexus.security.policy.MustChangePasswordException;
 import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.system.SecuritySystem;
 import org.codehaus.plexus.security.ui.web.filter.authentication.HttpAuthenticator;
@@ -157,6 +159,16 @@ public class RepositoryAccess
             getLogger().error( "Fatal Http Authentication Error.", e );
             throw new ServletException( "Fatal Http Authentication Error.", e );
         }
+        catch ( AccountLockedException e )
+        {
+            httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
+                                new AuthenticationException("User account is locked") );
+        }
+        catch ( MustChangePasswordException e )
+        {
+            httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
+                                new AuthenticationException("You must change your password before you can attempt this again.") );
+        }
 
         // Authorization Tests.
 
@@ -179,7 +191,8 @@ public class RepositoryAccess
             if ( !isAuthorized )
             {
                 // Issue HTTP Challenge.
-                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), null );
+                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
+                                    new AuthenticationException("Authorization Denied.") );
                 return;
             }
         }
