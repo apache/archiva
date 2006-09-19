@@ -235,6 +235,7 @@
             <fileset>
               <directory>${basedir}/src/main/webapp</directory>
               <includes>
+                <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
                 <include>META-INF</include>
                 <include>WEB-INF/classes</include>
                 <include>WEB-INF/lib</include>
@@ -253,8 +254,9 @@
         <version>2.0.1</version>
         <configuration>
           <archiveClasses>true</archiveClasses>
-          <dependentWarExcludes>WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
+          <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
         </configuration>
+        <!-- TODO: would be good to make the jetty plugin aware of these and remove the below -->
         <executions>
           <execution>
             <phase>compile</phase>
