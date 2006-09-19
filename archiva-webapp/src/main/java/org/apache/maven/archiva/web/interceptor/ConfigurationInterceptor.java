@@ -20,10 +20,14 @@ import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
+import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.web.util.RoleManager;
 import org.apache.maven.archiva.web.ArchivaDefaults;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.security.rbac.RBACManager;
+
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * An interceptor that makes the application configuration available
@@ -65,6 +69,7 @@ public class ConfigurationInterceptor
         throws Exception
     {
         archivaDefaults.ensureDefaultsExist();
+        ensureRepoRolesExist();
 
         // determine if we need an admin account made
 
@@ -86,6 +91,38 @@ public class ConfigurationInterceptor
         else
         {
             return actionInvocation.invoke();
+        }
+    }
+
+    public void ensureRepoRolesExist()
+    {
+        try
+        {
+            if ( configurationStore.getConfigurationFromStore().isValid() )
+            {
+                Map repositories = configurationStore.getConfigurationFromStore().getRepositoriesMap();
+
+                for ( Iterator i = repositories.keySet().iterator(); i.hasNext(); )
+                {
+                    String id = (String) i.next();
+
+                    if ( !rbacManager.roleExists( "Repository Observer - " + id ) )
+                    {
+                        getLogger().info( "recovering Repository Observer - " + id );
+                        roleManager.addRepository( id );
+                    }
+
+                    if ( !rbacManager.roleExists( "Repository Manager - " + id ) )
+                    {
+                        getLogger().info( "recovering Repository Manager - " + id );
+                        roleManager.addRepository( id );
+                    }
+                }
+            }
+        }
+        catch ( ConfigurationStoreException e )
+        {
+            throw new RuntimeException( "error with configurationStore()" );
         }
     }
 
