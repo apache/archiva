@@ -16,7 +16,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
+<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
 
 <html>
 <head>

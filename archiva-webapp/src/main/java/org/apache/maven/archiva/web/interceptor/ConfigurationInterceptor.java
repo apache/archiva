@@ -21,6 +21,7 @@ import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.web.util.RoleManager;
+import org.apache.maven.archiva.web.ArchivaDefaults;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.security.rbac.RBACManager;
 
@@ -50,6 +51,11 @@ public class ConfigurationInterceptor
     private RBACManager rbacManager;
 
     /**
+     * @plexus.requirement
+     */
+    private ArchivaDefaults archivaDefaults;
+
+    /**
      *
      * @param actionInvocation
      * @return
@@ -58,12 +64,9 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
+        archivaDefaults.ensureDefaultsExist();
 
-//        if ( rbacManager.getAllUserAssignments().size() == 0 )
-//        {
-//            getLogger().info( "no accounts setup, create user account, forwarding to registration" );
-//            return "admin-account-needed";
-//        }
+        // determine if we need an admin account made
 
         Configuration configuration = configurationStore.getConfigurationFromStore();
 

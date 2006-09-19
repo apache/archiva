@@ -18,7 +18,7 @@
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="pss" uri="plexusSecuritySystem" %>
+<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
 <html>
 <head>
   <title>Maven Archiva ::
@@ -106,15 +106,15 @@
                 </li>
           --%>
         <pss:ifAnyAuthorized permissions="edit-configuration,edit-all-users">
-          <li class="expanded">
-            <pss:ifAuthorized permission="edit-all-users">
-              <my:currentWWUrl action="userManagement!input" namespace="/admin">User Management</my:currentWWUrl>               
-            </pss:ifAuthorized>
-          </li>
-          <li>
-            <pss:ifAuthorized permission="edit-configuration">
+          <pss:ifAuthorized permission="edit-all-users">
+            <li class="none">
+              <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
+            </li>
+          </pss:ifAuthorized>
+          <pss:ifAuthorized permission="edit-configuration">
+          <li class="none">
               <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
-            </pss:ifAuthorized>
+
 
             <ul>
               <li class="none">
@@ -128,6 +128,7 @@
                 --%>
             </ul>
           </li>
+          </pss:ifAuthorized>
         </pss:ifAnyAuthorized>
       </ul>
     </pss:ifAnyAuthorized>

@@ -55,7 +55,7 @@ public class DefaultArchivaDefaults
      */
     private UserSecurityPolicy securityPolicy;
 
-    private boolean initialized;
+    private boolean initialized = false;
 
     private User guestUser;
 
