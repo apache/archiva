@@ -1,7 +1,5 @@
 package org.apache.maven.archiva.web.util;
 
-import org.codehaus.plexus.security.rbac.RbacStoreException;
-
 /*
  * Copyright 2005 The Apache Software Foundation.
  *
@@ -18,16 +16,19 @@ import org.codehaus.plexus.security.rbac.RbacStoreException;
  * limitations under the License.
  */
 
+import org.codehaus.plexus.security.rbac.RbacStoreException;
+
 /**
  * RoleManager:
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @version $Id:$
- *
  */
 public interface RoleManager
 {
     public static final String ROLE = RoleManager.class.getName();
+    
+    public static final String ADMIN_USERNAME = "admin";
 
     public void addRepository( String repositoryName )
         throws RbacStoreException;

@@ -241,12 +241,13 @@
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
                 <include>META-INF</include>
-                <include>WEB-INF/classes</include>
-                <include>WEB-INF/lib</include>
-                <include>WEB-INF/database</include>
-                <include>WEB-INF/logs</include>
-                <include>WEB-INF/temp</include>
-                <include>WEB-INF/jsp/pss</include>
+                <include>WEB-INF/classes</include>      <!-- Classes and Resources from other wars -->
+                <include>WEB-INF/lib</include>          <!-- Dependencies from other wars -->
+                <include>WEB-INF/database</include>     <!-- Database location configured in application.xml -->
+                <include>WEB-INF/logs</include>         <!-- Log file location specified in application.xml -->
+                <include>pss</include>                  <!-- plexus-security css and javascript -->
+                <include>WEB-INF/jsp/pss</include>      <!-- plexus-security jsps -->
+                <include>WEB-INF/template/pss</include> <!-- plexus-security xwork templates -->
               </includes>
             </fileset>
           </filesets>
@@ -257,6 +258,9 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.0.1</version>
         <configuration>
+          <!-- Some versions of maven-war-plugin (snapshots) have this incorrectly defaulted to true.
+               Specifically setting this to false to avoid accidental jar file creation. -->
+          <archiveClasses>false</archiveClasses>
           <dependentWarExcludes>META-INF/**,WEB-INF/web.xml,WEB-INF/classes/xwork.xml</dependentWarExcludes>
         </configuration>
         <!-- TODO: would be good to make the jetty plugin aware of these and remove the below -->

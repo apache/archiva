@@ -48,6 +48,11 @@
     <global-results>
       <!-- TODO: want an extra message on the configure page when this first happens! -->
       <!-- TODO: can we send them back to the original location afterwards? -->
+      <result name="admin-user-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <param name="actionName">addadmin</param>
+      </result>
+      
       <result name="config-needed" type="redirect-action">
         <param name="namespace">/admin</param>
         <param name="actionName">configure</param>
@@ -63,6 +68,7 @@
       <!-- The following security-* result names arrive from the plexus-security package -->
       <result name="security-login-success" type="redirect-action">browse</result>
       <result name="security-login-cancel" type="redirect-action">browse</result>
+      <result name="security-login-locked" type="redirect-action">browse</result>
       <result name="security-logout" type="redirect-action">browse</result>
       <result name="security-register-success" type="redirect-action">
         <param name="actionName">login</param>
@@ -173,6 +179,16 @@
   
     <action name="index" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
+    </action>
+  
+    <action name="addadmin" class="addAdminAction" method="show">
+      <interceptor-ref name="defaultStack"/>
+      <result name="input">/WEB-INF/jsp/admin/createAdmin.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/createAdmin.jsp</result>
+      <result name="success" type="redirect-action">
+        <param name="namespace">/</param>
+        <param name="actionName">browse</param>
+      </result>    
     </action>
 
     <action name="addRepository" class="configureRepositoryAction" method="add">

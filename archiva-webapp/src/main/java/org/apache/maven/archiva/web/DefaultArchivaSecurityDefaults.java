@@ -160,6 +160,14 @@ public class DefaultArchivaSecurityDefaults
                 admin.setAssignable( true );
                 rbacManager.saveRole( admin );
             }
+            
+            if ( !rbacManager.roleExists( GUEST_ROLE ) )
+            {
+                Role userAdmin = rbacManager.createRole( GUEST_ROLE );
+                // No permissions.
+                userAdmin.setAssignable( true );
+                rbacManager.saveRole( userAdmin );
+            }
         }
         catch ( RbacObjectNotFoundException ne )
         {

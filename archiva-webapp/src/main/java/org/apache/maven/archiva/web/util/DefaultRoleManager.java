@@ -17,6 +17,7 @@ package org.apache.maven.archiva.web.util;
  */
 
 import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.security.rbac.Permission;
@@ -26,6 +27,10 @@ import org.codehaus.plexus.security.rbac.RbacStoreException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.rbac.Role;
 import org.codehaus.plexus.security.rbac.UserAssignment;
+import org.codehaus.plexus.security.user.User;
+import org.codehaus.plexus.security.user.UserManager;
+import org.codehaus.plexus.security.user.UserManagerListener;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * DefaultRoleManager:
@@ -36,8 +41,13 @@ import org.codehaus.plexus.security.rbac.UserAssignment;
  * role-hint="default"
  */
 public class DefaultRoleManager
-    implements RoleManager, Initializable
+    extends AbstractLogEnabled
+    implements RoleManager, UserManagerListener, Initializable
 {
+    /**
+     * @plexus.requirement
+     */
+    private UserManager userManager;
 
     /**
      * @plexus.requirement
@@ -55,13 +65,13 @@ public class DefaultRoleManager
         throws InitializationException
     {
         archivaSecurity.ensureDefaultsExist();
+        userManager.addUserManagerListener( this );
         initialized = true;
     }
 
     public void addUser( String principal )
         throws RbacStoreException
     {
-
         // make the resource
         Resource usernameResource = manager.createResource( principal );
         manager.saveResource( usernameResource );
@@ -155,5 +165,51 @@ public class DefaultRoleManager
     public void setInitialized( boolean initialized )
     {
         this.initialized = initialized;
+    }
+
+    public void userManagerInit( boolean freshDatabase )
+    {
+        // no-op
+    }
+
+    public void userManagerUserAdded( User user )
+    {
+        if ( !StringUtils.equals( ADMIN_USERNAME, user.getUsername() ) )
+        {
+            // We have a non-admin user.
+            String principal = user.getPrincipal().toString();
+            
+            // Add the personal (dynamic) roles.
+            addUser( principal );
+            
+            // Add the guest (static) role.
+            try
+            {
+                Role guestRole = manager.getRole( ArchivaSecurityDefaults.GUEST_ROLE );
+                guestRole = manager.saveRole( guestRole );
+
+                UserAssignment assignment = manager.createUserAssignment( principal );
+                assignment.addRoleName( guestRole.getName() );
+                manager.saveUserAssignment( assignment );
+            }
+            catch ( RbacStoreException e )
+            {
+                getLogger().error( "Unable to add guest role to new user " + user.getUsername() + ".", e );
+            }
+            catch ( RbacObjectNotFoundException e )
+            {
+                getLogger().error( "Unable to add guest role to new user " + user.getUsername() + ".", e );
+            }
+        }
+    }
+
+    public void userManagerUserRemoved( User user )
+    {
+        // TODO: Should remove the personal (dynamic) roles for this user too.
+    }
+
+    public void userManagerUserUpdated( User user )
+    {
+        // no-op
     }
 }

@@ -30,6 +30,8 @@ public interface ArchivaSecurityDefaults
 {
     public static final String ROLE = ArchivaSecurityDefaults.class.getName();
 
+    public static final String GUEST_ROLE = "Guest Role";
+    
     public static final String GUEST_USERNAME = "guest";
     
     public static final String CONFIGURATION_EDIT_OPERATION = "edit-configuration";
