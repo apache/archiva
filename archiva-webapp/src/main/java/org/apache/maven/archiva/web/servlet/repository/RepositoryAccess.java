@@ -22,7 +22,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.web.ArchivaDefaults;
+import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
 import org.apache.maven.archiva.web.servlet.AbstractPlexusServlet;
 import org.codehaus.plexus.security.authentication.AuthenticationException;
 import org.codehaus.plexus.security.authentication.AuthenticationResult;
@@ -47,7 +47,7 @@ import java.util.Map;
 /**
  * RepositoryAccess - access read/write to the repository.
  *
- * @plexus.component role="org.apache.maven.archiva.web.servlet.PlexusServlet" 
+ * @plexus.component role="org.apache.maven.archiva.web.servlet.PlexusServlet"
  *                   role-hint="repositoryAccess"
  * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
@@ -75,7 +75,7 @@ public class RepositoryAccess
     /**
      * @plexus.requirement
      */
-    private ArchivaDefaults archiva;
+    private ArchivaSecurityDefaults archivaSecurity;
 
     /**
      * List of request methods that fall into the category of 'access' or 'read' of a repository.
@@ -143,7 +143,7 @@ public class RepositoryAccess
         AuthenticationResult result;
         try
         {
-            result = httpAuth.getAuthenticationResult( request, response, archiva.getGuestUser().getPrincipal()
+            result = httpAuth.getAuthenticationResult( request, response, archivaSecurity.getGuestUser().getPrincipal()
                 .toString() );
 
             if ( !result.isAuthenticated() )
@@ -177,11 +177,11 @@ public class RepositoryAccess
         SecuritySession securitySession = httpAuth.getSecuritySession();
         try
         {
-            String permission = ArchivaDefaults.REPOSITORY_ACCESS; 
+            String permission = ArchivaSecurityDefaults.REPOSITORY_ACCESS;
 
             if ( isWriteRequest )
             {
-                permission = ArchivaDefaults.REPOSITORY_UPLOAD;
+                permission = ArchivaSecurityDefaults.REPOSITORY_UPLOAD;
             }
 
             permission += " - " + repoconfig.getId();

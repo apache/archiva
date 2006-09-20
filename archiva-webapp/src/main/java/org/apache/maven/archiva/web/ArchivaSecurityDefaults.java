@@ -19,16 +19,16 @@ package org.apache.maven.archiva.web;
 import org.codehaus.plexus.security.user.User;
 
 /**
- * ArchivaDefaults
+ * ArchivaSecurityDefaults
  *
  * NOTE: this is targeted for removal with the forth coming rbac role templating 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArchivaDefaults
+public interface ArchivaSecurityDefaults
 {
-    public static final String ROLE = ArchivaDefaults.class.getName();
+    public static final String ROLE = ArchivaSecurityDefaults.class.getName();
 
     public static final String GUEST_USERNAME = "guest";
     

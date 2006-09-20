@@ -30,15 +30,15 @@ import org.codehaus.plexus.security.user.UserNotFoundException;
 import org.codehaus.plexus.security.policy.UserSecurityPolicy;
 
 /**
- * DefaultArchivaDefaults
+ * DefaultArchivaSecurityDefaults
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.web.ArchivaDefaults"
+ * @plexus.component role="org.apache.maven.archiva.web.ArchivaSecurityDefaults"
  */
-public class DefaultArchivaDefaults
+public class DefaultArchivaSecurityDefaults
     extends AbstractLogEnabled
-    implements ArchivaDefaults, Initializable
+    implements ArchivaSecurityDefaults, Initializable
 {
     /**
      * @plexus.requirement

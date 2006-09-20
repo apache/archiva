@@ -16,7 +16,7 @@ package org.apache.maven.archiva.web.util;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.web.ArchivaDefaults;
+import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.security.rbac.Permission;
@@ -47,14 +47,14 @@ public class DefaultRoleManager
     /**
      * @plexus.requirement
      */
-    private ArchivaDefaults archivaDefaults;
+    private ArchivaSecurityDefaults archivaSecurity;
 
     private boolean initialized;
                            
     public void initialize()
         throws InitializationException
     {
-        archivaDefaults.ensureDefaultsExist();
+        archivaSecurity.ensureDefaultsExist();
         initialized = true;
     }
 
@@ -91,7 +91,7 @@ public class DefaultRoleManager
         throws RbacStoreException
     {
         UserAssignment assignment = manager.createUserAssignment( principal );
-        assignment.addRoleName( ArchivaDefaults.SYSTEM_ADMINISTRATOR );
+        assignment.addRoleName( ArchivaSecurityDefaults.SYSTEM_ADMINISTRATOR );
         manager.saveUserAssignment( assignment );
     }
 
@@ -105,29 +105,29 @@ public class DefaultRoleManager
             repoResource = manager.saveResource( repoResource );
 
             // make the permissions
-            Permission editRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_EDIT + " - " + repositoryName );
-            editRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_EDIT_OPERATION ) );
+            Permission editRepo = manager.createPermission( ArchivaSecurityDefaults.REPOSITORY_EDIT + " - " + repositoryName );
+            editRepo.setOperation( manager.getOperation( ArchivaSecurityDefaults.REPOSITORY_EDIT_OPERATION ) );
             editRepo.setResource( repoResource );
             editRepo = manager.savePermission( editRepo );
 
-            Permission deleteRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_DELETE + " - " + repositoryName );
-            deleteRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_DELETE_OPERATION ) );
+            Permission deleteRepo = manager.createPermission( ArchivaSecurityDefaults.REPOSITORY_DELETE + " - " + repositoryName );
+            deleteRepo.setOperation( manager.getOperation( ArchivaSecurityDefaults.REPOSITORY_DELETE_OPERATION ) );
             deleteRepo.setResource( repoResource );
             deleteRepo = manager.savePermission( deleteRepo );
             
-            Permission accessRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_ACCESS + " - " + repositoryName );
-            accessRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_ACCESS_OPERATION ) );
+            Permission accessRepo = manager.createPermission( ArchivaSecurityDefaults.REPOSITORY_ACCESS + " - " + repositoryName );
+            accessRepo.setOperation( manager.getOperation( ArchivaSecurityDefaults.REPOSITORY_ACCESS_OPERATION ) );
             accessRepo.setResource( repoResource );
             accessRepo = manager.savePermission( accessRepo );
             
-            Permission uploadRepo = manager.createPermission( ArchivaDefaults.REPOSITORY_UPLOAD + " - " + repositoryName );
-            uploadRepo.setOperation( manager.getOperation( ArchivaDefaults.REPOSITORY_UPLOAD_OPERATION ) );
+            Permission uploadRepo = manager.createPermission( ArchivaSecurityDefaults.REPOSITORY_UPLOAD + " - " + repositoryName );
+            uploadRepo.setOperation( manager.getOperation( ArchivaSecurityDefaults.REPOSITORY_UPLOAD_OPERATION ) );
             uploadRepo.setResource( repoResource );
             uploadRepo = manager.savePermission( uploadRepo );
 
             // make the roles
             Role repositoryObserver = manager.createRole( "Repository Observer - " + repositoryName );
-            repositoryObserver.addPermission( manager.getPermission( ArchivaDefaults.REPORTS_ACCESS_PERMISSION ) );
+            repositoryObserver.addPermission( manager.getPermission( ArchivaSecurityDefaults.REPORTS_ACCESS_PERMISSION ) );
             repositoryObserver.setAssignable( true );
             repositoryObserver = manager.saveRole( repositoryObserver );
 
@@ -136,7 +136,7 @@ public class DefaultRoleManager
             repositoryManager.addPermission( deleteRepo );
             repositoryManager.addPermission( accessRepo );
             repositoryManager.addPermission( uploadRepo );
-            repositoryManager.addPermission( manager.getPermission( ArchivaDefaults.REPORTS_GENERATE_PERMISSION ) );
+            repositoryManager.addPermission( manager.getPermission( ArchivaSecurityDefaults.REPORTS_GENERATE_PERMISSION ) );
             repositoryManager.addChildRoleName( repositoryObserver.getName() );
             repositoryManager.setAssignable( true );
             manager.saveRole( repositoryManager );

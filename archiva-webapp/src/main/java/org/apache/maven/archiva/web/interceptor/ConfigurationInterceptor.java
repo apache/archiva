@@ -22,7 +22,6 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.web.util.RoleManager;
-import org.apache.maven.archiva.web.ArchivaDefaults;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.security.rbac.RBACManager;
 
@@ -55,11 +54,6 @@ public class ConfigurationInterceptor
     private RBACManager rbacManager;
 
     /**
-     * @plexus.requirement
-     */
-    private ArchivaDefaults archivaDefaults;
-
-    /**
      *
      * @param actionInvocation
      * @return
@@ -68,7 +62,6 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
-        archivaDefaults.ensureDefaultsExist();
         ensureRepoRolesExist();
 
         // determine if we need an admin account made
