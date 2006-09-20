@@ -26,7 +26,8 @@
 
       <configuration>
         <threshold>WARN</threshold>
-        <default-appender>console</default-appender>
+        <default-appender>console,rolling</default-appender>
+        
         <appenders>
           <appender>
             <id>console</id>
@@ -34,8 +35,58 @@
             <type>org.apache.log4j.ConsoleAppender</type>
             <conversion-pattern>%d [%t] %-5p %-30c{1} - %m%n</conversion-pattern>
           </appender>
+        
+          <appender>
+            <id>rolling</id>
+            <threshold>DEBUG</threshold>
+            <type>org.apache.log4j.DailyRollingFileAppender</type>
+            <conversion-pattern>%-4r [%t] %-5p %c %x - %m%n</conversion-pattern>
+
+            <properties>
+              <property>
+                <name>file</name>
+                <value>${plexus.home}/logs/archiva.log</value>
+              </property>
+              <property>
+                <name>append</name>
+                <value>true</value>
+              </property>
+              <property>
+                <name>datePattern</name>
+                <value>'.'yyyy-MM-dd</value>
+              </property>
+            </properties>
+          </appender>
+          
+          <appender>
+            <id>audit</id>
+            <threshold>DEBUG</threshold>
+            <type>org.apache.log4j.DailyRollingFileAppender</type>
+            <conversion-pattern>%-4r [%t] %-5p %c %x - %m%n</conversion-pattern>
+
+            <properties>
+              <property>
+                <name>file</name>
+                <value>${plexus.home}/logs/audit.log</value>
+              </property>
+              <property>
+                <name>append</name>
+                <value>true</value>
+              </property>
+              <property>
+                <name>datePattern</name>
+                <value>'.'yyyy-MM-dd</value>
+              </property>
+            </properties>
+          </appender>
         </appenders>
+        
         <levels>
+          <level>
+            <hierarchy>org.apache.maven.archiva.web.servlet.repository.RepositoryMapping</hierarchy>
+            <level>DEBUG, audit</level>
+          </level>
+        
           <!-- Help identify bugs during testing -->
           <level>
             <hierarchy>org.apache.maven</hierarchy>
