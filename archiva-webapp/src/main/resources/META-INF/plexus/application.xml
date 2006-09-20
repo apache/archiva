@@ -74,6 +74,12 @@
             <hierarchy>JPOX</hierarchy>
             <level>WARN</level>
           </level>
+<!--
+          <level>
+            <hierarchy>JPOX.RDBMS.SQL</hierarchy>
+            <level>DEBUG</level>
+          </level>
+-->
           <level>
             <hierarchy>freemarker</hierarchy>
             <level>WARN</level>
@@ -123,8 +129,14 @@
 
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
+<!--
       <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
+-->
+      <implementation>org.codehaus.plexus.jdo.DataSourceConfigurableJdoFactory</implementation>
       <configuration>
+
+        <connectionFactoryName>java:comp/env/jdbc/users</connectionFactoryName>
+        <shutdownConnectionFactoryName>java:comp/env/jdbc/shutdown</shutdownConnectionFactoryName>
 
         <!-- HSQLDB Configuration -->
         <!--
@@ -142,10 +154,12 @@
             -->
 
         <!-- Apache Derby Configuration -->
+<!--
         <driverName>org.apache.derby.jdbc.EmbeddedDriver</driverName>
         <url>jdbc:derby:${plexus.home}/database;create=true</url>
         <userName>sa</userName>
         <password></password>
+-->
 
         <!-- Postgresql Configuration -->
         <!--

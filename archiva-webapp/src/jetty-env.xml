@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+
+<New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/users</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">target/database</Set>
+      <Set name="createDatabase">create</Set>
+    </New>
+  </Arg>
+</New>
+<New id="shutdown" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>jdbc/shutdown</Arg>
+  <Arg>
+    <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+      <Set name="DatabaseName">target/database</Set>
+      <Set name="shutdownDatabase">shutdown</Set>
+    </New>
+  </Arg>
+</New>
+
+</Configure>
+
