@@ -339,13 +339,6 @@
       </plugin>
     </plugins>
   </build>
-  <!-- TODO: remove once xwork integration is released -->
-  <repositories>
-    <repository>
-      <id>codehaus.snapshots</id>
-      <url>http://snapshots.repository.codehaus.org</url>
-    </repository>
-  </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>codehaus.org</id>

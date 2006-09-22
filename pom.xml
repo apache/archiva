@@ -376,6 +376,13 @@
       <url>http://snapshots.repository.codehaus.org</url>
     </pluginRepository>
   </pluginRepositories>
+  <!-- TODO: remove once xwork integration, plexus container is released -->
+  <repositories>
+    <repository>
+      <id>codehaus.snapshots</id>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </repository>
+  </repositories>
   <properties>
     <maven.version>2.0.4</maven.version>
   </properties>

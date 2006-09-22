@@ -1,1 +1,44 @@
-<plexus/>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plexus> 
+  <load-on-start>
+    <component>
+      <role>org.codehaus.plexus.naming.Naming</role>
+      <role-hint>dataSources</role-hint>
+    </component>
+  </load-on-start>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.naming.Naming</role>
+      <implementation>org.codehaus.plexus.naming.DefaultNaming</implementation>
+      <role-hint>dataSources</role-hint>
+      <configuration>
+        <resources>
+          <resource>
+            <name>jdbc/users</name>
+            <type>javax.sql.DataSource</type>
+            <properties>
+              <property>
+                <name>driverClassName</name>
+                <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+              </property>
+              <property>
+                <name>url</name>
+                <value>jdbc:derby:${plexus.home}/database;create=true</value>
+              </property>
+              <property>
+                <name>username</name>
+                <value>sa</value>
+              </property>
+              <property>
+                <name>password</name>
+                <value></value>
+              </property>
+            </properties>
+          </resource>
+        </resources>
+      </configuration>
+    </component>
+  </components>
+</plexus>
+

@@ -48,6 +48,18 @@
       <artifactId>commons-logging-api</artifactId>
       <version>1.0.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.1.3.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-naming</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -71,6 +83,14 @@
           <runtimePath>target/plexus-archiva-runtime</runtimePath>
           <additionalCoreArtifacts>
             <additionalCoreArtifact>commons-logging:commons-logging-api</additionalCoreArtifact>
+            <additionalCoreArtifact>org.apache.derby:derby</additionalCoreArtifact>
+            <additionalCoreArtifact>org.codehaus.plexus:plexus-naming</additionalCoreArtifact>
+            <additionalCoreArtifact>commons-pool:commons-pool</additionalCoreArtifact>
+            <additionalCoreArtifact>commons-dbcp:commons-dbcp</additionalCoreArtifact>
+            <additionalCoreArtifact>commons-collections:commons-collections</additionalCoreArtifact>
+            <additionalCoreArtifact>directory-naming:naming-core</additionalCoreArtifact>
+            <additionalCoreArtifact>directory-naming:naming-factory</additionalCoreArtifact>
+            <additionalCoreArtifact>directory-naming:naming-java</additionalCoreArtifact>
           </additionalCoreArtifacts>
         </configuration>
       </plugin>
