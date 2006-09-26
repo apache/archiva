@@ -180,45 +180,11 @@
 
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
-<!--
-      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
--->
       <implementation>org.codehaus.plexus.jdo.DataSourceConfigurableJdoFactory</implementation>
       <configuration>
 
         <connectionFactoryName>java:comp/env/jdbc/users</connectionFactoryName>
         <shutdownConnectionFactoryName>java:comp/env/jdbc/shutdown</shutdownConnectionFactoryName>
-
-        <!-- HSQLDB Configuration -->
-        <!--
-          NOTE: NO NOT USE THIS CONFIGURATION FOR A PRODUCTION SYSTEM.
-          HSQLDB keeps all data in memory at all times.
-
-          NOTE: JPOX 1.1.1 won't create the tables on start
-          http://www.jpox.org/servlet/jira/browse/CORE-2946
-        -->
-        <!--
-        <driverName>org.hsqldb.jdbcDriver</driverName>
-        <url>jdbc:hsqldb:mem:test</url>
-        <userName>sa</userName>
-        <password></password>
-            -->
-
-        <!-- Apache Derby Configuration -->
-<!--
-        <driverName>org.apache.derby.jdbc.EmbeddedDriver</driverName>
-        <url>jdbc:derby:${plexus.home}/database;create=true</url>
-        <userName>sa</userName>
-        <password></password>
--->
-
-        <!-- Postgresql Configuration -->
-        <!--
-        <driverName>org.postgresql.Driver</driverName>
-        <url>jdbc:postgresql://localhost/continuum</url>
-        <userName>username</userName>
-        <password></password>
-        -->
 
         <!-- JPOX and JDO configuration -->
         <persistenceManagerFactoryClass>org.jpox.PersistenceManagerFactoryImpl</persistenceManagerFactoryClass>
