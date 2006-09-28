@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.security.rbac.RbacManagerException;
 
 import java.io.IOException;
 
@@ -64,7 +65,8 @@ public abstract class AbstractConfigureRepositoryAction
     protected Configuration configuration;
 
     public String add()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException
+        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
+        RbacManagerException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -79,7 +81,8 @@ public abstract class AbstractConfigureRepositoryAction
     }
 
     public String edit()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException
+        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
+        RbacManagerException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -94,7 +97,8 @@ public abstract class AbstractConfigureRepositoryAction
     protected abstract AbstractRepositoryConfiguration getRepository( String id );
 
     private String saveConfiguration()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException
+        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
+        RbacManagerException
     {
         addRepository();
 

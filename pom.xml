@@ -82,6 +82,7 @@
           <execution>
             <goals>
               <goal>descriptor</goal>
+              <goal>merge-descriptors</goal>
             </goals>
           </execution>
         </executions>
@@ -130,6 +131,7 @@
     <module>archiva-repository-layer</module>
     <module>archiva-plexus-application</module>
     <module>archiva-plexus-runtime</module>
+    <module>archiva-security</module>
   </modules>
   <dependencies>
     <dependency>
@@ -239,6 +241,11 @@
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-applet</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-security</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>

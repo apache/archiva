@@ -26,6 +26,7 @@ import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
 import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.security.rbac.RBACManager;
+import org.codehaus.plexus.security.rbac.RbacManagerException;
 import org.codehaus.plexus.security.user.User;
 import org.codehaus.plexus.security.user.UserManager;
 import org.codehaus.plexus.security.user.UserNotFoundException;
@@ -126,6 +127,7 @@ public class ConfigurationInterceptor
     }
 
     public void ensureRepoRolesExist()
+        throws RbacManagerException
     {
         try
         {

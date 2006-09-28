@@ -22,12 +22,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.security.rbac.Operation;
 import org.codehaus.plexus.security.rbac.Permission;
 import org.codehaus.plexus.security.rbac.RBACManager;
-import org.codehaus.plexus.security.rbac.RbacObjectNotFoundException;
-import org.codehaus.plexus.security.rbac.Role;
-import org.codehaus.plexus.security.user.User;
-import org.codehaus.plexus.security.user.UserManager;
-import org.codehaus.plexus.security.user.UserNotFoundException;
-import org.codehaus.plexus.security.policy.UserSecurityPolicy;
+import org.codehaus.plexus.security.rbac.RbacManagerException;
 
 /**
  * DefaultArchivaSecurityDefaults
@@ -45,21 +40,10 @@ public class DefaultArchivaSecurityDefaults
      */
     private RBACManager rbacManager;
 
-    /**
-     * @plexus.requirement
-     */
-    private UserManager userManager;
-
-    /**
-     * @plexus.requirement
-     */
-    private UserSecurityPolicy securityPolicy;
-
     private boolean initialized = false;
 
-    private User guestUser;
-
     public void ensureDefaultsExist()
+        throws RbacManagerException
     {
         if ( initialized )
         {
@@ -69,12 +53,12 @@ public class DefaultArchivaSecurityDefaults
         ensureOperationsExist();
         ensurePermissionsExist();
         ensureRolesExist();
-        ensureUsersExist();
 
         initialized = true;
     }
 
     private void ensureOperationExists( String operationName )
+        throws RbacManagerException
     {
         if ( !rbacManager.operationExists( operationName ) )
         {
@@ -84,11 +68,11 @@ public class DefaultArchivaSecurityDefaults
     }
 
     private void ensureOperationsExist()
+        throws RbacManagerException
     {
         ensureOperationExists( REPOSITORY_ADD_OPERATION );
         ensureOperationExists( REPOSITORY_EDIT_OPERATION );
         ensureOperationExists( REPOSITORY_DELETE_OPERATION );
-        ensureOperationExists( CONFIGURATION_EDIT_OPERATION );
         ensureOperationExists( INDEX_RUN_OPERATION );
         ensureOperationExists( INDEX_REGENERATE_OPERATION );
         ensureOperationExists( REPORTS_ACCESS_OPERATION );
@@ -102,25 +86,20 @@ public class DefaultArchivaSecurityDefaults
     }
 
     private void ensurePermissionExists( String permissionName, String operationName, String resourceIdentifier )
+        throws RbacManagerException
     {
         if ( !rbacManager.permissionExists( permissionName ) )
         {
-            Permission editConfiguration = rbacManager.createPermission( permissionName, operationName,
-                                                                         resourceIdentifier );
+            Permission editConfiguration =
+                rbacManager.createPermission( permissionName, operationName, resourceIdentifier );
             rbacManager.savePermission( editConfiguration );
         }
     }
 
     private void ensurePermissionsExist()
+        throws RbacManagerException
     {
         String globalResource = rbacManager.getGlobalResource().getIdentifier();
-
-        ensurePermissionExists( USERS_EDIT_ALL_PERMISSION, USERS_EDIT_ALL_OPERATION, globalResource );
-
-        ensurePermissionExists( CONFIGURATION_EDIT_PERMISSION, CONFIGURATION_EDIT_OPERATION, globalResource );
-
-        ensurePermissionExists( ROLES_GRANT_PERMISSION, ROLES_GRANT_OPERATION, globalResource );
-        ensurePermissionExists( ROLES_REMOVE_PERMISSION, ROLES_REMOVE_OPERATION, globalResource );
 
         ensurePermissionExists( REPORTS_ACCESS_PERMISSION, REPORTS_ACCESS_OPERATION, globalResource );
         ensurePermissionExists( REPORTS_GENERATE_PERMISSION, REPORTS_GENERATE_OPERATION, globalResource );
@@ -134,78 +113,35 @@ public class DefaultArchivaSecurityDefaults
     }
 
     private void ensureRolesExist()
+        throws RbacManagerException
     {
-        try
-        {
-            if ( !rbacManager.roleExists( USER_ADMINISTRATOR ) )
-            {
-                Role userAdmin = rbacManager.createRole( USER_ADMINISTRATOR );
-                userAdmin.addPermission( rbacManager.getPermission( USERS_EDIT_ALL_PERMISSION ) );
-                userAdmin.addPermission( rbacManager.getPermission( ROLES_REMOVE_PERMISSION ) );
-                userAdmin.addPermission( rbacManager.getPermission( ROLES_GRANT_PERMISSION ) );
-                userAdmin.setAssignable( true );
-                rbacManager.saveRole( userAdmin );
-            }
-
-            if ( !rbacManager.roleExists( SYSTEM_ADMINISTRATOR ) )
-            {
-                Role admin = rbacManager.createRole( SYSTEM_ADMINISTRATOR );
-                admin.addChildRoleName( rbacManager.getRole( USER_ADMINISTRATOR ).getName() );
-                admin.addPermission( rbacManager.getPermission( CONFIGURATION_EDIT_PERMISSION ) );
-                admin.addPermission( rbacManager.getPermission( INDEX_RUN_PERMISSION ) );
-                admin.addPermission( rbacManager.getPermission( REPOSITORY_ADD_PERMISSION ) );
-                admin.addPermission( rbacManager.getPermission( REPORTS_ACCESS_PERMISSION ) );
-                admin.addPermission( rbacManager.getPermission( REPORTS_GENERATE_PERMISSION ) );
-                admin.addPermission( rbacManager.getPermission( INDEX_REGENERATE_PERMISSION ) );
-                admin.setAssignable( true );
-                rbacManager.saveRole( admin );
-            }
-            
-            if ( !rbacManager.roleExists( GUEST_ROLE ) )
-            {
-                Role userAdmin = rbacManager.createRole( GUEST_ROLE );
-                // No permissions.
-                userAdmin.setAssignable( true );
-                rbacManager.saveRole( userAdmin );
-            }
-        }
-        catch ( RbacObjectNotFoundException ne )
-        {
-            getLogger().fatalError( "Unable to initialize Roles!", ne );
-            throw new RuntimeException( "All Mandatory Defaults do not Exist!" );
-        }
-    }
-
-    public void ensureUsersExist()
-    {
-        if( !userManager.userExists( GUEST_USERNAME ))
-        {
-            securityPolicy.setEnabled( false );
-            this.guestUser = userManager.createUser( GUEST_USERNAME, "Guest User", "" );
-            this.guestUser = userManager.addUser( this.guestUser );
-            securityPolicy.setEnabled( true );
-        }
-        else
-        {
-            try
-            {
-                this.guestUser = userManager.findUser( GUEST_USERNAME );
-            }
-            catch ( UserNotFoundException e )
-            {
-                throw new RuntimeException( "Unable to find user '" + GUEST_USERNAME + "'", e );
-            }
-        }
-    }
-
-    public User getGuestUser()
-    {
-        return this.guestUser;
+        /* TODO!
+                    if ( !rbacManager.roleExists( SYSTEM_ADMINISTRATOR ) )
+                    {
+                        Role admin = rbacManager.createRole( SYSTEM_ADMINISTRATOR );
+                        admin.addChildRoleName( rbacManager.getRole( USER_ADMINISTRATOR ).getName() );
+                        admin.addPermission( rbacManager.getPermission( CONFIGURATION_EDIT_PERMISSION ) );
+                        admin.addPermission( rbacManager.getPermission( INDEX_RUN_PERMISSION ) );
+                        admin.addPermission( rbacManager.getPermission( REPOSITORY_ADD_PERMISSION ) );
+                        admin.addPermission( rbacManager.getPermission( REPORTS_ACCESS_PERMISSION ) );
+                        admin.addPermission( rbacManager.getPermission( REPORTS_GENERATE_PERMISSION ) );
+                        admin.addPermission( rbacManager.getPermission( INDEX_REGENERATE_PERMISSION ) );
+                        admin.setAssignable( true );
+                        rbacManager.saveRole( admin );
+                    }
+        */
     }
 
     public void initialize()
         throws InitializationException
     {
-        ensureDefaultsExist();
+        try
+        {
+            ensureDefaultsExist();
+        }
+        catch ( RbacManagerException e )
+        {
+            throw new InitializationException( e.getMessage(), e );
+        }
     }
 }

@@ -17,6 +17,7 @@ package org.apache.maven.archiva.web;
  */
 
 import org.codehaus.plexus.security.user.User;
+import org.codehaus.plexus.security.rbac.RbacManagerException;
 
 /**
  * ArchivaSecurityDefaults
@@ -30,14 +31,8 @@ public interface ArchivaSecurityDefaults
 {
     public static final String ROLE = ArchivaSecurityDefaults.class.getName();
 
-    public static final String GUEST_ROLE = "Guest Role";
-    
     public static final String GUEST_USERNAME = "guest";
-    
-    public static final String CONFIGURATION_EDIT_OPERATION = "edit-configuration";
-    
-    public static final String CONFIGURATION_EDIT_PERMISSION = "Edit Configuration";
-    
+
     public static final String INDEX_REGENERATE_OPERATION = "regenerate-index";
 
     public static final String INDEX_REGENERATE_PERMISSION = "Regenerate Index";
@@ -96,6 +91,7 @@ public interface ArchivaSecurityDefaults
 
     public static final String USERS_EDIT_ALL_PERMISSION = "Edit All Users";
     
-    public void ensureDefaultsExist();
-    public User getGuestUser();
+    public void ensureDefaultsExist()
+        throws RbacManagerException;
+
 }

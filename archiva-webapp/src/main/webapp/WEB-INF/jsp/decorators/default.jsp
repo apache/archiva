@@ -59,7 +59,7 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <c:import url="/WEB-INF/jsp/pss/include/securityLinks.jspf" />
+    <c:import url="/WEB-INF/jsp/pss/include/securityLinks.jsp"/>
   </div>
 
   <div class="xright">
@@ -92,7 +92,7 @@
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
     </ul>
-    <pss:ifAnyAuthorized permissions="edit-all-users,access-reports,edit-configuration">
+    <pss:ifAnyAuthorized permissions="archiva-manage-users,access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
         <pss:ifAuthorized permission="access-reports">
@@ -105,15 +105,14 @@
                   <a href="#">Synchronisation</a>
                 </li>
           --%>
-        <pss:ifAnyAuthorized permissions="edit-configuration,edit-all-users">
-          <pss:ifAuthorized permission="edit-all-users">
-            <li class="none">
-              <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
-            </li>
-          </pss:ifAuthorized>
-          <pss:ifAuthorized permission="edit-configuration">
+        <pss:ifAuthorized permission="archiva-manage-users">
           <li class="none">
-              <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
+            <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
+          </li>
+        </pss:ifAuthorized>
+        <pss:ifAuthorized permission="archiva-manage-configuration">
+          <li class="none">
+            <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
 
 
             <ul>
@@ -128,8 +127,7 @@
                 --%>
             </ul>
           </li>
-          </pss:ifAuthorized>
-        </pss:ifAnyAuthorized>
+        </pss:ifAuthorized>
       </ul>
     </pss:ifAnyAuthorized>
     <br/>

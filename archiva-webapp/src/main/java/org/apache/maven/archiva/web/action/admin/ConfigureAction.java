@@ -26,8 +26,13 @@ import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
+import org.codehaus.plexus.security.rbac.Resource;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +44,7 @@ import java.io.IOException;
  */
 public class ConfigureAction
     extends PlexusActionSupport
-    implements ModelDriven, Preparable, Validateable
+    implements ModelDriven, Preparable, Validateable, SecureAction
 {
     /**
      * @plexus.requirement
@@ -72,10 +77,10 @@ public class ConfigureAction
         //validate cron expression
         cronValidator = new CronExpressionValidator();
 
-        if( !cronValidator.validate( getCronExpression() ) )
+        if ( !cronValidator.validate( getCronExpression() ) )
         {
             addActionError( "Invalid Cron Expression" );
-        }              
+        }
     }
 
     public String execute()
@@ -114,15 +119,29 @@ public class ConfigureAction
 
         while ( i < cronEx.length )
         {
-            switch( i )
+            switch ( i )
             {
-                case 0 : second = cronEx[i]; break;
-                case 1 : minute = cronEx[i]; break;
-                case 2 : hour = cronEx[i]; break;
-                case 3 : dayOfMonth = cronEx[i]; break;
-                case 4 : month = cronEx[i]; break;
-                case 5 : dayOfWeek = cronEx[i]; break;
-                case 6 : year = cronEx[i]; break;
+                case 0:
+                    second = cronEx[i];
+                    break;
+                case 1:
+                    minute = cronEx[i];
+                    break;
+                case 2:
+                    hour = cronEx[i];
+                    break;
+                case 3:
+                    dayOfMonth = cronEx[i];
+                    break;
+                case 4:
+                    month = cronEx[i];
+                    break;
+                case 5:
+                    dayOfWeek = cronEx[i];
+                    break;
+                case 6:
+                    year = cronEx[i];
+                    break;
             }
             i++;
         }
@@ -213,8 +232,18 @@ public class ConfigureAction
 
     private String getCronExpression()
     {
-        return ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month +
-                    " " + dayOfWeek + " " + year ).trim();
+        return ( second + " " + minute + " " + hour + " " + dayOfMonth + " " + month + " " + dayOfWeek + " " +
+            year ).trim();
     }
 
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
+
+        return bundle;
+    }
 }

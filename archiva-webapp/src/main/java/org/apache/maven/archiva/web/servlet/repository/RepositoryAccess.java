@@ -143,8 +143,7 @@ public class RepositoryAccess
         AuthenticationResult result;
         try
         {
-            result = httpAuth.getAuthenticationResult( request, response, archivaSecurity.getGuestUser().getPrincipal()
-                .toString() );
+            result = httpAuth.getAuthenticationResult( request, response );
 
             if ( !result.isAuthenticated() )
             {

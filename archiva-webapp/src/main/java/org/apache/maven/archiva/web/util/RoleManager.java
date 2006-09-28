@@ -16,7 +16,7 @@ package org.apache.maven.archiva.web.util;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.security.rbac.RbacStoreException;
+import org.codehaus.plexus.security.rbac.RbacManagerException;
 
 /**
  * RoleManager:
@@ -27,17 +27,8 @@ import org.codehaus.plexus.security.rbac.RbacStoreException;
 public interface RoleManager
 {
     public static final String ROLE = RoleManager.class.getName();
-    
-    public static final String ADMIN_USERNAME = "admin";
 
     public void addRepository( String repositoryName )
-        throws RbacStoreException;
+        throws RbacManagerException;
 
-    public void addUser( String principal )
-        throws RbacStoreException;
-
-    public void addAdminUser( String principal )
-        throws RbacStoreException;
-
-    public boolean isInitialized();
 }
