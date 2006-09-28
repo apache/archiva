@@ -27,7 +27,6 @@
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
-      <interceptor name="continuumConfigurationCheck" class="forceContinuumConfigurationInterceptor"/>
       <interceptor name="pssForceAdminUser" class="pssForceAdminUserInterceptor"/>
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
