@@ -22,7 +22,12 @@ import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.security.rbac.Resource;
 
 import java.io.IOException;
 
@@ -33,6 +38,7 @@ import java.io.IOException;
  */
 public abstract class AbstractDeleteRepositoryAction
     extends PlexusActionSupport
+    implements SecureAction
 {
     /**
      * @plexus.requirement
@@ -111,5 +117,25 @@ public abstract class AbstractDeleteRepositoryAction
     public void setOperation( String operation )
     {
         this.operation = operation;
+    }
+    
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+
+        if ( getRepoId() != null )
+        {
+            // TODO: not right. We only care about this permission on managed repositories. Otherwise, it's configuration
+            bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, getRepoId() );
+        }
+        else
+        {
+            bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
+        }
+
+        return bundle;
     }
 }

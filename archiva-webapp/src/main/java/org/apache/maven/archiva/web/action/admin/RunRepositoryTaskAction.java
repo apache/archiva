@@ -18,7 +18,12 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.maven.archiva.scheduler.RepositoryTaskScheduler;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.rbac.Resource;
 
 /**
  * Configures the application.
@@ -27,6 +32,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public class RunRepositoryTaskAction
     extends PlexusActionSupport
+    implements SecureAction
 {
     /**
      * @plexus.requirement
@@ -39,5 +45,16 @@ public class RunRepositoryTaskAction
         taskScheduler.runIndexer();
 
         return SUCCESS;
+    }
+
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_RUN_INDEXER, Resource.GLOBAL );
+
+        return bundle;
     }
 }

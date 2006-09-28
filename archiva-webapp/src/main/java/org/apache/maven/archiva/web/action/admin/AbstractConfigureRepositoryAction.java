@@ -27,6 +27,7 @@ import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 import org.codehaus.plexus.security.rbac.RbacManagerException;
+import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
@@ -171,11 +172,17 @@ public abstract class AbstractConfigureRepositoryAction
     {
         SecureActionBundle bundle = new SecureActionBundle();
 
+        bundle.setRequiresAuthentication( true );
+
         if ( getRepoId() != null )
         {
-            bundle.setRequiresAuthentication( true );
-            // TODO: this is not right. It needs to change based on method
+            // TODO: this is not right. It needs to change based on method. But is this really the right way to restrict this area?
+            // TODO: not right. We only care about this permission on managed repositories. Otherwise, it's configuration
             bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY, getRepoId() );
+        }
+        else
+        {
+            bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
         }
 
         return bundle;
