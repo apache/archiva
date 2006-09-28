@@ -52,7 +52,7 @@
     </td>
     <%-- TODO: a "delete index and run now" operation should be here too (really clean, remove deletions that didn't get picked up) --%>
     <td>
-      <pss:ifAuthorized permission="run-indexer">
+      <pss:ifAuthorized permission="archiva-run-indexer">
         <a href="<ww:url action="runIndexer" />">Run Now</a>
       </pss:ifAuthorized>
     </td>
@@ -82,7 +82,7 @@
 <div>
   <div style="float: right">
     <%-- TODO replace with icons --%>
-    <pss:ifAuthorized permission="add-repository">
+    <pss:ifAuthorized permission="archiva-add-repository">
       <ww:url id="addRepositoryUrl" action="addRepository" method="input"/>
       <ww:a href="%{addRepositoryUrl}">Add Repository</ww:a>
     </pss:ifAuthorized>
@@ -104,7 +104,8 @@
         <ww:param name="repoId" value="%{'${repository.id}'}" />
       </ww:url>
       <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized><pss:ifAuthorized permission="delete-repository" resource="${repository.id}"> <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
+      <pss:ifAuthorized permission="archiva-edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized>
+      <pss:ifAuthorized permission="archiva-delete-repository" resource="${repository.id}"><ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
     </div>
     <h3>${repository.name}</h3>
     <table class="infoTable">

@@ -24,9 +24,14 @@ import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.web.util.RoleManager;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 import org.codehaus.plexus.security.rbac.RbacManagerException;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.rbac.profile.RoleProfileException;
+import org.codehaus.plexus.rbac.profile.RoleProfileManager;
 
 import java.io.IOException;
 
@@ -37,7 +42,7 @@ import java.io.IOException;
  */
 public abstract class AbstractConfigureRepositoryAction
     extends PlexusActionSupport
-    implements ModelDriven, Preparable
+    implements ModelDriven, Preparable, SecureAction
 {
     /**
      * @plexus.requirement
@@ -45,9 +50,9 @@ public abstract class AbstractConfigureRepositoryAction
     private ConfigurationStore configurationStore;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="archiva"
      */
-    protected RoleManager roleManager;
+    protected RoleProfileManager roleProfileManager;
 
     /**
      * The repository.
@@ -66,7 +71,7 @@ public abstract class AbstractConfigureRepositoryAction
 
     public String add()
         throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException
+        RbacManagerException, RoleProfileException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -82,7 +87,7 @@ public abstract class AbstractConfigureRepositoryAction
 
     public String edit()
         throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException
+        RbacManagerException, RoleProfileException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -98,11 +103,9 @@ public abstract class AbstractConfigureRepositoryAction
 
     private String saveConfiguration()
         throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException
+        RbacManagerException, RoleProfileException
     {
         addRepository();
-
-        roleManager.addRepository( repository.getId() );
 
         configurationStore.storeConfiguration( configuration );
 
@@ -114,7 +117,7 @@ public abstract class AbstractConfigureRepositoryAction
     }
 
     protected abstract void addRepository()
-        throws IOException;
+        throws IOException, RoleProfileException;
 
     public String input()
     {
@@ -161,5 +164,20 @@ public abstract class AbstractConfigureRepositoryAction
     public Configuration getConfiguration()
     {
         return configuration;
+    }
+
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        if ( getRepoId() != null )
+        {
+            bundle.setRequiresAuthentication( true );
+            // TODO: this is not right. It needs to change based on method
+            bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY, getRepoId() );
+        }
+
+        return bundle;
     }
 }

@@ -63,5 +63,25 @@
         </requirement>
       </requirements>
     </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
+      <role-hint>archiva-repository-manager</role-hint>
+      <implementation>org.apache.maven.archiva.security.RepositoryManagerDynamicRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
+      <role-hint>archiva-repository-observer</role-hint>
+      <implementation>org.apache.maven.archiva.security.RepositoryObserverDynamicRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+      </requirements>
+    </component>
   </components>
 </component-set>

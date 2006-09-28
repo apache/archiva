@@ -18,14 +18,42 @@ package org.apache.maven.archiva.security;
 
 public class ArchivaRoleConstants
 {
+    public static final String DELIMITER = " - ";
+
     // globalish roles
     public static final String SYSTEM_ADMINISTRATOR_ROLE = "System Administrator";
+
     public static final String USER_ADMINISTRATOR_ROLE = "User Administrator";
+
     public static final String REGISTERED_USER_ROLE = "Registered User";
+
     public static final String GUEST_ROLE = "Guest";
+
+    // dynamic role prefixes
+    public static final String REPOSITORY_MANAGER_ROLE_PREFIX = "Repository Manager";
+
+    public static final String REPOSITORY_OBSERVER_ROLE_PREFIX = "Repository Observer";
 
     // operations
     public static final String OPERATION_MANAGE_USERS = "archiva-manage-users";
+
     public static final String OPERATION_MANAGE_CONFIGURATION = "archiva-manage-configuration";
+
     public static final String OPERATION_ACTIVE_GUEST = "archiva-guest";
+
+    public static final String OPERATION_RUN_INDEXER = "archiva-run-indexer";
+
+    public static final String OPERATION_REGENERATE_INDEX = "archiva-regenerate-index";
+
+    public static final String OPERATION_ACCESS_REPORT = "archiva-access-reports";
+
+    public static final String OPERATION_ADD_REPOSITORY = "archiva-add-repository";
+
+    public static final String OPERATION_REPOSITORY_ACCESS = "archiva-read-repository";
+
+    public static final String OPERATION_DELETE_REPOSITORY = "archiva-delete-repository";
+
+    public static final String OPERATION_EDIT_REPOSITORY = "archiva-edit-repository";
+
+    public static final String OPERATION_REPOSITORY_UPLOAD = "archiva-upload-repository";
 }

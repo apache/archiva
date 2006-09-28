@@ -92,10 +92,10 @@
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
     </ul>
-    <pss:ifAnyAuthorized permissions="archiva-manage-users,access-reports,archiva-manage-configuration">
+    <pss:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
-        <pss:ifAuthorized permission="access-reports">
+        <pss:ifAuthorized permission="archiva-access-reports">
           <li class="none">
             <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
           </li>

@@ -34,7 +34,7 @@
 
 <div id="contentArea">
 
-<pss:ifAnyAuthorized permissions="generate-reports">
+<pss:ifAnyAuthorized permissions="archiva-generate-reports">
   <ww:form action="reports" namespace="/admin">
     <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
     <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
@@ -55,7 +55,7 @@
     --%>
   <c:choose>
     <c:when test="${!database.inProgress}">
-      <pss:ifAuthorized permission="generate-reports">
+      <pss:ifAuthorized permission="archiva-generate-reports">
         <ww:url id="regenerateReportUrl" action="runReport" namespace="/admin">
           <ww:param name="repositoryId">${database.repository.id}</ww:param>
           <ww:param name="reportGroup" value="reportGroup"/>

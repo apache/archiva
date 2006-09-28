@@ -18,21 +18,9 @@ package org.apache.maven.archiva.web.interceptor;
 
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
-
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
-import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
-import org.apache.maven.archiva.web.util.RoleManager;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.security.rbac.RBACManager;
-import org.codehaus.plexus.security.rbac.RbacManagerException;
-import org.codehaus.plexus.security.user.User;
-import org.codehaus.plexus.security.user.UserManager;
-import org.codehaus.plexus.security.user.UserNotFoundException;
-
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * An interceptor that makes the application configuration available
@@ -51,28 +39,6 @@ public class ConfigurationInterceptor
     private ConfigurationStore configurationStore;
 
     /**
-     * @plexus.requirement
-     */
-    private RoleManager roleManager;
-
-    /**
-     * @plexus.requirement
-     */
-    private RBACManager rbacManager;
-    
-    /**
-     * @plexus.requirement
-     */
-    private UserManager userManager;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaSecurityDefaults archivaDefaults;
-    
-    private boolean adminInitialized = false;
-
-    /**
      *
      * @param actionInvocation
      * @return
@@ -81,30 +47,6 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
-        archivaDefaults.ensureDefaultsExist();
-        ensureRepoRolesExist();
-        
-        if ( !adminInitialized )
-        {
-            adminInitialized = true;
-
-            try
-            {
-                User user = userManager.findUser( "admin" );
-                if ( user == null )
-                {
-                    getLogger().info( "No admin user configured - forwarding to admin user creation page." );
-                    return "admin-user-needed";
-                }
-                getLogger().info( "Admin user found. No need to configure admin user." );
-            }
-            catch ( UserNotFoundException e )
-            {
-                getLogger().info( "No admin user found - forwarding to admin user creation page." );
-                return "admin-user-needed";
-            }
-        }
-
         Configuration configuration = configurationStore.getConfigurationFromStore();
 
         if ( !configuration.isValid() )
@@ -123,39 +65,6 @@ public class ConfigurationInterceptor
         else
         {
             return actionInvocation.invoke();
-        }
-    }
-
-    public void ensureRepoRolesExist()
-        throws RbacManagerException
-    {
-        try
-        {
-            if ( configurationStore.getConfigurationFromStore().isValid() )
-            {
-                Map repositories = configurationStore.getConfigurationFromStore().getRepositoriesMap();
-
-                for ( Iterator i = repositories.keySet().iterator(); i.hasNext(); )
-                {
-                    String id = (String) i.next();
-
-                    if ( !rbacManager.roleExists( "Repository Observer - " + id ) )
-                    {
-                        getLogger().info( "recovering Repository Observer - " + id );
-                        roleManager.addRepository( id );
-                    }
-
-                    if ( !rbacManager.roleExists( "Repository Manager - " + id ) )
-                    {
-                        getLogger().info( "recovering Repository Manager - " + id );
-                        roleManager.addRepository( id );
-                    }
-                }
-            }
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new RuntimeException( "error with configurationStore()" );
         }
     }
 

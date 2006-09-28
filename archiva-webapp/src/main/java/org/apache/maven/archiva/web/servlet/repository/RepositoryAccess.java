@@ -22,16 +22,16 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.web.ArchivaSecurityDefaults;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.servlet.AbstractPlexusServlet;
 import org.codehaus.plexus.security.authentication.AuthenticationException;
 import org.codehaus.plexus.security.authentication.AuthenticationResult;
 import org.codehaus.plexus.security.authorization.AuthorizationException;
+import org.codehaus.plexus.security.policy.AccountLockedException;
+import org.codehaus.plexus.security.policy.MustChangePasswordException;
 import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.system.SecuritySystem;
 import org.codehaus.plexus.security.ui.web.filter.authentication.HttpAuthenticator;
-import org.codehaus.plexus.security.policy.AccountLockedException;
-import org.codehaus.plexus.security.policy.MustChangePasswordException;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -47,11 +47,10 @@ import java.util.Map;
 /**
  * RepositoryAccess - access read/write to the repository.
  *
- * @plexus.component role="org.apache.maven.archiva.web.servlet.PlexusServlet"
- *                   role-hint="repositoryAccess"
- * 
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.web.servlet.PlexusServlet"
+ * role-hint="repositoryAccess"
  * @todo CACHE REPOSITORY LIST
  */
 public class RepositoryAccess
@@ -71,11 +70,6 @@ public class RepositoryAccess
      * @plexus.requirement role-hint="basic"
      */
     private HttpAuthenticator httpAuth;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaSecurityDefaults archivaSecurity;
 
     /**
      * List of request methods that fall into the category of 'access' or 'read' of a repository.
@@ -137,7 +131,7 @@ public class RepositoryAccess
             routeToErrorPage( response, "Invalid Repository ID." );
             return;
         }
-        
+
         // Authentication Tests.
 
         AuthenticationResult result;
@@ -148,8 +142,8 @@ public class RepositoryAccess
             if ( !result.isAuthenticated() )
             {
                 // Must Authenticate.
-                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
-                                    new AuthenticationException("User Credentials Invalid") );
+                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
+                                    new AuthenticationException( "User Credentials Invalid" ) );
                 return;
             }
         }
@@ -161,12 +155,12 @@ public class RepositoryAccess
         catch ( AccountLockedException e )
         {
             httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
-                                new AuthenticationException("User account is locked") );
+                                new AuthenticationException( "User account is locked" ) );
         }
         catch ( MustChangePasswordException e )
         {
-            httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
-                                new AuthenticationException("You must change your password before you can attempt this again.") );
+            httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), new AuthenticationException(
+                "You must change your password before you can attempt this again." ) );
         }
 
         // Authorization Tests.
@@ -176,11 +170,11 @@ public class RepositoryAccess
         SecuritySession securitySession = httpAuth.getSecuritySession();
         try
         {
-            String permission = ArchivaSecurityDefaults.REPOSITORY_ACCESS;
+            String permission = ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS;
 
             if ( isWriteRequest )
             {
-                permission = ArchivaSecurityDefaults.REPOSITORY_UPLOAD;
+                permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
 
             permission += " - " + repoconfig.getId();
@@ -190,8 +184,8 @@ public class RepositoryAccess
             if ( !isAuthorized )
             {
                 // Issue HTTP Challenge.
-                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(), 
-                                    new AuthenticationException("Authorization Denied.") );
+                httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
+                                    new AuthenticationException( "Authorization Denied." ) );
                 return;
             }
         }
@@ -204,8 +198,8 @@ public class RepositoryAccess
 
         RepositoryMapping repo = getRepositoryMapping( repoconfig );
 
-        response.setHeader( "Server", getServletContext().getServerInfo() + " Archiva : "
-            + DAVUtilities.SERVLET_SIGNATURE );
+        response.setHeader( "Server",
+                            getServletContext().getServerInfo() + " Archiva : " + DAVUtilities.SERVLET_SIGNATURE );
 
         DAVTransaction transaction = new DAVTransaction( request, response );
         try

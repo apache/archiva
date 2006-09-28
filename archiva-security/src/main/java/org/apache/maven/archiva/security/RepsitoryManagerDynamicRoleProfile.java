@@ -16,40 +16,46 @@ package org.apache.maven.archiva.security;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.rbac.profile.AbstractRoleProfile;
+import org.codehaus.plexus.rbac.profile.AbstractDynamicRoleProfile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * @todo why does this need to be created in the client app?
- * @todo composition instead of inheritence?
- * @plexus.component role="org.codehaus.plexus.rbac.profile.RoleProfile" role-hint="archiva-system-administrator"
+ * @plexus.component role="org.codehaus.plexus.rbac.profile.DynamicRoleProfile"
+ * role-hint="archiva-repository-manager"
  */
-public class ArchivaSystemAdministratorRoleProfile
-    extends AbstractRoleProfile
+public class RepsitoryManagerDynamicRoleProfile
+    extends AbstractDynamicRoleProfile
 {
-    public String getRoleName()
+    public String getRoleName( String string )
     {
-        return ArchivaRoleConstants.SYSTEM_ADMINISTRATOR_ROLE;
+        return ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string;
     }
 
     public List getOperations()
     {
         List operations = new ArrayList();
-        operations.add( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION );
-        operations.add( ArchivaRoleConstants.OPERATION_MANAGE_USERS );
-        operations.add( ArchivaRoleConstants.OPERATION_RUN_INDEXER );
-        operations.add( ArchivaRoleConstants.OPERATION_REGENERATE_INDEX );
-        operations.add( ArchivaRoleConstants.OPERATION_ACCESS_REPORT ); // TODO: does this need to be templated?
-        operations.add( ArchivaRoleConstants.OPERATION_ADD_REPOSITORY );
+
+        // I'm not sure these are appropriate roles.
         operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
+
+        operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+        operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         return operations;
+    }
+
+    public List getDynamicChildRoles( String string )
+    {
+        return Collections.singletonList(
+            ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string );
     }
 
     public boolean isAssignable()
     {
-        return false;
+        return true;
     }
 }
+

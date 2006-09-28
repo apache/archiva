@@ -16,7 +16,6 @@ package org.apache.maven.archiva.web.action;
  * limitations under the License.
  */
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
@@ -29,8 +28,13 @@ import org.apache.maven.archiva.reporting.ReportExecutor;
 import org.apache.maven.archiva.reporting.ReportGroup;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.archiva.reporting.ReportingStoreException;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.codehaus.plexus.security.rbac.Resource;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
@@ -42,10 +46,11 @@ import java.util.Map;
  * Repository reporting.
  *
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="reportsAction"
+ * @todo split report access and report generation
  */
 public class ReportsAction
     extends PlexusActionSupport
-    implements Preparable
+    implements Preparable, SecureAction
 {
     /**
      * @plexus.requirement
@@ -222,5 +227,16 @@ public class ReportsAction
     public void setFilter( String filter )
     {
         this.filter = filter;
+    }
+
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
+    {
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
+
+        return bundle;
     }
 }
