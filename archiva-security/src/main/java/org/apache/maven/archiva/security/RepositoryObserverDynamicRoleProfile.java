@@ -18,39 +18,26 @@ package org.apache.maven.archiva.security;
 
 import org.codehaus.plexus.rbac.profile.AbstractDynamicRoleProfile;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @plexus.component role="org.codehaus.plexus.rbac.profile.DynamicRoleProfile"
- * role-hint="archiva-repository-manager"
+ * role-hint="archiva-repository-observer"
  */
-public class RepsitoryManagerDynamicRoleProfile
+public class RepositoryObserverDynamicRoleProfile
     extends AbstractDynamicRoleProfile
 {
     public String getRoleName( String string )
     {
-        return ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string;
+        return ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string;
     }
 
     public List getOperations()
     {
         List operations = new ArrayList();
-
-        // I'm not sure these are appropriate roles.
-        operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
-        operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
-
         operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
-        operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         return operations;
-    }
-
-    public List getDynamicChildRoles( String string )
-    {
-        return Collections.singletonList(
-            ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string );
     }
 
     public boolean isAssignable()
@@ -58,4 +45,3 @@ public class RepsitoryManagerDynamicRoleProfile
         return true;
     }
 }
-
