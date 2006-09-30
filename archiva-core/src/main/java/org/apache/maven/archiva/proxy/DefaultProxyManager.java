@@ -23,6 +23,9 @@ import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Proxy;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
+import org.apache.maven.archiva.configuration.InvalidConfigurationException;
+import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
@@ -46,7 +49,7 @@ import java.util.Map;
  */
 public class DefaultProxyManager
     extends AbstractLogEnabled
-    implements ProxyManager
+    implements ProxyManager, ConfigurationChangeListener
 {
     /**
      * @plexus.requirement
@@ -143,6 +146,8 @@ public class DefaultProxyManager
         try
         {
             configuration = configurationStore.getConfigurationFromStore();
+
+            configurationStore.addChangeListener( this );
         }
         catch ( ConfigurationStoreException e )
         {
@@ -153,7 +158,7 @@ public class DefaultProxyManager
     }
 
     private Map getProxyGroups()
-        throws ProxyException
+        throws ProxyException, ResourceDoesNotExistException
     {
         if ( proxyGroups == null )
         {
@@ -170,8 +175,11 @@ public class DefaultProxyManager
                 List proxiedRepositories = getProxiedRepositoriesForManagedRepository(
                     configuration.getProxiedRepositories(), repository.getId() );
 
-                groups.put( repository.getId(),
-                            new ProxiedRepositoryGroup( proxiedRepositories, managedRepository, wagonProxy ) );
+                if ( !proxiedRepositories.isEmpty() )
+                {
+                    groups.put( repository.getId(),
+                                new ProxiedRepositoryGroup( proxiedRepositories, managedRepository, wagonProxy ) );
+                }
             }
 
             // TODO: ability to configure default proxy separately!
@@ -233,5 +241,14 @@ public class DefaultProxyManager
             proxyInfo.setType( proxy.getProtocol() );
         }
         return proxyInfo;
+    }
+
+    public void notifyOfConfigurationChange( Configuration configuration )
+        throws InvalidConfigurationException, ConfigurationChangeException
+    {
+        // reinit
+        proxyGroups = null;
+        defaultProxyGroup = null;
+        getLogger().debug( "Re-initialising proxy configuration" );
     }
 }
