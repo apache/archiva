@@ -452,7 +452,7 @@ public class ReportingDatabase
         {
             getReporting().setExecutionTime( endTime.getTime() - startTime );
         }
-        getReporting().setLastModified( endTime );
+        getReporting().setLastModified( endTime.getTime() );
     }
 
     public ReportGroup getReportGroup()

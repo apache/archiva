@@ -50,7 +50,7 @@
         <field xml.attribute="true">
           <name>lastModified</name>
           <version>1.0.0</version>
-          <type>Date</type>
+          <type>long</type>
         </field>
         <field xml.attribute="true">
           <name>executionTime</name>
