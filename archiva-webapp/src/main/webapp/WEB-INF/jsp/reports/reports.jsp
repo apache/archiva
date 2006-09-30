@@ -19,6 +19,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
@@ -34,7 +35,7 @@
 
 <div id="contentArea">
 
-<pss:ifAnyAuthorized permissions="archiva-generate-reports">
+<pss:ifAnyAuthorized permissions="archiva-access-reports">
   <ww:form action="reports" namespace="/admin">
     <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
     <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
@@ -55,7 +56,7 @@
     --%>
   <c:choose>
     <c:when test="${!database.inProgress}">
-      <pss:ifAuthorized permission="archiva-generate-reports">
+      <pss:ifAuthorized permission="archiva-access-reports">
         <ww:url id="regenerateReportUrl" action="runReport" namespace="/admin">
           <ww:param name="repositoryId">${database.repository.id}</ww:param>
           <ww:param name="reportGroup" value="reportGroup"/>
@@ -84,8 +85,9 @@
       ${database.numNotices}
 
       <span style="font-size: x-small">
-        <%-- TODO! use better formatting here --%>
-        Last updated: ${database.reporting.lastModified},
+        <jsp:useBean id="date" class="java.util.Date"/>
+        <c:set target="${date}" property="time" value="${database.reporting.lastModified}"/>
+        Last updated: <fmt:formatDate type="both" value="${date}" />,
         execution time: <fmt:formatNumber maxFractionDigits="0" value="${database.reporting.executionTime / 60000}"/> minutes
         <fmt:formatNumber maxFractionDigits="0" value="${(database.reporting.executionTime / 1000) % 60}"/> seconds
       </span>
@@ -99,7 +101,6 @@
 </p>
 
   <%-- TODO need to protect iterations against concurrent modification exceptions by cloning the lists synchronously --%>
-  <%-- TODO! factor out common parts, especially artifact rendering tag --%>
   <%-- TODO! paginate (displaytag?) --%>
 <c:if test="${!empty(database.reporting.artifacts)}">
   <h3>Artifacts</h3>
@@ -116,41 +117,8 @@
       </c:forEach>
     </ul>
     <p style="text-indent: 3em;">
-          <span style="font-size: x-small">
-            <%-- TODO! share with browse as a tag --%>
-          <c:set var="cumulativeGroup" value=""/>
-          <c:forTokens items="${artifact.groupId}" delims="." var="part">
-            <c:choose>
-              <c:when test="${empty(cumulativeGroup)}">
-                <c:set var="cumulativeGroup" value="${part}"/>
-              </c:when>
-              <c:otherwise>
-                <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
-              </c:otherwise>
-            </c:choose>
-            <c:set var="url">
-              <ww:url action="browseGroup" namespace="/">
-                <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
-              </ww:url>
-            </c:set>
-            <a href="${url}">${part}</a> /
-          </c:forTokens>
-          <strong>${artifact.artifactId}</strong>
-          | <strong>Version:</strong>
-          <c:set var="url">
-            <ww:url action="showArtifact" namespace="/">
-              <ww:param name="groupId" value="%{'${artifact.groupId}'}"/>
-              <ww:param name="artifactId" value="%{'${artifact.artifactId}'}"/>
-              <c:if test="${!empty(artifact.version)}">
-                <ww:param name="version" value="%{'${artifact.version}'}"/>
-              </c:if>
-            </ww:url>
-          </c:set>
-          <a href="${url}">${artifact.version}</a>
-          <c:if test="${!empty(artifact.classifier)}">
-            | <strong>Classifier:</strong> ${artifact.classifier}
-          </c:if>
-        </span>
+      <my:showArtifactLink groupId="${artifact.groupId}" artifactId="${artifact.artifactId}"
+                           version="${artifact.version}" classifier="${artifact.classifier}"/>
     </p>
     <%-- TODO!
               <td>
@@ -179,48 +147,8 @@
       </c:forEach>
     </ul>
     <p style="text-indent: 3em;">
-          <span style="font-size: x-small">
-            <%-- TODO! share with browse as a tag --%>
-          <c:set var="cumulativeGroup" value=""/>
-          <c:forTokens items="${metadata.groupId}" delims="." var="part" varStatus="i">
-            <c:choose>
-              <c:when test="${empty(cumulativeGroup)}">
-                <c:set var="cumulativeGroup" value="${part}"/>
-              </c:when>
-              <c:otherwise>
-                <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
-              </c:otherwise>
-            </c:choose>
-            <c:set var="url">
-              <ww:url action="browseGroup" namespace="/">
-                <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
-              </ww:url>
-            </c:set>
-            <a href="${url}">${part}</a>
-            <c:if test="${!i.last}">
-              /
-            </c:if>
-          </c:forTokens>
-              <c:if test="${!empty(metadata.artifactId)}">
-                <c:set var="url">
-                  <ww:url action="browseArtifact" namespace="/">
-                    <ww:param name="groupId" value="%{'${metadata.groupId}'}"/>
-                    <ww:param name="artifactId" value="%{'${metadata.artifactId}'}"/>
-                  </ww:url>
-                </c:set>
-                / <a href="${url}">${metadata.artifactId}</a>
-              </c:if>
-<c:if test="${!empty(metadata.version)}"> | <strong>Version:</strong>
-  <c:set var="url">
-    <ww:url action="showArtifact" namespace="/">
-      <ww:param name="groupId" value="%{'${metadata.groupId}'}"/>
-      <ww:param name="artifactId" value="%{'${metadata.artifactId}'}"/>
-      <ww:param name="version" value="%{'${metadata.version}'}"/>
-    </ww:url>
-  </c:set>
-  <a href="${url}">${metadata.version}</a>
-</c:if>       
-        </span>
+      <my:showArtifactLink groupId="${metadata.groupId}" artifactId="${metadata.artifactId}"
+                           version="${metadata.version}"/>
     </p>
     <%-- TODO!
               <td>
