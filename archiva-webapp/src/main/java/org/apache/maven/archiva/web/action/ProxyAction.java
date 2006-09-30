@@ -26,6 +26,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.opensymphony.webwork.interceptor.ServletResponseAware;
+
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Proxy functionality.
  *
@@ -33,6 +37,7 @@ import java.io.InputStream;
  */
 public class ProxyAction
     extends PlexusActionSupport
+    implements ServletResponseAware
 {
     /**
      * @plexus.requirement
@@ -49,6 +54,10 @@ public class ProxyAction
 
     private InputStream artifactStream;
 
+    private long contentLength;
+
+    private HttpServletResponse httpServletResponse;
+
     public String execute()
         throws ProxyException
     {
@@ -62,6 +71,10 @@ public class ProxyAction
             contentType = "application/octet-stream";
 
             filename = file.getName();
+
+            contentLength = file.length();
+
+            httpServletResponse.addDateHeader( "Last-Modified", file.lastModified() );
         }
         catch ( ResourceDoesNotExistException e )
         {
@@ -99,8 +112,18 @@ public class ProxyAction
         return contentType;
     }
 
+    public long getContentLength()
+    {
+        return contentLength;
+    }
+
     public InputStream getArtifactStream()
     {
         return artifactStream;
+    }
+
+    public void setServletResponse( HttpServletResponse httpServletResponse )
+    {
+        this.httpServletResponse = httpServletResponse;
     }
 }

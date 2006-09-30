@@ -176,6 +176,7 @@
         <param name="contentDisposition">filename="${filename}"</param>
         <param name="inputName">artifactStream</param>
         <param name="bufferSize">1024</param>
+        <param name="contentLength">${contentLength}</param>
       </result>
       <result name="notFound" type="httpheader">404</result>
     </action>
