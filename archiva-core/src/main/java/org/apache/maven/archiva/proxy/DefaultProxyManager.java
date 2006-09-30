@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -44,6 +45,7 @@ import java.util.Map;
  * @plexus.component instantiation-strategy="per-lookup"
  */
 public class DefaultProxyManager
+    extends AbstractLogEnabled
     implements ProxyManager
 {
     /**
@@ -95,7 +97,9 @@ public class DefaultProxyManager
         }
         else
         {
-            repositoryPath = repositoryPath.substring( proxyGroup.getManagedRepository().getId().length() + 2 );
+            String id = proxyGroup.getManagedRepository().getId();
+            getLogger().debug( "requesting " + repositoryPath + " from repository '" + id + "'" );
+            repositoryPath = repositoryPath.substring( id.length() + 2 );
         }
 
         return requestHandler.get( repositoryPath, proxyGroup.getProxiedRepositories(),

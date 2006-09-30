@@ -65,11 +65,13 @@ public class ProxyAction
         }
         catch ( ResourceDoesNotExistException e )
         {
+            getLogger().debug( "Requested proxy path not found: " + e.getMessage() );
             // TODO: set message?
             return NOT_FOUND;
         }
         catch ( FileNotFoundException e )
         {
+            getLogger().debug( "Requested proxy file not found: " + e.getMessage() );
             // TODO: set message?
             return NOT_FOUND;
         }

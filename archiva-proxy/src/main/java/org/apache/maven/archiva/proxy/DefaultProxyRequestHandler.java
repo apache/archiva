@@ -143,15 +143,18 @@ public class DefaultProxyRequestHandler
                 artifactPath = path.substring( 0, index );
             }
 
+            String msg = "";
+
             // Request for artifact: parse the requested path to build an Artifact.
             Artifact artifact = null;
             try
             {
                 artifact = defaultArtifactDiscoverer.buildArtifact( artifactPath );
+                getLogger().debug( "Artifact requested is: " + artifact );
             }
             catch ( DiscovererException e )
             {
-                getLogger().debug( "Failed to build artifact using default layout with message: " + e.getMessage() );
+                msg = "Failed to build artifact from path:\n\tfrom default: " + e.getMessage();
             }
 
             if ( artifact == null )
@@ -159,10 +162,11 @@ public class DefaultProxyRequestHandler
                 try
                 {
                     artifact = legacyArtifactDiscoverer.buildArtifact( artifactPath );
+                    getLogger().debug( "Artifact requested is: " + artifact );
                 }
                 catch ( DiscovererException e )
                 {
-                    getLogger().debug( "Failed to build artifact using legacy layout with message: " + e.getMessage() );
+                    getLogger().debug( msg + "\n\tfrom legacy: " + e.getMessage() );
                 }
             }
 
@@ -500,15 +504,15 @@ public class DefaultProxyRequestHandler
                 {
                     tries++;
 
-                    getLogger().debug( "Trying " + path + " from " + repository.getName() + "..." );
-
                     boolean downloaded = true;
                     if ( force || !target.exists() )
                     {
+                        getLogger().debug( "Retrieving " + path + " from " + repository.getName() );
                         wagon.get( path, temp );
                     }
                     else
                     {
+                        getLogger().debug( "Retrieving " + path + " from " + repository.getName() + " if updated" );
                         downloaded = wagon.getIfNewer( path, temp, target.lastModified() );
                     }
 
@@ -537,6 +541,8 @@ public class DefaultProxyRequestHandler
                 {
                     moveTempToTarget( temp, target );
                 }
+
+                getLogger().debug( "Successfully downloaded" );
             }
             //try next repository
         }
