@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration</artifactId>
-      <version>1.0-alpha-2-SNAPSHOT</version>
+      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -185,7 +185,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-jdo2</artifactId>
-      <version>1.0-alpha-7-SNAPSHOT</version>
+      <version>1.0-alpha-7</version>
       <exclusions>
         <exclusion>
           <groupId>xerces</groupId>
