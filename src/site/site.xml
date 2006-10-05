@@ -21,6 +21,11 @@
       <item name="Maven" href="http://maven.apache.org/"/>
     </links>
 
+
+    <menu name="Documentation">
+        <item name="Getting Started"    href="/guides/getting-started/index.html"/>
+    </menu>
+
     <menu ref="reports" inherit="bottom"/>
 
   </body>

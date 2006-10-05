@@ -1,0 +1,114 @@
+ -----
+ Getting Started with Archiva
+ -----
+ Henri Yandell
+ -----
+ 1 October 2006
+ -----
+
+To build 
+
+  Run 'mvn install'. If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
+
+    * Download the 1.0 connector zip from: http://java.sun.com/j2ee/connector/download.html
+  
+    * Unpack the zip to get the jar
+
+    * Run: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar
+
+    * Download the 1.0.2 activation zip from: http://java.sun.com/products/archive/javabeans/jaf102.html
+  
+    * Unpack the zip to get the jar
+
+    * Run: mvn install:install-file -DgroupId=javax.activation -DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar -Dfile=activation.jar 
+
+    * Download the 1.3.2 javamail zip from: http://java.sun.com/products/javamail/downloads/index.html
+  
+    * Unpack the zip to get the jar
+
+    * Run: mvn install:install-file -DgroupId=javax.mail -DartifactId=mail -Dversion=1.3.2 -Dpackaging=jar -Dfile=javamail-1.3.2/mail.jar 
+
+
+To deploy Archiva on Plexus
+
+  Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
+
+   * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
+
+   * Start with: ./bin/plexus.sh start (don't use the platform specific versions).
+
+   * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
+
+
+To deploy Archiva to Tomcat 5.5
+
+   * Create a directory in tomcat called archiva, at the same level as bin, conf, logs and the others.
+
+   * Copy the war file from archiva/archiva-webapp/target into the new directory
+
+   * Create a conf/Catalina/localhost/archiva.xml file with the following data:
+
++-------------------------------------------------------------------------+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <Context path="/archiva"
+          docBase="${catalina.home}/archiva/archiva-webapp-1.0-SNAPSHOT.war">
+
+ <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
+           username="sa"
+           password=""
+           driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+           url="jdbc:derby:database/archiva;create=true"
+ />
+ </Context>
++-------------------------------------------------------------------------+
+
+   * Copy archiva/archiva-webapp/target/archiva-webapp-1.0-SNAPSHOT/WEB-INF/lib/derby-10.1.3.1.jar into the tomcat common/lib
+
+   * To deal with a current bug, you'll also need to add the following to your ${catalina.home}/conf/web.xml in the relevant section (search for jspx):
+
++-------------------------------------------------------------------------+
+  <servlet-mapping>
+    <servlet-name>jsp</servlet-name>
+    <url-pattern>*.jspf</url-pattern>
+  </servlet-mapping>
++-------------------------------------------------------------------------+
+
+ When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't appear to cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but Tomcat fails to start the context and you have to shutdown and restart again.
+
+
+Setting up your Archiva instance
+
+   * Goto {{http://localhost:8080/archiva/}} if on Tomcat or {{http://localhost:8080/}} if on Plexus.
+
+   * On the first page - setup your administration user. The password requires a numerical character.
+
+   * On the second page - setup your first repository. It can be both an m1 and an m2 repository.
+
+   * On the third page - setup your indexing. Mostly this means choosing a directory to put the index in. It'll re-index every hour.
+
+ A useful repository to setup when exploring is your local Maven repository. 
+
++-------------------------------------------------------------------------+
+ Identifier: LOCAL
+ Name: Maven2 Local Repository
+ Location: $HOME/.m2/repository
++-------------------------------------------------------------------------+
+
+
+Updating Archiva within a Tomcat
+
+  While exploring Archiva, or perhaps while developing with it, you will want to delete the 
+  current state. Presuming you followed the instructions above, you will need to remove the 
+  following files from the ${catalina.home} directory. Ensure your Tomcat has first been 
+  shutdown.
+
++-------------------------------------------------------------------------+
+   # Remove the database
+   rm -r bin/database/ bin/derby.log
+   # Remove the archiva configuration
+   rm $HOME/.m2/archiva.xml
+   # Remove the temporary Tomcat files
+   rm webapps/archiva/ work/Catalina/localhost/archiva/ logs/*
+   # Remove the war file (if you're deploying a new one)
+   rm archiva/*.war
++-------------------------------------------------------------------------+
