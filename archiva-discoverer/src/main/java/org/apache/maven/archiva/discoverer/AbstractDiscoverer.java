@@ -22,6 +22,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -103,7 +104,17 @@ public abstract class AbstractDiscoverer
         }
 
         DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( repositoryBase );
+        try
+        {
+            //Fix FNFE when repositoryBase contain spaces
+            //TODO: move this code in DirectoryScanner.setBasedir()
+            scanner.setBasedir( repositoryBase.getCanonicalFile() );
+        }
+        catch( IOException e )
+        {
+            scanner.setBasedir( repositoryBase );
+        }
+
         if ( includes != null )
         {
             scanner.setIncludes( includes );
