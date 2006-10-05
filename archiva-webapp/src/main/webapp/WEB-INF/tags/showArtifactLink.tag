@@ -21,7 +21,7 @@
 <%@ attribute name="version" %>
 <%@ attribute name="classifier" %>
 <%@ attribute name="scope" %>
-<%@ attribute name="versions" %>
+<%@ attribute name="versions" type="java.util.List"%>
 
 <span class="artifact-link">
   <c:set var="cumulativeGroup" value=""/>
