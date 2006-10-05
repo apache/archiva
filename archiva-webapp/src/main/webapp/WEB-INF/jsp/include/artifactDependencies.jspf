@@ -4,7 +4,7 @@
 
 <%-- TODO: paginate! --%>
 <c:forEach items="${dependencies}" var="dependency">
-  <h3>
+  <h3 class="artifact-title">
     <my:showArtifactTitle groupId="${dependency.groupId}" artifactId="${dependency.artifactId}"
                           version="${dependency.version}"/>
                          

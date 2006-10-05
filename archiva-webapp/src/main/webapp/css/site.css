@@ -108,3 +108,11 @@
 .infoBullet {
     list-style-image: url( "../images/icon_info_sml.gif" );
 }
+
+.artifact-link {
+    font-size: x-small;
+    padding-left: 5em;
+}
+
+.artifact-title {
+}

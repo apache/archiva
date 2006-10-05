@@ -23,7 +23,7 @@
 <%@ attribute name="scope" %>
 <%@ attribute name="versions" %>
 
-<span style="font-size: x-small">
+<span class="artifact-link">
   <c:set var="cumulativeGroup" value=""/>
   <c:forTokens items="${groupId}" delims="." var="part" varStatus="i">
     <c:choose>
