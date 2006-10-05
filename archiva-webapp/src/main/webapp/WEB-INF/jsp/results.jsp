@@ -16,6 +16,7 @@
 
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
@@ -25,37 +26,29 @@
 
 <body>
 
-<h1>Search Results</h1>
+<h1>Search</h1>
 
 <div id="contentArea">
   <div id="searchBox">
     <%@ include file="/WEB-INF/jsp/include/quickSearchForm.jspf" %>
+  </div>
 
+    <h1>Results</h1>
     <div id="resultsBox">
-      <table class="bodyTable">
-        <tr class="a">
-          <th>Group</th>
-          <th>Artifact</th>
-          <th>Version</th>
-          <%-- TODO
-                    <th>Hits</th>
-                    <th></th>
-          --%>
-        </tr>
         <ww:set name="searchResults" value="searchResults" />
         <c:forEach items="${searchResults}" var="record" varStatus="i">
-          <tr class="${i.index % 2 == 0 ? "b" : "a"}">
-            <td>
-              <c:out value="${record.groupId}" />
-            </td>
-            <td>
-              <c:out value="${record.artifactId}" />
-            </td>
-            <td>
-              <c:out value="${record.version}" />
-            </td>
+
+
+          <h3 class="artifact-title">
+            <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                  version="${record.version}"/>
+          </h3>
+
+          <p>
+          <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}" 
+                               version="${record.version}" versions="${record.versions}"/>
+
               <%-- TODO: hits
-            <td>
               <table border="1px" width="100%" cellspacing="0">
                 <c:forEach items="${result.fieldMatchesEntrySet}" var="entry">
                   <tr>
@@ -82,11 +75,9 @@
                 <a href="artifact.html">Details</a>
               </td>
               --%>
-          </tr>
+          </p>
         </c:forEach>
-      </table>
     </div>
-  </div>
 </div>
 </body>
 </html>

@@ -5,25 +5,9 @@
 <%-- TODO: paginate! --%>
 <c:forEach items="${dependencies}" var="dependency">
   <h3>
-    <c:set var="url">
-      <c:choose>
-        <c:when test="${!empty(dependency.version)}">
-          <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
-            <ww:param name="version" value="%{'${dependency.version}'}"/>
-          </ww:url>
-        </c:when>
-        <c:otherwise>
-          <ww:url action="browseArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${dependency.groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${dependency.artifactId}'}"/>
-          </ww:url>
-        </c:otherwise>
-      </c:choose>
-    </c:set>
-      <%-- TODO: showing the name and description would be nice, but that would require loading the POMs --%>
-    <a href="${url}">${dependency.artifactId}</a>
+    <my:showArtifactTitle groupId="${dependency.groupId}" artifactId="${dependency.artifactId}"
+                          version="${dependency.version}"/>
+                         
   </h3>
 
   <p>

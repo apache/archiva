@@ -46,6 +46,7 @@ import org.apache.maven.report.projectinfo.dependencies.ReportResolutionListener
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.util.VersionMerger;
 
 import java.io.File;
 import java.io.IOException;
@@ -143,17 +144,7 @@ public class ShowArtifactAction
         model = project.getModel();
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
-
-        List dependencies = new ArrayList();
-
-        for ( Iterator i = project.getModel().getDependencies().iterator(); i.hasNext(); )
-        {
-            Dependency dependency = (Dependency) i.next();
-
-            dependencies.add( new DependencyWrapper( dependency ) );
-        }
-
-        this.dependencies = dependencies;
+        this.dependencies = VersionMerger.wrap(project.getModel().getDependencies());
 
         return SUCCESS;
     }
@@ -176,27 +167,7 @@ public class ShowArtifactAction
         String id = createId( groupId, artifactId, version );
         List records = index.search( new LuceneQuery( new TermQuery( new Term( "dependencies", id ) ) ) );
 
-        Map dependees = new LinkedHashMap();
-
-        for ( Iterator i = records.iterator(); i.hasNext(); )
-        {
-            StandardArtifactIndexRecord record = (StandardArtifactIndexRecord) i.next();
-
-            String key = record.getGroupId() + ":" + record.getArtifactId();
-            if ( dependees.containsKey( key ) )
-            {
-                DependencyWrapper wrapper = (DependencyWrapper) dependees.get( key );
-                wrapper.addVersion( record.getVersion() );
-            }
-            else
-            {
-                DependencyWrapper wrapper = new DependencyWrapper( record );
-
-                dependees.put( key, wrapper );
-            }
-        }
-
-        dependencies = dependees.values();
+        dependencies = VersionMerger.merge(records);
 
         return SUCCESS;
     }

@@ -32,10 +32,11 @@ import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.archiva.web.util.VersionMerger;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -58,7 +59,7 @@ public class SearchAction
     /**
      * Search results.
      */
-    private List searchResults;
+    private Collection searchResults;
 
     /**
      * @plexus.requirement
@@ -107,6 +108,8 @@ public class SearchAction
             addActionError( "No results found" );
             return INPUT;
         }
+
+        searchResults = VersionMerger.merge(searchResults);
 
         return SUCCESS;
     }
@@ -178,7 +181,7 @@ public class SearchAction
         this.md5 = md5;
     }
 
-    public List getSearchResults()
+    public Collection getSearchResults()
     {
         return searchResults;
     }
