@@ -6,6 +6,12 @@ echo This will be removed when the repository manager is in place.
 
 echo
 
+echo Options
+echo  go - does the sync for real
+echo  check - checks for changed files
+
+echo
+
 echo
 echo For a better explanation of the output flags please check --itemize-changes at rsync man page
 echo
@@ -38,20 +44,27 @@ for f in `find conf -iname "*.sh"`
     RSYNC_SSH="--rsh=ssh $SSH_OPTS"
   fi
 
-  echo "Syncing $FROM -> $TO"
-  rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
-  rsync --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
-
   # check for changed files
-  rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM $BASEDIR/$TO >> $CHANGED_LOG
+  if [ "$1" == "check" ]; then
+
+    rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM $BASEDIR/$TO >> $CHANGED_LOG
+
+  else
+
+    echo "Syncing $FROM -> $TO"
+    rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
+    rsync --exclude-from=$HOME/components/maven-meeper/src/bin/syncopate/exclusions.txt --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
+
+  fi
 
 done
 
-echo "*******************************************************************************"
-echo "*******************************  CHANGED FILES  *******************************"
-echo "*******************************************************************************"
-cat $CHANGED_LOG
-echo "*******************************************************************************"
-echo "*******************************************************************************"
-echo "*******************************************************************************"
-
+if [ "$1" == "check" ]; then
+  echo "*******************************************************************************"
+  echo "*******************************  CHANGED FILES  *******************************"
+  echo "*******************************************************************************"
+  cat $CHANGED_LOG
+  echo "*******************************************************************************"
+  echo "*******************************************************************************"
+  echo "*******************************************************************************"
+fi
