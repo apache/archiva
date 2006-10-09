@@ -21,6 +21,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +52,13 @@ public class DefaultConfiguredRepositoryFactory
     {
         File repositoryDirectory = new File( configuration.getDirectory() );
         String repoDir = repositoryDirectory.toURI().toString();
+
+        //workaround for spaces non converted by PathUtils in wagon
+        //todo: remove it when PathUtils will be fixed
+        if ( repoDir.indexOf( "%20" ) >= 0 )
+        {
+            repoDir = StringUtils.replace( repoDir, "%20", " " );
+        }
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
         return repoFactory.createArtifactRepository( configuration.getId(), repoDir, layout, null, null );

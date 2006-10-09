@@ -104,16 +104,8 @@ public abstract class AbstractDiscoverer
         }
 
         DirectoryScanner scanner = new DirectoryScanner();
-        try
-        {
-            //Fix FNFE when repositoryBase contain spaces
-            //TODO: move this code in DirectoryScanner.setBasedir()
-            scanner.setBasedir( repositoryBase.getCanonicalFile() );
-        }
-        catch( IOException e )
-        {
-            scanner.setBasedir( repositoryBase );
-        }
+
+        scanner.setBasedir( repositoryBase );
 
         if ( includes != null )
         {
