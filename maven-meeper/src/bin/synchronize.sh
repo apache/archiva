@@ -5,6 +5,7 @@
 # 2. Convert Maven 1.x repository to Maven 2.x repository
 # 3. Manual fixes
 # 4. Sync the Maven 2.x repository to Ibiblio
+# 5. Copy the mod_rewrite rules to the Maven 2.x repository
 # ------------------------------------------------------------------------
 
 PID=$$
@@ -65,3 +66,13 @@ echo Synchronizing to ibiblio
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
+# ------------------------------------------------------------------------
+# Copy the mod_rewrite rules to the Maven 1.x repository
+# ------------------------------------------------------------------------
+if [ "hostname" == $CENTRAL_HOST ]; then
+  cp $M1_M2_REWRITE_RULES $HOME/repository-staging/to-ibiblio/maven/.htaccess
+else
+  scp $M1_M2_REWRITE_RULES maven@maven.org:~maven/repository-staging/to-ibiblio/maven/.htaccess
+fi
+    
+scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
