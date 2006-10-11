@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ "`hostname`" == "maven01.managed.contegix.com" ]; then
+if [ "`hostname`" == $CENTRAL_HOST ]; then
   cp ibiblio-htaccess $HOME/repository-staging/to-ibiblio/maven/.htaccess
 else
   scp ibiblio-htaccess maven@maven.org:~maven/repository-staging/to-ibiblio/maven/.htaccess
