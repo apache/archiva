@@ -1,7 +1,11 @@
 #!/bin/sh
 
+# ------------------------------------------------------------------------
 # 1. Sync Maven 1.x repositories
 # 2. Convert Maven 1.x repository to Maven 2.x repository
+# 3. Manual fixes
+# 4. Sync the Maven 2.x repository to Ibiblio
+# ------------------------------------------------------------------------
 
 PID=$$
 RUNNING=`ps -ef | grep synchronize.sh | grep -v 'sh -c' | grep -v grep | grep -v $PID`
@@ -36,6 +40,9 @@ echo Running repoclean
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
+# ------------------------------------------------------------------------
+# Manual fixes
+# ------------------------------------------------------------------------
 echo Removing commons-logging 1.1-dev
 
 # hack prevent commons-logging-1.1-dev
