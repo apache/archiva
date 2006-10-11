@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# 1. Sync Maven 1.x repositories
+# 2. Convert Maven 1.x repository to Maven 2.x repository
+
 PID=$$
 RUNNING=`ps -ef | grep synchronize.sh | grep -v 'sh -c' | grep -v grep | grep -v $PID`
 if [ ! -z "$RUNNING" ]; then
@@ -8,22 +11,27 @@ if [ ! -z "$RUNNING" ]; then
   exit 1
 fi
 
+. synchronize.properties
 
-TOOLS_BASE=$HOME/components/maven-meeper/src/bin
-
+# ------------------------------------------------------------------------
+# Syncopate: the Maven 1.x repository 
+# ------------------------------------------------------------------------
 echo Running Syncopate
 
 (
-  cd $TOOLS_BASE/syncopate
+  cd $SYNCOPATE
   ./sync
   retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
+# ------------------------------------------------------------------------
+# Repoclean: converting the Maven 1.x repository to Maven 2.x 
+# ------------------------------------------------------------------------
 echo Running repoclean
 
 (
-  $TOOLS_BASE/repoclean/sync-repoclean.sh
+  $REPOCLEAN/sync-repoclean.sh
   retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
@@ -38,6 +46,9 @@ mv $CL/maven-metadata.xml.tmp $CL/maven-metadata.xml
 md5sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.md5
 sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
 
+# ------------------------------------------------------------------------
+# Ibiblio synchronization: sync the central repository to Ibiblio 
+# ------------------------------------------------------------------------
 echo Synchronizing to ibiblio
 
 (
