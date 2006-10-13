@@ -11,12 +11,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-rbac-profile</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-system</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
