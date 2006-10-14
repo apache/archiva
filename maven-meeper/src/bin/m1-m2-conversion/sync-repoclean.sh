@@ -7,7 +7,7 @@ log=$repocleanhome/last-changes.log
 src=maven2-repoclean
 dst=maven2
 
-$repocleanhome/repoclean.sh ~/components/maven-meeper/src/bin/repoclean/synchronize.properties
+$repocleanhome/repoclean.sh ~/components/maven-meeper/src/bin/m1-m2-conversion/synchronize.properties
 
 rsync --ignore-existing -rvpl $dir/$src/ $dir/$dst/ > $log
 
