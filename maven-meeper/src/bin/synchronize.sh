@@ -8,6 +8,8 @@
 # 5. Copy the mod_rewrite rules to the Maven 2.x repository
 # ------------------------------------------------------------------------
 
+MODE=$1
+
 PID=$$
 RUNNING=`ps -ef | grep synchronize.sh | grep -v 'sh -c' | grep -v grep | grep -v $PID`
 if [ ! -z "$RUNNING" ]; then
@@ -17,6 +19,16 @@ if [ ! -z "$RUNNING" ]; then
 fi
 
 . synchronize.properties
+
+echo "Using the following settings:"
+echo "CENTRAL_HOST = $CENTRAL_HOST"
+echo "TOOLS_BASE = $TOOLS_BASE"
+echo "SYNC_TOOLS = $SYNC_TOOLS"
+echo "SYNCOPATE = $SYNCOPATE"
+echo "REPOCLEAN = $REPOCLEAN"
+echo "M1_M2_REWRITE_RULES = $M1_M2_REWRITE_RULES"
+
+[ "$MODE" = "batch" ] && echo && echo "To continue press any key or hit ^C to quit." && echo
 
 # ------------------------------------------------------------------------
 # Syncopate: the Maven 1.x repository 
