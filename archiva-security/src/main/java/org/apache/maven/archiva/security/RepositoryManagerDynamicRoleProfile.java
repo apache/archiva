@@ -29,9 +29,14 @@ import java.util.List;
 public class RepositoryManagerDynamicRoleProfile
     extends AbstractDynamicRoleProfile
 {
-    public String getRoleName( String string )
+    /**
+     * Create the Role name for a Repository Manager, using the provided repository id.
+     * 
+     * @param repoId the repository id
+     */
+    public String getRoleName( String repoId )
     {
-        return ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string;
+        return ArchivaRoleConstants.REPOSITORY_MANAGER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + repoId;
     }
 
     public List getOperations()
