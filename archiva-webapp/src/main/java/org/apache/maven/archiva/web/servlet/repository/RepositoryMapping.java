@@ -45,7 +45,7 @@ public class RepositoryMapping implements DAVListener
         this.repositoryConfiguration = repoConfig;
         File repoDir = new File(repositoryConfiguration.getDirectory());
         this.davRepository = new DAVRepository( repoDir );
-        this.davProcessor = new DAVProcessor(this.davRepository);
+        this.davProcessor = new DAVProcessor( this.davRepository );
         this.davRepository.addListener(this);
     }
     

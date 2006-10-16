@@ -114,6 +114,7 @@ public class RepositoryAccess
         catch ( ConfigurationStoreException e )
         {
             // TODO: should be a more pretty error to user. ;-)
+            // TODO: can we determine if the incoming request is a real user, or just maven-wagon?
 
             throw new ServletException( "Unable to obtain configuration.", e );
         }
@@ -179,8 +180,6 @@ public class RepositoryAccess
                 permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
             
-            permission += "-" + repoconfig.getId();
-
             boolean isAuthorized = securitySystem.isAuthorized( securitySession, permission, repoconfig.getId() );
 
             if ( !isAuthorized )
@@ -200,10 +199,18 @@ public class RepositoryAccess
 
         RepositoryMapping repo = getRepositoryMapping( repoconfig );
 
-        response.setHeader( "Server",
-                            getServletContext().getServerInfo() + " Archiva : " + DAVUtilities.SERVLET_SIGNATURE );
+        String serverInfo = "";
+        if ( getServletContext() != null )
+        {
+            if ( StringUtils.isNotEmpty( getServletContext().getServerInfo() ) )
+            {
+                serverInfo = getServletContext().getServerInfo();
+            }
+        }
+        
+        response.setHeader( "Server", serverInfo + " Archiva : " + DAVUtilities.SERVLET_SIGNATURE );
 
-        DAVTransaction transaction = new DAVTransaction( request, response );
+        DAVTransaction transaction = new DAVTransaction( new RepositoryRequest( request, repoconfig.getId() ), response );
         try
         {
             repo.getDavProcessor().process( transaction );
