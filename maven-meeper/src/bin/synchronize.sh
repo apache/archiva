@@ -28,12 +28,15 @@ echo "SYNCOPATE = $SYNCOPATE"
 echo "REPOCLEAN = $REPOCLEAN"
 echo "M1_M2_REWRITE_RULES = $M1_M2_REWRITE_RULES"
 
-[ "$MODE" = "batch" ] && echo && echo "To continue press any key or hit ^C to quit." && echo
+[ "$MODE" = "batch" ] && echo && echo "Press any key to continue, or hit ^C to quit." && echo
 
 # ------------------------------------------------------------------------
-# Syncopate: the Maven 1.x repository 
+# Syncopate: Sync the Maven 1.x repositories 
 # ------------------------------------------------------------------------
-echo Running Syncopate
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run syncopate, or hit ^C to quit." && echo
+
+echo "Running Syncopate"
 
 (
   cd $SYNCOPATE
@@ -45,7 +48,10 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 # ------------------------------------------------------------------------
 # Repoclean: converting the Maven 1.x repository to Maven 2.x 
 # ------------------------------------------------------------------------
-echo Running repoclean
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run the m1 to m2 conversion, or hit ^C to quit." && echo
+
+echo "Running repoclean"
 
 (
   $REPOCLEAN/sync-repoclean.sh
@@ -56,7 +62,10 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 # ------------------------------------------------------------------------
 # Manual fixes
 # ------------------------------------------------------------------------
-echo Removing commons-logging 1.1-dev
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run manual fixes, or hit ^C to quit." && echo
+
+echo "Removing commons-logging 1.1-dev"
 
 # hack prevent commons-logging-1.1-dev
 CL=$HOME/repository-staging/to-ibiblio/maven2/commons-logging/commons-logging
@@ -69,7 +78,10 @@ sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
 # ------------------------------------------------------------------------
 # Ibiblio synchronization: sync the central repository to Ibiblio 
 # ------------------------------------------------------------------------
-echo Synchronizing to ibiblio
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Ibiblio, or hit ^C to quit." && echo
+
+echo "Synchronizing to ibiblio"
 
 (
   cd $SYNC_TOOLS
@@ -81,6 +93,11 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 # ------------------------------------------------------------------------
 # Copy the mod_rewrite rules to the Maven 1.x repository
 # ------------------------------------------------------------------------
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to copy the m1 to m2 rewrite rules, or hit ^C to quit." && echo
+
+echo "Copying rewrite rules into place"
+
 if [ "hostname" == $CENTRAL_HOST ]; then
   cp $M1_M2_REWRITE_RULES $HOME/repository-staging/to-ibiblio/maven/.htaccess
 else
