@@ -6,23 +6,27 @@
  1 October 2006
  -----
 
+To checkout the latest code
+
+  Using Subversion, either checkout from {{http://svn.apache.org/repos/asf/maven/archiva/trunk/}} or to get all of Maven 2, checkout from {{http://svn.apache.org/repos/asf/maven/trunks/}}.
+
 To build 
 
   Run 'mvn install'. If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
 
-    * Download the 1.0 connector zip from: http://java.sun.com/j2ee/connector/download.html
+    * Download the 1.0 connector zip from: {{http://java.sun.com/j2ee/connector/download.html}}
   
     * Unpack the zip to get the jar
 
     * Run: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar
 
-    * Download the 1.0.2 activation zip from: http://java.sun.com/products/archive/javabeans/jaf102.html
+    * Download the 1.0.2 activation zip from: {{http://java.sun.com/products/archive/javabeans/jaf102.html}}
   
     * Unpack the zip to get the jar
 
     * Run: mvn install:install-file -DgroupId=javax.activation -DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar -Dfile=activation.jar 
 
-    * Download the 1.3.2 javamail zip from: http://java.sun.com/products/javamail/downloads/index.html
+    * Download the 1.3.2 javamail zip from: {{http://java.sun.com/products/javamail/downloads/index.html}}
   
     * Unpack the zip to get the jar
 
@@ -80,7 +84,7 @@ Setting up your Archiva instance
 
    * Goto {{http://localhost:8080/archiva/}} if on Tomcat or {{http://localhost:8080/}} if on Plexus.
 
-   * On the first page - setup your administration user. The password requires a numerical character.
+   * On the first page - setup your administration user. The password requires a numerical character and must not be longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
 
    * On the second page - setup your first repository. It can be both an m1 and an m2 repository.
 

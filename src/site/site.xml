@@ -23,6 +23,7 @@
 
 
     <menu name="Documentation">
+        <item name="Welcome"    href="/index.html"/>
         <item name="Getting Started"    href="/guides/getting-started/index.html"/>
     </menu>
 
