@@ -160,7 +160,7 @@ public class StandardArtifactIndexRecordFactory
                         }
                         catch ( ProjectBuildingException e )
                         {
-                            getLogger().error( "Error reading POM file, not populating in index: " + e.getMessage() );
+                            getLogger().error( "Error reading POM file ["+pomFile+"] for " + artifact + ", not populating in index: " + e.getMessage() );
                         }
                     }
                 }
@@ -183,7 +183,7 @@ public class StandardArtifactIndexRecordFactory
                     }
                     catch ( ProjectBuildingException e )
                     {
-                        getLogger().error( "Error reading POM file, not populating in index: " + e.getMessage() );
+                        getLogger().error( "Error reading POM file for " + artifact + ", not populating in index: " + e.getMessage() );
                     }
                 }
             }
