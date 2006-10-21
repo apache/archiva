@@ -1,0 +1,33 @@
+ -----
+ Developing Archiva
+ -----
+ Henri Yandell
+ -----
+ 20 October 2006
+ -----
+
+Goal
+
+  The idea here is to explain how to develop Archiva; or at least to provide some 
+  insight into what is what within the maven/archiva/ directory.
+
+Subprojects
+
+  The following subprojects exist within Archiva:
+
+  * archiva-applet - The progress bar on the checksum checking page.
+  * archiva-configuration - A facade on top of the Plexus configuration XML.
+  * archiva-converter - ????
+  * archiva-core - central code, business objects, modello etc.
+  * archiva-discoverer - monitors the managed repositories and kicks off the indexing.
+  * archiva-indexer - the lucene indexing.
+  * archiva-plexus-application - archiva can run on plexus as well as as a war. This creates a plexus app.
+  * archiva-plexus-runtime - archiva can run on plexus as well as as a war. This runs lots of apps.
+  * archiva-proxy - proxy repositories?
+  * archiva-reports-standard - a couple of reports are implemented. Not very pluginable yet.
+  * archiva-repository-layer - ????
+  * archiva-security - webapp security
+  * archiva-utils - some handy archiva specific utils
+  * archiva-webapp - creates a war file
+  * design - contains a mock-up currently
+  * maven-meeper - rsync scripts to sync repositories. Also converts m1 repositories to m2 repositories.
