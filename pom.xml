@@ -258,6 +258,72 @@
         <artifactId>archiva-converter</artifactId>
         <version>${pom.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-rbac-profile</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-system</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-system</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-ui-web</artifactId>
+        <version>${plexus-security.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-ui-web-integration</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-ui-web-taglib</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authentication-provider-user-manager</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-user-management-api</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-user-management-provider-jdo</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authorization-api</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authorization-rbac-authorizer</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-keys-jdo</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <reporting>
@@ -385,5 +451,6 @@
   </repositories>
   <properties>
     <maven.version>2.0.4</maven.version>
+    <plexus-security.version>1.0-alpha-6-SNAPSHOT</plexus-security.version
   </properties>
 </project>

@@ -129,53 +129,47 @@
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-system</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web-integration</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web-taglib</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authentication-provider-user-manager</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-user-management-api</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-user-management-provider-jdo</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authorization-api</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authorization-rbac-authorizer</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.security</groupId>
+      <artifactId>plexus-security-keys-jdo</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -191,11 +185,6 @@
           <artifactId>xmlParserAPIs</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-keys-jdo</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
