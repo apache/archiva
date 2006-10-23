@@ -20,6 +20,9 @@
           <configurationsDirectory>src/conf</configurationsDirectory>
           <configurationProperties>src/plexus.properties</configurationProperties>
           <applicationName>archiva</applicationName>
+          <runtimeConfiguration>src/conf/plexus.xml</runtimeConfiguration>
+          <runtimeConfigurationProperties>src/plexus.properties</runtimeConfigurationProperties>
+          <runtimePath>target/plexus-archiva-runtime</runtimePath>
         </configuration>
       </plugin>
     </plugins>
