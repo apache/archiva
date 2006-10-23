@@ -39,7 +39,7 @@ To deploy Archiva on Plexus
 
    * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
 
-   * Start with: ./bin/plexus.sh start (don't use the platform specific versions).
+   * Start with: ./bin/plexus.sh start or a platform specific version.
 
    * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
 
