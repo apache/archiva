@@ -451,6 +451,6 @@
   </repositories>
   <properties>
     <maven.version>2.0.4</maven.version>
-    <plexus-security.version>1.0-alpha-6-SNAPSHOT</plexus-security.version
+    <plexus-security.version>1.0-alpha-6-SNAPSHOT</plexus-security.version>
   </properties>
 </project>
