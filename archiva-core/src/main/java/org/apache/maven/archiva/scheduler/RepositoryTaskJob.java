@@ -16,8 +16,10 @@ package org.apache.maven.archiva.scheduler;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.scheduler.task.RepositoryTask;
+import org.apache.maven.archiva.scheduler.task.IndexerTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
+import org.codehaus.plexus.taskqueue.TaskQueue;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -29,6 +31,8 @@ public class RepositoryTaskJob
     extends AbstractJob
 {
     static final String TASK_KEY = "EXECUTION";
+
+    static final String TASK_QUEUE = "TASK_QUEUE";
 
     /**
      * Execute the discoverer and the indexer.
@@ -43,12 +47,16 @@ public class RepositoryTaskJob
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
 
-        RepositoryTask executor = (RepositoryTask) dataMap.get( TASK_KEY );
+        TaskQueue indexerQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
+
+        IndexerTask task = new IndexerTask();
+        task.setJobName( context.getJobDetail().getName() );
+
         try
         {
-            executor.execute();
+            indexerQueue.put( task );
         }
-        catch ( TaskExecutionException e )
+        catch ( TaskQueueException e )
         {
             throw new JobExecutionException( e );
         }

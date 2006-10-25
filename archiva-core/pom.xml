@@ -34,6 +34,11 @@
       <artifactId>plexus-quartz</artifactId>
       <version>1.0-alpha-2</version>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-taskqueue</artifactId>
+      <version>1.0-alpha-4-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

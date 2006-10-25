@@ -17,6 +17,7 @@ package org.apache.maven.archiva.scheduler.task;
  */
 
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
+import org.codehaus.plexus.taskqueue.Task;
 
 /**
  * A repository task.
@@ -24,6 +25,7 @@ import org.apache.maven.archiva.scheduler.TaskExecutionException;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public interface RepositoryTask
+    extends Task
 {
     /**
      * Execute the task.

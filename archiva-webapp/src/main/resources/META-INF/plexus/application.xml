@@ -441,5 +441,9 @@
     <component>
       <role>org.apache.maven.archiva.scheduler.RepositoryTaskScheduler</role>
     </component>
+    <component>
+      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
+      <role-hint>indexer</role-hint>
+    </component>
   </load-on-start>
 </plexus>

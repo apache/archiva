@@ -22,25 +22,31 @@ import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.scheduler.task.RepositoryTask;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
+import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
+import org.apache.maven.archiva.scheduler.task.IndexerTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
-import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.scheduler.Scheduler;
+import org.codehaus.plexus.taskqueue.TaskQueue;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
+import java.io.File;
 import java.text.ParseException;
 
 /**
  * Default implementation of a scheduling component for the application.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @todo should we use plexus-taskqueue instead of or in addition to this?
  * @plexus.component role="org.apache.maven.archiva.scheduler.RepositoryTaskScheduler"
  */
 public class DefaultRepositoryTaskScheduler
@@ -53,18 +59,28 @@ public class DefaultRepositoryTaskScheduler
     private Scheduler scheduler;
 
     /**
+     * @plexus.requirement role-hint="indexer"
+     */
+    private TaskQueue indexerQueue;
+
+    /**
+     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexer"
+     */
+    private IndexerTaskExecutor indexerTaskExecutor;
+
+    /**
      * @plexus.requirement
      */
     private ConfigurationStore configurationStore;
 
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryArtifactIndexFactory indexFactory;
+
     private static final String DISCOVERER_GROUP = "DISCOVERER";
 
     private static final String INDEXER_JOB = "indexerTask";
-
-    /**
-     * @plexus.requirement role-hint="indexer"
-     */
-    private RepositoryTask indexerTask;
 
     public void start()
         throws StartingException
@@ -97,22 +113,20 @@ public class DefaultRepositoryTaskScheduler
     private void scheduleJobs( Configuration configuration )
         throws ParseException, SchedulerException
     {
-        // TODO: would be nice to queue jobs that are triggered so we could avoid two running at the same time (so have a queue for discovery based jobs so they didn't thrash the repo)
         if ( configuration.getIndexPath() != null )
         {
-            JobDetail jobDetail = createJobDetail( INDEXER_JOB, indexerTask );
+            JobDetail jobDetail = createJobDetail( INDEXER_JOB );
 
             getLogger().info( "Scheduling indexer: " + configuration.getIndexerCronExpression() );
             CronTrigger trigger =
                 new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
             scheduler.scheduleJob( jobDetail, trigger );
 
-            // TODO: run as a job so it doesn't block startup/configuration saving
             try
             {
-                indexerTask.executeNowIfNeeded();
+                queueNowIfNeeded();
             }
-            catch ( TaskExecutionException e )
+            catch ( org.codehaus.plexus.taskqueue.execution.TaskExecutionException e )
             {
                 getLogger().error( "Error executing task first time, continuing anyway: " + e.getMessage(), e );
             }
@@ -123,13 +137,14 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    private JobDetail createJobDetail( String jobName, RepositoryTask task )
+    private JobDetail createJobDetail( String jobName )
     {
         JobDetail jobDetail = new JobDetail( jobName, DISCOVERER_GROUP, RepositoryTaskJob.class );
+
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put( AbstractJob.LOGGER, getLogger() );
-        dataMap.put( RepositoryTaskJob.TASK_KEY, task );
+        dataMap.put( RepositoryTaskJob.TASK_QUEUE, indexerQueue );
         jobDetail.setJobDataMap( dataMap );
+
         return jobDetail;
     }
 
@@ -170,9 +185,51 @@ public class DefaultRepositoryTaskScheduler
     }
 
     public void runIndexer()
-        throws TaskExecutionException
+        throws org.apache.maven.archiva.scheduler.TaskExecutionException
     {
-        indexerTask.execute();
+        IndexerTask task = new IndexerTask();
+        task.setJobName( "INDEX_INIT" );
+        try
+        {
+            indexerQueue.put( task );
+        }
+        catch ( TaskQueueException e )
+        {
+            throw new org.apache.maven.archiva.scheduler.TaskExecutionException( e.getMessage(), e );
+        }
+    }
+
+    public void queueNowIfNeeded()
+        throws org.codehaus.plexus.taskqueue.execution.TaskExecutionException
+    {
+        Configuration configuration;
+        try
+        {
+            configuration = configurationStore.getConfigurationFromStore();
+        }
+        catch ( ConfigurationStoreException e )
+        {
+            throw new TaskExecutionException( e.getMessage(), e );
+        }
+
+        File indexPath = new File( configuration.getIndexPath() );
+
+        try
+        {
+            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
+            if ( !artifactIndex.exists() )
+            {
+                runIndexer();
+            }
+        }
+        catch ( RepositoryIndexException e )
+        {
+            throw new TaskExecutionException( e.getMessage(), e );
+        }
+        catch ( org.apache.maven.archiva.scheduler.TaskExecutionException e )
+        {
+            throw new TaskExecutionException( e.getMessage(), e );
+        }
     }
 
 }

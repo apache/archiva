@@ -16,294 +16,30 @@ package org.apache.maven.archiva.scheduler.task;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
-import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
-import org.apache.maven.archiva.discoverer.DiscovererException;
-import org.apache.maven.archiva.discoverer.MetadataDiscoverer;
-import org.apache.maven.archiva.discoverer.filter.MetadataFilter;
-import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.record.IndexRecordExistsArtifactFilter;
-import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
-import org.apache.maven.archiva.reporting.ReportExecutor;
-import org.apache.maven.archiva.reporting.ReportGroup;
-import org.apache.maven.archiva.reporting.ReportingDatabase;
-import org.apache.maven.archiva.reporting.ReportingMetadataFilter;
-import org.apache.maven.archiva.reporting.ReportingStoreException;
-import org.apache.maven.archiva.scheduler.TaskExecutionException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
-import org.apache.maven.project.MavenProjectBuilder;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.codehaus.plexus.taskqueue.Task;
 
 /**
  * Task for discovering changes in the repository and updating the index accordingly.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @plexus.component role="org.apache.maven.archiva.scheduler.task.RepositoryTask" role-hint="indexer"
  */
 public class IndexerTask
-    extends AbstractLogEnabled
-    implements RepositoryTask
+    implements Task
 {
-    /**
-     * Configuration store.
-     *
-     * @plexus.requirement
-     */
-    private ConfigurationStore configurationStore;
+    private String jobName;
 
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryArtifactIndexFactory indexFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ConfiguredRepositoryFactory repoFactory;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.discoverer.ArtifactDiscoverer"
-     */
-    private Map artifactDiscoverers;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.discoverer.MetadataDiscoverer"
-     */
-    private Map metadataDiscoverers;
-
-    /**
-     * @plexus.requirement role-hint="standard"
-     */
-    private RepositoryIndexRecordFactory recordFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ReportExecutor reportExecutor;
-
-    /**
-     * @plexus.requirement role-hint="health"
-     */
-    private ReportGroup reportGroup;
-
-    private static final int ARTIFACT_BUFFER_SIZE = 1000;
-
-    public void execute()
-        throws TaskExecutionException
+    public long getMaxExecutionTime()
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-
-        File indexPath = new File( configuration.getIndexPath() );
-
-        execute( configuration, indexPath );
+        return 0;
     }
 
-    private void execute( Configuration configuration, File indexPath )
-        throws TaskExecutionException
+    public String getJobName()
     {
-        long time = System.currentTimeMillis();
-        getLogger().info( "Starting repository indexing process" );
-
-        RepositoryArtifactIndex index = indexFactory.createStandardIndex( indexPath );
-
-        try
-        {
-            Collection keys;
-            if ( index.exists() )
-            {
-                keys = index.getAllRecordKeys();
-            }
-            else
-            {
-                keys = Collections.EMPTY_LIST;
-            }
-
-            for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
-            {
-                RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
-
-                if ( repositoryConfiguration.isIndexed() )
-                {
-                    List blacklistedPatterns = new ArrayList();
-                    if ( repositoryConfiguration.getBlackListPatterns() != null )
-                    {
-                        blacklistedPatterns.addAll( repositoryConfiguration.getBlackListPatterns() );
-                    }
-                    if ( configuration.getGlobalBlackListPatterns() != null )
-                    {
-                        blacklistedPatterns.addAll( configuration.getGlobalBlackListPatterns() );
-                    }
-                    boolean includeSnapshots = repositoryConfiguration.isIncludeSnapshots();
-
-                    ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
-                    ReportingDatabase reporter = reportExecutor.getReportDatabase( repository, reportGroup );
-
-                    // keep original value in case there is another process under way
-                    long origStartTime = reporter.getStartTime();
-                    reporter.setStartTime( System.currentTimeMillis() );
-
-                    // Discovery process
-                    String layoutProperty = repositoryConfiguration.getLayout();
-                    ArtifactDiscoverer discoverer = (ArtifactDiscoverer) artifactDiscoverers.get( layoutProperty );
-                    AndArtifactFilter filter = new AndArtifactFilter();
-                    filter.add( new IndexRecordExistsArtifactFilter( keys ) );
-                    if ( !includeSnapshots )
-                    {
-                        filter.add( new SnapshotArtifactFilter() );
-                    }
-
-                    // Save some memory by not tracking paths we won't use
-                    // TODO: Plexus CDC should be able to inject this configuration
-                    discoverer.setTrackOmittedPaths( false );
-
-                    getLogger().info( "Searching repository " + repositoryConfiguration.getName() );
-                    List artifacts = discoverer.discoverArtifacts( repository, blacklistedPatterns, filter );
-
-                    if ( !artifacts.isEmpty() )
-                    {
-                        getLogger().info( "Discovered " + artifacts.size() + " unindexed artifacts" );
-
-                        // Work through these in batches, then flush the project cache.
-                        for ( int j = 0; j < artifacts.size(); j += ARTIFACT_BUFFER_SIZE )
-                        {
-                            int end = j + ARTIFACT_BUFFER_SIZE;
-                            List currentArtifacts =
-                                artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
-
-                            // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
-
-                            // run the reports. Done intermittently to avoid losing track of what is indexed since
-                            // that is what the filter is based on.
-                            reportExecutor.runArtifactReports( reportGroup, currentArtifacts, repository );
-
-                            index.indexArtifacts( currentArtifacts, recordFactory );
-
-                            // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
-                            // around that. TODO: remove when it is configurable
-                            flushProjectBuilderCacheHack();
-                        }
-                    }
-
-                    MetadataFilter metadataFilter = new ReportingMetadataFilter( reporter );
-
-                    MetadataDiscoverer metadataDiscoverer =
-                        (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
-                    List metadata =
-                        metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns, metadataFilter );
-
-                    if ( !metadata.isEmpty() )
-                    {
-                        getLogger().info( "Discovered " + metadata.size() + " unprocessed metadata files" );
-
-                        // run the reports
-                        reportExecutor.runMetadataReports( reportGroup, metadata, repository );
-                    }
-
-                    reporter.setStartTime( origStartTime );
-                }
-            }
-        }
-        catch ( RepositoryIndexException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-        catch ( DiscovererException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-        catch ( ReportingStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-
-        time = System.currentTimeMillis() - time;
-        getLogger().info( "Finished repository indexing process in " + time + "ms" );
+        return jobName;
     }
 
-    public void executeNowIfNeeded()
-        throws TaskExecutionException
+    public void setJobName( String jobName )
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-
-        File indexPath = new File( configuration.getIndexPath() );
-
-        try
-        {
-            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
-            if ( !artifactIndex.exists() )
-            {
-                execute( configuration, indexPath );
-            }
-        }
-        catch ( RepositoryIndexException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
+        this.jobName = jobName;
     }
-
-    /**
-     * @todo remove when no longer needed (MNG-142)
-     * @plexus.requirement
-     */
-    private MavenProjectBuilder projectBuilder;
-
-    private void flushProjectBuilderCacheHack()
-    {
-        try
-        {
-            if ( projectBuilder != null )
-            {
-                java.lang.reflect.Field f = projectBuilder.getClass().getDeclaredField( "rawProjectCache" );
-                f.setAccessible( true );
-                Map cache = (Map) f.get( projectBuilder );
-                cache.clear();
-
-                f = projectBuilder.getClass().getDeclaredField( "processedProjectCache" );
-                f.setAccessible( true );
-                cache = (Map) f.get( projectBuilder );
-                cache.clear();
-            }
-        }
-        catch ( NoSuchFieldException e )
-        {
-            throw new RuntimeException( e );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw new RuntimeException( e );
-        }
-    }
-
 }
