@@ -16,7 +16,6 @@ package org.apache.maven.archiva.scheduler.task;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.scheduler.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.Task;
 
 /**
@@ -27,15 +26,29 @@ import org.codehaus.plexus.taskqueue.Task;
 public interface RepositoryTask
     extends Task
 {
-    /**
-     * Execute the task.
-     */
-    void execute()
-        throws TaskExecutionException;
+    String QUEUE_POLICY_WAIT = "wait";
+
+    String QUEUE_POLICY_SKIP = "skip";
 
     /**
-     * Execute the task now if needed because the target doesn't exist.
+     * Gets the queue policy for this task.
+     *
+     * @return Queue policy for this task
      */
-    void executeNowIfNeeded()
-        throws TaskExecutionException;
+    String getQueuePolicy();
+
+    /**
+     * Sets the queue policy for this task.
+     *
+     * @param policy  
+     */
+    void setQueuePolicy( String policy );
+
+    /**
+     * Sets the job name to represent a group of similar / identical job tasks.  Can be used to check the
+     * task queue for similar / identical job tasks.
+     */
+    void setJobName( String jobName );
+
+    String getJobName();
 }

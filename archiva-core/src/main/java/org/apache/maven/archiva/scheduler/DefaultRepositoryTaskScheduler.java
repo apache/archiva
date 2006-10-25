@@ -27,6 +27,7 @@ import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
 import org.apache.maven.archiva.scheduler.task.IndexerTask;
+import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
@@ -143,6 +144,7 @@ public class DefaultRepositoryTaskScheduler
 
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( RepositoryTaskJob.TASK_QUEUE, indexerQueue );
+        dataMap.put( RepositoryTaskJob.TASK_QUEUE_POLICY, RepositoryTask.QUEUE_POLICY_SKIP );
         jobDetail.setJobDataMap( dataMap );
 
         return jobDetail;

@@ -17,6 +17,7 @@ package org.apache.maven.archiva.scheduler;
  */
 
 import org.apache.maven.archiva.scheduler.task.IndexerTask;
+import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -34,12 +35,13 @@ public class RepositoryTaskJob
 
     static final String TASK_QUEUE = "TASK_QUEUE";
 
+    static final String TASK_QUEUE_POLICY = "TASK_QUEUE_POLICY";
+
     /**
      * Execute the discoverer and the indexer.
      *
      * @param context
      * @throws org.quartz.JobExecutionException
-     *
      */
     public void execute( JobExecutionContext context )
         throws JobExecutionException
@@ -48,18 +50,32 @@ public class RepositoryTaskJob
         setJobDataMap( dataMap );
 
         TaskQueue indexerQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
+        String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        IndexerTask task = new IndexerTask();
+        RepositoryTask task = new IndexerTask();
         task.setJobName( context.getJobDetail().getName() );
 
         try
         {
-            indexerQueue.put( task );
+            if ( indexerQueue.getQueueSnapshot().size() == 0 )
+            {
+                indexerQueue.put( task );
+            }
+            else
+            {
+                if ( RepositoryTask.QUEUE_POLICY_WAIT.equals( queuePolicy ) )
+                {
+                    indexerQueue.put( task );
+                }
+                else if ( RepositoryTask.QUEUE_POLICY_SKIP.equals( queuePolicy ) )
+                {
+                    //do not queue anymore, policy is to skip
+                }
+            }
         }
         catch ( TaskQueueException e )
         {
             throw new JobExecutionException( e );
         }
     }
-
 }

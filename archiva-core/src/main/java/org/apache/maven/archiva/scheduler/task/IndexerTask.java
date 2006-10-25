@@ -16,17 +16,17 @@ package org.apache.maven.archiva.scheduler.task;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.taskqueue.Task;
-
 /**
  * Task for discovering changes in the repository and updating the index accordingly.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class IndexerTask
-    implements Task
+    implements RepositoryTask
 {
     private String jobName;
+
+    private String policy;
 
     public long getMaxExecutionTime()
     {
@@ -38,8 +38,20 @@ public class IndexerTask
         return jobName;
     }
 
+    public String getQueuePolicy()
+    {
+        return policy;
+    }
+
+    public void setQueuePolicy( String policy )
+    {
+        this.policy =  policy;
+    }
+
     public void setJobName( String jobName )
     {
         this.jobName = jobName;
     }
+
+    
 }
