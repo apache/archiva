@@ -27,7 +27,7 @@ BASEDIR=$HOME/repository-staging/to-ibiblio/maven2
 CHANGED_LOG=/tmp/sync-changed.log
 rm $CHANGED_LOG
 
-for f in `find conf -iname "*.sh"`
+for f in `find conf -maxdepth 1 -iname "*.sh"`
   do
 
   FROM=
