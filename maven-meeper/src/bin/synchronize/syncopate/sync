@@ -22,7 +22,7 @@ my $reportUrl = $configuration->val( "syncopate", "reportUrl" );
 
 if ( defined( $ARGV[0] ) )
 {
-    my $sourceConfiguration = new Config::IniFiles( -file => "conf/$ARGV[0]" . ".conf" );
+    my $sourceConfiguration = new Config::IniFiles( -file => "conf/m1/$ARGV[0]" . ".conf" );
     
     syncSource( $sourceConfiguration );
 }
@@ -37,7 +37,7 @@ else
 # -----------------------------------------------------------------------------
 sub syncSources
 {
-    my @sources = glob( "conf/*.conf" );
+    my @sources = glob( "conf/m1/*.conf" );
 
     for my $source (@sources) 
     {
