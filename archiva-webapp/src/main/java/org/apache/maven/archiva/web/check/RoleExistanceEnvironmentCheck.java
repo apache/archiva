@@ -1,17 +1,7 @@
 package org.apache.maven.archiva.web.check;
 
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.codehaus.plexus.rbac.profile.RoleProfileException;
-import org.codehaus.plexus.rbac.profile.RoleProfileManager;
-import org.codehaus.plexus.security.system.check.EnvironmentCheck;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.util.Iterator;
-import java.util.List;
 /*
- * Copyright 2006 The Apache Software Foundation.
+ * Copyright 2005-2006 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +15,17 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.archiva.configuration.ConfigurationStore;
+import org.apache.maven.archiva.configuration.ConfigurationStoreException;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.rbac.profile.RoleProfileException;
+import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.security.system.check.EnvironmentCheck;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * RoleExistanceEnvironmentCheck:

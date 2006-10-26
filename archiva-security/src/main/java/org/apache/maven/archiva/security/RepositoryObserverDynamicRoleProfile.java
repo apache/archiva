@@ -18,8 +18,8 @@ package org.apache.maven.archiva.security;
 
 import org.codehaus.plexus.rbac.profile.AbstractDynamicRoleProfile;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @plexus.component role="org.codehaus.plexus.rbac.profile.DynamicRoleProfile"

@@ -18,11 +18,7 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
-import org.codehaus.plexus.security.rbac.Resource;
 
 import java.io.File;
 import java.io.IOException;

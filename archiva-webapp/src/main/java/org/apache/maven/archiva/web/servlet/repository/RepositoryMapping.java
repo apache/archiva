@@ -16,16 +16,15 @@ package org.apache.maven.archiva.web.servlet.repository;
  * limitations under the License.
  */
 
+import it.could.webdav.DAVListener;
+import it.could.webdav.DAVProcessor;
+import it.could.webdav.DAVRepository;
+import it.could.webdav.DAVResource;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.logging.Logger;
 
 import java.io.File;
 import java.io.IOException;
-
-import it.could.webdav.DAVListener;
-import it.could.webdav.DAVProcessor;
-import it.could.webdav.DAVRepository;
-import it.could.webdav.DAVResource;
 
 /**
  * RepositoryMapping 

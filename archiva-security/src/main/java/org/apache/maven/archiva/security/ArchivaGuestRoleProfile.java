@@ -18,8 +18,8 @@ package org.apache.maven.archiva.security;
 
 import org.codehaus.plexus.rbac.profile.AbstractRoleProfile;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @todo why does this need to be created in the client app?

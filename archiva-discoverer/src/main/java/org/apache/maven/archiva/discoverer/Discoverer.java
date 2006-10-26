@@ -1,7 +1,5 @@
 package org.apache.maven.archiva.discoverer;
 
-import java.util.Iterator;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -17,6 +15,8 @@ import java.util.Iterator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import java.util.Iterator;
 
 /**
  * @author Edwin Punzalan

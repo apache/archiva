@@ -31,8 +31,8 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 import org.apache.maven.archiva.web.util.VersionMerger;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.net.MalformedURLException;

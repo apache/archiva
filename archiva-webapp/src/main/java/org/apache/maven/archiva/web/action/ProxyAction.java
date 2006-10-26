@@ -16,19 +16,17 @@ package org.apache.maven.archiva.web.action;
  * limitations under the License.
  */
 
+import com.opensymphony.webwork.interceptor.ServletResponseAware;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.ProxyManager;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
-import com.opensymphony.webwork.interceptor.ServletResponseAware;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Proxy functionality.

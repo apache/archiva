@@ -19,11 +19,11 @@ package org.apache.maven.archiva.web.action.admin;
 import org.apache.maven.archiva.scheduler.RepositoryTaskScheduler;
 import org.apache.maven.archiva.scheduler.TaskExecutionException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.security.rbac.Resource;
+import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
-import org.codehaus.plexus.security.rbac.Resource;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Configures the application.

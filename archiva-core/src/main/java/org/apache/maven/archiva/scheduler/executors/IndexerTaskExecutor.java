@@ -18,9 +18,9 @@ package org.apache.maven.archiva.scheduler.executors;
 
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
+import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.MetadataDiscoverer;

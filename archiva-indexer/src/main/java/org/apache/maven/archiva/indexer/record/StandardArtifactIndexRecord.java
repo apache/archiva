@@ -1,9 +1,5 @@
 package org.apache.maven.archiva.indexer.record;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -19,6 +15,10 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The a record with the fields in the standard index.

@@ -16,6 +16,8 @@ package org.apache.maven.archiva.web.servlet.repository;
  * limitations under the License.
  */
 
+import it.could.webdav.DAVTransaction;
+import it.could.webdav.DAVUtilities;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
@@ -33,18 +35,14 @@ import org.codehaus.plexus.security.ui.web.filter.authentication.HttpAuthenticat
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import it.could.webdav.DAVTransaction;
-import it.could.webdav.DAVUtilities;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * RepositoryAccess - access read/write to the repository.

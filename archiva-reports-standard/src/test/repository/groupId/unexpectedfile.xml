@@ -1,4 +1,5 @@
-This file is here to make sure that it will not be processed during unit <!--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,4 +15,5 @@ This file is here to make sure that it will not be processed during unit <!--
   ~ limitations under the License.
   -->
 
+This file is here to make sure that it will not be processed during unit 
     test.

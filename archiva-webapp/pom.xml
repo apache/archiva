@@ -1,5 +1,4 @@
-<?xml version="1.0" ?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright 2005-2006 The Apache Software Foundation.
   ~
@@ -120,8 +119,8 @@
       <version>2.1-SNAPSHOT</version>
       <exclusions>
         <exclusion>
-            <groupId>plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
+          <groupId>plexus</groupId>
+          <artifactId>plexus-utils</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -190,12 +189,12 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>1.2</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-mail-sender-javamail</artifactId>
       <version>1.0-alpha-3</version>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
@@ -239,13 +238,20 @@
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
                 <include>META-INF</include>
-                <include>WEB-INF/classes</include>      <!-- Classes and Resources from other wars -->
-                <include>WEB-INF/lib</include>          <!-- Dependencies from other wars -->
-                <include>WEB-INF/database</include>     <!-- Database location configured in application.xml -->
-                <include>WEB-INF/logs</include>         <!-- Log file location specified in application.xml -->
-                <include>pss</include>                  <!-- plexus-security css and javascript -->
-                <include>WEB-INF/jsp/pss</include>      <!-- plexus-security jsps -->
-                <include>WEB-INF/template/pss</include> <!-- plexus-security xwork templates -->
+                <include>WEB-INF/classes</include>
+                <!-- Classes and Resources from other wars -->
+                <include>WEB-INF/lib</include>
+                <!-- Dependencies from other wars -->
+                <include>WEB-INF/database</include>
+                <!-- Database location configured in application.xml -->
+                <include>WEB-INF/logs</include>
+                <!-- Log file location specified in application.xml -->
+                <include>pss</include>
+                <!-- plexus-security css and javascript -->
+                <include>WEB-INF/jsp/pss</include>
+                <!-- plexus-security jsps -->
+                <include>WEB-INF/template/pss</include>
+                <!-- plexus-security xwork templates -->
               </includes>
             </fileset>
           </filesets>

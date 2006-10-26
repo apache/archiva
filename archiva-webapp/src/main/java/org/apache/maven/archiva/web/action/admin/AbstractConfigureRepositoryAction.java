@@ -25,14 +25,14 @@ import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.rbac.profile.RoleProfileException;
+import org.codehaus.plexus.rbac.profile.RoleProfileManager;
 import org.codehaus.plexus.security.rbac.RbacManagerException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
-import org.codehaus.plexus.rbac.profile.RoleProfileException;
-import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.IOException;
 

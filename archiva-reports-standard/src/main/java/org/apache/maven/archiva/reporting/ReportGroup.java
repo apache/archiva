@@ -1,12 +1,5 @@
 package org.apache.maven.archiva.reporting;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.model.Model;
-
-import java.util.Map;
-
 /*
  * Copyright 2005-2006 The Apache Software Foundation.
  *
@@ -22,6 +15,13 @@ import java.util.Map;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
+import org.apache.maven.model.Model;
+
+import java.util.Map;
 
 /**
  * A grouping or report processors for execution as a visible report from the web interface - eg, "health",

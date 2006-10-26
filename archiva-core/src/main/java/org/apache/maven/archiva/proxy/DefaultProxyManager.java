@@ -17,15 +17,15 @@ package org.apache.maven.archiva.proxy;
  */
 
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ConfigurationChangeException;
+import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
+import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Proxy;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
