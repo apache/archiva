@@ -79,6 +79,8 @@
   </table>
 </c:if>
 
+<c:set var="urlbase">${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}/repository/</c:set>
+
 <div>
   <div style="float: right">
     <%-- TODO replace with icons --%>
@@ -120,6 +122,10 @@
         <td>${repository.directory}</td>
       </tr>
       <tr>
+        <th>WebDAV URL</th>
+        <td><a href="${urlbase}${repository.urlName}">${urlbase}${repository.urlName}</a></td>
+      </tr>
+      <tr>
         <th>Type</th>
           <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
         <td>
@@ -135,11 +141,42 @@
       </tr>
       <tr>
         <th>Snapshots Included</th>
-        <td class="${repository.includeSnapshots ? 'doneMark' : 'errorMark'}"></td>
+        <td class="${repository.includeSnapshots ? 'doneMark' : 'errorMark'} booleanIcon"> ${repository.includeSnapshots}</td>
       </tr>
       <tr>
         <th>Indexed</th>
-        <td class="${repository.indexed ? 'doneMark' : 'errorMark'}"></td>
+        <td class="${repository.indexed ? 'doneMark' : 'errorMark'} booleanIcon"> ${repository.indexed}</td>
+      </tr>
+      <tr>
+        <th>POM Snippet</th>
+        <td>
+<pre class="pom">
+&lt;project>
+  ...
+  &lt;distributionManagement>
+    &lt;${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
+      &lt;id>${repository.id}&lt;/id>
+      &lt;url>dav:${urlbase}${repository.urlName}&lt;/url>
+    &lt;/${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
+  &lt;/distributionManagement>
+  
+  &lt;repositories>
+    &lt;repository>
+      &lt;id>${repository.id}&lt;/id>
+      &lt;name>${repository.name}&lt;/name>
+      &lt;url>${urlbase}${repository.urlName}&lt;/url>
+      &lt;releases>
+        &lt;enabled>${repository.includeSnapshots ? 'false' : 'true'}&lt;/enabled>
+      &lt;/releases>
+      &lt;snapshots>
+        &lt;enabled>${repository.includeSnapshots ? 'true' : 'false'}&lt;/enabled>
+      &lt;/snapshots>
+    &lt;/repository>
+  &lt;/repositories>
+  ...
+&lt;/project>
+</pre>        
+        </td>
       </tr>
     </table>
   </div>

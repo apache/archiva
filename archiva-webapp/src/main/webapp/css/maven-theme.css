@@ -170,6 +170,18 @@ dt {
     background-image: url( ../images/icon_info_sml.gif );
 }
 
+.booleanIcon {
+	padding-left: 20px;
+	height: 20px;
+}
+
+pre.pom {
+	font-size: 0.9em;
+	border: 1px solid #ddddff;
+	background-color: #f8f8ff;
+	padding: 5px;	
+}
+
 #leftColumn {
     padding: 4px 4px 4px 4px;
     overflow: hidden;

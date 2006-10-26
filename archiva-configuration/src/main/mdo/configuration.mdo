@@ -114,6 +114,19 @@
         return valid;
     }
 
+    public RepositoryConfiguration getRepositoryByUrlName( String urlName )
+    {
+        for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
+            if ( repository.getUrlName().equals( urlName ) )
+            {
+                return repository;
+            }
+        }
+        return null;
+    }
+    
     public RepositoryConfiguration getRepositoryById( String id )
     {
         for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
@@ -256,6 +269,16 @@
       <name>RepositoryConfiguration</name>
       <version>1.0.0</version>
       <fields>
+        <field>
+          <name>urlName</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL name for this repository.
+            Used to create the WebDAV URL for the repository such like - http://hostname.com/repository/${urlName}/
+          </description>
+        </field>
         <field>
           <name>directory</name>
           <version>1.0.0</version>

@@ -44,7 +44,7 @@ public class RepositoryAccessTest
 
         assertNotNull( requestPath );
 
-        assertEquals( expectedId, requestPath.repoId );
+        assertEquals( expectedId, requestPath.repoName );
         assertEquals( expectedPath, requestPath.path );
     }
 

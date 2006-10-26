@@ -20,6 +20,7 @@ import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Reader;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -99,6 +100,7 @@ public class DefaultConfigurationStore
             try
             {
                 configuration = reader.read( fileReader, false );
+                sanitizeConfiguration( configuration );
             }
             catch ( IOException e )
             {
@@ -114,6 +116,27 @@ public class DefaultConfigurationStore
             }
         }
         return configuration;
+    }
+
+    /**
+     * Perform any Upgrades and Adjustments needed to bring configuration up to the
+     * current configuration format.
+     * 
+     * @param config the configuration to upgrade and adjust.
+     */
+    private void sanitizeConfiguration( Configuration config )
+    {
+        Iterator it = config.getRepositories().iterator();
+        while ( it.hasNext() )
+        {
+            RepositoryConfiguration repo = (RepositoryConfiguration) it.next();
+            
+            // Ensure that the repo.urlName is set.
+            if ( StringUtils.isEmpty( repo.getUrlName() ) )
+            {
+                repo.setUrlName( repo.getId() );
+            }
+        }
     }
 
     public void storeConfiguration( Configuration configuration )

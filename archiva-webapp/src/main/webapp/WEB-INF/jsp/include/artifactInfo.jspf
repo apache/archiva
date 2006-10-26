@@ -99,6 +99,18 @@
   --%>
 </table>
 
+<c:if test="${model.packaging != 'pom'}">
+<h2>POM Dependency Snippet</h2>
+<pre class="pom">
+    &lt;dependency>
+      &lt;groupId>${model.groupId}&lt;/groupId>
+      &lt;artifactId>${model.artifactId}&lt;/artifactId>
+      &lt;version>${model.version}&lt;/version><c:if test="${model.packaging != 'jar'}">
+      &lt;type>${model.packaging}&lt;/type></c:if>
+    &lt;/dependency>
+</pre>
+</c:if>
+
 <c:if test="${!empty(model.url) || model.organization != null || !empty(model.licenses)
     || model.issueManagement != null || model.ciManagement != null}">
 

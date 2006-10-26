@@ -88,7 +88,7 @@ public class RepositoryAccess
 
     public class RequestPath
     {
-        String repoId;
+        String repoName;
 
         String path;
     }
@@ -125,11 +125,11 @@ public class RepositoryAccess
             return;
         }
 
-        RepositoryConfiguration repoconfig = config.getRepositoryById( reqpath.repoId );
+        RepositoryConfiguration repoconfig = config.getRepositoryByUrlName( reqpath.repoName );
 
         if ( repoconfig == null )
         {
-            routeToErrorPage( response, "Invalid Repository ID." );
+            routeToErrorPage( response, "Invalid Repository URL." );
             return;
         }
 
@@ -247,7 +247,7 @@ public class RepositoryAccess
         // Find the first 'path' of the pathInfo.
 
         // Default: "/pathid" -> "pathid"
-        ret.repoId = requestPathInfo.substring( 1 );
+        ret.repoName = requestPathInfo.substring( 1 );
         ret.path = "/";
 
         // Find first element, if slash exists. 
@@ -255,7 +255,7 @@ public class RepositoryAccess
         if ( slash > 0 )
         {
             // Filtered: "/central/org/apache/maven/" -> "central"
-            ret.repoId = requestPathInfo.substring( 1, slash );
+            ret.repoName = requestPathInfo.substring( 1, slash );
 
             String repoPath = requestPathInfo.substring( slash );
 
