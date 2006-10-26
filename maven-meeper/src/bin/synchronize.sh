@@ -1,11 +1,12 @@
 #!/bin/sh
 
 # ------------------------------------------------------------------------
-# 1. Sync Maven 1.x repositories
+# 1. Sync Maven 1.x repositories to central
 # 2. Convert Maven 1.x repository to Maven 2.x repository
 # 3. Manual fixes
-# 4. Sync the Maven 2.x repository to Ibiblio
-# 5. Copy the mod_rewrite rules to the Maven 2.x repository
+# 4. Sync Maven 2.x repositories to central
+# 5. Sync the Maven 2.x repository to Ibiblio
+# 6. Copy the mod_rewrite rules to the Maven 1.x repository @ Ibiblio
 # ------------------------------------------------------------------------
 
 MODE=$1
@@ -74,6 +75,17 @@ grep -v 1.1-dev $CL/maven-metadata.xml > $CL/maven-metadata.xml.tmp
 mv $CL/maven-metadata.xml.tmp $CL/maven-metadata.xml
 md5sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.md5
 sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
+
+# ------------------------------------------------------------------------
+# 4. Sync Maven 2.x repositories to central
+# ------------------------------------------------------------------------
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to sync Maven 2.x repositories to central, or hit ^C to quit." && echo
+
+(
+  cd $M2_SYNC
+  ./m2-sync.sh go
+)
 
 # ------------------------------------------------------------------------
 # Ibiblio synchronization: sync the central repository to Ibiblio 
