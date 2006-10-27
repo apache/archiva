@@ -98,7 +98,7 @@ public class DuplicateArtifactFileReportProcessor
                                 String groupId = artifact.getGroupId();
                                 if ( groupId.equals( result.getGroupId() ) )
                                 {
-                                    addFailures( reporter, artifact, "duplicate",
+                                    addFailure( reporter, artifact, "duplicate",
                                                  "Found duplicate for " + artifact.getId() );
                                 }
                             }
@@ -117,7 +117,7 @@ public class DuplicateArtifactFileReportProcessor
         }
     }
 
-    private static void addFailures( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
         reporter.addFailure( artifact, ROLE_HINT, problem, reason );
