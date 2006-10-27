@@ -48,3 +48,13 @@ Subprojects
   * archiva-webapp - creates a war file
   * design - contains a mock-up currently
   * maven-meeper - rsync scripts to sync repositories. Also converts m1 repositories to m2 repositories.
+
+Concepts
+
+  There are various terms in Archiva that are worth explaining and defining. 
+
+  * "Managed" - A managed repository is a repository which Archiva is sitting on top of that may be browsed.
+  * "Indexed" - The ability to search a managed repository.
+  * "Proxied" - A remote repository which an existing managed repository can be used as a facade for.
+  * "Synchronized" - A remote repository which is physically copied down to be managed under Archiva. 
+  * "Identifier" - A short ID for your repository that will be used in URLs.
