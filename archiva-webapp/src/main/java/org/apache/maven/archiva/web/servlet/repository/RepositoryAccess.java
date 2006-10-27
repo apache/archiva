@@ -81,6 +81,7 @@ public class RepositoryAccess
     static
     {
         ACCESS_METHODS = new ArrayList();
+        ACCESS_METHODS.add( "HEAD" );
         ACCESS_METHODS.add( "GET" );
         ACCESS_METHODS.add( "PROPFIND" );
         ACCESS_METHODS.add( "OPTIONS" );
@@ -185,7 +186,9 @@ public class RepositoryAccess
             {
                 if ( authzResult.getException() != null )
                 {
-                    getLogger().warn( "Authorization Denied", authzResult.getException() );
+                    getLogger().warn( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest="
+                                          + isWriteRequest + ",permission=" + permission + "] : "
+                                          + authzResult.getException().getMessage() );
                 }
                 
                 // Issue HTTP Challenge.
