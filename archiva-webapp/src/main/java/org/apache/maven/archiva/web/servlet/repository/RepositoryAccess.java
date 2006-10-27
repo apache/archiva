@@ -27,6 +27,7 @@ import org.apache.maven.archiva.web.servlet.AbstractPlexusServlet;
 import org.codehaus.plexus.security.authentication.AuthenticationException;
 import org.codehaus.plexus.security.authentication.AuthenticationResult;
 import org.codehaus.plexus.security.authorization.AuthorizationException;
+import org.codehaus.plexus.security.authorization.AuthorizationResult;
 import org.codehaus.plexus.security.policy.AccountLockedException;
 import org.codehaus.plexus.security.policy.MustChangePasswordException;
 import org.codehaus.plexus.security.system.SecuritySession;
@@ -134,19 +135,18 @@ public class RepositoryAccess
         }
 
         // Authentication Tests.
-
-        AuthenticationResult result;
         try
         {
-            result = httpAuth.getAuthenticationResult( request, response );
+            AuthenticationResult result = httpAuth.getAuthenticationResult( request, response );
 
-            if ( !result.isAuthenticated() )
+            if ( ( result != null ) && !result.isAuthenticated() )
             {
                 // Must Authenticate.
                 httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
                                     new AuthenticationException( "User Credentials Invalid" ) );
                 return;
             }
+
         }
         catch ( AuthenticationException e )
         {
@@ -178,10 +178,16 @@ public class RepositoryAccess
                 permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
             
-            boolean isAuthorized = securitySystem.isAuthorized( securitySession, permission, repoconfig.getId() );
-
-            if ( !isAuthorized )
+            AuthorizationResult authzResult = securitySystem
+                .authorize( securitySession, permission, repoconfig.getId() );
+             
+            if ( !authzResult.isAuthorized() )
             {
+                if ( authzResult.getException() != null )
+                {
+                    getLogger().warn( "Authorization Denied", authzResult.getException() );
+                }
+                
                 // Issue HTTP Challenge.
                 httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
                                     new AuthenticationException( "Authorization Denied." ) );
