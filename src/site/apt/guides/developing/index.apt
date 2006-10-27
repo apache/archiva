@@ -34,15 +34,15 @@ Subprojects
 
   * archiva-applet - The progress bar on the checksum checking page.
   * archiva-configuration - A facade on top of the Plexus configuration XML.
-  * archiva-converter - ????
+  * archiva-converter - converts an m1 repository to an m2 one - currently not hooked up
   * archiva-core - central code, business objects, modello etc.
   * archiva-discoverer - monitors the managed repositories and kicks off the indexing.
   * archiva-indexer - the lucene indexing.
   * archiva-plexus-application - archiva can run on plexus as well as as a war. This creates a plexus app.
   * archiva-plexus-runtime - archiva can run on plexus as well as as a war. This runs lots of apps.
-  * archiva-proxy - proxy repositories?
+  * archiva-proxy - proxies repositories?
   * archiva-reports-standard - a couple of reports are implemented. Not very pluginable yet.
-  * archiva-repository-layer - ????
+  * archiva-repository-layer - a query layer for the reports
   * archiva-security - webapp security
   * archiva-utils - some handy archiva specific utils
   * archiva-webapp - creates a war file
