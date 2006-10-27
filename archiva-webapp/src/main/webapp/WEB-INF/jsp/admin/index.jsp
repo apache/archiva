@@ -149,14 +149,14 @@
       </tr>
       <tr>
         <th>POM Snippet</th>
-        <td>
-<pre class="pom">
-&lt;project>
+        <td><a href="#" onclick="Effect.SlideDown('repoPom${repository.id}'); return false;">Show POM Snippet</a><br />
+<pre class="pom" style="display: none;" id="repoPom${repository.id}"><code>&lt;project>
   ...
   &lt;distributionManagement>
     &lt;${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
       &lt;id>${repository.id}&lt;/id>
-      &lt;url>dav:${urlbase}${repository.urlName}&lt;/url>
+      &lt;url>dav:${urlbase}${repository.urlName}&lt;/url><c:if test="${repository.layout != 'default'}">
+      &lt;layout>${repository.layout}&lt;/layout></c:if>
     &lt;/${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
   &lt;/distributionManagement>
   
@@ -164,7 +164,8 @@
     &lt;repository>
       &lt;id>${repository.id}&lt;/id>
       &lt;name>${repository.name}&lt;/name>
-      &lt;url>${urlbase}${repository.urlName}&lt;/url>
+      &lt;url>${urlbase}${repository.urlName}&lt;/url><c:if test="${repository.layout != 'default'}">
+      &lt;layout>${repository.layout}&lt;/layout></c:if>
       &lt;releases>
         &lt;enabled>${repository.includeSnapshots ? 'false' : 'true'}&lt;/enabled>
       &lt;/releases>
@@ -175,7 +176,7 @@
   &lt;/repositories>
   ...
 &lt;/project>
-</pre>        
+</code></pre>        
         </td>
       </tr>
     </table>
