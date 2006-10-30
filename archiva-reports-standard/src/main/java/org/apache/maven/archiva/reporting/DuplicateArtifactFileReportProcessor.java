@@ -18,8 +18,6 @@ package org.apache.maven.archiva.reporting;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
-import org.apache.maven.archiva.digest.Digester;
-import org.apache.maven.archiva.digest.DigesterException;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
@@ -29,6 +27,8 @@ import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 
 import java.io.File;
 import java.util.Iterator;

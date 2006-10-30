@@ -16,8 +16,8 @@ package org.apache.maven.archiva.indexer.record;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.digest.Digester;
-import org.apache.maven.archiva.digest.DigesterException;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;

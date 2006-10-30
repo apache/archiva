@@ -16,8 +16,6 @@ package org.apache.maven.archiva.proxy;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.digest.DigestUtils;
-import org.apache.maven.archiva.digest.DigesterException;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.artifact.Artifact;
@@ -40,6 +38,8 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.observers.ChecksumObserver;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.codehaus.plexus.digest.DigestUtils;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;

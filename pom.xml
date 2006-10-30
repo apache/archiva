@@ -260,6 +260,11 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-digest</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.plexus.security</groupId>
         <artifactId>plexus-security-rbac-profile</artifactId>
         <version>${plexus-security.version}</version>

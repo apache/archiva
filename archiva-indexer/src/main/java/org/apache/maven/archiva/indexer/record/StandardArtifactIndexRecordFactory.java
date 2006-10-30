@@ -16,7 +16,6 @@ package org.apache.maven.archiva.indexer.record;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.digest.Digester;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -27,6 +26,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
+import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;

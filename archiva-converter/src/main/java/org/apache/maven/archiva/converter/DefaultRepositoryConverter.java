@@ -17,8 +17,6 @@ package org.apache.maven.archiva.converter;
  */
 
 import org.apache.maven.archiva.converter.transaction.FileTransaction;
-import org.apache.maven.archiva.digest.Digester;
-import org.apache.maven.archiva.digest.DigesterException;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -39,6 +37,8 @@ import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;

@@ -23,7 +23,7 @@
       <implementation>org.apache.maven.archiva.reporting.DuplicateArtifactFileReportProcessor</implementation>
       <requirements>
         <requirement>
-          <role>org.apache.maven.archiva.digest.Digester</role>
+          <role>org.codehaus.plexus.digest.Digester</role>
           <role-hint>md5</role-hint>
         </requirement>
         <requirement>

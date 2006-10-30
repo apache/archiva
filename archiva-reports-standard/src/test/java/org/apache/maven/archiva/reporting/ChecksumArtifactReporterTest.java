@@ -16,13 +16,13 @@ package org.apache.maven.archiva.reporting;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.digest.DigesterException;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.GroupRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
+import org.codehaus.plexus.digest.DigesterException;
 
 import java.io.File;
 import java.io.IOException;
