@@ -1,0 +1,1 @@
+0  */4 * * * cd ~/components/maven-meeper/src/bin; ./synchronize.sh 2>&1 | tee $HOME/repository-tools/last-sync-results.txt
