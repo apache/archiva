@@ -27,10 +27,6 @@
   <name>Archiva Artifact Discoverer</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-utils</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>

@@ -123,7 +123,6 @@
     <module>archiva-discoverer</module>
     <module>archiva-reports-standard</module>
     <module>archiva-indexer</module>
-    <module>archiva-utils</module>
     <module>archiva-webapp</module>
     <module>archiva-proxy</module>
     <module>archiva-core</module>
@@ -232,11 +231,6 @@
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-proxy</artifactId>
-        <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
-        <artifactId>archiva-utils</artifactId>
         <version>${pom.version}</version>
       </dependency>
       <dependency>
