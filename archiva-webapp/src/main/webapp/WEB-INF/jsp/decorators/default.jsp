@@ -19,6 +19,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ page import="java.util.Calendar" %>
 <html>
 <head>
   <title>Maven Archiva ::
@@ -146,9 +147,18 @@
   <hr/>
 </div>
 
+<%
+    int inceptionYear = 2005;
+    int currentYear = Calendar.getInstance().get( Calendar.YEAR );
+    String copyrightRange = String.valueOf( inceptionYear );
+    if ( inceptionYear != currentYear )
+    {
+        copyrightRange = copyrightRange + "-" + String.valueOf( currentYear );
+    }
+%>
 <div id="footer">
   <div class="xright">&#169;
-    2005-2006 Apache Software Foundation
+    Copyright &copy; <%= copyrightRange %> Apache Software Foundation
   </div>
 
   <div class="clear">
