@@ -49,6 +49,7 @@
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-webapp</artifactId>
+      <type>war</type>
     </dependency>
   </dependencies>
   <!-- For filtering -->
