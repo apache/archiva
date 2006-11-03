@@ -24,12 +24,12 @@ import java.io.File;
 /**
  * @author Jason van Zyl
  */
-public interface RepositoryManager
+public interface Archiva
 {
     /**
      * Role of the Repository Manager
      */
-    String ROLE = RepositoryManager.class.getName();
+    String ROLE = Archiva.class.getName();
 
     /**
      * Convert a legacy repository to a modern repository. This means a Maven 1.x repository

@@ -33,7 +33,7 @@ public class RepositoryManagerTest
 
         File repositoryDirectory = getTestFile( "target/maven-2.x-repository" );
 
-        RepositoryManager rm = (RepositoryManager) lookup( RepositoryManager.ROLE );
+        Archiva rm = (Archiva) lookup( Archiva.ROLE );
 
         rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, true );
     }
