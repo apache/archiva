@@ -19,12 +19,6 @@ public class CliManager
 {
     public static char CONVERT = 'c';
 
-    public static final char OLD_REPOSITORY_PATH = 'o';
-
-    public static final char NEW_REPOSITORY_PATH = 'n';
-
-    public static final char BLACKLISTED_PATTERNS = 'b';
-
     // ----------------------------------------------------------------------------
     // These are standard options that we would want to use for all our projects.
     // ----------------------------------------------------------------------------
@@ -47,17 +41,10 @@ public class CliManager
     {
         options = new Options();
 
-        options.addOption( OptionBuilder.withLongOpt( "convert" ).withDescription(
-            "Convert a legacy Maven 1.x repository to a Maven 2.x repository." ).create( CONVERT ) );
-
-        options.addOption( OptionBuilder.withLongOpt( "old-repo" ).hasArg().withDescription(
-            "Path to Maven 1.x legacy repository to convert." ).create( OLD_REPOSITORY_PATH ) );
-
-        options.addOption( OptionBuilder.withLongOpt( "new-repo" ).hasArg().withDescription(
-            "Path to newly created Maven 2.x repository." ).create( NEW_REPOSITORY_PATH ) );
-
-        options.addOption( OptionBuilder.withLongOpt( "new-repo" ).hasArg().withDescription(
-            "Path to newly created Maven 2.x repository." ).create( BLACKLISTED_PATTERNS  ) );
+        options.addOption(
+            OptionBuilder.withLongOpt( "convert" ).hasArg().withDescription(
+            "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion." )
+                .create( CONVERT ) );
     }
 
     public CommandLine parse( String[] args )

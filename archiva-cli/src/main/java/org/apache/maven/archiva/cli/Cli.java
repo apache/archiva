@@ -31,6 +31,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.List;
 import java.util.Arrays;
@@ -44,6 +45,12 @@ import java.util.Arrays;
  */
 public class Cli
 {
+    public static final String SOURCE_REPO_PATH = "sourceRepositoryPath";
+
+    public static final String TARGET_REPO_PATH = "targetRepositoryPath";
+
+    public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
+
     public static void main( String[] args )
     {
         ClassWorld classWorld = new ClassWorld( "plexus.core", Thread.currentThread().getContextClassLoader() );
@@ -154,41 +161,43 @@ public class Cli
 
             if ( cli.hasOption( CliManager.CONVERT ) )
             {
-                if ( cli.hasOption( CliManager.OLD_REPOSITORY_PATH ) &&
-                    cli.hasOption( CliManager.NEW_REPOSITORY_PATH ) )
+                Properties p = new Properties();
+
+                try
                 {
-                    File oldRepositoryPath = new File( cli.getOptionValue( CliManager.OLD_REPOSITORY_PATH ) );
-
-                    File newRepositoryPath = new File( cli.getOptionValue( CliManager.NEW_REPOSITORY_PATH ) );
-
-                    System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
-
-                    List blacklistedPatterns = null;
-
-                    if ( cli.hasOption( CliManager.BLACKLISTED_PATTERNS ) )
-                    {
-                        blacklistedPatterns = Arrays.asList( StringUtils.split( cli.getOptionValue( CliManager.BLACKLISTED_PATTERNS ), "," ) );
-                    }
-
-                    try
-                    {
-                        archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, blacklistedPatterns, true );
-                    }
-                    catch ( RepositoryConversionException e )
-                    {
-                        showFatalError( "", e, true );
-                    }
-                    catch ( DiscovererException e )
-                    {
-                        showFatalError( "", e, true );
-                    }
+                    p.load( new FileInputStream( cli.getOptionValue( CliManager.CONVERT ) ) );
                 }
-                else
+                catch ( IOException e )
                 {
-                    System.out.println(
-                        "You need to specify both a repository to convert and the path for the repository that will be created." );
+                    showFatalError( "Cannot find properties file which describes the conversion.", e, true );
+                }
 
-                    cliManager.displayHelp();
+                File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
+
+                File newRepositoryPath = new File( p.getProperty( TARGET_REPO_PATH ) );
+
+                System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
+
+                List blacklistedPatterns = null;
+
+                String s = p.getProperty( BLACKLISTED_PATTERNS );
+
+                if ( s != null )
+                {
+                    blacklistedPatterns = Arrays.asList( StringUtils.split( s, "," ) );
+                }
+
+                try
+                {
+                    archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, blacklistedPatterns, true );
+                }
+                catch ( RepositoryConversionException e )
+                {
+                    showFatalError( "Error converting repository.", e, true );
+                }
+                catch ( DiscovererException e )
+                {
+                    showFatalError( "Error discovery artifacts to convert.", e, true );
                 }
             }
 
@@ -206,8 +215,8 @@ public class Cli
     }
 
     private static int showFatalError( String message,
-                                        Exception e,
-                                        boolean show )
+                                       Exception e,
+                                       boolean show )
     {
         System.err.println( "FATAL ERROR: " + message );
 
