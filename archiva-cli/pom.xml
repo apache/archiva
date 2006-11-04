@@ -60,6 +60,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <!-- This needs to run here as it can't run in the package phase 
+                 because the directory assembly needs to be made first. Total hack, but works.-->
             <phase>integration-test</phase>
             <configuration>
               <sourceRoot>target/generated/src/main/java</sourceRoot>
