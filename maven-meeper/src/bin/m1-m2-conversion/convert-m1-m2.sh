@@ -1,7 +1,7 @@
 #!/bin/sh
 
 java -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c synchronize.properties
-java -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c synchronize-java.net.properties
+#java -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c synchronize-java.net.properties
 
 dir=/home/maven/repository-staging/to-ibiblio
 src=$dir/maven2-repoclean
