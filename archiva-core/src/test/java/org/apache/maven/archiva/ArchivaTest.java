@@ -35,6 +35,6 @@ public class ArchivaTest
 
         Archiva rm = (Archiva) lookup( Archiva.ROLE );
 
-        rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, true );
+        rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, null, true );
     }
 }

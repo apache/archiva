@@ -23,6 +23,8 @@ public class CliManager
 
     public static final char NEW_REPOSITORY_PATH = 'n';
 
+    public static final char BLACKLISTED_PATTERNS = 'b';
+
     // ----------------------------------------------------------------------------
     // These are standard options that we would want to use for all our projects.
     // ----------------------------------------------------------------------------
@@ -53,6 +55,9 @@ public class CliManager
 
         options.addOption( OptionBuilder.withLongOpt( "new-repo" ).hasArg().withDescription(
             "Path to newly created Maven 2.x repository." ).create( NEW_REPOSITORY_PATH ) );
+
+        options.addOption( OptionBuilder.withLongOpt( "new-repo" ).hasArg().withDescription(
+            "Path to newly created Maven 2.x repository." ).create( BLACKLISTED_PATTERNS  ) );
     }
 
     public CommandLine parse( String[] args )

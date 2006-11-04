@@ -25,12 +25,15 @@ import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.File;
 import java.util.Properties;
+import java.util.List;
+import java.util.Arrays;
 
 /**
  * @author jason van zyl
@@ -160,9 +163,16 @@ public class Cli
 
                     System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
 
+                    List blacklistedPatterns = null;
+
+                    if ( cli.hasOption( CliManager.BLACKLISTED_PATTERNS ) )
+                    {
+                        blacklistedPatterns = Arrays.asList( StringUtils.split( cli.getOptionValue( CliManager.BLACKLISTED_PATTERNS ), "," ) );
+                    }
+
                     try
                     {
-                        archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, true );
+                        archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, blacklistedPatterns, true );
                     }
                     catch ( RepositoryConversionException e )
                     {
