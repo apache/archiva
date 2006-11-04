@@ -132,6 +132,7 @@
     <module>archiva-plexus-application</module>
     <module>archiva-plexus-runtime</module>
     <module>archiva-security</module>
+    <module>archiva-cli</module>
   </modules>
   <dependencies>
     <dependency>

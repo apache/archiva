@@ -23,7 +23,7 @@ import java.io.File;
 /**
  * @author Jason van Zyl
  */
-public class RepositoryManagerTest
+public class ArchivaTest
     extends PlexusTestCase
 {
     public void testLegacyRepositoryConversion()

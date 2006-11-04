@@ -4,6 +4,7 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * @author Jason van Zyl
@@ -19,7 +20,11 @@ public interface LegacyRepositoryConverter
      * @param legacyRepositoryDirectory
      * @param repositoryDirectory
      * @throws org.apache.maven.archiva.converter.RepositoryConversionException
+     *
      */
-    void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory, boolean includeSnapshots )
+    void convertLegacyRepository( File legacyRepositoryDirectory,
+                                  File repositoryDirectory,
+                                  List blacklistedPatterns,
+                                  boolean includeSnapshots )
         throws RepositoryConversionException, DiscovererException;
 }

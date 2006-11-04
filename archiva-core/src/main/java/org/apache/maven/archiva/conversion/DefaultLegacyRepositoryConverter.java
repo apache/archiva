@@ -63,7 +63,9 @@ public class DefaultLegacyRepositoryConverter
      */
     private ReportGroup reportGroup;
 
-    public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
+    public void convertLegacyRepository( File legacyRepositoryDirectory,
+                                         File repositoryDirectory,
+                                         List blacklistedPatterns,
                                          boolean includeSnapshots )
         throws RepositoryConversionException, DiscovererException
     {
@@ -88,7 +90,7 @@ public class DefaultLegacyRepositoryConverter
 
         ArtifactFilter filter =
             includeSnapshots ? new AcceptAllArtifactFilter() : (ArtifactFilter) new SnapshotArtifactFilter();
-        List legacyArtifacts = artifactDiscoverer.discoverArtifacts( legacyRepository, null, filter );
+        List legacyArtifacts = artifactDiscoverer.discoverArtifacts( legacyRepository, blacklistedPatterns, filter );
 
         ReportingDatabase reporter;
         try
