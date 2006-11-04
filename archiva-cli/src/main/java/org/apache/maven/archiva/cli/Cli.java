@@ -158,6 +158,8 @@ public class Cli
 
                     File newRepositoryPath = new File( cli.getOptionValue( CliManager.NEW_REPOSITORY_PATH ) );
 
+                    System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
+
                     try
                     {
                         archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, true );

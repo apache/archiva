@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: 1.4.2-66 ("Apple Computer, Inc.")
+Main-Class: org.apache.maven.archiva.cli.Cli

@@ -47,4 +47,34 @@
       <version>2.6.7</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptor>src/main/assembly/archiva-cli-assembly.xml</descriptor>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <configuration>
+              <sourceRoot>target/generated/src/main/java</sourceRoot>
+              <tasks>
+                <jar destfile="${basedir}/target/archiva-cli-1.0-SNAPSHOT-cli.jar"
+                     basedir="${basedir}/target/archiva-cli-1.0-SNAPSHOT-cli"
+                     manifest="${basedir}/src/main/resources/META-INF/MANIFEST.MF"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

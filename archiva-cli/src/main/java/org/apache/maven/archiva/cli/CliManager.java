@@ -48,10 +48,10 @@ public class CliManager
         options.addOption( OptionBuilder.withLongOpt( "convert" ).withDescription(
             "Convert a legacy Maven 1.x repository to a Maven 2.x repository." ).create( CONVERT ) );
 
-        options.addOption( OptionBuilder.withLongOpt( "old-repo" ).withDescription(
+        options.addOption( OptionBuilder.withLongOpt( "old-repo" ).hasArg().withDescription(
             "Path to Maven 1.x legacy repository to convert." ).create( OLD_REPOSITORY_PATH ) );
 
-        options.addOption( OptionBuilder.withLongOpt( "new-repo" ).withDescription(
+        options.addOption( OptionBuilder.withLongOpt( "new-repo" ).hasArg().withDescription(
             "Path to newly created Maven 2.x repository." ).create( NEW_REPOSITORY_PATH ) );
     }
 
