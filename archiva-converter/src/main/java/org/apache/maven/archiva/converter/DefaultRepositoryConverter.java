@@ -294,14 +294,14 @@ public class DefaultRepositoryConverter
 
         boolean result = true;
 
-        if ( !metadata.getGroupId().equals( artifact.getGroupId() ) )
+        if ( metadata.getGroupId() == null || !metadata.getGroupId().equals( artifact.getGroupId() ) )
         {
             addFailure( reporter, artifact, groupIdKey );
             result = false;
         }
         if ( !repositoryMetadata.storedInGroupDirectory() )
         {
-            if ( !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
+            if ( metadata.getGroupId() == null || !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
             {
                 addFailure( reporter, artifact, artifactIdKey );
                 result = false;
