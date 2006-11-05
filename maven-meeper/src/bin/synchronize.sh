@@ -9,20 +9,20 @@
 # 6. Copy the mod_rewrite rules to the Maven 1.x repository @ Ibiblio
 # ------------------------------------------------------------------------
 
-dir=`pwd`
-syncProperties=$dir/synchronize.properties
-
-MODE=$1
 PID=$$
-
-(
-
 RUNNING=`ps -ef | grep synchronize.sh | grep -v 'sh -c' | grep -v grep | grep -v $PID`
+echo $RUNNING
 if [ ! -z "$RUNNING" ]; then
   echo Sync already running... exiting
   echo $RUNNING
   exit 1
 fi
+
+(
+
+dir=`pwd`
+syncProperties=$dir/synchronize.properties
+MODE=$1
 
 . $syncProperties
 
@@ -119,4 +119,4 @@ cp $M1_M2_REWRITE_RULES $MAVEN1_REPO/.htaccess
     
 scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
 
-) > $HOME/repository-staging/to-ibiblio/reports/sync/last-sync-results.txt 2>&1
+) 2>&1 | tee $HOME/repository-staging/to-ibiblio/reports/sync/last-sync-results.txt
