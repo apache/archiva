@@ -72,7 +72,7 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 echo "Removing commons-logging 1.1-dev"
 
 # hack prevent commons-logging-1.1-dev
-CL=$HOME/repository-staging/to-ibiblio/maven2/commons-logging/commons-logging
+CL=$MAVEN2_REPO/commons-logging/commons-logging
 rm -rf $CL/1.1-dev
 grep -v 1.1-dev $CL/maven-metadata.xml > $CL/maven-metadata.xml.tmp
 mv $CL/maven-metadata.xml.tmp $CL/maven-metadata.xml
@@ -113,10 +113,6 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 echo "Copying rewrite rules into place"
 
-if [ "hostname" == $CENTRAL_HOST ]; then
-  cp $M1_M2_REWRITE_RULES $HOME/repository-staging/to-ibiblio/maven/.htaccess
-else
-  scp $M1_M2_REWRITE_RULES maven@maven.org:~maven/repository-staging/to-ibiblio/maven/.htaccess
-fi
+cp $M1_M2_REWRITE_RULES $MAVEN1_REPO/.htaccess
     
 scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
