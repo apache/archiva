@@ -55,12 +55,12 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run the m1 to m2 conversion, or hit ^C to quit." && echo
 
-echo "Running repoclean"
+echo "Running Maven 1.x to Maven 2.x conversion ..."
 
-#(
-#  $REPOCLEAN/m1-m2-conversion.sh $syncProperties
-#  retval=$?; if [ $retval != 0 ]; then exit $retval; fi
-#)
+(
+  $REPOCLEAN/m1-m2-conversion.sh $syncProperties
+  retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+)
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 # ------------------------------------------------------------------------
