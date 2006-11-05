@@ -5,9 +5,7 @@ java -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c synchronize.properties
 
 dir=/home/maven/repository-staging/to-ibiblio
 src=$dir/maven2-converted-from-maven1
-dst=$dir/maven2/test-conversion
-
-exit 
+dst=$dir/maven2
 
 rsync --ignore-existing -rvpl $src/ $dst/ > $log
 
