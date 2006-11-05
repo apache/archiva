@@ -273,6 +273,7 @@ public class DefaultRepositoryConverter
         String snapshotKey = null;
         String versionKey = null;
         String versionsKey = null;
+        
         if ( repositoryMetadata.storedInGroupDirectory() )
         {
             groupIdKey = "failure.incorrect.groupMetadata.groupId";
@@ -407,8 +408,10 @@ public class DefaultRepositoryConverter
                 if ( testChecksums( artifact, file, reporter ) )
                 {
                     checksumsValid = true;
-                    contents = FileUtils.fileRead( file );
                 }
+
+                // Even if the checksums for the POM are invalid we should still convert the POM
+                contents = FileUtils.fileRead( file );
             }
             catch ( IOException e )
             {
