@@ -1,1 +1,1 @@
-0  */4 * * * cd ~/components/maven-meeper/src/bin; ./synchronize.sh 2>&1 | tee $HOME/repository-staging/to-ibiblio/reports/sync/last-sync-results.txt
+0  */4 * * * cd ~/components/maven-meeper/src/bin; ./synchronize.sh
