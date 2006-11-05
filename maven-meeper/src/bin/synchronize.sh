@@ -57,10 +57,10 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 echo "Running repoclean"
 
-(
-  $REPOCLEAN/m1-m2-conversion.sh $syncProperties
-  retval=$?; if [ $retval != 0 ]; then exit $retval; fi
-)
+#(
+#  $REPOCLEAN/m1-m2-conversion.sh $syncProperties
+#  retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+#)
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 # ------------------------------------------------------------------------
