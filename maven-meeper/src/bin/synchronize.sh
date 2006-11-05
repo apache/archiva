@@ -60,7 +60,8 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 echo "Running Maven 1.x to Maven 2.x conversion ..."
 
 (
-  $REPOCLEAN/convert-m1-m2.sh $syncProperties
+  cd $REPOCLEAN
+  ./convert-m1-m2.sh $syncProperties
   retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
