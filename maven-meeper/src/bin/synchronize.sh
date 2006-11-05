@@ -9,6 +9,9 @@
 # 6. Copy the mod_rewrite rules to the Maven 1.x repository @ Ibiblio
 # ------------------------------------------------------------------------
 
+dir=`pwd`
+syncProperties=$dir/synchronize.properties
+
 MODE=$1
 
 PID=$$
@@ -19,7 +22,7 @@ if [ ! -z "$RUNNING" ]; then
   exit 1
 fi
 
-. synchronize.properties
+. $syncProperties
 
 echo "Using the following settings:"
 echo "CENTRAL_HOST = $CENTRAL_HOST"
@@ -55,7 +58,7 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 echo "Running repoclean"
 
 (
-  $REPOCLEAN/m1-m2-conversion.sh
+  $REPOCLEAN/m1-m2-conversion.sh $syncProperties
   retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
@@ -97,7 +100,7 @@ echo "Synchronizing to ibiblio"
 
 (
   cd $SYNC_TOOLS
-  ./sync-central-to-ibiblio.sh
+  ./sync-central-to-ibiblio.sh $syncProperties
   retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 )
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
