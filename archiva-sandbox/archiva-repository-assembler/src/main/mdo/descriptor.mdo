@@ -1,0 +1,793 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Copyright 2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!--
+  Since modello does not have the capability to share descriptor,
+  If you make changes to FileSet, FileItem, DependendencySet, or
+  adding new collection, make sure to propagate your changes
+  to "component.mdo".
+-->
+
+<model>
+  <id>assembly</id>
+  <name>Assembly</name>
+  <description>
+    <![CDATA[
+    <p>
+    Maven Assembly Plugin relies on the provided assembly descriptors to dictate
+    its execution. Although there are already prefabricated descriptors available
+    for use, they can only suffice some of the common assembly requirements.
+    </p>
+    <p>
+    So in order for you to customize the way the Assembly Plugin creates your
+    assemblies, you need to know how to use the Assembly Descriptor.
+    </p>
+    <p>
+    This descriptor specifies the type of assembly archive to create, the contents
+    of the assembly, and the ways in which dependencies or its modules are bundled
+    with an assembly.
+    </p>
+    ]]>
+  </description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.apache.maven.plugins.assembly.model</value>
+    </default>
+  </defaults>
+  <classes>
+    <class rootElement="true" xml.tagName="assembly">
+      <name>Assembly</name>
+      <description>
+        <![CDATA[
+        An assembly defines a collection of files usually distributed in an
+        archive format such as zip, tar, or tar.gz that is generated from a
+        project.  For example, a project could produce a ZIP assembly which
+        contains a project's JAR artifact in the root directory, the
+        runtime dependencies in a lib/ directory, and a shell script to launch
+        a stand-alone application.
+        ]]>
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            Sets the id of this assembly. This is a symbolic name for a
+            particular assembly of files from this project. Also, aside from
+            being used to distinctly name the assembled package by attaching
+            its value to the generated archive, the id is used as your
+            artifact's classifier when deploying.
+          </description>
+        </field>
+        <field>
+          <name>formats</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies the formats of the assembly. Multiple formats can be
+            supplied and the Assembly Plugin will generate an archive for each
+            desired formats. When deploying your project, all file formats
+            specified will also be deployed. A format is specified by supplying
+            one of the following values in a &lt;format&gt; subelement:
+            <ul>
+              <li><b>"zip"</b> - Creates a ZIP file format</li>
+              <li><b>"gz"</b> - Creates a GZIP format</li>
+              <li><b>"tar"</b> - Creates a TAR format</li>
+              <li><b>"tar.gz"</b> - Creates a gzip'd TAR format</li>
+              <li><b>"tar.bz2</b> - Creates a bzip'd TAR format</li>
+            </ul>
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>includeBaseDirectory</name>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+            Includes a base directory in the final archive. For example,
+            if you are creating an assembly named "your-app", setting
+            includeBaseDirectory to true will create an archive that
+            includes this base directory. If this option is set to false
+            the archive created will unzip its content to the current
+            directory. Default value is true.
+          </description>
+        </field>
+        <field>
+          <name>baseDirectory</name>
+          <version>1.1.0</version>
+          <type>String</type>
+          <description>
+            Sets the base directory of the resulting assembly archive. If this is not
+            set and includeBaseDirectory == true, ${project.build.finalName} will be used instead.
+          </description>
+        </field>
+        <field>
+          <name>includeSiteDirectory</name>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            Includes a site directory in the final archive. The site directory
+            location of a project is determined by the siteDirectory parameter
+            of the Assembly Plugin. Default value is false.
+          </description>
+        </field>
+        <field>
+          <name>moduleSets</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ModuleSet</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which module files to include in the assembly. A moduleSet
+            is specified by providing one or more of &lt;moduleSet&gt;
+            subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>fileSets</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>FileSet</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which groups of files to include in the assembly. A
+            fileSet is specified by providing one or more of &lt;fileSet&gt;
+            subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>files</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>FileItem</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which single files to include in the assembly. A file
+            is specified by providing one or more of &lt;file&gt;
+            subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>dependencySets</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>DependencySet</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which dependencies to include in the assembly. A
+            dependencySet is specified by providing one or more of
+            &lt;dependencySet&gt; subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>repositories</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>Repository</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which repository files to include in the assembly. A
+            repository is specified by providing one or more of
+            &lt;repository&gt; subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>componentDescriptors</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies the shared components xml file locations to include in the
+            assembly. The locations specified must be relative to the basedir of
+            the project. When multiple componentDescriptors are found, their
+            contents are merged. Check out the <a href="component.html">
+            descriptor components</a> for more information. A
+            componentDescriptor is specified by providing one or more of
+            &lt;componentDescriptor&gt; subelements.
+            ]]>
+          </description>
+        </field>
+      </fields>
+    </class>
+
+
+    <class>
+      <name>SetBase</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>useDefaultExcludes</name>
+          <version>1.1.0</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+            Whether standard exclusion patterns, such as those matching CVS and Subversion
+            metadata files, should be used when calculating the files affected by this set.
+            For backward compatibility, the default value is true.
+          </description>
+        </field>
+        <field>
+          <name>outputDirectory</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            Sets the output directory relative to the root
+            of the root directory of the assembly. For example,
+            "log" will put the specified files in the log directory.
+          </description>
+        </field>
+        <field>
+          <name>includes</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            When &lt;include&gt; subelements are present, they define a set of
+            files and directory to include. If none is present, then
+            &lt;includes&gt; represents all valid values.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>excludes</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            When &lt;exclude&gt; subelements are present, they define a set of
+            files and directory to exclude. If none is present, then
+            &lt;excludes&gt; represents no exclusions.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>fileMode</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>0644</defaultValue>
+          <description>
+            <![CDATA[
+            Similar to a UNIX permission, sets the file mode of the files included.
+            Format: (User)(Group)(Other) where each component is a sum of Read = 4,
+            Write = 2, and Execute = 1.  For example, the default value of 0644
+            translates to User read-write, Group and Other read-only.
+            <a href="http://www.onlamp.com/pub/a/bsd/2000/09/06/FreeBSD_Basics.html">(more on unix-style permissions)</a>
+          	]]>
+          </description>
+        </field>
+        <field>
+          <name>directoryMode</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>0755</defaultValue>
+          <description>
+            <![CDATA[
+            Similar to a UNIX permission, sets the directory mode of the directories
+            included. Format: (User)(Group)(Other) where each component is a sum of
+            Read = 4, Write = 2, and Execute = 1.  For example, the default value of
+            0755 translates to User read-write, Group and Other read-only.
+            <a href="http://www.onlamp.com/pub/a/bsd/2000/09/06/FreeBSD_Basics.html">(more on unix-style permissions)</a>
+          	]]>
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>FileSet</name>
+      <version>1.0.0+</version>
+      <superClass>SetBase</superClass>
+      <description>
+        A fileSet allows the inclusion of groups of files into the assembly.
+      </description>
+      <fields>
+        <field>
+          <name>directory</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            Sets the absolute or relative location from the module's
+            directory. For example, "src/main/bin" would select this
+            subdirectory of the project in which this dependency is defined.
+          </description>
+          <required>true</required>
+        </field>
+        <field>
+          <name>lineEnding</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            <![CDATA[
+            Sets the line-endings of the files in this fileSet.
+            Valid values:
+            <ul>
+              <li><b>"keep"</b> - Preserve all line endings</li>
+              <li><b>"unix"</b> - Use Unix-style line endings</li>
+              <li><b>"lf"</b> - Use a single line-feed line endings</li>
+              <li><b>"dos"</b> - Use DOS-style line endings</li>
+              <li><b>"crlf"</b> - Use Carraige-return, line-feed line endings</li>
+            </ul>
+            ]]>
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>FileItem</name>
+      <version>1.0.0+</version>
+      <description>
+        A file allows individual file inclusion with the option to change
+        the destination filename not supported by fileSets.
+      </description>
+      <fields>
+        <field>
+          <name>source</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            Sets the absolute or relative path from the module's directory
+            of the file to be included in the assembly.
+          </description>
+        </field>
+        <field>
+          <name>outputDirectory</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            Sets the output directory relative to the root
+            of the root directory of the assembly. For example,
+            "log" will put the specified files in the log directory.
+          </description>
+        </field>
+        <field>
+          <name>destName</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            Sets the destination filename in the outputDirectory.
+            Default is the same name as the source's file.
+          </description>
+        </field>
+        <field>
+          <name>fileMode</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>0644</defaultValue>
+          <description>
+            <![CDATA[
+            Similar to a UNIX permission, sets the file mode of the files included.
+            Format: (User)(Group)(Other) where each component is a sum of Read = 4,
+            Write = 2, and Execute = 1.  For example, the default value of 0644
+            translates to User read-write, Group and Other read-only.
+            <a href="http://www.onlamp.com/pub/a/bsd/2000/09/06/FreeBSD_Basics.html">(more on unix-style permissions)</a>
+          	]]>
+          </description>
+        </field>
+        <field>
+          <name>lineEnding</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            <![CDATA[
+            Sets the line-endings of the files in this file.
+            Valid values are:
+            <ul>
+              <li><b>"keep"</b> - Preserve all line endings</li>
+              <li><b>"unix"</b> - Use Unix-style line endings</li>
+              <li><b>"lf"</b> - Use a single line-feed line endings</li>
+              <li><b>"dos"</b> - Use DOS-style line endings</li>
+              <li><b>"crlf"</b> - Use Carraige-return, line-feed line endings</li>
+            </ul>
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>filtered</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+            Sets whether to determine if the file is filtered.
+          </description>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>DependencySet</name>
+      <version>1.0.0+</version>
+      <superClass>SetBase</superClass>
+      <description>
+        A dependencySet allows inclusion and exclusion of project dependencies
+        in the assembly.
+      </description>
+      <fields>
+        <field>
+          <name>outputFileNameMapping</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>${artifactId}-${version}.${extension}</defaultValue>
+          <description>
+            Sets the mapping pattern for all dependencies included in this
+            assembly. Default is ${artifactId}-${version}.${extension}.
+          </description>
+        </field>
+        <field>
+          <name>unpack</name>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            If set to true, this property will unpack all dependencies
+            into the specified output directory. When set to false
+            dependencies will be includes as archives (jars). Can only unpack
+            jar, zip, tar.gz, and tar.bz archives. Default value is false.
+          </description>
+        </field>
+        <field>
+          <name>scope</name>
+          <version>1.0.0+</version>              
+          <type>String</type>
+          <defaultValue>runtime</defaultValue>
+          <required>true</required>
+          <description>
+            Sets the dependency scope for this dependencySet.
+            Default scope value is "runtime".
+          </description>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>ModuleSet</name>
+      <description>
+        <![CDATA[
+        A moduleSet represent one or more project &lt;module&gt; present inside
+        a project's pom.xml. This allows you to include sources or binaries
+        belonging to a project's &lt;modules&gt;.
+
+        <br/><b>NOTE:</b> When using &lt;moduleSets&gt; from the command-line, it
+        is required to pass first the package phase by doing: "mvn package
+        assembly:assembly". This bug/issue is scheduled to be addressed by Maven 2.1.
+        ]]>
+      </description>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>includeSubModules</name>
+          <version>1.1.0</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+          If set to false, the plugin will exclude sub-modules from processing in this ModuleSet.
+          Otherwise, it will process all sub-modules, each subject to include/exclude rules.
+          Default value is true.
+          </description>
+        </field>
+        <field>
+          <name>includes</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[
+            This is a list of &lt;include/&gt; subelements, each containing a
+            module reference of the type groupId:artifactId. Modules matching
+            these elements will be included in this set. If none is present,
+            then &lt;includes&gt; represents all valid values.
+            ]]>
+          </description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>excludes</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[
+            This is a list of &lt;exclude/&gt; subelements, each containing a
+            module reference of the type groupId:artifactId. Modules matching
+            these elements will be excluded from this set.
+            ]]>
+          </description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>sources</name>
+          <version>1.0.0+</version>
+          <description>
+            When this is present, the plugin will include the source files of
+            the included modules from this set in the resulting assembly.
+          </description>
+          <association>
+            <type>ModuleSources</type>
+          </association>
+        </field>
+        <field>
+          <name>binaries</name>
+          <version>1.0.0+</version>
+          <description>
+            When this is present, the plugin will include the binaries of the
+            included modules from this set in the resulting assembly.
+          </description>
+          <association>
+            <type>ModuleBinaries</type>
+          </association>
+        </field>
+      </fields>
+    </class>
+    
+    <class>
+      <name>ModuleSources</name>
+      <version>1.0.0+</version>
+      <superClass>SetBase</superClass>
+      <description>
+        Contains configuration options for including the source files of a
+        project module in an assembly.
+      </description>
+      <fields>
+        <field>
+          <name>fileSets</name>
+          <version>1.1.0</version>
+          <association>
+            <type>FileSet</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which groups of files from each included module to include in the assembly. A
+            fileSet is specified by providing one or more of &lt;fileSet&gt; subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>includeModuleDirectory</name>
+          <version>1.1.0</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+            <![CDATA[
+            Specifies whether the module's finalName should be prepended to the outputDirectory 
+            values of any fileSets applied to it. Default value is true.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>excludeSubModuleDirectories</name>
+          <version>1.1.0</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+            <![CDATA[
+            Specifies whether sub-module directories below the current module should be excluded
+            from fileSets applied to that module. This might be useful if you only mean to copy
+            the sources for the exact module list matched by this ModuleSet, ignoring (or processing
+            separately) the modules which exist in directories below the current one. 
+            Default value is true.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>outputDirectoryMapping</name>
+          <version>1.1.0</version>
+          <type>String</type>
+          <defaultValue>${artifactId}</defaultValue>
+          <description>
+            Sets the mapping pattern for all module base-directories included in this assembly.
+            NOTE: This field is only used if includeModuleDirectory == true.
+            Default is the module's ${artifactId}.
+          </description>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>ModuleBinaries</name>
+      <version>1.0.0+</version>
+      <superClass>SetBase</superClass>
+      <description>
+        Contains configuration options for including the binary files of a
+        project module in an assembly.
+      </description>
+      <fields>
+        <field>
+          <name>includeDependencies</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+          If set to true, the plugin will include the direct and transitive dependencies of
+          of the project modules included here.  Otherwise, it will only include the module
+          packages only. Default value is false.
+          </description>
+        </field>
+        <field>
+          <name>dependencySets</name>
+          <version>1.1.0</version>
+          <association>
+            <type>DependencySet</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            <![CDATA[
+            Specifies which dependencies of the module to include in the assembly. A
+            dependencySet is specified by providing one or more of
+            &lt;dependencySet&gt; subelements.
+            ]]>
+          </description>
+        </field>
+        <field>
+          <name>unpack</name>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+          <description>
+            If set to true, this property will unpack all module packages
+            into the specified output directory. When set to false
+            module packages will be included as archives (jars).
+            Default value is true.
+          </description>
+        </field>
+        <field>
+          <name>outputFileNameMapping</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>${artifactId}-${version}.${extension}</defaultValue>
+          <description>
+            Sets the mapping pattern for all dependencies included
+            in this assembly.
+            Default is ${artifactId}-${version}.${extension}.
+          </description>
+        </field>
+      </fields>
+    </class>
+    
+    <class>
+      <name>Repository</name>
+      <version>1.0.0+</version>
+      <superClass>SetBase</superClass>
+      <description>
+        <![CDATA[
+        Defines a Maven repository to be included in the assembly. The artifacts
+        available to be included in a repository are your project's dependency
+        artifacts. The repository created contains the needed metadata entries
+        and also contains both sha1 and md5 checksums. This is useful for creating
+        archives which will be deployed to internal repositories.
+
+        <br/><b>NOTE:</b> Currently, only artifacts from the central repository
+        are allowed.
+        ]]>
+      </description>
+      <fields>
+        <field>
+          <name>includeMetadata</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+          <description>
+            If set to true, this property will trigger the creation of repository
+            metadata which will allow the repository to be used as a functional remote
+            repository. Default value is false.
+          </description>
+        </field>
+        <field>
+          <name>groupVersionAlignments</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[
+            Specifies that you want to align a group of artifacts to a specified
+            version. A groupVersionAlignment is specified by providing one or
+            more of &lt;groupVersionAlignment&gt; subelements.
+            ]]>
+          </description>
+          <association>
+            <type>GroupVersionAlignment</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>scope</name>
+          <version>1.1.0</version>              
+          <type>String</type>
+          <defaultValue>runtime</defaultValue>
+          <required>true</required>
+          <description>
+            Specifies the scope for artifacts included in this repository.
+            Default scope value is "runtime".
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>GroupVersionAlignment</name>
+      <version>1.0.0+</version>
+      <description>
+        Allows a group of artifacts to be aligned to a specified version.
+      </description>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The groupId of the artifacts for which you want to align the
+            versions.
+          </description>
+        </field>
+        <field>
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The version you want to align this group to.
+          </description>
+        </field>
+        <field>
+          <name>excludes</name>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[
+            When &lt;exclude&gt; subelements are present, they define the
+            artifactIds of the artifacts to exclude. If none is present, then
+            &lt;excludes&gt; represents no exclusions. An exclude is specified
+            by providing one or more of &lt;exclude&gt; subelements.
+            ]]>
+          </description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+  </classes>
+</model>

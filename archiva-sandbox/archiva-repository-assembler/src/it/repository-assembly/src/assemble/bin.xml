@@ -1,0 +1,14 @@
+<assembly>
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <repositories>
+    <repository>
+      <outputDirectory>repo</outputDirectory>
+      <includes>
+        <include>junit:junit</include>
+      </includes>
+    </repository>
+  </repositories>
+</assembly>
