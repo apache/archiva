@@ -1,1 +1,2 @@
 0  */4 * * * cd ~/components/maven-meeper/src/bin; ./synchronize.sh
+0   0  * * * cd ~/reports; ./run.sh
