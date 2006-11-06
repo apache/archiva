@@ -18,6 +18,10 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>1.1</version>
     </dependency>
@@ -53,29 +57,12 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptor>src/main/assembly/archiva-cli-assembly.xml</descriptor>
+          <archive>
+            <manifest>
+              <mainClass>org.apache.maven.archiva.cli.Cli</mainClass>
+            </manifest>
+          </archive>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <!-- This needs to run here as it can't run in the package phase 
-                 because the directory assembly needs to be made first. Total hack, but works.-->
-            <phase>integration-test</phase>
-            <configuration>
-              <sourceRoot>target/generated/src/main/java</sourceRoot>
-              <tasks>
-                <jar destfile="${basedir}/target/archiva-cli-1.0-SNAPSHOT-cli.jar"
-                     basedir="${basedir}/target/archiva-cli-1.0-SNAPSHOT-cli"
-                     manifest="${basedir}/src/main/resources/META-INF/MANIFEST.MF"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
