@@ -83,7 +83,7 @@
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-appserver-maven-plugin</artifactId>
-        <version>2.0-alpha-3</version>
+        <version>2.0-alpha-4-SNAPSHOT</version>
         <extensions>true</extensions>
         <executions>
           <execution>
