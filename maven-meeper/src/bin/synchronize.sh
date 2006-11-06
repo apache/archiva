@@ -120,4 +120,4 @@ cp $M1_M2_REWRITE_RULES $MAVEN1_REPO/.htaccess
     
 scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
 
-) 2>&1 | tee $HOME/repository-staging/to-ibiblio/reports/sync/last-sync-results.txt
+) 2>&1 | tee $SYNC_REPORTS/last-sync-results.txt
