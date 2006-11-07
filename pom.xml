@@ -303,6 +303,11 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authentication-provider-keystore</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
         <artifactId>plexus-security-user-management-api</artifactId>
         <version>${plexus-security.version}</version>
       </dependency>

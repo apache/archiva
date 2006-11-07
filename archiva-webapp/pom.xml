@@ -177,6 +177,10 @@
       <artifactId>plexus-security-keys-jdo</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus.security</groupId>
+      <artifactId>plexus-security-authentication-provider-keystore</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-jdo2</artifactId>
       <version>1.0-alpha-7</version>
