@@ -17,6 +17,19 @@
 
 <plexus>
   <components>
+
+    <component>
+      <role>org.codehaus.plexus.security.configuration.UserConfiguration</role>
+      <implementation>org.codehaus.plexus.security.configuration.UserConfiguration</implementation>
+      <configuration>
+        <configs>
+          <config>${user.home}/.m2/security.properties</config>
+          <config>${user.home}/.m2/archiva.properties</config>
+          <config>/org/apache/maven/archiva/security.properties</config>
+        </configs>
+      </configuration>
+    </component>
+
     <!--
      | Logger manager
      -->
@@ -142,29 +155,6 @@
 
     <!-- plexus security components -->
     <component>
-      <role>org.codehaus.plexus.security.system.ApplicationDetails</role>
-      <implementation>org.codehaus.plexus.security.system.DefaultApplicationDetails</implementation>
-      <description>DefaultApplicationDetails</description>
-      <configuration>
-        <application-name>Unconfigured Application Name</application-name>
-        <!-- Do not include the trailing '/' on the url. -->
-        <application-url>http://localhost:9090</application-url>
-        <timestamp-format>EEE, d MMM yyyy HH:mm:ss Z</timestamp-format>
-      </configuration>
-    </component>
-
-    <component>
-      <role>org.codehaus.plexus.security.system.EmailSettings</role>
-      <implementation>org.codehaus.plexus.security.system.DefaultEmailSettings</implementation>
-      <description>DefaultEmailSettings</description>
-      <configuration>
-        <feedback>/feedback.action</feedback>
-        <from-address>security@unconfigured.com</from-address>
-        <from-username>Unconfigured Username</from-username>
-      </configuration>
-    </component>
-
-    <component>
       <role>org.codehaus.plexus.security.system.SecuritySystem</role>
       <implementation>org.codehaus.plexus.security.system.DefaultSecuritySystem</implementation>
       <role-hint>default</role-hint>
@@ -194,16 +184,9 @@
           <role-hint>default</role-hint>
           <field-name>policy</field-name>
         </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.security.system.ApplicationDetails</role>
-          <field-name>applicationDetails</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.security.system.EmailSettings</role>
-          <field-name>emailSettings</field-name>
-        </requirement>
       </requirements>
     </component>
+
     <component>
       <role>org.codehaus.plexus.security.authorization.Authorizer</role>
       <role-hint>rbac</role-hint>
@@ -224,69 +207,17 @@
         </requirement>
       </requirements>
     </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.PasswordRule</role>
-      <role-hint>character-length</role-hint>
-      <implementation>org.codehaus.plexus.security.policy.rules.CharacterLengthPasswordRule</implementation>
-      <description>Basic Password Rule, Checks for non-empty passwords that have between {@link
-        #setMinimumCharacters(int)} and {@link #setMaximumCharacters(int)} characters in length.
-      </description>
-      <configuration>
-        <enabled>true</enabled>
-        <minimum-characters>1</minimum-characters>
-        <maximum-characters>8</maximum-characters>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.PasswordRule</role>
-      <role-hint>reuse</role-hint>
-      <implementation>org.codehaus.plexus.security.policy.rules.ReusePasswordRule</implementation>
-      <description>Password Rule, Checks supplied password found at {@link User#getPassword()} against the {@link
-        User#getPreviousEncodedPasswords()} to ensure that a password is not reused.
-      </description>
-      <configuration>
-        <enabled>true</enabled>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.PasswordRule</role>
-      <role-hint>numerical-count</role-hint>
-      <implementation>org.codehaus.plexus.security.policy.rules.NumericalPasswordRule</implementation>
-      <description>Basic Password Rule, Checks for non-empty passwords that have at least {@link #setMinimumCount(int)}
-        of numerical characters contained within.
-      </description>
-      <configuration>
-        <enabled>true</enabled>
-        <minimum-count>1</minimum-count>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.PasswordRule</role>
-      <role-hint>must-have</role-hint>
-      <implementation>org.codehaus.plexus.security.policy.rules.MustHavePasswordRule</implementation>
-      <description>Basic Password Rule, Checks for non-empty Passwords in non guest users.</description>
-      <configuration>
-        <enabled>true</enabled>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.PasswordRule</role>
-      <role-hint>alpha-count</role-hint>
-      <implementation>org.codehaus.plexus.security.policy.rules.AlphaPasswordRule</implementation>
-      <description>Basic Password Rule, Checks for non-empty passwords that have at least {@link #setMinimumCount(int)}
-        of alpha characters contained within.
-      </description>
-      <configuration>
-        <enabled>true</enabled>
-        <minimum-count>1</minimum-count>
-      </configuration>
-    </component>
+
     <component>
       <role>org.codehaus.plexus.security.policy.UserSecurityPolicy</role>
       <role-hint>default</role-hint>
       <implementation>org.codehaus.plexus.security.policy.DefaultUserSecurityPolicy</implementation>
       <description>User Security Policy.</description>
       <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.configuration.UserConfiguration</role>
+          <field-name>config</field-name>
+        </requirement>
         <requirement>
           <role>org.codehaus.plexus.security.policy.PasswordEncoder</role>
           <role-hint>sha256</role-hint>
@@ -309,57 +240,7 @@
           <field-name>singleSignOnSettings</field-name>
         </requirement>
       </requirements>
-      <configuration>
-        <previous-passwords-count>6</previous-passwords-count>
-        <login-attempt-count>3</login-attempt-count>
-        <password-expiration-days>90</password-expiration-days>
-      </configuration>
     </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.RememberMeSettings</role>
-      <implementation>org.codehaus.plexus.security.policy.DefaultRememberMeSettings</implementation>
-      <description>DefaultRememberMeSettings</description>
-      <configuration>
-        <enabled>true</enabled>
-        <cookie-timeout>525600</cookie-timeout>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.SingleSignOnSettings</role>
-      <implementation>org.codehaus.plexus.security.policy.DefaultSingleSignOnSettings</implementation>
-      <description>DefaultSingleSignOnSettings</description>
-      <configuration>
-        <enabled>true</enabled>
-        <cookie-timeout>30</cookie-timeout>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.security.policy.UserValidationSettings</role>
-      <implementation>org.codehaus.plexus.security.policy.DefaultUserValidationSettings</implementation>
-      <description>DefaultUserValidationSettings</description>
-      <configuration>
-        <email-validation-required>true</email-validation-required>
-        <!-- This is a timeout for the validation url (in minutes) - 2880 = 48 hours -->
-        <email-validation-timeout>2880</email-validation-timeout>
-        <email-login-path>/security/login!login.action</email-login-path>
-        <email-subject>Unconfigured Subject Line</email-subject>
-      </configuration>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.mailsender.MailSender</role>
-      <implementation>org.codehaus.plexus.mailsender.javamail.JavamailMailSender</implementation>
-      <configuration>
-        <smtp-host>localhost</smtp-host>
-        <smtp-port>25</smtp-port>
-        <sslProvider>com.sun.net.ssl.internal.ssl.Provider</sslProvider>
-        <!--
-        <username>mylogin</username>
-        <password>mypassword</password>
-        <sslMode>true</sslMode>
-        -->
-      </configuration>
-    </component>
-
 
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
