@@ -457,10 +457,28 @@
   <!-- TODO: remove once xwork integration, plexus container is released -->
   <repositories>
     <repository>
-      <id>codehaus.snapshots</id>
+      <id>codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus.org</id>
+      <url>http://snapshots.repository.codehaus.org</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
   <properties>
     <maven.version>2.0.4</maven.version>
     <plexus-security.version>1.0-alpha-6-SNAPSHOT</plexus-security.version>
