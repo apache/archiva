@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/continuum"
+         docBase="${catalina.base}/webapps/continuum">
+
+    <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
+              username="sa"
+              password=""
+              driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+              url="jdbc:derby:target/database/users;create=true"
+    />
+    <Resource name="jdbc/archiva" auth="Container" type="javax.sql.DataSource"
+              username="sa"
+              password=""
+              driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+              url="jdbc:derby:target/database/archiva;create=true"
+    />
+</Context>
