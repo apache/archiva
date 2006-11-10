@@ -294,7 +294,7 @@
           <jettyEnvXml>src/jetty-env.xml</jettyEnvXml>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>9000</port>
+              <port>9001</port>
               <maxIdleTime>60000</maxIdleTime>
             </connector>
           </connectors>
