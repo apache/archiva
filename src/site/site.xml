@@ -25,6 +25,7 @@
     <menu name="Documentation">
         <item name="Welcome"    href="/index.html"/>
         <item name="Getting Started"    href="/guides/getting-started/index.html"/>
+        <item name="Getting Started FAQ"    href="/guides/getting-started/faq.html"/>
         <item name="Developing"    href="/guides/developing/index.html"/>
     </menu>
 
