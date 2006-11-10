@@ -28,3 +28,5 @@ Getting Started FAQ
     [How do I access my repository through Archiva?] By default Archiva provides a secure WebDAV URL that needs a user and password. If you want it to not be secured, then you need to add the Repository-Observer role for the repository in question to the Guest user. This is done on the User Management page when logged in as an administrator. 
 
 ~~ [How do I login in M1, M2, Ant?]
+
+    [How does Archiva remember my repositories after I refresh the database?] Check out the archiva.xml file in your $M2_HOME/ directory (usually ~/.m2/) and you'll understand how.
