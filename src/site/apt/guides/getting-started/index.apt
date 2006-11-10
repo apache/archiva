@@ -108,7 +108,7 @@ To deploy Archiva on Plexus
 
 Setting up your Archiva instance
 
-   * Goto {{http://localhost:9091/archiva/}} if on the embedded Jetty, {{http://localhost:8080/archiva/}} if on Tomcat or {{http://localhost:8080/}} if on Plexus.
+   * Goto {{http://localhost:9091/}} if on the embedded Jetty, {{http://localhost:8080/archiva/}} if on Tomcat or {{http://localhost:8080/}} if on Plexus.
 
    * On the first page - setup your administration user. The password requires a numerical character and must not be longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
 
