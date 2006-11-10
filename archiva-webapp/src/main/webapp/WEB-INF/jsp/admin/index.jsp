@@ -149,7 +149,7 @@
       </tr>
       <tr>
         <th>POM Snippet</th>
-        <td><a href="#" onclick="Effect.SlideDown('repoPom${repository.id}'); return false;">Show POM Snippet</a><br />
+        <td><a href="#" onclick="Effect.toggle('repoPom${repository.id}','slide'); return false;">Show POM Snippet</a><br />
 <pre class="pom" style="display: none;" id="repoPom${repository.id}"><code>&lt;project>
   ...
   &lt;distributionManagement>
