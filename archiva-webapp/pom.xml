@@ -180,6 +180,7 @@
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authentication-provider-keystore</artifactId>
     </dependency>
+    <!-- Arrives via pleus-security
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-jdo2</artifactId>
@@ -195,6 +196,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+     -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
