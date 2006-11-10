@@ -50,17 +50,6 @@ To build
     * Run: mvn install:install-file -DgroupId=javax.mail -DartifactId=mail -Dversion=1.3.2 -Dpackaging=jar -Dfile=javamail-1.3.2/mail.jar 
 
 
-To deploy Archiva on Plexus
-
-  Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
-
-   * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
-
-   * Start with: ./bin/plexus.sh start or a platform specific version.
-
-   * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
-
-
 To deploy Archiva to Tomcat 5.5
 
    * Create a directory in tomcat called archiva, at the same level as bin, conf, logs and the others.
@@ -95,6 +84,19 @@ To deploy Archiva to Tomcat 5.5
 +-------------------------------------------------------------------------+
 
  When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't appear to cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but Tomcat fails to start the context and you have to shutdown and restart again.
+
+
+To deploy Archiva on Plexus
+
+  (THIS IS CURRENTLY BROKEN)
+
+  Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
+
+   * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
+
+   * Start with: ./bin/plexus.sh start or a platform specific version.
+
+   * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
 
 
 Setting up your Archiva instance
