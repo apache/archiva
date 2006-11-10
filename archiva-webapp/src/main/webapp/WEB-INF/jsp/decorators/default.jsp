@@ -32,8 +32,8 @@
     @import url( "<c:url value="/css/site.css" />" );
   </style>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
-  <script type="text/javascript" src="<c:url value="/js/prototype.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/js/scriptaculous.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/scriptaculous/prototype.js"/>"></script>
+  <script type="text/javascript" src="<c:url value="/js/scriptaculous/scriptaculous.js"/>"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
 </head>
 
