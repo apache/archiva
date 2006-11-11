@@ -77,3 +77,11 @@ Concepts
   * "Synchronized" - A remote repository which is physically copied down to be managed under Archiva. 
 
   * "Identifier" - A short ID for your repository that will be used in URLs.
+
+Material that needs pulling into this site
+
+  * {{{http://docs.codehaus.org/display/MAVEN/Repository+Manager} Repository Manager design wiki}}
+
+  * {{{http://docs.codehaus.org/display/MAVEN/Maven+repository+tools} Repository tools wiki}}
+
+  * {{{http://docs.codehaus.org/display/MAVEN/Repository+Security} Repository security wiki}}
