@@ -364,6 +364,16 @@ public class DefaultArtifactDiscovererTest
             createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "sources" ) ) );
     }
 
+    public void testTestSourcesInclusion()
+    throws DiscovererException
+{
+    List artifacts = discoverArtifactsWithSnapshots();
+    assertNotNull( "Check artifacts not null", artifacts );
+
+    assertTrue( "Check normal included", artifacts.contains(
+        createArtifact( "org.apache.maven", "testing", "1.0", "java-source", "test-sources" ) ) );
+}
+
     public void testDistributionInclusion()
         throws DiscovererException
     {

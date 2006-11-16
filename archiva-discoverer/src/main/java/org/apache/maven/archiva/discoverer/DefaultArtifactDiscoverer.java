@@ -87,6 +87,13 @@ public class DefaultArtifactDiscoverer
                     type = "distribution-zip";
                     remainingFilename = remainingFilename.substring( 0, remainingFilename.length() - ".zip".length() );
                 }
+                else if ( remainingFilename.endsWith( "-test-sources.jar" ) )
+                {
+                    type = "java-source";
+                    classifier = "test-sources";
+                    remainingFilename =
+                        remainingFilename.substring( 0, remainingFilename.length() - "-test-sources.jar".length() );
+                }
                 else if ( remainingFilename.endsWith( "-sources.jar" ) )
                 {
                     type = "java-source";
