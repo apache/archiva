@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Sebastien Pennec sebastien@qos.ch
-# Ceki Gulcu ceki@qos.ch
+CONTACTS="Ceki Gulcu <ceki@qos.ch>,Sebastien Pennec <sebastien@qos.ch>"
+MODE=rsync
 
 FROM=rsync://pixie.qos.ch/mvnrepo
 GROUP_DIR=ch/qos/logback/
