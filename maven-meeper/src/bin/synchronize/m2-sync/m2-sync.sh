@@ -31,7 +31,7 @@ for f in `find conf -maxdepth 1 -iname "*.sh"`
   do
 
   FROM=
-  TO=
+  GROUP_DIR=
   NO_SSH=
   SSH_OPTS=
   # to prevent empty variable
@@ -47,13 +47,13 @@ for f in `find conf -maxdepth 1 -iname "*.sh"`
   # check for changed files
   if [ "$1" == "check" ]; then
 
-    rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM $BASEDIR/$TO >> $CHANGED_LOG
+    rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR >> $CHANGED_LOG
 
   else
 
-    echo "Syncing $FROM -> $TO"
-    rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
-    rsync --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM $BASEDIR/$TO
+    echo "Syncing $FROM -> $GROUP_DIR"
+    rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
+    rsync --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
 
   fi
 

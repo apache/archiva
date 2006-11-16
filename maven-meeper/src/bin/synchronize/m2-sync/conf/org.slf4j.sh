@@ -2,7 +2,7 @@
 
 # Ceki Gulcu ceki@qos.ch
 
-FROM=rsync://pixie.qos.ch/mvnrepo/org/slf4j
-TO=org/slf4j
+FROM=rsync://pixie.qos.ch/mvnrepo
+GROUP_DIR=org/slf4j
 
 NO_SSH=true

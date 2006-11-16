@@ -2,5 +2,5 @@
 
 # Contact: twenstar@users.sourceforge.net
 
-FROM=mavensync@shell.sourceforge.net:/home/groups/m/ma/mapasuta/maven/upload-repo/net/sf/mapasuta/
-TO=net/sf/mapasuta/
+FROM=mavensync@shell.sourceforge.net:/home/groups/m/ma/mapasuta/maven/upload-repo
+GROUP_DIR=net/sf/mapasuta/

@@ -2,5 +2,5 @@
 
 # Hervé BOUTEMY herve.boutemy@free.fr
 
-FROM=mavensync@shell.sourceforge.net:/home/groups/d/dt/dtddoc/htdocs/m2repo/releases/net/sf/dtddoc/
-TO=net/sf/dtddoc/
+FROM=mavensync@shell.sourceforge.net:/home/groups/d/dt/dtddoc/htdocs/m2repo/releases
+GROUP_DIR=net/sf/dtddoc/

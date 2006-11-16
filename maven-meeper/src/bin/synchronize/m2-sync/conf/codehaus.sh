@@ -1,7 +1,7 @@
 #!/bin/sh
 
-FROM=mavensync@repository.codehaus.org:/repository/
-TO=./
+FROM=mavensync@repository.codehaus.org:/repository
+GROUP_DIR=./
 SSH_OPTS="-i $HOME/.ssh/new-id_dsa"
 #RSYNC_OPTS="-L"
 
