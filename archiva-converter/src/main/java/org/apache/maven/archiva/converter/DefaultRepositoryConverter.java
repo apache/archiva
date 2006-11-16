@@ -19,6 +19,7 @@ package org.apache.maven.archiva.converter;
 import org.apache.maven.archiva.converter.transaction.FileTransaction;
 import org.apache.maven.archiva.reporting.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -89,6 +90,11 @@ public class DefaultRepositoryConverter
      * @plexus.requirement
      */
     private ModelConverter translator;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactHandlerManager artifactHandlerManager;
 
     /**
      * @plexus.configuration default-value="false"
@@ -665,6 +671,11 @@ public class DefaultRepositoryConverter
         throws RepositoryConversionException
     {
         File sourceFile = artifact.getFile();
+
+        if ( sourceFile.getAbsolutePath().indexOf( "/plugins/" ) > -1 )
+        {
+            artifact.setArtifactHandler( artifactHandlerManager.getArtifactHandler( "maven-plugin" ) );
+        }
 
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
