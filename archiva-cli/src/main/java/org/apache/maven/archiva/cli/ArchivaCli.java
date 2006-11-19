@@ -36,6 +36,12 @@ public class ArchivaCli
     //
     // ----------------------------------------------------------------------------
 
+    public static void main( String[] args )
+        throws Exception
+    {
+        new ArchivaCli().execute( args );
+    }
+
     public String getPomPropertiesPath()
     {
         return "META-INF/maven/org.apache.maven/maven-core/pom.properties";
