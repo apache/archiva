@@ -1,20 +1,22 @@
 package org.apache.maven.archiva.cli;
 
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.util.StringUtils;
-import org.apache.maven.archiva.Archiva;
-import org.apache.maven.archiva.discoverer.DiscovererException;
-import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
+import org.apache.maven.archiva.Archiva;
+import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.tools.cli.AbstractCli;
+import org.codehaus.plexus.tools.cli.Cli;
+import org.codehaus.plexus.util.StringUtils;
 
-import java.util.Properties;
-import java.util.List;
-import java.util.Arrays;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Jason van Zyl
@@ -34,17 +36,12 @@ public class ArchivaCli
     //
     // ----------------------------------------------------------------------------
 
-    protected static Cli getCli()
-    {
-        return new ArchivaCli();
-    }
-
-    protected String getPomPropertiesPath()
+    public String getPomPropertiesPath()
     {
         return "META-INF/maven/org.apache.maven/maven-core/pom.properties";
     }
 
-    protected Options buildOptions( Options options )
+    public Options buildCliOptions( Options options )
     {
         options.addOption( OptionBuilder.withLongOpt( "convert" ).hasArg().withDescription(
             "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion." )
@@ -53,7 +50,7 @@ public class ArchivaCli
         return options;
     }
 
-    public void processOptions( CommandLine cli,
+    public void invokePlexusComponent( CommandLine cli,
                                        PlexusContainer plexus )
         throws Exception
     {
