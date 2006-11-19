@@ -44,7 +44,7 @@ public class ArchivaCli
 
     public String getPomPropertiesPath()
     {
-        return "META-INF/maven/org.apache.maven/maven-core/pom.properties";
+        return "META-INF/maven/org.apache.maven.archiva/archiva-cli/pom.properties";
     }
 
     public Options buildCliOptions( Options options )
