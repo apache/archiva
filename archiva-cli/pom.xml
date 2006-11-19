@@ -12,6 +12,10 @@
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-cli</artifactId>
       <version>1.0-SNAPSHOT</version>
