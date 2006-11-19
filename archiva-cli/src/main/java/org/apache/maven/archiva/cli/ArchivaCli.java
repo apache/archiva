@@ -8,7 +8,6 @@ import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.tools.cli.AbstractCli;
-import org.codehaus.plexus.tools.cli.Cli;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -24,17 +23,21 @@ import java.util.Properties;
 public class ArchivaCli
     extends AbstractCli
 {
+    // ----------------------------------------------------------------------------
+    // Options
+    // ----------------------------------------------------------------------------
+
     public static final char CONVERT = 'c';
+
+    // ----------------------------------------------------------------------------
+    // Properties controlling Repository conversion
+    // ----------------------------------------------------------------------------
 
     public static final String SOURCE_REPO_PATH = "sourceRepositoryPath";
 
     public static final String TARGET_REPO_PATH = "targetRepositoryPath";
 
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
-
-    // ----------------------------------------------------------------------------
-    //
-    // ----------------------------------------------------------------------------
 
     public static void main( String[] args )
         throws Exception
