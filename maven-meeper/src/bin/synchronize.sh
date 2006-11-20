@@ -18,7 +18,7 @@ if [ ! -z "$RUNNING" ]; then
   exit 1
 fi
 
-(
+((
 
 dir=`pwd`
 syncProperties=$dir/synchronize.properties
@@ -120,4 +120,4 @@ cp $M1_M2_REWRITE_RULES $MAVEN1_REPO/.htaccess
     
 scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
 
-) 2>&1 | tee $SYNC_REPORTS/last-sync-results.txt
+) | tee $SYNC_REPORTS/last-sync-results.txt ) 2>&1
