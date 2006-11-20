@@ -3,7 +3,7 @@
 CONTACTS="Nathan Hamblen <nathan@technically.us>"
 MODE=rsync_ssh
 FROM=maven@databinder.net:/var/dbwww/maven
-TO=net/databinder/
+GROUP_DIR=net/databinder/
 
 #[info]
 #id = net.databinder
