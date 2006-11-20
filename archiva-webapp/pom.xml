@@ -284,7 +284,7 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <configuration>
           <scanIntervalSeconds>10</scanIntervalSeconds>
-          <contextPath>/archiva-1.0</contextPath>
+          <contextPath>/</contextPath>
           <jettyEnvXml>src/jetty-env.xml</jettyEnvXml>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
