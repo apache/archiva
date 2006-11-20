@@ -18,13 +18,13 @@ if [ ! -z "$RUNNING" ]; then
   exit 1
 fi
 
-((
-
 dir=`pwd`
 syncProperties=$dir/synchronize.properties
-MODE=$1
+source $syncProperties
 
-. $syncProperties
+((
+
+MODE=$1
 
 echo "Using the following settings:"
 echo "CENTRAL_HOST = $CENTRAL_HOST"
@@ -33,6 +33,7 @@ echo "SYNC_TOOLS = $SYNC_TOOLS"
 echo "SYNCOPATE = $SYNCOPATE"
 echo "REPOCLEAN = $REPOCLEAN"
 echo "M1_M2_REWRITE_RULES = $M1_M2_REWRITE_RULES"
+echo "SYNC_REPORTS = $SYNC_REPORTS"
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to continue, or hit ^C to quit." && echo
 
