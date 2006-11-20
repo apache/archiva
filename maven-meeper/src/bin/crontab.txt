@@ -1,2 +1,3 @@
-0  */4 * * * cd ~/components/maven-meeper/src/bin; ./synchronize.sh
-0   0  * * * cd ~/reports; ./run.sh
+MAILTO=jason@maven.org
+0  */4 * * * cd $HOME/components/maven-meeper/src/bin; ./synchronize.sh
+0   0  * * * cd $HOME/reports; ./run.sh
