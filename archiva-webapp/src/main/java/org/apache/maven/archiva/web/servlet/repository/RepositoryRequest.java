@@ -30,20 +30,20 @@ import javax.servlet.http.HttpServletRequestWrapper;
 public class RepositoryRequest
     extends HttpServletRequestWrapper
 {
-    private String repoId;
+    private String repoUrlName;
 
-    public RepositoryRequest( HttpServletRequest request, String repoid )
+    public RepositoryRequest( HttpServletRequest request, String repoUrlName )
     {
         super( request );
-        this.repoId = "";
+        this.repoUrlName = "";
         
-        if(repoid != null) {
-            this.repoId = repoid;
+        if(repoUrlName != null) {
+            this.repoUrlName = repoUrlName;
         }
     }
 
     /**
-     * Adjust the path info value to remove reference to repoId.
+     * Adjust the path info value to remove reference to repoUrlName.
      * This is done to satisfy the needs of {@link DAVTransaction}
      */
     public String getPathInfo()
@@ -60,9 +60,9 @@ public class RepositoryRequest
             pathInfo = pathInfo.substring( 1 );
         }
 
-        if ( pathInfo.startsWith( repoId ) )
+        if ( pathInfo.startsWith( repoUrlName ) )
         {
-            pathInfo = pathInfo.substring( repoId.length() );
+            pathInfo = pathInfo.substring( repoUrlName.length() );
         }
 
         return pathInfo;
@@ -70,7 +70,7 @@ public class RepositoryRequest
 
     public String getServletPath()
     {
-        return super.getServletPath() + "/" + this.repoId;
+        return super.getServletPath() + "/" + this.repoUrlName;
     }
     
 }

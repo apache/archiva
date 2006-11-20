@@ -39,13 +39,14 @@ public class RepositoryMapping implements DAVListener
     private DAVRepository davRepository;
     private Logger logger;
     
-    public RepositoryMapping(RepositoryConfiguration repoConfig) throws IOException
+    public RepositoryMapping( RepositoryConfiguration repoConfig )
+        throws IOException
     {
         this.repositoryConfiguration = repoConfig;
-        File repoDir = new File(repositoryConfiguration.getDirectory());
+        File repoDir = new File( repositoryConfiguration.getDirectory() );
         this.davRepository = new DAVRepository( repoDir );
         this.davProcessor = new DAVProcessor( this.davRepository );
-        this.davRepository.addListener(this);
+        this.davRepository.addListener( this );
     }
     
     public DAVProcessor getDavProcessor()
@@ -57,9 +58,11 @@ public class RepositoryMapping implements DAVListener
      * <p>Receive notification of an event occurred in a specific
      * {@link DAVRepository}.</p>
      */
-    public void notify(DAVResource resource, int event) {
+    public void notify( DAVResource resource, int event )
+    {
         String message = "Unknown event";
-        switch (event) {
+        switch ( event )
+        {
             case DAVListener.COLLECTION_CREATED:
                 message = "Collection created";
                 break;
@@ -76,6 +79,7 @@ public class RepositoryMapping implements DAVListener
                 message = "Resource modified";
                 break;
         }
-        logger.info(message + ": " + this.repositoryConfiguration.getId() + " : \"" + resource.getRelativePath() + "\"");
+        logger.info( message + ": " + this.repositoryConfiguration.getId() + " : \"" + resource.getRelativePath()
+            + "\"" );
     }
 }

@@ -217,7 +217,7 @@ public class RepositoryAccess
         
         response.setHeader( "Server", serverInfo + " Archiva : " + DAVUtilities.SERVLET_SIGNATURE );
 
-        DAVTransaction transaction = new DAVTransaction( new RepositoryRequest( request, repoconfig.getId() ), response );
+        DAVTransaction transaction = new DAVTransaction( new RepositoryRequest( request, repoconfig.getUrlName() ), response );
         try
         {
             repo.getDavProcessor().process( transaction );
