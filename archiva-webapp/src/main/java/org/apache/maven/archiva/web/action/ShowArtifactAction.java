@@ -42,8 +42,10 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.artifact.InvalidDependencyVersionException;
-import org.apache.maven.report.projectinfo.dependencies.Dependencies;
-import org.apache.maven.report.projectinfo.dependencies.ReportResolutionListener;
+import org.apache.maven.shared.dependency.tree.DependencyNode;
+import org.apache.maven.shared.dependency.tree.DependencyTree;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
+import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
@@ -55,9 +57,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -102,6 +102,11 @@ public class ShowArtifactAction
      * @plexus.requirement
      */
     private ArtifactCollector collector;
+    
+    /**
+     * @plexus.requirement
+     */
+    private DependencyTreeBuilder dependencyTreeBuilder;
 
     private String groupId;
 
@@ -112,7 +117,7 @@ public class ShowArtifactAction
     private Model model;
 
     private Collection dependencies;
-
+    
     private List dependencyTree;
 
     public String artifact()
@@ -192,42 +197,43 @@ public class ShowArtifactAction
 
         getLogger().debug( " processing : " + groupId + ":" + artifactId + ":" + version );
 
-        Dependencies dependencies =
+        DependencyTree dependencies =
             collectDependencies( project, artifact, localRepository, repositories );
-
-        dependencyTree = new LinkedList();
-        populateFlatTreeList( dependencies.getResolvedRoot(), dependencyTree );
+        
+        this.dependencyTree = new ArrayList();
+        
+        populateFlatTreeList( dependencies.getRootNode(), dependencyTree );
 
         return SUCCESS;
     }
 
-    private void populateFlatTreeList( ReportResolutionListener.Node currentNode, List dependencyList )
+    private void populateFlatTreeList( DependencyNode currentNode, List dependencyList )
     {
-        ReportResolutionListener.Node childNode;
+        DependencyNode childNode;
 
         for ( Iterator iterator = currentNode.getChildren().iterator(); iterator.hasNext(); )
         {
-            childNode = (ReportResolutionListener.Node) iterator.next();
+            childNode = (DependencyNode) iterator.next();
             dependencyList.add( childNode );
             populateFlatTreeList( childNode, dependencyList );
         }
     }
 
-    private Dependencies collectDependencies( MavenProject project, Artifact artifact,
+    private DependencyTree collectDependencies( MavenProject project, Artifact artifact,
                                               ArtifactRepository localRepository, List repositories )
         throws ArtifactResolutionException, ProjectBuildingException, InvalidDependencyVersionException,
         ConfigurationStoreException
     {
-        Map managedDependencyMap = Dependencies.getManagedVersionMap( project, artifactFactory );
-
-        ReportResolutionListener listener = new ReportResolutionListener();
-
-        project.setDependencyArtifacts( project.createArtifacts( artifactFactory, null, null ) );
-
-        collector.collect( project.getDependencyArtifacts(), artifact, managedDependencyMap, localRepository,
-                           repositories, artifactMetadataSource, null, Collections.singletonList( listener ) );
-
-        return new Dependencies( project, listener, null );
+        try
+        {
+            return dependencyTreeBuilder.buildDependencyTree( project, localRepository, artifactFactory,
+                                                              artifactMetadataSource, collector );
+        }
+        catch ( DependencyTreeBuilderException e )
+        {
+            getLogger().error( "Unable to build dependency tree.", e );
+            return null;
+        }
     }
 
     private static String createId( String groupId, String artifactId, String version )
@@ -293,11 +299,6 @@ public class ShowArtifactAction
         return dependencies;
     }
 
-    public List getDependencyTree()
-    {
-        return dependencyTree;
-    }
-
     public String getGroupId()
     {
         return groupId;
@@ -318,6 +319,11 @@ public class ShowArtifactAction
         this.artifactId = artifactId;
     }
 
+    public List getDependencyTree()
+    {
+        return dependencyTree;
+    }
+    
     public String getVersion()
     {
         return version;
@@ -466,4 +472,5 @@ public class ShowArtifactAction
             return version;
         }
     }
+
 }

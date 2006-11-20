@@ -116,3 +116,11 @@
 
 .artifact-title {
 }
+
+ul.dependencyTree {
+	margin-left: 50px;	
+}
+
+ul.dependencyTree span.artifact-link {
+	padding-left: 0px;
+}

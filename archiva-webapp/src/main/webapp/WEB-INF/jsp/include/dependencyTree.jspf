@@ -18,7 +18,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
-<ul>
+<ul class="dependencyTree">
 <c:set var="prevDepth" value="1"/>
 <ww:set name="dependencyTree" value="dependencyTree"/>
 <c:forEach items="${dependencyTree}" var="node">
