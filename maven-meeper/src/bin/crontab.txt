@@ -1,6 +1,4 @@
 # Cron jobs for the maven repository
 MAILTO=jason@maven.org
-JAVA_HOME=/opt/java/sdk/current
-PATH=$PATH:$JAVA_HOME/bin
 0  */4 * * * cd $HOME/components/maven-meeper/src/bin; ./synchronize.sh
 0   0  * * * cd $HOME/reports; ./run.sh
