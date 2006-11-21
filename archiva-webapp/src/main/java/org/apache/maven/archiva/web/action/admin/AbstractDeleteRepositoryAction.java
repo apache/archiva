@@ -28,6 +28,8 @@ import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.rbac.profile.RoleProfileException;
 
 import java.io.IOException;
 
@@ -55,6 +57,10 @@ public abstract class AbstractDeleteRepositoryAction
      */
     private String operation = "unmodified";
 
+    /**
+     * @plexus.requirement role-hint="archiva"
+     */
+    protected RoleProfileManager roleProfileManager;
     public String execute()
         throws ConfigurationStoreException, IOException, InvalidConfigurationException, ConfigurationChangeException
     {
@@ -92,7 +98,7 @@ public abstract class AbstractDeleteRepositoryAction
     protected abstract AbstractRepositoryConfiguration getRepository( Configuration configuration );
 
     protected abstract void removeRepository( Configuration configuration,
-                                              AbstractRepositoryConfiguration existingRepository );
+        AbstractRepositoryConfiguration existingRepository );
 
     public String input()
     {
@@ -138,4 +144,5 @@ public abstract class AbstractDeleteRepositoryAction
 
         return bundle;
     }
+
 }
