@@ -134,6 +134,14 @@
       </ul>
     </pss:ifAnyAuthorized>
     <br/>
+
+    <c:if test="${sessionScope.securitySession.authenticated}">
+    <h5>My Account</h5>
+    <li class="none">
+      <my:currentWWUrl action="account" namespace="/">Edit user info</my:currentWWUrl>
+    </li>
+    </c:if>
+
   </div>
 </div>
 
