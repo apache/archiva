@@ -1,5 +1,7 @@
 #!/bin/sh
 
+exclusions=$HOME/bin/synchronize/syncopate/exclusions.txt
+
 echo This script is very temporary. Please validate all input files in the source repository before blindly copying them in.
 echo Ensure all artifacts have a valid POM.
 echo This will be removed when the repository manager is in place.
@@ -47,13 +49,13 @@ for f in `find conf -maxdepth 1 -iname "*.sh"`
   # check for changed files
   if [ "$1" == "check" ]; then
 
-    rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR >> $CHANGED_LOG
+    rsync -n --exclude=**/maven-metadata.xml* --exclude-from=$exclusions --existing $RSYNC_OPTS -Lrtivzc "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR >> $CHANGED_LOG
 
   else
 
     echo "Syncing $FROM -> $GROUP_DIR"
-    rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
-    rsync --exclude-from=$HOME/components/maven-meeper/src/bin/synchronize/syncopate/exclusions.txt --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
+    rsync --include=*/ --include=**/maven-metadata.xml* --exclude=* --exclude-from=$exclusions $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
+    rsync --exclude-from=$exclusions --ignore-existing $RSYNC_OPTS -Lrtivz "$RSYNC_SSH" $FROM/$GROUP_DIR $BASEDIR/$GROUP_DIR
 
   fi
 

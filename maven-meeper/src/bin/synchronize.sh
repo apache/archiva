@@ -34,6 +34,7 @@ echo "SYNCOPATE = $SYNCOPATE"
 echo "REPOCLEAN = $REPOCLEAN"
 echo "M1_M2_REWRITE_RULES = $M1_M2_REWRITE_RULES"
 echo "SYNC_REPORTS = $SYNC_REPORTS"
+echo "JAVA = $JAVA"
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to continue, or hit ^C to quit." && echo
 
