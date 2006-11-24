@@ -70,10 +70,17 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>scp://minotaur.apache.org/www/maven.apache.org/archiva/</url>
+      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/</url>
     </site>
   </distributionManagement>
   <build>
+  <extensions>
+    <extension>
+      <groupId>org.apache.maven.wagon</groupId>
+      <artifactId>wagon-ssh-external</artifactId>
+      <version>1.0-alpha-5</version>
+    </extension>
+  </extensions>
     <plugins>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
@@ -471,6 +478,18 @@
     <pluginRepository>
       <id>codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+
+    <!-- See: http://www.nabble.com/NoClassDefFoundError-from-shared-in-project-info-reports-tf2678299s177.html#a7489595 -->
+    <pluginRepository>
+      <id>apache.org</id>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
       <releases>
         <enabled>false</enabled>
       </releases>
