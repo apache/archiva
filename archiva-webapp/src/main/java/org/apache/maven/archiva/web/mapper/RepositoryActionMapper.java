@@ -59,7 +59,7 @@ public class RepositoryActionMapper
         else if ( "showArtifactDependees".equals( actionMapping.getName() ) )
         {
             return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" ) + "/dependedonby";
+                params.remove( "version" ) + "/usedby";
         }
         else if ( "showArtifactDependencyTree".equals( actionMapping.getName() ) )
         {
@@ -119,7 +119,7 @@ public class RepositoryActionMapper
                     {
                         return new ActionMapping( "showArtifactDependencies", "/", "", params );
                     }
-                    else if ( "dependedonby".equals( parts[3] ) )
+                    else if ( "usedby".equals( parts[3] ) )
                     {
                         return new ActionMapping( "showArtifactDependees", "/", "", params );
                     }

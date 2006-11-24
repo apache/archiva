@@ -117,7 +117,7 @@
           <ww:param name="version" value="%{version}"/>
         </ww:url>
       </c:set>
-      <my:currentWWUrl url="${url}">Depended On By</my:currentWWUrl>
+      <my:currentWWUrl url="${url}">Used By</my:currentWWUrl>
       <%-- TODO:
           <a href="TODO">Mailing Lists</a>
       --%>
