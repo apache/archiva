@@ -190,21 +190,25 @@
       <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
     </action>
 
+    <action name="managedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/managedRepositories.jsp</result>
+    </action>
+
     <action name="addRepository" class="configureRepositoryAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
-      <result type="redirect-action">index</result>
+      <result type="redirect-action">managedRepositories</result>
       <interceptor-ref name="unconfiguredStack"/>
     </action>
 
     <action name="editRepository" class="configureRepositoryAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
-      <result type="redirect-action">index</result>
+      <result type="redirect-action">managedRepositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="deleteRepository" class="deleteRepositoryAction">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
-      <result type="redirect-action">index</result>
+      <result type="redirect-action">managedRepositories</result>
     </action>
 
     <action name="proxiedRepositories" class="configureAction" method="input">

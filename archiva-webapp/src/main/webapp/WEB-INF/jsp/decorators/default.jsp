@@ -120,6 +120,9 @@
 
             <ul>
               <li class="none">
+                <my:currentWWUrl action="managedRepositories" namespace="/admin">Managed Repositories</my:currentWWUrl>
+              </li>
+              <li class="none">
                 <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
               </li>
 
