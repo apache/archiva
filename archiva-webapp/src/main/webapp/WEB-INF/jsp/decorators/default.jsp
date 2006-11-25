@@ -114,7 +114,7 @@
           </li>
         </pss:ifAuthorized>
         <pss:ifAuthorized permission="archiva-manage-configuration">
-          <li class="none">
+          <li class="expanded">
             <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
 
 
@@ -133,7 +133,6 @@
         </pss:ifAuthorized>
       </ul>
     </pss:ifAnyAuthorized>
-    <br/>
 
     <c:if test="${sessionScope.securitySession.authenticated}">
     <h5>My Account</h5>
