@@ -29,9 +29,9 @@
       <role-hint>dataSources</role-hint>
       <configuration>
         <resources>
-          <!------------------>
-          <!-- Mail Session -->
-          <!------------------>
+          <!--
+               Mail Session
+          -->
           <resource>
             <name>mail/Session</name>
             <type>javax.mail.Session</type>
@@ -46,9 +46,9 @@
               </property>
             </properties>
           </resource>
-          <!------------------>
-          <!-- Datasources  -->
-          <!------------------>
+          <!--
+               Datasources
+          -->
           <resource>
             <name>jdbc/users</name>
             <type>javax.sql.DataSource</type>
