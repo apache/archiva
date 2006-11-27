@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/continuum"
-         docBase="${catalina.base}/webapps/continuum">
+<Context path="/archiva"
+         docBase="${catalina.base}/webapps/archiva">
 
     <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
               username="sa"
