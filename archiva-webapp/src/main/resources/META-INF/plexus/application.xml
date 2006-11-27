@@ -30,6 +30,14 @@
       </configuration>
     </component>
 
+    <component>
+      <role>org.codehaus.plexus.mailsender.MailSender</role>
+      <implementation>org.codehaus.plexus.mailsender.javamail.JndiJavamailMailSender</implementation>
+      <configuration>
+        <jndiSessionName>java:comp/env/mail/Session</jndiSessionName>
+      </configuration>
+    </component>
+
     <!--
      | Logger manager
      -->

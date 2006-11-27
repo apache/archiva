@@ -29,6 +29,26 @@
       <role-hint>dataSources</role-hint>
       <configuration>
         <resources>
+          <!------------------>
+          <!-- Mail Session -->
+          <!------------------>
+          <resource>
+            <name>mail/Session</name>
+            <type>javax.mail.Session</type>
+            <properties>
+              <property>
+                <name>mail.smtp.host</name>
+                <value>localhost</value>
+              </property>
+              <property>
+                <name>mail.smtp.port</name>
+                <value>25</value>
+              </property>
+            </properties>
+          </resource>
+          <!------------------>
+          <!-- Datasources  -->
+          <!------------------>
           <resource>
             <name>jdbc/users</name>
             <type>javax.sql.DataSource</type>
