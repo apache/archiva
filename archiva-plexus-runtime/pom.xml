@@ -77,6 +77,12 @@
       <version>1.0-alpha-1</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -109,6 +115,8 @@
             <additionalCoreArtifact>directory-naming:naming-core</additionalCoreArtifact>
             <additionalCoreArtifact>directory-naming:naming-factory</additionalCoreArtifact>
             <additionalCoreArtifact>directory-naming:naming-java</additionalCoreArtifact>
+            <additionalCoreArtifact>javax.mail:mail</additionalCoreArtifact>
+            <additionalCoreArtifact>javax.activation:activation</additionalCoreArtifact>
           </additionalCoreArtifacts>
         </configuration>
       </plugin>
