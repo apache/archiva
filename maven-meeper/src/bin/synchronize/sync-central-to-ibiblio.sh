@@ -4,8 +4,6 @@ syncProperties=$1
                                                                                                                                            
 . $syncProperties      
 
-dest=/home/maven/repository-staging/to-ibiblio
-
 rsync -e ssh --delete --max-delete=10 -v -riplt $MAVEN2_REPO/ $IBIBLIO_SYNC_HOST:$M2_IBIBLIO_SYNC_DIR
 
 # M1 Sync only for plugins ...
