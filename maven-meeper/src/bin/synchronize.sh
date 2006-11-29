@@ -103,7 +103,7 @@ sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
 
 echo "Synchronizing to ibiblio"
 
-./sync-central-to-ibiblio.sh $syncProperties
+./synchronize-central-to-ibiblio.sh $syncProperties
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
