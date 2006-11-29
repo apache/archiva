@@ -3,10 +3,8 @@
 ## MAVEN 1.0.2 doesn't deal with redirects. Avoid them
 
 RewriteEngine on
-#RewriteLog c:/home/brett/scm/codehaus/maven/maven/rewrite.log
-#RewriteLogLevel 9
 
-RewriteBase /maven/
+RewriteBase /pub/mirrors/maven
 
 RewriteRule org.codehaus.modello/jars/modello-plugin-dom4j-(.+).jar(.*)$ /maven2/org/codehaus/modello/modello-plugin-dom4j/$1/modello-plugin-dom4j-$1.jar$2 [L]
 RewriteRule org.codehaus.modello/jars/modello-plugin-xpp3-(.+).jar(.*)$ /maven2/org/codehaus/modello/modello-plugin-xpp3/$1/modello-plugin-xpp3-$1.jar$2 [L]
@@ -23,13 +21,8 @@ RewriteRule jython/jars/jython-20020827-no-oro.jar /maven2/jython/jython/2002082
 RewriteRule xpp3/jars/xpp3-1.1.3.4-(.+?).jar /maven2/xpp3/xpp3/1.1.3.4/xpp3-1.1.3.4-$1.jar [L]
 
 # rewrite // to /
-#RewriteRule ^/maven//(.*) /maven/$1
 RewriteRule ^/(.*)$ /maven/$1
-#RewriteRule ^/(.*)$ /maven/$1 [R]
 # rewrite mapped artifact
-#RewriteRule ^(.*)(\.sha1)$ ${artifact-map:$1|$1}$2 [PT]
-#RewriteRule ^(.*)(\.md5)$ ${artifact-map:$1|$1}$2 [PT]
-#RewriteRule ^(.*)$ ${artifact-map:$1|$1}
 # rewrite artifact
 # don't translate plugins - they aren't copied in the reposync
 RewriteRule ^([^/]+)/(jar|pom|config|distribution|java-source|dist|dtd|ear|ejb|license|licence|nbm|rar|sar|tld|war|xml|zip)s/([^0-9]+)-([0-9].+)\.([^0-9]+)(\.md5|\.sha1){0,1}$ r/$1/$3/$4/$3-$4.$5$6 [PT]
@@ -38,10 +31,3 @@ RewriteRule ^([^/]+)/(jar|pom|config|distribution|java-source|dist|dtd|ear|ejb|l
 RewriteRule ^r/([^/]+)\.(.*)$ r/$1/$2 [PT] [N]
 # final redirect
 RewriteRule ^r/(.*)$ /maven2/$1
-#RewriteRule ^r/(.*)$ /maven2/$ [R]
-
-# rewrite for browsing
-#RewriteRule ^/maven$ /maven2/ [R]
-#RewriteRule ^/maven/([^/]+)/(.+)s/(.*)$ /maven2/$1/$3 [R]
-#RewriteRule ^/maven/(.*)$ /maven2/$1 [R]
-
