@@ -111,12 +111,6 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 # Copy the mod_rewrite rules to the Maven 1.x repository
 # ------------------------------------------------------------------------
 
-[ "$MODE" = "batch" ] && echo && echo "Press any key to copy the m1 to m2 rewrite rules, or hit ^C to quit." && echo
-
-echo "Copying rewrite rules into place"
-
-cp $M1_M2_REWRITE_RULES $MAVEN1_REPO/.htaccess
-    
-scp $M1_M2_REWRITE_RULES maven@login.ibiblio.org:/public/html/maven/.htaccess   
+./synchronize-rewrite-rules-to-ibiblio.sh $syncProperties
 
 ) | tee $SYNC_REPORTS/last-sync-results.txt ) 2>&1
