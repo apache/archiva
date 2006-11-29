@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CONTACTS=""
+CONTACTS="fabrizio giustina <fgiust@gmail.com>"
 MODE=rsync_ssh
 
 FROM=mavensync@shell.sourceforge.net:/home/groups/o/op/openutils/htdocs/repository/releases
