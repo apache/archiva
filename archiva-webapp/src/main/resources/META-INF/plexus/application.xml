@@ -339,6 +339,104 @@
       </configuration>
     </component>
 
+    <!-- ================================================================
+           Caches with Long Term entries
+         ================================================================ -->
+    
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>operations</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for Operations</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>operationsCache</name>
+        <time-to-idle-seconds>1800</time-to-idle-seconds>
+        <time-to-live-seconds>14400</time-to-live-seconds>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>permissions</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for Permissions</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>permissionsCache</name>
+        <time-to-idle-seconds>1800</time-to-idle-seconds>
+        <time-to-live-seconds>14400</time-to-live-seconds>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>resources</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for Resources</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>resourcesCache</name>
+        <time-to-idle-seconds>1800</time-to-idle-seconds>
+        <time-to-live-seconds>14400</time-to-live-seconds>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>roles</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for Roles</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>rolesCache</name>
+        <time-to-idle-seconds>1800</time-to-idle-seconds>
+        <time-to-live-seconds>14400</time-to-live-seconds>
+      </configuration>
+    </component>
+    
+    <!-- ================================================================
+           Caches with Short Term entries
+         ================================================================ -->
+    
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>userAssignments</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for UserAssignments</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>10000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>userAssignmentsCache</name>
+        <time-to-idle-seconds>300</time-to-idle-seconds>
+        <time-to-live-seconds>600</time-to-live-seconds>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+      <role-hint>userPermissions</role-hint>
+      <implementation>org.codehaus.plexus.ehcache.MemoryCache</implementation>
+      <description>MemoryCache for User Permissions</description>
+      <configuration>
+        <eternal>false</eternal>
+        <max-elements-in-memory>10000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>userPermissionsCache</name>
+        <time-to-idle-seconds>300</time-to-idle-seconds>
+        <time-to-live-seconds>600</time-to-live-seconds>
+      </configuration>
+    </component>
+
   </components>
 
   <!-- Override default configuration of components -->
