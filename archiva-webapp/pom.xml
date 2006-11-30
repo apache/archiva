@@ -154,6 +154,10 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
+      <artifactId>plexus-security-authorization-rbac-store-cached</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
     </dependency>
     <dependency>

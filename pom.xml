@@ -325,6 +325,11 @@
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.security</groupId>
+        <artifactId>plexus-security-authorization-rbac-store-cached</artifactId>
+        <version>${plexus-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.security</groupId>
         <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
         <version>${plexus-security.version}</version>
       </dependency>

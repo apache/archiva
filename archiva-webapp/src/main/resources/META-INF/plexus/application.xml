@@ -202,7 +202,8 @@
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.security.rbac.RBACManager</role>
-          <role-hint>jdo</role-hint>
+          <role-hint>cached</role-hint>
+          <field-name>manager</field-name>
         </requirement>
         <requirement>
           <role>org.codehaus.plexus.security.user.UserManager</role>
@@ -212,6 +213,50 @@
         <requirement>
           <role>org.codehaus.plexus.security.authorization.rbac.evaluator.PermissionEvaluator</role>
           <role-hint>default</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+      <role-hint>cached</role-hint>
+      <implementation>org.codehaus.plexus.security.authorization.rbac.store.cached.CachedRbacManager</implementation>
+      <description>CachedRbacManager is a wrapped RBACManager with caching.</description>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+          <role-hint>jdo</role-hint>
+          <field-name>rbacImpl</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>operations</role-hint>
+          <field-name>operationsCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>permissions</role-hint>
+          <field-name>permissionsCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>resources</role-hint>
+          <field-name>resourcesCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>roles</role-hint>
+          <field-name>rolesCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>userAssignments</role-hint>
+          <field-name>userAssignmentsCache</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.ehcache.EhcacheComponent</role>
+          <role-hint>userPermissions</role-hint>
+          <field-name>userPermissionsCache</field-name>
         </requirement>
       </requirements>
     </component>
