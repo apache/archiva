@@ -113,7 +113,7 @@ public class LocationArtifactReportProcessor
             }
         }
 
-        //get the location of the artifact itself
+        // get the location of the artifact itself
         File file = new File( repository.getBasedir(), artifactPath );
 
         if ( file.exists() )
@@ -140,7 +140,7 @@ public class LocationArtifactReportProcessor
         }
         else
         {
-            throw new IllegalStateException( "Couldn't find artifact " + file );
+            addFailure( reporter, artifact, "missing-artifact", "The artifact file [" + file + "] cannot be found for metadata." );
         }
     }
 

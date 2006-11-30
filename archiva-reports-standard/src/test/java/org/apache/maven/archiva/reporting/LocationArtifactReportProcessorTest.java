@@ -157,16 +157,10 @@ public class LocationArtifactReportProcessorTest
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2" );
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
-        try
-        {
-            Model model = readPom( repository.pathOf( pomArtifact ) );
-            artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-            fail( "Should not have passed the artifact" );
-        }
-        catch ( IllegalStateException e )
-        {
-            // correct!
-        }
+        Model model = readPom( repository.pathOf( pomArtifact ) );
+        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        
+        assertEquals( 1, reportDatabase.getNumFailures() );
     }
 
     /**

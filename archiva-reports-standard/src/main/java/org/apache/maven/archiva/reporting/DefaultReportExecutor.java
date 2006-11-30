@@ -21,6 +21,7 @@ import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.MetadataDiscoverer;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllMetadataFilter;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.InvalidArtifactRTException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
@@ -115,6 +116,10 @@ public class DefaultReportExecutor
                     projectBuilder.buildFromRepository( pomArtifact, Collections.EMPTY_LIST, repository );
 
                 model = project.getModel();
+            }
+            catch ( InvalidArtifactRTException e )
+            {
+                reporter.addWarning( artifact, null, null, "Invalid artifact [" + artifact + "] : " + e );
             }
             catch ( ProjectBuildingException e )
             {

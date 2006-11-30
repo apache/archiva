@@ -18,6 +18,7 @@ package org.apache.maven.archiva.indexer.record;
 
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.InvalidArtifactRTException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Dependency;
@@ -251,8 +252,17 @@ public class StandardArtifactIndexRecordFactory
     {
         // TODO: this can create a -SNAPSHOT.pom when it didn't exist and a timestamped one did. This is harmless, but should be avoided
         // TODO: will this pollute with local repo metadata?
-        MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
-        return project.getModel();
+        
+        try
+        {
+            MavenProject project = projectBuilder.buildFromRepository( artifact, Collections.EMPTY_LIST, repository );
+            return project.getModel();
+        }
+        catch ( InvalidArtifactRTException e )
+        {
+            throw new ProjectBuildingException( artifact.getId(), "Unable to build project from invalid artifact ["
+                + artifact + "]", e );
+        }
     }
 
     private void populateArchiveEntries( List files, StandardArtifactIndexRecord record, File artifactFile )
