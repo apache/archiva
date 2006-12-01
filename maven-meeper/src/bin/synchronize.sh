@@ -44,7 +44,7 @@ echo "JAVA = $JAVA"
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run syncopate, or hit ^C to quit." && echo
 
-echo "Running Syncopate"
+echo ">>>>>>>>>>>>>>>>>> Running Syncopate"
 
 (
   cd $SYNCOPATE
@@ -59,7 +59,7 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run the m1 to m2 conversion, or hit ^C to quit." && echo
 
-echo "Running Maven 1.x to Maven 2.x conversion ..."
+echo ">>>>>>>>>>>>>>>>>> Running Maven 1.x to Maven 2.x conversion ..."
 
 (
   cd $REPOCLEAN
@@ -74,7 +74,7 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run manual fixes, or hit ^C to quit." && echo
 
-echo "Removing commons-logging 1.1-dev"
+echo ">>>>>>>>>>>>>>>>>> Removing commons-logging 1.1-dev"
 
 # hack prevent commons-logging-1.1-dev
 CL=$MAVEN2_REPO/commons-logging/commons-logging
@@ -100,8 +100,6 @@ sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
 # ------------------------------------------------------------------------
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Ibiblio, or hit ^C to quit." && echo
-
-echo "Synchronizing to ibiblio"
 
 ./synchronize-central-to-ibiblio.sh $syncProperties
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
