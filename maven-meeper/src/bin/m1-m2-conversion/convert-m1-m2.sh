@@ -4,7 +4,7 @@ syncProperties=$1
 
 . $syncProperties
 
-$JAVA -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c synchronize.properties
+$JAVA -jar archiva-cli-1.0-SNAPSHOT-cli.jar -c $CONVERSION_PROPERTIES
 
 dir=/home/maven/repository-staging/to-ibiblio
 src=$dir/maven2-converted-from-maven1
