@@ -31,6 +31,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A dummy wagon implementation
@@ -69,6 +70,18 @@ public class WagonDelegate
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         delegate.putDirectory( sourceDirectory, destinationDirectory );
+    }
+
+    public boolean resourceExists( String resourceName )
+        throws TransferFailedException, AuthorizationException
+    {
+        return delegate.resourceExists( resourceName );
+    }
+
+    public List getFileList( String destinationDirectory )
+        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
+    {
+        return delegate.getFileList( destinationDirectory );
     }
 
     public boolean supportsDirectoryCopy()

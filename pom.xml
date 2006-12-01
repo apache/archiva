@@ -498,7 +498,7 @@
   </pluginRepositories>
   <properties>
     <maven.version>2.0.4</maven.version>
-    <wagon.version>1.0-beta-1</wagon.version>
+    <wagon.version>1.0-beta-2-SNAPSHOT</wagon.version>
     <plexus-security.version>1.0-alpha-6-SNAPSHOT</plexus-security.version>
   </properties>
 </project>
