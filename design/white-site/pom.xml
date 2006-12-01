@@ -36,7 +36,7 @@
     <!-- for skin -->
     <repository>
       <id>apache.snapshots</id>
-      <url>http://people.apache.org/maven-snapshot-repository</url>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
     </repository>
   </repositories>
 </project>

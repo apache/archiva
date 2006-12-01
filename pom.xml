@@ -486,7 +486,7 @@
 
     <!-- See: http://www.nabble.com/NoClassDefFoundError-from-shared-in-project-info-reports-tf2678299s177.html#a7489595 -->
     <pluginRepository>
-      <id>apache.org</id>
+      <id>apache.snapshots</id>
       <url>http://people.apache.org/repo/m2-snapshot-repository</url>
       <releases>
         <enabled>false</enabled>
