@@ -23,7 +23,7 @@ import org.apache.lucene.document.NumberTools;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecord;
 import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 import java.util.Arrays;

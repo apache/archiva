@@ -341,6 +341,11 @@
         <artifactId>plexus-security-keys-jdo</artifactId>
         <version>${plexus-security.version}</version>
       </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
   <reporting>

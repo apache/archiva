@@ -66,6 +66,10 @@
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-discoverer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

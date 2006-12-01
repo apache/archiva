@@ -20,6 +20,10 @@
       <artifactId>plexus-cli</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

@@ -26,7 +26,7 @@ import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -162,7 +162,7 @@ public class DefaultMetadataDiscoverer
         String tmpDir = (String) it.next();
 
         Artifact artifact = null;
-        if ( !StringUtils.isEmpty( metaVersion ) )
+        if ( StringUtils.isNotEmpty( metaVersion ) )
         {
             artifact = artifactFactory.createProjectArtifact( metaGroupId, metaArtifactId, metaVersion );
         }

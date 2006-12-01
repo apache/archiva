@@ -16,7 +16,7 @@ package org.apache.maven.archiva.configuration;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

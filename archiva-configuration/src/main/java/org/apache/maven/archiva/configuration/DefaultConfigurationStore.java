@@ -20,7 +20,7 @@ import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Reader;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;

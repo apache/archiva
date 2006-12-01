@@ -56,6 +56,10 @@
       <artifactId>plexus-taskqueue</artifactId>
       <version>1.0-alpha-4-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

@@ -17,7 +17,7 @@ package org.apache.maven.archiva.discoverer;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

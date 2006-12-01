@@ -30,7 +30,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -230,7 +230,7 @@ public class DefaultProxyManager
     private static ProxyInfo createWagonProxy( Proxy proxy )
     {
         ProxyInfo proxyInfo = null;
-        if ( proxy != null && !StringUtils.isEmpty( proxy.getHost() ) )
+        if ( proxy != null && StringUtils.isNotEmpty( proxy.getHost() ) )
         {
             proxyInfo = new ProxyInfo();
             proxyInfo.setHost( proxy.getHost() );
