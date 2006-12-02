@@ -17,7 +17,7 @@ package org.apache.maven.archiva.converter.transaction;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 
@@ -42,7 +42,7 @@ public class CopyFileEventTest
 
         testSource.createNewFile();
 
-        FileUtils.fileWrite( testSource.getAbsolutePath(), "source contents" );
+        FileUtils.writeStringToFile( testSource, "source contents", null );
     }
 
     public void testCopyCommitRollback()
@@ -50,7 +50,7 @@ public class CopyFileEventTest
     {
         assertTrue( "Test if the source exists", testSource.exists() );
 
-        String source = FileUtils.fileRead( testSource.getAbsolutePath() );
+        String source = FileUtils.readFileToString( testSource, null );
 
         CopyFileEvent event = new CopyFileEvent( testSource, testDest );
 
@@ -60,7 +60,7 @@ public class CopyFileEventTest
 
         assertTrue( "Test that the destination is created", testDest.exists() );
 
-        String target = FileUtils.fileRead( testDest.getAbsolutePath() );
+        String target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test that the destination contents are copied correctly", source.equals( target ) );
 
@@ -74,31 +74,31 @@ public class CopyFileEventTest
     {
         assertTrue( "Test if the source exists", testSource.exists() );
 
-        String source = FileUtils.fileRead( testSource.getAbsolutePath() );
+        String source = FileUtils.readFileToString( testSource, null );
 
         testDest.getParentFile().mkdirs();
 
         testDest.createNewFile();
 
-        FileUtils.fileWrite( testDest.getAbsolutePath(), "overwritten contents" );
+        FileUtils.writeStringToFile( testDest, "overwritten contents", null );
 
         assertTrue( "Test that the destination exists", testDest.exists() );
 
         CopyFileEvent event = new CopyFileEvent( testSource, testDest );
 
-        String target = FileUtils.fileRead( testDest.getAbsolutePath() );
+        String target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test that the destination contents have not changed", target.equals( "overwritten contents" ) );
 
         event.commit();
 
-        target = FileUtils.fileRead( testDest.getAbsolutePath() );
+        target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test that the destination contents are copied correctly", source.equals( target ) );
 
         event.rollback();
 
-        target = FileUtils.fileRead( testDest.getAbsolutePath() );
+        target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test the destination file contents have been restored", target.equals( "overwritten contents" ) );
     }
@@ -108,7 +108,7 @@ public class CopyFileEventTest
     {
         assertTrue( "Test if the source exists", testSource.exists() );
 
-        String source = FileUtils.fileRead( testSource.getAbsolutePath() );
+        String source = FileUtils.readFileToString( testSource, null );
 
         CopyFileEvent event = new CopyFileEvent( testSource, testDest );
 
@@ -122,7 +122,7 @@ public class CopyFileEventTest
 
         assertTrue( "Test that the destination is created", testDest.exists() );
 
-        String target = FileUtils.fileRead( testDest.getAbsolutePath() );
+        String target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test that the destination contents are copied correctly", source.equals( target ) );
     }
@@ -132,7 +132,6 @@ public class CopyFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory(
-            new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ).getAbsolutePath() );
+        FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ) );
     }
 }

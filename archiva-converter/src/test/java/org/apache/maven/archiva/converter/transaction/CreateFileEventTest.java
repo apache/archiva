@@ -17,7 +17,7 @@ package org.apache.maven.archiva.converter.transaction;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 
@@ -58,23 +58,23 @@ public class CreateFileEventTest
 
         testFile.createNewFile();
 
-        FileUtils.fileWrite( testFile.getAbsolutePath(), "original contents" );
+        FileUtils.writeStringToFile( testFile, "original contents", null );
 
         CreateFileEvent event = new CreateFileEvent( "modified contents", testFile );
 
-        String contents = FileUtils.fileRead( testFile.getAbsolutePath() );
+        String contents = FileUtils.readFileToString( testFile, null );
 
         assertEquals( "Test contents have not changed", "original contents", contents );
 
         event.commit();
 
-        contents = FileUtils.fileRead( testFile.getAbsolutePath() );
+        contents = FileUtils.readFileToString( testFile, null );
 
         assertEquals( "Test contents have not changed", "modified contents", contents );
 
         event.rollback();
 
-        contents = FileUtils.fileRead( testFile.getAbsolutePath() );
+        contents = FileUtils.readFileToString( testFile, null );
 
         assertEquals( "Test contents have not changed", "original contents", contents );
     }
@@ -102,7 +102,6 @@ public class CreateFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory(
-            new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ).getAbsolutePath() );
+        FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ) );
     }
 }

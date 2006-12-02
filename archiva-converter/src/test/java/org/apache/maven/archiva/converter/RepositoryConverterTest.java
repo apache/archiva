@@ -30,7 +30,7 @@ import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -920,8 +920,8 @@ public class RepositoryConverterTest
     private static void compareFiles( File expectedPomFile, File pomFile )
         throws IOException
     {
-        String expectedContent = normalizeString( FileUtils.fileRead( expectedPomFile ) );
-        String targetContent = normalizeString( FileUtils.fileRead( pomFile ) );
+        String expectedContent = normalizeString( FileUtils.readFileToString( expectedPomFile, null ) );
+        String targetContent = normalizeString( FileUtils.readFileToString( pomFile, null ) );
         assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
                       targetContent );
     }

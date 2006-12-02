@@ -16,7 +16,7 @@ package org.apache.maven.archiva.converter.transaction;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +85,7 @@ public abstract class AbstractTransactionEvent
 
                 if ( dir.isDirectory() && dir.list().length == 0 )
                 {
-                    FileUtils.deleteDirectory( dir.getAbsolutePath() );
+                    FileUtils.deleteDirectory( dir );
                 }
                 else
                 {

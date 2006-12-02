@@ -41,7 +41,7 @@ import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.i18n.I18N;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -432,7 +432,7 @@ public class DefaultRepositoryConverter
                 }
 
                 // Even if the checksums for the POM are invalid we should still convert the POM
-                contents = FileUtils.fileRead( file );
+                contents = FileUtils.readFileToString( file, null );
             }
             catch ( IOException e )
             {
@@ -447,7 +447,7 @@ public class DefaultRepositoryConverter
                     boolean matching = false;
                     if ( !force && targetFile.exists() )
                     {
-                        String targetContents = FileUtils.fileRead( targetFile );
+                        String targetContents = FileUtils.readFileToString( targetFile, null );
                         matching = targetContents.equals( contents );
                     }
                     if ( force || !matching )
@@ -650,7 +650,7 @@ public class DefaultRepositoryConverter
         File checksumFile = new File( file.getParentFile(), fileName );
         if ( checksumFile.exists() )
         {
-            String checksum = FileUtils.fileRead( checksumFile );
+            String checksum = FileUtils.readFileToString( checksumFile, null );
             try
             {
                 digester.verify( file, checksum );

@@ -16,7 +16,7 @@ package org.apache.maven.archiva.converter.transaction;
  * limitations under the License.
  */
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class CopyFileEvent
     public void rollback()
         throws IOException
     {
-        FileUtils.fileDelete( destination.getAbsolutePath() );
+        destination.delete();
 
         revertMkDirs();
 
