@@ -16,8 +16,8 @@ package org.apache.maven.archiva.converter;
  * limitations under the License.
  */
 
-import org.apache.maven.archiva.reporting.ReportGroup;
-import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;

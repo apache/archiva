@@ -17,7 +17,7 @@ package org.apache.maven.archiva.converter;
  */
 
 import org.apache.maven.archiva.converter.transaction.FileTransaction;
-import org.apache.maven.archiva.reporting.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.factory.ArtifactFactory;

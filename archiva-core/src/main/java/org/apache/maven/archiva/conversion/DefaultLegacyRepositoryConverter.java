@@ -1,10 +1,10 @@
 package org.apache.maven.archiva.conversion;
 
 import org.apache.maven.archiva.Archiva;
-import org.apache.maven.archiva.reporting.ReportingStore;
-import org.apache.maven.archiva.reporting.ReportGroup;
-import org.apache.maven.archiva.reporting.ReportingDatabase;
-import org.apache.maven.archiva.reporting.ReportingStoreException;
+import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.store.ReportingStore;
+import org.apache.maven.archiva.reporting.store.ReportingStoreException;
 import org.apache.maven.archiva.converter.RepositoryConverter;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
