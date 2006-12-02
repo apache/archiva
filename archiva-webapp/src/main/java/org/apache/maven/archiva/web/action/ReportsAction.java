@@ -74,7 +74,7 @@ public class ReportsAction
     private Configuration configuration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.ReportGroup"
+     * @plexus.requirement role="org.apache.maven.archiva.reporting.group.ReportGroup"
      */
     private Map reports;
 

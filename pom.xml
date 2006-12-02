@@ -256,6 +256,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-utils</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-webapp</artifactId>
         <version>${pom.version}</version>
         <type>war</type>
