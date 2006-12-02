@@ -42,7 +42,7 @@ import org.codehaus.plexus.digest.DigestUtils;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -407,7 +407,7 @@ public class DefaultProxyRequestHandler
                 }
                 finally
                 {
-                    IOUtil.close( fileReader );
+                    IOUtils.closeQuietly( fileReader );
                 }
             }
 
@@ -440,7 +440,7 @@ public class DefaultProxyRequestHandler
             }
             finally
             {
-                IOUtil.close( fileReader );
+                IOUtils.closeQuietly( fileReader );
             }
 
             if ( changed )
@@ -457,7 +457,7 @@ public class DefaultProxyRequestHandler
                 }
                 finally
                 {
-                    IOUtil.close( fileWriter );
+                    IOUtils.closeQuietly( fileWriter );
                 }
             }
         }

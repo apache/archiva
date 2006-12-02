@@ -42,7 +42,7 @@ import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.i18n.I18N;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -213,7 +213,7 @@ public class DefaultRepositoryConverter
             }
             finally
             {
-                IOUtil.close( writer );
+                IOUtils.closeQuietly( writer );
             }
         }
     }
@@ -243,7 +243,7 @@ public class DefaultRepositoryConverter
         }
         finally
         {
-            IOUtil.close( fileReader );
+            IOUtils.closeQuietly( fileReader );
         }
         return metadata;
     }
@@ -515,7 +515,7 @@ public class DefaultRepositoryConverter
                 }
                 finally
                 {
-                    IOUtil.close( writer );
+                    IOUtils.closeQuietly( writer );
                 }
             }
         }

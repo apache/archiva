@@ -22,7 +22,7 @@ import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -87,7 +87,7 @@ public class InvalidPomArtifactReportProcessor
                 }
                 finally
                 {
-                    IOUtil.close( reader );
+                    IOUtils.closeQuietly( reader );
                 }
             }
         }

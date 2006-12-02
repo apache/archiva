@@ -19,7 +19,7 @@ package org.apache.maven.archiva.reporting.reporter;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 
 import java.io.BufferedOutputStream;
@@ -136,7 +136,7 @@ public abstract class AbstractChecksumArtifactReporterTestCase
 
             BufferedReader in = new BufferedReader( new FileReader( filename1 ) );
             out.putNextEntry( new JarEntry( filename1 ) );
-            IOUtil.copy( in, out );
+            IOUtils.copy( in, out );
             in.close();
             out.close();
 

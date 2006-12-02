@@ -32,7 +32,7 @@ import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -268,7 +268,7 @@ public class DefaultRepositoryAssembler
                 }
                 finally
                 {
-                    IOUtil.close( writer );
+                    IOUtils.closeQuietly( writer );
                 }
 
                 try

@@ -25,7 +25,7 @@ import org.apache.maven.archiva.reporting.store.ReportingStoreException;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -94,7 +94,7 @@ public class DefaultReportingStore
                 }
                 finally
                 {
-                    IOUtil.close( fileReader );
+                    IOUtils.closeQuietly( fileReader );
                 }
             }
 
@@ -136,7 +136,7 @@ public class DefaultReportingStore
         }
         finally
         {
-            IOUtil.close( fileWriter );
+            IOUtils.closeQuietly( fileWriter );
         }
     }
 }

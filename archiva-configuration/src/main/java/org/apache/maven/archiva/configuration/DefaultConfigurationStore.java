@@ -19,7 +19,7 @@ package org.apache.maven.archiva.configuration;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Reader;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -112,7 +112,7 @@ public class DefaultConfigurationStore
             }
             finally
             {
-                IOUtil.close( fileReader );
+                IOUtils.closeQuietly( fileReader );
             }
         }
         return configuration;
@@ -166,7 +166,7 @@ public class DefaultConfigurationStore
         }
         finally
         {
-            IOUtil.close( fileWriter );
+            IOUtils.closeQuietly( fileWriter );
         }
     }
 
