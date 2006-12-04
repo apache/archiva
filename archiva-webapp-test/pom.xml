@@ -90,6 +90,19 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>check-archiva-loaded</id>
+            <phase>integration-test</phase>
+            <configuration>
+              <tasks>
+                <get src="http://localhost:9595/archiva/" dest="${project.build.directory}/index.html"/>
+                <delete file="${project.build.directory}/index.html"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>

@@ -41,7 +41,6 @@ public abstract class AbstractArchivaTestCase
 
     protected void initialize()
     {
-        getSelenium().setTimeout( "120000" );
         getSelenium().open( "/archiva" );
 
         if ( CREATE_ADMIN_USER_PAGE_TITLE.equals( getSelenium().getTitle() ) )
