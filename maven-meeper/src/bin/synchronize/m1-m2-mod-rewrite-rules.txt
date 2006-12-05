@@ -4,7 +4,7 @@
 
 RewriteEngine on
 
-RewriteBase /pub/mirrors/maven
+RewriteBase /maven
 
 RewriteRule org.codehaus.modello/jars/modello-plugin-dom4j-(.+).jar(.*)$ /maven2/org/codehaus/modello/modello-plugin-dom4j/$1/modello-plugin-dom4j-$1.jar$2 [L]
 RewriteRule org.codehaus.modello/jars/modello-plugin-xpp3-(.+).jar(.*)$ /maven2/org/codehaus/modello/modello-plugin-xpp3/$1/modello-plugin-xpp3-$1.jar$2 [L]
