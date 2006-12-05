@@ -81,6 +81,20 @@
       </requirements>
     </component>
     <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>archiva-repository-manager-base</role-hint>
+      <implementation>org.apache.maven.archiva.security.BaseRepositoryManagerRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
       <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
       <role-hint>archiva-repository-manager</role-hint>
       <implementation>org.apache.maven.archiva.security.RepositoryManagerDynamicRoleProfile</implementation>

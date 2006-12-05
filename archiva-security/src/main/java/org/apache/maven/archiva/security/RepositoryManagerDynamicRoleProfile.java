@@ -52,6 +52,12 @@ public class RepositoryManagerDynamicRoleProfile
         return operations;
     }
 
+
+    public List getChildRoles()
+    {
+        return Collections.singletonList( ArchivaRoleConstants.BASE_REPOSITORY_MANAGER );
+    }
+
     public List getDynamicChildRoles( String string )
     {
         return Collections.singletonList(

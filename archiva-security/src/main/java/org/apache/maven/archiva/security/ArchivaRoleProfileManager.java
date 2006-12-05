@@ -32,6 +32,8 @@ public class ArchivaRoleProfileManager
     public void initialize()
         throws RoleProfileException
     {
+        getRole( "archiva-repository-manager-base" );
+
         mergeRoleProfiles( "system-administrator", "archiva-system-administrator" );
         mergeRoleProfiles( "user-administrator", "archiva-user-administrator" );
         mergeRoleProfiles( "guest", "archiva-guest" );
