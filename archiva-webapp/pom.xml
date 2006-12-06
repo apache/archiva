@@ -179,6 +179,7 @@
                 <!-- Log file location specified in application.xml -->
                 <include>pss</include>
                 <!-- plexus-security css and javascript -->
+                <include>css/pss</include>
                 <include>WEB-INF/jsp/pss</include>
                 <!-- plexus-security jsps -->
                 <include>WEB-INF/template/pss</include>
