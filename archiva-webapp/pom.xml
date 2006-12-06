@@ -48,6 +48,7 @@
       <artifactId>jstl</artifactId>
       <version>1.1.2</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration</artifactId>
@@ -63,6 +64,7 @@
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
     </dependency>
+     -->
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
@@ -124,75 +126,14 @@
     <!-- Plexus Security Dependencies -->
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-system</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-ui-web-integration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-ui-web-taglib</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authentication-provider-user-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-user-management-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-user-management-provider-jdo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authorization-rbac-store-cached</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authorization-rbac-store-jdo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authorization-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authorization-rbac-authorizer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-keys-jdo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-authentication-provider-keystore</artifactId>
-    </dependency>
-    <!-- Arrives via pleus-security
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-jdo2</artifactId>
-      <version>1.0-alpha-8-SNAPSHOT</version>
-      <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xmlParserAPIs</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-     -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
@@ -203,25 +144,9 @@
       <version>10.1.3.1</version>
     </dependency>
     <dependency>
-      <groupId>jpox</groupId>
-      <artifactId>jpox</artifactId>
-      <version>1.1.1</version>
-      <exclusions>
-        <!-- targeting JDK 1.4 we don't need this -->
-        <exclusion>
-          <groupId>javax.sql</groupId>
-          <artifactId>jdbc-stdext</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>it.could</groupId>
       <artifactId>webdav</artifactId>
       <version>0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
   <build>
