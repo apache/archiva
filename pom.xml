@@ -145,6 +145,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-app-configuration-model</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.shared</groupId>
+        <artifactId>maven-app-configuration-web</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-container-default</artifactId>
         <version>1.0-alpha-10</version>

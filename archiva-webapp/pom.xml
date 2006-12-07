@@ -48,23 +48,31 @@
       <artifactId>jstl</artifactId>
       <version>1.1.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-app-configuration-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-app-configuration-web</artifactId>
+    </dependency>
     <!--
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-xwork-integration</artifactId>
-      <version>1.0-alpha-2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-log4j-logging</artifactId>
-      <version>1.1-alpha-2</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-     -->
+   <dependency>
+     <groupId>org.codehaus.plexus</groupId>
+     <artifactId>plexus-xwork-integration</artifactId>
+     <version>1.0-alpha-2</version>
+   </dependency>
+   <dependency>
+     <groupId>org.codehaus.plexus</groupId>
+     <artifactId>plexus-log4j-logging</artifactId>
+     <version>1.1-alpha-2</version>
+   </dependency>
+   <dependency>
+     <groupId>commons-logging</groupId>
+     <artifactId>commons-logging</artifactId>
+     <version>1.0.4</version>
+   </dependency>
+    -->
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>

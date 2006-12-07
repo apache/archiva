@@ -49,11 +49,7 @@
     </a>
   </span>
   <span id="bannerRight">
-    <%-- TODO: configured corporate banner
-        <a href="http://www.apache.org/">
-          <img src="http://www.apache.org/images/asf_logo_wide.gif" alt="" width="537" height="51" />
-        </a>
-    --%>
+    <ww:action namespace="/components" name="companyInfo" executeResult="true"/>
   </span>
 
   <div class="clear">
@@ -115,6 +111,9 @@
           </li>
         </pss:ifAuthorized>
         <pss:ifAuthorized permission="archiva-manage-configuration">
+          <li class="none">
+            <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
+          </li>
           <li class="expanded">
             <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
 
@@ -139,10 +138,10 @@
     </pss:ifAnyAuthorized>
 
     <c:if test="${sessionScope.securitySession.authenticated}">
-    <h5>My Account</h5>
-    <li class="none">
-      <my:currentWWUrl action="account" namespace="/">Edit user info</my:currentWWUrl>
-    </li>
+      <h5>My Account</h5>
+      <li class="none">
+        <my:currentWWUrl action="account" namespace="/">Edit user info</my:currentWWUrl>
+      </li>
     </c:if>
 
   </div>
@@ -159,13 +158,13 @@
 </div>
 
 <%
-    int inceptionYear = 2005;
-    int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-    String copyrightRange = String.valueOf( inceptionYear );
-    if ( inceptionYear != currentYear )
-    {
-        copyrightRange = copyrightRange + "-" + String.valueOf( currentYear );
-    }
+  int inceptionYear = 2005;
+  int currentYear = Calendar.getInstance().get( Calendar.YEAR );
+  String copyrightRange = String.valueOf( inceptionYear );
+  if ( inceptionYear != currentYear )
+  {
+    copyrightRange = copyrightRange + "-" + String.valueOf( currentYear );
+  }
 %>
 <div id="footer">
   <div class="xright">&#169;

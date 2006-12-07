@@ -78,7 +78,7 @@
       <result name="security-login-cancel" type="redirect-action">index</result>
       <result name="security-login-locked" type="redirect-action">
         <param name="infoMessage">Account Locked</param>
-        <param name="actionName">index</param>           
+        <param name="actionName">index</param>
       </result>
       <result name="security-logout" type="redirect-action">index</result>
       <result name="requires-authentication" type="redirect-action">
@@ -186,6 +186,12 @@
     </action>
   </package>
 
+  <package name="components" namespace="/components" extends="default">
+    <action name="companyInfo" class="companyInfo">
+      <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
+    </action>
+  </package>
+
   <!-- Configuration for the admin package. -->
   <package name="admin" namespace="/admin" extends="base">
 
@@ -286,6 +292,34 @@
       <interceptor-ref name="execAndWait"/>
       <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
       <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
+    </action>
+
+    <action name="configureAppearance" class="configureAppearance" method="input">
+      <result name="input">/WEB-INF/jsp/admin/appearance.jsp</result>
+    </action>
+
+    <action name="editAppearance" class="configureAppearance" method="input">
+      <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
+    </action>
+
+    <action name="saveAppearance" class="configureAppearance">
+      <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
+      <result type="redirect-action">
+        <param name="actionName">configureAppearance</param>
+        <param name="namespace">/admin</param>
+      </result>
+    </action>
+
+    <action name="editCompanyPom" class="editPom" method="input">
+      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
+    </action>
+
+    <action name="saveCompanyPom" class="editPom">
+      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
+      <result type="redirect-action">
+        <param name="actionName">configureAppearance</param>
+        <param name="namespace">/admin</param>
+      </result>
     </action>
   </package>
 </xwork>

@@ -16,12 +16,12 @@ package org.apache.maven.archiva.configuration;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.proxy.ProxiedArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
