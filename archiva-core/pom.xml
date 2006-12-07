@@ -54,7 +54,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-taskqueue</artifactId>
-      <version>1.0-alpha-4-SNAPSHOT</version>
+      <version>1.0-alpha-4</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
