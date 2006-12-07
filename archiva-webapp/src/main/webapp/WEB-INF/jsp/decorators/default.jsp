@@ -29,6 +29,7 @@
   <style type="text/css" media="all">
     @import url( "<c:url value="/css/maven-base.css" />" );
     @import url( "<c:url value="/css/maven-theme.css" />" );
+    @import url( "<c:url value="/css/pss/table.css" />" );
     @import url( "<c:url value="/css/site.css" />" );
   </style>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
