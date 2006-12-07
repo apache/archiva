@@ -76,7 +76,10 @@
       <!-- The following security-* result names arrive from the plexus-security package -->
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
-      <result name="security-login-locked" type="redirect-action">index</result>
+      <result name="security-login-locked" type="redirect-action">
+        <param name="infoMessage">Account Locked</param>
+        <param name="actionName">index</param>           
+      </result>
       <result name="security-logout" type="redirect-action">index</result>
       <result name="requires-authentication" type="redirect-action">
         <param name="actionName">login</param>

@@ -80,6 +80,8 @@ public class SearchAction
 
     private static final String ARTIFACT = "artifact";
 
+    private String infoMessage;
+
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
         ConfigurationStoreException, ParseException
@@ -184,5 +186,15 @@ public class SearchAction
     public Collection getSearchResults()
     {
         return searchResults;
+    }
+
+    public String getInfoMessage()
+    {
+        return infoMessage;
+    }
+
+    public void setInfoMessage( String infoMessage )
+    {
+        this.infoMessage = infoMessage;
     }
 }

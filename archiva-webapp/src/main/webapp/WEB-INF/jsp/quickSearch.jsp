@@ -21,6 +21,10 @@
   <ww:head />
 </head>
 
+<ww:if test="%{infoMessage != null}">
+   <p>${infoMessage}</p>
+</ww:if>
+
 <body>
 
 <h1>Search</h1>
