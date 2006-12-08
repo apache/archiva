@@ -42,10 +42,7 @@
 <div id="banner">
   <span id="bannerLeft">
     <a href="http://maven.apache.org/archiva/">
-      <img src="http://maven.apache.org/images/maven.jpg" alt="" width="267" height="70"/>
-      <%-- TODO: logo instead
-            <img src="http://ci.codehaus.org/continuum_logo_75.gif" alt="" width="188" height="89" />
-      --%>
+      <img src="<c:url value='/images/archiva.png' />" alt="" width="188" height="69"/>
     </a>
   </span>
   <span id="bannerRight">
