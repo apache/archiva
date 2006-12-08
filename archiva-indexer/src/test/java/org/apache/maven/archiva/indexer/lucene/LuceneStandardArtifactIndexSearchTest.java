@@ -36,7 +36,7 @@ import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.versioning.VersionRange;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.HashMap;

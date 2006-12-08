@@ -32,7 +32,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
