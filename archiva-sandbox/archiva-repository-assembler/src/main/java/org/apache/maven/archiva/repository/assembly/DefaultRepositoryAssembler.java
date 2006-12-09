@@ -31,7 +31,7 @@ import org.apache.maven.artifact.resolver.filter.AndArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ScopeArtifactFilter;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -160,7 +160,7 @@ public class DefaultRepositoryAssembler
             // the assembly we previously populated.
             FileUtils.deleteDirectory( repositoryDirectory );
 
-            FileUtils.mkdir( repositoryDirectory.getAbsolutePath() );
+            repositoryDirectory.mkdirs();
 
             for ( Iterator i = result.getArtifacts().iterator(); i.hasNext(); )
             {
@@ -304,10 +304,10 @@ public class DefaultRepositoryAssembler
             String md5 = DigestUtils.createChecksum( file, "MD5" );
             String sha1 = DigestUtils.createChecksum( file, "SHA-1" );
 
-            FileUtils.fileWrite( new File( file.getParentFile(), file.getName() + ".md5" ).getAbsolutePath(), md5
-                .toLowerCase() );
-            FileUtils.fileWrite( new File( file.getParentFile(), file.getName() + ".sha1" ).getAbsolutePath(), sha1
-                .toLowerCase() );
+            FileUtils.writeStringToFile( new File( file.getParentFile(), file.getName() + ".md5" ), 
+                                         md5.toLowerCase(), null );
+            FileUtils.writeStringToFile( new File( file.getParentFile(), file.getName() + ".sha1" ),
+                                         sha1.toLowerCase(), null );
         }
         catch ( NoSuchAlgorithmException e )
         {
