@@ -27,7 +27,7 @@ import org.apache.maven.wagon.events.SessionListener;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -200,7 +200,7 @@ public class WagonDelegate
             }
             else
             {
-                FileUtils.fileWrite( destination.getAbsolutePath(), contentToGet );
+                FileUtils.writeStringToFile( new File( destination.getAbsolutePath() ), contentToGet, null );
             }
         }
         catch ( IOException e )

@@ -29,7 +29,7 @@ import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -147,8 +147,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         // TODO: timestamp preservation requires support for that in wagon
 //        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
@@ -158,7 +158,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
         long originalModificationTime = expectedFile.lastModified();
 
         assertTrue( expectedFile.exists() );
@@ -167,10 +167,10 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
@@ -181,7 +181,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -191,10 +191,10 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetWhenInBothProxiedRepos()
@@ -212,12 +212,12 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetInSecondProxiedRepo()
@@ -234,8 +234,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testNotFoundInAnyProxies()
@@ -285,8 +285,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         assertTrue( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
     }
@@ -394,12 +394,12 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetInSecondProxiedRepoFirstHardFailsFromCache()
@@ -460,8 +460,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
     }
@@ -485,12 +485,12 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
 
         assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
     }
@@ -500,7 +500,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( expectedFile );
+        String unexpectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -509,9 +509,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetAlwaysAlreadyPresentRemovedFromProxies()
@@ -519,7 +519,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-removed-from-proxies/1.0/get-removed-from-proxies-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -527,7 +527,7 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testGetAlwaysWithCachedFailure()
@@ -535,7 +535,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( expectedFile );
+        String unexpectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -549,9 +549,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetRemovesTemporaryFileOnSuccess()
@@ -678,7 +678,7 @@ public class ProxyRequestHandlerTest
         File checksumFile = getChecksumFile( file, "sha1" );
         assertTrue( "Check file created", checksumFile.exists() );
         assertEquals( "Check checksum", "066d76e459f7782c312c31e8a11b3c0f1e3e43a7 *get-checksum-both-right-1.0.jar",
-                      FileUtils.fileRead( checksumFile ).trim() );
+                      FileUtils.readFileToString( checksumFile, null ).trim() );
 
         assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
     }
@@ -700,7 +700,7 @@ public class ProxyRequestHandlerTest
         File checksumFile = getChecksumFile( file, "sha1" );
         assertTrue( "Check file created", checksumFile.exists() );
         assertEquals( "Check checksum", "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
-                      FileUtils.fileRead( checksumFile ).trim() );
+                      FileUtils.readFileToString( checksumFile, null ).trim() );
 
         assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
     }
@@ -722,7 +722,7 @@ public class ProxyRequestHandlerTest
         File checksumFile = getChecksumFile( file, "sha1" );
         assertTrue( "Check file created", checksumFile.exists() );
         assertEquals( "Check checksum", "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
-                      FileUtils.fileRead( checksumFile ).trim() );
+                      FileUtils.readFileToString( checksumFile, null ).trim() );
 
         assertFalse( "Check file not created", getChecksumFile( file, "md5" ).exists() );
     }
@@ -744,7 +744,7 @@ public class ProxyRequestHandlerTest
         File checksumFile = getChecksumFile( file, "md5" );
         assertTrue( "Check file created", checksumFile.exists() );
         assertEquals( "Check checksum", "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar",
-                      FileUtils.fileRead( checksumFile ).trim() );
+                      FileUtils.readFileToString( checksumFile, null ).trim() );
 
         assertFalse( "Check file not created", getChecksumFile( file, "sha1" ).exists() );
     }
@@ -766,7 +766,7 @@ public class ProxyRequestHandlerTest
         File checksumFile = getChecksumFile( file, "md5" );
         assertTrue( "Check file created", checksumFile.exists() );
         assertEquals( "Check checksum", "8a02aa67549d27b2a03cd4547439c6d3 *get-checksum-md5-bad-sha1-1.0.jar",
-                      FileUtils.fileRead( checksumFile ).trim() );
+                      FileUtils.readFileToString( checksumFile, null ).trim() );
 
         assertFalse( "Check file not created", getChecksumFile( file, "sha1" ).exists() );
     }
@@ -856,7 +856,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( expectedFile );
+        String unexpectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -865,9 +865,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
 
         assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".sha1" ).exists() );
         assertFalse( "Check checksum removed", new File( file.getParentFile(), file.getName() + ".md5" ).exists() );
@@ -879,7 +879,7 @@ public class ProxyRequestHandlerTest
         String path =
             "org/apache/maven/test/get-checksum-from-managed-repo/1.0/get-checksum-from-managed-repo-1.0.jar.sha1";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -888,9 +888,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetAlwaysChecksumPresentInManagedRepo()
@@ -899,7 +899,7 @@ public class ProxyRequestHandlerTest
         String path =
             "org/apache/maven/test/get-checksum-from-managed-repo/1.0/get-checksum-from-managed-repo-1.0.jar.sha1";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -908,9 +908,9 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetChecksumNotPresentInManagedRepo()
@@ -991,7 +991,7 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         String expectedContents = getExpectedMetadata( "get-default-metadata", "1.0" );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testGetMetadataMergeRepos()
@@ -1009,7 +1009,7 @@ public class ProxyRequestHandlerTest
         String expectedContents = getExpectedMetadata( "get-merged-metadata", getVersioning(
             Arrays.asList( new String[]{"0.9", "1.0", "2.0", "3.0", "5.0", "4.0"} ) ) );
 
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testGetMetadataRemovedFromProxies()
@@ -1017,14 +1017,14 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-removed-metadata/1.0/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testGetReleaseMetadataNotExpired()
@@ -1032,7 +1032,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1043,11 +1043,11 @@ public class ProxyRequestHandlerTest
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
         assertFalse( "Check content doesn't match proxy version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetSnapshotMetadataNotExpired()
@@ -1055,7 +1055,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1066,11 +1066,11 @@ public class ProxyRequestHandlerTest
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.fileRead( new File( proxiedRepository1.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
         assertFalse( "Check content doesn't match proxy version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetReleaseMetadataExpired()
@@ -1078,7 +1078,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1093,9 +1093,9 @@ public class ProxyRequestHandlerTest
         String expectedContents =
             getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
 
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match proxy version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetSnapshotMetadataExpired()
@@ -1103,7 +1103,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1118,9 +1118,9 @@ public class ProxyRequestHandlerTest
         String expectedContents =
             getExpectedMetadata( "get-updated-metadata", "1.0-SNAPSHOT", getVersioning( "20050831.111213", 2 ) );
 
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match proxy version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetMetadataNotUpdated()
@@ -1128,7 +1128,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1139,11 +1139,11 @@ public class ProxyRequestHandlerTest
         File file = requestHandler.get( path, proxiedRepositories, defaultManagedRepository );
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
         assertFalse( "Check content doesn't match proxy version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetMetadataUpdated()
@@ -1151,7 +1151,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1163,9 +1163,9 @@ public class ProxyRequestHandlerTest
 
         String expectedContents =
             getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match old version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testGetAlwaysMetadata()
@@ -1173,7 +1173,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( new File( defaultManagedRepository.getBasedir(), path ) );
+        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1184,9 +1184,9 @@ public class ProxyRequestHandlerTest
         String expectedContents =
             getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
 
-        assertEquals( "Check content matches", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match old version",
-                     unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+                     unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testSnapshotNonExistant()
@@ -1224,8 +1224,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testNewerTimestampDrivenSnapshotOnFirstRepo()
@@ -1244,8 +1244,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testOlderTimestampDrivenSnapshotOnFirstRepo()
@@ -1254,7 +1254,7 @@ public class ProxyRequestHandlerTest
         String path =
             "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1265,11 +1265,11 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
 /* TODO: won't pass until Wagon preserves timestamp on download
@@ -1299,12 +1299,12 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 */
 
@@ -1335,12 +1335,12 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         proxiedFile = new File( proxiedRepository2.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testTimestampDrivenSnapshotNotExpired()
@@ -1359,11 +1359,11 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        String expectedContents = FileUtils.fileRead( expectedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testTimestampDrivenSnapshotNotUpdated()
@@ -1372,7 +1372,7 @@ public class ProxyRequestHandlerTest
         String path =
             "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1384,10 +1384,10 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testTimestampDrivenSnapshotNotPresentAlreadyExpiredCacheFailure()
@@ -1411,8 +1411,8 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
 
         assertFalse( "Check failure", proxiedArtifactRepository.isCachedFailure( path ) );
     }
@@ -1432,8 +1432,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
     }
 
     public void testGetMetadataDrivenSnapshotRemoteUpdate()
@@ -1445,7 +1445,7 @@ public class ProxyRequestHandlerTest
         String path =
             "org/apache/maven/test/get-present-metadata-snapshot/1.0-SNAPSHOT/get-present-metadata-snapshot-1.0-20050831.101112-1.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1455,10 +1455,10 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( proxiedRepository1.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
 
     public void testLegacyManagedRepoGetNotPresent()
@@ -1475,8 +1475,8 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( proxiedRepository1.getBasedir(),
                                      "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar" );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         // TODO: timestamp preservation requires support for that in wagon
 //        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
@@ -1486,7 +1486,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
         File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
         long originalModificationTime = expectedFile.lastModified();
 
         assertTrue( expectedFile.exists() );
@@ -1495,11 +1495,11 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( proxiedRepository1.getBasedir(),
                                      "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar" );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
@@ -1520,8 +1520,8 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
         File proxiedFile =
             new File( legacyProxiedRepository.getBasedir(), "org.apache.maven.test/jars/get-default-layout-1.0.jar" );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         // TODO: timestamp preservation requires support for that in wagon
 //        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
@@ -1531,7 +1531,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
         long originalModificationTime = expectedFile.lastModified();
 
         assertTrue( expectedFile.exists() );
@@ -1540,11 +1540,11 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( legacyProxiedRepository.getBasedir(),
                                      "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
@@ -1563,8 +1563,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
         File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( proxiedFile );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         // TODO: timestamp preservation requires support for that in wagon
 //        assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
@@ -1574,7 +1574,7 @@ public class ProxyRequestHandlerTest
     {
         String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
         File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.fileRead( expectedFile );
+        String expectedContents = FileUtils.readFileToString( expectedFile, null );
         long originalModificationTime = expectedFile.lastModified();
 
         assertTrue( expectedFile.exists() );
@@ -1583,10 +1583,10 @@ public class ProxyRequestHandlerTest
 
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
-        assertEquals( "Check file contents", expectedContents, FileUtils.fileRead( file ) );
+        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
         File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.fileRead( proxiedFile );
-        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.fileRead( file ) ) );
+        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
+        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
         assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
         assertEquals( "Check file timestamp is that of original managed file", originalModificationTime,
                       file.lastModified() );
@@ -1871,7 +1871,9 @@ public class ProxyRequestHandlerTest
             {
                 destination = destination.getParentFile();
 
-                FileUtils.copyFileToDirectory( file, destination );
+                FileUtils.copyFile(file, new File(destination, file.getName()), false);
+                // TODO: Change when there is a FileUtils.copyFileToDirectory(file, destination, boolean) option
+                //FileUtils.copyFileToDirectory( file, destination );
             }
             else if ( file.isDirectory() )
             {

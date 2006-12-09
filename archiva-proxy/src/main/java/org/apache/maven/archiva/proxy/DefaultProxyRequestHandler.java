@@ -41,7 +41,7 @@ import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.digest.DigestUtils;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
@@ -669,7 +669,7 @@ public class DefaultProxyRequestHandler
 
                 allNotFound = false;
 
-                String remoteChecksum = DigestUtils.cleanChecksum( FileUtils.fileRead( tempChecksumFile ),
+                String remoteChecksum = DigestUtils.cleanChecksum( FileUtils.readFileToString( tempChecksumFile, null ),
                                                                    checksumExt.toUpperCase(),
                                                                    path.substring( path.lastIndexOf( '/' ) + 1 ) );
 
