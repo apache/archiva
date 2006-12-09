@@ -22,7 +22,7 @@ import org.apache.maven.archiva.reporting.processor.MetadataReportProcessor;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class ChecksumMetadataReportProcessor
         {
             try
             {
-                digester.verify( file, FileUtils.fileRead( checksumFile ) );
+                digester.verify( file, FileUtils.readFileToString( checksumFile, null ) );
             }
             catch ( DigesterException e )
             {

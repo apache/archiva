@@ -23,7 +23,7 @@ import org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -109,7 +109,7 @@ public class OldSnapshotArtifactReportProcessorTest
         dir.mkdirs();
 
         String date = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( new Date() );
-        FileUtils.fileWrite( new File( dir, "artifactId-1.0-alpha-1-" + date + "-1.jar" ).getAbsolutePath(), "foo" );
+        FileUtils.writeStringToFile( new File( dir, "artifactId-1.0-alpha-1-" + date + "-1.jar" ), "foo", null );
 
         Artifact artifact =
             createArtifactFromRepository( repository, "groupId", "artifactId", "1.0-alpha-1-" + date + "-1" );
@@ -129,8 +129,8 @@ public class OldSnapshotArtifactReportProcessorTest
         String date = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( new Date() );
         for ( int i = 1; i <= 5; i++ )
         {
-            FileUtils.fileWrite( new File( dir, "artifactId-1.0-alpha-1-" + date + "-" + i + ".jar" ).getAbsolutePath(),
-                                 "foo" );
+            FileUtils.writeStringToFile( new File( dir, "artifactId-1.0-alpha-1-" + date + "-" + i + ".jar" ),
+                                 "foo", null );
         }
 
         for ( int i = 1; i <= 5; i++ )

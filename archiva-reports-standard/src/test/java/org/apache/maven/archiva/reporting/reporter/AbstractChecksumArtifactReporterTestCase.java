@@ -18,7 +18,7 @@ package org.apache.maven.archiva.reporting.reporter;
 
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 
