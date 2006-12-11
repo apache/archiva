@@ -57,6 +57,13 @@
       </pss:ifAuthorized>
     </td>
   </tr>
+  <tr>
+    <th>Last Indexing Time</th>
+    <td>
+      <ww:property value="lastIndexingTime"/>
+    </td>
+    <td></td>
+  </tr>
 </table>
 
 <ww:set name="proxy" value="proxy"/>

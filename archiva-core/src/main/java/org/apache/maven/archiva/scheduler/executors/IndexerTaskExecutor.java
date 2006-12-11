@@ -104,7 +104,14 @@ public class IndexerTaskExecutor
      */
     private ReportGroup reportGroup;
 
+    private long lastIndexingTime = 0;
+
     private static final int ARTIFACT_BUFFER_SIZE = 1000;
+
+    public long getLastIndexingTime()
+    {
+        return lastIndexingTime;
+    }
 
     public void executeTask( Task task )
         throws TaskExecutionException
@@ -282,6 +289,7 @@ public class IndexerTaskExecutor
         }
 
         time = System.currentTimeMillis() - time;
+        lastIndexingTime = System.currentTimeMillis();
         getLogger().info( "Finished repository indexing process in " + time + "ms" );
     }
 

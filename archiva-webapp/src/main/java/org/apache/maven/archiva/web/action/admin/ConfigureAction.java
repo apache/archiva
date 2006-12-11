@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
+import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.security.rbac.Resource;
@@ -36,6 +37,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Configures the application.
@@ -50,6 +52,11 @@ public class ConfigureAction
      * @plexus.requirement
      */
     private ConfigurationStore configurationStore;
+
+    /**
+     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexer"
+     */
+    private IndexerTaskExecutor indexer;
 
     /**
      * The configuration.
@@ -71,6 +78,8 @@ public class ConfigureAction
     private String dayOfWeek = "?";
 
     private String year;
+
+    private String lastIndexingTime;
 
     public void validate()
     {
@@ -146,6 +155,14 @@ public class ConfigureAction
             i++;
         }
 
+        if ( indexer.getLastIndexingTime() != 0 ) {
+            lastIndexingTime = new Date( indexer.getLastIndexingTime() ).toString();
+        }
+        else
+        {
+            lastIndexingTime = "Never been run.";
+        }
+
         return INPUT;
     }
 
@@ -158,6 +175,16 @@ public class ConfigureAction
         throws ConfigurationStoreException
     {
         configuration = configurationStore.getConfigurationFromStore();
+    }
+
+    public String getLastIndexingTime()
+    {
+        return lastIndexingTime;
+    }
+
+    public void setLastIndexingTime(String lastIndexingTime)
+    {
+        this.lastIndexingTime = lastIndexingTime;
     }
 
     public String getSecond()
