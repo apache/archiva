@@ -45,6 +45,8 @@ public class ArchivaSystemAdministratorRoleProfile
         operations.add( ArchivaRoleConstants.OPERATION_ADD_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
+        // we don't add access/upload repository operations. This isn't a sys-admin function, and we don't want to
+        // encourage the use of the sys admin role for such operations. They can grant it as necessary.
         return operations;
     }
 
