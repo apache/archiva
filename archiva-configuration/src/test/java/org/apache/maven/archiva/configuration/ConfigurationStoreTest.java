@@ -40,7 +40,7 @@ public class ConfigurationStoreTest
 
         // check default configuration
         assertNotNull( "check configuration returned", configuration );
-        assertEquals( "check configuration has default elements", "0 0 * * * ?",
+        assertEquals( "check configuration has default elements", "0 0,30 * * * ?",
                       configuration.getIndexerCronExpression() );
         assertNull( "check configuration has default elements", configuration.getIndexPath() );
         assertTrue( "check configuration has default elements", configuration.getRepositories().isEmpty() );

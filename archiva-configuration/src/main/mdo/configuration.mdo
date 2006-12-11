@@ -69,8 +69,8 @@
           <name>indexerCronExpression</name>
           <version>1.0.0</version>
           <type>String</type>
-          <description>When to run the indexing mechanism. Default is every hour on the hour.</description>
-          <defaultValue>0 0 * * * ?</defaultValue>
+          <description>When to run the indexing mechanism. Default is every 0 and 30 mins of any hour.</description>
+          <defaultValue>0 0,30 * * * ?</defaultValue>
         </field>
         <field>
           <name>globalBlackListPatterns</name>
