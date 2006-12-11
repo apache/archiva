@@ -70,15 +70,8 @@
 
 <div class="sidebar3">
   <div id="download">
-    <c:set var="url">
-      <ww:url action="proxy">
-        <%-- TODO! create a tag for this, include classifier for javadoc, sources below --%>
-        <%-- TODO: what about other repositories? --%>
-        <%-- TODO! extension probably doesn't match type. Use artifact handler instead. --%>
-        <ww:param name="path"
-                  value="%{'${model.groupId}/${model.artifactId}/${model.version}/${model.artifactId}-${model.version}.${model.packaging}'}"/>
-      </ww:url>
-    </c:set>
+    <%-- TODO! create a tag for this, include classifier for javadoc, sources below --%>
+    <c:url var="url" value="/repository/${repositoryId}/${artifactPath}"/>
     <a href="${url}">Download</a>
   </div>
 </div>

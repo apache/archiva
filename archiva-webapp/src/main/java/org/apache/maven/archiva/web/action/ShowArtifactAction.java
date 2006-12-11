@@ -16,6 +16,7 @@ package org.apache.maven.archiva.web.action;
  * limitations under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -28,6 +29,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
+import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.web.util.VersionMerger;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -35,6 +37,7 @@ import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -46,7 +49,7 @@ import org.apache.maven.shared.dependency.tree.DependencyNode;
 import org.apache.maven.shared.dependency.tree.DependencyTree;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilder;
 import org.apache.maven.shared.dependency.tree.DependencyTreeBuilderException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
@@ -102,11 +105,16 @@ public class ShowArtifactAction
      * @plexus.requirement
      */
     private ArtifactCollector collector;
-    
+
     /**
      * @plexus.requirement
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
+
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactResolver artifactResolver;
 
     private String groupId;
 
@@ -117,11 +125,16 @@ public class ShowArtifactAction
     private Model model;
 
     private Collection dependencies;
-    
+
     private List dependencyTree;
 
+    private String repositoryId;
+
+    private String artifactPath;
+
     public String artifact()
-        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
+        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException,
+        ResourceDoesNotExistException, ProxyException, ArtifactResolutionException
     {
         if ( !checkParameters() )
         {
@@ -131,6 +144,26 @@ public class ShowArtifactAction
         MavenProject project = readProject();
 
         model = project.getModel();
+
+        Configuration configuration = configurationStore.getConfigurationFromStore();
+        List repositories = repositoryFactory.createRepositories( configuration );
+
+        Artifact artifact = artifactFactory.createBuildArtifact( project.getGroupId(), project.getArtifactId(),
+                                                                 project.getVersion(), project.getPackaging() );
+
+        for ( Iterator i = repositories.iterator(); i.hasNext(); )
+        {
+            ArtifactRepository repository = (ArtifactRepository) i.next();
+
+            String path = repository.pathOf( artifact );
+            File f = new File( repository.getBasedir(), path );
+            if ( f.exists() )
+            {
+                repositoryId = repository.getId();
+
+                artifactPath = path;
+            }
+        }
 
         return SUCCESS;
     }
@@ -148,7 +181,7 @@ public class ShowArtifactAction
         model = project.getModel();
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
-        this.dependencies = VersionMerger.wrap(project.getModel().getDependencies());
+        this.dependencies = VersionMerger.wrap( project.getModel().getDependencies() );
 
         return SUCCESS;
     }
@@ -171,7 +204,7 @@ public class ShowArtifactAction
         String id = createId( groupId, artifactId, version );
         List records = index.search( new LuceneQuery( new TermQuery( new Term( "dependencies", id ) ) ) );
 
-        dependencies = VersionMerger.merge(records);
+        dependencies = VersionMerger.merge( records );
 
         return SUCCESS;
     }
@@ -197,11 +230,10 @@ public class ShowArtifactAction
 
         getLogger().debug( " processing : " + groupId + ":" + artifactId + ":" + version );
 
-        DependencyTree dependencies =
-            collectDependencies( project, artifact, localRepository, repositories );
-        
+        DependencyTree dependencies = collectDependencies( project, artifact, localRepository, repositories );
+
         this.dependencyTree = new ArrayList();
-        
+
         populateFlatTreeList( dependencies.getRootNode(), dependencyTree );
 
         return SUCCESS;
@@ -220,7 +252,7 @@ public class ShowArtifactAction
     }
 
     private DependencyTree collectDependencies( MavenProject project, Artifact artifact,
-                                              ArtifactRepository localRepository, List repositories )
+                                                ArtifactRepository localRepository, List repositories )
         throws ArtifactResolutionException, ProjectBuildingException, InvalidDependencyVersionException,
         ConfigurationStoreException
     {
@@ -323,7 +355,7 @@ public class ShowArtifactAction
     {
         return dependencyTree;
     }
-    
+
     public String getVersion()
     {
         return version;
@@ -332,6 +364,11 @@ public class ShowArtifactAction
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public String getArtifactPath()
+    {
+        return artifactPath;
     }
 
     public static class DependencyWrapper
@@ -473,4 +510,8 @@ public class ShowArtifactAction
         }
     }
 
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
 }
