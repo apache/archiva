@@ -172,6 +172,10 @@
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
                 <include>META-INF</include>
+                <include>images/pss</include>
+                <!-- Images from other wars -->
+                <include>template/pss</include>
+                <!-- Templates from other wars -->
                 <include>WEB-INF/classes</include>
                 <!-- Classes and Resources from other wars -->
                 <include>WEB-INF/lib</include>
@@ -187,6 +191,10 @@
                 <!-- plexus-security jsps -->
                 <include>WEB-INF/template/pss</include>
                 <!-- plexus-security xwork templates -->
+                <include>WEB-INF/logs</include>
+                <!-- Directory created by jetty:run -->
+                <include>WEB-INF/temp</include>
+                <!-- Directory created by jetty:run -->
               </includes>
             </fileset>
           </filesets>
