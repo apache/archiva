@@ -37,18 +37,6 @@ To build
 
     * Run: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar
 
-    * Download the 1.0.2 activation zip from: {{http://java.sun.com/products/archive/javabeans/jaf102.html}}
-  
-    * Unpack the zip to get the jar
-
-    * Run: mvn install:install-file -DgroupId=javax.activation -DartifactId=activation -Dversion=1.0.2 -Dpackaging=jar -Dfile=activation.jar 
-
-    * Download the 1.3.2 javamail zip from: {{http://java.sun.com/products/javamail/downloads/index.html}}
-  
-    * Unpack the zip to get the jar
-
-    * Run: mvn install:install-file -DgroupId=javax.mail -DartifactId=mail -Dversion=1.3.2 -Dpackaging=jar -Dfile=javamail-1.3.2/mail.jar 
-
 
 To test-deploy Archiva on the embedded Jetty
 
