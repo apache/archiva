@@ -20,10 +20,10 @@
 
 <tr>
   <td>
-    <ww:label for="urlName" theme="simple">URL Name:</ww:label>
+    <ww:label for="urlName" theme="simple">URL Name*:</ww:label>
   </td>
   <td>
-    <c:out value="${urlbase}" /><ww:textfield name="urlName" id="urlName" size="20" theme="simple"/>
+    <c:out value="${urlbase}" /><ww:textfield name="urlName" id="urlName" size="20" theme="simple" required="true" />
   </td>
 </tr>
     

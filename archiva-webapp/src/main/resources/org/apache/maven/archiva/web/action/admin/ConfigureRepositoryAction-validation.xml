@@ -24,6 +24,11 @@
       <message>You must enter the repository identifier.</message>
     </field-validator>
   </field>
+  <field name="urlName">
+    <field-validator type="requiredstring">
+      <message>You must enter the url name.</message>
+    </field-validator>
+  </field>
   <field name="name">
     <field-validator type="requiredstring">
       <message>You must enter the repository name.</message>
