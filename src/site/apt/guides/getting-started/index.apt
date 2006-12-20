@@ -83,8 +83,6 @@ To deploy Archiva to Tomcat 5.5
 
 To deploy Archiva on Plexus
 
-  (THIS IS CURRENTLY BROKEN)
-
   Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
 
    * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
