@@ -48,6 +48,7 @@
   <strong>There are no managed repositories configured yet.</strong>
 </c:if>
 <c:forEach items="${repositories}" var="repository" varStatus="i">
+  <pss:ifAnyAuthorized permissions="archiva-edit-repository, archiva-delete-repository" resource="${repository.id}">
   <div>
     <div style="float: right">
       <ww:url id="editRepositoryUrl" action="editRepository" method="input">
@@ -57,8 +58,8 @@
         <ww:param name="repoId" value="%{'${repository.id}'}" />
       </ww:url>
       <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="archiva-edit-repository" resource="${repository.id}"><ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a></pss:ifAuthorized>
-      <pss:ifAuthorized permission="archiva-delete-repository" resource="${repository.id}"><ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a></pss:ifAuthorized>
+      <ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a>
+      <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a>
     </div>
     <h3>${repository.name}</h3>
     <table class="infoTable">
@@ -132,6 +133,7 @@
       </tr>
     </table>
   </div>
+  </pss:ifAnyAuthorized>
 </c:forEach>
 </div>
 

@@ -58,4 +58,6 @@ public class ArchivaRoleConstants
     public static final String OPERATION_EDIT_REPOSITORY = "archiva-edit-repository";
 
     public static final String OPERATION_REPOSITORY_UPLOAD = "archiva-upload-repository";
+
+    public static final String OPERATION_EDIT_CONFIGURATION = "archiva-edit-configuration";
 }

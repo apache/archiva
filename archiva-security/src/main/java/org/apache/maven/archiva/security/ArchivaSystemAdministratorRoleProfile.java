@@ -38,6 +38,7 @@ public class ArchivaSystemAdministratorRoleProfile
     {
         List operations = new ArrayList();
         operations.add( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION );
+        operations.add( ArchivaRoleConstants.OPERATION_EDIT_CONFIGURATION );
         operations.add( ArchivaRoleConstants.OPERATION_MANAGE_USERS );
         operations.add( ArchivaRoleConstants.OPERATION_RUN_INDEXER );
         operations.add( ArchivaRoleConstants.OPERATION_REGENERATE_INDEX );
