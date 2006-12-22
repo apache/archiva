@@ -162,12 +162,6 @@
         <configuration>
           <filesets>
             <fileset>
-              <directory>${basedir}/</directory>
-              <includes>
-                <include>derby.log</include>
-              </includes>
-            </fileset>
-            <fileset>
               <directory>${basedir}/src/main/webapp</directory>
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
@@ -237,7 +231,11 @@
           <systemProperties>
             <systemProperty>
               <name>appserver.base</name>
-              <value>${basedir}/target</value>
+              <value>${project.build.directory}/appserver-base</value>
+            </systemProperty>
+            <systemProperty>
+              <name>derby.system.home</name>
+              <value>${project.build.directory}/appserver-base/logs</value>
             </systemProperty>
           </systemProperties>
         </configuration>
