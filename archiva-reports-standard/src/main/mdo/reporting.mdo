@@ -238,6 +238,41 @@
           </description>
         </field>
       </fields>
+
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code><![CDATA[
+            public boolean equals( Object obj )
+            {
+                if ( obj instanceof Result )
+                {
+                    if ( this == obj )
+                    {
+                        return true;
+                    }
+                    Result rhs = (Result) obj;
+                    return new org.apache.commons.lang.builder.EqualsBuilder()
+                        .append( problem, rhs.problem )
+                        .append( processor, rhs.processor )
+                        .append( reason, rhs.reason )
+                        .isEquals();
+                }
+                return false;
+            }
+
+            public int hashCode()
+            {
+                return new org.apache.commons.lang.builder.HashCodeBuilder( 19, 43 )
+                    .append( getReason() )
+                    .append( getProcessor() )
+                    .append( getProblem() )
+                    .toHashCode();
+            }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+
     </class>
   </classes>
 </model>

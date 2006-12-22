@@ -92,8 +92,12 @@ public class ReportingDatabase
     public void addFailure( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        results.addFailure( createResult( processor, problem, reason ) );
-        numFailures++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getFailures().contains( result ) )
+        {
+            results.addFailure( result );
+            numFailures++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -107,8 +111,12 @@ public class ReportingDatabase
     public void addNotice( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        results.addNotice( createResult( processor, problem, reason ) );
-        numNotices++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getNotices().contains( result ) )
+        {
+            results.addNotice( result );
+            numNotices++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -122,8 +130,12 @@ public class ReportingDatabase
     public void addWarning( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        results.addWarning( createResult( processor, problem, reason ) );
-        numWarnings++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getWarnings().contains( result ) )
+        {
+            results.addWarning( result );
+            numWarnings++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -134,7 +146,7 @@ public class ReportingDatabase
         }
     }
 
-    private ArtifactResults getArtifactResults( Artifact artifact )
+    ArtifactResults getArtifactResults( Artifact artifact )
     {
         return getArtifactResults( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                    artifact.getType(), artifact.getClassifier() );
@@ -203,8 +215,12 @@ public class ReportingDatabase
         {
             metadataWithProblems.add( results );
         }
-        results.addFailure( createResult( processor, problem, reason ) );
-        numFailures++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getFailures().contains( result ) )
+        {
+            results.addFailure( result );
+            numFailures++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -222,8 +238,12 @@ public class ReportingDatabase
         {
             metadataWithProblems.add( results );
         }
-        results.addWarning( createResult( processor, problem, reason ) );
-        numWarnings++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getWarnings().contains( result ) )
+        {
+            results.addWarning( result );
+            numWarnings++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -241,8 +261,12 @@ public class ReportingDatabase
         {
             metadataWithProblems.add( results );
         }
-        results.addNotice( createResult( processor, problem, reason ) );
-        numNotices++;
+        Result result = createResult( processor, problem, reason );
+        if ( !results.getNotices().contains( result ) )
+        {
+            results.addNotice( result );
+            numNotices++;
+        }
         updateTimings();
 
         if ( filteredDatabases.containsKey( problem ) )
@@ -346,7 +370,7 @@ public class ReportingDatabase
         metadataWithProblems.remove( results );
     }
 
-    private MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
+    MetadataResults getMetadataResults( RepositoryMetadata metadata, long lastModified )
     {
         return getMetadataResults( metadata.getGroupId(), metadata.getArtifactId(), metadata.getBaseVersion(),
                                    lastModified );
