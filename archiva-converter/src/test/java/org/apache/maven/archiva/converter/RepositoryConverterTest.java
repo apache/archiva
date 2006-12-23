@@ -574,8 +574,8 @@ public class RepositoryConverterTest
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
 
-        assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
-        assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
+        assertEquals( "Check artifact unmodified", origTime, targetFile.lastModified() );
+        assertEquals( "Check POM unmodified", origPomTime, targetPomFile.lastModified() );
     }
 
     public void testModifedArtifactFails()
