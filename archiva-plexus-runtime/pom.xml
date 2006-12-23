@@ -96,6 +96,7 @@
         <extensions>true</extensions>
         <executions>
           <execution>
+            <phase>process-resources</phase>
             <goals>
               <goal>assemble-runtime</goal>
               <goal>add-services</goal>
