@@ -3,12 +3,12 @@ package org.apache.maven.archiva.cli;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.apache.maven.archiva.Archiva;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.conversion.LegacyRepositoryConverter;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.tools.cli.AbstractCli;
-import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,11 +59,11 @@ public class ArchivaCli
         return options;
     }
 
-    public void invokePlexusComponent( CommandLine cli,
-                                       PlexusContainer plexus )
+    public void invokePlexusComponent( CommandLine cli, PlexusContainer plexus )
         throws Exception
     {
-        Archiva archiva = (Archiva) plexus.lookup( Archiva.ROLE );
+        LegacyRepositoryConverter legacyRepositoryConverter =
+            (LegacyRepositoryConverter) plexus.lookup( LegacyRepositoryConverter.ROLE );
 
         if ( cli.hasOption( CONVERT ) )
         {
@@ -95,7 +95,8 @@ public class ArchivaCli
 
             try
             {
-                archiva.convertLegacyRepository( oldRepositoryPath, newRepositoryPath, blacklistedPatterns, true );
+                legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
+                                                                   blacklistedPatterns, true );
             }
             catch ( RepositoryConversionException e )
             {

@@ -1,19 +1,18 @@
 package org.apache.maven.archiva.conversion;
 
-import org.apache.maven.archiva.Archiva;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.store.ReportingStore;
-import org.apache.maven.archiva.reporting.store.ReportingStoreException;
-import org.apache.maven.archiva.converter.RepositoryConverter;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.maven.archiva.converter.RepositoryConverter;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.filter.AcceptAllArtifactFilter;
 import org.apache.maven.archiva.discoverer.filter.SnapshotArtifactFilter;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.store.ReportingStore;
+import org.apache.maven.archiva.reporting.store.ReportingStoreException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
 import java.io.File;
@@ -24,6 +23,7 @@ import java.util.List;
  * @author Jason van Zyl
  * @plexus.component
  * @todo turn this into a general conversion component and hide all this crap here.
+ * @todo it should be possible to move this to the converter module without causing it to gain additional dependencies
  */
 public class DefaultLegacyRepositoryConverter
     implements LegacyRepositoryConverter
@@ -63,10 +63,8 @@ public class DefaultLegacyRepositoryConverter
      */
     private ReportGroup reportGroup;
 
-    public void convertLegacyRepository( File legacyRepositoryDirectory,
-                                         File repositoryDirectory,
-                                         List blacklistedPatterns,
-                                         boolean includeSnapshots )
+    public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
+                                         List blacklistedPatterns, boolean includeSnapshots )
         throws RepositoryConversionException, DiscovererException
     {
         ArtifactRepository legacyRepository;
