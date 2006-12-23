@@ -26,29 +26,23 @@ public class LoginTest
 {
     public void testBadLogin()
     {
-        getSelenium().open( "/archiva/login.action" );
+        goToLoginPage();
         submitLoginPage( "badUsername", "badPassword", false );
-        assertLoginPage();
         assertTextPresent( "Authentication failed" );
     }
 
     public void testUserLogin()
     {
         createUser( "user", "user01" );
-        getSelenium().open( "/archiva/login.action" );
-        assertLoginPage();
+        goToLoginPage();
         submitLoginPage( "user", "user01" );
-    }
-
-    public void login()
-    {
     }
 
     private void createUser( String username, String password )
     {
         Selenium sel = getSelenium();
 
-        sel.open( "/archiva/security/login.action" );
+        goToLoginPage();
         submitLoginPage( adminUsername, adminPassword );
 
         sel.open( "/archiva/security/userlist.action" );

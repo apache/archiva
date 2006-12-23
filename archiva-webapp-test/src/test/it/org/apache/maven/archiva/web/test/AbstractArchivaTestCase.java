@@ -27,33 +27,9 @@ import java.util.Calendar;
 public abstract class AbstractArchivaTestCase
     extends AbstractSeleniumTestCase
 {
-    protected String adminUsername = "admin";
-
-    protected String adminPassword = "admin1";
-
-    protected String adminFullName = "Archiva Admin";
-
-    protected String adminEmail = "admin@localhost.localdomain.com";
-
     private String baseUrl = "http://localhost:9595/archiva";
 
     public static final String CREATE_ADMIN_USER_PAGE_TITLE = "Maven Archiva :: Create Admin User";
-
-    protected void initialize()
-    {
-        getSelenium().open( "/archiva" );
-
-        if ( CREATE_ADMIN_USER_PAGE_TITLE.equals( getSelenium().getTitle() ) )
-        {
-            assertCreateAdminUserPage();
-            submitCreateAdminUserPage( adminFullName, adminEmail, adminPassword, adminPassword );
-            assertLoginPage();
-            submitLoginPage( adminUsername, adminPassword );
-            logout();
-        }
-
-        login();
-    }
 
     protected String getApplicationName()
     {
@@ -63,15 +39,6 @@ public abstract class AbstractArchivaTestCase
     protected String getInceptionYear()
     {
         return "2005";
-    }
-
-    public abstract void login();
-
-    public void assertFooter()
-    {
-        int currentYear = Calendar.getInstance().get( Calendar.YEAR );
-        assertTrue( getSelenium().getText( "xpath=//div[@id='footer']/div" ).endsWith(
-            " " + getInceptionYear() + "-" + currentYear + " Apache Software Foundation" ) );
     }
 
     public void assertHeader()
@@ -91,48 +58,5 @@ public abstract class AbstractArchivaTestCase
     public String getBaseUrl()
     {
         return baseUrl;
-    }
-
-    //////////////////////////////////////
-    // Create Admin User
-    //////////////////////////////////////
-    public void assertCreateAdminUserPage()
-    {
-        assertPage( CREATE_ADMIN_USER_PAGE_TITLE );
-        assertTextPresent( "Create Admin User" );
-        assertTextPresent( "Username" );
-        assertElementPresent( "user.username" );
-        assertTextPresent( "Full Name" );
-        assertElementPresent( "user.fullName" );
-        assertTextPresent( "Email Address" );
-        assertElementPresent( "user.email" );
-        assertTextPresent( "Password" );
-        assertElementPresent( "user.password" );
-        assertTextPresent( "Confirm Password" );
-        assertElementPresent( "user.confirmPassword" );
-    }
-
-    //////////////////////////////////////
-    // Login
-    //////////////////////////////////////
-    public void assertLoginPage()
-    {
-        assertPage( "Maven Archiva :: Login Page" );
-        assertTextPresent( "Login" );
-        assertTextPresent( "Username" );
-        assertTextPresent( "Password" );
-        assertTextPresent( "Remember Me" );
-        assertFalse( isChecked( "rememberMe" ) );
-    }
-
-    public void submitCreateAdminUserPage( String fullName, String email, String password, String confirmPassword )
-    {
-        Selenium sel = getSelenium();
-        sel.type( "user.fullName", fullName );
-        sel.type( "user.email", email );
-        sel.type( "user.password", password );
-        sel.type( "user.confirmPassword", confirmPassword );
-        sel.click( "//input[@type='submit']" );
-        waitPage();
     }
 }
