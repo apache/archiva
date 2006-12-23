@@ -252,7 +252,7 @@ public class IndexerTaskExecutor
 
                             index.indexArtifacts( currentArtifacts, recordFactory );
 
-                            // MNG-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
+                            // MRM-142 - the project builder retains a lot of objects in its inflexible cache. This is a hack
                             // around that. TODO: remove when it is configurable
                             flushProjectBuilderCacheHack();
                         }
@@ -296,7 +296,7 @@ public class IndexerTaskExecutor
     }
 
     /**
-     * @todo remove when no longer needed (MNG-142)
+     * @todo remove when no longer needed (MRM-142)
      * @plexus.requirement
      */
     private MavenProjectBuilder projectBuilder;
