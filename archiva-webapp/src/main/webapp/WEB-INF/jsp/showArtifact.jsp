@@ -114,9 +114,14 @@
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Used By</my:currentWWUrl>
-      <%-- TODO:
-          <a href="TODO">Mailing Lists</a>
-      --%>
+      <c:set var="url">
+        <ww:url action="showArtifactMailingLists">
+          <ww:param name="groupId" value="%{groupId}"/>
+          <ww:param name="artifactId" value="%{artifactId}"/>
+          <ww:param name="version" value="%{version}"/>
+        </ww:url>
+      </c:set>
+      <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
     </span>
   </div>
 
@@ -129,6 +134,9 @@
       </c:when>
       <c:when test="${dependencyTree != null}">
         <%@ include file="/WEB-INF/jsp/include/dependencyTree.jspf" %>
+      </c:when>
+      <c:when test="${mailingLists != null}">
+        <%@ include file="/WEB-INF/jsp/include/mailingLists.jspf" %>
       </c:when>
       <c:otherwise>
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>

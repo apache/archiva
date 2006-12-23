@@ -135,6 +135,8 @@ public class ShowArtifactAction
 
     private String artifactPath;
 
+    private List mailingLists;
+
     public String artifact()
         throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException,
         ResourceDoesNotExistException, ProxyException, ArtifactResolutionException
@@ -185,6 +187,23 @@ public class ShowArtifactAction
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
         this.dependencies = VersionMerger.wrap( project.getModel().getDependencies() );
+
+        return SUCCESS;
+    }
+
+    public String mailingLists()
+        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
+    {
+        if ( !checkParameters() )
+        {
+            return ERROR;
+        }
+
+        MavenProject project = readProject();
+
+        model = project.getModel();
+
+        this.mailingLists = project.getMailingLists();
 
         return SUCCESS;
     }
@@ -516,5 +535,10 @@ public class ShowArtifactAction
     public String getRepositoryId()
     {
         return repositoryId;
+    }
+
+    public List getMailingLists()
+    {
+        return mailingLists;
     }
 }

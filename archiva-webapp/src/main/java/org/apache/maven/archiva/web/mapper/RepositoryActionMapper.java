@@ -59,6 +59,11 @@ public class RepositoryActionMapper
             return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
                 params.remove( "version" ) + "/dependencies";
         }
+        else if ( "showArtifactMailingLists".equals( actionMapping.getName() ) )
+        {
+            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
+                params.remove( "version" ) + "/mailingLists";
+        }
         else if ( "showArtifactDependees".equals( actionMapping.getName() ) )
         {
             return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
@@ -121,6 +126,10 @@ public class RepositoryActionMapper
                     if ( "dependencies".equals( parts[3] ) )
                     {
                         return new ActionMapping( "showArtifactDependencies", "/", "", params );
+                    }
+                    else if ( "mailingLists".equals( parts[3] ) )
+                    {
+                        return new ActionMapping( "showArtifactMailingLists", "/", "", params );
                     }
                     else if ( "usedby".equals( parts[3] ) )
                     {
