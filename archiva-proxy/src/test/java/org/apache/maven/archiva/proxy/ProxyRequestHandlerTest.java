@@ -1,21 +1,25 @@
 package org.apache.maven.archiva.proxy;
 
 /*
- * Copyright 2005-2006 The Apache Software Foundation.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
@@ -29,7 +33,6 @@ import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.codehaus.plexus.PlexusTestCase;
-import org.apache.commons.io.FileUtils;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -1017,7 +1020,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-removed-metadata/1.0/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String expectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1032,7 +1036,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String expectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1045,7 +1050,8 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
@@ -1055,7 +1061,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String expectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1068,7 +1075,8 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
 
-        String unexpectedContents = FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( proxiedRepository1.getBasedir(), path ), null );
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
@@ -1078,7 +1086,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1103,7 +1112,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/1.0-SNAPSHOT/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1128,7 +1138,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String expectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String expectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1151,7 +1162,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1173,7 +1185,8 @@ public class ProxyRequestHandlerTest
     {
         String path = "org/apache/maven/test/get-updated-metadata/maven-metadata.xml";
         File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        String unexpectedContents = FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
+        String unexpectedContents =
+            FileUtils.readFileToString( new File( defaultManagedRepository.getBasedir(), path ), null );
 
         assertTrue( expectedFile.exists() );
 
@@ -1871,7 +1884,7 @@ public class ProxyRequestHandlerTest
             {
                 destination = destination.getParentFile();
 
-                FileUtils.copyFile(file, new File(destination, file.getName()), false);
+                FileUtils.copyFile( file, new File( destination, file.getName() ), false );
                 // TODO: Change when there is a FileUtils.copyFileToDirectory(file, destination, boolean) option
                 //FileUtils.copyFileToDirectory( file, destination );
             }

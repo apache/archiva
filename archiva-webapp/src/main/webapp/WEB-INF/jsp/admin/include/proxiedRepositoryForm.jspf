@@ -1,39 +1,42 @@
 <%--
-  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
   ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
+  ~   http://www.apache.org/licenses/LICENSE-2.0
   ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <ww:textfield name="name" label="Name" size="50" required="true"/>
 <ww:textfield name="url" label="URL" size="50" required="true"/>
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
-           name="layout" label="Type" />
+           name="layout" label="Type"/>
 <ww:select name="snapshotsPolicy" label="Snapshots" list="#@java.util.LinkedHashMap@{
         'disabled' : 'Disabled',
         'daily' : 'Enabled, updated daily',
         'hourly' : 'Enabled, updated hourly',
         'never' : 'Enabled, never updated',
-        'interval' : 'Enabled, updated on given interval'}" />
-<ww:textfield label="Snapshot update interval" name="snapshotsInterval" size="4" />
+        'interval' : 'Enabled, updated on given interval'}"/>
+<ww:textfield label="Snapshot update interval" name="snapshotsInterval" size="4"/>
 <ww:select name="releasesPolicy" label="Releases" list="#@java.util.LinkedHashMap@{
         'disabled' : 'Disabled',
         'daily' : 'Enabled, updated daily',
         'hourly' : 'Enabled, updated hourly',
         'never' : 'Enabled, never updated',
-        'interval' : 'Enabled, updated on given interval'}" />
-<ww:textfield label="Release update interval" name="releasesInterval" size="4" />
-<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through" />
-<ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy" />
-<ww:checkbox name="cacheFailures" fieldValue="true" label="Cache Failures" />
-<ww:checkbox name="hardFail" fieldValue="true" label="Fail Whole Group" />
+        'interval' : 'Enabled, updated on given interval'}"/>
+<ww:textfield label="Release update interval" name="releasesInterval" size="4"/>
+<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through"/>
+<ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy"/>
+<ww:checkbox name="cacheFailures" fieldValue="true" label="Cache Failures"/>
+<ww:checkbox name="hardFail" fieldValue="true" label="Fail Whole Group"/>

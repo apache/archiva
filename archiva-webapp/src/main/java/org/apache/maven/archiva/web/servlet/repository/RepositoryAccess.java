@@ -1,23 +1,27 @@
 package org.apache.maven.archiva.web.servlet.repository;
 
 /*
- * Copyright 2001-2006 The Apache Software Foundation.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import it.could.webdav.DAVTransaction;
 import it.could.webdav.DAVUtilities;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfigurationStoreException;
@@ -34,7 +38,6 @@ import org.codehaus.plexus.security.system.SecuritySession;
 import org.codehaus.plexus.security.system.SecuritySystem;
 import org.codehaus.plexus.security.ui.web.filter.authentication.HttpAuthenticator;
 import org.codehaus.plexus.util.FileUtils;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -178,19 +181,19 @@ public class RepositoryAccess
             {
                 permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
-            
+
             AuthorizationResult authzResult = securitySystem
                 .authorize( securitySession, permission, repoconfig.getId() );
-             
+
             if ( !authzResult.isAuthorized() )
             {
                 if ( authzResult.getException() != null )
                 {
-                    getLogger().warn( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest="
-                                          + isWriteRequest + ",permission=" + permission + "] : "
-                                          + authzResult.getException().getMessage() );
+                    getLogger().warn( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" +
+                        isWriteRequest + ",permission=" + permission + "] : " +
+                        authzResult.getException().getMessage() );
                 }
-                
+
                 // Issue HTTP Challenge.
                 httpAuth.challenge( request, response, "Repository " + repoconfig.getName(),
                                     new AuthenticationException( "Authorization Denied." ) );
@@ -214,10 +217,11 @@ public class RepositoryAccess
                 serverInfo = getServletContext().getServerInfo();
             }
         }
-        
+
         response.setHeader( "Server", serverInfo + " Archiva : " + DAVUtilities.SERVLET_SIGNATURE );
 
-        DAVTransaction transaction = new DAVTransaction( new RepositoryRequest( request, repoconfig.getUrlName() ), response );
+        DAVTransaction transaction =
+            new DAVTransaction( new RepositoryRequest( request, repoconfig.getUrlName() ), response );
         try
         {
             repo.getDavProcessor().process( transaction );

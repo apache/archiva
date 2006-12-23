@@ -1,21 +1,25 @@
 package org.apache.maven.archiva.indexer.lucene;
 
 /*
- * Copyright 2005-2006 The Apache Software Foundation.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.NumberTools;
 import org.apache.lucene.index.IndexReader;
@@ -32,7 +36,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
-import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -352,8 +355,8 @@ public class LuceneStandardArtifactIndexTest
 
     private void assertPomRecord( Artifact artifact, Document document )
     {
-        assertRecord( artifact, document, "test-pom", "pom", "98b4a1b708a90a8637aaf541bef5094f",
-                      "d95348bee1666a46511260696292bfa0519b61c1" );
+        assertRecord( artifact, document, "test-pom", "pom", "758e1ae96dff63dab7278a62e3eb174d",
+                      "770fde06cd5c3dccb5f5e8c6754b8c4c77b98560" );
         assertNull( "Check document classes", document.get( StandardIndexRecordFields.CLASSES ) );
         assertNull( "Check document files", document.get( StandardIndexRecordFields.FILES ) );
         assertNull( "Check document pluginPrefix", document.get( StandardIndexRecordFields.PLUGIN_PREFIX ) );

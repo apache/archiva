@@ -1,25 +1,28 @@
 package org.apache.maven.archiva.reporting.executor;
 
 /*
- * Copyright 2005-2006 The Apache Software Foundation.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
 import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.group.ReportGroup;
 import org.apache.maven.archiva.reporting.store.ReportingStoreException;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 
@@ -41,7 +44,8 @@ public interface ReportExecutor
      * @param reportGroup the report set to run
      * @param metadata    the RepositoryMetadata objects to report on
      * @param repository  the repository that they come from
-     * @throws org.apache.maven.archiva.reporting.store.ReportingStoreException if there is a problem reading/writing the report database
+     * @throws org.apache.maven.archiva.reporting.store.ReportingStoreException
+     *          if there is a problem reading/writing the report database
      */
     public void runMetadataReports( ReportGroup reportGroup, List metadata, ArtifactRepository repository )
         throws ReportingStoreException;

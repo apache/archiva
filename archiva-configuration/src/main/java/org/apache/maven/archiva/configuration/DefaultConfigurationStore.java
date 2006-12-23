@@ -1,26 +1,29 @@
 package org.apache.maven.archiva.configuration;
 
 /*
- * Copyright 2005-2006 The Apache Software Foundation.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Reader;
 import org.apache.maven.archiva.configuration.io.xpp3.ConfigurationXpp3Writer;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -121,7 +124,7 @@ public class DefaultConfigurationStore
     /**
      * Perform any Upgrades and Adjustments needed to bring configuration up to the
      * current configuration format.
-     * 
+     *
      * @param config the configuration to upgrade and adjust.
      */
     private void sanitizeConfiguration( Configuration config )
@@ -130,7 +133,7 @@ public class DefaultConfigurationStore
         while ( it.hasNext() )
         {
             RepositoryConfiguration repo = (RepositoryConfiguration) it.next();
-            
+
             // Ensure that the repo.urlName is set.
             if ( StringUtils.isEmpty( repo.getUrlName() ) )
             {
