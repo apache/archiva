@@ -167,6 +167,9 @@
             <log>${project.build.directory}/logs/${container.name}.log</log>
             <output>${project.build.directory}/logs/${container.name}.out</output>
             <timeout>600000</timeout>
+            <systemProperties>
+              <appserver.base>${project.build.directory}</appserver.base>
+            </systemProperties>
           </container>
           <configuration>
             <home>${project.build.directory}/${container.name}conf</home>
