@@ -39,6 +39,7 @@ public class LoginTest
         goToLoginPage();
         submitLoginPage( "test-user", "temp-pass" );
 
+        // change of password required for new users
         if ( getTitle().equals( getTitlePrefix() + "Change Password" ) )
         {
             setFieldValue( "existingPassword", "temp-pass" );
@@ -83,18 +84,14 @@ public class LoginTest
 
         clickLinkWithText( "User Management" );
         assertPage( "[Admin] User List" );
-
-        try
-        {
-            Thread.sleep( 15000 );
-        }
-        catch ( InterruptedException e )
-        {
-            e.printStackTrace();
-        }
-
         assertLinkPresent( username );
-        clickLinkWithXPath( "//a[@href='/security/userdelete.action?username=" + username + "']" );
+
+        //this does not work bec the image is pointing to /archiva/archiva/images/pss/admin/delete.gif
+        // when ran in selenium
+        // clickLinkWithXPath( "//a[@href='/security/userdelete.action?username=" + username + "']" );
+        //so instead we use this
+        open( "/archiva/security/userdelete.action?username=" + username );
+
         assertPage( "[Admin] User Delete" );
         assertTextPresent( "The following user will be deleted: " + username );
         clickButtonWithValue( "Delete User" );
