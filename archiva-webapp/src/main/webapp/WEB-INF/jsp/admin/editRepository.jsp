@@ -38,7 +38,7 @@
     <ww:hidden name="id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
     <ww:checkbox name="indexed" fieldValue="true" label="Indexed"/>
-    <ww:submit value="Change Repository"/>
+    <ww:submit value="Update Repository"/>
   </ww:form>
 
   <script type="text/javascript">

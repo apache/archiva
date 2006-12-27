@@ -39,7 +39,7 @@
   <ww:form method="post" action="editProxiedRepository" namespace="/admin" validate="true">
     <ww:hidden name="id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/proxiedRepositoryForm.jspf" %>
-    <ww:submit value="Change Repository"/>
+    <ww:submit value="Update Repository"/>
   </ww:form>
 
   <script type="text/javascript">
