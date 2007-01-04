@@ -19,25 +19,54 @@ package org.apache.maven.archiva.converter.transaction;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * Abstract class for the TransactionEvents
  *
  * @author Edwin Punzalan
+ * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
+ * @version $Id$
  */
 public abstract class AbstractTransactionEvent
+    extends AbstractLogEnabled
     implements TransactionEvent
 {
-    private File backup;
+    private Map backups = new HashMap();;
 
-    private List createdDirs;
+    private List createdDirs = new ArrayList();
+
+    private List createdFiles = new ArrayList();
+
+    /** {@link List}&lt;{@link Digester}> */
+    private List digesters;
+
+    protected AbstractTransactionEvent()
+    {
+        this( new ArrayList( 0 ) );
+    }
+
+    protected AbstractTransactionEvent( List digesters )
+    {
+        this.digesters = digesters;
+    }
+
+    protected List getDigesters()
+    {
+        return digesters;
+    }
 
     /**
      * Method that creates a directory as well as all the parent directories needed
@@ -57,8 +86,6 @@ public abstract class AbstractTransactionEvent
 
             parent = parent.getParentFile();
         }
-
-        createdDirs = new ArrayList();
 
         while ( !createDirs.isEmpty() )
         {
@@ -99,25 +126,100 @@ public abstract class AbstractTransactionEvent
         }
     }
 
+    protected void revertFilesCreated()
+        throws IOException
+    {
+        Iterator it = createdFiles.iterator();
+        while ( it.hasNext() )
+        {
+            File file = (File) it.next();
+            file.delete();
+            it.remove();
+        }
+    }
+
     protected void createBackup( File file )
         throws IOException
     {
         if ( file.exists() && file.isFile() )
         {
-            backup = File.createTempFile( "temp-", ".backup" );
+            File backup = File.createTempFile( "temp-", ".backup" );
 
             FileUtils.copyFile( file, backup );
 
             backup.deleteOnExit();
+
+            backups.put( file, backup );
+        }
+    }
+
+    protected void restoreBackups()
+        throws IOException
+    {
+        Iterator it = backups.entrySet().iterator();
+        while ( it.hasNext() )
+        {
+            Map.Entry entry = (Map.Entry) it.next();
+            FileUtils.copyFile( (File) entry.getValue(), (File) entry.getKey() );
         }
     }
 
     protected void restoreBackup( File file )
         throws IOException
     {
+        File backup = (File) backups.get( file );
         if ( backup != null )
         {
             FileUtils.copyFile( backup, file );
         }
     }
+
+    /**
+     * Create checksums of file using all digesters defined at construction time.
+     * 
+     * @param file
+     * @param force whether existing checksums should be overwritten or not
+     * @throws IOException
+     */
+    protected void createChecksums( File file, boolean force )
+        throws IOException
+    {
+        Iterator it = getDigesters().iterator();
+        while ( it.hasNext() )
+        {
+            Digester digester = (Digester) it.next();
+            File checksumFile = new File( file.getAbsolutePath() + "." + getDigesterFileExtension( digester ) );
+            if ( checksumFile.exists() )
+            {
+                if ( !force )
+                {
+                    continue;
+                }
+                createBackup( checksumFile );
+            }
+            else
+            {
+                createdFiles.add( checksumFile );
+            }
+            try
+            {
+                FileUtils.writeStringToFile( checksumFile, digester.calc( file ), null );
+            }
+            catch ( DigesterException e )
+            {
+                // the Digester API just wraps IOException and should be fixed 
+                throw (IOException) e.getCause();
+            }
+        }
+    }
+
+    /**
+     * File extension for checksums
+     * TODO should be moved to plexus-digester ?
+     */
+    protected String getDigesterFileExtension( Digester digester )
+    {
+        return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" );
+    }
+
 }

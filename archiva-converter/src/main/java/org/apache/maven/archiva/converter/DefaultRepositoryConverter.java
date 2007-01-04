@@ -70,14 +70,11 @@ public class DefaultRepositoryConverter
     implements RepositoryConverter
 {
     /**
-     * @plexus.requirement role-hint="sha1"
+     * {@link List}&lt;{@link Digester}>
+     * 
+     * @plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
-    private Digester sha1Digester;
-
-    /**
-     * @plexus.requirement role-hint="md5"
-     */
-    private Digester md5Digester;
+    private List digesters;
 
     /**
      * @plexus.requirement
@@ -204,7 +201,7 @@ public class DefaultRepositoryConverter
 
                 mappingWriter.write( writer, metadata );
 
-                transaction.createFile( writer.toString(), file );
+                transaction.createFile( writer.toString(), file, digesters );
             }
             catch ( IOException e )
             {
@@ -440,7 +437,7 @@ public class DefaultRepositoryConverter
                     }
                     if ( force || !matching )
                     {
-                        transaction.createFile( contents, targetFile );
+                        transaction.createFile( contents, targetFile, digesters );
                     }
                 }
                 catch ( IOException e )
@@ -475,7 +472,7 @@ public class DefaultRepositoryConverter
                     MavenXpp3Writer Xpp3Writer = new MavenXpp3Writer();
                     Xpp3Writer.write( writer, v4Model );
 
-                    transaction.createFile( writer.toString(), targetFile );
+                    transaction.createFile( writer.toString(), targetFile, digesters );
 
                     List warnings = translator.getWarnings();
 
@@ -590,7 +587,7 @@ public class DefaultRepositoryConverter
         MavenXpp3Writer pomWriter = new MavenXpp3Writer();
         pomWriter.write( strWriter, pom );
 
-        transaction.createFile( strWriter.toString(), pomFile );
+        transaction.createFile( strWriter.toString(), pomFile, digesters );
     }
 
     private String getI18NString( String key, String arg0 )
@@ -606,12 +603,24 @@ public class DefaultRepositoryConverter
     private boolean testChecksums( Artifact artifact, File file, ReportingDatabase reporter )
         throws IOException
     {
-
-        boolean result =
-            verifyChecksum( file, file.getName() + ".md5", md5Digester, reporter, artifact, "failure.incorrect.md5" );
-        result = result && verifyChecksum( file, file.getName() + ".sha1", sha1Digester, reporter, artifact,
-                                           "failure.incorrect.sha1" );
+        boolean result = true;
+        Iterator it = digesters.iterator();
+        while ( it.hasNext() )
+        {
+            Digester digester = (Digester) it.next();
+            result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester,
+                                      reporter, artifact, "failure.incorrect." + getDigesterFileExtension( digester ) );
+        }
         return result;
+    }
+
+    /**
+     * File extension for checksums
+     * TODO should be moved to plexus-digester ?
+     */
+    private String getDigesterFileExtension( Digester digester )
+    {
+        return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" );
     }
 
     private boolean verifyChecksum( File file, String fileName, Digester digester, ReportingDatabase reporter,
@@ -669,7 +678,7 @@ public class DefaultRepositoryConverter
                 {
                     if ( testChecksums( artifact, sourceFile, reporter ) )
                     {
-                        transaction.copyFile( sourceFile, targetFile );
+                        transaction.copyFile( sourceFile, targetFile, digesters );
                     }
                     else
                     {

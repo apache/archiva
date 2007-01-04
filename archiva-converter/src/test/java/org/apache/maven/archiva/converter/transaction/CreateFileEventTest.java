@@ -19,16 +19,16 @@ package org.apache.maven.archiva.converter.transaction;
  * under the License.
  */
 
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
-
-import java.io.File;
 
 /**
  * @author Edwin Punzalan
  */
 public class CreateFileEventTest
-    extends PlexusTestCase
+    extends AbstractFileEventTest
 {
     private File testDir = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/create-file" );
 
@@ -37,17 +37,22 @@ public class CreateFileEventTest
     {
         File testFile = new File( testDir, "test-file.txt" );
 
-        CreateFileEvent event = new CreateFileEvent( "file contents", testFile );
+        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
 
         assertFalse( "Test file is not yet created", testFile.exists() );
 
         event.commit();
 
-        assertTrue( "Test file is not yet created", testFile.exists() );
+        assertTrue( "Test file has been created", testFile.exists() );
+
+        assertChecksumCommit( testFile );
 
         event.rollback();
 
         assertFalse( "Test file is has been deleted after rollback", testFile.exists() );
+
+        assertChecksumRollback( testFile );
+
         assertFalse( "Test file parent directories has been rolledback too", testDir.exists() );
         assertTrue( "target directory still exists", new File( PlexusTestCase.getBasedir(), "target" ).exists() );
     }
@@ -63,7 +68,7 @@ public class CreateFileEventTest
 
         FileUtils.writeStringToFile( testFile, "original contents", null );
 
-        CreateFileEvent event = new CreateFileEvent( "modified contents", testFile );
+        CreateFileEvent event = new CreateFileEvent( "modified contents", testFile, digesters );
 
         String contents = FileUtils.readFileToString( testFile, null );
 
@@ -75,11 +80,15 @@ public class CreateFileEventTest
 
         assertEquals( "Test contents have not changed", "modified contents", contents );
 
+        assertChecksumCommit( testFile );
+
         event.rollback();
 
         contents = FileUtils.readFileToString( testFile, null );
 
         assertEquals( "Test contents have not changed", "original contents", contents );
+
+        assertChecksumRollback( testFile );
     }
 
     public void testCreateRollbackCommit()
@@ -87,7 +96,7 @@ public class CreateFileEventTest
     {
         File testFile = new File( testDir, "test-file.txt" );
 
-        CreateFileEvent event = new CreateFileEvent( "file contents", testFile );
+        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
 
         assertFalse( "Test file is not yet created", testFile.exists() );
 
@@ -98,6 +107,8 @@ public class CreateFileEventTest
         event.commit();
 
         assertTrue( "Test file is not yet created", testFile.exists() );
+
+        assertChecksumCommit( testFile );
     }
 
     protected void tearDown()

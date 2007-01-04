@@ -30,13 +30,7 @@
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>sha1</role-hint>
-          <field-name>sha1Digester</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>md5</role-hint>
-          <field-name>md5Digester</field-name>
+          <field-name>digesters</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
@@ -62,13 +56,7 @@
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>sha1</role-hint>
-          <field-name>sha1Digester</field-name>
-        </requirement>
-        <requirement>
-          <role>org.codehaus.plexus.digest.Digester</role>
-          <role-hint>md5</role-hint>
-          <field-name>md5Digester</field-name>
+          <field-name>digesters</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>

@@ -19,15 +19,20 @@ package org.apache.maven.archiva.converter.transaction;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.digest.Digester;
 
 /**
  * Event for creating a file from a string content.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
+ * @version $Id$
  */
 public class CreateFileEvent
     extends AbstractTransactionEvent
@@ -36,8 +41,28 @@ public class CreateFileEvent
 
     private final String content;
 
+    /**
+     * Creates a create file event with no digesters
+     * 
+     * @deprecated use other constructors
+     * 
+     * @param content
+     * @param destination
+     */
     public CreateFileEvent( String content, File destination )
     {
+        this( content, destination, new ArrayList( 0 ) );
+    }
+
+    /**
+     * 
+     * @param content
+     * @param destination
+     * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
+     */
+    public CreateFileEvent( String content, File destination, List digesters )
+    {
+        super( digesters );
         this.content = content;
         this.destination = destination;
     }
@@ -55,6 +80,8 @@ public class CreateFileEvent
         }
 
         FileUtils.writeStringToFile( destination, content, null );
+
+        createChecksums( destination, true );
     }
 
     public void rollback()
@@ -62,8 +89,10 @@ public class CreateFileEvent
     {
         destination.delete();
 
+        revertFilesCreated();
+
         revertMkDirs();
 
-        restoreBackup( destination );
+        restoreBackups();
     }
 }

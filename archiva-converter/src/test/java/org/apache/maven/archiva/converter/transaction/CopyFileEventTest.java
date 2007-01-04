@@ -19,22 +19,27 @@ package org.apache.maven.archiva.converter.transaction;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
-
-import java.io.File;
 
 /**
  * @author Edwin Punzalan
  */
 public class CopyFileEventTest
-    extends PlexusTestCase
+    extends AbstractFileEventTest
 {
     private File testDir = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/copy-file" );
 
     private File testDest = new File( testDir, "test-file.txt" );
 
     private File testSource = new File( PlexusTestCase.getBasedir(), "target/transaction-tests/test-file.txt" );
+
+    private File testDestChecksum;
+
+    private String source, oldChecksum;
 
     public void setUp()
         throws Exception
@@ -46,22 +51,36 @@ public class CopyFileEventTest
         testSource.createNewFile();
 
         FileUtils.writeStringToFile( testSource, "source contents", null );
+
+        testDestChecksum = new File( testDest.getPath() + ".sha1" );
+
+        testDestChecksum.getParentFile().mkdirs();
+
+        testDestChecksum.createNewFile();
+
+        FileUtils.writeStringToFile( testDestChecksum, "this is the checksum", null );
+
+        assertTrue( "Test if the source exists", testSource.exists() );
+
+        assertTrue( "Test if the destination checksum exists", testDestChecksum.exists() );
+
+        source = FileUtils.readFileToString( testSource, null );
+
+        oldChecksum = FileUtils.readFileToString( testDestChecksum, null );
     }
 
     public void testCopyCommitRollback()
         throws Exception
     {
-        assertTrue( "Test if the source exists", testSource.exists() );
-
-        String source = FileUtils.readFileToString( testSource, null );
-
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
         assertFalse( "Test that the destination is not yet created", testDest.exists() );
 
         event.commit();
 
         assertTrue( "Test that the destination is created", testDest.exists() );
+
+        assertChecksumCommit( testDest );
 
         String target = FileUtils.readFileToString( testDest, null );
 
@@ -70,15 +89,13 @@ public class CopyFileEventTest
         event.rollback();
 
         assertFalse( "Test that the destination file has been deleted", testDest.exists() );
+
+        assertChecksumRollback( testDest );
     }
 
     public void testCopyCommitRollbackWithBackup()
         throws Exception
     {
-        assertTrue( "Test if the source exists", testSource.exists() );
-
-        String source = FileUtils.readFileToString( testSource, null );
-
         testDest.getParentFile().mkdirs();
 
         testDest.createNewFile();
@@ -87,7 +104,7 @@ public class CopyFileEventTest
 
         assertTrue( "Test that the destination exists", testDest.exists() );
 
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
         String target = FileUtils.readFileToString( testDest, null );
 
@@ -99,21 +116,21 @@ public class CopyFileEventTest
 
         assertTrue( "Test that the destination contents are copied correctly", source.equals( target ) );
 
+        assertChecksumCommit( testDest );
+
         event.rollback();
 
         target = FileUtils.readFileToString( testDest, null );
 
         assertTrue( "Test the destination file contents have been restored", target.equals( "overwritten contents" ) );
+
+        assertChecksumRollback( testDest );
     }
 
     public void testCreateRollbackCommit()
         throws Exception
     {
-        assertTrue( "Test if the source exists", testSource.exists() );
-
-        String source = FileUtils.readFileToString( testSource, null );
-
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
         assertFalse( "Test that the destination is not yet created", testDest.exists() );
 
@@ -124,6 +141,8 @@ public class CopyFileEventTest
         event.commit();
 
         assertTrue( "Test that the destination is created", testDest.exists() );
+
+        assertChecksumCommit( testDest );
 
         String target = FileUtils.readFileToString( testDest, null );
 
@@ -136,5 +155,26 @@ public class CopyFileEventTest
         super.tearDown();
 
         FileUtils.deleteDirectory( new File( PlexusTestCase.getBasedir(), "target/transaction-tests" ) );
+    }
+
+    protected void assertChecksumCommit( File file )
+        throws IOException
+    {
+        super.assertChecksumCommit( file );
+
+        String target = FileUtils.readFileToString( testDestChecksum, null );
+
+        assertFalse( "Test that the destination checksum contents are created correctly", oldChecksum.equals( target ) );
+    }
+
+    protected void assertChecksumRollback( File file )
+        throws IOException
+    {
+        assertChecksumDoesNotExist( file, "md5" );
+        assertChecksumExists( file, "sha1" );
+
+        String target = FileUtils.readFileToString( testDestChecksum, null );
+
+        assertEquals( "Test that the destination checksum contents are reverted correctly", oldChecksum, target );
     }
 }

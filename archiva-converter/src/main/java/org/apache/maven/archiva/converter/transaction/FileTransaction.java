@@ -20,10 +20,12 @@ package org.apache.maven.archiva.converter.transaction;
  */
 
 import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.codehaus.plexus.digest.Digester;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,13 +82,45 @@ public class FileTransaction
         }
     }
 
+    /**
+     * @deprecated use {@link #copyFile(File, File, List)}
+     * @param source
+     * @param destination
+     */
     public void copyFile( File source, File destination )
     {
-        events.add( new CopyFileEvent( source, destination ) );
+        copyFile( source, destination, Collections.EMPTY_LIST );
     }
 
+    /**
+     * 
+     * @param source
+     * @param destination
+     * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
+     */
+    public void copyFile( File source, File destination, List digesters )
+    {
+        events.add( new CopyFileEvent( source, destination, digesters ) );
+    }
+
+    /**
+     * @deprecated use {@link #createFile(String, File, List)}
+     * @param content
+     * @param destination
+     */
     public void createFile( String content, File destination )
     {
-        events.add( new CreateFileEvent( content, destination ) );
+        createFile( content, destination, Collections.EMPTY_LIST );
+    }
+
+    /**
+     * 
+     * @param content
+     * @param destination
+     * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
+     */
+    public void createFile( String content, File destination, List digesters )
+    {
+        events.add( new CreateFileEvent( content, destination, digesters ) );
     }
 }

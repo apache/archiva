@@ -19,15 +19,21 @@ package org.apache.maven.archiva.converter.transaction;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.digest.Digester;
 
 /**
  * Event to copy a file.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
+ * @version $Id$
  */
 public class CopyFileEvent
     extends AbstractTransactionEvent
@@ -36,8 +42,28 @@ public class CopyFileEvent
 
     private final File destination;
 
+    /**
+     * Creates a copy file event with no digesters
+     * 
+     * @deprecated use other constructors
+     * 
+     * @param source
+     * @param destination
+     */
     public CopyFileEvent( File source, File destination )
     {
+        this( source, destination, new ArrayList( 0 ) );
+    }
+
+    /**
+     * 
+     * @param source
+     * @param destination
+     * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
+     */
+    public CopyFileEvent( File source, File destination, List digesters )
+    {
+        super( digesters );
         this.source = source;
         this.destination = destination;
     }
@@ -50,6 +76,47 @@ public class CopyFileEvent
         mkDirs( destination.getParentFile() );
 
         FileUtils.copyFile( source, destination );
+
+        createChecksums( destination, true );
+        copyChecksums();
+
+        copyChecksum( "asc" );
+    }
+
+    /**
+     * Copy checksums of source file with all digesters if exist
+     * 
+     * @throws IOException
+     */
+    private void copyChecksums()
+        throws IOException
+    {
+        Iterator it = getDigesters().iterator();
+        while ( it.hasNext() )
+        {
+            Digester digester = (Digester) it.next();
+            copyChecksum( getDigesterFileExtension( digester ) );
+        }
+    }
+
+    /**
+     * Copy checksum of source file with extension provided if exists
+     * 
+     * @param extension
+     * @return whether the checksum exists or not 
+     * @throws IOException
+     */
+    private boolean copyChecksum( String extension )
+        throws IOException
+    {
+        File checksumSource = new File( source.getAbsolutePath() + "." + extension );
+        if ( checksumSource.exists() )
+        {
+            File checksumDestination = new File( destination.getAbsolutePath() + "." + extension );
+            FileUtils.copyFile( checksumSource, checksumDestination );
+            return true;
+        }
+        return false;
     }
 
     public void rollback()
@@ -57,8 +124,10 @@ public class CopyFileEvent
     {
         destination.delete();
 
+        revertFilesCreated();
+
         revertMkDirs();
 
-        restoreBackup( destination );
+        restoreBackups();
     }
 }
