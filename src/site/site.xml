@@ -21,7 +21,6 @@
       <item name="Maven" href="http://maven.apache.org/"/>
     </links>
 
-
     <menu name="Documentation">
         <item name="Welcome"    href="/index.html"/>
         <item name="Getting Started"    href="/guides/getting-started/index.html"/>
@@ -31,7 +30,6 @@
     </menu>
 
     <menu ref="reports" inherit="bottom"/>
-
   </body>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
@@ -44,6 +42,6 @@
     <href>http://maven.apache.org/</href>
   </bannerLeft>
   <bannerRight>
-    <src>http://maven.apache.org/images/maven-logo-2.gif</src>
+    <src>images/archiva-logo-banner.jpg</src>
   </bannerRight>
 </project>
