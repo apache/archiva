@@ -163,11 +163,11 @@
           <!-- Help identify bugs during testing -->
           <level>
             <hierarchy>org.apache.maven</hierarchy>
-            <level>DEBUG</level>
+            <level>INFO</level>
           </level>
           <level>
             <hierarchy>org.codehaus.plexus.security</hierarchy>
-            <level>DEBUG</level>
+            <level>INFO</level>
           </level>
           <!-- squelch noisy objects (for now) -->
           <level>
