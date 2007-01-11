@@ -84,7 +84,8 @@ div.clear hr {
 }
 
 #leftColumn {
-    width: 170px;
+	height: 300px;
+	width: 170px;
     float: left;
     overflow: auto;
 }
