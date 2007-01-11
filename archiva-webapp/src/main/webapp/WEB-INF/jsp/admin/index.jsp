@@ -56,11 +56,6 @@
         <ww:property value="indexerCronExpression"/>
       </td>
       <%-- TODO: a "delete index and run now" operation should be here too (really clean, remove deletions that didn't get picked up) --%>
-      <td>
-        <pss:ifAuthorized permission="archiva-run-indexer">
-          <a href="<ww:url action="runIndexer" />">Run Now</a>
-        </pss:ifAuthorized>
-      </td>
     </tr>
     <tr>
       <th>Last Indexing Time</th>
@@ -68,6 +63,16 @@
         <ww:property value="lastIndexingTime"/>
       </td>
       <td></td>
+    </tr>
+  </table>
+
+  <table class="infoTable">
+    <tr>
+      <td>
+        <pss:ifAuthorized permission="archiva-run-indexer">
+          <a href="<ww:url action="runIndexer" />">Run Now</a>
+        </pss:ifAuthorized>
+      </td>
     </tr>
   </table>
 
