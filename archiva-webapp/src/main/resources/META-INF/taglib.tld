@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+
+   <tlib-version>2.2.3</tlib-version>
+   <jsp-version>1.2</jsp-version>
+   <short-name>Archiva Taglib</short-name>
+
+   <uri>http://maven.apache.org/archiva</uri>
+
+   <display-name>Archiva Taglib</display-name>
+   <description><![CDATA[Archiva JSP Taglib]]></description>
+
+   <tag>
+
+      <name>groupIdLink</name>
+      <tag-class>org.apache.maven.archiva.web.tags.GroupIdLinkTag</tag-class>
+      <body-content>empty</body-content>
+      <description><![CDATA[Render a groupId as a set of Links]]></description>
+
+      <attribute>
+        <name>var</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The GroupID String]]></description>
+      </attribute>
+      
+      <attribute>
+        <name>includeTop</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[Boolean indicating if 'top' link should be created or not.]]></description>
+      </attribute>
+      
+   </tag>
+   
+</taglib>

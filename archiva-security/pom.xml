@@ -37,5 +37,9 @@
       <groupId>org.codehaus.plexus.security</groupId>
       <artifactId>plexus-security-system</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-component-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -79,7 +79,7 @@
       </tr>
       <tr>
         <th>WebDAV URL</th>
-        <td><a href="${urlbase}${repository.urlName}">${urlbase}${repository.urlName}</a></td>
+        <td><a href="${urlbase}${repository.urlName}/">${urlbase}${repository.urlName}/</a></td>
       </tr>
       <tr>
         <th>Type</th>
@@ -121,7 +121,7 @@
     &lt;repository>
       &lt;id>${repository.id}&lt;/id>
       &lt;name>${repository.name}&lt;/name>
-      &lt;url>${urlbase}${repository.urlName}&lt;/url><c:if test="${repository.layout != 'default'}">
+      &lt;url>${urlbase}${repository.urlName}/&lt;/url><c:if test="${repository.layout != 'default'}">
       &lt;layout>${repository.layout}&lt;/layout></c:if>
       &lt;releases>
         &lt;enabled>${repository.includeSnapshots ? 'false' : 'true'}&lt;/enabled>

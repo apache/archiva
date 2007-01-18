@@ -27,7 +27,7 @@
         <webapps>
           <webapp>
             <file>${plexus.home}/lib/archiva-webapp-@archivaVersion@.war</file>
-            <context>/</context>
+            <context>/archiva</context>
             <extraction-path>${plexus.home}/webapp</extraction-path>
             <standardWebappClassloader>true</standardWebappClassloader>
             <listeners>

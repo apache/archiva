@@ -19,6 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
 <html>
 <head>
@@ -33,30 +34,7 @@
 <div id="contentArea">
   <div id="nameColumn">
     <p>
-      <c:set var="cumulativeGroup" value=""/>
-      <c:forTokens items="${groupId}" delims="." var="part" varStatus="status">
-        <c:choose>
-          <c:when test="${empty(cumulativeGroup)}">
-            <c:set var="cumulativeGroup" value="${part}"/>
-          </c:when>
-          <c:otherwise>
-            <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
-          </c:otherwise>
-        </c:choose>
-        <c:choose>
-          <c:when test="${status.last}">
-            <strong>${part}</strong>
-          </c:when>
-          <c:otherwise>
-            <c:set var="url">
-              <ww:url action="browseGroup" namespace="/">
-                <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
-              </ww:url>
-            </c:set>
-            <a href="${url}">${part}</a> /
-          </c:otherwise>
-        </c:choose>
-      </c:forTokens>
+      <archiva:groupIdLink var="${groupId}" includeTop="true" />
     </p>
 
     <ww:set name="groups" value="groups"/>

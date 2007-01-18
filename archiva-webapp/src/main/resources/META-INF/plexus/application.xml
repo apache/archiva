@@ -40,6 +40,16 @@
         <jndiSessionName>java:comp/env/mail/Session</jndiSessionName>
       </configuration>
     </component>
+    
+    <component>
+      <role>org.codehaus.plexus.webdav.DavServerManager</role>
+      <role-hint>default</role-hint>
+      <implementation>org.codehaus.plexus.webdav.DefaultDavServerManager</implementation>
+      <description>DefaultDavServerManager</description>
+      <configuration>
+        <provider-hint>proxied</provider-hint>
+      </configuration>
+    </component>
 
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
@@ -130,36 +140,9 @@
               </property>
             </properties>
           </appender>
-
-          <appender>
-            <id>audit</id>
-            <threshold>DEBUG</threshold>
-            <type>org.apache.log4j.DailyRollingFileAppender</type>
-            <conversion-pattern>%-4r [%t] %-5p %c %x - %m%n</conversion-pattern>
-
-            <properties>
-              <property>
-                <name>file</name>
-                <value>${appserver.base}/logs/audit.log</value>
-              </property>
-              <property>
-                <name>append</name>
-                <value>true</value>
-              </property>
-              <property>
-                <name>datePattern</name>
-                <value>'.'yyyy-MM-dd</value>
-              </property>
-            </properties>
-          </appender>
         </appenders>
 
         <levels>
-          <level>
-            <hierarchy>org.apache.maven.archiva.web.servlet.repository.RepositoryMapping</hierarchy>
-            <level>DEBUG, audit</level>
-          </level>
-
           <!-- Help identify bugs during testing -->
           <level>
             <hierarchy>org.apache.maven</hierarchy>

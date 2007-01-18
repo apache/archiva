@@ -181,16 +181,6 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
-    <action name="proxy" class="proxyAction">
-      <result type="stream">
-        <param name="contentType">${contentType}</param>
-        <param name="contentDisposition">filename="${filename}"</param>
-        <param name="inputName">artifactStream</param>
-        <param name="bufferSize">1024</param>
-        <param name="contentLength">${contentLength}</param>
-      </result>
-      <result name="notFound" type="httpheader">404</result>
-    </action>
   </package>
 
   <package name="components" namespace="/components" extends="default">

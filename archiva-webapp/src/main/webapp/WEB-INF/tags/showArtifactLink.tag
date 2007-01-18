@@ -19,6 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 <%@ attribute name="groupId" required="true" %>
 <%@ attribute name="artifactId" %>
 <%@ attribute name="version" %>
@@ -27,26 +28,8 @@
 <%@ attribute name="versions" type="java.util.List" %>
 
 <span class="artifact-link">
-  <c:set var="cumulativeGroup" value=""/>
-  <c:forTokens items="${groupId}" delims="." var="part" varStatus="i">
-    <c:choose>
-      <c:when test="${empty(cumulativeGroup)}">
-        <c:set var="cumulativeGroup" value="${part}"/>
-      </c:when>
-      <c:otherwise>
-        <c:set var="cumulativeGroup" value="${cumulativeGroup}.${part}"/>
-      </c:otherwise>
-    </c:choose>
-    <c:set var="url">
-      <ww:url action="browseGroup" namespace="/">
-        <ww:param name="groupId" value="%{'${cumulativeGroup}'}"/>
-      </ww:url>
-    </c:set>
-    <a href="${url}">${part}</a>
-    <c:if test="${!i.last}">
-      /
-    </c:if>
-  </c:forTokens>
+  <archiva:groupIdLink var="${model.groupId}" includeTop="true" />
+  
   <c:if test="${!empty(artifactId)}">
     <c:set var="url">
       <ww:url action="browseArtifact" namespace="/">

@@ -154,15 +154,44 @@
         <artifactId>maven-app-configuration-web</artifactId>
         <version>1.0-SNAPSHOT</version>
       </dependency>
+      <!--
+        Rejected Plexus Container / Component Versions:
+          1.0-alpha-11
+             2007-01-17 11:40:40.371::WARN:  Failed startup of context org.mortbay.jetty.webapp.WebAppContext@553763
+             {/,/home/joakim/code/maven/trunks/archiva/archiva-webapp/src/main/webapp}
+             java.lang.NullPointerException
+                     at org.codehaus.plexus.classworlds.strategy.DefaultStrategy.getResource(DefaultStrategy.java:99)
+                     at org.codehaus.plexus.classworlds.strategy.ForeignStrategy.getResource(ForeignStrategy.java:54)
+                     at org.codehaus.plexus.classworlds.strategy.DefaultStrategy.getResourceAsStream(DefaultStrategy.java:107)
+                     at org.codehaus.plexus.classworlds.realm.ClassRealm.getResourceAsStream(ClassRealm.java:207)
+                     at org.codehaus.plexus.DefaultPlexusContainer.<init>(DefaultPlexusContainer.java:244)
+        
+          1.0-alpha-12
+          1.0-alpha-13
+          1.0-alpha-14 
+             Caused by: org.codehaus.plexus.PlexusContainerException: The specified user configuration 
+             'file:/home/joakim/code/maven/trunks/archiva/archiva-webapp/src/main/webapp/WEB-INF/classes/META-INF/plexus/application.xml' is null.
+
+          1.0-alpha-15
+             The resolution of ${configuration.store.file} is never attempted.
+
+          1.0-alpha-16-SNAPSHOT
+             Incompatible with plexus-xwork-integration 
+        -->
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-container-default</artifactId>
-        <version>1.0-alpha-10</version>
+        <version>1.0-alpha-16-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-api</artifactId>
+        <version>1.0-alpha-16-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -188,6 +217,12 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-project</artifactId>
         <version>${maven.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>plexus</groupId>
+            <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -400,6 +435,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <source>1.4</source>
           <aggregate>true</aggregate>
         </configuration>
       </plugin>
