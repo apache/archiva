@@ -81,7 +81,6 @@
 
     <h5>Find</h5>
     <ul>
-
       <li class="none">
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
@@ -94,6 +93,7 @@
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
     </ul>
+
     <pss:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
@@ -116,28 +116,30 @@
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
+        </pss:ifAuthorized>
+      </ul>
+    </pss:ifAnyAuthorized>
+
+    <pss:ifAuthorized permission="archiva-manage-configuration">
+      <h5>Administration</h5>
+      <ul>
           <li class="expanded">
-            <my:currentWWUrl action="index" namespace="/admin">Administration</my:currentWWUrl>
-
-
-            <ul>
-              <li class="none">
-                <my:currentWWUrl action="managedRepositories" namespace="/admin">Managed Repositories</my:currentWWUrl>
-              </li>
-              <li class="none">
-                <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
-              </li>
+            <my:currentWWUrl action="index" namespace="/admin">Index</my:currentWWUrl>
+          </li>
+          <li class="none">
+            <my:currentWWUrl action="managedRepositories" namespace="/admin">Managed Repositories</my:currentWWUrl>
+          </li>
+          <li class="none">
+            <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
+          </li>
 
                 <%-- TODO: add back after synced repos are implemented
                           <li class="none">
                             <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
                           </li>
                 --%>
-            </ul>
-          </li>
-        </pss:ifAuthorized>
       </ul>
-    </pss:ifAnyAuthorized>
+    </pss:ifAuthorized>
 
   </div>
 </div>
