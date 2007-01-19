@@ -158,7 +158,11 @@ public class DefaultConfigurationStore
         FileWriter fileWriter = null;
         try
         {
-            file.getParentFile().mkdirs();
+            //does file directory exist ?
+            if ( file.getParentFile() != null && !file.getParentFile().exists() )
+            {
+                file.getParentFile().mkdirs();
+            }
 
             fileWriter = new FileWriter( file );
             writer.write( fileWriter, configuration );
