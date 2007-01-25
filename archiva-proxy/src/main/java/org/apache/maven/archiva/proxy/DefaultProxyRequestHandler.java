@@ -28,6 +28,7 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.metadata.Metadata;
+import org.apache.maven.artifact.repository.metadata.Versioning;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Reader;
 import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.model.DistributionManagement;
@@ -54,11 +55,15 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * An implementation of the proxy handler. This class is not thread safe (the class itself is, but the wagons it uses
@@ -96,6 +101,8 @@ public class DefaultProxyRequestHandler
      * @plexus.requirement role="org.apache.maven.wagon.Wagon"
      */
     private Map/*<String,Wagon>*/ wagons;
+
+    private static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone( "UTC" );
 
     public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException
@@ -423,6 +430,9 @@ public class DefaultProxyRequestHandler
 
                 if ( metadata != null )
                 {
+                    setLastUpdatedIfEmpty( newMetadata, metadataFile );
+                    setLastUpdatedIfEmpty( metadata, target );
+
                     changed = metadata.merge( newMetadata );
                 }
                 else
@@ -463,6 +473,20 @@ public class DefaultProxyRequestHandler
                     IOUtils.closeQuietly( fileWriter );
                 }
             }
+        }
+    }
+
+    private void setLastUpdatedIfEmpty( Metadata metadata, File metadataFile )
+    {
+        if ( metadata.getVersioning() == null )
+        {
+            metadata.setVersioning( new Versioning() );
+        }
+        if ( metadata.getVersioning().getLastUpdated() == null )
+        {
+            DateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss", Locale.US );
+            fmt.setTimeZone( UTC_TIMEZONE );
+            metadata.getVersioning().setLastUpdated( fmt.format( new Date( metadataFile.lastModified() ) ) );
         }
     }
 

@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Test the proxy handler.
@@ -87,6 +89,8 @@ public class ProxyRequestHandlerTest
 
     private static final ArtifactRepositoryPolicy ALWAYS_UPDATE_POLICY =
         new ArtifactRepositoryPolicy( true, ArtifactRepositoryPolicy.UPDATE_POLICY_ALWAYS, null );
+
+    private static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone( "UTC" );
 
     protected void setUp()
         throws Exception
@@ -1010,7 +1014,7 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         String expectedContents = getExpectedMetadata( "get-merged-metadata", getVersioning(
-            Arrays.asList( new String[]{"0.9", "1.0", "2.0", "3.0", "5.0", "4.0"} ) ) );
+            Arrays.asList( new String[]{"0.9", "1.0", "2.0", "3.0", "5.0", "4.0"} ), file ) );
 
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
     }
@@ -1099,8 +1103,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        String expectedContents =
-            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
+        String expectedContents = getExpectedMetadata( "get-updated-metadata", getVersioning(
+            Arrays.asList( new String[]{"1.0", "2.0"} ), file ) );
 
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match proxy version",
@@ -1126,7 +1130,7 @@ public class ProxyRequestHandlerTest
         assertTrue( "Check file created", file.exists() );
 
         String expectedContents =
-            getExpectedMetadata( "get-updated-metadata", "1.0-SNAPSHOT", getVersioning( "20050831.111213", 2 ) );
+            getExpectedMetadata( "get-updated-metadata", "1.0-SNAPSHOT", getVersioning( "20050831.111213", 2, file ) );
 
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match proxy version",
@@ -1173,8 +1177,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        String expectedContents =
-            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
+        String expectedContents = getExpectedMetadata( "get-updated-metadata", getVersioning(
+            Arrays.asList( new String[]{"1.0", "2.0"} ), file ) );
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match old version",
                      unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
@@ -1194,8 +1198,8 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
         assertTrue( "Check file created", file.exists() );
 
-        String expectedContents =
-            getExpectedMetadata( "get-updated-metadata", getVersioning( Arrays.asList( new String[]{"1.0", "2.0"} ) ) );
+        String expectedContents = getExpectedMetadata( "get-updated-metadata", getVersioning(
+            Arrays.asList( new String[]{"1.0", "2.0"} ), file ) );
 
         assertEquals( "Check content matches", expectedContents, FileUtils.readFileToString( file, null ) );
         assertFalse( "Check content doesn't match old version",
@@ -1767,7 +1771,7 @@ public class ProxyRequestHandlerTest
         assertEquals( "Check file matches", expectedFile, file );
     }
 
-    private static Versioning getVersioning( List versions )
+    private static Versioning getVersioning( List versions, File file )
     {
         Versioning versioning = new Versioning();
         for ( Iterator i = versions.iterator(); i.hasNext(); )
@@ -1775,6 +1779,7 @@ public class ProxyRequestHandlerTest
             String v = (String) i.next();
             versioning.addVersion( v );
         }
+        setLastUpdatedTimestamp( versioning, file );
         return versioning;
     }
 
@@ -1806,13 +1811,21 @@ public class ProxyRequestHandlerTest
         return getExpectedMetadata( artifactId, version, null );
     }
 
-    private static Versioning getVersioning( String timestamp, int buildNumber )
+    private static Versioning getVersioning( String timestamp, int buildNumber, File file )
     {
         Versioning versioning = new Versioning();
         versioning.setSnapshot( new Snapshot() );
         versioning.getSnapshot().setTimestamp( timestamp );
         versioning.getSnapshot().setBuildNumber( buildNumber );
+        setLastUpdatedTimestamp( versioning, file );
         return versioning;
+    }
+
+    private static void setLastUpdatedTimestamp( Versioning versioning, File file )
+    {
+        DateFormat fmt = new SimpleDateFormat( "yyyyMMddHHmmss", Locale.US );
+        fmt.setTimeZone( UTC_TIMEZONE );
+        versioning.setLastUpdated( fmt.format( new Date( file.lastModified() ) ) );
     }
 
     private static Date getPastDate()
