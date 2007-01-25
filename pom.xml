@@ -558,7 +558,7 @@
     </pluginRepository>
   </pluginRepositories>
   <properties>
-    <maven.version>2.0.5-maestro-1.2-SNAPSHOT</maven.version>
+    <maven.version>2.0.4</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
     <plexus-security.version>1.0-alpha-10-SNAPSHOT</plexus-security.version>
   </properties>
