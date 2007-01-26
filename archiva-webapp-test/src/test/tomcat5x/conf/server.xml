@@ -93,7 +93,7 @@ parent-child relationships with each other -->
     -->
 
     <!-- Define a non-SSL HTTP/1.1 Connector on port 8080 -->
-    <Connector port="9595" maxHttpHeaderSize="8192"
+    <Connector port="9696" maxHttpHeaderSize="8192"
                maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
                enableLookups="false" redirectPort="8443" acceptCount="100"
                connectionTimeout="20000" disableUploadTimeout="true"/>

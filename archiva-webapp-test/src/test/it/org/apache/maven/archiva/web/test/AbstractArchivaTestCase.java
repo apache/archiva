@@ -27,7 +27,7 @@ import org.apache.maven.shared.web.test.AbstractSeleniumTestCase;
 public abstract class AbstractArchivaTestCase
     extends AbstractSeleniumTestCase
 {
-    private String baseUrl = "http://localhost:9595/archiva";
+    private String baseUrl = "http://localhost:9696/archiva";
 
     protected String getApplicationName()
     {

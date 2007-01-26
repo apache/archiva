@@ -99,7 +99,7 @@
             <phase>integration-test</phase>
             <configuration>
               <tasks>
-                <get src="http://localhost:9595/archiva/" dest="${project.build.directory}/index.html"/>
+                <get src="http://localhost:9696/archiva/" dest="${project.build.directory}/index.html"/>
                 <delete file="${project.build.directory}/index.html"/>
               </tasks>
             </configuration>
@@ -175,7 +175,7 @@
             <home>${project.build.directory}/${container.name}conf</home>
             <type>existing</type>
             <properties>
-              <cargo.servlet.port>9595</cargo.servlet.port>
+              <cargo.servlet.port>9696</cargo.servlet.port>
             </properties>
           </configuration>
         </configuration>
