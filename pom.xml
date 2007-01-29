@@ -181,12 +181,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-container-default</artifactId>
-        <version>1.0-alpha-16</version>
+        <version>1.0-alpha-17-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-api</artifactId>
-        <version>1.0-alpha-16</version>
+        <version>1.0-alpha-17-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -217,12 +217,6 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-project</artifactId>
         <version>${maven.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.shared</groupId>
