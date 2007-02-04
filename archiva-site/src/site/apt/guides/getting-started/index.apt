@@ -32,13 +32,15 @@ To checkout the latest code
 
 To build 
 
-  Run 'mvn install'. If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
+  If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
 
-    * Download the 1.0 connector zip from: {{http://java.sun.com/j2ee/connector/download.html}}
-  
-    * Unpack the zip to get the jar
+    * Download the 1.0.1B jta zip from: {{http://java.sun.com/products/jta/}}
 
-    * Run: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar
+    * Install it: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector Dversion=1.0 -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
+
+  Otherwise:
+
+    * Build Archiva: mvn install
 
 
 To test-deploy Archiva on the embedded Jetty
