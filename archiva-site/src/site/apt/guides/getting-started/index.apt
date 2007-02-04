@@ -36,7 +36,7 @@ To build
 
     * Download the 1.0.1B jta zip from: {{http://java.sun.com/products/jta/}}
 
-    * Install it: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector Dversion=1.0 -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
+    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
 
   Otherwise:
 
