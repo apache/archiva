@@ -111,9 +111,8 @@
       &lt;groupId>${model.groupId}&lt;/groupId>
       &lt;artifactId>${model.artifactId}&lt;/artifactId>
       &lt;version>${model.version}&lt;/version><c:if test="${model.packaging != 'jar'}">
-  &lt;type>${model.packaging}&lt;/type>
-</c:if>
-    &lt;/dependency>
+      &lt;type>${model.packaging}&lt;/type>
+</c:if>    &lt;/dependency>
 </pre>
 </c:if>
 

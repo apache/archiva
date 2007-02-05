@@ -21,9 +21,6 @@ package org.apache.maven.archiva.web.tags;
 
 import com.opensymphony.webwork.views.jsp.TagUtils;
 
-import org.apache.taglibs.standard.tag.common.core.NullAttributeException;
-import org.apache.taglibs.standard.tag.el.core.ExpressionUtil;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
@@ -40,7 +37,7 @@ public class GroupIdLinkTag
 {
     private String var_; // stores EL-based property
 
-    private Object var; // stores the evaluated object.
+    private String var; // stores the evaluated object.
 
     private boolean includeTop = false;
 
@@ -61,7 +58,7 @@ public class GroupIdLinkTag
         GroupIdLink gidlink = new GroupIdLink( TagUtils.getStack( pageContext ), (HttpServletRequest) pageContext
             .getRequest(), (HttpServletResponse) pageContext.getResponse() );
 
-        gidlink.setGroupId( var.toString() );
+        gidlink.setGroupId( var );
         gidlink.setIncludeTop( includeTop );
 
         gidlink.end( pageContext.getOut(), "" );
@@ -72,25 +69,14 @@ public class GroupIdLinkTag
     private void evaluateExpressions()
         throws JspException
     {
-        try
-        {
-            var = ExpressionUtil.evalNotNull( "groupIdLink", "var", var_, String.class, this, pageContext );
-        }
-        catch ( NullAttributeException e )
-        {
-            log( "groupIdLink var is null!", e );
-            var = "";
-        }
+        ExpressionTool exprTool = new ExpressionTool( pageContext, this, "groupIdLink" );
+        
+        var = exprTool.optionalString( "var", var_, "" );
     }
 
     public void setVar( String value )
     {
         this.var_ = value;
-    }
-
-    private void log( String msg, Throwable t )
-    {
-        pageContext.getServletContext().log( msg, t );
     }
 
     public void setIncludeTop( boolean includeTop )

@@ -54,6 +54,44 @@
         <name>indexer</name>
       </configuration>
     </component>
+    
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>artifactCache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>EhcacheCache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent>
+        <disk-store-path>${appserver.base}/.cache/artifacts</disk-store-path>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>artifact-cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <time-to-idle-seconds>600</time-to-idle-seconds>
+        <time-to-live-seconds>300</time-to-live-seconds>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>projectCache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>EhcacheCache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent>
+        <disk-store-path>${appserver.base}/.cache/projects</disk-store-path>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>project-cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <time-to-idle-seconds>600</time-to-idle-seconds>
+        <time-to-live-seconds>300</time-to-live-seconds>
+      </configuration>
+    </component>
 
   </components>
 </component-set>

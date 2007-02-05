@@ -19,6 +19,10 @@
   -->
 
 <decorators defaultdir="/WEB-INF/jsp/decorators">
+  <excludes>
+    <pattern>/repository/*</pattern>
+  </excludes>
+  
   <decorator name="default" page="default.jsp">
     <pattern>/*</pattern>
   </decorator>

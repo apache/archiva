@@ -59,6 +59,11 @@
       <version>1.0-alpha-4-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus.cache</groupId>
+      <artifactId>plexus-cache-ehcache</artifactId>
+      <version>1.0-alpha-1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-taskqueue</artifactId>
       <version>1.0-alpha-6-SNAPSHOT</version>

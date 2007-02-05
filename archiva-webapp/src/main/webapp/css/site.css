@@ -16,133 +16,198 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 .sidebar3 {
-    width: 10em;
-    float: right;
-    text-align: center;
+	width: 10em;
+	float: right;
+	text-align: center;
 }
 
 #sidebarb {
-    font-size: small;
-    text-align: center;
-    padding: 10px 10px 10px 10px;
-    border: 1px #DFDEDE solid;
-    width: 10em;
+	font-size: small;
+	text-align: center;
+	padding: 10px 10px 10px 10px;
+	border: 1px #DFDEDE solid;
+	width: 10em;
 }
 
 #sidebar {
-    float: right;
-    font-size: small;
-    margin: 10px;
-    padding: 10px;
-    border: 1px #DFDEDE solid;
-    width: 10em;
+	float: right;
+	font-size: small;
+	margin: 10px;
+	padding: 10px;
+	border: 1px #DFDEDE solid;
+	width: 10em;
 }
 
-#download {
-    background-image: url( ../images/dl.gif );
-    background-repeat: no-repeat;
-    float: right;
-    font-size: small;
-    font-weight: bold;
-    margin: 10px;
-    padding: 10px;
-    height: auto;
-    width: 10em;
-    display: block;
+.download {
+	float: right;
+	font-size: small;
+	font-weight: bold;
+	xmargin: 0px auto;
+	margin: 15px auto 0px auto;
+	height: auto;
+	width: 150px;
+	min-width: 120px;
+	display: block;
 }
 
-#download a {
-    text-decoration: none;
+.download .hd .c,
+.download .ft .c {
+	font-size: 1px; /* ensure minimum height */
+	height: 10px;
+}
+
+.download .ft .c {
+	height: 10px;
+}
+
+.download .hd {
+	background: transparent url(../images/download.tl.gif) no-repeat 0px 0px;
+}
+
+.download .hd .c {
+	background: transparent url(../images/download.tr.gif) no-repeat right 0px;
+}
+
+.download .bd {
+	background: transparent url(../images/download.ml.gif) repeat-y 0px 0px;
+}
+
+.download .bd .c {
+	background: transparent url(../images/download.mr.gif) repeat-y right 0px;
+}
+
+.download .bd .c .s {
+	margin: 0px 8px 0px 4px;
+	background: #000 url(../images/download.ms.jpg) repeat-x 0px 0px;
+	padding: 1em;
+}
+
+.download .ft {
+	background: transparent url(../images/download.bl.gif) no-repeat 0px 0px;
+}
+
+.download .ft .c {
+	background: transparent url(../images/download.br.gif) no-repeat right 0px;
+}
+
+.download .bd h2 {
+	margin: 0px;
+	text-align: center;
+	border-bottom-width: 0px !important;
+}
+
+.download .bd p {
+	margin: 0px;
+	border: 0px;
+	text-align: left;
+	padding-left: 15px;
+}
+
+.download a {
+	text-decoration: none;
 }
 
 #contentArea {
-    margin-right: 15em;
-    padding: 1em;
+	/* margin-right: 15em; */
+	padding: 1em;
 }
 
 #tabs b {
-    border: 1px #DFDEDE solid;
-    padding-left: 1em;
-    padding-right: 1em;
+	border: 1px #DFDEDE solid;
+	padding-left: 1em;
+	padding-right: 1em;
 }
 
 #tabs a {
-    border: 1px #DFDEDE solid;
-    padding-left: 1em;
-    padding-right: 1em;
-    text-decoration: none;
+	border: 1px #DFDEDE solid;
+	padding-left: 1em;
+	padding-right: 1em;
+	text-decoration: none;
 }
 
 #tabArea {
-    border-top: 1px solid #DFDEDE;
-    padding: 1em;
+	border-top: 1px solid #DFDEDE;
+	padding: 1em;
 }
 
 #searchTypes {
-    text-align: right;
-    font-size: xx-small;
+	text-align: right;
+	font-size: xx-small;
 }
 
 .statusFailed {
-    color: red;
-    font-weight: bold;
+	color: red;
+	font-weight: bold;
 }
 
 /* WebWork validation failures */
 .errorMessage {
-    color: red;
-    font-weight: bold;
+	color: red;
+	font-weight: bold;
 }
 
 .actionMessage {
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .errorBullet {
-    list-style-image: url( "../images/icon_error_sml.gif" );
+	list-style-image: url( "../images/icon_error_sml.gif" );
 }
 
 .warningBullet {
-    list-style-image: url( "../images/icon_warning_sml.gif" );
+	list-style-image: url( "../images/icon_warning_sml.gif" );
 }
 
 .infoBullet {
-    list-style-image: url( "../images/icon_info_sml.gif" );
+	list-style-image: url( "../images/icon_info_sml.gif" );
 }
 
 .artifact-link {
-    font-size: x-small;
-    padding-left: 5em;
+	font-size: x-small;
+	padding-left: 5em;
 }
 
 .artifact-title {
+	
 }
 
 ul.dependencyTree {
-    margin-left: 50px;
+	margin-left: 50px;
 }
 
 ul.dependencyTree span.artifact-link {
-    padding-left: 0px;
+	padding-left: 0px;
 }
 
 .eXtremeTable tr.filter {
-    padding: 1px;
+	padding: 1px;
 }
 
-.eXtremeTable .tableRegion,
-    .eXtremeTable .statusBar {
-    width: 100%;
+.eXtremeTable .tableRegion,.eXtremeTable .statusBar {
+	width: 100%;
 }
 
 .eXtremeTable .tableHeader {
-    background-color: #F3B455;
+	background-color: #F3B455;
 }
 
 .eXtremeTable .tableHeaderSort {
-    background-color: #FFBF5F;
+	background-color: #FFBF5F;
 }
 
+.eXtremeTable .compactToolbar td {
+	white-space: nowrap;
+}
+
+.tools {
+	border-color: gray !important;	
+}
+
+.tools .toolHeading {
+	padding: 0px 3px 0px 3px;
+	margin: 0px !important;
+	font-size: 11px !important;
+	background-color: #F3B455 !important;
+}
 

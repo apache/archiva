@@ -33,7 +33,9 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * DefaultRepositoryQueryLayer 
  *
+ * @version $Id$
  */
 public class DefaultRepositoryQueryLayer
     implements RepositoryQueryLayer

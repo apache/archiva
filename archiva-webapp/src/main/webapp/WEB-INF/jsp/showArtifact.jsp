@@ -20,6 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
 <html>
 <head>
@@ -71,14 +72,6 @@
   </c:choose>
 </h1>
 
-<div class="sidebar3">
-  <div id="download">
-    <%-- TODO! create a tag for this, include classifier for javadoc, sources below --%>
-    <c:url var="url" value="/repository/${repositoryId}/${artifactPath}"/>
-    <a href="${url}">Download</a>
-  </div>
-</div>
-
 <div id="contentArea">
   <div id="tabs">
     <span>
@@ -124,6 +117,10 @@
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
     </span>
   </div>
+
+<div class="sidebar3">
+  <archiva:downloadArtifact groupId="${groupId}" artifactId="${artifactId}" version="${Version}" />
+</div>
 
   <%-- TODO: perhaps using ajax? --%>
   <%-- TODO: panels? this is ugly as is! --%>

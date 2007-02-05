@@ -241,8 +241,8 @@ public class IndexerTaskExecutor
                         for ( int j = 0; j < artifacts.size(); j += ARTIFACT_BUFFER_SIZE )
                         {
                             int end = j + ARTIFACT_BUFFER_SIZE;
-                            List currentArtifacts =
-                                artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
+                            List currentArtifacts = artifacts.subList( j, end > artifacts.size() ? artifacts.size()
+                                                                                                : end );
 
                             // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
 
@@ -260,10 +260,10 @@ public class IndexerTaskExecutor
 
                     MetadataFilter metadataFilter = new ReportingMetadataFilter( reporter );
 
-                    MetadataDiscoverer metadataDiscoverer =
-                        (MetadataDiscoverer) metadataDiscoverers.get( layoutProperty );
-                    List metadata =
-                        metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns, metadataFilter );
+                    MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers
+                        .get( layoutProperty );
+                    List metadata = metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns,
+                                                                         metadataFilter );
 
                     if ( !metadata.isEmpty() )
                     {
@@ -307,14 +307,18 @@ public class IndexerTaskExecutor
         {
             if ( projectBuilder != null )
             {
+                getLogger().info( "projectBuilder is type " + projectBuilder.getClass().getName() );
+
                 java.lang.reflect.Field f = projectBuilder.getClass().getDeclaredField( "rawProjectCache" );
                 f.setAccessible( true );
                 Map cache = (Map) f.get( projectBuilder );
+                getLogger().info( "projectBuilder.raw is type " + cache.getClass().getName() );
                 cache.clear();
 
                 f = projectBuilder.getClass().getDeclaredField( "processedProjectCache" );
                 f.setAccessible( true );
                 cache = (Map) f.get( projectBuilder );
+                getLogger().info( "projectBuilder.processed is type " + cache.getClass().getName() );
                 cache.clear();
             }
         }

@@ -40,7 +40,6 @@ import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -114,11 +113,6 @@ public class ShowArtifactAction
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
 
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactResolver artifactResolver;
-
     private String groupId;
 
     private String artifactId;
@@ -132,6 +126,8 @@ public class ShowArtifactAction
     private List dependencyTree;
 
     private String repositoryId;
+
+    private String repositoryUrlName;
 
     private String artifactPath;
 
@@ -149,26 +145,6 @@ public class ShowArtifactAction
         MavenProject project = readProject();
 
         model = project.getModel();
-
-        Configuration configuration = configurationStore.getConfigurationFromStore();
-        List repositories = repositoryFactory.createRepositories( configuration );
-
-        Artifact artifact = artifactFactory.createBuildArtifact( project.getGroupId(), project.getArtifactId(),
-                                                                 project.getVersion(), project.getPackaging() );
-
-        for ( Iterator i = repositories.iterator(); i.hasNext(); )
-        {
-            ArtifactRepository repository = (ArtifactRepository) i.next();
-
-            String path = repository.pathOf( artifact );
-            File f = new File( repository.getBasedir(), path );
-            if ( f.exists() )
-            {
-                repositoryId = repository.getId();
-
-                artifactPath = path;
-            }
-        }
 
         return SUCCESS;
     }
@@ -202,7 +178,7 @@ public class ShowArtifactAction
         MavenProject project = readProject();
 
         model = project.getModel();
-
+        
         this.mailingLists = project.getMailingLists();
 
         return SUCCESS;
@@ -490,7 +466,7 @@ public class ShowArtifactAction
                         return false;
                     }
                     if ( getQualifier() != null ? !getQualifier().equals( that.getQualifier() )
-                        : that.getQualifier() != null )
+                                               : that.getQualifier() != null )
                     {
                         return false;
                     }
@@ -540,5 +516,10 @@ public class ShowArtifactAction
     public List getMailingLists()
     {
         return mailingLists;
+    }
+
+    public String getRepositoryUrlName()
+    {
+        return repositoryUrlName;
     }
 }

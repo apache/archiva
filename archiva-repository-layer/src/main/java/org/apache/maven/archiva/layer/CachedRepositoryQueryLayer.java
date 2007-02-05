@@ -26,7 +26,9 @@ import java.util.List;
 
 
 /**
+ * CachedRepositoryQueryLayer 
  *
+ * @version $Id$
  */
 public class CachedRepositoryQueryLayer
     implements RepositoryQueryLayer

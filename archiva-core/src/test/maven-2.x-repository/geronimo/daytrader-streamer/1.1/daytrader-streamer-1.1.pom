@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>daytrader</artifactId>
+    <groupId>geronimo</groupId>
+    <version>1.1</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>daytrader-streamer</artifactId>
+  <name>DayTrader :: Quote Streamer</name>
+  <version>1.1</version>
+  <description>Streamer Application for Day Trader</description>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/modules/streamer</connection>
+    <developerConnection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/modules/streamer</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/geronimo/daytrader/trunk/modules/ear</url>
+  </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <class-path>dt-ejb.jar</class-path>
+            </manifestEntries>
+            <manifest>
+              <main-class>org.apache.geronimo.samples.daytrader.client.TradeClient</main-class>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>geronimo</groupId>
+      <artifactId>daytrader-ejb</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+      <version>1.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>
