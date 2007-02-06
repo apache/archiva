@@ -181,6 +181,10 @@
             <hierarchy>JPOX</hierarchy>
             <level>WARN</level>
           </level>
+          <level>
+            <hierarchy>JPOX.MetaData</hierarchy>
+            <level>ERROR</level>
+          </level>
           <!--
                     <level>
                       <hierarchy>JPOX.RDBMS.SQL</hierarchy>
