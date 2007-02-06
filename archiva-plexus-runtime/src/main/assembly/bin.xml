@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -53,7 +52,7 @@
       <directory>target/plexus-archiva-runtime/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>plexus.sh</include>
+        <include>**/*.sh</include>
       </includes>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
@@ -62,85 +61,29 @@
       <directory>target/plexus-archiva-runtime/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>plexus.bat</include>
+        <include>*/wrapper.conf</include>
       </includes>
-      <lineEnding>dos</lineEnding>
     </fileSet>
     <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/linux</directory>
-      <outputDirectory>bin/linux</outputDirectory>
+      <directory>target/plexus-archiva-runtime/bin</directory>
+      <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>run.sh</include>
-        <include>wrapper.conf</include>
-      </includes>
-      <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/linux</directory>
-      <outputDirectory>bin/linux</outputDirectory>
-      <includes>
-        <include>libwrapper.so</include>
-        <include>wrapper</include>
+        <include>*/libwrapper.jnilib</include>
+        <include>*/libwrapper.so</include>
+        <include>*/wrapper</include>
+        <include>*/wrapper.exe</include>
+        <include>*/wrapper.dll</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/macosx</directory>
-      <outputDirectory>bin/macosx</outputDirectory>
+      <directory>target/plexus-archiva-runtime/bin</directory>
+      <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>run.sh</include>
-        <include>wrapper.conf</include>
-      </includes>
-      <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/macosx</directory>
-      <outputDirectory>bin/macosx</outputDirectory>
-      <includes>
-        <include>libwrapper.jnilib</include>
-        <include>wrapper</include>
-      </includes>
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/solaris</directory>
-      <outputDirectory>bin/solaris</outputDirectory>
-      <includes>
-        <include>run.sh</include>
-        <include>wrapper.conf</include>
-      </includes>
-      <lineEnding>unix</lineEnding>
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/solaris</directory>
-      <outputDirectory>bin/solaris</outputDirectory>
-      <includes>
-        <include>libwrapper.so</include>
-        <include>wrapper</include>
-      </includes>
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/win32</directory>
-      <outputDirectory>bin/win32</outputDirectory>
-      <includes>
-        <include>*.bat</include>
-        <include>wrapper.conf</include>
+        <include>**/*.bat</include>
       </includes>
       <fileMode>0755</fileMode>
       <lineEnding>dos</lineEnding>
-    </fileSet>
-    <fileSet>
-      <directory>target/plexus-archiva-runtime/bin/win32</directory>
-      <outputDirectory>bin/win32</outputDirectory>
-      <includes>
-        <include>wrapper.exe</include>
-        <include>wrapper.dll</include>
-      </includes>
-      <fileMode>0755</fileMode>
     </fileSet>
   </fileSets>
 </assembly>
