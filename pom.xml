@@ -181,12 +181,12 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-container-default</artifactId>
-        <version>1.0-alpha-17-SNAPSHOT</version>
+        <version>1.0-alpha-17</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-api</artifactId>
-        <version>1.0-alpha-17-SNAPSHOT</version>
+        <version>1.0-alpha-17</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -527,30 +527,6 @@
       </snapshots>
     </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>codehaus.org</id>
-      <url>http://snapshots.repository.codehaus.org</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-
-    <!-- See: http://www.nabble.com/NoClassDefFoundError-from-shared-in-project-info-reports-tf2678299s177.html#a7489595 -->
-    <pluginRepository>
-      <id>apache.snapshots</id>
-      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
   <properties>
     <maven.version>2.0.4</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
