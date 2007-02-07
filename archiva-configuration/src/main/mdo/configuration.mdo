@@ -133,6 +133,24 @@
         return valid;
     }
 
+    /**
+     * Perform any Upgrades and Adjustments needed to bring configuration up to the
+     * current configuration format.
+     */
+    public void sanitize()
+    {
+        for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration repo = (RepositoryConfiguration) i.next();
+
+            // Ensure that the repo.urlName is set.
+            if ( org.codehaus.plexus.util.StringUtils.isEmpty( repo.getUrlName() ) )
+            {
+                repo.setUrlName( repo.getId() );
+            }
+        }
+    }
+
     public RepositoryConfiguration getRepositoryByUrlName( String urlName )
     {
         for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
