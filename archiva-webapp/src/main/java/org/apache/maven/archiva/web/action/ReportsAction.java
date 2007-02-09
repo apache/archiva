@@ -20,8 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork.Preparable;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.DiscovererException;
@@ -58,7 +58,7 @@ public class ReportsAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -209,7 +209,7 @@ public class ReportsAction
     public void prepare()
         throws Exception
     {
-        configuration = configurationStore.getConfigurationFromStore();
+        configuration = archivaConfiguration.getConfiguration();
     }
 
     public Configuration getConfiguration()

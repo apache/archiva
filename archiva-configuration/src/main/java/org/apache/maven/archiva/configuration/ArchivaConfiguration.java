@@ -19,21 +19,35 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-/**
- * Exception occurring using the configuration store.
- *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- */
-public class ConfigurationStoreException
-    extends Exception
-{
-    public ConfigurationStoreException( String message )
-    {
-        super( message );
-    }
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.registry.RegistryListener;
 
-    public ConfigurationStoreException( String message, Throwable e )
-    {
-        super( message, e );
-    }
+/**
+ * Configuration holder for the model read from the registry.
+ */
+public interface ArchivaConfiguration
+{
+    /**
+     * Get the configuration.
+     *
+     * @return the configuration
+     */
+    Configuration getConfiguration();
+
+    /**
+     * Save any updated configuration.
+     *
+     * @param configuration the configuration to save
+     * @throws org.codehaus.plexus.registry.RegistryException
+     *          if there is a problem saving the registry data
+     */
+    void save( Configuration configuration )
+        throws RegistryException;
+
+    /**
+     * Add a change listener so that registry changes are propogated.
+     *
+     * @param listener the listener
+     */
+    void addChangeListener( RegistryListener listener );
 }

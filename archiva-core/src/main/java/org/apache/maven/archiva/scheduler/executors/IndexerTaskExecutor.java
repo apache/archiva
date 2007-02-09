@@ -19,9 +19,8 @@ package org.apache.maven.archiva.scheduler.executors;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
@@ -69,7 +68,7 @@ public class IndexerTaskExecutor
      *
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -128,15 +127,7 @@ public class IndexerTaskExecutor
     public void execute()
         throws TaskExecutionException
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         File indexPath = new File( configuration.getIndexPath() );
 
@@ -146,15 +137,7 @@ public class IndexerTaskExecutor
     public void executeNowIfNeeded()
         throws TaskExecutionException
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         File indexPath = new File( configuration.getIndexPath() );
 
@@ -241,8 +224,8 @@ public class IndexerTaskExecutor
                         for ( int j = 0; j < artifacts.size(); j += ARTIFACT_BUFFER_SIZE )
                         {
                             int end = j + ARTIFACT_BUFFER_SIZE;
-                            List currentArtifacts = artifacts.subList( j, end > artifacts.size() ? artifacts.size()
-                                                                                                : end );
+                            List currentArtifacts =
+                                artifacts.subList( j, end > artifacts.size() ? artifacts.size() : end );
 
                             // TODO: proper queueing of this in case it was triggered externally (not harmful to do so at present, but not optimal)
 
@@ -262,8 +245,8 @@ public class IndexerTaskExecutor
 
                     MetadataDiscoverer metadataDiscoverer = (MetadataDiscoverer) metadataDiscoverers
                         .get( layoutProperty );
-                    List metadata = metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns,
-                                                                         metadataFilter );
+                    List metadata =
+                        metadataDiscoverer.discoverMetadata( repository, blacklistedPatterns, metadataFilter );
 
                     if ( !metadata.isEmpty() )
                     {

@@ -31,6 +31,15 @@
       <implementation>org.codehaus.plexus.naming.DefaultNaming</implementation>
       <role-hint>dataSources</role-hint>
       <configuration>
+        <!-- Example override:
+                <environments>
+                  <environment>
+                    <name>org/apache/maven/archiva/indexPath</name>
+                    <value>${user.home}/.m2/my-index</value>
+                    <type>java.lang.String</type>
+                  </environment>
+                </environments>
+        -->
         <resources>
           <!--
                Mail Session

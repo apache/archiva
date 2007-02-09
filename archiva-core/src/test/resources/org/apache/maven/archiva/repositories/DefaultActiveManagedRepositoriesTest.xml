@@ -21,10 +21,14 @@
 <component-set>
   <components>
     <component>
-      <role>org.apache.maven.archiva.configuration.ConfigurationStore</role>
-      <implementation>org.apache.maven.archiva.configuration.DefaultConfigurationStore</implementation>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <role-hint>commons-configuration</role-hint>
       <configuration>
-        <file>${basedir}/src/test/conf/archiva.xml</file>
+        <properties>
+          <xml fileName="${basedir}/src/test/conf/archiva.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
       </configuration>
     </component>
   </components>

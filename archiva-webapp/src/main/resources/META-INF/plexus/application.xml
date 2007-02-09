@@ -22,14 +22,27 @@
   <components>
 
     <component>
-      <role>org.codehaus.plexus.security.configuration.UserConfiguration</role>
-      <implementation>org.codehaus.plexus.security.configuration.UserConfiguration</implementation>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <role-hint>commons-configuration</role-hint>
       <configuration>
-        <configs>
-          <config>${user.home}/.m2/security.properties</config>
-          <config>${user.home}/.m2/archiva.properties</config>
-          <config>/org/apache/maven/archiva/security.properties</config>
-        </configs>
+        <properties>
+          <system/>
+          <jndi prefix="java:comp/env" config-optional="true"/>
+          <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true" config-name="org.apache.maven.archiva"
+               config-at="org.apache.maven.archiva" config-forceCreate="true"/>
+          <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"/>
+          <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.security"/>
+          <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
+                      config-at="org.codehaus.plexus.security"/>
+          <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
+               config-at="org.apache.maven.archiva"/>
+          <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
+          <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
+               config-at="org.apache.maven.archiva"/>
+          <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
+        </properties>
       </configuration>
     </component>
 
@@ -40,7 +53,7 @@
         <jndiSessionName>java:comp/env/mail/Session</jndiSessionName>
       </configuration>
     </component>
-    
+
     <component>
       <role>org.codehaus.plexus.webdav.DavServerManager</role>
       <role-hint>default</role-hint>

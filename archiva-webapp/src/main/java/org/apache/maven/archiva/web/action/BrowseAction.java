@@ -20,9 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
@@ -62,7 +61,7 @@ public class BrowseAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     private List groups;
 
@@ -81,7 +80,7 @@ public class BrowseAction
     private static long groupCacheTime;
 
     public String browse()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException
+        throws RepositoryIndexException, IOException
     {
         RepositoryArtifactIndex index = getIndex();
 
@@ -99,7 +98,7 @@ public class BrowseAction
     }
 
     public String browseGroup()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException, RepositoryIndexSearchException
+        throws RepositoryIndexException, IOException, RepositoryIndexSearchException
     {
         RepositoryArtifactIndex index = getIndex();
 
@@ -146,7 +145,7 @@ public class BrowseAction
     }
 
     public String browseArtifact()
-        throws ConfigurationStoreException, RepositoryIndexException, IOException, RepositoryIndexSearchException
+        throws RepositoryIndexException, IOException, RepositoryIndexSearchException
     {
         RepositoryArtifactIndex index = getIndex();
 
@@ -245,9 +244,9 @@ public class BrowseAction
     }
 
     private RepositoryArtifactIndex getIndex()
-        throws ConfigurationStoreException, RepositoryIndexException
+        throws RepositoryIndexException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         File indexPath = new File( configuration.getIndexPath() );
 
         return factory.createStandardIndex( indexPath );

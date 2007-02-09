@@ -20,9 +20,8 @@ package org.apache.maven.archiva.scheduler.executors;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.scheduler.task.IndexerTask;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
@@ -31,7 +30,7 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import java.io.File;
 
 /**
- * IndexerTaskExecutorTest 
+ * IndexerTaskExecutorTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -48,8 +47,9 @@ public class IndexerTaskExecutorTest
 
         taskExecutor = (TaskExecutor) lookup( "org.codehaus.plexus.taskqueue.execution.TaskExecutor", "indexer" );
 
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE );
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         File indexPath = new File( configuration.getIndexPath() );
         if ( indexPath.exists() )

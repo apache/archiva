@@ -25,7 +25,7 @@ import org.apache.maven.archiva.artifact.ManagedJavaArtifact;
 import org.codehaus.plexus.PlexusTestCase;
 
 /**
- * DefaultActiveManagedRepositoriesTest 
+ * DefaultActiveManagedRepositoriesTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -40,11 +40,11 @@ public class DefaultActiveManagedRepositoriesTest
     {
         super.setUp();
 
-        managedRepos = (DefaultActiveManagedRepositories) lookup( ActiveManagedRepositories.ROLE );
+        managedRepos = (ActiveManagedRepositories) lookup( ActiveManagedRepositories.ROLE );
     }
 
     /**
-     * Test a simple java find artifact with extras (sources / javadoc). 
+     * Test a simple java find artifact with extras (sources / javadoc).
      */
     public void testFindArtifactJavaWithExtras()
     {
@@ -53,8 +53,8 @@ public class DefaultActiveManagedRepositoriesTest
 
         if ( !( artifact instanceof ManagedJavaArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedJavaArtifact javaArtifact = (ManagedJavaArtifact) artifact;
@@ -68,7 +68,7 @@ public class DefaultActiveManagedRepositoriesTest
         assertEquals( pathPrefix + "/" + pathArtifactVersion + "-javadoc.jar", javaArtifact.getJavadocPath() );
         assertEquals( pathPrefix + "/" + pathArtifactVersion + "-sources.jar", javaArtifact.getSourcesPath() );
     }
-    
+
     /**
      * Test a simple java find artifact with no extras.
      */
@@ -79,8 +79,8 @@ public class DefaultActiveManagedRepositoriesTest
 
         if ( !( artifact instanceof ManagedJavaArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedJavaArtifact javaArtifact = (ManagedJavaArtifact) artifact;
@@ -93,10 +93,10 @@ public class DefaultActiveManagedRepositoriesTest
         assertEquals( pathPrefix + "/" + pathArtifactVersion + ".jar", javaArtifact.getPath() );
         assertNull( "should have no javadoc jar.", javaArtifact.getJavadocPath() );
         assertNull( "should have no sources jar.", javaArtifact.getSourcesPath() );
-    }    
+    }
 
     /**
-     * Test a java find of a snapshot artifact that uses a timestamp format. 
+     * Test a java find of a snapshot artifact that uses a timestamp format.
      */
     public void testFindArtifactJavaSnapshotTimestamp()
     {
@@ -106,8 +106,8 @@ public class DefaultActiveManagedRepositoriesTest
 
         if ( !( artifact instanceof ManagedJavaArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedJavaArtifact javaArtifact = (ManagedJavaArtifact) artifact;
@@ -123,7 +123,7 @@ public class DefaultActiveManagedRepositoriesTest
     }
 
     /**
-     * Test a java find of a snapshot artifact. 
+     * Test a java find of a snapshot artifact.
      */
     public void testFindArtifactJavaSnapshot()
     {
@@ -133,8 +133,8 @@ public class DefaultActiveManagedRepositoriesTest
 
         if ( !( artifact instanceof ManagedJavaArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedJavaArtifact javaArtifact = (ManagedJavaArtifact) artifact;
@@ -150,18 +150,18 @@ public class DefaultActiveManagedRepositoriesTest
     }
 
     /**
-     * Test a ejb find of a snapshot artifact that also has a client jar available. 
+     * Test a ejb find of a snapshot artifact that also has a client jar available.
      */
     public void testFindArtifactEjbSnapshot()
     {
-        ManagedArtifact artifact = managedRepos.findArtifact( "org.apache.geronimo.daytrader", "daytrader-ejb",
-                                                              "2.0-SNAPSHOT", "ejb" );
+        ManagedArtifact artifact =
+            managedRepos.findArtifact( "org.apache.geronimo.daytrader", "daytrader-ejb", "2.0-SNAPSHOT", "ejb" );
         assertNotNull( artifact );
 
         if ( !( artifact instanceof ManagedEjbArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedEjbArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedEjbArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedEjbArtifact ejbArtifact = (ManagedEjbArtifact) artifact;
@@ -176,7 +176,7 @@ public class DefaultActiveManagedRepositoriesTest
         assertEquals( pathPrefix + "/" + pathArtifactVersion + "-javadoc.jar", ejbArtifact.getJavadocPath() );
         assertEquals( pathPrefix + "/" + pathArtifactVersion + "-sources.jar", ejbArtifact.getSourcesPath() );
     }
-    
+
     /**
      * Test a simple java find artifact with no extras.
      */
@@ -187,8 +187,8 @@ public class DefaultActiveManagedRepositoriesTest
 
         if ( !( artifact instanceof ManagedJavaArtifact ) )
         {
-            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <"
-                + artifact.getClass().getName() + ">." );
+            fail( "Expected artifact to be type <" + ManagedJavaArtifact.class.getName() + "> but was actually <" +
+                artifact.getClass().getName() + ">." );
         }
 
         ManagedJavaArtifact warArtifact = (ManagedJavaArtifact) artifact;
@@ -201,5 +201,5 @@ public class DefaultActiveManagedRepositoriesTest
         assertEquals( pathPrefix + "/" + pathArtifactVersion + ".war", warArtifact.getPath() );
         assertEquals( pathPrefix + "/" + pathArtifactVersion + "-javadoc.jar", warArtifact.getJavadocPath() );
         assertNull( "should have no sources jar.", warArtifact.getSourcesPath() );
-    }    
+    }
 }

@@ -80,8 +80,7 @@ public class ConfigureAppearanceAction
     }
 
     public void prepare()
-        throws ConfigurationStoreException, ProjectBuildingException, ArtifactMetadataRetrievalException,
-        org.apache.maven.archiva.configuration.ConfigurationStoreException
+        throws ConfigurationStoreException, ProjectBuildingException, ArtifactMetadataRetrievalException
     {
         configuration = appConfigurationStore.getConfigurationFromStore();
 

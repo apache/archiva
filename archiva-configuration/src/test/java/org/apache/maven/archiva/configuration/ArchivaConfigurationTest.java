@@ -20,7 +20,6 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
-import org.easymock.MockControl;
 
 import java.io.File;
 import java.util.Properties;
@@ -29,17 +28,17 @@ import java.util.Properties;
  * Test the configuration store.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @noinspection JavaDoc
  */
-public class ConfigurationStoreTest
+public class ArchivaConfigurationTest
     extends PlexusTestCase
 {
-    public void testInvalidFile()
+    public void testDefaults()
         throws Exception
     {
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE, "invalid-file" );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-defaults" );
 
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         // check default configuration
         assertNotNull( "check configuration returned", configuration );
@@ -49,29 +48,13 @@ public class ConfigurationStoreTest
         assertTrue( "check configuration has default elements", configuration.getRepositories().isEmpty() );
     }
 
-    public void testCorruptFile()
-        throws Exception
-    {
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE, "corrupt-file" );
-
-        try
-        {
-            configurationStore.getConfigurationFromStore();
-            fail( "Configuration should not have succeeded" );
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            // expected
-            assertTrue( true );
-        }
-    }
-
     public void testGetConfiguration()
         throws Exception
     {
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE, "default" );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
 
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         assertEquals( "check indexPath", ".index", configuration.getIndexPath() );
         assertEquals( "check localRepository", "local-repository", configuration.getLocalRepository() );
@@ -113,45 +96,44 @@ public class ConfigurationStoreTest
         assertEquals( "check synced repositories", properties, syncedRepository.getProperties() );
     }
 
+    public void testGetConfigurationSystemOverride()
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
+
+        System.setProperty( "org.apache.maven.archiva.localRepository", "system-repository" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        assertEquals( "check localRepository", "system-repository", configuration.getLocalRepository() );
+        assertEquals( "check indexPath", ".index", configuration.getIndexPath() );
+    }
+
     public void testStoreConfiguration()
         throws Exception
     {
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE, "save-file" );
-
-        Configuration configuration = new Configuration();
-        configuration.setIndexPath( "index-path" );
-
         File file = getTestFile( "target/test/test-file.xml" );
         file.delete();
         assertFalse( file.exists() );
 
-        configurationStore.storeConfiguration( configuration );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save" );
+
+        Configuration configuration = new Configuration();
+        configuration.setIndexPath( "index-path" );
+
+        archivaConfiguration.save( configuration );
 
         assertTrue( "Check file exists", file.exists() );
 
-        // read it back
-        configuration = configurationStore.getConfigurationFromStore();
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
         assertEquals( "check value", "index-path", configuration.getIndexPath() );
-    }
 
-    /**
-     * @noinspection JUnitTestMethodWithNoAssertions
-     */
-    public void testChangeListeners()
-        throws Exception
-    {
-        ConfigurationStore configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE, "save-file" );
-
-        MockControl control = MockControl.createControl( ConfigurationChangeListener.class );
-        ConfigurationChangeListener mock = (ConfigurationChangeListener) control.getMock();
-        configurationStore.addChangeListener( mock );
-
-        Configuration configuration = new Configuration();
-        mock.notifyOfConfigurationChange( configuration );
-        control.replay();
-
-        configurationStore.storeConfiguration( configuration );
-
-        control.verify();
+        // read it back
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
+        configuration = archivaConfiguration.getConfiguration();
+        assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 }

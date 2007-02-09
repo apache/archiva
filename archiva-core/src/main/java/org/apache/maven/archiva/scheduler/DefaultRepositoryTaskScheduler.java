@@ -19,12 +19,8 @@ package org.apache.maven.archiva.scheduler;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
@@ -35,6 +31,8 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -55,7 +53,7 @@ import java.text.ParseException;
  */
 public class DefaultRepositoryTaskScheduler
     extends AbstractLogEnabled
-    implements RepositoryTaskScheduler, Startable, ConfigurationChangeListener
+    implements RepositoryTaskScheduler, Startable, RegistryListener
 {
     /**
      * @plexus.requirement
@@ -75,7 +73,7 @@ public class DefaultRepositoryTaskScheduler
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -89,16 +87,8 @@ public class DefaultRepositoryTaskScheduler
     public void start()
         throws StartingException
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-            configurationStore.addChangeListener( this );
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new StartingException( "Unable to read configuration from the store", e );
-        }
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        archivaConfiguration.addChangeListener( this );
 
         try
         {
@@ -166,26 +156,30 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    public void notifyOfConfigurationChange( Configuration configuration )
-        throws InvalidConfigurationException, ConfigurationChangeException
+    public void notifyOfConfigurationChange( Registry registry )
     {
         try
         {
             stop();
-
-            scheduleJobs( configuration );
         }
         catch ( StoppingException e )
         {
-            throw new ConfigurationChangeException( "Unable to unschedule previous tasks", e );
+            getLogger().warn( "Error stopping task scheduler: " + e.getMessage(), e );
+        }
+
+        try
+        {
+            scheduleJobs( archivaConfiguration.getConfiguration() );
         }
         catch ( ParseException e )
         {
-            throw new InvalidConfigurationException( "indexerCronExpression", "Invalid cron expression", e );
+            getLogger().error(
+                "Error restarting task scheduler after configuration change, due to configuration error: " +
+                    e.getMessage(), e );
         }
         catch ( SchedulerException e )
         {
-            throw new ConfigurationChangeException( "Unable to schedule new tasks", e );
+            getLogger().error( "Error restarting task scheduler after configuration change: " + e.getMessage(), e );
         }
     }
 
@@ -207,15 +201,7 @@ public class DefaultRepositoryTaskScheduler
     public void queueNowIfNeeded()
         throws org.codehaus.plexus.taskqueue.execution.TaskExecutionException
     {
-        Configuration configuration;
-        try
-        {
-            configuration = configurationStore.getConfigurationFromStore();
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         File indexPath = new File( configuration.getIndexPath() );
 

@@ -27,32 +27,32 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 
 /**
- * ActiveManagedRepositories 
+ * ActiveManagedRepositories
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ActiveManagedRepositories
 {
-    public static final String ROLE = ActiveManagedRepositories.class.getName();
+    String ROLE = ActiveManagedRepositories.class.getName();
 
     /**
      * Obtain the ArtifactRepository for the specified Repository ID.
-     * 
+     *
      * @param id the ID of the repository.
      * @return the ArtifactRepository associated with the provided ID, or null if none found.
      */
-    public ArtifactRepository getArtifactRepository( String id );
+    ArtifactRepository getArtifactRepository( String id );
 
-    public RepositoryConfiguration getRepositoryConfiguration( String id );
+    RepositoryConfiguration getRepositoryConfiguration( String id );
 
-    public MavenProject findProject( String groupId, String artifactId, String version )
+    MavenProject findProject( String groupId, String artifactId, String version )
         throws ProjectBuildingException;
 
-    public ManagedArtifact findArtifact( String groupId, String artifactId, String version )
+    ManagedArtifact findArtifact( String groupId, String artifactId, String version )
         throws ProjectBuildingException;
 
-    public ManagedArtifact findArtifact( String groupId, String artifactId, String version, String type );
+    ManagedArtifact findArtifact( String groupId, String artifactId, String version, String type );
 
-    public ManagedArtifact findArtifact( Artifact artifact );
+    ManagedArtifact findArtifact( Artifact artifact );
 }

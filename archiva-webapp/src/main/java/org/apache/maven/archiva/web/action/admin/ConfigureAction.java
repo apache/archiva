@@ -22,15 +22,14 @@ package org.apache.maven.archiva.web.action.admin;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
@@ -54,7 +53,7 @@ public class ConfigureAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexer"
@@ -96,8 +95,8 @@ public class ConfigureAction
     }
 
     public String execute()
-        throws IOException, RepositoryIndexException, RepositoryIndexSearchException, ConfigurationStoreException,
-        InvalidConfigurationException, ConfigurationChangeException
+        throws IOException, RepositoryIndexException, RepositoryIndexSearchException, InvalidConfigurationException,
+        RegistryException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
@@ -115,7 +114,7 @@ public class ConfigureAction
         // Just double checking that our validation routines line up with what is expected in the configuration
         assert configuration.isValid();
 
-        configurationStore.storeConfiguration( configuration );
+        archivaConfiguration.save( configuration );
 
         // TODO: if the repository has changed, we need to check if indexing is needed!
 
@@ -176,9 +175,8 @@ public class ConfigureAction
     }
 
     public void prepare()
-        throws ConfigurationStoreException
     {
-        configuration = configurationStore.getConfigurationFromStore();
+        configuration = archivaConfiguration.getConfiguration();
     }
 
     public String getLastIndexingTime()

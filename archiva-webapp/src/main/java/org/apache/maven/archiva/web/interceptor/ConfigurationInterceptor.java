@@ -21,8 +21,8 @@ package org.apache.maven.archiva.web.interceptor;
 
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -39,7 +39,7 @@ public class ConfigurationInterceptor
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @param actionInvocation
@@ -49,7 +49,7 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         if ( !configuration.isValid() )
         {

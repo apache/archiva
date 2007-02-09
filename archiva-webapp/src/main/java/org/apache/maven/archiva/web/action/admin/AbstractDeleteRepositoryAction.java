@@ -20,13 +20,12 @@ package org.apache.maven.archiva.web.action.admin;
  */
 
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
@@ -47,7 +46,7 @@ public abstract class AbstractDeleteRepositoryAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * The repository ID to lookup when editing a repository.
@@ -65,13 +64,13 @@ public abstract class AbstractDeleteRepositoryAction
     protected RoleProfileManager roleProfileManager;
 
     public String execute()
-        throws ConfigurationStoreException, IOException, InvalidConfigurationException, ConfigurationChangeException
+        throws IOException, InvalidConfigurationException, RegistryException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
         if ( "delete-entry".equals( operation ) || "delete-contents".equals( operation ) )
         {
-            Configuration configuration = configurationStore.getConfigurationFromStore();
+            Configuration configuration = archivaConfiguration.getConfiguration();
 
             AbstractRepositoryConfiguration existingRepository = getRepository( configuration );
             if ( existingRepository == null )
@@ -84,7 +83,7 @@ public abstract class AbstractDeleteRepositoryAction
 
             removeRepository( configuration, existingRepository );
 
-            configurationStore.storeConfiguration( configuration );
+            archivaConfiguration.save( configuration );
 
             if ( "delete-contents".equals( operation ) )
             {

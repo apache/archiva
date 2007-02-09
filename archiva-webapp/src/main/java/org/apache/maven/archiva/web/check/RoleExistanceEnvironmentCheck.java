@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.check;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
@@ -49,14 +49,14 @@ public class RoleExistanceEnvironmentCheck
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement role-hint="archiva"
      */
     private RoleProfileManager roleProfileManager;
 
-    private boolean checked = false;
+    private boolean checked;
 
     public void validateEnvironment( List list )
     {
@@ -65,9 +65,10 @@ public class RoleExistanceEnvironmentCheck
             try
             {
                 // check if there is potential for role/repo disconnect
-                if ( configurationStore.getConfigurationFromStore().isValid() )
+                Configuration configuration = archivaConfiguration.getConfiguration();
+                if ( configuration.isValid() )
                 {
-                    List repos = configurationStore.getConfigurationFromStore().getRepositories();
+                    List repos = configuration.getRepositories();
 
                     for ( Iterator i = repos.iterator(); i.hasNext(); )
                     {
@@ -78,11 +79,6 @@ public class RoleExistanceEnvironmentCheck
                         roleProfileManager.getDynamicRole( "archiva-repository-observer", repository.getId() );
                     }
                 }
-            }
-            catch ( ConfigurationStoreException cse )
-            {
-                list.add( this.getClass().getName() + " error loading configuration store: " + cse.getMessage() );
-                getLogger().info( "error loading configuration store", cse );
             }
             catch ( RoleProfileException rpe )
             {

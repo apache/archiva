@@ -19,9 +19,8 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
@@ -37,12 +36,11 @@ public abstract class AbstractConfiguredAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     protected ArtifactRepository createLocalRepository()
-        throws ConfigurationStoreException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
         return repositoryFactory.createLocalRepository( configuration );
     }

@@ -22,9 +22,8 @@ package org.apache.maven.archiva.web.action;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
@@ -91,7 +90,7 @@ public class ShowArtifactAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -134,8 +133,8 @@ public class ShowArtifactAction
     private List mailingLists;
 
     public String artifact()
-        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException,
-        ResourceDoesNotExistException, ProxyException, ArtifactResolutionException
+        throws IOException, XmlPullParserException, ProjectBuildingException, ResourceDoesNotExistException,
+        ProxyException, ArtifactResolutionException
     {
         if ( !checkParameters() )
         {
@@ -150,7 +149,7 @@ public class ShowArtifactAction
     }
 
     public String dependencies()
-        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
+        throws IOException, XmlPullParserException, ProjectBuildingException
     {
         if ( !checkParameters() )
         {
@@ -168,7 +167,7 @@ public class ShowArtifactAction
     }
 
     public String mailingLists()
-        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException
+        throws IOException, XmlPullParserException, ProjectBuildingException
     {
         if ( !checkParameters() )
         {
@@ -178,15 +177,15 @@ public class ShowArtifactAction
         MavenProject project = readProject();
 
         model = project.getModel();
-        
+
         this.mailingLists = project.getMailingLists();
 
         return SUCCESS;
     }
 
     public String dependees()
-        throws ConfigurationStoreException, IOException, XmlPullParserException, ProjectBuildingException,
-        RepositoryIndexException, RepositoryIndexSearchException
+        throws IOException, XmlPullParserException, ProjectBuildingException, RepositoryIndexException,
+        RepositoryIndexSearchException
     {
         if ( !checkParameters() )
         {
@@ -208,15 +207,14 @@ public class ShowArtifactAction
     }
 
     public String dependencyTree()
-        throws ConfigurationStoreException, ProjectBuildingException, InvalidDependencyVersionException,
-        ArtifactResolutionException
+        throws ProjectBuildingException, InvalidDependencyVersionException, ArtifactResolutionException
     {
         if ( !checkParameters() )
         {
             return ERROR;
         }
 
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         List repositories = repositoryFactory.createRepositories( configuration );
 
         Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
@@ -228,7 +226,7 @@ public class ShowArtifactAction
 
         getLogger().debug( " processing : " + groupId + ":" + artifactId + ":" + version );
 
-        DependencyTree dependencies = collectDependencies( project, artifact, localRepository, repositories );
+        DependencyTree dependencies = collectDependencies( project, localRepository );
 
         this.dependencyTree = new ArrayList();
 
@@ -249,10 +247,8 @@ public class ShowArtifactAction
         }
     }
 
-    private DependencyTree collectDependencies( MavenProject project, Artifact artifact,
-                                                ArtifactRepository localRepository, List repositories )
-        throws ArtifactResolutionException, ProjectBuildingException, InvalidDependencyVersionException,
-        ConfigurationStoreException
+    private DependencyTree collectDependencies( MavenProject project, ArtifactRepository localRepository )
+        throws ArtifactResolutionException, ProjectBuildingException, InvalidDependencyVersionException
     {
         try
         {
@@ -272,18 +268,18 @@ public class ShowArtifactAction
     }
 
     private RepositoryArtifactIndex getIndex()
-        throws ConfigurationStoreException, RepositoryIndexException
+        throws RepositoryIndexException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         File indexPath = new File( configuration.getIndexPath() );
 
         return factory.createStandardIndex( indexPath );
     }
 
     private MavenProject readProject()
-        throws ConfigurationStoreException, ProjectBuildingException
+        throws ProjectBuildingException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         List repositories = repositoryFactory.createRepositories( configuration );
 
         Artifact artifact = artifactFactory.createProjectArtifact( groupId, artifactId, version );
@@ -466,7 +462,7 @@ public class ShowArtifactAction
                         return false;
                     }
                     if ( getQualifier() != null ? !getQualifier().equals( that.getQualifier() )
-                                               : that.getQualifier() != null )
+                        : that.getQualifier() != null )
                     {
                         return false;
                     }

@@ -19,14 +19,12 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.security.authentication.AuthenticationException;
 import org.codehaus.plexus.security.authentication.AuthenticationResult;
 import org.codehaus.plexus.security.authorization.AuthorizationException;
@@ -42,25 +40,24 @@ import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * RepositoryServlet 
+ * RepositoryServlet
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryServlet
     extends MultiplexedWebDavServlet
-    implements ConfigurationChangeListener
+    implements RegistryListener
 {
     /**
      * @plexus.requirement
@@ -77,49 +74,42 @@ public class RepositoryServlet
      */
     private AuditLog audit;
 
-    private Configuration config;
+    private Configuration configuration;
+
+    private ArchivaConfiguration archivaConfiguration;
 
     public void initComponents()
         throws ServletException
     {
         super.initComponents();
 
-        ConfigurationStore configurationStore;
-
-        configurationStore = (ConfigurationStore) lookup( ConfigurationStore.ROLE );
         securitySystem = (SecuritySystem) lookup( SecuritySystem.ROLE );
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
         audit = (AuditLog) lookup( AuditLog.ROLE );
 
-        try
-        {
-            config = configurationStore.getConfigurationFromStore();
-            configurationStore.addChangeListener( this );
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new ServletException( "Unable to obtain configuration.", e );
-        }
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
+        configuration = archivaConfiguration.getConfiguration();
+        archivaConfiguration.addChangeListener( this );
 
     }
 
     public void initServers( ServletConfig servletConfig )
         throws DavServerException
     {
-        List repositories = config.getRepositories();
+        List repositories = configuration.getRepositories();
         Iterator itrepos = repositories.iterator();
         while ( itrepos.hasNext() )
         {
             RepositoryConfiguration repoConfig = (RepositoryConfiguration) itrepos.next();
-            DavServerComponent server = createServer( repoConfig.getUrlName(), new File( repoConfig.getDirectory() ),
-                                                      servletConfig );
+            DavServerComponent server =
+                createServer( repoConfig.getUrlName(), new File( repoConfig.getDirectory() ), servletConfig );
             server.addListener( audit );
         }
     }
 
     public RepositoryConfiguration getRepositoryConfiguration( DavServerRequest request )
     {
-        return config.getRepositoryByUrlName( request.getPrefix() );
+        return configuration.getRepositoryByUrlName( request.getPrefix() );
     }
 
     public String getRepositoryName( DavServerRequest request )
@@ -189,16 +179,16 @@ public class RepositoryServlet
                 permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
 
-            AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission,
-                                                                        getRepositoryConfiguration( davRequest )
-                                                                            .getId() );
+            AuthorizationResult authzResult =
+                securitySystem.authorize( securitySession, permission, getRepositoryConfiguration( davRequest )
+                    .getId() );
 
             if ( !authzResult.isAuthorized() )
             {
                 if ( authzResult.getException() != null )
                 {
-                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest
-                        + ",permission=" + permission + "] : " + authzResult.getException().getMessage() );
+                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
+                        ",permission=" + permission + "] : " + authzResult.getException().getMessage() );
                 }
 
                 // Issue HTTP Challenge.
@@ -214,11 +204,10 @@ public class RepositoryServlet
 
         return true;
     }
-    
-    public void notifyOfConfigurationChange( Configuration newConfiguration )
-        throws InvalidConfigurationException, ConfigurationChangeException
+
+    public void notifyOfConfigurationChange( Registry registry )
     {
-        config = newConfiguration;
+        configuration = archivaConfiguration.getConfiguration();
 
         getDavManager().removeAllServers();
 
@@ -228,7 +217,7 @@ public class RepositoryServlet
         }
         catch ( DavServerException e )
         {
-            throw new ConfigurationChangeException( "Unable to process configuration change.", e );
+            log( "Error restarting WebDAV server after configuration change - service disabled: " + e.getMessage(), e );
         }
     }
 }

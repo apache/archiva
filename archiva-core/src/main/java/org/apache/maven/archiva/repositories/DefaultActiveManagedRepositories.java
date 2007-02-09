@@ -24,13 +24,9 @@ import org.apache.maven.archiva.artifact.ManagedArtifact;
 import org.apache.maven.archiva.artifact.ManagedArtifactTypes;
 import org.apache.maven.archiva.artifact.ManagedEjbArtifact;
 import org.apache.maven.archiva.artifact.ManagedJavaArtifact;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationChangeListener;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -42,20 +38,22 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * DefaultActiveManagedRepositories 
+ * DefaultActiveManagedRepositories
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repositories.ActiveManagedRepositories"
  */
 public class DefaultActiveManagedRepositories
-    implements ActiveManagedRepositories, ConfigurationChangeListener, Initializable
+    implements ActiveManagedRepositories, Initializable, RegistryListener
 {
     /**
      * @plexus.requirement role-hint="artifactCache"
@@ -70,7 +68,7 @@ public class DefaultActiveManagedRepositories
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -191,21 +189,8 @@ public class DefaultActiveManagedRepositories
     public void initialize()
         throws InitializationException
     {
-        Configuration config;
-        try
-        {
-            config = configurationStore.getConfigurationFromStore();
-            configureSelf( config );
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new InitializationException( "Unable to load configuration.", e );
-        }
-    }
-
-    public void notifyOfConfigurationChange( Configuration config )
-        throws InvalidConfigurationException, ConfigurationChangeException
-    {
+        Configuration config = archivaConfiguration.getConfiguration();
+        archivaConfiguration.addChangeListener( this );
         configureSelf( config );
     }
 
@@ -229,7 +214,7 @@ public class DefaultActiveManagedRepositories
         this.configuration = config;
         this.artifactCache.clear();
         this.projectCache.clear();
-        
+
         repositories = repositoryFactory.createRepositories( this.configuration );
         localRepository = repositoryFactory.createLocalRepository( this.configuration );
     }
@@ -280,5 +265,10 @@ public class DefaultActiveManagedRepositories
         }
 
         return path;
+    }
+
+    public void notifyOfConfigurationChange( Registry registry )
+    {
+        configureSelf( archivaConfiguration.getConfiguration() );
     }
 }

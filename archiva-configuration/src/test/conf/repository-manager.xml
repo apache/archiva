@@ -30,8 +30,6 @@
     <proxiedRepository>
       <url>http://www.ibiblio.org/maven2/</url>
       <managedRepository>local</managedRepository>
-      <snapshotsInterval></snapshotsInterval>
-      <releasesInterval></releasesInterval>
       <useNetworkProxy>true</useNetworkProxy>
       <id>ibiblio</id>
       <name>Ibiblio</name>

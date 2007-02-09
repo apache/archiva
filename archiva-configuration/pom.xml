@@ -51,19 +51,24 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-registry</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
-        <version>1.0-alpha-10</version>
+        <version>1.0-alpha-14-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
-              <goal>xpp3-writer</goal>
               <goal>java</goal>
-              <goal>xpp3-reader</goal>
+              <goal>registry-reader</goal>
+              <goal>registry-writer</goal>
             </goals>
           </execution>
         </executions>

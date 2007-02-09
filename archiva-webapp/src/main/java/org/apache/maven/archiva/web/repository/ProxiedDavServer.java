@@ -20,9 +20,8 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Proxy;
@@ -38,25 +37,23 @@ import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 /**
- * ProxiedDavServer 
+ * ProxiedDavServer
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.codehaus.plexus.webdav.DavServerComponent" 
- *                   role-hint="proxied" 
- *                   instantiation-strategy="per-lookup"
+ * @plexus.component role="org.codehaus.plexus.webdav.DavServerComponent"
+ * role-hint="proxied"
+ * instantiation-strategy="per-lookup"
  */
 public class ProxiedDavServer
     extends AbstractDavServerComponent
@@ -69,7 +66,7 @@ public class ProxiedDavServer
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.proxy.ProxyRequestHandler"
@@ -117,29 +114,22 @@ public class ProxiedDavServer
 
         proxiedRepositories = new ArrayList();
 
-        try
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        wagonProxy = createWagonProxy( config.getProxy() );
+
+        repositoryConfiguration = config.getRepositoryByUrlName( getPrefix() );
+
+        managedRepository = repositoryFactory.createRepository( repositoryConfiguration );
+
+        for ( Iterator i = config.getProxiedRepositories().iterator(); i.hasNext(); )
         {
-            Configuration config = configurationStore.getConfigurationFromStore();
+            ProxiedRepositoryConfiguration proxiedRepoConfig = (ProxiedRepositoryConfiguration) i.next();
 
-            wagonProxy = createWagonProxy( config.getProxy() );
-
-            repositoryConfiguration = config.getRepositoryByUrlName( getPrefix() );
-
-            managedRepository = repositoryFactory.createRepository( repositoryConfiguration );
-
-            for ( Iterator i = config.getProxiedRepositories().iterator(); i.hasNext(); )
+            if ( proxiedRepoConfig.getManagedRepository().equals( repositoryConfiguration.getId() ) )
             {
-                ProxiedRepositoryConfiguration proxiedRepoConfig = (ProxiedRepositoryConfiguration) i.next();
-
-                if ( proxiedRepoConfig.getManagedRepository().equals( repositoryConfiguration.getId() ) )
-                {
-                    proxiedRepositories.add( repositoryFactory.createProxiedRepository( proxiedRepoConfig ) );
-                }
+                proxiedRepositories.add( repositoryFactory.createProxiedRepository( proxiedRepoConfig ) );
             }
-        }
-        catch ( ConfigurationStoreException e )
-        {
-            throw new DavServerException( "Unable to obtain configuration.", e );
         }
     }
 

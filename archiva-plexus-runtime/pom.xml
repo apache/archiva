@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-naming</artifactId>
-      <version>1.0-alpha-2</version>
+      <version>1.0-alpha-3-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -118,6 +118,7 @@
             <additionalCoreArtifact>directory-naming:naming-core</additionalCoreArtifact>
             <additionalCoreArtifact>directory-naming:naming-factory</additionalCoreArtifact>
             <additionalCoreArtifact>directory-naming:naming-java</additionalCoreArtifact>
+            <additionalCoreArtifact>directory-naming:naming-config</additionalCoreArtifact>
             <additionalCoreArtifact>javax.mail:mail</additionalCoreArtifact>
             <additionalCoreArtifact>javax.activation:activation</additionalCoreArtifact>
           </additionalCoreArtifacts>

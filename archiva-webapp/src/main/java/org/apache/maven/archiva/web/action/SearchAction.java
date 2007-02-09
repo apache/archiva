@@ -23,9 +23,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.TermQuery;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
@@ -77,7 +76,7 @@ public class SearchAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     private static final String RESULTS = "results";
 
@@ -86,8 +85,7 @@ public class SearchAction
     private String infoMessage;
 
     public String quickSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException,
-        ConfigurationStoreException, ParseException
+        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException, ParseException
     {
         // TODO: give action message if indexing is in progress
 
@@ -153,9 +151,9 @@ public class SearchAction
     }
 
     private RepositoryArtifactIndex getIndex()
-        throws ConfigurationStoreException, RepositoryIndexException
+        throws RepositoryIndexException
     {
-        Configuration configuration = configurationStore.getConfigurationFromStore();
+        Configuration configuration = archivaConfiguration.getConfiguration();
         File indexPath = new File( configuration.getIndexPath() );
 
         return factory.createStandardIndex( indexPath );

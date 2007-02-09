@@ -70,7 +70,7 @@ public class EditPomAction
 
     public String execute()
         throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        ArtifactInstallationException, org.apache.maven.archiva.configuration.ConfigurationStoreException
+        ArtifactInstallationException
     {
         // TODO: hack for passed in String[]
         String[] logo = (String[]) companyModel.getProperties().get( "organization.logo" );
@@ -90,8 +90,7 @@ public class EditPomAction
     }
 
     public void prepare()
-        throws ConfigurationStoreException, ProjectBuildingException, ArtifactMetadataRetrievalException,
-        org.apache.maven.archiva.configuration.ConfigurationStoreException
+        throws ConfigurationStoreException, ProjectBuildingException, ArtifactMetadataRetrievalException
     {
         configuration = appConfigurationStore.getConfigurationFromStore();
 

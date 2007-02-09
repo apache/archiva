@@ -22,14 +22,13 @@ package org.apache.maven.archiva.web.action.admin;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfigurationChangeException;
-import org.apache.maven.archiva.configuration.ConfigurationStore;
-import org.apache.maven.archiva.configuration.ConfigurationStoreException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
 import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.security.rbac.RbacManagerException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
@@ -51,7 +50,7 @@ public abstract class AbstractConfigureRepositoryAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore configurationStore;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement role-hint="archiva"
@@ -74,8 +73,7 @@ public abstract class AbstractConfigureRepositoryAction
     protected Configuration configuration;
 
     public String add()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException, RoleProfileException
+        throws IOException, InvalidConfigurationException, RbacManagerException, RoleProfileException, RegistryException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -90,8 +88,7 @@ public abstract class AbstractConfigureRepositoryAction
     }
 
     public String edit()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException, RoleProfileException
+        throws IOException, InvalidConfigurationException, RbacManagerException, RoleProfileException, RegistryException
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
@@ -106,12 +103,11 @@ public abstract class AbstractConfigureRepositoryAction
     protected abstract AbstractRepositoryConfiguration getRepository( String id );
 
     private String saveConfiguration()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        RbacManagerException, RoleProfileException
+        throws IOException, InvalidConfigurationException, RbacManagerException, RoleProfileException, RegistryException
     {
         addRepository();
 
-        configurationStore.storeConfiguration( configuration );
+        archivaConfiguration.save( configuration );
 
         // TODO: do we need to check if indexing is needed?
 
@@ -136,9 +132,8 @@ public abstract class AbstractConfigureRepositoryAction
     protected abstract AbstractRepositoryConfiguration createRepository();
 
     public void prepare()
-        throws ConfigurationStoreException
     {
-        configuration = configurationStore.getConfigurationFromStore();
+        configuration = archivaConfiguration.getConfiguration();
 
         if ( repository == null )
         {
