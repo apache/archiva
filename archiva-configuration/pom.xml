@@ -31,17 +31,11 @@
   <dependencies>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-container-default</artifactId>
+      <artifactId>plexus-component-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <version>1.2_Java1.3</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
@@ -55,6 +49,18 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-registry</artifactId>
       <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Test Deps -->
+    <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>1.2_Java1.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
