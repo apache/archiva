@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.component;
 import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
 import org.apache.maven.model.Model;
 import org.apache.maven.shared.app.company.CompanyPomHandler;
-import org.apache.maven.shared.app.configuration.ConfigurationStore;
+import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
 
 /**
  * Stores the company information for displaying on the page.
@@ -46,12 +46,12 @@ public class CompanyInfoAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore appConfigurationStore;
+    private MavenAppConfiguration appConfigurationStore;
 
     public String execute()
         throws Exception
     {
-        Model model = handler.getCompanyPomModel( appConfigurationStore.getConfigurationFromStore().getCompanyPom(),
+        Model model = handler.getCompanyPomModel( appConfigurationStore.getConfiguration().getCompanyPom(),
                                                   createLocalRepository() );
 
         if ( model != null )

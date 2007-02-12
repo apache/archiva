@@ -31,7 +31,9 @@
           <jndi prefix="java:comp/env" config-optional="true"/>
           <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true" config-name="org.apache.maven.archiva"
                config-at="org.apache.maven.archiva" config-forceCreate="true"/>
-          <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"/>
+          <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"
+               config-name="org.apache.maven.shared.app" config-at="org.apache.maven.shared.app"
+               config-forceCreate="true"/>
           <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
