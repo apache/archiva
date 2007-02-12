@@ -183,6 +183,11 @@ public class DefaultActiveManagedRepositories
         return repositoryFactory.createRepository( repoConfig );
     }
 
+    public List getAllArtifactRepositories()
+    {
+        return repositoryFactory.createRepositories( configuration );
+    }
+
     public RepositoryConfiguration getRepositoryConfiguration( String id )
     {
         return this.configuration.getRepositoryById( id );
