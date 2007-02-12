@@ -61,7 +61,7 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <c:import url="/WEB-INF/jsp/pss/include/securityLinks.jsp"/>
+    <%@ include file="/WEB-INF/jsp/pss/include/securityLinks.jsp" %>
   </div>
 
   <div class="xright">
