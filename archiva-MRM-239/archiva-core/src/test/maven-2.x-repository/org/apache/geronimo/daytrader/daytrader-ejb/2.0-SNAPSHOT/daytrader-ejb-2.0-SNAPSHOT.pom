@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>daytrader</artifactId>
+    <groupId>org.apache.geronimo.daytrader</groupId>
+    <version>2.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>daytrader-ejb</artifactId>
+  <packaging>ejb</packaging>
+  <name>DayTrader :: EJBs</name>
+  <version>2.0-SNAPSHOT</version>
+  <description>Daytrader EJBs</description>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/modules/ejb</connection>
+    <developerConnection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/modules/ejb</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/geronimo/daytrader/trunk/modules/ejb</url>
+  </scm>
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>${basedir}/src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <path id="enhance.path.ref">
+                  <fileset dir="${project.build.outputDirectory}">
+                    <include name="**/*.class"></include>
+                  </fileset>
+                </path>
+                <pathconvert pathsep=" " property="enhance.files" refid="enhance.path.ref"></pathconvert>
+                <java classname="org.apache.openjpa.enhance.PCEnhancer">
+                  <arg line="-p persistence.xml"></arg>
+                  <arg line="${enhance.files}"></arg>
+                  <classpath>
+                    <path refid="maven.dependency.classpath"></path>
+                    <path refid="maven.compile.classpath"></path>
+                  </classpath>
+                </java>
+              </tasks>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-ejb-plugin</artifactId>
+        <configuration>
+          <generateClient>true</generateClient>
+          <archive>
+            <manifestEntries>
+              <Class-Path>wsappclient.jar</Class-Path>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.daytrader</groupId>
+      <artifactId>daytrader-wsappclient</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-ejb_2.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jms_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-qname_1.1_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jpa_3.0_spec</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa-all</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.6.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xmlParserAPIs</artifactId>
+      <version>2.2.1</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <status>deployed</status>
+  </distributionManagement>
+</project>

@@ -1,0 +1,4 @@
+# Cron jobs for the maven repository
+MAILTO=repository@maven.org
+0  */4 * * * cd $HOME/bin; ./synchronize.sh
+0   0  * * * cd $HOME/reports; ./run.sh

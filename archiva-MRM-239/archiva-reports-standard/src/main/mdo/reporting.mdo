@@ -1,0 +1,283 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<model>
+  <id>reporting</id>
+  <name>Reporting</name>
+  <description>
+    Storage database for reporting results in the repository.
+  </description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.apache.maven.archiva.reporting.model</value>
+    </default>
+  </defaults>
+  <classes>
+    <class rootElement="true" xml.tagName="reporting">
+      <name>Reporting</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>artifacts</name>
+          <version>1.0.0</version>
+          <association>
+            <type>ArtifactResults</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>metadata</name>
+          <version>1.0.0</version>
+          <association>
+            <type>MetadataResults</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field xml.attribute="true">
+          <name>lastModified</name>
+          <version>1.0.0</version>
+          <type>long</type>
+        </field>
+        <field xml.attribute="true">
+          <name>executionTime</name>
+          <version>1.0.0</version>
+          <type>long</type>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ArtifactResults</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>failures</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>warnings</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>notices</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field xml.attribute="true">
+          <name>groupId</name>
+          <identity>true</identity>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The group ID of the artifact in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>artifactId</name>
+          <version>1.0.0</version>
+          <identity>true</identity>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The artifact ID of the artifact in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>version</name>
+          <version>1.0.0</version>
+          <identity>true</identity>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The version of the artifact in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>type</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <identity>true</identity>
+          <required>true</required>
+          <description>
+            The type of the artifact in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>classifier</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <identity>true</identity>
+          <description>
+            The classifier of the artifact in the result.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>MetadataResults</name>
+      <version>1.0.0</version>
+      <fields>
+        <field>
+          <name>failures</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>warnings</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>notices</name>
+          <version>1.0.0</version>
+          <association>
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field xml.attribute="true">
+          <name>groupId</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <required>true</required>
+          <identity>true</identity>
+          <description>
+            The group ID of the metadata in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>artifactId</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <identity>true</identity>
+          <description>
+            The artifact ID of the metadata in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>version</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <identity>true</identity>
+          <description>
+            The version of the metadata in the result.
+          </description>
+        </field>
+        <field xml.attribute="true">
+          <name>lastModified</name>
+          <version>1.0.0</version>
+          <type>long</type>
+          <identity>true</identity>
+          <description>
+            The time that the metadata was last modified.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>Result</name>
+      <version>1.0.0</version>
+      <fields>
+        <field xml.attribute="true">
+          <name>reason</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The reason given for the result.
+          </description>
+          <required>true</required>
+        </field>
+        <field xml.attribute="true">
+          <name>processor</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The processor identifier for the report that triggered the problem. This matches the role-hint of a report
+            processor.
+          </description>
+          <required>true</required>
+        </field>
+        <field xml.attribute="true">
+          <name>problem</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <description>
+            The problem identifier for the problem that occurred. This is so that the processor can identify how to
+            fix the problem. It may be null if it cannot be fixed automatically.
+          </description>
+        </field>
+      </fields>
+
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code><![CDATA[
+            public boolean equals( Object obj )
+            {
+                if ( obj instanceof Result )
+                {
+                    if ( this == obj )
+                    {
+                        return true;
+                    }
+                    Result rhs = (Result) obj;
+                    return new org.apache.commons.lang.builder.EqualsBuilder()
+                        .append( problem, rhs.problem )
+                        .append( processor, rhs.processor )
+                        .append( reason, rhs.reason )
+                        .isEquals();
+                }
+                return false;
+            }
+
+            public int hashCode()
+            {
+                return new org.apache.commons.lang.builder.HashCodeBuilder( 19, 43 )
+                    .append( getReason() )
+                    .append( getProcessor() )
+                    .append( getProblem() )
+                    .toHashCode();
+            }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+
+    </class>
+  </classes>
+</model>
+
+

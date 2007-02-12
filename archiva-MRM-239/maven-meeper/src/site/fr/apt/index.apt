@@ -1,0 +1,17 @@
+ -----
+ Le Site
+ -----
+ L'?quipe Maven
+ -----
+
+Site Maven pour votre projet
+
+ F?licitations!  Si vous regardez cette page alors vous avez
+ g?n?r? avec succ?s un mod?le de site en utilisant l'arch?type
+ de site et vous avez lanc? :
+  
++-----+
+
+m2 site:site
+
++-----+

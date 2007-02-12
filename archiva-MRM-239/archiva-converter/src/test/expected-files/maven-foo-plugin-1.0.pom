@@ -1,0 +1,7 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-foo-plugin</artifactId>
+  <version>1.0.0</version>
+  <packaging>maven-plugin</version>
+</project>
