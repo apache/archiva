@@ -101,15 +101,15 @@
         </tr>
         <tr>
           <th>Use HTTP Proxy</th>
-          <td class="${repository.useNetworkProxy ? 'doneMark' : 'errorMark'}"></td>
+          <td class="${repository.useNetworkProxy ? 'donemark' : 'errormark'} booleanIcon"></td>
         </tr>
         <tr>
           <th>Cache Failures</th>
-          <td class="${repository.cacheFailures ? 'doneMark' : 'errorMark'}"></td>
+          <td class="${repository.cacheFailures ? 'donemark' : 'errormark'} booleanIcon"></td>
         </tr>
         <tr>
           <th>Fail Whole Group</th>
-          <td class="${repository.hardFail ? 'doneMark' : 'errorMark'}"></td>
+          <td class="${repository.hardFail ? 'donemark' : 'errormark'} booleanIcon"></td>
         </tr>
       </table>
     </div>

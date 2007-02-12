@@ -34,7 +34,9 @@
 <div id="contentArea">
 
 <%-- DO NOT REFORMAT THIS LINE --%>
-<c:set var="urlbase">${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/repository/</c:set>
+<c:set var="urlbase">${pageContext.request.scheme}://${pageContext.request.serverName}
+  :${pageContext.request.serverPort}${pageContext.request.contextPath}/repository/
+</c:set>
 
 <div>
   <div style="float: right">
@@ -53,91 +55,95 @@
 </c:if>
 <c:forEach items="${repositories}" var="repository" varStatus="i">
   <pss:ifAnyAuthorized permissions="archiva-edit-repository, archiva-delete-repository" resource="${repository.id}">
-  <div>
-    <div style="float: right">
-      <ww:url id="editRepositoryUrl" action="editRepository" method="input">
-        <ww:param name="repoId" value="%{'${repository.id}'}" />
-      </ww:url>
-      <ww:url id="deleteRepositoryUrl" action="deleteRepository" method="input">
-        <ww:param name="repoId" value="%{'${repository.id}'}" />
-      </ww:url>
-      <%-- TODO replace with icons --%>
-      <ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a>
-      <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a>
-    </div>
-    <h3>${repository.name}</h3>
-    <table class="infoTable">
-      <tr>
-        <th>Identifier</th>
-        <td>
-          <code>${repository.id}</code>
-        </td>
-      </tr>
-      <tr>
-        <th>Directory</th>
-        <td>${repository.directory}</td>
-      </tr>
-      <tr>
-        <th>WebDAV URL</th>
-        <td><a href="${urlbase}${repository.urlName}/">${urlbase}${repository.urlName}/</a></td>
-      </tr>
-      <tr>
-        <th>Type</th>
-          <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
-        <td>
-          <c:choose>
-            <c:when test="${repository.layout == 'default'}">
-              Maven 2.x Repository
-            </c:when>
-            <c:otherwise>
-              Maven 1.x Repository
-            </c:otherwise>
-          </c:choose>
-        </td>
-      </tr>
-      <tr>
-        <th>Snapshots Included</th>
-        <td class="${repository.includeSnapshots ? 'doneMark' : 'errorMark'} booleanIcon"> ${repository.includeSnapshots}</td>
-      </tr>
-      <tr>
-        <th>Indexed</th>
-        <td class="${repository.indexed ? 'doneMark' : 'errorMark'} booleanIcon"> ${repository.indexed}</td>
-      </tr>
-      <tr>
-        <th>POM Snippet</th>
-        <td><a href="#" onclick="Effect.toggle('repoPom${repository.id}','slide'); return false;">Show POM Snippet</a><br />
-<%-- DO NOT REFORMAT THIS SECTION --%>
+    <div>
+      <div style="float: right">
+        <ww:url id="editRepositoryUrl" action="editRepository" method="input">
+          <ww:param name="repoId" value="%{'${repository.id}'}"/>
+        </ww:url>
+        <ww:url id="deleteRepositoryUrl" action="deleteRepository" method="input">
+          <ww:param name="repoId" value="%{'${repository.id}'}"/>
+        </ww:url>
+          <%-- TODO replace with icons --%>
+        <ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a>
+        <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a>
+      </div>
+      <h3>${repository.name}</h3>
+      <table class="infoTable">
+        <tr>
+          <th>Identifier</th>
+          <td>
+            <code>${repository.id}</code>
+          </td>
+        </tr>
+        <tr>
+          <th>Directory</th>
+          <td>${repository.directory}</td>
+        </tr>
+        <tr>
+          <th>WebDAV URL</th>
+          <td><a href="${urlbase}${repository.urlName}/">${urlbase}${repository.urlName}/</a></td>
+        </tr>
+        <tr>
+          <th>Type</th>
+            <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
+          <td>
+            <c:choose>
+              <c:when test="${repository.layout == 'default'}">
+                Maven 2.x Repository
+              </c:when>
+              <c:otherwise>
+                Maven 1.x Repository
+              </c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+        <tr>
+          <th>Snapshots Included</th>
+          <td class="${repository.includeSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.includeSnapshots}</td>
+        </tr>
+        <tr>
+          <th>Indexed</th>
+          <td class="${repository.indexed ? 'donemark' : 'errormark'} booleanIcon"> ${repository.indexed}</td>
+        </tr>
+        <tr>
+          <th>POM Snippet</th>
+          <td><a href="#" onclick="Effect.toggle('repoPom${repository.id}','slide'); return false;">Show POM Snippet</a><br/>
+              <%-- DO NOT REFORMAT THIS SECTION --%>
 <pre class="pom" style="display: none;" id="repoPom${repository.id}"><code>&lt;project>
   ...
   &lt;distributionManagement>
-    &lt;${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
-      &lt;id>${repository.id}&lt;/id>
-      &lt;url>dav:${urlbase}${repository.urlName}&lt;/url><c:if test="${repository.layout != 'default'}">
-      &lt;layout>${repository.layout}&lt;/layout></c:if>
-    &lt;/${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
+  &lt;${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
+  &lt;id>${repository.id}&lt;/id>
+  &lt;url>dav:${urlbase}${repository.urlName}&lt;/url>
+  <c:if test="${repository.layout != 'default'}">
+    &lt;layout>${repository.layout}&lt;/layout>
+  </c:if>
+  &lt;/${repository.includeSnapshots ? 'snapshotRepository' : 'repository'}>
   &lt;/distributionManagement>
-  
+
   &lt;repositories>
-    &lt;repository>
-      &lt;id>${repository.id}&lt;/id>
-      &lt;name>${repository.name}&lt;/name>
-      &lt;url>${urlbase}${repository.urlName}/&lt;/url><c:if test="${repository.layout != 'default'}">
-      &lt;layout>${repository.layout}&lt;/layout></c:if>
-      &lt;releases>
-        &lt;enabled>${repository.includeSnapshots ? 'false' : 'true'}&lt;/enabled>
-      &lt;/releases>
-      &lt;snapshots>
-        &lt;enabled>${repository.includeSnapshots ? 'true' : 'false'}&lt;/enabled>
-      &lt;/snapshots>
-    &lt;/repository>
+  &lt;repository>
+  &lt;id>${repository.id}&lt;/id>
+  &lt;name>${repository.name}&lt;/name>
+  &lt;url>${urlbase}${repository.urlName}/&lt;/url>
+  <c:if test="${repository.layout != 'default'}">
+    &lt;layout>${repository.layout}&lt;/layout>
+  </c:if>
+  &lt;releases>
+  &lt;enabled>${repository.includeSnapshots ? 'false' : 'true'}&lt;/enabled>
+  &lt;/releases>
+  &lt;snapshots>
+  &lt;enabled>${repository.includeSnapshots ? 'true' : 'false'}&lt;/enabled>
+  &lt;/snapshots>
+  &lt;/repository>
   &lt;/repositories>
   ...
-&lt;/project>
-</code></pre>        
-        </td>
-      </tr>
-    </table>
-  </div>
+  &lt;/project>
+</code></pre>
+          </td>
+        </tr>
+      </table>
+    </div>
   </pss:ifAnyAuthorized>
 </c:forEach>
 </div>
