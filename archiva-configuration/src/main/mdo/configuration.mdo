@@ -156,7 +156,7 @@
         for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
         {
             RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-            if ( urlName != null ? !urlName.equals( repository.getUrlName() ) : repository.getUrlName() != null )
+            if ( urlName != null ? urlName.equals( repository.getUrlName() ) : repository.getUrlName() == null )
             {
                 return repository;
             }
@@ -169,7 +169,7 @@
         for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
         {
             RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-            if ( id != null ? !id.equals( repository.getId() ) : repository.getId() != null )
+            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
             {
                 return repository;
             }
@@ -182,7 +182,7 @@
         for ( java.util.Iterator i = getSyncedRepositories().iterator(); i.hasNext(); )
         {
             SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) i.next();
-            if ( id != null ? !id.equals( repository.getId() ) : repository.getId() != null )
+            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
             {
                 return repository;
             }
@@ -195,7 +195,7 @@
         for ( java.util.Iterator i = getProxiedRepositories().iterator(); i.hasNext(); )
         {
             ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) i.next();
-            if ( id != null ? !id.equals( repository.getId() ) : repository.getId() != null )
+            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
             {
                 return repository;
             }
