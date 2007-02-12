@@ -123,8 +123,8 @@
     <pss:ifAuthorized permission="archiva-manage-configuration">
       <h5>Administration</h5>
       <ul>
-          <li class="expanded">
-            <my:currentWWUrl action="index" namespace="/admin">Index</my:currentWWUrl>
+          <li class="none">
+            <my:currentWWUrl action="index" namespace="/admin">Settings</my:currentWWUrl>
           </li>
           <li class="none">
             <my:currentWWUrl action="managedRepositories" namespace="/admin">Managed Repositories</my:currentWWUrl>
