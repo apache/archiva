@@ -156,7 +156,7 @@
         for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
         {
             RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-            if ( urlName.equals( repository.getUrlName() ) )
+            if ( urlName != null ? !urlName.equals( repository.getUrlName() ) : repository.getUrlName() != null )
             {
                 return repository;
             }
