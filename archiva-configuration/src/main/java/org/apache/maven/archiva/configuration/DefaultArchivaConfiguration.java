@@ -69,17 +69,23 @@ public class DefaultArchivaConfiguration
 
     public void addChangeListener( RegistryListener listener )
     {
-        registry.addChangeListener( listener );
-    }
-
-    public synchronized void notifyOfConfigurationChange( Registry registry )
-    {
-        configuration = null;
+        Registry section = registry.getSection( KEY );
+        section.addChangeListener( listener );
     }
 
     public void initialize()
         throws InitializationException
     {
         registry.addChangeListener( this );
+    }
+
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        // nothing to do here
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        configuration = null;
     }
 }

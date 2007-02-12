@@ -92,7 +92,7 @@ public class DefaultRepositoryTaskScheduler
 
         try
         {
-            scheduleJobs( configuration );
+            scheduleJobs( configuration.getIndexPath(), configuration.getIndexerCronExpression() );
         }
         catch ( ParseException e )
         {
@@ -104,16 +104,15 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    private void scheduleJobs( Configuration configuration )
+    private void scheduleJobs( String indexPath, String indexerCronExpression )
         throws ParseException, SchedulerException
     {
-        if ( configuration.getIndexPath() != null )
+        if ( indexPath != null )
         {
             JobDetail jobDetail = createJobDetail( INDEXER_JOB );
 
-            getLogger().info( "Scheduling indexer: " + configuration.getIndexerCronExpression() );
-            CronTrigger trigger =
-                new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, configuration.getIndexerCronExpression() );
+            getLogger().info( "Scheduling indexer: " + indexerCronExpression );
+            CronTrigger trigger = new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, indexerCronExpression );
             scheduler.scheduleJob( jobDetail, trigger );
 
             try
@@ -156,30 +155,47 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    public void notifyOfConfigurationChange( Registry registry )
-    {
-        try
-        {
-            stop();
-        }
-        catch ( StoppingException e )
-        {
-            getLogger().warn( "Error stopping task scheduler: " + e.getMessage(), e );
-        }
 
-        try
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        // nothing to do
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        if ( "indexPath".equals( propertyName ) || "indexerCronExpression".equals( propertyName ) )
         {
-            scheduleJobs( archivaConfiguration.getConfiguration() );
+            getLogger().debug( "Restarting task scheduler with new configuration after property change: " +
+                propertyName + " to " + propertyValue );
+            try
+            {
+                stop();
+            }
+            catch ( StoppingException e )
+            {
+                getLogger().warn( "Error stopping task scheduler: " + e.getMessage(), e );
+            }
+
+            try
+            {
+                Configuration configuration = archivaConfiguration.getConfiguration();
+                scheduleJobs( configuration.getIndexPath(), configuration.getIndexerCronExpression() );
+            }
+            catch ( ParseException e )
+            {
+                getLogger().error(
+                    "Error restarting task scheduler after configuration change, due to configuration error: " +
+                        e.getMessage(), e );
+            }
+            catch ( SchedulerException e )
+            {
+                getLogger().error( "Error restarting task scheduler after configuration change: " + e.getMessage(), e );
+            }
         }
-        catch ( ParseException e )
+        else
         {
-            getLogger().error(
-                "Error restarting task scheduler after configuration change, due to configuration error: " +
-                    e.getMessage(), e );
-        }
-        catch ( SchedulerException e )
-        {
-            getLogger().error( "Error restarting task scheduler after configuration change: " + e.getMessage(), e );
+            getLogger().debug(
+                "Not restarting task scheduler with new configuration after property change: " + propertyName );
         }
     }
 

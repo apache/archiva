@@ -36,6 +36,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.codehaus.plexus.cache.Cache;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -53,6 +54,7 @@ import java.util.List;
  * @plexus.component role="org.apache.maven.archiva.repositories.ActiveManagedRepositories"
  */
 public class DefaultActiveManagedRepositories
+    extends AbstractLogEnabled
     implements ActiveManagedRepositories, Initializable, RegistryListener
 {
     /**
@@ -267,8 +269,22 @@ public class DefaultActiveManagedRepositories
         return path;
     }
 
-    public void notifyOfConfigurationChange( Registry registry )
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        configureSelf( archivaConfiguration.getConfiguration() );
+        // nothing to do
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        if ( propertyName.startsWith( "repositories" ) || propertyName.startsWith( "localRepository" ) )
+        {
+            getLogger().debug( "Triggering managed repository configuration change with " + propertyName + " set to " +
+                propertyValue );
+            configureSelf( archivaConfiguration.getConfiguration() );
+        }
+        else
+        {
+            getLogger().debug( "Not triggering managed repository configuration change with " + propertyName );
+        }
     }
 }

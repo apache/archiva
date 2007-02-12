@@ -90,7 +90,6 @@ public class RepositoryServlet
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         configuration = archivaConfiguration.getConfiguration();
         archivaConfiguration.addChangeListener( this );
-
     }
 
     public void initServers( ServletConfig servletConfig )
@@ -205,19 +204,34 @@ public class RepositoryServlet
         return true;
     }
 
-    public void notifyOfConfigurationChange( Registry registry )
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        // nothing to do
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         configuration = archivaConfiguration.getConfiguration();
 
-        getDavManager().removeAllServers();
+        if ( propertyName.startsWith( "repositories" ) )
+        {
+            log( "Triggering managed repository configuration change with " + propertyName + " set to " +
+                propertyValue );
+            getDavManager().removeAllServers();
 
-        try
-        {
-            initServers( getServletConfig() );
+            try
+            {
+                initServers( getServletConfig() );
+            }
+            catch ( DavServerException e )
+            {
+                log( "Error restarting WebDAV server after configuration change - service disabled: " + e.getMessage(),
+                     e );
+            }
         }
-        catch ( DavServerException e )
+        else
         {
-            log( "Error restarting WebDAV server after configuration change - service disabled: " + e.getMessage(), e );
+            log( "Not triggering managed repository configuration change with " + propertyName );
         }
     }
 }
