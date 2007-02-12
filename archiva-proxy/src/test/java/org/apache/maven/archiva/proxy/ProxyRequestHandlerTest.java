@@ -1161,7 +1161,6 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check content doesn't match proxy version",
                      unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
-*/
 
     public void testGetMetadataUpdated()
         throws IOException, ResourceDoesNotExistException, ProxyException, ParseException
@@ -1185,6 +1184,7 @@ public class ProxyRequestHandlerTest
         assertFalse( "Check content doesn't match old version",
                      unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
     }
+*/
 
     public void testGetAlwaysMetadata()
         throws IOException, ResourceDoesNotExistException, ProxyException
