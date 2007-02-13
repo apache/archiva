@@ -34,8 +34,7 @@
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
       <interceptor name="pssEnvironmentChecker" class="pssEnvironmentCheckInterceptor"/>
-      <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterc
-eptor"/>
+      <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterceptor"/>
 
       <interceptor-stack name="unconfiguredStack">
         <interceptor-ref name="defaultStack"/>
