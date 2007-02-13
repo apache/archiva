@@ -520,7 +520,7 @@
     </profile>
   </profiles>
   <!-- TODO: remove once modello is released -->
-  <pluginRepositories>>
+  <pluginRepositories>
     <pluginRepository>
       <id>codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>
