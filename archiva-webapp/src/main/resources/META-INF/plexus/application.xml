@@ -114,10 +114,12 @@
             <name>org.jpox.rdbms.dateTimezone</name>
             <value>JDK_DEFAULT_TIMEZONE</value>
           </property>
+<!--
           <property>
             <name>org.jpox.identifier.case</name>
             <value>PreserveCase</value>
           </property>
+-->
         </otherProperties>
       </configuration>
     </component>
