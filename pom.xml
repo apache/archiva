@@ -519,7 +519,14 @@
       </build>
     </profile>
   </profiles>
-  <!-- TODO: remove once xwork integration, plexus container is released -->
+  <!-- TODO: remove once modello is released -->
+  <pluginRepositories>>
+    <pluginRepository>
+      <id>codehaus.org</id>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <!-- TODO: remove once ehcache, p-sec, registry, webdav, xwork, naming released -->
   <repositories>
     <repository>
       <id>codehaus.org</id>
