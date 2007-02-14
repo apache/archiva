@@ -20,38 +20,18 @@ package org.apache.maven.archiva.discoverer;
  */
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
-
-import java.util.List;
 
 /**
  * Interface for implementation that can discover artifacts within a repository.
  *
  * @author John Casey
  * @author Brett Porter
- * @todo do we want blacklisted patterns in another form? Part of the object construction?
- * @todo should includeSnapshots be configuration on the component? If not, should the methods be changed to include alternates for both possibilities (discoverReleaseArtifacts, discoverReleaseAndSnapshotArtifacts)?
- * @todo instead of a returned list, should a listener be passed in?
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  */
 public interface ArtifactDiscoverer
     extends Discoverer
 {
     String ROLE = ArtifactDiscoverer.class.getName();
-
-    /**
-     * Discover artifacts in the repository. Only artifacts added since the last attempt at discovery will be found.
-     * This process guarantees never to miss an artifact, however it is possible that an artifact will be received twice
-     * consecutively even if unchanged, so any users of this list must handle such a situation gracefully.
-     *
-     * @param repository          the location of the repository
-     * @param blacklistedPatterns pattern that lists any files to prevent from being included when scanning
-     * @param filter              filter for artifacts to include in the discovered list
-     * @return the list of artifacts discovered
-     * @throws DiscovererException if there was an unrecoverable problem discovering artifacts or recording progress
-     */
-    List discoverArtifacts( ArtifactRepository repository, List blacklistedPatterns, ArtifactFilter filter )
-        throws DiscovererException;
 
     /**
      * Build an artifact from a path in the repository

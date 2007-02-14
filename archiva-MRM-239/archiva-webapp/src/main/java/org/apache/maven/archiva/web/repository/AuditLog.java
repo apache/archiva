@@ -35,7 +35,7 @@ import java.util.Date;
 /**
  * AuditLog - Audit Log. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.web.repository.AuditLog"

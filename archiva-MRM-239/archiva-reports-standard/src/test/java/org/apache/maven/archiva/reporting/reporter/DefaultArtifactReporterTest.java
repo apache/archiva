@@ -21,7 +21,6 @@ package org.apache.maven.archiva.reporting.reporter;
 
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.archiva.reporting.model.Result;
@@ -34,12 +33,14 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 import java.util.Iterator;
 
 /**
+ * DefaultArtifactReporterTest 
  *
+ * @version $Id$
  */
 public class DefaultArtifactReporterTest
     extends AbstractRepositoryReportsTestCase
 {
-    private ReportingDatabase reportingDatabase;
+    private ReportingDatabase database;
 
     private RepositoryMetadata metadata;
 
@@ -49,23 +50,41 @@ public class DefaultArtifactReporterTest
 
     private Artifact artifact;
 
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
+
+        ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+
+        artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
+
+        Versioning versioning = new Versioning();
+        versioning.addVersion( "1.0-alpha-1" );
+        versioning.addVersion( "1.0-alpha-2" );
+
+        metadata = new ArtifactRepositoryMetadata( artifact, versioning );
+    }
+
     public void testEmptyArtifactReporter()
     {
-        assertEquals( "No failures", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "No warnings", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
-        assertFalse( "No artifact failures", reportingDatabase.getArtifactIterator().hasNext() );
-        assertFalse( "No metadata failures", reportingDatabase.getMetadataIterator().hasNext() );
+        assertEquals( "No failures", 0, database.getNumFailures() );
+        assertEquals( "No warnings", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
+        assertFalse( "No artifact failures", database.getArtifactIterator().hasNext() );
+        assertFalse( "No metadata failures", database.getMetadataIterator().hasNext() );
     }
 
     public void testMetadataSingleFailure()
     {
-        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "Single Failure Reason" );
-        assertEquals( "failures count", 1, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addFailure( metadata, PROCESSOR, PROBLEM, "Single Failure Reason" );
+        assertEquals( "failures count", 1, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -87,13 +106,13 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataMultipleFailures()
     {
-        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "First Failure Reason" );
-        reportingDatabase.addFailure( metadata, PROCESSOR, PROBLEM, "Second Failure Reason" );
-        assertEquals( "failures count", 2, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addFailure( metadata, PROCESSOR, PROBLEM, "First Failure Reason" );
+        database.getMetadataDatabase().addFailure( metadata, PROCESSOR, PROBLEM, "Second Failure Reason" );
+        assertEquals( "failures count", 2, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getMetadataIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -113,12 +132,12 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataSingleWarning()
     {
-        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "Single Warning Message" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 1, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addWarning( metadata, PROCESSOR, PROBLEM, "Single Warning Message" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 1, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getMetadataIterator();
+        Iterator warnings = database.getMetadataIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getWarnings().iterator();
@@ -133,13 +152,13 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataMultipleWarnings()
     {
-        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "First Warning" );
-        reportingDatabase.addWarning( metadata, PROCESSOR, PROBLEM, "Second Warning" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 2, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addWarning( metadata, PROCESSOR, PROBLEM, "First Warning" );
+        database.getMetadataDatabase().addWarning( metadata, PROCESSOR, PROBLEM, "Second Warning" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 2, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getMetadataIterator();
+        Iterator warnings = database.getMetadataIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getWarnings().iterator();
@@ -159,12 +178,12 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataSingleNotice()
     {
-        reportingDatabase.addNotice( metadata, PROCESSOR, PROBLEM, "Single Notice Message" );
-        assertEquals( "failure count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check notices", 1, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addNotice( metadata, PROCESSOR, PROBLEM, "Single Notice Message" );
+        assertEquals( "failure count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check notices", 1, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getMetadataIterator();
+        Iterator warnings = database.getMetadataIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getNotices().iterator();
@@ -179,13 +198,13 @@ public class DefaultArtifactReporterTest
 
     public void testMetadataMultipleNotices()
     {
-        reportingDatabase.addNotice( metadata, PROCESSOR, PROBLEM, "First Notice" );
-        reportingDatabase.addNotice( metadata, PROCESSOR, PROBLEM, "Second Notice" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 2, reportingDatabase.getNumNotices() );
+        database.getMetadataDatabase().addNotice( metadata, PROCESSOR, PROBLEM, "First Notice" );
+        database.getMetadataDatabase().addNotice( metadata, PROCESSOR, PROBLEM, "Second Notice" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 2, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getMetadataIterator();
+        Iterator warnings = database.getMetadataIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getNotices().iterator();
@@ -205,12 +224,12 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactSingleFailure()
     {
-        reportingDatabase.addFailure( artifact, PROCESSOR, PROBLEM, "Single Failure Reason" );
-        assertEquals( "failures count", 1, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addFailure( artifact, PROCESSOR, PROBLEM, "Single Failure Reason" );
+        assertEquals( "failures count", 1, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getArtifactIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         ArtifactResults results = (ArtifactResults) failures.next();
         failures = results.getFailures().iterator();
@@ -234,13 +253,13 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactMultipleFailures()
     {
-        reportingDatabase.addFailure( artifact, PROCESSOR, PROBLEM, "First Failure Reason" );
-        reportingDatabase.addFailure( artifact, PROCESSOR, PROBLEM, "Second Failure Reason" );
-        assertEquals( "failures count", 2, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addFailure( artifact, PROCESSOR, PROBLEM, "First Failure Reason" );
+        database.getArtifactDatabase().addFailure( artifact, PROCESSOR, PROBLEM, "Second Failure Reason" );
+        assertEquals( "failures count", 2, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getArtifactIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         ArtifactResults results = (ArtifactResults) failures.next();
         failures = results.getFailures().iterator();
@@ -260,12 +279,12 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactSingleWarning()
     {
-        reportingDatabase.addWarning( artifact, PROCESSOR, PROBLEM, "Single Warning Message" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 1, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addWarning( artifact, PROCESSOR, PROBLEM, "Single Warning Message" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 1, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getArtifactIterator();
+        Iterator warnings = database.getArtifactIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getWarnings().iterator();
@@ -280,13 +299,13 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactMultipleWarnings()
     {
-        reportingDatabase.addWarning( artifact, PROCESSOR, PROBLEM, "First Warning" );
-        reportingDatabase.addWarning( artifact, PROCESSOR, PROBLEM, "Second Warning" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 2, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addWarning( artifact, PROCESSOR, PROBLEM, "First Warning" );
+        database.getArtifactDatabase().addWarning( artifact, PROCESSOR, PROBLEM, "Second Warning" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 2, database.getNumWarnings() );
+        assertEquals( "check no notices", 0, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getArtifactIterator();
+        Iterator warnings = database.getArtifactIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getWarnings().iterator();
@@ -306,12 +325,12 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactSingleNotice()
     {
-        reportingDatabase.addNotice( artifact, PROCESSOR, PROBLEM, "Single Notice Message" );
-        assertEquals( "failure count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check notices", 1, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addNotice( artifact, PROCESSOR, PROBLEM, "Single Notice Message" );
+        assertEquals( "failure count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check notices", 1, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getArtifactIterator();
+        Iterator warnings = database.getArtifactIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getNotices().iterator();
@@ -326,13 +345,13 @@ public class DefaultArtifactReporterTest
 
     public void testArtifactMultipleNotices()
     {
-        reportingDatabase.addNotice( artifact, PROCESSOR, PROBLEM, "First Notice" );
-        reportingDatabase.addNotice( artifact, PROCESSOR, PROBLEM, "Second Notice" );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "warnings count", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 2, reportingDatabase.getNumNotices() );
+        database.getArtifactDatabase().addNotice( artifact, PROCESSOR, PROBLEM, "First Notice" );
+        database.getArtifactDatabase().addNotice( artifact, PROCESSOR, PROBLEM, "Second Notice" );
+        assertEquals( "warnings count", 0, database.getNumFailures() );
+        assertEquals( "warnings count", 0, database.getNumWarnings() );
+        assertEquals( "check no notices", 2, database.getNumNotices() );
 
-        Iterator warnings = reportingDatabase.getArtifactIterator();
+        Iterator warnings = database.getArtifactIterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getNotices().iterator();
@@ -350,22 +369,4 @@ public class DefaultArtifactReporterTest
         assertFalse( "no more warnings", warnings.hasNext() );
     }
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
-
-        artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
-
-        Versioning versioning = new Versioning();
-        versioning.addVersion( "1.0-alpha-1" );
-        versioning.addVersion( "1.0-alpha-2" );
-
-        metadata = new ArtifactRepositoryMetadata( artifact, versioning );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportingDatabase = new ReportingDatabase( reportGroup );
-    }
 }

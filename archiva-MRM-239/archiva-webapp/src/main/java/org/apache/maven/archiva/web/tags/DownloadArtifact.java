@@ -44,7 +44,7 @@ import javax.servlet.jsp.PageContext;
 /**
  * DownloadArtifact 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="com.opensymphony.webwork.components.Component" role-hint="download-artifact" 

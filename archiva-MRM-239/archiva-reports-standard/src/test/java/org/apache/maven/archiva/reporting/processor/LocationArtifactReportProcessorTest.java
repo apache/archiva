@@ -20,8 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -40,16 +39,14 @@ public class LocationArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reportDatabase;
+    private ArtifactResultsDatabase database;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "artifact-location" );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     /**
@@ -61,10 +58,10 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-model", "2.0" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -78,10 +75,10 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -94,10 +91,10 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( pomArtifact, model, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( pomArtifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -111,10 +108,10 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -129,10 +126,10 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -147,10 +144,10 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     /**
@@ -164,9 +161,9 @@ public class LocationArtifactReportProcessorTest
         Artifact pomArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
+        artifactReportProcessor.processArtifact( artifact, model );
 
-        assertEquals( 1, reportDatabase.getNumFailures() );
+        assertEquals( 1, database.getNumFailures() );
     }
 
     /**
@@ -180,8 +177,8 @@ public class LocationArtifactReportProcessorTest
 
         Artifact pomArtifact = createArtifact( "org.apache.maven", "maven-archiver", "2.0", "pom" );
         Model model = readPom( repository.pathOf( pomArtifact ) );
-        artifactReportProcessor.processArtifact( artifact, model, reportDatabase );
-        assertEquals( 1, reportDatabase.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
     }
 
     private Model readPom( String path )
@@ -210,8 +207,8 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-monitor", "2.1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 1, reportDatabase.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 1, database.getNumFailures() );
     }
 
     /**
@@ -223,8 +220,8 @@ public class LocationArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-project", "2.1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 1, reportDatabase.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 1, database.getNumFailures() );
     }
 
 }

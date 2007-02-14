@@ -20,14 +20,13 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.project.MavenProjectBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -57,13 +56,19 @@ public class LocationArtifactReportProcessor
     private ArtifactFactory artifactFactory;
 
     // TODO: share with other code with the same
-    private static final Set JAR_FILE_TYPES =
-        new HashSet( Arrays.asList( new String[]{"jar", "war", "par", "ejb", "ear", "rar", "sar"} ) );
+    private static final Set JAR_FILE_TYPES = new HashSet( Arrays.asList( new String[] {
+        "jar",
+        "war",
+        "par",
+        "ejb",
+        "ear",
+        "rar",
+        "sar" } ) );
 
     /**
      * @plexus.requirement
      */
-    private MavenProjectBuilder projectBuilder;
+    private ArtifactResultsDatabase database;
 
     private static final String POM = "pom";
 
@@ -77,15 +82,15 @@ public class LocationArtifactReportProcessor
      * location is valid based on the location specified in the pom. Check if the both the location
      * specified in the file system pom and in the pom included in the package is the same.
      */
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
 
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
-            throw new UnsupportedOperationException(
-                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+            throw new UnsupportedOperationException( "Can't process repository '" + repository.getUrl()
+                + "'. Only file based repositories are supported" );
         }
 
         adjustDistributionArtifactHandler( artifact );
@@ -100,19 +105,16 @@ public class LocationArtifactReportProcessor
             {
                 //check if the artifact is located in its proper location based on the info
                 //specified in the model object/pom
-                Artifact modelArtifact = artifactFactory.createArtifactWithClassifier( model.getGroupId(),
-                                                                                       model.getArtifactId(),
-                                                                                       model.getVersion(),
-                                                                                       artifact.getType(),
-                                                                                       artifact.getClassifier() );
+                Artifact modelArtifact = artifactFactory.createArtifactWithClassifier( model.getGroupId(), model
+                    .getArtifactId(), model.getVersion(), artifact.getType(), artifact.getClassifier() );
 
                 adjustDistributionArtifactHandler( modelArtifact );
                 String modelPath = repository.pathOf( modelArtifact );
                 if ( !modelPath.equals( artifactPath ) )
                 {
-                    addFailure( reporter, artifact, "repository-pom-location",
-                                "The artifact is out of place. It does not match the specified location in the repository pom: " +
-                                    modelPath );
+                    addFailure( artifact, "repository-pom-location",
+                                "The artifact is out of place. It does not match the specified location in the repository pom: "
+                                    + modelPath );
                 }
             }
         }
@@ -126,7 +128,7 @@ public class LocationArtifactReportProcessor
             {
                 //unpack the artifact (using the groupId, artifactId & version specified in the artifact object itself
                 //check if the pom is included in the package
-                Model extractedModel = readArtifactModel( file, artifact, reporter );
+                Model extractedModel = readArtifactModel( file, artifact );
 
                 if ( extractedModel != null )
                 {
@@ -136,7 +138,7 @@ public class LocationArtifactReportProcessor
                                                                                       extractedModel.getPackaging() );
                     if ( !repository.pathOf( extractedArtifact ).equals( artifactPath ) )
                     {
-                        addFailure( reporter, artifact, "packaged-pom-location",
+                        addFailure( artifact, "packaged-pom-location",
                                     "The artifact is out of place. It does not match the specified location in the packaged pom." );
                     }
                 }
@@ -144,15 +146,14 @@ public class LocationArtifactReportProcessor
         }
         else
         {
-            addFailure( reporter, artifact, "missing-artifact",
-                        "The artifact file [" + file + "] cannot be found for metadata." );
+            addFailure( artifact, "missing-artifact", "The artifact file [" + file + "] cannot be found for metadata." );
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addFailure( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+        database.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 
     private static void adjustDistributionArtifactHandler( Artifact artifact )
@@ -168,7 +169,7 @@ public class LocationArtifactReportProcessor
         }
     }
 
-    private Model readArtifactModel( File file, Artifact artifact, ReportingDatabase reporter )
+    private Model readArtifactModel( File file, Artifact artifact )
     {
         Model model = null;
 
@@ -178,8 +179,8 @@ public class LocationArtifactReportProcessor
             jar = new JarFile( file );
 
             //Get the entry and its input stream.
-            JarEntry entry = jar.getJarEntry(
-                "META-INF/maven/" + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/pom.xml" );
+            JarEntry entry = jar.getJarEntry( "META-INF/maven/" + artifact.getGroupId() + "/"
+                + artifact.getArtifactId() + "/pom.xml" );
 
             // If the entry is not null, extract it.
             if ( entry != null )
@@ -198,11 +199,11 @@ public class LocationArtifactReportProcessor
         }
         catch ( IOException e )
         {
-            addWarning( reporter, artifact, "Unable to read artifact to extract model: " + e );
+            addWarning( artifact, "Unable to read artifact to extract model: " + e );
         }
         catch ( XmlPullParserException e )
         {
-            addWarning( reporter, artifact, "Unable to parse extracted model: " + e );
+            addWarning( artifact, "Unable to parse extracted model: " + e );
         }
         finally
         {
@@ -222,10 +223,10 @@ public class LocationArtifactReportProcessor
         return model;
     }
 
-    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String reason )
+    private void addWarning( Artifact artifact, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addWarning( artifact, ROLE_HINT, null, reason );
+        database.addWarning( artifact, ROLE_HINT, null, reason );
     }
 
     private Model readModel( InputStream entryStream )

@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -30,7 +31,7 @@
     </default>
   </defaults>
   <classes>
-    <class rootElement="true" xml.tagName="reporting">
+    <class rootElement="true" xml.tagName="reporting" stash.storable="false">
       <name>Reporting</name>
       <version>1.0.0</version>
       <fields>
@@ -50,47 +51,19 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
-        <field xml.attribute="true">
-          <name>lastModified</name>
-          <version>1.0.0</version>
-          <type>long</type>
-        </field>
-        <field xml.attribute="true">
-          <name>executionTime</name>
-          <version>1.0.0</version>
-          <type>long</type>
-        </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true" 
+           jpox.use-identifiers-as-primary-key="true"
+           jpox.identity-type="application"
+           jpox.identity-class="ArtifactResultsKey">
       <name>ArtifactResults</name>
       <version>1.0.0</version>
       <fields>
-        <field>
-          <name>failures</name>
-          <version>1.0.0</version>
-          <association>
-            <type>Result</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-        <field>
-          <name>warnings</name>
-          <version>1.0.0</version>
-          <association>
-            <type>Result</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-        <field>
-          <name>notices</name>
-          <version>1.0.0</version>
-          <association>
-            <type>Result</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true" 
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>groupId</name>
           <identity>true</identity>
           <version>1.0.0</version>
@@ -100,7 +73,10 @@
             The group ID of the artifact in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>artifactId</name>
           <version>1.0.0</version>
           <identity>true</identity>
@@ -110,7 +86,10 @@
             The artifact ID of the artifact in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>version</name>
           <version>1.0.0</version>
           <identity>true</identity>
@@ -120,7 +99,10 @@
             The version of the artifact in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>type</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -130,7 +112,11 @@
             The type of the artifact in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.nullValue="none"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>classifier</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -139,16 +125,15 @@
             The classifier of the artifact in the result.
           </description>
         </field>
-      </fields>
-    </class>
-    <class>
-      <name>MetadataResults</name>
-      <version>1.0.0</version>
-      <fields>
         <field>
           <name>failures</name>
           <version>1.0.0</version>
-          <association>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
             <type>Result</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -156,7 +141,12 @@
         <field>
           <name>warnings</name>
           <version>1.0.0</version>
-          <association>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
             <type>Result</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -164,12 +154,29 @@
         <field>
           <name>notices</name>
           <version>1.0.0</version>
-          <association>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
             <type>Result</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
-        <field xml.attribute="true">
+      </fields>
+    </class>
+    <class stash.storable="true" 
+           jpox.use-identifiers-as-primary-key="true"
+           jpox.identity-type="application"
+           jpox.identity-class="MetadataResultsKey">
+      <name>MetadataResults</name>
+      <version>1.0.0</version>
+      <fields>
+        <field xml.attribute="true"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>groupId</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -179,7 +186,11 @@
             The group ID of the metadata in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.nullValue="none"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>artifactId</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -188,7 +199,11 @@
             The artifact ID of the metadata in the result.
           </description>
         </field>
-        <field xml.attribute="true">
+        <field xml.attribute="true"
+               jpox.nullValue="none"
+               jpox.primary-key="true" 
+               jpox.value-strategy="off" 
+               jpox.persistence-modifier="persistent">
           <name>version</name>
           <version>1.0.0</version>
           <type>String</type>
@@ -196,6 +211,45 @@
           <description>
             The version of the metadata in the result.
           </description>
+        </field>
+        <field>
+          <name>failures</name>
+          <version>1.0.0</version>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>warnings</name>
+          <version>1.0.0</version>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>notices</name>
+          <version>1.0.0</version>
+          <association stash.part="true"
+                       jpox.join="true"
+                       java.init="field"
+                       jpox.dependent="true"
+                       java.generate-break="false"
+                       java.generate-create="false">
+            <type>Result</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
         <field xml.attribute="true">
           <name>lastModified</name>
@@ -208,7 +262,7 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true">
       <name>Result</name>
       <version>1.0.0</version>
       <fields>

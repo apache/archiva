@@ -19,7 +19,6 @@ package org.apache.maven.archiva.reporting.group;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor;
 import org.apache.maven.archiva.reporting.processor.MetadataReportProcessor;
 import org.apache.maven.artifact.Artifact;
@@ -46,7 +45,7 @@ public abstract class AbstractReportGroup
      */
     private Map metadataReports;
 
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reportingDatabase )
+    public void processArtifact( Artifact artifact, Model model )
     {
         for ( Iterator i = artifactReports.entrySet().iterator(); i.hasNext(); )
         {
@@ -56,13 +55,12 @@ public abstract class AbstractReportGroup
             {
                 ArtifactReportProcessor report = (ArtifactReportProcessor) entry.getValue();
 
-                report.processArtifact( artifact, model, reportingDatabase );
+                report.processArtifact( artifact, model );
             }
         }
     }
 
-    public void processMetadata( RepositoryMetadata repositoryMetadata, ArtifactRepository repository,
-                                 ReportingDatabase reportingDatabase )
+    public void processMetadata( RepositoryMetadata repositoryMetadata, ArtifactRepository repository )
     {
         for ( Iterator i = metadataReports.entrySet().iterator(); i.hasNext(); )
         {
@@ -72,7 +70,7 @@ public abstract class AbstractReportGroup
             {
                 MetadataReportProcessor report = (MetadataReportProcessor) entry.getValue();
 
-                report.processMetadata( repositoryMetadata, repository, reportingDatabase );
+                report.processMetadata( repositoryMetadata, repository );
             }
         }
     }

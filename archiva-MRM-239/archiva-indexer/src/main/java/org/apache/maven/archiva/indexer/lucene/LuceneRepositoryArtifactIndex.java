@@ -351,6 +351,40 @@ public class LuceneRepositoryArtifactIndex
             lastUpdatedTime = System.currentTimeMillis();
         }
     }
+    
+    public void indexArtifact( Artifact artifact, RepositoryIndexRecordFactory factory )
+        throws RepositoryIndexException
+    {
+        IndexModifier indexModifier = null;
+        try
+        {
+            indexModifier = new IndexModifier( indexLocation, getAnalyzer(), !exists() );
+
+            RepositoryIndexRecord record = factory.createRecord( artifact );
+
+            if ( record != null )
+            {
+                Term term = new Term( FLD_PK, record.getPrimaryKey() );
+
+                indexModifier.deleteDocuments( term );
+
+                Document document = converter.convert( record );
+                document.add( new Field( FLD_PK, record.getPrimaryKey(), Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+
+                indexModifier.addDocument( document );
+            }
+            indexModifier.optimize();
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
+        }
+        finally
+        {
+            closeQuietly( indexModifier );
+            lastUpdatedTime = System.currentTimeMillis();
+        }
+    }    
 
     public List getAllGroupIds()
         throws RepositoryIndexException

@@ -24,8 +24,7 @@ import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Model;
@@ -49,7 +48,7 @@ public class DuplicateArtifactFileReportProcessorTest
 
     File indexDirectory;
 
-    private ReportingDatabase reportDatabase;
+    private ArtifactResultsDatabase database;
 
     protected void setUp()
         throws Exception
@@ -60,8 +59,11 @@ public class DuplicateArtifactFileReportProcessorTest
         FileUtils.deleteDirectory( indexDirectory );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
+        
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
+        
         artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "jar" );
-        System.out.println( "artifact = " + artifact );
+        
         model = new Model();
 
         RepositoryArtifactIndexFactory factory =
@@ -75,9 +77,6 @@ public class DuplicateArtifactFileReportProcessorTest
         index.indexRecords( Collections.singletonList( recordFactory.createRecord( artifact ) ) );
 
         processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "duplicate" );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     public void testNullArtifactFile()
@@ -85,32 +84,32 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         artifact.setFile( null );
 
-        processor.processArtifact( artifact, model, reportDatabase );
+        processor.processArtifact( artifact, model );
 
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
-        assertEquals( "Check warnings", 1, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
+        assertEquals( "Check warnings", 1, database.getNumWarnings() );
+        assertEquals( "Check no failures", 0, database.getNumFailures() );
     }
 
     public void testSuccessOnAlreadyIndexedArtifact()
         throws Exception
     {
-        processor.processArtifact( artifact, model, reportDatabase );
+        processor.processArtifact( artifact, model );
 
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
-        assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
+        assertEquals( "Check warnings", 0, database.getNumWarnings() );
+        assertEquals( "Check no failures", 0, database.getNumFailures() );
     }
 
     public void testSuccessOnDifferentGroupId()
         throws Exception
     {
         artifact.setGroupId( "different.groupId" );
-        processor.processArtifact( artifact, model, reportDatabase );
+        processor.processArtifact( artifact, model );
 
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
-        assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
+        assertEquals( "Check warnings", 0, database.getNumWarnings() );
+        assertEquals( "Check no failures", 0, database.getNumFailures() );
     }
 
     public void testSuccessOnNewArtifact()
@@ -118,11 +117,11 @@ public class DuplicateArtifactFileReportProcessorTest
     {
         Artifact newArtifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "1.0-alpha-1", "pom" );
 
-        processor.processArtifact( newArtifact, model, reportDatabase );
+        processor.processArtifact( newArtifact, model );
 
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
-        assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no failures", 0, reportDatabase.getNumFailures() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
+        assertEquals( "Check warnings", 0, database.getNumWarnings() );
+        assertEquals( "Check no failures", 0, database.getNumFailures() );
     }
 
     public void testFailure()
@@ -132,11 +131,11 @@ public class DuplicateArtifactFileReportProcessorTest
                                              artifact.getVersion(), artifact.getType() );
         duplicate.setFile( artifact.getFile() );
 
-        processor.processArtifact( duplicate, model, reportDatabase );
+        processor.processArtifact( duplicate, model );
 
-        assertEquals( "Check warnings", 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
-        assertEquals( "Check no failures", 1, reportDatabase.getNumFailures() );
+        assertEquals( "Check warnings", 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
+        assertEquals( "Check no failures", 1, database.getNumFailures() );
     }
 
     private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,

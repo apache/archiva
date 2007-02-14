@@ -19,7 +19,6 @@ package org.apache.maven.archiva.reporting.processor;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Model;
 
@@ -31,5 +30,5 @@ public interface ArtifactReportProcessor
 {
     String ROLE = ArtifactReportProcessor.class.getName();
 
-    void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter );
+    void processArtifact( Artifact artifact, Model model );
 }

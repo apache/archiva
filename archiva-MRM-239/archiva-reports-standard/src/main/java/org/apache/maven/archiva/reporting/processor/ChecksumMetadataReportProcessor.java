@@ -20,7 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 import org.codehaus.plexus.digest.Digester;
@@ -48,32 +48,36 @@ public class ChecksumMetadataReportProcessor
      */
     private Digester md5Digester;
 
+    /**
+     * @plexus.requirement
+     */
+    private MetadataResultsDatabase database;
+
     private static final String ROLE_HINT = "checksum-metadata";
 
     /**
      * Validate the checksums of the metadata. Get the metadata file from the
      * repository then validate the checksum.
      */
-    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                 ReportingDatabase reporter )
+    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository )
     {
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
-            throw new UnsupportedOperationException(
-                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+            throw new UnsupportedOperationException( "Can't process repository '" + repository.getUrl()
+                + "'. Only file based repositories are supported" );
         }
 
         //check if checksum files exist
         String path = repository.pathOfRemoteRepositoryMetadata( metadata );
         File file = new File( repository.getBasedir(), path );
 
-        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, metadata );
-        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, metadata );
+        verifyChecksum( repository, path + ".md5", file, md5Digester, metadata );
+        verifyChecksum( repository, path + ".sha1", file, sha1Digester, metadata );
     }
 
     private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
-                                 ReportingDatabase reporter, RepositoryMetadata metadata )
+                                 RepositoryMetadata metadata )
     {
         File checksumFile = new File( repository.getBasedir(), path );
         if ( checksumFile.exists() )
@@ -84,25 +88,23 @@ public class ChecksumMetadataReportProcessor
             }
             catch ( DigesterException e )
             {
-                addFailure( reporter, metadata, "checksum-wrong", e.getMessage() );
+                addFailure( metadata, "checksum-wrong", e.getMessage() );
             }
             catch ( IOException e )
             {
-                addFailure( reporter, metadata, "checksum-io-exception", "Read file error: " + e.getMessage() );
+                addFailure( metadata, "checksum-io-exception", "Read file error: " + e.getMessage() );
             }
         }
         else
         {
-            addFailure( reporter, metadata, "checksum-missing",
-                        digester.getAlgorithm() + " checksum file does not exist." );
+            addFailure( metadata, "checksum-missing", digester.getAlgorithm() + " checksum file does not exist." );
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
-                                    String reason )
+    private void addFailure( RepositoryMetadata metadata, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( metadata, ROLE_HINT, problem, reason );
+        database.addFailure( metadata, ROLE_HINT, problem, reason );
     }
 
 }

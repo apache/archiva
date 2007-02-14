@@ -21,8 +21,7 @@ package org.apache.maven.archiva.reporting.processor;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
@@ -40,7 +39,7 @@ public class OldSnapshotArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reportDatabase;
+    private ArtifactResultsDatabase database;
 
     private File tempRepository;
 
@@ -48,11 +47,10 @@ public class OldSnapshotArtifactReportProcessorTest
         throws Exception
     {
         super.setUp();
-        artifactReportProcessor =
-            (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "old-snapshot-artifact" );
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
+        artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE,
+                                                                    "old-snapshot-artifact" );
 
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "old-artifact" );
-        reportDatabase = new ReportingDatabase( reportGroup );
         tempRepository = getTestFile( "target/test-repository" );
         FileUtils.deleteDirectory( tempRepository );
     }
@@ -61,11 +59,11 @@ public class OldSnapshotArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-20050611.202024-1", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check notices", 1, reportDatabase.getNumNotices() );
-        Iterator artifactIterator = reportDatabase.getArtifactIterator();
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check notices", 1, database.getNumNotices() );
+        Iterator artifactIterator = database.getIterator();
         assertArtifactResults( artifactIterator, artifact );
     }
 
@@ -86,20 +84,20 @@ public class OldSnapshotArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     public void testNonSnapshotArtifact()
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     public void testNewSnapshotArtifact()
@@ -113,13 +111,13 @@ public class OldSnapshotArtifactReportProcessorTest
         String date = new SimpleDateFormat( "yyyyMMdd.HHmmss" ).format( new Date() );
         FileUtils.writeStringToFile( new File( dir, "artifactId-1.0-alpha-1-" + date + "-1.jar" ), "foo", null );
 
-        Artifact artifact =
-            createArtifactFromRepository( repository, "groupId", "artifactId", "1.0-alpha-1-" + date + "-1" );
+        Artifact artifact = createArtifactFromRepository( repository, "groupId", "artifactId", "1.0-alpha-1-" + date
+            + "-1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     public void testTooManySnapshotArtifact()
@@ -137,15 +135,15 @@ public class OldSnapshotArtifactReportProcessorTest
 
         for ( int i = 1; i <= 5; i++ )
         {
-            Artifact artifact = createArtifactFromRepository( tempRepository, "groupId", "artifactId",
-                                                              "1.0-alpha-1-" + date + "-" + i );
-            artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+            Artifact artifact = createArtifactFromRepository( tempRepository, "groupId", "artifactId", "1.0-alpha-1-"
+                + date + "-" + i );
+            artifactReportProcessor.processArtifact( artifact, null );
         }
 
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check notices", 3, reportDatabase.getNumNotices() );
-        Iterator artifactIterator = reportDatabase.getArtifactIterator();
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check notices", 3, database.getNumNotices() );
+        Iterator artifactIterator = database.getIterator();
         for ( int i = 1; i <= 3; i++ )
         {
             String version = "1.0-alpha-1-" + date + "-" + i;
@@ -161,7 +159,7 @@ public class OldSnapshotArtifactReportProcessorTest
 
         try
         {
-            artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+            artifactReportProcessor.processArtifact( artifact, null );
             fail( "Should not have passed" );
         }
         catch ( IllegalStateException e )

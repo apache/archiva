@@ -19,7 +19,7 @@ package org.apache.maven.archiva.reporting.processor;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -44,8 +44,15 @@ public class OldArtifactReportProcessor
      * @plexus.configuration default-value="31536000"
      */
     private int maxAge;
+    
+    /**
+     * TODO: Must create an 'Old Artifact' database.
+     * TODO: Base this off of an artifact table query instead.
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
 
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
 
@@ -68,7 +75,7 @@ public class OldArtifactReportProcessor
             if ( System.currentTimeMillis() - file.lastModified() > maxAge * 1000 )
             {
                 // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-                reporter.addNotice( artifact, ROLE_HINT, "old-artifact",
+                database.addNotice( artifact, ROLE_HINT, "old-artifact",
                                     "The artifact is older than the maximum age of " + maxAge + " seconds." );
             }
         }

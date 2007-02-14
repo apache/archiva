@@ -38,7 +38,6 @@ import org.apache.maven.artifact.repository.metadata.io.xpp3.MetadataXpp3Writer;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
-import org.apache.maven.model.converter.ArtifactPomRewriter;
 import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -84,17 +83,17 @@ public class DefaultRepositoryConverter
     /**
      * @plexus.requirement
      */
-    private ArtifactPomRewriter rewriter;
-
-    /**
-     * @plexus.requirement
-     */
     private ModelConverter translator;
 
     /**
      * @plexus.requirement
      */
     private ArtifactHandlerManager artifactHandlerManager;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ReportingDatabase reportingDatabase;
 
     /**
      * @plexus.configuration default-value="false"
@@ -111,7 +110,7 @@ public class DefaultRepositoryConverter
      */
     private I18N i18n;
 
-    public void convert( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter )
+    public void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException
     {
         if ( artifact.getRepository().getUrl().equals( targetRepository.getUrl() ) )
@@ -119,13 +118,13 @@ public class DefaultRepositoryConverter
             throw new RepositoryConversionException( getI18NString( "exception.repositories.match" ) );
         }
 
-        if ( validateMetadata( artifact, reporter ) )
+        if ( validateMetadata( artifact ) )
         {
             FileTransaction transaction = new FileTransaction();
 
-            if ( copyPom( artifact, targetRepository, reporter, transaction ) )
+            if ( copyPom( artifact, targetRepository, transaction ) )
             {
-                if ( copyArtifact( artifact, targetRepository, reporter, transaction ) )
+                if ( copyArtifact( artifact, targetRepository, transaction ) )
                 {
                     Metadata metadata = createBaseMetadata( artifact );
                     Versioning versioning = new Versioning();
@@ -244,7 +243,7 @@ public class DefaultRepositoryConverter
         return metadata;
     }
 
-    private boolean validateMetadata( Artifact artifact, ReportingDatabase reporter )
+    private boolean validateMetadata( Artifact artifact )
         throws RepositoryConversionException
     {
         ArtifactRepository repository = artifact.getRepository();
@@ -257,7 +256,7 @@ public class DefaultRepositoryConverter
         if ( file.exists() )
         {
             Metadata metadata = readMetadata( file );
-            result = validateMetadata( metadata, repositoryMetadata, artifact, reporter );
+            result = validateMetadata( metadata, repositoryMetadata, artifact );
         }
 
         repositoryMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
@@ -265,14 +264,13 @@ public class DefaultRepositoryConverter
         if ( file.exists() )
         {
             Metadata metadata = readMetadata( file );
-            result = result && validateMetadata( metadata, repositoryMetadata, artifact, reporter );
+            result = result && validateMetadata( metadata, repositoryMetadata, artifact );
         }
 
         return result;
     }
 
-    private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact,
-                                      ReportingDatabase reporter )
+    private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact )
     {
         String groupIdKey;
         String artifactIdKey = null;
@@ -302,14 +300,14 @@ public class DefaultRepositoryConverter
 
         if ( metadata.getGroupId() == null || !metadata.getGroupId().equals( artifact.getGroupId() ) )
         {
-            addFailure( reporter, artifact, groupIdKey );
+            addFailure( artifact, groupIdKey );
             result = false;
         }
         if ( !repositoryMetadata.storedInGroupDirectory() )
         {
             if ( metadata.getGroupId() == null || !metadata.getArtifactId().equals( artifact.getArtifactId() ) )
             {
-                addFailure( reporter, artifact, artifactIdKey );
+                addFailure( artifact, artifactIdKey );
                 result = false;
             }
             if ( !repositoryMetadata.storedInArtifactVersionDirectory() )
@@ -332,7 +330,7 @@ public class DefaultRepositoryConverter
 
                 if ( !foundVersion )
                 {
-                    addFailure( reporter, artifact, versionsKey );
+                    addFailure( artifact, versionsKey );
                     result = false;
                 }
             }
@@ -341,7 +339,7 @@ public class DefaultRepositoryConverter
                 // snapshot metadata
                 if ( !artifact.getBaseVersion().equals( metadata.getVersion() ) )
                 {
-                    addFailure( reporter, artifact, versionKey );
+                    addFailure( artifact, versionKey );
                     result = false;
                 }
 
@@ -364,7 +362,7 @@ public class DefaultRepositoryConverter
 
                         if ( !correct )
                         {
-                            addFailure( reporter, artifact, snapshotKey );
+                            addFailure( artifact, snapshotKey );
                             result = false;
                         }
                     }
@@ -374,26 +372,25 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    private void addFailure( ReportingDatabase reporter, Artifact artifact, String key )
+    private void addFailure( Artifact artifact, String key )
     {
-        addFailureWithReason( reporter, artifact, getI18NString( key ) );
+        addFailureWithReason( artifact, getI18NString( key ) );
 
     }
 
-    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String message )
-    {
-        // TODO: should we be able to identify/fix these?
-        reporter.addWarning( artifact, null, null, message );
-    }
-
-    private static void addFailureWithReason( ReportingDatabase reporter, Artifact artifact, String reason )
+    private void addWarning( Artifact artifact, String message )
     {
         // TODO: should we be able to identify/fix these?
-        reporter.addFailure( artifact, null, null, reason );
+        reportingDatabase.getArtifactDatabase().addWarning( artifact, null, null, message );
     }
 
-    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter,
-                             FileTransaction transaction )
+    private void addFailureWithReason( Artifact artifact, String reason )
+    {
+        // TODO: should we be able to identify/fix these?
+        reportingDatabase.getArtifactDatabase().addFailure( artifact, null, null, reason );
+    }
+
+    private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws RepositoryConversionException
     {
         Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
@@ -411,7 +408,7 @@ public class DefaultRepositoryConverter
             boolean checksumsValid = false;
             try
             {
-                if ( testChecksums( artifact, file, reporter ) )
+                if ( testChecksums( artifact, file ) )
                 {
                     checksumsValid = true;
                 }
@@ -479,12 +476,12 @@ public class DefaultRepositoryConverter
                     for ( Iterator i = warnings.iterator(); i.hasNext(); )
                     {
                         String message = (String) i.next();
-                        addWarning( reporter, artifact, message );
+                        addWarning( artifact, message );
                     }
                 }
                 catch ( XmlPullParserException e )
                 {
-                    addFailureWithReason( reporter, artifact,
+                    addFailureWithReason( artifact,
                                           getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
@@ -494,7 +491,7 @@ public class DefaultRepositoryConverter
                 }
                 catch ( PomTranslationException e )
                 {
-                    addFailureWithReason( reporter, artifact,
+                    addFailureWithReason( artifact,
                                           getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
@@ -506,7 +503,7 @@ public class DefaultRepositoryConverter
         }
         else
         {
-            addWarning( reporter, artifact, getI18NString( "warning.missing.pom" ) );
+            addWarning( artifact, getI18NString( "warning.missing.pom" ) );
         }
         return result;
     }
@@ -600,7 +597,7 @@ public class DefaultRepositoryConverter
         return i18n.getString( getClass().getName(), Locale.getDefault(), key );
     }
 
-    private boolean testChecksums( Artifact artifact, File file, ReportingDatabase reporter )
+    private boolean testChecksums( Artifact artifact, File file )
         throws IOException
     {
         boolean result = true;
@@ -609,7 +606,7 @@ public class DefaultRepositoryConverter
         {
             Digester digester = (Digester) it.next();
             result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester,
-                                      reporter, artifact, "failure.incorrect." + getDigesterFileExtension( digester ) );
+                                      artifact, "failure.incorrect." + getDigesterFileExtension( digester ) );
         }
         return result;
     }
@@ -623,8 +620,8 @@ public class DefaultRepositoryConverter
         return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" );
     }
 
-    private boolean verifyChecksum( File file, String fileName, Digester digester, ReportingDatabase reporter,
-                                    Artifact artifact, String key )
+    private boolean verifyChecksum( File file, String fileName, Digester digester, Artifact artifact,
+                                    String key )
         throws IOException
     {
         boolean result = true;
@@ -639,15 +636,14 @@ public class DefaultRepositoryConverter
             }
             catch ( DigesterException e )
             {
-                addFailure( reporter, artifact, key );
+                addFailure( artifact, key );
                 result = false;
             }
         }
         return result;
     }
 
-    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter,
-                                  FileTransaction transaction )
+    private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws RepositoryConversionException
     {
         File sourceFile = artifact.getFile();
@@ -668,7 +664,7 @@ public class DefaultRepositoryConverter
                 matching = FileUtils.contentEquals( sourceFile, targetFile );
                 if ( !matching )
                 {
-                    addFailure( reporter, artifact, "failure.target.already.exists" );
+                    addFailure( artifact, "failure.target.already.exists" );
                     result = false;
                 }
             }
@@ -676,7 +672,7 @@ public class DefaultRepositoryConverter
             {
                 if ( force || !matching )
                 {
-                    if ( testChecksums( artifact, sourceFile, reporter ) )
+                    if ( testChecksums( artifact, sourceFile ) )
                     {
                         transaction.copyFile( sourceFile, targetFile, digesters );
                     }
@@ -694,7 +690,7 @@ public class DefaultRepositoryConverter
         return result;
     }
 
-    public void convert( List artifacts, ArtifactRepository targetRepository, ReportingDatabase reporter )
+    public void convert( List artifacts, ArtifactRepository targetRepository )
         throws RepositoryConversionException
     {
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
@@ -703,7 +699,7 @@ public class DefaultRepositoryConverter
 
             try
             {
-                convert( artifact, targetRepository, reporter );
+                convert( artifact, targetRepository );
             }
             catch ( RepositoryConversionException e )
             {
@@ -716,7 +712,7 @@ public class DefaultRepositoryConverter
                 // the stack trace would be useful. I also have no idea what a processor is currently or
                 // how to get hold of it here.
 
-                reporter.addFailure( artifact, "", e.getLocalizedMessage(), e.getCause().getLocalizedMessage() );
+                reportingDatabase.getArtifactDatabase().addFailure( artifact, "", e.getLocalizedMessage(), e.getCause().getLocalizedMessage() );
             }
         }
     }

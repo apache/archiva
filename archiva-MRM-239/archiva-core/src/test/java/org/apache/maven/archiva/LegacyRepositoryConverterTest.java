@@ -19,7 +19,7 @@ package org.apache.maven.archiva;
  * under the License.
  */
 
-import org.apache.maven.archiva.conversion.LegacyRepositoryConverter;
+import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -39,6 +39,6 @@ public class LegacyRepositoryConverterTest
 
         LegacyRepositoryConverter rm = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE );
 
-        rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, null, true );
+        rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, true );
     }
 }

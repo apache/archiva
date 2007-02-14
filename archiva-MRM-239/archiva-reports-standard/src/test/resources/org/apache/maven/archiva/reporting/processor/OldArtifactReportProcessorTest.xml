@@ -24,6 +24,12 @@
       <role>org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor</role>
       <role-hint>old-artifact</role-hint>
       <implementation>org.apache.maven.archiva.reporting.processor.OldArtifactReportProcessor</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase</role>
+          <field-name>database</field-name>
+        </requirement>
+      </requirements>
       <configuration>
         <maxAge>10</maxAge>
       </configuration>

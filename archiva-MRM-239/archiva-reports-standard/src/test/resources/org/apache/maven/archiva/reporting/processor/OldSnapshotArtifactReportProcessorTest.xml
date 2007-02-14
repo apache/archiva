@@ -24,6 +24,12 @@
       <role>org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor</role>
       <role-hint>old-snapshot-artifact</role-hint>
       <implementation>org.apache.maven.archiva.reporting.processor.OldSnapshotArtifactReportProcessor</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase</role>
+          <field-name>database</field-name>
+        </requirement>
+      </requirements>
       <configuration>
         <maxAge>3600</maxAge>
         <maxSnapshots>2</maxSnapshots>

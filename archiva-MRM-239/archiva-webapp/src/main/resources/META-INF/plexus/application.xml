@@ -251,7 +251,7 @@
     </component>
     <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>indexer</role-hint>
+      <role-hint>data-refresh</role-hint>
     </component>
   </load-on-start>
 </plexus>
