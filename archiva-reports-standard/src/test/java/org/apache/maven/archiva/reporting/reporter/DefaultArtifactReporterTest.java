@@ -19,6 +19,7 @@ package org.apache.maven.archiva.reporting.reporter;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
@@ -99,9 +100,17 @@ public class DefaultArtifactReporterTest
 
     private void assertMetadata( MetadataResults result )
     {
-        assertEquals( "check failure cause", metadata.getGroupId(), result.getGroupId() );
-        assertEquals( "check failure cause", metadata.getArtifactId(), result.getArtifactId() );
-        assertEquals( "check failure cause", metadata.getBaseVersion(), result.getVersion() );
+        /* The funky StringUtils.defaultString() is used because of database constraints.
+         * The MetadataResults object has a complex primary key consisting of groupId, artifactId, and version.
+         * This also means that none of those fields may be null.  however, that doesn't eliminate the
+         * ability to have an empty string in place of a null.
+         */
+
+        assertEquals( "check failure cause", StringUtils.defaultString( metadata.getGroupId() ), result.getGroupId() );
+        assertEquals( "check failure cause", StringUtils.defaultString( metadata.getArtifactId() ), result
+            .getArtifactId() );
+        assertEquals( "check failure cause", StringUtils.defaultString( metadata.getBaseVersion() ), result
+            .getVersion() );
     }
 
     public void testMetadataMultipleFailures()
@@ -244,11 +253,20 @@ public class DefaultArtifactReporterTest
 
     private void assertArtifact( ArtifactResults results )
     {
-        assertEquals( "check failure cause", artifact.getGroupId(), results.getGroupId() );
-        assertEquals( "check failure cause", artifact.getArtifactId(), results.getArtifactId() );
-        assertEquals( "check failure cause", artifact.getVersion(), results.getVersion() );
-        assertEquals( "check failure cause", artifact.getClassifier(), results.getClassifier() );
-        assertEquals( "check failure cause", artifact.getType(), results.getType() );
+        /* The funky StringUtils.defaultString() is used because of database constraints.
+         * The ArtifactResults object has a complex primary key consisting of groupId, artifactId, version,
+         * type, classifier.
+         * This also means that none of those fields may be null.  however, that doesn't eliminate the
+         * ability to have an empty string in place of a null.
+         */
+
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getGroupId() ), results.getGroupId() );
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getArtifactId() ), results
+            .getArtifactId() );
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getVersion() ), results.getVersion() );
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getClassifier() ), results
+            .getClassifier() );
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getType() ), results.getType() );
     }
 
     public void testArtifactMultipleFailures()
