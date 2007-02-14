@@ -381,13 +381,13 @@ public class DefaultRepositoryConverter
     private void addWarning( Artifact artifact, String message )
     {
         // TODO: should we be able to identify/fix these?
-        reportingDatabase.getArtifactDatabase().addWarning( artifact, null, null, message );
+        reportingDatabase.getArtifactDatabase().addWarning( artifact, "repo-convertor", "-", message );
     }
 
     private void addFailureWithReason( Artifact artifact, String reason )
     {
         // TODO: should we be able to identify/fix these?
-        reportingDatabase.getArtifactDatabase().addFailure( artifact, null, null, reason );
+        reportingDatabase.getArtifactDatabase().addFailure( artifact, "repo-convertor", "-", reason );
     }
 
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
