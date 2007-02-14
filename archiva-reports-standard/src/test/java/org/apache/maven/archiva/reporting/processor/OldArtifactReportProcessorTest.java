@@ -20,8 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
@@ -38,27 +37,25 @@ public class OldArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reportDatabase;
+    private ArtifactResultsDatabase database;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "old-artifact" );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "old-artifact" );
-        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     public void testOldArtifact()
     {
         Artifact artifact = createArtifact( "org.apache.maven", "maven-model", "2.0" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check notices", 1, reportDatabase.getNumNotices() );
-        ArtifactResults results = (ArtifactResults) reportDatabase.getArtifactIterator().next();
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check notices", 1, database.getNumNotices() );
+        ArtifactResults results = (ArtifactResults) database.getIterator().next();
         assertEquals( artifact.getArtifactId(), results.getArtifactId() );
         assertEquals( artifact.getGroupId(), results.getGroupId() );
         assertEquals( artifact.getVersion(), results.getVersion() );
@@ -78,10 +75,10 @@ public class OldArtifactReportProcessorTest
 
         Artifact artifact = createArtifactFromRepository( repository, "groupId", "artifactId", "1.0-alpha-1" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
     public void testMissingArtifact()
@@ -91,7 +88,7 @@ public class OldArtifactReportProcessorTest
 
         try
         {
-            artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
+            artifactReportProcessor.processArtifact( artifact, null );
             fail( "Should not have passed" );
         }
         catch ( IllegalStateException e )

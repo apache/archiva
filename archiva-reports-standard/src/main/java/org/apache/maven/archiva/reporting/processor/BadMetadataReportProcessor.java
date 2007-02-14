@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.processor;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.layer.RepositoryQueryLayer;
 import org.apache.maven.archiva.layer.RepositoryQueryLayerFactory;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -61,6 +61,11 @@ public class BadMetadataReportProcessor
      */
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
+    /**
+     * @plexus.requirement
+     */
+    private MetadataResultsDatabase database;
+
     private static final String ROLE_HINT = "bad-metadata";
 
     /**
@@ -70,18 +75,17 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ReportingDatabase to receive processing results
      */
-    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                 ReportingDatabase reporter )
+    public void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository )
     {
         if ( metadata.storedInGroupDirectory() )
         {
             try
             {
-                checkPluginMetadata( metadata, repository, reporter );
+                checkPluginMetadata( metadata, repository );
             }
             catch ( IOException e )
             {
-                addWarning( reporter, metadata, null, "Error getting plugin artifact directories versions: " + e );
+                addWarning( metadata, null, "Error getting plugin artifact directories versions: " + e );
             }
         }
         else
@@ -98,36 +102,34 @@ public class BadMetadataReportProcessor
             }
             if ( !found )
             {
-                addFailure( reporter, metadata, "missing-last-updated",
-                            "Missing lastUpdated element inside the metadata." );
+                addFailure( metadata, "missing-last-updated", "Missing lastUpdated element inside the metadata." );
             }
 
             if ( metadata.storedInArtifactVersionDirectory() )
             {
-                checkSnapshotMetadata( metadata, repository, reporter );
+                checkSnapshotMetadata( metadata, repository );
             }
             else
             {
-                checkMetadataVersions( metadata, repository, reporter );
+                checkMetadataVersions( metadata, repository );
 
                 try
                 {
-                    checkRepositoryVersions( metadata, repository, reporter );
+                    checkRepositoryVersions( metadata, repository );
                 }
                 catch ( IOException e )
                 {
                     String reason = "Error getting plugin artifact directories versions: " + e;
-                    addWarning( reporter, metadata, null, reason );
+                    addWarning( metadata, null, reason );
                 }
             }
         }
     }
 
-    private static void addWarning( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
-                                    String reason )
+    private void addWarning( RepositoryMetadata metadata, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addWarning( metadata, ROLE_HINT, problem, reason );
+        database.addWarning( metadata, ROLE_HINT, problem, reason );
     }
 
     /**
@@ -137,12 +139,11 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ReportingDatabase to receive processing results
      */
-    private void checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                      ReportingDatabase reporter )
+    private void checkPluginMetadata( RepositoryMetadata metadata, ArtifactRepository repository )
         throws IOException
     {
-        File metadataDir =
-            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
+        File metadataDir = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) )
+            .getParentFile();
         List pluginDirs = getArtifactIdFiles( metadataDir );
 
         Map prefixes = new HashMap();
@@ -153,22 +154,22 @@ public class BadMetadataReportProcessor
             String artifactId = plugin.getArtifactId();
             if ( artifactId == null || artifactId.length() == 0 )
             {
-                addFailure( reporter, metadata, "missing-artifact-id:" + plugin.getPrefix(),
+                addFailure( metadata, "missing-artifact-id:" + plugin.getPrefix(),
                             "Missing or empty artifactId in group metadata for plugin " + plugin.getPrefix() );
             }
 
             String prefix = plugin.getPrefix();
             if ( prefix == null || prefix.length() == 0 )
             {
-                addFailure( reporter, metadata, "missing-plugin-prefix:" + artifactId,
+                addFailure( metadata, "missing-plugin-prefix:" + artifactId,
                             "Missing or empty plugin prefix for artifactId " + artifactId + "." );
             }
             else
             {
                 if ( prefixes.containsKey( prefix ) )
                 {
-                    addFailure( reporter, metadata, "duplicate-plugin-prefix:" + prefix,
-                                "Duplicate plugin prefix found: " + prefix + "." );
+                    addFailure( metadata, "duplicate-plugin-prefix:" + prefix, "Duplicate plugin prefix found: "
+                        + prefix + "." );
                 }
                 else
                 {
@@ -181,8 +182,8 @@ public class BadMetadataReportProcessor
                 File pluginDir = new File( metadataDir, artifactId );
                 if ( !pluginDirs.contains( pluginDir ) )
                 {
-                    addFailure( reporter, metadata, "missing-plugin-from-repository:" + artifactId,
-                                "Metadata plugin " + artifactId + " not found in the repository" );
+                    addFailure( metadata, "missing-plugin-from-repository:" + artifactId, "Metadata plugin "
+                        + artifactId + " not found in the repository" );
                 }
                 else
                 {
@@ -196,8 +197,8 @@ public class BadMetadataReportProcessor
             for ( Iterator plugins = pluginDirs.iterator(); plugins.hasNext(); )
             {
                 File plugin = (File) plugins.next();
-                addFailure( reporter, metadata, "missing-plugin-from-metadata:" + plugin.getName(), "Plugin " +
-                    plugin.getName() + " is present in the repository but " + "missing in the metadata." );
+                addFailure( metadata, "missing-plugin-from-metadata:" + plugin.getName(), "Plugin " + plugin.getName()
+                    + " is present in the repository but " + "missing in the metadata." );
             }
         }
     }
@@ -209,27 +210,26 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ReportingDatabase to receive processing results
      */
-    private void checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository,
-                                        ReportingDatabase reporter )
+    private void checkSnapshotMetadata( RepositoryMetadata metadata, ArtifactRepository repository )
     {
-        RepositoryQueryLayer repositoryQueryLayer =
-            repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
+        RepositoryQueryLayer repositoryQueryLayer = repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
 
         Versioning versioning = metadata.getMetadata().getVersioning();
         if ( versioning != null )
         {
             Snapshot snapshot = versioning.getSnapshot();
 
-            String version = StringUtils.replace( metadata.getBaseVersion(), Artifact.SNAPSHOT_VERSION,
-                                                  snapshot.getTimestamp() + "-" + snapshot.getBuildNumber() );
-            Artifact artifact =
-                artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
+            String version = StringUtils.replace( metadata.getBaseVersion(), Artifact.SNAPSHOT_VERSION, snapshot
+                .getTimestamp()
+                + "-" + snapshot.getBuildNumber() );
+            Artifact artifact = artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(),
+                                                                       version );
             artifact.isSnapshot(); // trigger baseVersion correction
 
             if ( !repositoryQueryLayer.containsArtifact( artifact ) )
             {
-                addFailure( reporter, metadata, "missing-snapshot-artifact-from-repository:" + version,
-                            "Snapshot artifact " + version + " does not exist." );
+                addFailure( metadata, "missing-snapshot-artifact-from-repository:" + version, "Snapshot artifact "
+                    + version + " does not exist." );
             }
         }
     }
@@ -241,11 +241,9 @@ public class BadMetadataReportProcessor
      * @param repository the repository where the metadata was encountered
      * @param reporter   the ReportingDatabase to receive processing results
      */
-    private void checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                        ReportingDatabase reporter )
+    private void checkMetadataVersions( RepositoryMetadata metadata, ArtifactRepository repository )
     {
-        RepositoryQueryLayer repositoryQueryLayer =
-            repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
+        RepositoryQueryLayer repositoryQueryLayer = repositoryQueryLayerFactory.createRepositoryQueryLayer( repository );
 
         Versioning versioning = metadata.getMetadata().getVersioning();
         if ( versioning != null )
@@ -254,13 +252,13 @@ public class BadMetadataReportProcessor
             {
                 String version = (String) versions.next();
 
-                Artifact artifact =
-                    artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata.getArtifactId(), version );
+                Artifact artifact = artifactFactory.createProjectArtifact( metadata.getGroupId(), metadata
+                    .getArtifactId(), version );
 
                 if ( !repositoryQueryLayer.containsArtifact( artifact ) )
                 {
-                    addFailure( reporter, metadata, "missing-artifact-from-repository:" + version, "Artifact version " +
-                        version + " is present in metadata but " + "missing in the repository." );
+                    addFailure( metadata, "missing-artifact-from-repository:" + version, "Artifact version " + version
+                        + " is present in metadata but " + "missing in the repository." );
                 }
             }
         }
@@ -275,14 +273,13 @@ public class BadMetadataReportProcessor
      * @param reporter   the ReportingDatabase to receive processing results
      * @throws java.io.IOException if there is a problem reading from the file system
      */
-    private void checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository,
-                                          ReportingDatabase reporter )
+    private void checkRepositoryVersions( RepositoryMetadata metadata, ArtifactRepository repository )
         throws IOException
     {
         Versioning versioning = metadata.getMetadata().getVersioning();
         List metadataVersions = versioning != null ? versioning.getVersions() : Collections.EMPTY_LIST;
-        File versionsDir =
-            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) ).getParentFile();
+        File versionsDir = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( metadata ) )
+            .getParentFile();
 
         // TODO: I don't know how this condition can happen, but it was seen on the main repository.
         // Avoid hard failure
@@ -295,14 +292,14 @@ public class BadMetadataReportProcessor
                 String version = path.getParentFile().getName();
                 if ( !metadataVersions.contains( version ) )
                 {
-                    addFailure( reporter, metadata, "missing-artifact-from-metadata:" + version, "Artifact version " +
-                        version + " found in the repository but " + "missing in the metadata." );
+                    addFailure( metadata, "missing-artifact-from-metadata:" + version, "Artifact version " + version
+                        + " found in the repository but " + "missing in the metadata." );
                 }
             }
         }
         else
         {
-            addFailure( reporter, metadata, null, "Metadata's directory did not exist: " + versionsDir );
+            addFailure( metadata, null, "Metadata's directory did not exist: " + versionsDir );
         }
     }
 
@@ -339,10 +336,9 @@ public class BadMetadataReportProcessor
         return artifactIdFiles;
     }
 
-    private static void addFailure( ReportingDatabase reporter, RepositoryMetadata metadata, String problem,
-                                    String reason )
+    private void addFailure( RepositoryMetadata metadata, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( metadata, ROLE_HINT, problem, reason );
+        database.addFailure( metadata, ROLE_HINT, problem, reason );
     }
 }

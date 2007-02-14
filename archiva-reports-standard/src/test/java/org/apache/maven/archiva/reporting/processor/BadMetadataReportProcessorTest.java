@@ -19,9 +19,9 @@ package org.apache.maven.archiva.reporting.processor;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
@@ -36,6 +36,11 @@ import org.apache.maven.artifact.repository.metadata.Versioning;
 
 import java.util.Iterator;
 
+/**
+ * BadMetadataReportProcessorTest 
+ *
+ * @version $Id$
+ */
 public class BadMetadataReportProcessorTest
     extends AbstractRepositoryReportsTestCase
 {
@@ -43,7 +48,7 @@ public class BadMetadataReportProcessorTest
 
     private MetadataReportProcessor badMetadataReportProcessor;
 
-    private ReportingDatabase reportingDatabase;
+    private MetadataResultsDatabase database;
 
     protected void setUp()
         throws Exception
@@ -52,12 +57,19 @@ public class BadMetadataReportProcessorTest
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
-        badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "bad-metadata" );
+        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE );
 
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportingDatabase = new ReportingDatabase( reportGroup );
+        badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "bad-metadata" );
     }
 
+    protected void tearDown()
+        throws Exception
+    {
+        release( artifactFactory );
+        release( badMetadataReportProcessor );
+        super.tearDown();
+    }
+    
     public void testMetadataMissingLastUpdated()
     {
         Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "artifactId", "1.0-alpha-1", "type" );
@@ -68,9 +80,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -87,9 +99,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, null );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -106,41 +118,41 @@ public class BadMetadataReportProcessorTest
         if ( alpha1First )
         {
             assertEquals( "check reason",
-                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.",
-                          result.getReason() );
+                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.", result
+                              .getReason() );
         }
         else
         {
             assertEquals( "check reason",
-                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
-                          result.getReason() );
+                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
+                              .getReason() );
         }
         result = (Result) failures.next();
         if ( !alpha1First )
         {
             assertEquals( "check reason",
-                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.",
-                          result.getReason() );
+                          "Artifact version 1.0-alpha-1 found in the repository but missing in the metadata.", result
+                              .getReason() );
         }
         else
         {
             assertEquals( "check reason",
-                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
-                          result.getReason() );
+                          "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
+                              .getReason() );
         }
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
     public void testSnapshotMetadataMissingVersioning()
     {
-        Artifact artifact =
-            artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
+        Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact",
+                                                                 "1.0-alpha-1-SNAPSHOT", "type" );
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -162,9 +174,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
@@ -178,9 +190,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -189,8 +201,8 @@ public class BadMetadataReportProcessorTest
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
-                      result.getReason() );
+                      "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
+                          .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -206,9 +218,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -217,8 +229,8 @@ public class BadMetadataReportProcessorTest
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-3 is present in metadata but missing in the repository.",
-                      result.getReason() );
+                      "Artifact version 1.0-alpha-3 is present in metadata but missing in the repository.", result
+                          .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -233,9 +245,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact, versioning );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -244,14 +256,14 @@ public class BadMetadataReportProcessorTest
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-3 is present in metadata but missing in the repository.",
-                      result.getReason() );
+                      "Artifact version 1.0-alpha-3 is present in metadata but missing in the repository.", result
+                          .getReason() );
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
         result = (Result) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason",
-                      "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.",
-                      result.getReason() );
+                      "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
+                          .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -261,9 +273,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
@@ -274,17 +286,16 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default2" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "missing-plugin", "default3" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         Result result = (Result) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason", "Metadata plugin missing-plugin not found in the repository",
-                      result.getReason() );
+        assertEquals( "check reason", "Metadata plugin missing-plugin not found in the repository", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -293,18 +304,17 @@ public class BadMetadataReportProcessorTest
         RepositoryMetadata metadata = new GroupRepositoryMetadata( "groupId" );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         Result result = (Result) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason",
-                      "Plugin snapshot-artifact is present in the repository but " + "missing in the metadata.",
-                      result.getReason() );
+        assertEquals( "check reason", "Plugin snapshot-artifact is present in the repository but "
+            + "missing in the metadata.", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -316,22 +326,22 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( null, "default3" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "", "default4" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         Result result = (Result) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default3",
-                      result.getReason() );
+        assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default3", result
+            .getReason() );
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
         result = (Result) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default4",
-                      result.getReason() );
+        assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default4", result
+            .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -341,9 +351,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", null ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -354,8 +364,8 @@ public class BadMetadataReportProcessorTest
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
         result = (Result) failures.next();
         // TODO: should be more robust
-        assertEquals( "check reason", "Missing or empty plugin prefix for artifactId snapshot-artifact.",
-                      result.getReason() );
+        assertEquals( "check reason", "Missing or empty plugin prefix for artifactId snapshot-artifact.", result
+            .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
@@ -365,9 +375,9 @@ public class BadMetadataReportProcessorTest
         metadata.getMetadata().addPlugin( createMetadataPlugin( "artifactId", "default" ) );
         metadata.getMetadata().addPlugin( createMetadataPlugin( "snapshot-artifact", "default" ) );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -380,8 +390,8 @@ public class BadMetadataReportProcessorTest
 
     public void testValidSnapshotMetadata()
     {
-        Artifact artifact =
-            artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
+        Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact",
+                                                                 "1.0-alpha-1-SNAPSHOT", "type" );
 
         Snapshot snapshot = new Snapshot();
         snapshot.setBuildNumber( 1 );
@@ -389,16 +399,16 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact, snapshot );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertFalse( "check there are no failures", failures.hasNext() );
     }
 
     public void testInvalidSnapshotMetadata()
     {
-        Artifact artifact =
-            artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact", "1.0-alpha-1-SNAPSHOT", "type" );
+        Artifact artifact = artifactFactory.createBuildArtifact( "groupId", "snapshot-artifact",
+                                                                 "1.0-alpha-1-SNAPSHOT", "type" );
 
         Snapshot snapshot = new Snapshot();
         snapshot.setBuildNumber( 2 );
@@ -406,9 +416,9 @@ public class BadMetadataReportProcessorTest
 
         RepositoryMetadata metadata = new SnapshotArtifactRepositoryMetadata( artifact, snapshot );
 
-        badMetadataReportProcessor.processMetadata( metadata, repository, reportingDatabase );
+        badMetadataReportProcessor.processMetadata( metadata, repository );
 
-        Iterator failures = reportingDatabase.getMetadataIterator();
+        Iterator failures = database.getIterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
@@ -416,16 +426,21 @@ public class BadMetadataReportProcessorTest
         Result result = (Result) failures.next();
         assertMetadata( metadata, results );
         // TODO: should be more robust
-        assertEquals( "check reason", "Snapshot artifact 1.0-alpha-1-20050611.202024-2 does not exist.",
-                      result.getReason() );
+        assertEquals( "check reason", "Snapshot artifact 1.0-alpha-1-20050611.202024-2 does not exist.", result
+            .getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
 
     private static void assertMetadata( RepositoryMetadata metadata, MetadataResults results )
     {
-        assertEquals( "check metadata", metadata.getGroupId(), results.getGroupId() );
-        assertEquals( "check metadata", metadata.getArtifactId(), results.getArtifactId() );
-        assertEquals( "check metadata", metadata.getBaseVersion(), results.getVersion() );
+        /* The funky StringUtils.defaultString() is used because of database constraints.
+         * The MetadataResults object has a complex primary key consisting of groupId, artifactId, and version.
+         * This also means that none of those fields may be null.  however, that doesn't eliminate the
+         * ability to have an empty string in place of a null.
+         */
+        assertEquals( "check metadata", StringUtils.defaultString( metadata.getGroupId() ), results.getGroupId() );
+        assertEquals( "check metadata", StringUtils.defaultString( metadata.getArtifactId() ), results.getArtifactId() );
+        assertEquals( "check metadata", StringUtils.defaultString( metadata.getBaseVersion() ), results.getVersion() );
     }
 
     private Plugin createMetadataPlugin( String artifactId, String prefix )

@@ -25,7 +25,8 @@ import java.util.Map;
 /**
  * The default report set, for repository health.
  *
- * @plexus.component role="org.apache.maven.archiva.reporting.group.ReportGroup" role-hint="health"
+ * @plexus.component role="org.apache.maven.archiva.reporting.group.ReportGroup" 
+ *      role-hint="health"
  * @todo could these report groups be assembled dynamically by configuration rather than as explicit components? eg, reportGroup.addReport( ARP ), reportGroup.addReport( MRP )
  */
 public class DefaultReportGroup
@@ -61,10 +62,5 @@ public class DefaultReportGroup
     public String getName()
     {
         return "Repository Health";
-    }
-
-    public String getFilename()
-    {
-        return "health-report.xml";
     }
 }

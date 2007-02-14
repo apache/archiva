@@ -21,7 +21,6 @@ package org.apache.maven.archiva.converter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
@@ -96,9 +95,6 @@ public class RepositoryConverterTest
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
         i18n = (I18N) lookup( I18N.ROLE );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportingDatabase = new ReportingDatabase( reportGroup );
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -167,7 +163,7 @@ public class RepositoryConverterTest
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         artifactFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -209,7 +205,7 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -250,7 +246,7 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         //checkSuccess();  --> commented until MNG-2100 is fixed
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -285,7 +281,7 @@ public class RepositoryConverterTest
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check number of warnings", 2, reportingDatabase.getNumWarnings() );
         assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
@@ -320,7 +316,7 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -363,7 +359,7 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -414,7 +410,7 @@ public class RepositoryConverterTest
             createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
         artifact.setFile(
             new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.
         //checkSuccess();
@@ -450,7 +446,7 @@ public class RepositoryConverterTest
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -483,7 +479,7 @@ public class RepositoryConverterTest
         // test that a POM is not created when there was none at the source
 
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check warnings", 1, reportingDatabase.getNumWarnings() );
         assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
@@ -510,7 +506,7 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "check failure message", getI18nString( "failure.incorrect.md5" ), getFailure().getReason() );
 
@@ -531,7 +527,7 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "check failure message", getI18nString( "failure.incorrect.sha1" ), getFailure().getReason() );
 
@@ -568,7 +564,7 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         compareFiles( sourceFile, targetFile );
@@ -604,7 +600,7 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "Check failure message", getI18nString( "failure.target.already.exists" ),
                       getFailure().getReason() );
@@ -641,7 +637,7 @@ public class RepositoryConverterTest
         sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
         sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         compareFiles( sourceFile, targetFile );
@@ -671,7 +667,7 @@ public class RepositoryConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         assertTrue( "Check source file exists", sourceFile.exists() );
@@ -713,7 +709,7 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "Check failure message", getI18nString( "failure.target.already.exists" ),
                       getFailure().getReason() );
@@ -744,7 +740,7 @@ public class RepositoryConverterTest
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replaceFirst( "\\{0\\}", ".*" ) + "$";
         assertTrue( "Check failure message", getFailure().getReason().matches( pattern ) );
@@ -763,7 +759,7 @@ public class RepositoryConverterTest
         artifacts.add( createArtifact( "test", "artifact-one", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-two", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-three", "1.0.0" ) );
-        repositoryConverter.convert( artifacts, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifacts, targetRepository );
         assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
         assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
         assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
@@ -797,7 +793,7 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "check failure message", getI18nString( "failure.incorrect.artifactMetadata.versions" ),
                       getFailure().getReason() );
@@ -821,7 +817,7 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkFailure();
         assertEquals( "check failure message", getI18nString( "failure.incorrect.snapshotMetadata.snapshot" ),
                       getFailure().getReason() );
@@ -841,7 +837,7 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "newversion-artifact", "1.0.1" );
 
-        repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+        repositoryConverter.convert( artifact, targetRepository );
         checkSuccess();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
@@ -879,7 +875,7 @@ public class RepositoryConverterTest
 
         try
         {
-            repositoryConverter.convert( artifact, targetRepository, reportingDatabase );
+            repositoryConverter.convert( artifact, targetRepository );
             fail( "Should have failed trying to convert within the same repository" );
         }
         catch ( RepositoryConversionException e )

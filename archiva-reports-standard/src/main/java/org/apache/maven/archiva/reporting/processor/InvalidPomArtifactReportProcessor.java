@@ -20,7 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
@@ -44,18 +44,23 @@ public class InvalidPomArtifactReportProcessor
     private static final String ROLE_HINT = "invalid-pom";
 
     /**
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
+
+    /**
      * @param artifact The pom xml file to be validated, passed as an artifact object.
      * @param reporter The artifact reporter object.
      */
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
 
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
-            throw new UnsupportedOperationException(
-                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+            throw new UnsupportedOperationException( "Can't process repository '" + repository.getUrl()
+                + "'. Only file based repositories are supported" );
         }
 
         if ( "pom".equals( artifact.getType().toLowerCase() ) )
@@ -64,7 +69,7 @@ public class InvalidPomArtifactReportProcessor
 
             if ( !f.exists() )
             {
-                addFailure( reporter, artifact, "pom-missing", "POM not found." );
+                addFailure( artifact, "pom-missing", "POM not found." );
             }
             else
             {
@@ -79,13 +84,12 @@ public class InvalidPomArtifactReportProcessor
                 }
                 catch ( XmlPullParserException e )
                 {
-                    addFailure( reporter, artifact, "pom-parse-exception",
+                    addFailure( artifact, "pom-parse-exception",
                                 "The pom xml file is not well-formed. Error while parsing: " + e.getMessage() );
                 }
                 catch ( IOException e )
                 {
-                    addFailure( reporter, artifact, "pom-io-exception",
-                                "Error while reading the pom xml file: " + e.getMessage() );
+                    addFailure( artifact, "pom-io-exception", "Error while reading the pom xml file: " + e.getMessage() );
                 }
                 finally
                 {
@@ -95,9 +99,9 @@ public class InvalidPomArtifactReportProcessor
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addFailure( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+        database.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 }

@@ -21,7 +21,7 @@ package org.apache.maven.archiva.reporting.processor;
 
 import org.apache.maven.archiva.layer.RepositoryQueryLayer;
 import org.apache.maven.archiva.layer.RepositoryQueryLayerFactory;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
@@ -49,34 +49,39 @@ public class DependencyArtifactReportProcessor
      */
     private RepositoryQueryLayerFactory layerFactory;
 
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
+
     private static final String POM = "pom";
 
     private static final String ROLE_HINT = "dependency";
 
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         RepositoryQueryLayer queryLayer = layerFactory.createRepositoryQueryLayer( artifact.getRepository() );
         if ( !queryLayer.containsArtifact( artifact ) )
         {
             // TODO: is this even possible?
-            addFailure( reporter, artifact, "missing-artifact", "Artifact does not exist in the repository" );
+            addFailure( artifact, "missing-artifact", "Artifact does not exist in the repository" );
         }
 
         if ( model != null && POM.equals( artifact.getType() ) )
         {
             List dependencies = model.getDependencies();
-            processDependencies( dependencies, reporter, queryLayer, artifact );
+            processDependencies( dependencies, queryLayer, artifact );
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addFailure( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+        database.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 
-    private void processDependencies( List dependencies, ReportingDatabase reporter,
-                                      RepositoryQueryLayer repositoryQueryLayer, Artifact sourceArtifact )
+    private void processDependencies( List dependencies, RepositoryQueryLayer repositoryQueryLayer,
+                                      Artifact sourceArtifact )
     {
         if ( dependencies.size() > 0 )
         {
@@ -100,19 +105,19 @@ public class DependencyArtifactReportProcessor
 
                     if ( !repositoryQueryLayer.containsArtifact( artifact ) )
                     {
-                        String reason = MessageFormat.format(
-                            "Artifact''s dependency {0} does not exist in the repository",
-                            new String[]{getDependencyString( dependency )} );
-                        addFailure( reporter, sourceArtifact, "missing-dependency:" + getDependencyKey( dependency ),
-                                    reason );
+                        String reason = MessageFormat
+                            .format( "Artifact''s dependency {0} does not exist in the repository",
+                                     new String[] { getDependencyString( dependency ) } );
+                        addFailure( sourceArtifact, "missing-dependency:" + getDependencyKey( dependency ), reason );
                     }
                 }
                 catch ( InvalidVersionSpecificationException e )
                 {
                     String reason = MessageFormat.format( "Artifact''s dependency {0} contains an invalid version {1}",
-                                                          new String[]{getDependencyString( dependency ),
-                                                              dependency.getVersion()} );
-                    addFailure( reporter, sourceArtifact, "bad-version:" + getDependencyKey( dependency ), reason );
+                                                          new String[] {
+                                                              getDependencyString( dependency ),
+                                                              dependency.getVersion() } );
+                    addFailure( sourceArtifact, "bad-version:" + getDependencyKey( dependency ), reason );
                 }
             }
         }
@@ -156,7 +161,7 @@ public class DependencyArtifactReportProcessor
         }
 
         return artifactFactory.createDependencyArtifact( dependency.getGroupId(), dependency.getArtifactId(), spec,
-                                                         dependency.getType(), dependency.getClassifier(),
-                                                         dependency.getScope() );
+                                                         dependency.getType(), dependency.getClassifier(), dependency
+                                                             .getScope() );
     }
 }

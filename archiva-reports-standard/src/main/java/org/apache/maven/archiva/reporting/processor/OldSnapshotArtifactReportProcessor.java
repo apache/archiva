@@ -19,7 +19,7 @@ package org.apache.maven.archiva.reporting.processor;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -62,15 +62,22 @@ public class OldSnapshotArtifactReportProcessor
      */
     private int maxSnapshots;
 
-    public void processArtifact( final Artifact artifact, Model model, ReportingDatabase reporter )
+    /**
+     * TODO: Must create an 'Old Artifact' database.
+     * TODO: Base this off of an artifact table query instead.
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
+
+    public void processArtifact( final Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
 
         if ( !"file".equals( repository.getProtocol() ) )
         {
             // We can't check other types of URLs yet. Need to use Wagon, with an exists() method.
-            throw new UnsupportedOperationException(
-                "Can't process repository '" + repository.getUrl() + "'. Only file based repositories are supported" );
+            throw new UnsupportedOperationException( "Can't process repository '" + repository.getUrl()
+                + "'. Only file based repositories are supported" );
         }
 
         adjustDistributionArtifactHandler( artifact );
@@ -95,13 +102,14 @@ public class OldSnapshotArtifactReportProcessor
                     catch ( ParseException e )
                     {
                         throw new IllegalStateException(
-                            "Shouldn't match timestamp pattern and not be able to parse it: " + m.group( 2 ) );
+                                                         "Shouldn't match timestamp pattern and not be able to parse it: "
+                                                             + m.group( 2 ) );
                     }
 
                     if ( System.currentTimeMillis() - timestamp > maxAge * 1000 )
                     {
-                        addNotice( reporter, artifact, "snapshot-expired-time",
-                                   "The artifact is older than the maximum age of " + maxAge + " seconds." );
+                        addNotice( artifact, "snapshot-expired-time", "The artifact is older than the maximum age of "
+                            + maxAge + " seconds." );
                     }
                     else if ( maxSnapshots > 0 )
                     {
@@ -109,12 +117,12 @@ public class OldSnapshotArtifactReportProcessor
                         {
                             public boolean accept( File file, String string )
                             {
-                                return string.startsWith( artifact.getArtifactId() + "-" ) &&
-                                    string.endsWith( "." + artifact.getArtifactHandler().getExtension() );
+                                return string.startsWith( artifact.getArtifactId() + "-" )
+                                    && string.endsWith( "." + artifact.getArtifactHandler().getExtension() );
                             }
                         } );
 
-                        List/*<Integer>*/ buildNumbers = new ArrayList();
+                        List/*<Integer>*/buildNumbers = new ArrayList();
                         Integer currentBuild = null;
                         for ( Iterator i = Arrays.asList( files ).iterator(); i.hasNext(); )
                         {
@@ -149,7 +157,7 @@ public class OldSnapshotArtifactReportProcessor
 
                         if ( buildNumbers.contains( currentBuild ) )
                         {
-                            addNotice( reporter, artifact, "snapshot-expired-count",
+                            addNotice( artifact, "snapshot-expired-count",
                                        "The artifact is older than the maximum number of retained snapshot builds." );
                         }
                     }
@@ -162,10 +170,10 @@ public class OldSnapshotArtifactReportProcessor
         }
     }
 
-    private static void addNotice( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addNotice( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addNotice( artifact, ROLE_HINT, problem, reason );
+        database.addNotice( artifact, ROLE_HINT, problem, reason );
     }
 
     private static void adjustDistributionArtifactHandler( Artifact artifact )

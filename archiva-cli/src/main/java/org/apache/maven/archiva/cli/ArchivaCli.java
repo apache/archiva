@@ -23,8 +23,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.conversion.LegacyRepositoryConverter;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
+import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.tools.cli.AbstractCli;
@@ -115,7 +115,7 @@ public class ArchivaCli
             try
             {
                 legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                                   blacklistedPatterns, true );
+                                                                   true );
             }
             catch ( RepositoryConversionException e )
             {

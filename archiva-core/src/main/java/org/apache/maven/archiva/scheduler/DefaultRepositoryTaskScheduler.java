@@ -24,8 +24,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
-import org.apache.maven.archiva.scheduler.task.IndexerTask;
+import org.apache.maven.archiva.scheduler.task.DataRefreshTask;
 import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
@@ -61,14 +60,9 @@ public class DefaultRepositoryTaskScheduler
     private Scheduler scheduler;
 
     /**
-     * @plexus.requirement role-hint="indexer"
+     * @plexus.requirement role-hint="data-refresh"
      */
-    private TaskQueue indexerQueue;
-
-    /**
-     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexer"
-     */
-    private IndexerTaskExecutor indexerTaskExecutor;
+    private TaskQueue datarefreshQueue;
 
     /**
      * @plexus.requirement
@@ -135,7 +129,7 @@ public class DefaultRepositoryTaskScheduler
         JobDetail jobDetail = new JobDetail( jobName, DISCOVERER_GROUP, RepositoryTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
-        dataMap.put( RepositoryTaskJob.TASK_QUEUE, indexerQueue );
+        dataMap.put( RepositoryTaskJob.TASK_QUEUE, datarefreshQueue );
         dataMap.put( RepositoryTaskJob.TASK_QUEUE_POLICY, RepositoryTask.QUEUE_POLICY_SKIP );
         jobDetail.setJobDataMap( dataMap );
 
@@ -199,14 +193,14 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    public void runIndexer()
+    public void runDataRefresh()
         throws org.apache.maven.archiva.scheduler.TaskExecutionException
     {
-        IndexerTask task = new IndexerTask();
-        task.setJobName( "INDEX_INIT" );
+        DataRefreshTask task = new DataRefreshTask();
+        task.setJobName( "DATA_REFRESH_INIT" );
         try
         {
-            indexerQueue.put( task );
+            datarefreshQueue.put( task );
         }
         catch ( TaskQueueException e )
         {
@@ -226,7 +220,7 @@ public class DefaultRepositoryTaskScheduler
             RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
             if ( !artifactIndex.exists() )
             {
-                runIndexer();
+                runDataRefresh();
             }
         }
         catch ( RepositoryIndexException e )

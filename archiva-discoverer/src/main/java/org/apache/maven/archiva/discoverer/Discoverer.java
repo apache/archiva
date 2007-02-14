@@ -19,26 +19,37 @@ package org.apache.maven.archiva.discoverer;
  * under the License.
  */
 
-import java.util.Iterator;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
+import java.util.List;
 
 /**
- * @author Edwin Punzalan
+ * Discoverer - generic discoverer of content in an ArtifactRepository. 
+ *
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @version $Id$
  */
 public interface Discoverer
 {
     /**
-     * Get the list of paths kicked out during the discovery process.
-     *
-     * @return the paths as Strings.
+     * Scan the repository for changes.
+     * Report changes to the appropriate Consumer.
+     * 
+     * @param repository the repository to change.
+     * @param consumers use the provided list of consumers.
+     * @param includeSnapshots true to include snapshots in the scanning of this repository.
+     * @return the statistics for this scan.
      */
-    Iterator getKickedOutPathsIterator();
-
+    public DiscovererStatistics scanRepository( ArtifactRepository repository, List consumers, boolean includeSnapshots );
+    
     /**
-     * Get the list of paths excluded during the discovery process.
-     *
-     * @return the paths as Strings.
+     * Walk the entire repository, regardless of change.
+     * Report changes to the appropriate Consumer.
+     * 
+     * @param repository the repository to change.
+     * @param consumers use the provided list of consumers.
+     * @param includeSnapshots true to include snapshots in the walking of this repository.
+     * @return the statistics for this scan.
      */
-    Iterator getExcludedPathsIterator();
-
-    void setTrackOmittedPaths( boolean trackOmittedPaths );
+    public DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers, boolean includeSnapshots );
 }

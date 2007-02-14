@@ -31,7 +31,7 @@ public interface RepositoryTaskScheduler
      */
     String ROLE = RepositoryTaskScheduler.class.getName();
 
-    void runIndexer()
+    void runDataRefresh()
         throws TaskExecutionException;
 
 }

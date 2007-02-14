@@ -20,8 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 
 /**
@@ -32,16 +31,14 @@ public class InvalidPomArtifactReportProcessorTest
 {
     private ArtifactReportProcessor artifactReportProcessor;
 
-    private ReportingDatabase reportDatabase;
+    private ArtifactResultsDatabase database;
 
     public void setUp()
         throws Exception
     {
         super.setUp();
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "invalid-pom" );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportDatabase = new ReportingDatabase( reportGroup );
     }
 
     /**
@@ -51,8 +48,8 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "org.apache.maven", "artifactId", "1.0-alpha-3", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 1, reportDatabase.getNumFailures() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 1, database.getNumFailures() );
     }
 
 
@@ -63,10 +60,10 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-2", "pom" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 
 
@@ -77,9 +74,9 @@ public class InvalidPomArtifactReportProcessorTest
     {
         Artifact artifact = createArtifact( "groupId", "artifactId", "1.0-alpha-1", "jar" );
 
-        artifactReportProcessor.processArtifact( artifact, null, reportDatabase );
-        assertEquals( 0, reportDatabase.getNumFailures() );
-        assertEquals( 0, reportDatabase.getNumWarnings() );
-        assertEquals( "Check no notices", 0, reportDatabase.getNumNotices() );
+        artifactReportProcessor.processArtifact( artifact, null );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( "Check no notices", 0, database.getNumNotices() );
     }
 }

@@ -20,7 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
@@ -48,10 +48,15 @@ public class ChecksumArtifactReportProcessor
      * @plexus.requirement role-hint="md5"
      */
     private Digester md5Digester;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
 
     private static final String ROLE_HINT = "checksum";
 
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
 
@@ -68,11 +73,11 @@ public class ChecksumArtifactReportProcessor
 
         // TODO: make md5 configurable
 //        verifyChecksum( repository, path + ".md5", file, md5Digester, reporter, artifact );
-        verifyChecksum( repository, path + ".sha1", file, sha1Digester, reporter, artifact );
+        verifyChecksum( repository, path + ".sha1", file, sha1Digester, artifact );
     }
 
     private void verifyChecksum( ArtifactRepository repository, String path, File file, Digester digester,
-                                 ReportingDatabase reporter, Artifact artifact )
+                                 Artifact artifact )
     {
         File checksumFile = new File( repository.getBasedir(), path );
         if ( checksumFile.exists() )
@@ -83,23 +88,23 @@ public class ChecksumArtifactReportProcessor
             }
             catch ( DigesterException e )
             {
-                addFailure( reporter, artifact, "checksum-wrong", e.getMessage() );
+                addFailure( artifact, "checksum-wrong", e.getMessage() );
             }
             catch ( IOException e )
             {
-                addFailure( reporter, artifact, "checksum-io-exception", "Read file error: " + e.getMessage() );
+                addFailure( artifact, "checksum-io-exception", "Read file error: " + e.getMessage() );
             }
         }
         else
         {
-            addFailure( reporter, artifact, "checksum-missing",
+            addFailure( artifact, "checksum-missing",
                         digester.getAlgorithm() + " checksum file does not exist." );
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addFailure( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+        database.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 }

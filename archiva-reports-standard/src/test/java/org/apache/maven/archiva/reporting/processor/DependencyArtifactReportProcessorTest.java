@@ -20,8 +20,7 @@ package org.apache.maven.archiva.reporting.processor;
  */
 
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.group.ReportGroup;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
@@ -43,7 +42,7 @@ public class DependencyArtifactReportProcessorTest
 
     private static final String VALID_VERSION = "1.0-alpha-1";
 
-    private ReportingDatabase reportingDatabase;
+    private ArtifactResultsDatabase database;
 
     private Model model;
 
@@ -58,27 +57,24 @@ public class DependencyArtifactReportProcessorTest
     {
         super.setUp();
         model = new Model();
-        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "dependency" );
-
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
-
-        ReportGroup reportGroup = (ReportGroup) lookup( ReportGroup.ROLE, "health" );
-        reportingDatabase = new ReportingDatabase( reportGroup );
+        database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
+        processor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "dependency" );
     }
 
     public void testArtifactFoundButNoDirectDependencies()
     {
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 0, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
     }
 
     private Artifact createValidArtifact()
     {
-        Artifact projectArtifact =
-            artifactFactory.createProjectArtifact( VALID_GROUP_ID, VALID_ARTIFACT_ID, VALID_VERSION );
+        Artifact projectArtifact = artifactFactory.createProjectArtifact( VALID_GROUP_ID, VALID_ARTIFACT_ID,
+                                                                          VALID_VERSION );
         projectArtifact.setRepository( repository );
         return projectArtifact;
     }
@@ -87,11 +83,11 @@ public class DependencyArtifactReportProcessorTest
     {
         Artifact artifact = artifactFactory.createProjectArtifact( INVALID, INVALID, INVALID );
         artifact.setRepository( repository );
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
@@ -106,10 +102,10 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 0, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
     }
 
     private Dependency createValidDependency()
@@ -124,10 +120,10 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createValidDependency();
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 0, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
     }
 
     public void testValidArtifactWithValidMultipleDependencies()
@@ -140,10 +136,10 @@ public class DependencyArtifactReportProcessorTest
         model.addDependency( dependency );
 
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 0, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
     }
 
     public void testValidArtifactWithAnInvalidDependency()
@@ -156,18 +152,17 @@ public class DependencyArtifactReportProcessorTest
         model.addDependency( createDependency( INVALID, INVALID, INVALID ) );
 
         Artifact artifact = createValidArtifact();
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
         Result result = (Result) failures.next();
-        assertEquals( getDependencyNotFoundMessage( createDependency( INVALID, INVALID, INVALID ) ),
-                      result.getReason() );
+        assertEquals( getDependencyNotFoundMessage( createDependency( INVALID, INVALID, INVALID ) ), result.getReason() );
     }
 
     public void testValidArtifactWithInvalidDependencyGroupId()
@@ -177,12 +172,12 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( INVALID, VALID_ARTIFACT_ID, VALID_VERSION );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
@@ -206,12 +201,12 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( VALID_GROUP_ID, INVALID, VALID_VERSION );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
@@ -226,11 +221,11 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, INVALID );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
@@ -245,12 +240,12 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, "[" );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
@@ -265,10 +260,10 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, "[1.0,)" );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 0, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 0, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
     }
 
     public void testValidArtifactWithMissingDependencyVersion()
@@ -278,12 +273,12 @@ public class DependencyArtifactReportProcessorTest
         Dependency dependency = createDependency( VALID_GROUP_ID, VALID_ARTIFACT_ID, null );
         model.addDependency( dependency );
 
-        processor.processArtifact( artifact, model, reportingDatabase );
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 0, reportingDatabase.getNumWarnings() );
-        assertEquals( 0, reportingDatabase.getNumNotices() );
+        processor.processArtifact( artifact, model );
+        assertEquals( 1, database.getNumFailures() );
+        assertEquals( 0, database.getNumWarnings() );
+        assertEquals( 0, database.getNumNotices() );
 
-        Iterator failures = reportingDatabase.getArtifactIterator();
+        Iterator failures = database.getIterator();
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
