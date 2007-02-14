@@ -110,7 +110,7 @@ public class RepositoryScanner
 
     public void directoryWalkStep( int percentage, File file )
     {
-        getLogger().info( "Walk Step: " + percentage + ", " + file );
+        getLogger().debug( "Walk Step: " + percentage + ", " + file );
 
         // Timestamp finished points to the last successful scan, not this current one.
         if ( isCheckLastModified() && ( file.lastModified() <= stats.timestampFinished ) )
@@ -136,7 +136,7 @@ public class RepositoryScanner
                 {
                     try
                     {
-                        getLogger().info( "Sending to consumer: " + consumer.getName() );
+                        getLogger().debug( "Sending to consumer: " + consumer.getName() );
                         stats.filesConsumed++;
                         consumer.processFile( file );
                     }
@@ -151,7 +151,7 @@ public class RepositoryScanner
                 }
                 else
                 {
-                    getLogger().info( "Skipping consumer " + consumer.getName() + " for file " + relativePath );
+                    getLogger().debug( "Skipping consumer " + consumer.getName() + " for file " + relativePath );
                 }
             }
         }
