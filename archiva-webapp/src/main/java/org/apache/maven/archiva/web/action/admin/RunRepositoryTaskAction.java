@@ -45,7 +45,7 @@ public class RunRepositoryTaskAction
     public String runIndexer()
         throws TaskExecutionException
     {
-        taskScheduler.runIndexer();
+        taskScheduler.runDataRefresh();
 
         return SUCCESS;
     }

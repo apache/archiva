@@ -31,6 +31,8 @@ import org.apache.maven.archiva.discoverer.DiscovererStatistics;
 import org.apache.maven.archiva.scheduler.task.DataRefreshTask;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
@@ -52,7 +54,7 @@ import java.util.List;
  */
 public class DataRefreshExecutor
     extends AbstractLogEnabled
-    implements TaskExecutor
+    implements TaskExecutor, Initializable
 {
     /**
      * Configuration store.
@@ -80,6 +82,8 @@ public class DataRefreshExecutor
      * @plexus.requirement
      */
     private DiscovererConsumerFactory consumerFactory;
+
+    private long lastRunTime = 0;
 
     public void executeTask( Task task )
         throws TaskExecutionException
@@ -145,6 +149,12 @@ public class DataRefreshExecutor
             getLogger().info( "   Files   : " + stats.getFilesIncluded() );
             getLogger().info( "   Consumed: " + stats.getFilesConsumed() );
             getLogger().info( "   Skipped : " + stats.getFilesSkipped() );
+            
+            // TODO: Do we really need to check first?
+            if ( stats.getTimestampFinished() > lastRunTime )
+            {
+                lastRunTime = stats.getTimestampFinished();
+            }
         }
 
         time = System.currentTimeMillis() - time;
@@ -181,4 +191,32 @@ public class DataRefreshExecutor
         return filtered;
     }
 
+    public void initialize()
+        throws InitializationException
+    {
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
+
+            if ( !repositoryConfiguration.isIndexed() )
+            {
+                continue;
+            }
+
+            ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
+
+            DiscovererStatistics stats = new DiscovererStatistics( repository );
+            if ( stats.getTimestampFinished() > lastRunTime )
+            {
+                lastRunTime = stats.getTimestampFinished();
+            }
+        }
+    }
+
+    public long getLastRunTime()
+    {
+        return lastRunTime;
+    }
 }
