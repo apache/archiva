@@ -54,6 +54,11 @@ public class LegacyLayoutArtifactBuilder
     public Artifact build( String pathToArtifact )
         throws BuilderException, DiscovererException
     {
+        if( artifactFactory == null )
+        {
+            throw new IllegalStateException( "Unable to build legacy artifact with a null artifactFactory." );
+        }
+        
         StringTokenizer tokens = new StringTokenizer( pathToArtifact, "/\\" );
 
         Artifact result;

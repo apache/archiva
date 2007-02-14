@@ -28,7 +28,6 @@
       <role>org.codehaus.plexus.logging.LoggerManager</role>
       <implementation>org.codehaus.plexus.logging.console.ConsoleLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
-
       <configuration>
         <threshold>ERROR</threshold>
       </configuration>

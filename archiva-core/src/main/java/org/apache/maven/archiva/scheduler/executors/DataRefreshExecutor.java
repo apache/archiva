@@ -67,7 +67,7 @@ public class DataRefreshExecutor
     private ConfiguredRepositoryFactory repoFactory;
 
     /**
-     * @plexus.configuration default-value="index-artifact"
+     * @plexus.configuration
      */
     private List consumerNames;
 

@@ -58,6 +58,13 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <!-- TEST DEPS -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.7.3.3</version>
+      <scope>test</scope>
+    </dependency>
     <!-- Needed for PlexusTestCase -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
