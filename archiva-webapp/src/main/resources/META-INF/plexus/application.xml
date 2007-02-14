@@ -226,37 +226,6 @@
 
   </components>
 
-  <!-- Override default configuration of components -->
-  <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
-    <default-lifecycle-handler-id>webapp</default-lifecycle-handler-id>
-    <lifecycle-handlers>
-      <lifecycle-handler implementation="org.codehaus.plexus.personality.plexus.PlexusLifecycleHandler">
-        <id>webapp</id>
-        <name>Web Application Component Lifecycle Handler</name>
-        <begin-segment>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.LogEnablePhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.CompositionPhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ContextualizePhase"/>
-          <phase implementation="org.codehaus.plexus.xwork.ConfigurationPhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ServiceablePhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializePhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.StartPhase"/>
-        </begin-segment>
-        <suspend-segment>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.SuspendPhase"/>
-        </suspend-segment>
-        <resume-segment>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ResumePhase"/>
-        </resume-segment>
-        <end-segment>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.StopPhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.DisposePhase"/>
-          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.LogDisablePhase"/>
-        </end-segment>
-      </lifecycle-handler>
-    </lifecycle-handlers>
-  </lifecycle-handler-manager>
-
   <load-on-start>
     <component>
       <role>org.apache.maven.archiva.scheduler.RepositoryTaskScheduler</role>
