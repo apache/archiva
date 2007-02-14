@@ -19,33 +19,26 @@ package org.apache.maven.archiva.discoverer.builders;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.Artifact;
-import org.codehaus.plexus.PlexusTestCase;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * AbstractLayoutArtifactBuilderTestCase 
+ * AllTests 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractLayoutArtifactBuilderTestCase
-extends PlexusTestCase
+public class AllTests
 {
 
-    protected void assertArtifact( String groupId, String artifactId, String version, String type, String classifier, Artifact artifact )
+    public static Test suite()
     {
-        assertNotNull( "Artifact cannot be null.", artifact );
-    
-        assertEquals( "Artifact groupId", groupId, artifact.getGroupId() );
-        assertEquals( "Artifact artifactId", artifactId, artifact.getArtifactId() );
-        assertEquals( "Artifact version", version, artifact.getVersion() );
-        assertEquals( "Artifact type", type, artifact.getType() );
-    
-        if ( StringUtils.isNotBlank( classifier ) )
-        {
-            assertEquals( "Artifact classifier", classifier, artifact.getClassifier() );
-        }
+        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.discoverer.builders" );
+        //$JUnit-BEGIN$
+        suite.addTestSuite( DefaultLayoutArtifactBuilderTest.class );
+        suite.addTestSuite( LegacyLayoutArtifactBuilderTest.class );
+        //$JUnit-END$
+        return suite;
     }
-    
+
 }

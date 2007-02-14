@@ -1,4 +1,4 @@
-package org.apache.maven.archiva;
+package org.apache.maven.archiva.repositories;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.archiva;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,26 +19,25 @@ package org.apache.maven.archiva;
  * under the License.
  */
 
-import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.codehaus.plexus.PlexusTestCase;
-
-import java.io.File;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * @author Jason van Zyl
+ * AllTests 
+ *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  */
-public class LegacyRepositoryConverterTest
-    extends PlexusTestCase
+public class AllTests
 {
-    public void testLegacyRepositoryConversion()
-        throws Exception
+
+    public static Test suite()
     {
-        File legacyRepositoryDirectory = getTestFile( "src/test/maven-1.x-repository" );
-
-        File repositoryDirectory = getTestFile( "target/maven-2.x-repository" );
-
-        LegacyRepositoryConverter rm = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE );
-
-        rm.convertLegacyRepository( legacyRepositoryDirectory, repositoryDirectory, true );
+        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repositories" );
+        //$JUnit-BEGIN$
+        suite.addTestSuite( DefaultActiveManagedRepositoriesTest.class );
+        //$JUnit-END$
+        return suite;
     }
+
 }

@@ -91,30 +91,29 @@ public abstract class GenericRepositoryMetadataConsumer
         throws DiscovererException
     {
         String relpath = PathUtil.getRelative( repository.getBasedir(), file );
-        RepositoryMetadata metadata = buildMetadata( repository.getBasedir(), relpath );
+        RepositoryMetadata metadata = buildMetadata( file, relpath );
         processRepositoryMetadata( metadata, file );
     }
 
-    private RepositoryMetadata buildMetadata( String repo, String metadataPath )
+    private RepositoryMetadata buildMetadata( File metadataFile, String metadataPath )
         throws DiscovererException
     {
         Metadata m;
-        File f = new File( repo, metadataPath );
         Reader reader = null;
         try
         {
-            reader = new FileReader( f );
+            reader = new FileReader( metadataFile );
             MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
 
             m = metadataReader.read( reader );
         }
         catch ( XmlPullParserException e )
         {
-            throw new DiscovererException( "Error parsing metadata file '" + f + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error parsing metadata file '" + metadataFile + "': " + e.getMessage(), e );
         }
         catch ( IOException e )
         {
-            throw new DiscovererException( "Error reading metadata file '" + f + "': " + e.getMessage(), e );
+            throw new DiscovererException( "Error reading metadata file '" + metadataFile + "': " + e.getMessage(), e );
         }
         finally
         {
@@ -166,6 +165,12 @@ public abstract class GenericRepositoryMetadataConsumer
         {
             artifact = artifactFactory.createProjectArtifact( metaGroupId, metaArtifactId, metaVersion );
         }
+        else
+        {
+            getLogger().info(
+                              "Skipping Create Project Artifact due to no Version defined in [" + m.getGroupId() + ":"
+                                  + m.getArtifactId() + ":" + m.getVersion() + "]." );
+        }
 
         // snapshotMetadata
         RepositoryMetadata metadata = null;
@@ -211,6 +216,17 @@ public abstract class GenericRepositoryMetadataConsumer
             if ( metaGroupId != null && metaGroupId.equals( groupDir ) )
             {
                 metadata = new GroupRepositoryMetadata( metaGroupId );
+            }
+            else
+            {
+                /* If we reached this point, we have some bad metadata.
+                 * We have a metadata file, with values for groupId / artifactId / version.
+                 * But the information it is providing does not exist relative to the file location.
+                 * 
+                 * See ${basedir}/src/test/repository/javax/maven-metadata.xml for example
+                 * 
+                 * TODO: document the bad metadata ??
+                 */
             }
         }
 

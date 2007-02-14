@@ -58,7 +58,7 @@ public class DataRefreshExecutorTest
         }
     }
 
-    public void testIndexer()
+    public void testExecutor()
         throws TaskExecutionException
     {
         taskExecutor.executeTask( new TestDataRefreshTask() );

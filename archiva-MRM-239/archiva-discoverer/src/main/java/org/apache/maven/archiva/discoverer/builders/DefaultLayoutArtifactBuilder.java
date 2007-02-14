@@ -56,6 +56,11 @@ public class DefaultLayoutArtifactBuilder
     public Artifact build( String pathToArtifact )
         throws BuilderException, DiscovererException
     {
+        if( artifactFactory == null )
+        {
+            throw new IllegalStateException( "Unable to build artifact with a null artifactFactory." );
+        }
+        
         List pathParts = new ArrayList();
         StringTokenizer st = new StringTokenizer( pathToArtifact, "/\\" );
         while ( st.hasMoreTokens() )

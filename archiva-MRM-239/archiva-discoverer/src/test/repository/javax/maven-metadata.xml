@@ -18,6 +18,7 @@
   ~ under the License.
   -->
 
+<!-- This metdata is intentionally wrong.  -->
 <metadata>
   <groupId>javax.sql</groupId>
   <artifactId>jdbc</artifactId>
