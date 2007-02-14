@@ -48,6 +48,7 @@
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.home}/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
+          <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.security"/>
         </properties>
       </configuration>
     </component>

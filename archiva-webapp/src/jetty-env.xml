@@ -21,6 +21,22 @@
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
 <Configure class="org.mortbay.jetty.webapp.WebAppContext">
 
+<New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
+  <Arg>mail/Session</Arg>
+  <Arg>
+    <New class="org.mortbay.naming.factories.MailSessionReference">
+      <Set name="user"></Set>
+      <Set name="password"></Set>
+      <Set name="properties">
+        <New class="java.util.Properties">
+          <Put name="mail.smtp.host">localhost</Put>
+          <Put name="mail.smtp.port">25</Put> <!-- TODO: shouldn't this default? -->
+        </New>
+      </Set>
+    </New>
+  </Arg>
+</New>
+
   <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
