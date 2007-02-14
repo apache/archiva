@@ -30,10 +30,7 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.shared.app.company.CompanyPomHandler;
 import org.apache.maven.shared.app.configuration.CompanyPom;
 import org.apache.maven.shared.app.configuration.Configuration;
-import org.apache.maven.shared.app.configuration.ConfigurationChangeException;
-import org.apache.maven.shared.app.configuration.ConfigurationStore;
-import org.apache.maven.shared.app.configuration.ConfigurationStoreException;
-import org.apache.maven.shared.app.configuration.InvalidConfigurationException;
+import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
@@ -54,7 +51,7 @@ public class EditPomAction
     /**
      * @plexus.requirement
      */
-    private ConfigurationStore appConfigurationStore;
+    private MavenAppConfiguration appConfigurationStore;
 
     /**
      * The configuration.
@@ -69,8 +66,7 @@ public class EditPomAction
     private Model companyModel;
 
     public String execute()
-        throws IOException, ConfigurationStoreException, InvalidConfigurationException, ConfigurationChangeException,
-        ArtifactInstallationException
+        throws IOException, ArtifactInstallationException
     {
         // TODO: hack for passed in String[]
         String[] logo = (String[]) companyModel.getProperties().get( "organization.logo" );
@@ -90,9 +86,9 @@ public class EditPomAction
     }
 
     public void prepare()
-        throws ConfigurationStoreException, ProjectBuildingException, ArtifactMetadataRetrievalException
+        throws ProjectBuildingException, ArtifactMetadataRetrievalException
     {
-        configuration = appConfigurationStore.getConfigurationFromStore();
+        configuration = appConfigurationStore.getConfiguration();
 
         CompanyPom companyPom = configuration.getCompanyPom();
         companyModel = companyPomHandler.getCompanyPomModel( companyPom, createLocalRepository() );

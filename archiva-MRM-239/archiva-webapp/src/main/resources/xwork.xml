@@ -34,12 +34,14 @@
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
       <interceptor name="pssEnvironmentChecker" class="pssEnvironmentCheckInterceptor"/>
+      <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterceptor"/>
 
       <interceptor-stack name="unconfiguredStack">
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="pssEnvironmentChecker"/>
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
+        <interceptor-ref name="pssPolicyEnforcement"/>
         <interceptor-ref name="pssSecureActions"/>
       </interceptor-stack>
 
@@ -48,6 +50,7 @@
         <interceptor-ref name="pssEnvironmentChecker"/>
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
+        <interceptor-ref name="pssPolicyEnforcement"/>
         <interceptor-ref name="pssSecureActions"/>
         <interceptor-ref name="configuration"/>
       </interceptor-stack>
@@ -107,6 +110,10 @@
       </result>
       <result name="security-admin-user-needed" type="redirect-action">
         <param name="actionName">addadmin</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-must-change-password" type="redirect-action">
+        <param name="actionName">password</param>
         <param name="namespace">/security</param>
       </result>
 
@@ -183,7 +190,8 @@
 
   </package>
 
-  <package name="components" namespace="/components" extends="default">
+  <package name="components" namespace="/components" extends="webwork-default">
+    <default-interceptor-ref name="basicStack"/>
     <action name="companyInfo" class="companyInfo">
       <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
     </action>

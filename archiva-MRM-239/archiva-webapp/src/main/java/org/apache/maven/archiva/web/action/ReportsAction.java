@@ -65,33 +65,11 @@ public class ReportsAction
      */
     private ConfiguredRepositoryFactory factory;
 
-    private List databases;
-
-    private String repositoryId;
-
-    /**
-     * @plexus.requirement
-     */
-    private ReportExecutor executor;
-
     private Configuration configuration;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.reporting.group.ReportGroup"
-     */
-    private Map reports;
-
-    private String reportGroup = DEFAULT_REPORT_GROUP;
-
-    private static final String DEFAULT_REPORT_GROUP = "health";
-
-    private String filter;
 
     public String execute()
         throws Exception
     {
-        ReportGroup reportGroup = (ReportGroup) reports.get( this.reportGroup );
-
         databases = new ArrayList();
 
         if ( repositoryId != null && !repositoryId.equals( "-" ) )
@@ -111,21 +89,6 @@ public class ReportsAction
         return SUCCESS;
     }
 
-    private void getReport( RepositoryConfiguration repositoryConfiguration, ReportGroup reportGroup )
-        throws ReportingStoreException
-    {
-        ArtifactRepository repository = factory.createRepository( repositoryConfiguration );
-
-        ReportingDatabase database = executor.getReportDatabase( repository, reportGroup );
-
-        if ( filter != null && !filter.equals( "-" ) )
-        {
-            database = database.getFilteredDatabase( filter );
-        }
-
-        databases.add( database );
-    }
-
     public String runReport()
         throws Exception
     {
@@ -143,67 +106,6 @@ public class ReportsAction
         generateReport( database, repositoryConfiguration, reportGroup, repository );
 
         return SUCCESS;
-    }
-
-    private void generateReport( ReportingDatabase database, RepositoryConfiguration repositoryConfiguration,
-                                 ReportGroup reportGroup, ArtifactRepository repository )
-        throws DiscovererException, ReportingStoreException
-    {
-        database.setInProgress( true );
-
-        List blacklistedPatterns = new ArrayList();
-        if ( repositoryConfiguration.getBlackListPatterns() != null )
-        {
-            blacklistedPatterns.addAll( repositoryConfiguration.getBlackListPatterns() );
-        }
-        if ( configuration.getGlobalBlackListPatterns() != null )
-        {
-            blacklistedPatterns.addAll( configuration.getGlobalBlackListPatterns() );
-        }
-
-        ArtifactFilter filter;
-        if ( repositoryConfiguration.isIncludeSnapshots() )
-        {
-            filter = new AcceptAllArtifactFilter();
-        }
-        else
-        {
-            filter = new SnapshotArtifactFilter();
-        }
-
-        try
-        {
-            executor.runReports( reportGroup, repository, blacklistedPatterns, filter );
-        }
-        finally
-        {
-            database.setInProgress( false );
-        }
-    }
-
-    public void setReportGroup( String reportGroup )
-    {
-        this.reportGroup = reportGroup;
-    }
-
-    public String getReportGroup()
-    {
-        return reportGroup;
-    }
-
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
-    }
-
-    public List getDatabases()
-    {
-        return databases;
     }
 
     public void prepare()
