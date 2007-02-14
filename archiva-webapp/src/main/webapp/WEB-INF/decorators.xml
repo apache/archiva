@@ -21,8 +21,9 @@
 <decorators defaultdir="/WEB-INF/jsp/decorators">
   <excludes>
     <pattern>/repository/*</pattern>
+    <pattern>/components/*</pattern>
   </excludes>
-  
+
   <decorator name="default" page="default.jsp">
     <pattern>/*</pattern>
   </decorator>

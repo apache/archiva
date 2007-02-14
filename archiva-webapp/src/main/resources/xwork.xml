@@ -41,7 +41,7 @@
         <interceptor-ref name="pssEnvironmentChecker"/>
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
-        <interceptor-ref name="pssPolicyEnforcement"/>        
+        <interceptor-ref name="pssPolicyEnforcement"/>
         <interceptor-ref name="pssSecureActions"/>
       </interceptor-stack>
 
@@ -190,7 +190,8 @@
 
   </package>
 
-  <package name="components" namespace="/components" extends="default">
+  <package name="components" namespace="/components" extends="webwork-default">
+    <default-interceptor-ref name="basicStack"/>
     <action name="companyInfo" class="companyInfo">
       <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
     </action>
