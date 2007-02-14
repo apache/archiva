@@ -65,6 +65,8 @@ public class DefaultArchivaConfiguration
         Registry section = registry.getSection( KEY );
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
+
+        this.configuration = configuration;
     }
 
     public void addChangeListener( RegistryListener listener )

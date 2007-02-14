@@ -56,7 +56,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-quartz</artifactId>
-      <version>1.0-alpha-4-SNAPSHOT</version>
+      <version>1.0-alpha-3</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
@@ -66,7 +66,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-taskqueue</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
+      <version>1.0-alpha-6</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
