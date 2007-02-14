@@ -20,8 +20,12 @@ package org.apache.maven.archiva.converter;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
+import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
+import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -77,6 +81,8 @@ public class RepositoryConverterTest
         ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
+        
+        reportingDatabase = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
 
         File sourceBase = getTestFile( "src/test/source-repository" );
         sourceRepository =
@@ -95,6 +101,57 @@ public class RepositoryConverterTest
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
         i18n = (I18N) lookup( I18N.ROLE );
+    }
+    
+
+    protected void tearDown()
+        throws Exception
+    {
+        if ( reportingDatabase != null )
+        {
+            ArtifactResultsDatabase artifactDatabase = reportingDatabase.getArtifactDatabase();
+
+            if ( artifactDatabase != null )
+            {
+                // Clean out any entries between runs.
+                for ( Iterator it = artifactDatabase.getIterator(); it.hasNext(); )
+                {
+                    ArtifactResults result = (ArtifactResults) it.next();
+                    try
+                    {
+                        artifactDatabase.remove( result );
+                    }
+                    catch ( Exception e )
+                    {
+                        // ignore
+                    }
+                }
+            }
+
+            MetadataResultsDatabase metadataDatabase = reportingDatabase.getMetadataDatabase();
+
+            if ( metadataDatabase != null )
+            {
+                // Clean out any entries between runs.
+                for ( Iterator it = metadataDatabase.getIterator(); it.hasNext(); )
+                {
+                    MetadataResults result = (MetadataResults) it.next();
+                    try
+                    {
+                        metadataDatabase.remove( result );
+                    }
+                    catch ( Exception e )
+                    {
+                        // ignore
+                    }
+                }
+            }
+
+            // Free it from plexus too!
+            release( reportingDatabase );
+        }
+
+        super.tearDown();
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -317,7 +374,7 @@ public class RepositoryConverterTest
         snapshotMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -360,7 +417,7 @@ public class RepositoryConverterTest
         snapshotMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -447,7 +504,7 @@ public class RepositoryConverterTest
         snapshotMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -480,10 +537,8 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
         repositoryConverter.convert( artifact, targetRepository );
-        assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "check warnings", 1, reportingDatabase.getNumWarnings() );
+        checkCounts( 0, 1, 0 );
         assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -507,7 +562,7 @@ public class RepositoryConverterTest
         file.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
+        checkCounts( 1, 0, 0 );
         assertEquals( "check failure message", getI18nString( "failure.incorrect.md5" ), getFailure().getReason() );
 
         assertFalse( "Check artifact not created", file.exists() );
@@ -528,8 +583,8 @@ public class RepositoryConverterTest
         file.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
-        assertEquals( "check failure message", getI18nString( "failure.incorrect.sha1" ), getFailure().getReason() );
+        checkCounts( 1, 0, 0 );
+        assertHasFailureReason( getI18nString( "failure.incorrect.sha1" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
@@ -565,7 +620,7 @@ public class RepositoryConverterTest
         Thread.sleep( SLEEP_MILLIS );
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -601,9 +656,9 @@ public class RepositoryConverterTest
         Thread.sleep( SLEEP_MILLIS );
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
-        assertEquals( "Check failure message", getI18nString( "failure.target.already.exists" ),
-                      getFailure().getReason() );
+        checkCounts( 1, 0, 0 );
+        
+        assertHasFailureReason( getI18nString( "failure.target.already.exists" ) );
 
         assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
@@ -638,7 +693,7 @@ public class RepositoryConverterTest
         sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -668,7 +723,7 @@ public class RepositoryConverterTest
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkCounts( 0, 0, 0 );
 
         assertTrue( "Check source file exists", sourceFile.exists() );
         assertTrue( "Check source POM exists", sourcePomFile.exists() );
@@ -741,7 +796,7 @@ public class RepositoryConverterTest
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
+        checkCounts( 1, 0, 0 );
         String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replaceFirst( "\\{0\\}", ".*" ) + "$";
         assertTrue( "Check failure message", getFailure().getReason().matches( pattern ) );
 
@@ -930,24 +985,60 @@ public class RepositoryConverterTest
     {
         return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>", "" );
     }
-
+    
     private void checkSuccess()
     {
-        assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        checkCounts(0, 0, 0);
     }
 
     private void checkFailure()
     {
-        assertEquals( "check num errors", 1, reportingDatabase.getNumFailures() );
-        assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        checkCounts(1, 0, 0);
+    }
+    
+    private void checkCounts( int failures, int warnings, int notices )
+    {
+        int actualFailures = reportingDatabase.getNumFailures();
+        int actualWarnings = reportingDatabase.getNumWarnings();
+        int actualNotices = reportingDatabase.getNumNotices();
+
+        if ( ( failures != actualFailures ) || ( warnings != actualWarnings ) || ( notices != actualNotices ) )
+        {
+            fail( "Check Results Counts expected:<" + failures + "," + warnings + "," + notices + "> but was:<"
+                + actualFailures + "," + actualWarnings + "," + actualNotices + ">" );
+        }
     }
 
     private String getI18nString( String key )
     {
         return i18n.getString( repositoryConverter.getClass().getName(), Locale.getDefault(), key );
+    }
+    
+    private void assertHasFailureReason( String reason )
+    {
+        ArtifactResults artifact = (ArtifactResults) reportingDatabase.getArtifactIterator().next();
+        
+        // Attempt to find the reason ...
+        for ( Iterator it = artifact.getFailures().iterator(); it.hasNext(); )
+        {
+            Result result = (Result) it.next();
+            if ( StringUtils.equals( result.getReason(), reason ) )
+            {
+                return;
+            }
+        }
+        
+        // Didn't find it! whoops ...
+        System.err.println( "ArtifactResults : " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
+            + artifact.getVersion() + ":" + artifact.getType() + ":" + artifact.getClassifier() );
+        for ( Iterator it = artifact.getFailures().iterator(); it.hasNext(); )
+        {
+            Result result = (Result) it.next();
+            System.err.println( "   Failure: " + result.getProcessor() + ":" + result.getProblem() + ":"
+                + result.getReason() );
+        }
+        
+        fail( "Unable to find failure reason <" + reason + "> in artifact <" + artifact + ">" );
     }
 
     private Result getFailure()
