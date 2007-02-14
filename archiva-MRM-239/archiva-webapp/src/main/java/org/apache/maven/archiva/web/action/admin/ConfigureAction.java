@@ -22,12 +22,13 @@ package org.apache.maven.archiva.web.action.admin;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
+
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.scheduler.executors.IndexerTaskExecutor;
+import org.apache.maven.archiva.scheduler.executors.DataRefreshExecutor;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
@@ -56,9 +57,9 @@ public class ConfigureAction
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="indexer"
+     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="data-refresh"
      */
-    private IndexerTaskExecutor indexer;
+    private DataRefreshExecutor dataRefresh;
 
     /**
      * The configuration.
@@ -157,9 +158,9 @@ public class ConfigureAction
             i++;
         }
 
-        if ( indexer.getLastIndexingTime() != 0 )
+        if ( dataRefresh.getLastRunTime() != 0 )
         {
-            lastIndexingTime = new Date( indexer.getLastIndexingTime() ).toString();
+            lastIndexingTime = new Date( dataRefresh.getLastRunTime() ).toString();
         }
         else
         {
