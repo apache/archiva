@@ -63,31 +63,33 @@ public abstract class AbstractArtifactDiscoverer
 
         List artifacts = new ArrayList();
 
-        List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
-
-        for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
+        if ( repositoryBase.exists() )
         {
-            String path = (String) i.next();
+            List artifactPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns );
 
-            try
+            for ( Iterator i = artifactPaths.iterator(); i.hasNext(); )
             {
-                Artifact artifact = buildArtifactFromPath( path, repository );
-
-                if ( filter.include( artifact ) )
+                String path = (String) i.next();
+    
+                try
                 {
-                    artifacts.add( artifact );
+                    Artifact artifact = buildArtifactFromPath( path, repository );
+    
+                    if ( filter.include( artifact ) )
+                    {
+                        artifacts.add( artifact );
+                    }
+                    else
+                    {
+                        addExcludedPath( path, "Omitted by filter" );
+                    }
                 }
-                else
+                catch ( DiscovererException e )
                 {
-                    addExcludedPath( path, "Omitted by filter" );
+                    addKickedOutPath( path, e.getMessage() );
                 }
-            }
-            catch ( DiscovererException e )
-            {
-                addKickedOutPath( path, e.getMessage() );
             }
         }
-
         return artifacts;
     }
 

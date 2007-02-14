@@ -69,31 +69,35 @@ public class DefaultMetadataDiscoverer
         }
 
         List metadataFiles = new ArrayList();
-        List metadataPaths = scanForArtifactPaths( new File( repository.getBasedir() ), blacklistedPatterns,
-                                                   STANDARD_DISCOVERY_INCLUDES, null );
 
-        for ( Iterator i = metadataPaths.iterator(); i.hasNext(); )
+        File repositoryBase = new File( repository.getBasedir() );
+        if ( repositoryBase.exists() )
         {
-            String metadataPath = (String) i.next();
-            try
+            List metadataPaths = scanForArtifactPaths( repositoryBase, blacklistedPatterns,
+                                                       STANDARD_DISCOVERY_INCLUDES, null );
+
+            for ( Iterator i = metadataPaths.iterator(); i.hasNext(); )
             {
-                RepositoryMetadata metadata = buildMetadata( repository.getBasedir(), metadataPath );
-                File f = new File( repository.getBasedir(), metadataPath );
-                if ( filter.include( metadata, f.lastModified() ) )
+                String metadataPath = (String) i.next();
+                try
                 {
-                    metadataFiles.add( metadata );
+                    RepositoryMetadata metadata = buildMetadata( repository.getBasedir(), metadataPath );
+                    File f = new File( repository.getBasedir(), metadataPath );
+                    if ( filter.include( metadata, f.lastModified() ) )
+                    {
+                        metadataFiles.add( metadata );
+                    }
+                    else
+                    {
+                        addExcludedPath( metadataPath, "Metadata excluded by filter" );
+                    }
                 }
-                else
+                catch ( DiscovererException e )
                 {
-                    addExcludedPath( metadataPath, "Metadata excluded by filter" );
+                    addKickedOutPath( metadataPath, e.getMessage() );
                 }
-            }
-            catch ( DiscovererException e )
-            {
-                addKickedOutPath( metadataPath, e.getMessage() );
             }
         }
-
         return metadataFiles;
     }
 
