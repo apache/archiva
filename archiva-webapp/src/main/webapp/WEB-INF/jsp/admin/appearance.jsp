@@ -39,13 +39,13 @@
 
 <ww:set name="companyPom" value="companyPom"/>
 
-<c:if test="${empty(companyPom)}">
+<c:if test="${empty(companyPom.groupId) || empty(companyPom.artifactId)}">
   <p>
     You have not yet specified a company POM. <a href="<ww:url action='editAppearance' />">Select a Company POM</a>
   </p>
 </c:if>
 
-<c:if test="${!empty(companyPom)}">
+<c:if test="${!empty(companyPom.groupId) && !empty(companyPom.artifactId)}">
   <p>
     Your selected company POM is below. If you would like to change the organization name, url or logo, you can
     <a href="<ww:url action='editCompanyPom'/>">edit the POM</a>.
