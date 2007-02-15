@@ -23,7 +23,7 @@
 
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <role-hint>commons-configuration</role-hint>
       <configuration>
         <properties>
@@ -111,10 +111,12 @@
             <name>org.jpox.poid.transactionIsolation</name>
             <value>READ_UNCOMMITTED</value>
           </property>
+<!--
           <property>
             <name>org.jpox.rdbms.dateTimezone</name>
             <value>JDK_DEFAULT_TIMEZONE</value>
           </property>
+-->
 <!--
           <property>
             <name>org.jpox.identifier.case</name>

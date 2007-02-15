@@ -34,7 +34,7 @@
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>empty</role-hint>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
       </configuration>
     </component>
@@ -53,7 +53,7 @@
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>configured</role-hint>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
         <properties>
           <system/>
@@ -77,7 +77,7 @@
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>save</role-hint>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
         <properties>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
@@ -100,7 +100,7 @@
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>read-saved</role-hint>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
         <properties>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
