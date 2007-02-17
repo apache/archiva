@@ -20,13 +20,6 @@ package org.apache.maven.archiva.converter;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
-import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
-import org.apache.maven.archiva.reporting.model.ArtifactResults;
-import org.apache.maven.archiva.reporting.model.MetadataResults;
-import org.apache.maven.archiva.reporting.model.Result;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
@@ -45,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
 /**
@@ -67,8 +62,6 @@ public class RepositoryConverterTest
 
     private ArtifactFactory artifactFactory;
 
-    private ReportingDatabase reportingDatabase;
-
     private static final int SLEEP_MILLIS = 100;
 
     private I18N i18n;
@@ -81,20 +74,18 @@ public class RepositoryConverterTest
         ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
-        
-        reportingDatabase = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
 
         File sourceBase = getTestFile( "src/test/source-repository" );
-        sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
+        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
+                                                             null );
 
         layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         File targetBase = getTestFile( "target/test-target-repository" );
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
-        targetRepository =
-            factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null, null );
+        targetRepository = factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null,
+                                                             null );
 
         repositoryConverter = (RepositoryConverter) lookup( RepositoryConverter.ROLE, "default" );
 
@@ -102,55 +93,10 @@ public class RepositoryConverterTest
 
         i18n = (I18N) lookup( I18N.ROLE );
     }
-    
 
     protected void tearDown()
         throws Exception
     {
-        if ( reportingDatabase != null )
-        {
-            ArtifactResultsDatabase artifactDatabase = reportingDatabase.getArtifactDatabase();
-
-            if ( artifactDatabase != null )
-            {
-                // Clean out any entries between runs.
-                for ( Iterator it = artifactDatabase.getIterator(); it.hasNext(); )
-                {
-                    ArtifactResults result = (ArtifactResults) it.next();
-                    try
-                    {
-                        artifactDatabase.remove( result );
-                    }
-                    catch ( Exception e )
-                    {
-                        // ignore
-                    }
-                }
-            }
-
-            MetadataResultsDatabase metadataDatabase = reportingDatabase.getMetadataDatabase();
-
-            if ( metadataDatabase != null )
-            {
-                // Clean out any entries between runs.
-                for ( Iterator it = metadataDatabase.getIterator(); it.hasNext(); )
-                {
-                    MetadataResults result = (MetadataResults) it.next();
-                    try
-                    {
-                        metadataDatabase.remove( result );
-                    }
-                    catch ( Exception e )
-                    {
-                        // ignore
-                    }
-                }
-            }
-
-            // Free it from plexus too!
-            release( reportingDatabase );
-        }
-
         super.tearDown();
     }
 
@@ -188,8 +134,8 @@ public class RepositoryConverterTest
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {
-                        throw new IOException(
-                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                        throw new IOException( "Could not create destination directory '"
+                            + destination.getAbsolutePath() + "'." );
                     }
                     copyDirectoryStructure( file, destination );
                 }
@@ -208,20 +154,23 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         artifactFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkSuccess(listener);
 
         assertTrue( "Check artifact created", artifactFile.exists() );
         assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
@@ -253,17 +202,20 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkSuccess(listener);
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -294,13 +246,13 @@ public class RepositoryConverterTest
     {
         Artifact artifact = createArtifact( "test", "relocated-v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
         repositoryConverter.convert( artifact, targetRepository );
@@ -308,8 +260,7 @@ public class RepositoryConverterTest
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check if relocated artifact created", artifactFile.exists() );
-        assertTrue( "Check if relocated artifact matches",
-                    FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        assertTrue( "Check if relocated artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
         Artifact pomArtifact = createArtifact( "relocated-test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
         File pomFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( pomArtifact ) );
         File testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
@@ -329,19 +280,20 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v3-warnings-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
         versionMetadataFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "check number of warnings", 2, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        checkCounts( listener, 0, 2 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -364,17 +316,20 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", version );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -407,17 +362,20 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-SNAPSHOT" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -463,10 +421,9 @@ public class RepositoryConverterTest
     public void testMavenOnePluginConversion()
         throws Exception
     {
-        Artifact artifact =
-            createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
-        artifact.setFile(
-            new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
+        Artifact artifact = createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0",
+                                            "maven-plugin" );
+        artifact.setFile( new File( getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
         repositoryConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.
@@ -477,14 +434,14 @@ public class RepositoryConverterTest
         assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
 
         /*
-        The POM isn't needed for Maven 1.x plugins but the raw conversion for  
+         The POM isn't needed for Maven 1.x plugins but the raw conversion for  
 
-        artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File expectedPomFile = getTestFile( "src/test/expected-files/maven-foo-plugin-1.0.pom" );
-        assertTrue( "Check POM created", pomFile.exists() );
-        compareFiles( expectedPomFile, pomFile );
-        */
+         artifact = createPomArtifact( artifact );
+         File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+         File expectedPomFile = getTestFile( "src/test/expected-files/maven-foo-plugin-1.0.pom" );
+         assertTrue( "Check POM created", pomFile.exists() );
+         compareFiles( expectedPomFile, pomFile );
+         */
     }
 
     public void testV3TimestampedSnapshotPomConvert()
@@ -494,17 +451,20 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-20060105.130101-3" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         artifactMetadataFile.delete();
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
+        File snapshotMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
         snapshotMetadataFile.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -536,9 +496,13 @@ public class RepositoryConverterTest
         // test that a POM is not created when there was none at the source
 
         Artifact artifact = createArtifact( "test", "noPomArtifact", "1.0.0" );
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 1, 0 );
-        assertEquals( "check warning message", getI18nString( "warning.missing.pom" ), getWarning().getReason() );
+        checkCounts( listener, 0, 1 );
+        
+        assertHasWarningReason( listener, getI18nString( "warning.missing.pom" ) );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -561,15 +525,19 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 1, 0, 0 );
-        assertEquals( "check failure message", getI18nString( "failure.incorrect.md5" ), getFailure().getReason() );
+        checkCounts( listener, 1, 0 );
+        
+        assertHasErrorReason( listener, getI18nString( "failure.incorrect.md5" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -582,15 +550,19 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 1, 0, 0 );
-        assertHasFailureReason( getI18nString( "failure.incorrect.sha1" ) );
+        checkCounts( listener, 1, 0 );
+        
+        assertHasErrorReason( listener, getI18nString( "failure.incorrect.sha1" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -619,8 +591,11 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -655,17 +630,20 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
-        repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 1, 0, 0 );
+        MockConversionListener listener = new MockConversionListener();
         
-        assertHasFailureReason( getI18nString( "failure.target.already.exists" ) );
+        repositoryConverter.addConversionListener( listener );
+        repositoryConverter.convert( artifact, targetRepository );
+        checkCounts( listener, 1, 0 );
+
+        assertHasErrorReason( listener, getI18nString( "failure.target.already.exists" ) );
 
         assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -692,8 +670,11 @@ public class RepositoryConverterTest
         sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
         sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
@@ -702,8 +683,8 @@ public class RepositoryConverterTest
         assertFalse( "Check modified", origTime == targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertTrue( "Check metadata created", metadataFile.exists() );
     }
 
@@ -722,8 +703,11 @@ public class RepositoryConverterTest
         File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 0, 0, 0 );
+        checkCounts( listener, 0, 0 );
 
         assertTrue( "Check source file exists", sourceFile.exists() );
         assertTrue( "Check source POM exists", sourcePomFile.exists() );
@@ -732,8 +716,8 @@ public class RepositoryConverterTest
         assertFalse( "Check target POM doesn't exist", targetPomFile.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -764,17 +748,20 @@ public class RepositoryConverterTest
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
-        assertEquals( "Check failure message", getI18nString( "failure.target.already.exists" ),
-                      getFailure().getReason() );
+        checkFailure(listener);
+        
+        assertHasErrorReason( listener, getI18nString( "failure.target.already.exists" ) );
 
         assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
         assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -785,20 +772,38 @@ public class RepositoryConverterTest
 
         Artifact artifact = createArtifact( "test", "rollback-created-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         FileUtils.deleteDirectory( artifactMetadataFile.getParentFile() );
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
-                                             targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
+        File versionMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( versionMetadata ) );
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkCounts( 1, 0, 0 );
+        checkCounts( listener, 1, 0 );
+        
+        List messages = (List) listener.getErrors().get( listener.toKey( artifact ));
+        assertNotNull("Should have error messages.");
+        
+        boolean found = false;
         String pattern = "^" + getI18nString( "failure.invalid.source.pom" ).replaceFirst( "\\{0\\}", ".*" ) + "$";
-        assertTrue( "Check failure message", getFailure().getReason().matches( pattern ) );
+        for ( Iterator it = messages.iterator(); it.hasNext(); )
+        {
+            String reason = (String) it.next();
+            if( reason.matches( pattern ) )
+            {
+                found = true;
+                break;
+            }
+        }
+        
+        assertTrue( "Check failure message.", found );
 
         assertFalse( "check artifact rolled back", artifactFile.exists() );
         assertFalse( "check metadata rolled back", artifactMetadataFile.exists() );
@@ -814,10 +819,12 @@ public class RepositoryConverterTest
         artifacts.add( createArtifact( "test", "artifact-one", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-two", "1.0.0" ) );
         artifacts.add( createArtifact( "test", "artifact-three", "1.0.0" ) );
+        
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifacts, targetRepository );
-        assertEquals( "check no errors", 0, reportingDatabase.getNumFailures() );
-        assertEquals( "check no warnings", 0, reportingDatabase.getNumWarnings() );
-        assertEquals( "check no notices", 0, reportingDatabase.getNumNotices() );
+        checkCounts( listener, 0, 0 );
 
         for ( Iterator i = artifacts.iterator(); i.hasNext(); )
         {
@@ -829,8 +836,8 @@ public class RepositoryConverterTest
 
             artifact = createPomArtifact( artifact );
             File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-            File expectedPomFile =
-                getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId() + ".pom" );
+            File expectedPomFile = getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId()
+                + ".pom" );
             assertTrue( "Check POM created", pomFile.exists() );
 
             compareFiles( expectedPomFile, pomFile );
@@ -848,16 +855,19 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
-        assertEquals( "check failure message", getI18nString( "failure.incorrect.artifactMetadata.versions" ),
-                      getFailure().getReason() );
+        checkFailure(listener);
+        
+        assertHasErrorReason( listener, getI18nString( "failure.incorrect.artifactMetadata.versions" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -872,16 +882,19 @@ public class RepositoryConverterTest
         File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         file.delete();
 
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkFailure();
-        assertEquals( "check failure message", getI18nString( "failure.incorrect.snapshotMetadata.snapshot" ),
-                      getFailure().getReason() );
+        checkFailure(listener);
+        
+        assertHasErrorReason( listener, getI18nString( "failure.incorrect.snapshotMetadata.snapshot" ) );
 
         assertFalse( "Check artifact not created", file.exists() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        File metadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( metadata ) );
         assertFalse( "Check metadata not created", metadataFile.exists() );
     }
 
@@ -891,9 +904,11 @@ public class RepositoryConverterTest
         // test artifact level metadata is merged when it already exists on successful conversion
 
         Artifact artifact = createArtifact( "test", "newversion-artifact", "1.0.1" );
-
+        MockConversionListener listener = new MockConversionListener();
+        
+        repositoryConverter.addConversionListener( listener );
         repositoryConverter.convert( artifact, targetRepository );
-        checkSuccess();
+        checkSuccess(listener);
 
         File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
         assertTrue( "Check artifact created", artifactFile.exists() );
@@ -907,8 +922,8 @@ public class RepositoryConverterTest
         compareFiles( sourcePomFile, pomFile );
 
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
-                                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File artifactMetadataFile = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
         assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
 
         File expectedMetadataFile = getTestFile( "src/test/expected-files/newversion-artifact-metadata.xml" );
@@ -923,8 +938,8 @@ public class RepositoryConverterTest
 
         ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
-        sourceRepository = factory.createArtifactRepository( "source", targetRepository.getUrl(),
-                                                             targetRepository.getLayout(), null, null );
+        sourceRepository = factory.createArtifactRepository( "source", targetRepository.getUrl(), targetRepository
+            .getLayout(), null, null );
 
         Artifact artifact = createArtifact( "test", "repository-artifact", "1.0" );
 
@@ -956,8 +971,7 @@ public class RepositoryConverterTest
         return createArtifact( groupId, artifactId, baseVersion, version, "jar" );
     }
 
-    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version,
-                                     String type )
+    private Artifact createArtifact( String groupId, String artifactId, String baseVersion, String version, String type )
     {
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );
         artifact.setBaseVersion( baseVersion );
@@ -968,8 +982,8 @@ public class RepositoryConverterTest
 
     private Artifact createPomArtifact( Artifact artifact )
     {
-        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(),
-                               artifact.getVersion(), "pom" );
+        return createArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(), artifact
+            .getVersion(), "pom" );
     }
 
     private static void compareFiles( File expectedPomFile, File pomFile )
@@ -977,35 +991,33 @@ public class RepositoryConverterTest
     {
         String expectedContent = normalizeString( FileUtils.readFileToString( expectedPomFile, null ) );
         String targetContent = normalizeString( FileUtils.readFileToString( pomFile, null ) );
-        assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
-                      targetContent );
+        assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent, targetContent );
     }
 
     private static String normalizeString( String path )
     {
         return path.trim().replaceAll( "\r\n", "\n" ).replace( '\r', '\n' ).replaceAll( "<\\?xml .+\\?>", "" );
     }
-    
-    private void checkSuccess()
+
+    private void checkSuccess(MockConversionListener listener)
     {
-        checkCounts(0, 0, 0);
+        checkCounts( listener, 0, 0 );
     }
 
-    private void checkFailure()
+    private void checkFailure(MockConversionListener listener)
     {
-        checkCounts(1, 0, 0);
+        checkCounts( listener, 1, 0 );
     }
-    
-    private void checkCounts( int failures, int warnings, int notices )
-    {
-        int actualFailures = reportingDatabase.getNumFailures();
-        int actualWarnings = reportingDatabase.getNumWarnings();
-        int actualNotices = reportingDatabase.getNumNotices();
 
-        if ( ( failures != actualFailures ) || ( warnings != actualWarnings ) || ( notices != actualNotices ) )
+    private void checkCounts( MockConversionListener listener, int failures, int warnings )
+    {
+        int actualFailures = listener.getErrorMessageCount();
+        int actualWarnings = listener.getWarningMessageCount();
+
+        if ( ( failures != actualFailures ) || ( warnings != actualWarnings ) )
         {
-            fail( "Check Results Counts expected:<" + failures + "," + warnings + "," + notices + "> but was:<"
-                + actualFailures + "," + actualWarnings + "," + actualNotices + ">" );
+            fail( "Check Results Counts expected:<" + failures + "," + warnings + "> but was:<" + actualFailures + ","
+                + actualWarnings + ">" );
         }
     }
 
@@ -1014,43 +1026,52 @@ public class RepositoryConverterTest
         return i18n.getString( repositoryConverter.getClass().getName(), Locale.getDefault(), key );
     }
     
-    private void assertHasFailureReason( String reason )
+    private void assertHasWarningReason( MockConversionListener listener, String reason )
     {
-        ArtifactResults artifact = (ArtifactResults) reportingDatabase.getArtifactIterator().next();
-        
-        // Attempt to find the reason ...
-        for ( Iterator it = artifact.getFailures().iterator(); it.hasNext(); )
+        assertHasMessage( listener.getWarnings(), "warning", reason );
+    }
+
+    private void assertHasErrorReason( MockConversionListener listener, String reason )
+    {
+        assertHasMessage( listener.getErrors(), "error", reason );
+    }
+    
+    private void assertHasMessage( Map map, String type, String message )
+    {
+        if ( ( map == null ) || ( map.isEmpty() ) )
         {
-            Result result = (Result) it.next();
-            if ( StringUtils.equals( result.getReason(), reason ) )
+            fail( "No " + type + "s captured, expected " + type + " <" + message + ">" );
+        }
+
+        // Attempt to find the message ...
+        for ( Iterator it = map.values().iterator(); it.hasNext(); )
+        {
+            List msgList = (List) it.next();
+
+            if ( msgList.contains( message ) )
             {
+                // Found it!
                 return;
             }
         }
-        
+
         // Didn't find it! whoops ...
-        System.err.println( "ArtifactResults : " + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
-            + artifact.getVersion() + ":" + artifact.getType() + ":" + artifact.getClassifier() );
-        for ( Iterator it = artifact.getFailures().iterator(); it.hasNext(); )
+        for ( Iterator it = map.entrySet().iterator(); it.hasNext(); )
         {
-            Result result = (Result) it.next();
-            System.err.println( "   Failure: " + result.getProcessor() + ":" + result.getProblem() + ":"
-                + result.getReason() );
+            Map.Entry entry = (Entry) it.next();
+            String key = (String) entry.getKey();
+            List msgList = (List) entry.getValue();
+
+            System.err.println( " Artifact: " + key );
+
+            for ( Iterator itMsgs = msgList.iterator(); itMsgs.hasNext(); )
+            {
+                String msg = (String) itMsgs.next();
+                System.err.println( "           " + msg );
+            }
         }
-        
-        fail( "Unable to find failure reason <" + reason + "> in artifact <" + artifact + ">" );
-    }
 
-    private Result getFailure()
-    {
-        ArtifactResults artifact = (ArtifactResults) reportingDatabase.getArtifactIterator().next();
-        return (Result) artifact.getFailures().get( 0 );
-    }
-
-    private Result getWarning()
-    {
-        ArtifactResults artifact = (ArtifactResults) reportingDatabase.getArtifactIterator().next();
-        return (Result) artifact.getWarnings().get( 0 );
+        fail( "Unable to find " + type + " reason <" + message + "> in any artifact." );
     }
 
     private void createModernSourceRepository()
@@ -1061,7 +1082,7 @@ public class RepositoryConverterTest
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
         File sourceBase = getTestFile( "src/test/source-modern-repository" );
-        sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
+        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
+                                                             null );
     }
 }

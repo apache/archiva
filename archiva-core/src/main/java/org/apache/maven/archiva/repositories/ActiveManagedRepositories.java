@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repositories;
  * under the License.
  */
 
-import org.apache.maven.archiva.artifact.ManagedArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifact;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -44,12 +44,27 @@ public interface ActiveManagedRepositories
      * @param id the ID of the repository.
      * @return the ArtifactRepository associated with the provided ID, or null if none found.
      */
-    ArtifactRepository getArtifactRepository( String id );
+    public ArtifactRepository getArtifactRepository( String id );
 
-    List getAllArtifactRepositories();
+    /**
+     * Get the List of active managed repositories as a List of {@link ArtifactRepository} objects.
+     *  
+     * @return the list of ArtifactRepository objects.
+     */
+    public List /*<ArtifactRepository>*/getAllArtifactRepositories();
 
     RepositoryConfiguration getRepositoryConfiguration( String id );
 
+    /**
+     * Providing only a groupId, artifactId, and version, return the MavenProject that
+     * is found, in any managed repository.
+     * 
+     * @param groupId the groupId to search for
+     * @param artifactId the artifactId to search for
+     * @param version the version to search for
+     * @return the MavenProject from the provided parameters.
+     * @throws ProjectBuildingException if there was a problem building the maven project object.
+     */
     MavenProject findProject( String groupId, String artifactId, String version )
         throws ProjectBuildingException;
 
@@ -59,4 +74,20 @@ public interface ActiveManagedRepositories
     ManagedArtifact findArtifact( String groupId, String artifactId, String version, String type );
 
     ManagedArtifact findArtifact( Artifact artifact );
+
+    /**
+     * Obtain the last data refresh timestamp for all Managed Repositories.
+     * 
+     * @return the last data refresh timestamp.
+     */
+    long getLastDataRefreshTime();
+
+    /**
+     * Tests to see if there needs to be a data refresh performed.
+     * 
+     * The only valid scenario is if 1 or more repositories have not had their data refreshed ever. 
+     * 
+     * @return true if there needs to be a data refresh.
+     */
+    boolean needsDataRefresh();
 }

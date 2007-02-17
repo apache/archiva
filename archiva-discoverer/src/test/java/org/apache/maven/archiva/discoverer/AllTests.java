@@ -35,9 +35,7 @@ public class AllTests
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.discoverer" );
         //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.discoverer.builders.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.discoverer.consumers.AllTests.suite() );
-        suite.addTestSuite( PathUtilTest.class );
+        suite.addTestSuite( DefaultDiscovererTest.class );
         //$JUnit-END$
         return suite;
     }

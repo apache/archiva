@@ -19,27 +19,25 @@ package org.apache.maven.archiva.scheduler.executors;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.consumers.Consumer;
+import org.apache.maven.archiva.common.consumers.ConsumerException;
+import org.apache.maven.archiva.common.consumers.ConsumerFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.Discoverer;
-import org.apache.maven.archiva.discoverer.DiscovererConsumer;
-import org.apache.maven.archiva.discoverer.DiscovererConsumerFactory;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.archiva.discoverer.DiscovererStatistics;
 import org.apache.maven.archiva.scheduler.task.DataRefreshTask;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,7 +52,7 @@ import java.util.List;
  */
 public class DataRefreshExecutor
     extends AbstractLogEnabled
-    implements TaskExecutor, Initializable
+    implements TaskExecutor
 {
     /**
      * Configuration store.
@@ -69,9 +67,9 @@ public class DataRefreshExecutor
     private ConfiguredRepositoryFactory repoFactory;
 
     /**
-     * @plexus.configuration
+     * @plexus.requirement
      */
-    private List consumerNames;
+    private DataRefreshConsumers consumerNames;
 
     /**
      * @plexus.requirement
@@ -81,9 +79,7 @@ public class DataRefreshExecutor
     /**
      * @plexus.requirement
      */
-    private DiscovererConsumerFactory consumerFactory;
-
-    private long lastRunTime = 0;
+    private ConsumerFactory consumerFactory;
 
     public void executeTask( Task task )
         throws TaskExecutionException
@@ -93,12 +89,6 @@ public class DataRefreshExecutor
         getLogger().info( "Executing task from queue with job name: " + indexerTask.getJobName() );
 
         execute();
-    }
-
-    private String toHumanTimestamp( long timestamp )
-    {
-        SimpleDateFormat dateFormat = new SimpleDateFormat();
-        return dateFormat.format( new Date( timestamp ) );
     }
 
     public void execute()
@@ -113,11 +103,12 @@ public class DataRefreshExecutor
             String name = (String) it.next();
             try
             {
-                DiscovererConsumer consumer = consumerFactory.createConsumer( name );
+                Consumer consumer = consumerFactory.createConsumer( name );
                 consumers.add( consumer );
             }
-            catch ( DiscovererException e )
+            catch ( ConsumerException e )
             {
+                getLogger().warn( e.getMessage(), e );
                 throw new TaskExecutionException( e.getMessage(), e );
             }
         }
@@ -137,23 +128,31 @@ public class DataRefreshExecutor
 
             List filteredConsumers = filterConsumers( consumers, repository );
 
-            DiscovererStatistics stats = discoverer.scanRepository( repository, filteredConsumers,
-                                                                    repositoryConfiguration.isIncludeSnapshots() );
-
-            getLogger().info( "----------------------------------------------------" );
-            getLogger().info( "Scan of Repository: " + repository.getId() );
-            getLogger().info( "   Started : " + toHumanTimestamp( stats.getTimestampStarted() ) );
-            getLogger().info( "   Finished: " + toHumanTimestamp( stats.getTimestampFinished() ) );
-            // TODO: pretty print ellapsed time.
-            getLogger().info( "   Duration: " + stats.getElapsedMilliseconds() + "ms" );
-            getLogger().info( "   Files   : " + stats.getFilesIncluded() );
-            getLogger().info( "   Consumed: " + stats.getFilesConsumed() );
-            getLogger().info( "   Skipped : " + stats.getFilesSkipped() );
-            
-            // TODO: Do we really need to check first?
-            if ( stats.getTimestampFinished() > lastRunTime )
+            DiscovererStatistics lastRunStats = new DiscovererStatistics( repository );
+            try
             {
-                lastRunTime = stats.getTimestampFinished();
+                lastRunStats.load( ".datarefresh" );
+            }
+            catch ( IOException e )
+            {
+                getLogger().info(
+                                  "Unable to load last run statistics for repository [" + repository.getId() + "]: "
+                                      + e.getMessage() );
+            }
+
+            try
+            {
+                DiscovererStatistics stats = discoverer
+                    .walkRepository( repository, filteredConsumers, repositoryConfiguration.isIncludeSnapshots(),
+                                     lastRunStats.getTimestampFinished(), null, null );
+
+                stats.dump( getLogger() );
+            }
+            catch ( DiscovererException e )
+            {
+                getLogger().error(
+                                   "Unable to run data refresh against repository [" + repository.getId() + "]: "
+                                       + e.getMessage(), e );
             }
         }
 
@@ -176,7 +175,7 @@ public class DataRefreshExecutor
 
         for ( Iterator it = consumers.iterator(); it.hasNext(); )
         {
-            DiscovererConsumer consumer = (DiscovererConsumer) it.next();
+            Consumer consumer = (Consumer) it.next();
             if ( consumer.init( repository ) )
             {
                 // Approved!
@@ -189,34 +188,5 @@ public class DataRefreshExecutor
         }
 
         return filtered;
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration repositoryConfiguration = (RepositoryConfiguration) i.next();
-
-            if ( !repositoryConfiguration.isIndexed() )
-            {
-                continue;
-            }
-
-            ArtifactRepository repository = repoFactory.createRepository( repositoryConfiguration );
-
-            DiscovererStatistics stats = new DiscovererStatistics( repository );
-            if ( stats.getTimestampFinished() > lastRunTime )
-            {
-                lastRunTime = stats.getTimestampFinished();
-            }
-        }
-    }
-
-    public long getLastRunTime()
-    {
-        return lastRunTime;
     }
 }

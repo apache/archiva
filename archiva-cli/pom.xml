@@ -30,7 +30,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-core</artifactId>
+      <artifactId>archiva-converter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

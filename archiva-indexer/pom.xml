@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-indexer</artifactId>
-  <name>Archiva Repository Indexer</name>
+  <name>Archiva Indexer</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>

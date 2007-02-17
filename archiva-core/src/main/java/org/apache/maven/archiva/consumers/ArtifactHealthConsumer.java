@@ -19,7 +19,8 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.discoverer.consumers.GenericArtifactConsumer;
+import org.apache.maven.archiva.common.consumers.GenericArtifactConsumer;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.group.ReportGroup;
 import org.apache.maven.artifact.Artifact;
@@ -29,7 +30,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 
-import java.io.File;
 import java.util.Collections;
 
 /**
@@ -38,7 +38,7 @@ import java.util.Collections;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  *
- * @plexus.component role="org.apache.maven.archiva.discoverer.DiscovererConsumer"
+ * @plexus.component role="org.apache.maven.archiva.common.consumers.Consumer"
  *     role-hint="artifact-health"
  *     instantiation-strategy="per-lookup"
  */
@@ -60,7 +60,7 @@ public class ArtifactHealthConsumer
      */
     private MavenProjectBuilder projectBuilder;
 
-    public void processArtifact( Artifact artifact, File file )
+    public void processArtifact( Artifact artifact, BaseFile file )
     {
         Model model = null;
         try
@@ -84,9 +84,14 @@ public class ArtifactHealthConsumer
         health.processArtifact( artifact, model );
     }
 
-    public void processArtifactBuildFailure( File path, String message )
+    public void processFileProblem( BaseFile path, String message )
     {
         /* do nothing here (yet) */
         // TODO: store build failure into database?
+    }
+    
+    public String getName()
+    {
+        return "Artifact Health Consumer";
     }
 }

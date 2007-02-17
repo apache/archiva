@@ -19,9 +19,10 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.consumers.GenericArtifactConsumer;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.discoverer.consumers.GenericArtifactConsumer;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
 import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
@@ -37,7 +38,7 @@ import java.io.File;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  *
- * @plexus.component role="org.apache.maven.archiva.discoverer.DiscovererConsumer"
+ * @plexus.component role="org.apache.maven.archiva.common.consumers.Consumer"
  *     role-hint="index-artifact"
  *     instantiation-strategy="per-lookup"
  */
@@ -74,7 +75,7 @@ public class IndexArtifactConsumer
         return super.init( repository );
     }
 
-    public void processArtifact( Artifact artifact, File file )
+    public void processArtifact( Artifact artifact, BaseFile file )
     {
         try
         {
@@ -86,9 +87,13 @@ public class IndexArtifactConsumer
         }
     }
 
-    public void processArtifactBuildFailure( File path, String message )
+    public void processFileProblem( BaseFile path, String message )
     {
-        // TODO Auto-generated method stub
 
+    }
+    
+    public String getName()
+    {
+        return "Index Artifact Consumer";
     }
 }

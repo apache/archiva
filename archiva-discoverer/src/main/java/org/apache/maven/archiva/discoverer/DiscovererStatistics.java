@@ -21,12 +21,15 @@ package org.apache.maven.archiva.discoverer;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -37,8 +40,6 @@ import java.util.Properties;
  */
 public class DiscovererStatistics
 {
-    public static final String STATS_FILENAME = ".stats";
-
     private static final String PROP_FILES_CONSUMED = "scan.consumed.files";
 
     private static final String PROP_FILES_INCLUDED = "scan.included.files";
@@ -64,14 +65,14 @@ public class DiscovererStatistics
     public DiscovererStatistics( ArtifactRepository repository )
     {
         this.repository = repository;
-        load();
     }
 
-    public void load()
+    public void load( String filename )
+        throws IOException
     {
         File repositoryBase = new File( this.repository.getBasedir() );
 
-        File scanProperties = new File( repositoryBase, STATS_FILENAME );
+        File scanProperties = new File( repositoryBase, filename );
         FileInputStream fis = null;
         try
         {
@@ -88,6 +89,7 @@ public class DiscovererStatistics
         catch ( IOException e )
         {
             reset();
+            throw e;
         }
         finally
         {
@@ -95,8 +97,8 @@ public class DiscovererStatistics
         }
     }
 
-    public void save()
-        throws DiscovererException
+    public void save( String filename )
+        throws IOException
     {
         Properties props = new Properties();
         props.setProperty( PROP_TIMESTAMP_FINISHED, String.valueOf( timestampFinished ) );
@@ -106,7 +108,7 @@ public class DiscovererStatistics
         props.setProperty( PROP_FILES_SKIPPED, String.valueOf( filesSkipped ) );
 
         File repositoryBase = new File( this.repository.getBasedir() );
-        File statsFile = new File( repositoryBase, STATS_FILENAME );
+        File statsFile = new File( repositoryBase, filename );
 
         FileOutputStream fos = null;
         try
@@ -114,11 +116,6 @@ public class DiscovererStatistics
             fos = new FileOutputStream( statsFile );
             props.store( fos, "Last Scan Information, managed by Archiva. DO NOT EDIT" );
             fos.flush();
-        }
-        catch ( IOException e )
-        {
-            throw new DiscovererException( "Unable to write scan stats to file " + statsFile.getAbsolutePath() + ": "
-                + e.getMessage(), e );
         }
         finally
         {
@@ -178,5 +175,24 @@ public class DiscovererStatistics
     public void setTimestampStarted( long timestampStarted )
     {
         this.timestampStarted = timestampStarted;
+    }
+
+    public void dump( Logger logger )
+    {
+        logger.info( "----------------------------------------------------" );
+        logger.info( "Scan of Repository: " + repository.getId() );
+        logger.info( "   Started : " + toHumanTimestamp( this.getTimestampStarted() ) );
+        logger.info( "   Finished: " + toHumanTimestamp( this.getTimestampFinished() ) );
+        // TODO: pretty print ellapsed time.
+        logger.info( "   Duration: " + this.getElapsedMilliseconds() + "ms" );
+        logger.info( "   Files   : " + this.getFilesIncluded() );
+        logger.info( "   Consumed: " + this.getFilesConsumed() );
+        logger.info( "   Skipped : " + this.getFilesSkipped() );
+    }
+    
+    private String toHumanTimestamp( long timestamp )
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat();
+        return dateFormat.format( new Date( timestamp ) );
     }
 }

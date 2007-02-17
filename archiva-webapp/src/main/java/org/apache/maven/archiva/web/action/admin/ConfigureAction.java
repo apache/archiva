@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.scheduler.executors.DataRefreshExecutor;
+import org.apache.maven.archiva.repositories.ActiveManagedRepositories;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
@@ -57,15 +57,15 @@ public class ConfigureAction
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" role-hint="data-refresh"
+     * @plexus.requirement
      */
-    private DataRefreshExecutor dataRefresh;
+    private ActiveManagedRepositories activeRepositories;
 
     /**
      * The configuration.
      */
     private Configuration configuration;
-
+    
     private CronExpressionValidator cronValidator;
 
     private String second = "0";
@@ -101,7 +101,7 @@ public class ConfigureAction
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
-        configuration.setIndexerCronExpression( getCronExpression() );
+        configuration.setDataRefreshCronExpression( getCronExpression() );
 
         // Normalize the path
         File file = new File( configuration.getIndexPath() );
@@ -126,7 +126,7 @@ public class ConfigureAction
 
     public String input()
     {
-        String[] cronEx = configuration.getIndexerCronExpression().split( " " );
+        String[] cronEx = configuration.getDataRefreshCronExpression().split( " " );
         int i = 0;
 
         while ( i < cronEx.length )
@@ -158,9 +158,9 @@ public class ConfigureAction
             i++;
         }
 
-        if ( dataRefresh.getLastRunTime() != 0 )
+        if ( activeRepositories.getLastDataRefreshTime() != 0 )
         {
-            lastIndexingTime = new Date( dataRefresh.getLastRunTime() ).toString();
+            lastIndexingTime = new Date( activeRepositories.getLastDataRefreshTime() ).toString();
         }
         else
         {

@@ -21,8 +21,8 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.discoverer.DiscovererException;
-import org.apache.maven.archiva.discoverer.builders.LayoutArtifactBuilder;
+import org.apache.maven.archiva.common.artifact.builder.BuilderException;
+import org.apache.maven.archiva.common.artifact.builder.LayoutArtifactBuilder;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -162,7 +162,7 @@ public class DefaultProxyRequestHandler
                 artifact = defaultArtifactBuilder.build( artifactPath );
                 getLogger().debug( "Artifact requested is: " + artifact );
             }
-            catch ( DiscovererException e )
+            catch ( BuilderException e )
             {
                 msg = "Failed to build artifact from path:\n\tfrom default: " + e.getMessage();
             }
@@ -174,7 +174,7 @@ public class DefaultProxyRequestHandler
                     artifact = legacyArtifactBuilder.build( artifactPath );
                     getLogger().debug( "Artifact requested is: " + artifact );
                 }
-                catch ( DiscovererException e )
+                catch ( BuilderException e )
                 {
                     getLogger().debug( msg + "\n\tfrom legacy: " + e.getMessage() );
                 }

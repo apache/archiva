@@ -19,13 +19,13 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.consumers.GenericArtifactConsumer;
+import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.RepositoryConverter;
-import org.apache.maven.archiva.discoverer.consumers.GenericArtifactConsumer;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-
-import java.io.File;
 
 /**
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
@@ -34,7 +34,7 @@ import java.io.File;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.discoverer.DiscovererConsumer"
+ * @plexus.component role="org.apache.maven.archiva.common.consumers.Consumers"
  *     role-hint="legacy-converter"
  *     instantiation-strategy="per-lookup"
  */
@@ -48,7 +48,7 @@ public class LegacyConverterArtifactConsumer
 
     private ArtifactRepository destinationRepository;
 
-    public void processArtifact( Artifact artifact, File file )
+    public void processArtifact( Artifact artifact, BaseFile file )
     {
         try
         {
@@ -62,9 +62,10 @@ public class LegacyConverterArtifactConsumer
         }
     }
 
-    public void processArtifactBuildFailure( File path, String message )
+    public void processFileProblem( BaseFile path, String message )
     {
         getLogger().error( "Artifact Build Failure on " + path + " : " + message );
+        // TODO: report this to the ConversionListener?
     }
 
     public ArtifactRepository getDestinationRepository()
@@ -76,4 +77,29 @@ public class LegacyConverterArtifactConsumer
     {
         this.destinationRepository = destinationRepository;
     }
+    
+    public String getName()
+    {
+        return "Legacy Artifact Converter Consumer";
+    }
+    
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    public void addConversionListener( ConversionListener listener )
+    {
+        repositoryConverter.addConversionListener( listener );
+    }
+
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    public void removeConversionListener( ConversionListener listener )
+    {
+        repositoryConverter.removeConversionListener( listener );
+    }    
 }

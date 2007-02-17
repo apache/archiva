@@ -1,0 +1,239 @@
+// Auto generated dot file from plexus-graphing-graphviz.
+digraph gid {
+
+  // Graph Defaults
+  graph [
+    rankdir="TB"
+  ];
+
+  // Node Defaults.
+  node [
+    fontname="Helvetica",
+    fontsize="8",
+    shape="box"
+  ];
+
+  // Edge Defaults.
+  edge [
+    arrowsize="0.8"
+    fontsize="8",
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_REPOSITORY_LAYER10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-repository-layer\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" [
+    label="org.apache.maven.archiva\narchiva-webapp\n1.0-SNAPSHOT\nwar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PLEXUS_APPLICATION10_SNAPSHOTPLEXUS_APPLICATION" [
+    label="org.apache.maven.archiva\narchiva-plexus-application\n1.0-SNAPSHOT\nplexus-application",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-core\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CONFIGURATION10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-configuration\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PROXY10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-proxy\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-reports-standard\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CLI10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-cli\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CONVERTER10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-converter\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_APPLET10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-applet\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PLEXUS_RUNTIME10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-plexus-runtime\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_DISCOVERER10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-discoverer\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_SECURITY10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-security\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Node
+  "ORGAPACHEMAVENARCHIVAARCHIVA_INDEXER10_SNAPSHOTJAR" [
+    label="org.apache.maven.archiva\narchiva-indexer\n1.0-SNAPSHOT\njar",
+    fontsize="8",
+    shape=box
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_CONVERTER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_APPLET10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PLEXUS_APPLICATION10_SNAPSHOTPLEXUS_APPLICATION" -> "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_INDEXER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_CONFIGURATION10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PLEXUS_RUNTIME10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_PLEXUS_APPLICATION10_SNAPSHOTPLEXUS_APPLICATION" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CLI10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_PROXY10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_DISCOVERER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_INDEXER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_DISCOVERER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_REPOSITORY_LAYER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_DISCOVERER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_DISCOVERER10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_PROXY10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_PROXY10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_CONFIGURATION10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CONVERTER10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_REPORTS_STANDARD10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_CORE10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+
+  // Edge
+  "ORGAPACHEMAVENARCHIVAARCHIVA_WEBAPP10_SNAPSHOTWAR" -> "ORGAPACHEMAVENARCHIVAARCHIVA_SECURITY10_SNAPSHOTJAR" [
+    arrowtail=none,
+    arrowhead=normal
+  ];
+}

@@ -19,12 +19,15 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.discoverer.DiscovererException;
 
 import java.io.File;
+import java.util.List;
 
 /**
+ * Convert an entire repository.
+ * 
  * @author Jason van Zyl
  */
 public interface LegacyRepositoryConverter
@@ -35,11 +38,27 @@ public interface LegacyRepositoryConverter
      * Convert a legacy repository to a modern repository. This means a Maven 1.x repository
      * using v3 POMs to a Maven 2.x repository using v4.0.0 POMs.
      *
-     * @param legacyRepositoryDirectory
-     * @param repositoryDirectory
-     * @throws org.apache.maven.archiva.converter.RepositoryConversionException
-     *
+     * @param legacyRepositoryDirectory the directory of the legacy repository. 
+     * @param destinationRepositoryDirectory the directory of the modern repository.
+     * @param fileExclusionPatterns the list of patterns to exclude from the conversion.
+     * @param includeSnapshots true to include snapshots in conversion or not.
+     * @throws RepositoryConversionException 
      */
-    void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory, boolean includeSnapshots )
-        throws RepositoryConversionException, DiscovererException;
+    void convertLegacyRepository( File legacyRepositoryDirectory, File destinationRepositoryDirectory,
+                                  List fileExclusionPatterns, boolean includeSnapshots )
+        throws RepositoryConversionException;
+    
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    void addConversionListener( ConversionListener listener );
+    
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    void removeConversionListener( ConversionListener listener );
 }

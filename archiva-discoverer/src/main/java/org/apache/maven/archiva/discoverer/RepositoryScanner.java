@@ -20,6 +20,8 @@ package org.apache.maven.archiva.discoverer;
  */
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.archiva.common.consumers.Consumer;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryWalkListener;
@@ -50,7 +52,7 @@ public class RepositoryScanner
 
     private DiscovererStatistics stats;
 
-    private boolean checkLastModified = true;
+    private long onlyModifiedAfterTimestamp = 0;
 
     public RepositoryScanner( ArtifactRepository repository, List consumerList )
     {
@@ -61,7 +63,7 @@ public class RepositoryScanner
         Iterator it = this.consumers.iterator();
         while ( it.hasNext() )
         {
-            DiscovererConsumer consumer = (DiscovererConsumer) it.next();
+            Consumer consumer = (Consumer) it.next();
 
             if ( !consumer.init( this.repository ) )
             {
@@ -81,29 +83,9 @@ public class RepositoryScanner
         return stats;
     }
 
-    public void directoryWalkFinished()
-    {
-        getLogger().info( "Walk Finished." );
-        stats.timestampFinished = System.currentTimeMillis();
-        
-        if( isCheckLastModified() )
-        {
-            // Only save if dealing with 'last modified' concept.
-            
-            try
-            {
-                stats.save();
-            }
-            catch ( DiscovererException e )
-            {
-                getLogger().warn( "Unable to save Scan information.", e );
-            }
-        }
-    }
-
     public void directoryWalkStarting( File basedir )
     {
-        getLogger().info( "Walk Started." );
+        getLogger().info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getBasedir() );
         stats.reset();
         stats.timestampStarted = System.currentTimeMillis();
     }
@@ -113,7 +95,7 @@ public class RepositoryScanner
         getLogger().debug( "Walk Step: " + percentage + ", " + file );
 
         // Timestamp finished points to the last successful scan, not this current one.
-        if ( isCheckLastModified() && ( file.lastModified() <= stats.timestampFinished ) )
+        if ( file.lastModified() < onlyModifiedAfterTimestamp )
         {
             // Skip file as no change has occured.
             getLogger().debug( "Skipping, No Change: " + file.getAbsolutePath() );
@@ -125,62 +107,87 @@ public class RepositoryScanner
         {
             stats.filesIncluded++;
 
-            String relativePath = PathUtil.getRelative( repository.getBasedir(), file );
+            BaseFile basefile = new BaseFile( repository.getBasedir(), file );
 
             Iterator itConsumers = this.consumers.iterator();
             while ( itConsumers.hasNext() )
             {
-                DiscovererConsumer consumer = (DiscovererConsumer) itConsumers.next();
+                Consumer consumer = (Consumer) itConsumers.next();
 
-                if ( isConsumerOfFile( consumer, relativePath ) )
+                if ( wantsFile( consumer, basefile.getRelativePath() ) )
                 {
                     try
                     {
                         getLogger().debug( "Sending to consumer: " + consumer.getName() );
                         stats.filesConsumed++;
-                        consumer.processFile( file );
+                        consumer.processFile( basefile );
                     }
                     catch ( Exception e )
                     {
                         /* Intentionally Catch all exceptions.
                          * So that the discoverer processing can continue.
                          */
-                        getLogger()
-                            .error( "Unable to process file [" + file.getAbsolutePath() + "]: " + e.getMessage(), e );
+                        getLogger().error(
+                                           "Consumer [" + consumer.getName() + "] had an error when processing file ["
+                                               + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
                     }
                 }
                 else
                 {
-                    getLogger().debug( "Skipping consumer " + consumer.getName() + " for file " + relativePath );
+                    getLogger().debug(
+                                       "Skipping consumer " + consumer.getName() + " for file "
+                                           + basefile.getRelativePath() );
                 }
             }
         }
     }
 
-    private boolean isConsumerOfFile( DiscovererConsumer consumer, String relativePath )
+    public void directoryWalkFinished()
     {
-        Iterator it = consumer.getIncludePatterns().iterator();
-        // String name = file.getAbsolutePath();
+        getLogger().info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getBasedir() );
+        stats.timestampFinished = System.currentTimeMillis();
+    }
+
+    private boolean wantsFile( Consumer consumer, String relativePath )
+    {
+        Iterator it;
+
+        // Test excludes first.
+        it = consumer.getExcludePatterns().iterator();
         while ( it.hasNext() )
         {
             String pattern = (String) it.next();
             if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
             {
+                // Definately does NOT WANT FILE.
+                return false;
+            }
+        }
+
+        // Now test includes.
+        it = consumer.getIncludePatterns().iterator();
+        while ( it.hasNext() )
+        {
+            String pattern = (String) it.next();
+            if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
+            {
+                // Specifically WANTS FILE.
                 return true;
             }
         }
 
+        // Not included, and Not excluded?  Default to EXCLUDE.
         return false;
     }
-
-    public boolean isCheckLastModified()
+    
+    public long getOnlyModifiedAfterTimestamp()
     {
-        return checkLastModified;
+        return onlyModifiedAfterTimestamp;
     }
 
-    public void setCheckLastModified( boolean checkLastModified )
+    public void setOnlyModifiedAfterTimestamp( long onlyModifiedAfterTimestamp )
     {
-        this.checkLastModified = checkLastModified;
+        this.onlyModifiedAfterTimestamp = onlyModifiedAfterTimestamp;
     }
 
     /**
@@ -200,5 +207,4 @@ public class RepositoryScanner
     {
         this.logger = logger;
     }
-
 }
