@@ -19,9 +19,9 @@ package org.apache.maven.archiva.repositories;
  * under the License.
  */
 
-import org.apache.maven.archiva.artifact.ManagedArtifact;
-import org.apache.maven.archiva.artifact.ManagedEjbArtifact;
-import org.apache.maven.archiva.artifact.ManagedJavaArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedEjbArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedJavaArtifact;
 import org.codehaus.plexus.PlexusTestCase;
 
 /**

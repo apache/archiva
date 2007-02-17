@@ -73,7 +73,7 @@ public class RepositoryTaskJob
                 }
                 else if ( RepositoryTask.QUEUE_POLICY_SKIP.equals( queuePolicy ) )
                 {
-                    //do not queue anymore, policy is to skip
+                    // do not queue anymore, policy is to skip
                 }
             }
         }

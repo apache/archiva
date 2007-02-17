@@ -24,6 +24,9 @@
     <version>4</version>
     <relativePath>../pom/maven/pom.xml</relativePath>
   </parent>
+  <prerequisites>
+    <maven>2.0.5</maven>
+  </prerequisites>
   <groupId>org.apache.maven.archiva</groupId>
   <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
@@ -120,6 +123,7 @@
   <modules>
     <module>archiva-applet</module>
     <module>archiva-converter</module>
+    <module>archiva-common</module>
     <module>archiva-discoverer</module>
     <module>archiva-reports-standard</module>
     <module>archiva-indexer</module>
@@ -219,6 +223,20 @@
         <artifactId>wagon-http-lightweight</artifactId>
         <version>${wagon.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-common</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <!--
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-common</artifactId>
+        <version>${pom.version}</version>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+       -->
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-core</artifactId>
@@ -495,9 +513,18 @@
       </build>
     </profile>
   </profiles>
-  <!-- TODO: remove once modello is released -->
-  <!-- TODO: remove once ehcache, p-sec, registry, webdav, xwork, naming released -->
   <repositories>
+    <repository>
+      <id>codehaus.org</id>
+      <url>http://repository.codehaus.org</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <!-- TODO: remove once ehcache, p-sec, registry, webdav, xwork, naming released -->
     <repository>
       <id>codehaus.org</id>
       <url>http://snapshots.repository.codehaus.org</url>

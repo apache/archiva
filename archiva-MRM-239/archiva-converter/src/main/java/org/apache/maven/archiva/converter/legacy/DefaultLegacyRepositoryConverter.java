@@ -19,9 +19,9 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.Discoverer;
-import org.apache.maven.archiva.discoverer.DiscovererConsumerFactory;
 import org.apache.maven.archiva.discoverer.DiscovererException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
@@ -62,13 +62,13 @@ public class DefaultLegacyRepositoryConverter
     private Discoverer discoverer;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.maven.archiva.common.consumers.Consumer" role-hint="legacy-converter"
      */
-    private DiscovererConsumerFactory consumerFactory;
+    private LegacyConverterArtifactConsumer legacyConverterConsumer;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
-                                         boolean includeSnapshots )
-        throws RepositoryConversionException, DiscovererException
+                                         List fileExclusionPatterns, boolean includeSnapshots )
+        throws RepositoryConversionException
     {
         ArtifactRepository legacyRepository;
 
@@ -87,14 +87,38 @@ public class DefaultLegacyRepositoryConverter
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }
 
-        List consumers = new ArrayList();
+        try
+        {
+            List consumers = new ArrayList();
+            legacyConverterConsumer.setDestinationRepository( repository );
+            consumers.add( legacyConverterConsumer );
 
-        LegacyConverterArtifactConsumer consumer = (LegacyConverterArtifactConsumer) consumerFactory
-            .createConsumer( "legacy-converter" );
-        consumer.setDestinationRepository( repository );
+            discoverer.walkRepository( legacyRepository, consumers, includeSnapshots );
+        }
+        catch ( DiscovererException e )
+        {
+            throw new RepositoryConversionException( "Unable to convert repository due to discoverer error:"
+                + e.getMessage(), e );
+        }
+    }
 
-        consumers.add( consumer );
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    public void addConversionListener( ConversionListener listener )
+    {
+        legacyConverterConsumer.addConversionListener( listener );
+    }
 
-        discoverer.walkRepository( legacyRepository, consumers, includeSnapshots );
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    public void removeConversionListener( ConversionListener listener )
+    {
+        legacyConverterConsumer.removeConversionListener( listener );
     }
 }

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.converter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.converter.transaction.FileTransaction;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -45,6 +44,7 @@ import org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.i18n.I18N;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -53,6 +53,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -66,6 +67,7 @@ import java.util.regex.Matcher;
  * @plexus.component role="org.apache.maven.archiva.converter.RepositoryConverter" role-hint="default"
  */
 public class DefaultRepositoryConverter
+    extends AbstractLogEnabled
     implements RepositoryConverter
 {
     /**
@@ -89,11 +91,6 @@ public class DefaultRepositoryConverter
      * @plexus.requirement
      */
     private ArtifactHandlerManager artifactHandlerManager;
-    
-    /**
-     * @plexus.requirement
-     */
-    private ReportingDatabase reportingDatabase;
 
     /**
      * @plexus.configuration default-value="false"
@@ -109,6 +106,8 @@ public class DefaultRepositoryConverter
      * @plexus.requirement
      */
     private I18N i18n;
+
+    private List listeners = new ArrayList();
 
     public void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException
@@ -130,8 +129,7 @@ public class DefaultRepositoryConverter
                     Versioning versioning = new Versioning();
                     versioning.addVersion( artifact.getBaseVersion() );
                     metadata.setVersioning( versioning );
-                    updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata,
-                                    transaction );
+                    updateMetadata( new ArtifactRepositoryMetadata( artifact ), targetRepository, metadata, transaction );
 
                     metadata = createBaseMetadata( artifact );
                     metadata.setVersion( artifact.getBaseVersion() );
@@ -172,8 +170,8 @@ public class DefaultRepositoryConverter
                                  Metadata newMetadata, FileTransaction transaction )
         throws RepositoryConversionException
     {
-        File file = new File( targetRepository.getBasedir(),
-                              targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
+        File file = new File( targetRepository.getBasedir(), targetRepository
+            .pathOfRemoteRepositoryMetadata( artifactMetadata ) );
 
         Metadata metadata;
         boolean changed;
@@ -251,8 +249,7 @@ public class DefaultRepositoryConverter
         boolean result = true;
 
         RepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
-        File file =
-            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        File file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
         if ( file.exists() )
         {
             Metadata metadata = readMetadata( file );
@@ -317,8 +314,7 @@ public class DefaultRepositoryConverter
                 boolean foundVersion = false;
                 if ( metadata.getVersioning() != null )
                 {
-                    for ( Iterator i = metadata.getVersioning().getVersions().iterator();
-                          i.hasNext() && !foundVersion; )
+                    for ( Iterator i = metadata.getVersioning().getVersions().iterator(); i.hasNext() && !foundVersion; )
                     {
                         String version = (String) i.next();
                         if ( version.equals( artifact.getBaseVersion() ) )
@@ -375,26 +371,27 @@ public class DefaultRepositoryConverter
     private void addFailure( Artifact artifact, String key )
     {
         addFailureWithReason( artifact, getI18NString( key ) );
-
     }
 
     private void addWarning( Artifact artifact, String message )
     {
         // TODO: should we be able to identify/fix these?
-        reportingDatabase.getArtifactDatabase().addWarning( artifact, "repo-convertor", "-", message );
+        // TODO: write archiva-artifact-repair module
+        triggerConversionEvent( new ConversionEvent( artifact.getRepository(), ConversionEvent.WARNING, artifact,
+                                                     message ) );
     }
 
     private void addFailureWithReason( Artifact artifact, String reason )
     {
         // TODO: should we be able to identify/fix these?
-        reportingDatabase.getArtifactDatabase().addFailure( artifact, "repo-convertor", "-", reason );
+        triggerConversionEvent( new ConversionEvent( artifact.getRepository(), ConversionEvent.ERROR, artifact, reason ) );
     }
 
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws RepositoryConversionException
     {
-        Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                              artifact.getVersion() );
+        Artifact pom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(), artifact
+            .getVersion() );
         pom.setBaseVersion( artifact.getBaseVersion() );
         ArtifactRepository repository = artifact.getRepository();
         File file = new File( repository.getBasedir(), repository.pathOf( pom ) );
@@ -454,16 +451,15 @@ public class DefaultRepositoryConverter
 
                     if ( doRelocation( artifact, v3Model, targetRepository, transaction ) )
                     {
-                        Artifact relocatedPom = artifactFactory.createProjectArtifact( artifact.getGroupId(),
-                                                                                       artifact.getArtifactId(),
-                                                                                       artifact.getVersion() );
+                        Artifact relocatedPom = artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact
+                            .getArtifactId(), artifact.getVersion() );
                         targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
                     }
 
                     Model v4Model = translator.translate( v3Model );
 
-                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(),
-                                                 v3Model.getVersion(), v3Model.getPackage() );
+                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(), v3Model
+                        .getVersion(), v3Model.getPackage() );
 
                     writer = new StringWriter();
                     MavenXpp3Writer Xpp3Writer = new MavenXpp3Writer();
@@ -481,8 +477,7 @@ public class DefaultRepositoryConverter
                 }
                 catch ( XmlPullParserException e )
                 {
-                    addFailureWithReason( artifact,
-                                          getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    addFailureWithReason( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
                 catch ( IOException e )
@@ -491,8 +486,7 @@ public class DefaultRepositoryConverter
                 }
                 catch ( PomTranslationException e )
                 {
-                    addFailureWithReason( artifact,
-                                          getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
+                    addFailureWithReason( artifact, getI18NString( "failure.invalid.source.pom", e.getMessage() ) );
                     result = false;
                 }
                 finally
@@ -513,8 +507,8 @@ public class DefaultRepositoryConverter
         throws IOException
     {
         Properties properties = v3Model.getProperties();
-        if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" ) ||
-            properties.containsKey( "relocated.version" ) )
+        if ( properties.containsKey( "relocated.groupId" ) || properties.containsKey( "relocated.artifactId" )
+            || properties.containsKey( "relocated.version" ) )
         {
             String newGroupId = properties.getProperty( "relocated.groupId", v3Model.getGroupId() );
             properties.remove( "relocated.groupId" );
@@ -620,8 +614,7 @@ public class DefaultRepositoryConverter
         return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" );
     }
 
-    private boolean verifyChecksum( File file, String fileName, Digester digester, Artifact artifact,
-                                    String key )
+    private boolean verifyChecksum( File file, String fileName, Digester digester, Artifact artifact, String key )
         throws IOException
     {
         boolean result = true;
@@ -703,16 +696,45 @@ public class DefaultRepositoryConverter
             }
             catch ( RepositoryConversionException e )
             {
-                // Need to add:
-                // artifact
-                // processor
-                // problem
-                // reason
-                //TODO: this doesn't really provide any real facility for a decent error message, having
-                // the stack trace would be useful. I also have no idea what a processor is currently or
-                // how to get hold of it here.
+                triggerConversionEvent( new ConversionEvent( targetRepository, ConversionEvent.ERROR, artifact, e ) );
+            }
+        }
+    }
 
-                reportingDatabase.getArtifactDatabase().addFailure( artifact, "", e.getLocalizedMessage(), e.getCause().getLocalizedMessage() );
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    public void addConversionListener( ConversionListener listener )
+    {
+        listeners.add( listener );
+    }
+
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    public void removeConversionListener( ConversionListener listener )
+    {
+        listeners.remove( listener );
+    }
+
+    private void triggerConversionEvent( ConversionEvent event )
+    {
+        Iterator it = listeners.iterator();
+        while ( it.hasNext() )
+        {
+            ConversionListener listener = (ConversionListener) it.next();
+
+            try
+            {
+                listener.conversionEvent( event );
+            }
+            catch ( Throwable t )
+            {
+                getLogger().warn( "ConversionEvent resulted in exception from listener: " + t.getMessage(), t );
             }
         }
     }

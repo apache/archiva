@@ -50,4 +50,18 @@ public interface RepositoryConverter
      */
     void convert( List artifacts, ArtifactRepository targetRepository )
         throws RepositoryConversionException;
+    
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    void addConversionListener( ConversionListener listener );
+    
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    void removeConversionListener( ConversionListener listener );
 }

@@ -38,10 +38,6 @@
           <field-name>artifactFactory</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.reporting.database.ReportingDatabase</role>
-          <field-name>reportingDatabase</field-name>
-        </requirement>
-        <requirement>
           <role>org.codehaus.plexus.i18n.I18N</role>
           <field-name>i18n</field-name>
         </requirement>
@@ -62,10 +58,6 @@
         <requirement>
           <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
           <field-name>artifactFactory</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.reporting.database.ReportingDatabase</role>
-          <field-name>reportingDatabase</field-name>
         </requirement>
         <requirement>
           <role>org.codehaus.plexus.i18n.I18N</role>

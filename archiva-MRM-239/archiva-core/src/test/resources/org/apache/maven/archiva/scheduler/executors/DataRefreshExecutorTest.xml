@@ -33,38 +33,6 @@
     </component>
     
     <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-      <role-hint>data-refresh</role-hint>
-      <implementation>org.apache.maven.archiva.scheduler.executors.DataRefreshExecutor</implementation>
-      <description>DataRefreshExecutor</description>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <field-name>archivaConfiguration</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory</role>
-          <field-name>repoFactory</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.discoverer.Discoverer</role>
-          <field-name>discoverer</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.discoverer.DiscovererConsumerFactory</role>
-          <field-name>consumerFactory</field-name>
-        </requirement>
-      </requirements>
-      <configuration>
-        <consumer-names>
-          <consumer-name>index-artifact</consumer-name>
-          <consumer-name>artifact-health</consumer-name>
-          <consumer-name>metadata-health</consumer-name>
-        </consumer-names>
-      </configuration>
-    </component>
-    
-    <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
       <role-hint>archiva</role-hint>
       <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>

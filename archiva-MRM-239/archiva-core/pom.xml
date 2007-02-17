@@ -35,10 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-converter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-discoverer</artifactId>
     </dependency>
     <dependency>

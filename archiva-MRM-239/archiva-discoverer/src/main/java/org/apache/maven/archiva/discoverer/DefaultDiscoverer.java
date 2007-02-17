@@ -19,6 +19,7 @@ package org.apache.maven.archiva.discoverer;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.consumers.Consumer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryWalker;
@@ -36,7 +37,6 @@ import java.util.List;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @plexus.component role="org.apache.maven.archiva.discoverer.Discoverer"
- *    role-hint="default"
  */
 public class DefaultDiscoverer
     extends AbstractLogEnabled
@@ -65,18 +65,16 @@ public class DefaultDiscoverer
     {
     }
 
-    public DiscovererStatistics scanRepository( ArtifactRepository repository, List consumers, boolean includeSnapshots )
-    {
-        return walkRepository( repository, consumers, includeSnapshots, true );
-    }
-
     public DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers, boolean includeSnapshots )
+        throws DiscovererException
     {
-        return walkRepository( repository, consumers, includeSnapshots, false );
+        return walkRepository( repository, consumers, includeSnapshots, 0, null, null );
     }
 
-    private DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers,
-                                                 boolean includeSnapshots, boolean checkLastModified )
+    public DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers,
+                                                boolean includeSnapshots, long onlyModifiedAfterTimestamp,
+                                                List extraFileExclusions, List extraFileInclusions )
+        throws DiscovererException
     {
         // Sanity Check
 
@@ -120,14 +118,27 @@ public class DefaultDiscoverer
             allExcludes.add( "**/*-SNAPSHOT*" );
         }
 
+        if ( extraFileExclusions != null )
+        {
+            allExcludes.addAll( extraFileExclusions );
+        }
+
         Iterator it = consumers.iterator();
         while ( it.hasNext() )
         {
-            DiscovererConsumer consumer = (DiscovererConsumer) it.next();
+            Consumer consumer = (Consumer) it.next();
 
-            // TODO Disabled, until I can find a better way to do this that doesn't clobber other consumers. - joakime
-            // addUniqueElements( consumer.getExcludePatterns(), allExcludes );
+            /* NOTE: Do not insert the consumer exclusion patterns here.
+             * Exclusion patterns are handled by RepositoryScanner.wantsFile(Consumer, String)
+             * 
+             * addUniqueElements( consumer.getExcludePatterns(), allExcludes );
+             */
             addUniqueElements( consumer.getIncludePatterns(), allIncludes );
+        }
+
+        if ( extraFileInclusions != null )
+        {
+            allIncludes.addAll( extraFileInclusions );
         }
 
         // Setup Directory Walker
@@ -140,9 +151,8 @@ public class DefaultDiscoverer
         dirWalker.setExcludes( allExcludes );
 
         // Setup the Scan Instance
-
         RepositoryScanner repoScanner = new RepositoryScanner( repository, consumers );
-        repoScanner.setCheckLastModified( checkLastModified );
+        repoScanner.setOnlyModifiedAfterTimestamp( onlyModifiedAfterTimestamp );
 
         repoScanner.setLogger( getLogger() );
         dirWalker.addDirectoryWalkListener( repoScanner );

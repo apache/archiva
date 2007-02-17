@@ -21,9 +21,7 @@ package org.apache.maven.archiva.scheduler;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.repositories.ActiveManagedRepositories;
 import org.apache.maven.archiva.scheduler.task.DataRefreshTask;
 import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -41,7 +39,6 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
-import java.io.File;
 import java.text.ParseException;
 
 /**
@@ -68,15 +65,15 @@ public class DefaultRepositoryTaskScheduler
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-
+    
     /**
      * @plexus.requirement
      */
-    private RepositoryArtifactIndexFactory indexFactory;
+    private ActiveManagedRepositories activeRepositories;
 
     private static final String DISCOVERER_GROUP = "DISCOVERER";
 
-    private static final String INDEXER_JOB = "indexerTask";
+    private static final String DATA_REFRESH_JOB = "dataRefreshTask";
 
     public void start()
         throws StartingException
@@ -86,11 +83,11 @@ public class DefaultRepositoryTaskScheduler
 
         try
         {
-            scheduleJobs( configuration.getIndexPath(), configuration.getIndexerCronExpression() );
+            scheduleJobs( configuration.getDataRefreshCronExpression() );
         }
         catch ( ParseException e )
         {
-            throw new StartingException( "Invalid configuration: " + configuration.getIndexerCronExpression(), e );
+            throw new StartingException( "Invalid configuration: " + configuration.getDataRefreshCronExpression(), e );
         }
         catch ( SchedulerException e )
         {
@@ -98,29 +95,22 @@ public class DefaultRepositoryTaskScheduler
         }
     }
 
-    private void scheduleJobs( String indexPath, String indexerCronExpression )
+    private void scheduleJobs( String indexerCronExpression )
         throws ParseException, SchedulerException
     {
-        if ( indexPath != null )
+        JobDetail jobDetail = createJobDetail( DATA_REFRESH_JOB );
+
+        getLogger().info( "Scheduling data-refresh: " + indexerCronExpression );
+        CronTrigger trigger = new CronTrigger( DATA_REFRESH_JOB + "Trigger", DISCOVERER_GROUP, indexerCronExpression );
+        scheduler.scheduleJob( jobDetail, trigger );
+
+        try
         {
-            JobDetail jobDetail = createJobDetail( INDEXER_JOB );
-
-            getLogger().info( "Scheduling indexer: " + indexerCronExpression );
-            CronTrigger trigger = new CronTrigger( INDEXER_JOB + "Trigger", DISCOVERER_GROUP, indexerCronExpression );
-            scheduler.scheduleJob( jobDetail, trigger );
-
-            try
-            {
-                queueNowIfNeeded();
-            }
-            catch ( org.codehaus.plexus.taskqueue.execution.TaskExecutionException e )
-            {
-                getLogger().error( "Error executing task first time, continuing anyway: " + e.getMessage(), e );
-            }
+            queueNowIfNeeded();
         }
-        else
+        catch ( org.codehaus.plexus.taskqueue.execution.TaskExecutionException e )
         {
-            getLogger().info( "Not scheduling indexer - index path is not configured" );
+            getLogger().error( "Error executing task first time, continuing anyway: " + e.getMessage(), e );
         }
     }
 
@@ -141,7 +131,7 @@ public class DefaultRepositoryTaskScheduler
     {
         try
         {
-            scheduler.unscheduleJob( INDEXER_JOB, DISCOVERER_GROUP );
+            scheduler.unscheduleJob( DATA_REFRESH_JOB, DISCOVERER_GROUP );
         }
         catch ( SchedulerException e )
         {
@@ -157,7 +147,7 @@ public class DefaultRepositoryTaskScheduler
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( "indexPath".equals( propertyName ) || "indexerCronExpression".equals( propertyName ) )
+        if ( "dataRefreshCronExpression".equals( propertyName ) )
         {
             getLogger().debug( "Restarting task scheduler with new configuration after property change: " +
                 propertyName + " to " + propertyValue );
@@ -173,7 +163,7 @@ public class DefaultRepositoryTaskScheduler
             try
             {
                 Configuration configuration = archivaConfiguration.getConfiguration();
-                scheduleJobs( configuration.getIndexPath(), configuration.getIndexerCronExpression() );
+                scheduleJobs( configuration.getDataRefreshCronExpression() );
             }
             catch ( ParseException e )
             {
@@ -194,7 +184,7 @@ public class DefaultRepositoryTaskScheduler
     }
 
     public void runDataRefresh()
-        throws org.apache.maven.archiva.scheduler.TaskExecutionException
+        throws TaskExecutionException
     {
         DataRefreshTask task = new DataRefreshTask();
         task.setJobName( "DATA_REFRESH_INIT" );
@@ -204,32 +194,16 @@ public class DefaultRepositoryTaskScheduler
         }
         catch ( TaskQueueException e )
         {
-            throw new org.apache.maven.archiva.scheduler.TaskExecutionException( e.getMessage(), e );
+            throw new TaskExecutionException( e.getMessage(), e );
         }
     }
 
     public void queueNowIfNeeded()
-        throws org.codehaus.plexus.taskqueue.execution.TaskExecutionException
+        throws TaskExecutionException
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        File indexPath = new File( configuration.getIndexPath() );
-
-        try
+        if ( activeRepositories.needsDataRefresh() )
         {
-            RepositoryArtifactIndex artifactIndex = indexFactory.createStandardIndex( indexPath );
-            if ( !artifactIndex.exists() )
-            {
-                runDataRefresh();
-            }
-        }
-        catch ( RepositoryIndexException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
-        }
-        catch ( org.apache.maven.archiva.scheduler.TaskExecutionException e )
-        {
-            throw new TaskExecutionException( e.getMessage(), e );
+            runDataRefresh();
         }
     }
 

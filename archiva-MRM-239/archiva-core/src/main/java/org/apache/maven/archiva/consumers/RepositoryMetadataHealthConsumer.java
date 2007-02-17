@@ -19,13 +19,12 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.discoverer.consumers.GenericRepositoryMetadataConsumer;
+import org.apache.maven.archiva.common.consumers.GenericRepositoryMetadataConsumer;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.archiva.reporting.group.ReportGroup;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-
-import java.io.File;
 
 /**
  * RepositoryMetadataHealthConsumer 
@@ -33,7 +32,7 @@ import java.io.File;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.discoverer.DiscovererConsumer"
+ * @plexus.component role="org.apache.maven.archiva.common.consumers.Consumer"
  *     role-hint="metadata-health"
  *     instantiation-strategy="per-lookup"
  */
@@ -50,11 +49,21 @@ public class RepositoryMetadataHealthConsumer
      */
     private ReportGroup health;
 
-    public void processRepositoryMetadata( RepositoryMetadata metadata, File file )
+    public void processRepositoryMetadata( RepositoryMetadata metadata, BaseFile file )
     {
         MetadataResults results = database.getMetadataResults( metadata );
         database.clearResults( results );
 
         health.processMetadata( metadata, repository );
+    }
+    
+    public void processFileProblem( BaseFile path, String message )
+    {
+        
+    }
+    
+    public String getName()
+    {
+        return "RepositoryMetadata Health Consumer";
     }
 }

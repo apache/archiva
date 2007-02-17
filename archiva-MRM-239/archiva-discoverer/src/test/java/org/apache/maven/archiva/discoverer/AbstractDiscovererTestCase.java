@@ -33,6 +33,23 @@ import java.io.File;
 public abstract class AbstractDiscovererTestCase
     extends PlexusTestCase
 {
+    protected Discoverer discoverer;
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        discoverer = (Discoverer) lookup( Discoverer.ROLE );
+    }
+
+    protected void tearDown()
+        throws Exception
+    {
+        release( discoverer );
+        super.tearDown();
+    }
+
     protected ArtifactRepository getLegacyRepository()
         throws Exception
     {
@@ -51,19 +68,9 @@ public abstract class AbstractDiscovererTestCase
         return repository;
     }
 
-    private void resetRepositoryState( ArtifactRepository repository )
+    protected void resetRepositoryState( ArtifactRepository repository )
     {
-        // Clean out any .stats file.
-        File repoBaseDir = new File( repository.getBasedir() );
-
-        File statFile = new File( repoBaseDir, DiscovererStatistics.STATS_FILENAME );
-        if ( statFile.exists() )
-        {
-            statFile.delete();
-        }
-
-        // TODO: Clean out any index.
-        // TODO: Clean out any report.
+        // Implement any kind of repository cleanup.
     }
 
     protected ArtifactRepository createRepository( File basedir, String layout )
@@ -73,6 +80,7 @@ public abstract class AbstractDiscovererTestCase
 
         ArtifactRepositoryLayout repoLayout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, layout );
 
-        return factory.createArtifactRepository( "discoveryRepo", "file://" + basedir, repoLayout, null, null );
+        return factory.createArtifactRepository( "discoveryRepo-" + getName(), "file://" + basedir, repoLayout, null,
+                                                 null );
     }
 }
