@@ -41,12 +41,12 @@
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
-          <properties fileName="${appserver.base}/security.properties" config-optional="true"
+          <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
-          <properties fileName="${appserver.home}/security.properties" config-optional="true"
+          <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.security"/>
         </properties>
