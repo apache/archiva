@@ -81,7 +81,48 @@ security.policy.password.rule.nowhitespace.enabled=true
  
 * Database
 
- TODO
+ By default, Archiva uses embedded {{{http://db.apache.org/derby}Apache Derby}}
+ to store the user information. It can be configured to use an external database
+ by providing a JDBC driver and editing the <<<plexus.xml>>> file.
+ 
+ [[1]] Place the jar containing the JDBC driver in <<<$ARCHIVA_HOME/core>>>.
+ 
+ [[2]] Edit <<<$ARCHIVA_HOME/conf/plexus.xml>>>, providing the JDBC driver class
+ name, and the database url, username, and password.
+    
+ []
+ 
+ For example:
 
- * {{{http://docs.codehaus.org/display/MAVENUSER/Archiva+User+DB+on+Derby+Network+Server}
-   Archiva User DB on Derby Network Server}}
++------+
+<!--
+     Datasources
+-->
+<resource>
+  <name>jdbc/users</name>
+  <type>javax.sql.DataSource</type>
+  <properties>
+    <property>
+      <name>driverClassName</name>
+      <value>org.apache.derby.jdbc.ClientDriver</value>
+    </property>
+    <property>
+      <name>url</name>
+      <value>jdbc:derby://localhost:1527/archiva-users;create=true</value>
+    </property>
+    <property>
+      <name>username</name>
+      <value>user1</value>
+    </property>
+    <property>
+      <name>password</name>
+      <value>user1</value>
+    </property>
+  </properties>
+</resource>
++------+
+
+ More information about using Derby Network Server as an external user database
+ for Archiva can be found on the wiki:
+ {{{http://docs.codehaus.org/display/MAVENUSER/Archiva+User+DB+on+Derby+Network+Server}
+ Archiva User DB on Derby Network Server}}
