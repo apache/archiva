@@ -23,11 +23,12 @@
 
 <xwork>
   <!-- TODO: better error handling for exceptions needed! -->
+  <include file="webwork-default.xml"/>
 
   <!-- Include plexus-security xwork configurations. -->
   <include file="xwork-security.xml"/>
 
-  <package name="base" extends="security">
+  <package name="base" extends="webwork-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="pssForceAdminUser" class="pssForceAdminUserInterceptor"/>
