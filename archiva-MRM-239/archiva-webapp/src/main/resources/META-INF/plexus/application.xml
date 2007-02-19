@@ -23,7 +23,7 @@
 
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <role-hint>commons-configuration</role-hint>
       <configuration>
         <properties>
@@ -41,12 +41,12 @@
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
-          <properties fileName="${appserver.base}/security.properties" config-optional="true"
+          <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
-          <properties fileName="${appserver.home}/security.properties" config-optional="true"
+          <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.security"/>
         </properties>
@@ -290,4 +290,35 @@
       <role-hint>data-refresh</role-hint>
     </component>
   </load-on-start>
+
+  <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
+    <default-lifecycle-handler-id>plexus</default-lifecycle-handler-id>
+    <lifecycle-handlers>
+      <lifecycle-handler implementation="org.codehaus.plexus.personality.plexus.PlexusLifecycleHandler">
+        <id>plexus</id>
+        <name>Plexus Lifecycle Handler</name>
+        <begin-segment>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.LogEnablePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.CompositionPhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ContextualizePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.AutoConfigurePhase"/>
+          <phase implementation="org.codehaus.plexus.registry.RegistryConfigurePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ServiceablePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.StartPhase"/>
+        </begin-segment>
+        <suspend-segment>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.SuspendPhase"/>
+        </suspend-segment>
+        <resume-segment>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.ResumePhase"/>
+        </resume-segment>
+        <end-segment>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.StopPhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.DisposePhase"/>
+          <phase implementation="org.codehaus.plexus.personality.plexus.lifecycle.phase.LogDisablePhase"/>
+        </end-segment>
+      </lifecycle-handler>
+    </lifecycle-handlers>
+  </lifecycle-handler-manager>
 </plexus>

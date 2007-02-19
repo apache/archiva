@@ -46,9 +46,15 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-registry</artifactId>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-api</artifactId>
       <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-commons</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
     <!-- Test Deps -->
     <dependency>

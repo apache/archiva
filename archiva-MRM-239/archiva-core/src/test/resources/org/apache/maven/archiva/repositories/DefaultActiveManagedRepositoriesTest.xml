@@ -22,7 +22,7 @@
   <components>
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
-      <implementation>org.codehaus.plexus.registry.CommonsConfigurationRegistry</implementation>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <role-hint>commons-configuration</role-hint>
       <configuration>
         <properties>
