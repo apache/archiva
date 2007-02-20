@@ -92,6 +92,10 @@
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
+      <result name="requires-authorization" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
       <result name="security-register-success" type="redirect-action">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
