@@ -67,9 +67,14 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-log4j-logging</artifactId>
-      <version>1.1-alpha-2</version>
+      <artifactId>plexus-slf4j-logging</artifactId>
+      <version>1.1-alpha-1-SNAPSHOT</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

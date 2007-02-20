@@ -169,12 +169,12 @@
             <name>org.jpox.rdbms.dateTimezone</name>
             <value>JDK_DEFAULT_TIMEZONE</value>
           </property>
-<!--
+          <!-- NEEDED FOR POSTGRES, But causes problems in other JDBC implementations.
           <property>
             <name>org.jpox.identifier.case</name>
             <value>PreserveCase</value>
           </property>
--->
+            -->
         </otherProperties>
       </configuration>
     </component>
@@ -184,101 +184,9 @@
      -->
     <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.log4j.Log4JLoggerManager</implementation>
+      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
-
-      <configuration>
-        <threshold>WARN</threshold>
-        <default-appender>console,rolling</default-appender>
-
-        <appenders>
-          <appender>
-            <id>console</id>
-            <threshold>DEBUG</threshold>
-            <type>org.apache.log4j.ConsoleAppender</type>
-            <conversion-pattern>%d [%t] %-5p %-30c{1} - %m%n</conversion-pattern>
-          </appender>
-
-          <appender>
-            <id>rolling</id>
-            <threshold>DEBUG</threshold>
-            <type>org.apache.log4j.DailyRollingFileAppender</type>
-            <conversion-pattern>%-4r [%t] %-5p %c %x - %m%n</conversion-pattern>
-
-            <properties>
-              <property>
-                <name>file</name>
-                <value>${appserver.base}/logs/archiva.log</value>
-              </property>
-              <property>
-                <name>append</name>
-                <value>true</value>
-              </property>
-              <property>
-                <name>datePattern</name>
-                <value>'.'yyyy-MM-dd</value>
-              </property>
-            </properties>
-          </appender>
-        </appenders>
-
-        <levels>
-          <!-- Help identify bugs during testing -->
-          <level>
-            <hierarchy>org.apache.maven</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.codehaus.plexus.security</hierarchy>
-            <level>INFO</level>
-          </level>
-          <!-- squelch noisy objects (for now) -->
-          <level>
-            <hierarchy>org.codehaus.plexus.mailsender.MailSender</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.quartz</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.apache.jasper</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.xwork</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.webwork</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.codehaus.plexus.PlexusContainer</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>JPOX</hierarchy>
-            <level>WARN</level>
-          </level>
-          <level>
-            <hierarchy>JPOX.MetaData</hierarchy>
-            <level>ERROR</level>
-          </level>
-          <!--
-                    <level>
-                      <hierarchy>JPOX.RDBMS.SQL</hierarchy>
-                      <level>DEBUG</level>
-                    </level>
-          -->
-          <level>
-            <hierarchy>freemarker</hierarchy>
-            <level>WARN</level>
-          </level>
-        </levels>
-      </configuration>
     </component>
-
   </components>
 
   <load-on-start>
