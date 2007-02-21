@@ -181,6 +181,10 @@
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
+    <action name="showArtifactReports" class="showArtifactAction" method="reports">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+    
     <action name="showArtifactDependencies" class="showArtifactAction" method="dependencies">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>

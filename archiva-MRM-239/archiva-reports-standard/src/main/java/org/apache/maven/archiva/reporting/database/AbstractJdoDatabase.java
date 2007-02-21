@@ -197,7 +197,7 @@ public abstract class AbstractJdoDatabase
         }
     }
 
-    private PersistenceManager getPersistenceManager()
+    protected PersistenceManager getPersistenceManager()
     {
         PersistenceManager pm = pmf.getPersistenceManager();
 
