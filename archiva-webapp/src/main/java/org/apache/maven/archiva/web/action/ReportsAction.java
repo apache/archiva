@@ -19,17 +19,15 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
-
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
+import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+
+import java.util.List;
 
 /**
  * Repository reporting.
@@ -39,44 +37,21 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  */
 public class ReportsAction
     extends PlexusActionSupport
-    implements Preparable, SecureAction
+    implements SecureAction
 {
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
+    private ReportingDatabase database;
 
-    /**
-     * @plexus.requirement
-     */
-    private ConfiguredRepositoryFactory factory;
-
-    private Configuration configuration;
+    private List reports;
 
     public String execute()
         throws Exception
     {
+        reports = database.getArtifactDatabase().getAllArtifactResults();
         
         return SUCCESS;
-    }
-
-    public String runReport()
-        throws Exception
-    {
-        
-
-        return SUCCESS;
-    }
-
-    public void prepare()
-        throws Exception
-    {
-        configuration = archivaConfiguration.getConfiguration();
-    }
-
-    public Configuration getConfiguration()
-    {
-        return configuration;
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -88,5 +63,10 @@ public class ReportsAction
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
 
         return bundle;
+    }
+
+    public List getReports()
+    {
+        return reports;
     }
 }

@@ -19,22 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-
-<html>
-<head>
-  <title>Reports</title>
-  <ww:head/>
-</head>
-
-<body>
-
-<h1>Reports</h1>
-
-<div id="contentArea">
 
 <c:forEach items="${reports}" var="report">
   <h3>
@@ -49,10 +34,5 @@
   </ul>
 </c:forEach>
 <c:if test="${empty(reports)}">
-  <strong>No reports for any artifact.</strong>
+  <strong>No reports for this artifact.</strong>
 </c:if>
-
-</div>
-
-</body>
-</html>

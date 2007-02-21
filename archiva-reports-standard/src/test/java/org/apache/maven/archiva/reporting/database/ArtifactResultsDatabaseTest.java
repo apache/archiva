@@ -25,6 +25,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.versioning.VersionRange;
 
+import java.util.List;
+
 /**
  * ArtifactResultsDatabaseTest 
  *
@@ -35,6 +37,7 @@ public class ArtifactResultsDatabaseTest
     extends AbstractRepositoryReportsTestCase
 {
     private Artifact artifact;
+
     private String processor, problem, reason;
 
     private ArtifactResultsDatabase database;
@@ -45,7 +48,7 @@ public class ArtifactResultsDatabaseTest
         super.setUp();
 
         database = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
-        
+
         artifact = new DefaultArtifact( "group", "artifact", VersionRange.createFromVersion( "1.0" ), "scope", "type",
                                         "classifier", null );
         processor = "processor";
@@ -60,7 +63,7 @@ public class ArtifactResultsDatabaseTest
 
         super.tearDown();
     }
-    
+
     public void testAddNoticeArtifactStringStringString()
     {
         database.addNotice( artifact, processor, problem, reason );
@@ -104,5 +107,65 @@ public class ArtifactResultsDatabaseTest
 
         assertEquals( 1, database.getNumFailures() );
         assertEquals( 1, artifactResults.getFailures().size() );
+    }
+
+    public void testFindArtifactResults()
+    {
+        String groupId = "org.test.group";
+
+        Artifact bar = createArtifact( "org.bar", "bar", "2.0" );
+        Artifact foo = createArtifact( groupId, "foo", "1.0" );
+        Artifact fooSources = createArtifactWithClassifier( groupId, "foo", "1.0", "jar", "sources" );
+        Artifact fooJavadoc = createArtifactWithClassifier( groupId, "foo", "1.0", "jar", "javadoc" );
+
+        database.addFailure( bar, processor, problem, "A reason that should not be found." );
+
+        String testprocessor = "test-processor";
+        String testproblem = "test-problem";
+
+        database.addFailure( foo, testprocessor, testproblem, "Test Reason on main jar." );
+        database.addFailure( foo, testprocessor, testproblem, "Someone mistook this for an actual reason." );
+        database.addWarning( foo, testprocessor, testproblem, "Congrats you have a test reason." );
+
+        database.addFailure( fooSources, testprocessor, testproblem, "Sources do not seem to match classes." );
+        database.addWarning( fooJavadoc, testprocessor, testproblem, "Javadoc content makes no sense." );
+
+        ArtifactResults artifactResults = database.getArtifactResults( foo );
+
+        assertEquals( 4, database.getNumFailures() );
+        assertEquals( 2, artifactResults.getFailures().size() );
+
+        List hits = database.findArtifactResults( groupId, "foo", "1.0" );
+        assertNotNull( hits );
+
+//        for ( Iterator it = hits.iterator(); it.hasNext(); )
+//        {
+//            ArtifactResults result = (ArtifactResults) it.next();
+//            System.out.println( " result: " + result.getGroupId() + ":" + result.getArtifactId() + ":"
+//                + result.getVersion() + ":" + result.getClassifier() + ":" + result.getType() );
+//
+//            for ( Iterator itmsgs = result.getFailures().iterator(); itmsgs.hasNext(); )
+//            {
+//                Result res = (Result) itmsgs.next();
+//                String msg = (String) res.getReason();
+//                System.out.println( "    failure: " + msg );
+//            }
+//
+//            for ( Iterator itmsgs = result.getWarnings().iterator(); itmsgs.hasNext(); )
+//            {
+//                Result res = (Result) itmsgs.next();
+//                String msg = (String) res.getReason();
+//                System.out.println( "    warning: " + msg );
+//            }
+//
+//            for ( Iterator itmsgs = result.getNotices().iterator(); itmsgs.hasNext(); )
+//            {
+//                Result res = (Result) itmsgs.next();
+//                String msg = (String) res.getReason();
+//                System.out.println( "    notice: " + msg );
+//            }
+//        }
+
+        assertEquals( "Should find 3 artifacts", 3, hits.size() ); // 3 artifacts
     }
 }

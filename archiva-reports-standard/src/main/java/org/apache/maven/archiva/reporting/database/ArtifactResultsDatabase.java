@@ -30,6 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.jdo.JDOObjectNotFoundException;
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.jdo.Transaction;
 
 /**
  * ArtifactResultsDatabase - Database of ArtifactResults. 
@@ -110,6 +113,35 @@ public class ArtifactResultsDatabase
         }
 
         return allartifacts.iterator();
+    }
+
+    public List findArtifactResults( String groupId, String artifactId, String version )
+    {
+        PersistenceManager pm = getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+
+        try
+        {
+            tx.begin();
+
+            Query query = pm.newQuery( "javax.jdo.query.JDOQL", "SELECT FROM " + ArtifactResults.class.getName()
+                + " WHERE groupId == findGroupId && " + " artifactId == findArtifactId && "
+                + " version == findVersionId" );
+            query.declareParameters( "String findGroupId, String findArtifactId, String findVersionId" );
+            query.setOrdering( "findArtifactId ascending" );
+
+            List result = (List) query.execute( groupId, artifactId, version );
+
+            result = (List) pm.detachCopyAll( result );
+
+            tx.commit();
+
+            return result;
+        }
+        finally
+        {
+            rollbackIfActive( tx );
+        }
     }
 
     public void remove( ArtifactResults results )

@@ -552,6 +552,6 @@
   <properties>
     <maven.version>2.0.5</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
-    <plexus-security.version>1.0-alpha-10.1-SNAPSHOT</plexus-security.version>
+    <plexus-security.version>1.0-alpha-11-SNAPSHOT</plexus-security.version>
   </properties>
 </project>
