@@ -117,6 +117,10 @@ public class ArchivaConfigurationTest
         file.delete();
         assertFalse( file.exists() );
 
+        // TODO: remove with commons-configuration 1.4
+        file.getParentFile().mkdirs();
+        org.codehaus.plexus.util.FileUtils.fileWrite( file.getAbsolutePath(), "<configuration/>" );
+
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save" );
 

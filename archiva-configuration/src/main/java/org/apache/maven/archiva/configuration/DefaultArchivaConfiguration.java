@@ -55,6 +55,16 @@ public class DefaultArchivaConfiguration
         {
             // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
             configuration = new ConfigurationRegistryReader().read( registry.getSubset( KEY ) );
+
+            // TODO: for commons-configuration 1.3 only
+            configuration.setIndexPath( removeExpressions( configuration.getIndexPath() ) );
+            configuration.setMinimalIndexPath( removeExpressions( configuration.getMinimalIndexPath() ) );
+            configuration.setLocalRepository( removeExpressions( configuration.getLocalRepository() ) );
+            for ( java.util.Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+            {
+                RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+                c.setDirectory( removeExpressions( c.getDirectory() ) );
+            }
         }
         return configuration;
     }
@@ -90,4 +100,12 @@ public class DefaultArchivaConfiguration
     {
         configuration = null;
     }
+
+    private String removeExpressions( String directory )
+    {
+        String value = org.codehaus.plexus.util.StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base", "${appserver.base}" ) );
+        value = org.codehaus.plexus.util.StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home", "${appserver.home}" ) );
+        return value;
+    }
+
 }

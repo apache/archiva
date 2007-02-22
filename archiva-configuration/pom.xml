@@ -48,12 +48,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-api</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-alpha-1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.0-alpha-1</version>
       <scope>test</scope>
     </dependency>
     <!-- Test Deps -->
@@ -74,7 +74,7 @@
       <plugin>
         <groupId>org.codehaus.modello</groupId>
         <artifactId>modello-maven-plugin</artifactId>
-        <version>1.0-alpha-14-SNAPSHOT</version>
+        <version>1.0-alpha-14</version>
         <executions>
           <execution>
             <goals>
