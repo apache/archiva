@@ -43,7 +43,7 @@ public class GroupIdLink
 
     private static final String NAMESPACE = "/";
 
-    private static final boolean includeContext = false;
+    private static final boolean includeContext = true;
 
     private static final boolean encode = true;
 
