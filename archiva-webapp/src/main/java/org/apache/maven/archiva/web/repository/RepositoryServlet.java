@@ -100,8 +100,15 @@ public class RepositoryServlet
         while ( itrepos.hasNext() )
         {
             RepositoryConfiguration repoConfig = (RepositoryConfiguration) itrepos.next();
-            DavServerComponent server =
-                createServer( repoConfig.getUrlName(), new File( repoConfig.getDirectory() ), servletConfig );
+            File repoDir = new File( repoConfig.getDirectory() );
+             
+            if ( !repoDir.exists() )
+            {
+                repoDir.mkdirs();
+            }
+
+            DavServerComponent server = createServer( repoConfig.getUrlName(),  repoDir, servletConfig );
+
             server.addListener( audit );
         }
     }
