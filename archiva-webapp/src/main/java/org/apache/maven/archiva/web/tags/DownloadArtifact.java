@@ -25,7 +25,7 @@ import com.opensymphony.xwork.util.OgnlValueStack;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.artifact.ManagedArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifact;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.repositories.ActiveManagedRepositories;
 import org.apache.maven.project.ProjectBuildingException;
@@ -44,7 +44,7 @@ import javax.servlet.jsp.PageContext;
 /**
  * DownloadArtifact 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="com.opensymphony.webwork.components.Component" role-hint="download-artifact" 

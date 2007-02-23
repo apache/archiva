@@ -21,6 +21,7 @@ package org.apache.maven.archiva.indexer;
 
 import org.apache.maven.archiva.indexer.query.Query;
 import org.apache.maven.archiva.indexer.record.RepositoryIndexRecordFactory;
+import org.apache.maven.artifact.Artifact;
 
 import java.util.Collection;
 import java.util.List;
@@ -89,6 +90,17 @@ public interface RepositoryArtifactIndex
     Collection getAllRecordKeys()
         throws RepositoryIndexException;
 
+    /**
+     * Indexes the artifact specified. If the artifact is already in the repository they it is updated. 
+     * This method should use less memory than indexRecords as the records can be created and disposed of on the fly.
+     *
+     * @param artifact  the artifact to index
+     * @param factory   the artifact to record factory
+     * @throws RepositoryIndexException if there is a problem indexing the artifacts
+     */
+    void indexArtifact( Artifact artifact, RepositoryIndexRecordFactory factory )
+        throws RepositoryIndexException;
+    
     /**
      * Indexes the artifacts found within the specified list. If the artifacts are already in the
      * repository they are updated. This method should use less memory than indexRecords as the records can be

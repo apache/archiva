@@ -26,9 +26,7 @@
 
 <html>
 <head>
-  <ww:set name="reports" value="reports"/>
-  <ww:set name="reportGroup" value="reportGroup"/>
-  <title>Report: ${reports[reportGroup].name}</title>
+  <title>Reports</title>
   <ww:head/>
 </head>
 
@@ -38,135 +36,22 @@
 
 <div id="contentArea">
 
-<pss:ifAnyAuthorized permissions="archiva-access-reports">
-  <ww:form action="reports" namespace="/admin">
-    <ww:select list="reports" label="Report" name="reportGroup" onchange="document.reports.submit();"/>
-    <ww:select list="configuration.repositories" listKey="id" listValue="name" label="Repository" headerKey="-"
-               headerValue="(All repositories)" name="repositoryId" onchange="document.reports.submit();"/>
-    <ww:select list="reports[reportGroup].reports" label="Filter" headerKey="-" headerValue="(All Problems)"
-               name="filter" onchange="document.reports.submit();"/>
-    <ww:submit value="Get Report"/>
-  </ww:form>
-</pss:ifAnyAuthorized>
-
-<ww:set name="databases" value="databases"/>
-<c:forEach items="${databases}" var="database">
-<div>
-<div style="float: right">
-    <%-- TODO!
-  <a href="#">Repair all</a>
-  |
-    --%>
-  <c:choose>
-    <c:when test="${!database.inProgress}">
-      <pss:ifAuthorized permission="archiva-access-reports">
-        <ww:url id="regenerateReportUrl" action="runReport" namespace="/admin">
-          <ww:param name="repositoryId">${database.repository.id}</ww:param>
-          <ww:param name="reportGroup" value="reportGroup"/>
-        </ww:url>
-        <ww:a href="%{regenerateReportUrl}">Regenerate Report</ww:a>
-      </pss:ifAuthorized>
-    </c:when>
-    <c:otherwise>
-      <!-- TODO: would be good to have a generic task/job mechanism that tracked progress and ability to run
-      concurrently -->
-      <span style="color: gray;">Report in progress</span>
-    </c:otherwise>
-  </c:choose>
-</div>
-<h2>Repository: ${database.repository.name}</h2>
-
-<p>
-  <c:choose>
-    <c:when test="${!empty(database.reporting.lastModified)}">
-      Status:
-      <img src="<c:url value="/images/icon_error_sml.gif"/>" width="15" height="15" alt=""/>
-      ${database.numFailures}
-      <img src="<c:url value="/images/icon_warning_sml.gif"/>" width="15" height="15" alt=""/>
-      ${database.numWarnings}
-      <img src="<c:url value="/images/icon_info_sml.gif"/>" width="15" height="15" alt=""/>
-      ${database.numNotices}
-
-      <span style="font-size: x-small">
-        <jsp:useBean id="date" class="java.util.Date"/>
-        <c:set target="${date}" property="time" value="${database.reporting.lastModified}"/>
-        Last updated: <fmt:formatDate type="both" value="${date}"/>,
-        execution time: <fmt:formatNumber maxFractionDigits="0" value="${database.reporting.executionTime / 60000}"/> minutes
-        <fmt:formatNumber maxFractionDigits="0" value="${(database.reporting.executionTime / 1000) % 60}"/> seconds
-      </span>
-    </c:when>
-    <c:otherwise>
-      <b>
-        This report has not yet been generated. <a href="${url}">Generate Report</a>
-      </b>
-    </c:otherwise>
-  </c:choose>
-</p>
-
-  <%-- TODO need to protect iterations against concurrent modification exceptions by cloning the lists synchronously --%>
-  <%-- TODO! paginate (displaytag?) --%>
-<c:if test="${!empty(database.reporting.artifacts)}">
-  <h3>Artifacts</h3>
-  <c:forEach items="${database.reporting.artifacts}" var="artifact" begin="0" end="2">
-    <ul>
-      <c:forEach items="${artifact.failures}" var="result">
-        <li class="errorBullet">${result.reason}</li>
-      </c:forEach>
-      <c:forEach items="${artifact.warnings}" var="result">
-        <li class="warningBullet">${result.reason}</li>
-      </c:forEach>
-      <c:forEach items="${artifact.notices}" var="result">
-        <li class="infoBullet">${result.reason}</li>
-      </c:forEach>
-    </ul>
-    <p style="text-indent: 3em;">
-      <my:showArtifactLink groupId="${artifact.groupId}" artifactId="${artifact.artifactId}"
-                           version="${artifact.version}" classifier="${artifact.classifier}"/>
-    </p>
-    <%-- TODO!
-              <td>
-                <a href="#">Repair</a>
-              </td>
-    --%>
-  </c:forEach>
-  <c:if test="${fn:length(database.reporting.artifacts) gt 3}">
-    <p>
-      <b>... more ...</b>
-    </p>
-  </c:if>
-</c:if>
-<c:if test="${!empty(database.metadataWithProblems)}">
-  <h3>Metadata</h3>
-  <c:forEach items="${database.metadataWithProblems}" var="metadata" begin="0" end="2">
-    <ul>
-      <c:forEach items="${metadata.failures}" var="result">
-        <li class="errorBullet">${result.reason}</li>
-      </c:forEach>
-      <c:forEach items="${metadata.warnings}" var="result">
-        <li class="warningBullet">${result.reason}</li>
-      </c:forEach>
-      <c:forEach items="${metadata.notices}" var="result">
-        <li class="infoBullet">${result.reason}</li>
-      </c:forEach>
-    </ul>
-    <p style="text-indent: 3em;">
-      <my:showArtifactLink groupId="${metadata.groupId}" artifactId="${metadata.artifactId}"
-                           version="${metadata.version}"/>
-    </p>
-    <%-- TODO!
-              <td>
-                <a href="#">Repair</a>
-              </td>
-    --%>
-  </c:forEach>
-  <c:if test="${fn:length(database.metadataWithProblems) gt 3}">
-    <p>
-      <b>... more ...</b>
-    </p>
-  </c:if>
-</c:if>
-</div>
+<c:forEach items="${reports}" var="report">
+  <h3>
+      ${report.groupId} : ${report.artifactId} : ${report.version} : ${report.classifier} : ${report.type}
+  </h3>
+  <ul>
+    <c:forEach items="${repor.results}" var="result">
+      <li>
+        <b>${result.reason}</b>
+      </li>
+    </c:forEach>
+  </ul>
 </c:forEach>
+<c:if test="${empty(reports)}">
+  <strong>No reports for any artifact.</strong>
+</c:if>
+
 </div>
 
 </body>

@@ -19,15 +19,15 @@ package org.apache.maven.archiva.repositories;
  * under the License.
  */
 
-import org.apache.maven.archiva.artifact.ManagedArtifact;
-import org.apache.maven.archiva.artifact.ManagedEjbArtifact;
-import org.apache.maven.archiva.artifact.ManagedJavaArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedEjbArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedJavaArtifact;
 import org.codehaus.plexus.PlexusTestCase;
 
 /**
  * DefaultActiveManagedRepositoriesTest
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DefaultActiveManagedRepositoriesTest

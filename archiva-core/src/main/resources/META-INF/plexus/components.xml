@@ -21,9 +21,67 @@
 <component-set>
   <components>
 
+    <!-- TODO: Remove once CDC can handle correct cross-module descriptor creation. -->
+
+    <!-- SNIP:START -->
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>index-artifact</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.IndexArtifactConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>artifact-health</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.ArtifactHealthConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>metadata-health</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.RepositoryMetadataHealthConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <!-- SNIP:END -->
+
+    <component>
+      <role>org.apache.maven.archiva.scheduler.executors.DataRefreshConsumers</role>
+      <implementation>org.apache.maven.archiva.scheduler.executors.DataRefreshConsumers</implementation>
+      <description>Mutable list of consumer for the Data Refresh.</description>
+      <configuration>
+        <consumer-names>
+          <consumer-name>index-artifact</consumer-name>
+          <consumer-name>artifact-health</consumer-name>
+          <consumer-name>metadata-health</consumer-name>
+        </consumer-names>
+      </configuration>
+    </component>
+
     <component>
       <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
-      <role-hint>indexer</role-hint>
+      <role-hint>data-refresh</role-hint>
       <implementation>org.codehaus.plexus.taskqueue.DefaultTaskQueue</implementation>
       <lifecycle-handler>plexus-configurable</lifecycle-handler>
       <configuration>
@@ -38,20 +96,20 @@
 
     <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>indexer</role-hint>
+      <role-hint>data-refresh</role-hint>
       <implementation>org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor</implementation>
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-          <role-hint>indexer</role-hint>
+          <role-hint>data-refresh</role-hint>
         </requirement>
         <requirement>
           <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
-          <role-hint>indexer</role-hint>
+          <role-hint>data-refresh</role-hint>
         </requirement>
       </requirements>
       <configuration>
-        <name>indexer</name>
+        <name>data-refresh</name>
       </configuration>
     </component>
     

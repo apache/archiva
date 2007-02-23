@@ -19,7 +19,6 @@ package org.apache.maven.archiva.converter;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
@@ -39,9 +38,8 @@ public interface RepositoryConverter
      *
      * @param artifact         the artifact to convert
      * @param targetRepository the target repository
-     * @param reporter         reporter to track the results of the conversion
      */
-    void convert( Artifact artifact, ArtifactRepository targetRepository, ReportingDatabase reporter )
+    void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws RepositoryConversionException;
 
     /**
@@ -49,8 +47,21 @@ public interface RepositoryConverter
      *
      * @param artifacts        the set of artifacts to convert
      * @param targetRepository the target repository
-     * @param reporter         reporter to track the results of the conversions
      */
-    void convert( List artifacts, ArtifactRepository targetRepository, ReportingDatabase reporter )
+    void convert( List artifacts, ArtifactRepository targetRepository )
         throws RepositoryConversionException;
+    
+    /**
+     * Add a listener to the conversion process.
+     * 
+     * @param listener the listener to add.
+     */
+    void addConversionListener( ConversionListener listener );
+    
+    /**
+     * Remove a listener from the conversion process.
+     * 
+     * @param listener the listener to remove.
+     */
+    void removeConversionListener( ConversionListener listener );
 }

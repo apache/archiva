@@ -19,6 +19,8 @@ package org.apache.maven.archiva.scheduler;
  * under the License.
  */
 
+import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
+
 /**
  * The component that takes care of scheduling in the application.
  *
@@ -31,7 +33,7 @@ public interface RepositoryTaskScheduler
      */
     String ROLE = RepositoryTaskScheduler.class.getName();
 
-    void runIndexer()
+    void runDataRefresh()
         throws TaskExecutionException;
 
-}
+} 

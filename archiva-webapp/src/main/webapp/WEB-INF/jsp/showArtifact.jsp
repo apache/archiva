@@ -21,6 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
+<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
 
 <html>
 <head>
@@ -115,6 +116,17 @@
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
+      <pss:ifAnyAuthorized permissions="archiva-access-reports">
+        <c:set var="url">
+	      <ww:url action="showArtifactReports">
+	        <ww:param name="groupId" value="%{groupId}"/>
+	        <ww:param name="artifactId" value="%{artifactId}"/>
+	        <ww:param name="version" value="%{version}"/>
+	      </ww:url>
+	    </c:set>
+	    <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
+      </pss:ifAnyAuthorized>
+      
     </span>
   </div>
 
@@ -134,6 +146,9 @@
       </c:when>
       <c:when test="${mailingLists != null}">
         <%@ include file="/WEB-INF/jsp/include/mailingLists.jspf" %>
+      </c:when>
+      <c:when test="${reports != null}">
+        <%@ include file="/WEB-INF/jsp/include/artifactReports.jspf" %>
       </c:when>
       <c:otherwise>
         <%@ include file="/WEB-INF/jsp/include/artifactInfo.jspf" %>

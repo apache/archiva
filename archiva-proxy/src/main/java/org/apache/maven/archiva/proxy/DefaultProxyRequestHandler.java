@@ -21,8 +21,8 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.archiva.discoverer.ArtifactDiscoverer;
-import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.common.artifact.builder.BuilderException;
+import org.apache.maven.archiva.common.artifact.builder.LayoutArtifactBuilder;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -85,17 +85,17 @@ public class DefaultProxyRequestHandler
      * @plexus.requirement
      */
     private ArtifactFactory factory;
-
+    
     /**
      * @plexus.requirement role-hint="default"
-     * @todo use a map, and have priorities in them
+     * @todo use a map, and have priorities in them.
      */
-    private ArtifactDiscoverer defaultArtifactDiscoverer;
-
+    private LayoutArtifactBuilder defaultArtifactBuilder;
+    
     /**
      * @plexus.requirement role-hint="legacy"
      */
-    private ArtifactDiscoverer legacyArtifactDiscoverer;
+    private LayoutArtifactBuilder legacyArtifactBuilder;
 
     /**
      * @plexus.requirement role="org.apache.maven.wagon.Wagon"
@@ -159,10 +159,10 @@ public class DefaultProxyRequestHandler
             Artifact artifact = null;
             try
             {
-                artifact = defaultArtifactDiscoverer.buildArtifact( artifactPath );
+                artifact = defaultArtifactBuilder.build( artifactPath );
                 getLogger().debug( "Artifact requested is: " + artifact );
             }
-            catch ( DiscovererException e )
+            catch ( BuilderException e )
             {
                 msg = "Failed to build artifact from path:\n\tfrom default: " + e.getMessage();
             }
@@ -171,10 +171,10 @@ public class DefaultProxyRequestHandler
             {
                 try
                 {
-                    artifact = legacyArtifactDiscoverer.buildArtifact( artifactPath );
+                    artifact = legacyArtifactBuilder.build( artifactPath );
                     getLogger().debug( "Artifact requested is: " + artifact );
                 }
-                catch ( DiscovererException e )
+                catch ( BuilderException e )
                 {
                     getLogger().debug( msg + "\n\tfrom legacy: " + e.getMessage() );
                 }

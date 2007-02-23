@@ -32,6 +32,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.archiva.proxy.ProxyException;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.web.util.VersionMerger;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -111,6 +112,11 @@ public class ShowArtifactAction
      * @plexus.requirement
      */
     private DependencyTreeBuilder dependencyTreeBuilder;
+    
+    /**
+     * @plexus.requirement
+     */
+    ArtifactResultsDatabase artifactsDatabase;
 
     private String groupId;
 
@@ -131,6 +137,8 @@ public class ShowArtifactAction
     private String artifactPath;
 
     private List mailingLists;
+    
+    private List reports;
 
     public String artifact()
         throws IOException, XmlPullParserException, ProjectBuildingException, ResourceDoesNotExistException,
@@ -179,6 +187,21 @@ public class ShowArtifactAction
         model = project.getModel();
 
         this.mailingLists = project.getMailingLists();
+
+        return SUCCESS;
+    }
+    
+    public String reports()
+        throws IOException, XmlPullParserException, ProjectBuildingException
+    {
+        if ( !checkParameters() )
+        {
+            return ERROR;
+        }
+
+        System.out.println("#### In reports.");
+        this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId, version );
+        System.out.println("#### Found " + reports.size() + " reports.");
 
         return SUCCESS;
     }
@@ -517,5 +540,10 @@ public class ShowArtifactAction
     public String getRepositoryUrlName()
     {
         return repositoryUrlName;
+    }
+
+    public List getReports()
+    {
+        return reports;
     }
 }

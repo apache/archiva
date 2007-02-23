@@ -20,14 +20,15 @@ package org.apache.maven.archiva.repositories;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.artifact.ManagedArtifact;
-import org.apache.maven.archiva.artifact.ManagedArtifactTypes;
-import org.apache.maven.archiva.artifact.ManagedEjbArtifact;
-import org.apache.maven.archiva.artifact.ManagedJavaArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedArtifactTypes;
+import org.apache.maven.archiva.common.artifact.managed.ManagedEjbArtifact;
+import org.apache.maven.archiva.common.artifact.managed.ManagedJavaArtifact;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.discoverer.DiscovererStatistics;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -49,7 +50,7 @@ import java.util.List;
 /**
  * DefaultActiveManagedRepositories
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repositories.ActiveManagedRepositories"
  */
@@ -224,6 +225,7 @@ public class DefaultActiveManagedRepositories
 
         repositories = repositoryFactory.createRepositories( this.configuration );
         localRepository = repositoryFactory.createLocalRepository( this.configuration );
+
     }
 
     private ManagedArtifact createManagedArtifact( ArtifactRepository repository, Artifact artifact, File f )
@@ -283,13 +285,49 @@ public class DefaultActiveManagedRepositories
     {
         if ( propertyName.startsWith( "repositories" ) || propertyName.startsWith( "localRepository" ) )
         {
-            getLogger().debug( "Triggering managed repository configuration change with " + propertyName + " set to " +
-                propertyValue );
+            getLogger().debug(
+                               "Triggering managed repository configuration change with " + propertyName + " set to "
+                                   + propertyValue );
             configureSelf( archivaConfiguration.getConfiguration() );
         }
         else
         {
             getLogger().debug( "Not triggering managed repository configuration change with " + propertyName );
         }
+    }
+
+    public long getLastDataRefreshTime()
+    {
+        long lastDataRefreshTime = 0;
+
+        for ( Iterator i = getAllArtifactRepositories().iterator(); i.hasNext(); )
+        {
+            ArtifactRepository repository = (ArtifactRepository) i.next();
+
+            DiscovererStatistics stats = new DiscovererStatistics( repository );
+            if ( stats.getTimestampFinished() > lastDataRefreshTime )
+            {
+                lastDataRefreshTime = stats.getTimestampFinished();
+            }
+        }
+
+        return lastDataRefreshTime;
+    }
+
+    public boolean needsDataRefresh()
+    {
+        for ( Iterator i = getAllArtifactRepositories().iterator(); i.hasNext(); )
+        {
+            ArtifactRepository repository = (ArtifactRepository) i.next();
+
+            DiscovererStatistics stats = new DiscovererStatistics( repository );
+            if ( stats.getTimestampFinished() <= 0 )
+            {
+                // Found a repository that has NEVER had it's data walked.
+                return true;
+            }
+        }
+
+        return false;
     }
 }

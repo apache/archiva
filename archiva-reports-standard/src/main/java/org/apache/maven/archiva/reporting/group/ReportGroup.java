@@ -19,7 +19,6 @@ package org.apache.maven.archiva.reporting.group;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
@@ -43,19 +42,16 @@ public interface ReportGroup
      *
      * @param artifact          the artifact to process
      * @param model             the POM associated with the artifact to process
-     * @param reportingDatabase the report database to store results in
      */
-    void processArtifact( Artifact artifact, Model model, ReportingDatabase reportingDatabase );
+    void processArtifact( Artifact artifact, Model model );
 
     /**
      * Run any metadata related reports in the report set.
      *
      * @param repositoryMetadata the metadata to process
      * @param repository         the repository the metadata is located in
-     * @param reportingDatabase  the report database to store results in
      */
-    void processMetadata( RepositoryMetadata repositoryMetadata, ArtifactRepository repository,
-                          ReportingDatabase reportingDatabase );
+    void processMetadata( RepositoryMetadata repositoryMetadata, ArtifactRepository repository );
 
     /**
      * Whether a report with the given role hint is included in this report set.
@@ -79,11 +75,4 @@ public interface ReportGroup
      * @return the report name
      */
     String getName();
-
-    /**
-     * Get the filename of the reports within the repository's reports directory.
-     *
-     * @return the filename
-     */
-    String getFilename();
 }

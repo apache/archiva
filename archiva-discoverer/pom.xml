@@ -27,8 +27,12 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-discoverer</artifactId>
-  <name>Archiva Artifact Discoverer</name>
+  <name>Archiva Discoverer</name>
   <dependencies>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>

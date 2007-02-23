@@ -19,7 +19,6 @@ package org.apache.maven.archiva.reporting.processor;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
@@ -30,5 +29,5 @@ public interface MetadataReportProcessor
 {
     String ROLE = MetadataReportProcessor.class.getName();
 
-    void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository, ReportingDatabase reporter );
+    void processMetadata( RepositoryMetadata metadata, ArtifactRepository repository );
 }

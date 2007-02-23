@@ -25,8 +25,18 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.jpox.SchemaTool;
 
 import java.io.File;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 
 /**
  *
@@ -50,6 +60,8 @@ public abstract class AbstractRepositoryReportsTestCase
     {
         super.setUp();
 
+        setupJdoFactory();
+
         File repositoryDirectory = getTestFile( "src/test/repository" );
 
         factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
@@ -60,14 +72,57 @@ public abstract class AbstractRepositoryReportsTestCase
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
     }
 
-    protected Artifact createArtifactFromRepository( File repository, String groupId, String artifactId,
-                                                     String version )
+    protected void setupJdoFactory()
+        throws Exception
+    {
+        DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
+
+        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" ); //$NON-NLS-1$
+
+        jdoFactory.setDriverName( "org.hsqldb.jdbcDriver" ); //$NON-NLS-1$
+
+        jdoFactory.setUrl( "jdbc:hsqldb:mem:" + getName() ); //$NON-NLS-1$
+
+        jdoFactory.setUserName( "sa" ); //$NON-NLS-1$
+
+        jdoFactory.setPassword( "" ); //$NON-NLS-1$
+
+        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_UNCOMMITTED" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_UNCOMMITTED" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" ); //$NON-NLS-1$ //$NON-NLS-2$
+
+        jdoFactory.setProperty( "javax.jdo.PersistenceManagerFactoryClass", "org.jpox.PersistenceManagerFactoryImpl" );
+
+        Properties properties = jdoFactory.getProperties();
+
+        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        {
+            Map.Entry entry = (Map.Entry) it.next();
+
+            System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
+        }
+
+        SchemaTool.createSchemaTables( new URL[] { getClass()
+            .getResource( "/org/apache/maven/archiva/reporting/model/package.jdo" ) }, new URL[] {}, null, false, null ); //$NON-NLS-1$
+
+        PersistenceManagerFactory pmf = jdoFactory.getPersistenceManagerFactory();
+
+        assertNotNull( pmf );
+
+        PersistenceManager pm = pmf.getPersistenceManager();
+
+        pm.close();
+    }
+
+    protected Artifact createArtifactFromRepository( File repository, String groupId, String artifactId, String version )
         throws Exception
     {
         Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, "jar" );
 
-        artifact.setRepository(
-            factory.createArtifactRepository( "repository", repository.toURL().toString(), layout, null, null ) );
+        artifact.setRepository( factory.createArtifactRepository( "repository", repository.toURL().toString(), layout,
+                                                                  null, null ) );
 
         artifact.isSnapshot();
 
@@ -90,8 +145,8 @@ public abstract class AbstractRepositoryReportsTestCase
     protected Artifact createArtifactWithClassifier( String groupId, String artifactId, String version, String type,
                                                      String classifier )
     {
-        Artifact artifact =
-            artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
+        Artifact artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type,
+                                                                          classifier );
         artifact.setRepository( repository );
         return artifact;
     }

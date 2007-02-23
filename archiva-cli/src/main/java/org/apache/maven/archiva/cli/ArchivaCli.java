@@ -23,9 +23,8 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.conversion.LegacyRepositoryConverter;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.tools.cli.AbstractCli;
 
@@ -103,27 +102,24 @@ public class ArchivaCli
 
             System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
 
-            List blacklistedPatterns = null;
+            List fileExclusionPatterns = null;
 
             String s = p.getProperty( BLACKLISTED_PATTERNS );
 
             if ( s != null )
             {
-                blacklistedPatterns = Arrays.asList( StringUtils.split( s, "," ) );
+                fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
             }
 
             try
             {
                 legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                                   blacklistedPatterns, true );
+                                                                   fileExclusionPatterns,
+                                                                   true );
             }
             catch ( RepositoryConversionException e )
             {
                 showFatalError( "Error converting repository.", e, true );
-            }
-            catch ( DiscovererException e )
-            {
-                showFatalError( "Error discovery artifacts to convert.", e, true );
             }
         }
     }

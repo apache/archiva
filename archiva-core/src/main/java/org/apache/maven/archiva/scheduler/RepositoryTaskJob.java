@@ -19,7 +19,7 @@ package org.apache.maven.archiva.scheduler;
  * under the License.
  */
 
-import org.apache.maven.archiva.scheduler.task.IndexerTask;
+import org.apache.maven.archiva.scheduler.task.DataRefreshTask;
 import org.apache.maven.archiva.scheduler.task.RepositoryTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.taskqueue.TaskQueue;
@@ -53,27 +53,27 @@ public class RepositoryTaskJob
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         setJobDataMap( dataMap );
 
-        TaskQueue indexerQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
+        TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
         String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        RepositoryTask task = new IndexerTask();
+        RepositoryTask task = new DataRefreshTask();
         task.setJobName( context.getJobDetail().getName() );
 
         try
         {
-            if ( indexerQueue.getQueueSnapshot().size() == 0 )
+            if ( taskQueue.getQueueSnapshot().size() == 0 )
             {
-                indexerQueue.put( task );
+                taskQueue.put( task );
             }
             else
             {
                 if ( RepositoryTask.QUEUE_POLICY_WAIT.equals( queuePolicy ) )
                 {
-                    indexerQueue.put( task );
+                    taskQueue.put( task );
                 }
                 else if ( RepositoryTask.QUEUE_POLICY_SKIP.equals( queuePolicy ) )
                 {
-                    //do not queue anymore, policy is to skip
+                    // do not queue anymore, policy is to skip
                 }
             }
         }

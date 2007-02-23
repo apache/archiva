@@ -21,37 +21,62 @@
 <!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
 <Configure class="org.mortbay.jetty.webapp.WebAppContext">
 
-<New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
-  <Arg>mail/Session</Arg>
-  <Arg>
-    <New class="org.mortbay.naming.factories.MailSessionReference">
-      <Set name="user"></Set>
-      <Set name="password"></Set>
-      <Set name="properties">
-        <New class="java.util.Properties">
-          <Put name="mail.smtp.host">localhost</Put>
-          <Put name="mail.smtp.port">25</Put> <!-- TODO: shouldn't this default? -->
-        </New>
-      </Set>
-    </New>
-  </Arg>
-</New>
+  <New id="validation_mail" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>mail/Session</Arg>
+    <Arg>
+      <New class="org.mortbay.naming.factories.MailSessionReference">
+        <Set name="user"></Set>
+        <Set name="password"></Set>
+        <Set name="properties">
+          <New class="java.util.Properties">
+            <Put name="mail.smtp.host">localhost</Put>
+            <Put name="mail.smtp.port">25</Put> <!-- TODO: shouldn't this default? -->
+          </New>
+        </Set>
+      </New>
+    </Arg>
+  </New>
 
-  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/users</Arg>
+  <!-- Archiva database -->
+  <New id="archiva" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/archiva</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">target/database</Set>
+        <Set name="DatabaseName">target/databases/archiva</Set>
         <Set name="user">sa</Set>
         <Set name="createDatabase">create</Set>
       </New>
     </Arg>
   </New>
-  <New id="shutdown" class="org.mortbay.jetty.plus.naming.Resource">
-    <Arg>jdbc/shutdown</Arg>
+
+  <New id="archivaShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/archivaShutdown</Arg>
     <Arg>
       <New class="org.apache.derby.jdbc.EmbeddedDataSource">
-        <Set name="DatabaseName">target/database</Set>
+        <Set name="DatabaseName">target/databases/archiva</Set>
+        <Set name="user">sa</Set>
+        <Set name="shutdownDatabase">shutdown</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <!-- Users / Security Database -->
+  <New id="users" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/users</Arg>
+    <Arg>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">target/databases/users</Set>
+        <Set name="user">sa</Set>
+        <Set name="createDatabase">create</Set>
+      </New>
+    </Arg>
+  </New>
+
+  <New id="usersShutdown" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>jdbc/usersShutdown</Arg>
+    <Arg>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="DatabaseName">target/databases/users</Set>
         <Set name="user">sa</Set>
         <Set name="shutdownDatabase">shutdown</Set>
       </New>

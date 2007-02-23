@@ -43,7 +43,7 @@ public class ArchivaConfigurationTest
         // check default configuration
         assertNotNull( "check configuration returned", configuration );
         assertEquals( "check configuration has default elements", "0 0,30 * * * ?",
-                      configuration.getIndexerCronExpression() );
+                      configuration.getDataRefreshCronExpression() );
         assertNull( "check configuration has default elements", configuration.getIndexPath() );
         assertTrue( "check configuration has default elements", configuration.getRepositories().isEmpty() );
     }

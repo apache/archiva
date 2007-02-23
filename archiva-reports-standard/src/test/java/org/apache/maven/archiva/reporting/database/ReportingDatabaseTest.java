@@ -19,14 +19,7 @@ package org.apache.maven.archiva.reporting.database;
  * under the License.
  */
 
-import junit.framework.TestCase;
-import org.apache.maven.archiva.reporting.model.ArtifactResults;
-import org.apache.maven.archiva.reporting.model.MetadataResults;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DefaultArtifact;
-import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
-import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
-import org.apache.maven.artifact.versioning.VersionRange;
+import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 
 /**
  * Test for {@link ReportingDatabase}.
@@ -35,117 +28,28 @@ import org.apache.maven.artifact.versioning.VersionRange;
  * @version $Id$
  */
 public class ReportingDatabaseTest
-    extends TestCase
+    extends AbstractRepositoryReportsTestCase
 {
-    private Artifact artifact;
-
-    private String processor, problem, reason;
-
-    private ReportingDatabase reportingDatabase;
-
-    private RepositoryMetadata metadata;
+    private ReportingDatabase database;
 
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        artifact = new DefaultArtifact( "group", "artifact", VersionRange.createFromVersion( "1.0" ), "scope", "type",
-                                        "classifier", null );
-        processor = "processor";
-        problem = "problem";
-        reason = "reason";
-        reportingDatabase = new ReportingDatabase( null );
-
-        metadata = new ArtifactRepositoryMetadata( artifact );
+        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
     }
 
-    public void testAddNoticeArtifactStringStringString()
+    protected void tearDown()
+        throws Exception
     {
-        reportingDatabase.addNotice( artifact, processor, problem, reason );
-        ArtifactResults artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumNotices() );
-        assertEquals( 1, artifactResults.getNotices().size() );
-
-        reportingDatabase.addNotice( artifact, processor, problem, reason );
-        artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumNotices() );
-        assertEquals( 1, artifactResults.getNotices().size() );
+        release( database );
+        super.tearDown();
     }
 
-    public void testAddWarningArtifactStringStringString()
+    public void testLookup()
     {
-        reportingDatabase.addWarning( artifact, processor, problem, reason );
-        ArtifactResults artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumWarnings() );
-        assertEquals( 1, artifactResults.getWarnings().size() );
-
-        reportingDatabase.addWarning( artifact, processor, problem, reason );
-        artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumWarnings() );
-        assertEquals( 1, artifactResults.getWarnings().size() );
-    }
-
-    public void testAddFailureArtifactStringStringString()
-    {
-        reportingDatabase.addFailure( artifact, processor, problem, reason );
-        ArtifactResults artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 1, artifactResults.getFailures().size() );
-
-        reportingDatabase.addFailure( artifact, processor, problem, reason );
-        artifactResults = reportingDatabase.getArtifactResults( artifact );
-
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 1, artifactResults.getFailures().size() );
-    }
-
-    public void testAddNoticeRepositoryMetadataStringStringString()
-    {
-        reportingDatabase.addNotice( metadata, processor, problem, reason );
-        MetadataResults metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumNotices() );
-        assertEquals( 1, metadataResults.getNotices().size() );
-
-        reportingDatabase.addNotice( metadata, processor, problem, reason );
-        metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumNotices() );
-        assertEquals( 1, metadataResults.getNotices().size() );
-    }
-
-    public void testAddWarningRepositoryMetadataStringStringString()
-    {
-        reportingDatabase.addWarning( metadata, processor, problem, reason );
-        MetadataResults metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumWarnings() );
-        assertEquals( 1, metadataResults.getWarnings().size() );
-
-        reportingDatabase.addWarning( metadata, processor, problem, reason );
-        metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumWarnings() );
-        assertEquals( 1, metadataResults.getWarnings().size() );
-    }
-
-    public void testAddFailureRepositoryMetadataStringStringString()
-    {
-        reportingDatabase.addFailure( metadata, processor, problem, reason );
-        MetadataResults metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 1, metadataResults.getFailures().size() );
-
-        reportingDatabase.addFailure( metadata, processor, problem, reason );
-        metadataResults = reportingDatabase.getMetadataResults( metadata, System.currentTimeMillis() );
-
-        assertEquals( 1, reportingDatabase.getNumFailures() );
-        assertEquals( 1, metadataResults.getFailures().size() );
+        assertNotNull( "database should not be null.", database );
+        assertNotNull( "database.artifactDatabase should not be null.", database.getArtifactDatabase() );
+        assertNotNull( "database.metadataDatabase should not be null.", database.getMetadataDatabase() );
     }
 }

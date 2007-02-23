@@ -27,7 +27,7 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.record.StandardArtifactIndexRecord;
 import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Model;
@@ -62,9 +62,14 @@ public class DuplicateArtifactFileReportProcessor
      */
     private String indexDirectory;
 
+    /**
+     * @plexus.requirement
+     */
+    private ArtifactResultsDatabase database;
+
     private static final String ROLE_HINT = "duplicate";
 
-    public void processArtifact( Artifact artifact, Model model, ReportingDatabase reporter )
+    public void processArtifact( Artifact artifact, Model model )
     {
         ArtifactRepository repository = artifact.getRepository();
         if ( artifact.getFile() != null )
@@ -82,16 +87,16 @@ public class DuplicateArtifactFileReportProcessor
             }
             catch ( DigesterException e )
             {
-                addWarning( reporter, artifact, null,
-                            "Unable to generate checksum for " + artifact.getFile() + ": " + e );
+                addWarning( artifact, null, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
             }
 
             if ( checksum != null )
             {
                 try
                 {
-                    List results = index.search( new LuceneQuery(
-                        new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum.toLowerCase() ) ) ) );
+                    List results = index
+                        .search( new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.MD5, checksum
+                            .toLowerCase() ) ) ) );
 
                     if ( !results.isEmpty() )
                     {
@@ -106,8 +111,7 @@ public class DuplicateArtifactFileReportProcessor
                                 String groupId = artifact.getGroupId();
                                 if ( groupId.equals( result.getGroupId() ) )
                                 {
-                                    addFailure( reporter, artifact, "duplicate",
-                                                "Found duplicate for " + artifact.getId() );
+                                    addFailure( artifact, "duplicate", "Found duplicate for " + artifact.getId() );
                                 }
                             }
                         }
@@ -115,25 +119,25 @@ public class DuplicateArtifactFileReportProcessor
                 }
                 catch ( RepositoryIndexSearchException e )
                 {
-                    addWarning( reporter, artifact, null, "Failed to search in index" + e );
+                    addWarning( artifact, null, "Failed to search in index" + e );
                 }
             }
         }
         else
         {
-            addWarning( reporter, artifact, null, "Artifact file is null" );
+            addWarning( artifact, null, "Artifact file is null" );
         }
     }
 
-    private static void addFailure( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addFailure( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addFailure( artifact, ROLE_HINT, problem, reason );
+        database.addFailure( artifact, ROLE_HINT, problem, reason );
     }
 
-    private static void addWarning( ReportingDatabase reporter, Artifact artifact, String problem, String reason )
+    private void addWarning( Artifact artifact, String problem, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        reporter.addWarning( artifact, ROLE_HINT, problem, reason );
+        database.addWarning( artifact, ROLE_HINT, problem, reason );
     }
 }

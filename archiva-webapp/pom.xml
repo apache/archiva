@@ -67,9 +67,14 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-log4j-logging</artifactId>
-      <version>1.1-alpha-2</version>
+      <artifactId>plexus-slf4j-logging</artifactId>
+      <version>1.1-alpha-1-SNAPSHOT</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -112,23 +117,15 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-indexer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-discoverer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-proxy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
@@ -178,6 +175,7 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
+      <version>10.1.3.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

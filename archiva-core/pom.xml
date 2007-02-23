@@ -35,10 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-converter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-discoverer</artifactId>
     </dependency>
     <dependency>
@@ -78,6 +74,13 @@
       <version>1.0-alpha-1</version>
       <scope>test</scope>
     </dependency>
+    <!-- TEST DEPS -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.7.3.3</version>
+      <scope>test</scope>
+    </dependency>
     <!-- needed for PlexusTestCase -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -88,16 +91,22 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <!-- TODO! add unit tests -->
-        <configuration>
-          <instrumentation>
-            <excludes>
-              <exclude>**/**</exclude>
-            </excludes>
-          </instrumentation>
-        </configuration>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>merge</id>
+            <goals>
+              <goal>merge-descriptors</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
+                <descriptor>${project.build.directory}/generated-resources/plexus/META-INF/plexus/components.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

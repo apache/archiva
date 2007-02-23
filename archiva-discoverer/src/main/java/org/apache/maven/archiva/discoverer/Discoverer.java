@@ -19,26 +19,55 @@ package org.apache.maven.archiva.discoverer;
  * under the License.
  */
 
-import java.util.Iterator;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+
+import java.io.File;
+import java.util.List;
 
 /**
- * @author Edwin Punzalan
+ * Discoverer - generic discoverer of content in an ArtifactRepository. 
+ *
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @version $Id$
  */
 public interface Discoverer
 {
+    public static final String ROLE = Discoverer.class.getName();
+    
     /**
-     * Get the list of paths kicked out during the discovery process.
-     *
-     * @return the paths as Strings.
+     * Walk the repository, and report to the consumers the files found.
+     * 
+     * Report changes to the appropriate Consumer.
+     * 
+     * This is just a convenience method to {@link #walkRepository(ArtifactRepository, List, boolean, long, List, List)}
+     * equivalent to calling <code>walkRepository( repository, consumers, includeSnapshots, 0, null, null );</code>
+     * 
+     * @param repository the repository to change.
+     * @param consumers use the provided list of consumers.
+     * @param includeSnapshots true to include snapshots in the walking of this repository.
+     * @return the statistics for this scan.
+     * @throws DiscovererException if there was a fundamental problem with getting the discoverer started.
      */
-    Iterator getKickedOutPathsIterator();
+    public DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers, boolean includeSnapshots )
+        throws DiscovererException;
 
     /**
-     * Get the list of paths excluded during the discovery process.
-     *
-     * @return the paths as Strings.
+     * Walk the repository, and report to the consumers the files found.
+     * 
+     * Report changes to the appropriate Consumer.
+     * 
+     * @param repository the repository to change.
+     * @param consumers use the provided list of consumers.
+     * @param includeSnapshots true to include snapshots in the scanning of this repository.
+     * @param onlyModifiedAfterTimestamp Only report to the consumers, files that have a {@link File#lastModified()}) 
+     *          after the provided timestamp.
+     * @param extraFileExclusions an optional list of file exclusions on the walk.
+     * @param extraFileInclusions an optional list of file inclusions on the walk.
+     * @return the statistics for this scan.
+     * @throws DiscovererException if there was a fundamental problem with getting the discoverer started. 
      */
-    Iterator getExcludedPathsIterator();
-
-    void setTrackOmittedPaths( boolean trackOmittedPaths );
+    public DiscovererStatistics walkRepository( ArtifactRepository repository, List consumers,
+                                                boolean includeSnapshots, long onlyModifiedAfterTimestamp,
+                                                List extraFileExclusions, List extraFileInclusions )
+        throws DiscovererException;
 }

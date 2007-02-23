@@ -30,6 +30,10 @@
   <name>Archiva Repository Converter</name>
   <dependencies>
     <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-discoverer</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
@@ -46,8 +50,8 @@
       <artifactId>maven-model-converter</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-reports-standard</artifactId>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-digest</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -57,6 +61,13 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <!-- TEST DEPS -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.7.3.3</version>
+      <scope>test</scope>
     </dependency>
     <!-- Needed for PlexusTestCase -->
     <dependency>

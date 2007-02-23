@@ -28,9 +28,15 @@
         <requirement>
           <role>org.codehaus.plexus.digest.Digester</role>
           <role-hint>md5</role-hint>
+          <field-name>digester</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory</role>
+          <field-name>indexFactory</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase</role>
+          <field-name>database</field-name>
         </requirement>
       </requirements>
       <configuration>
