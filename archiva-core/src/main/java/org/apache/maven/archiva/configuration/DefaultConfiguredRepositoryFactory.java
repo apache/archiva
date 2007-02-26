@@ -53,18 +53,7 @@ public class DefaultConfiguredRepositoryFactory
 
     public ArtifactRepository createRepository( RepositoryConfiguration configuration )
     {
-        File repositoryDirectory = new File( configuration.getDirectory() );
-        String repoDir = repositoryDirectory.toURI().toString();
-
-        //workaround for spaces non converted by PathUtils in wagon
-        //todo: remove it when PathUtils will be fixed
-        if ( repoDir.indexOf( "%20" ) >= 0 )
-        {
-            repoDir = StringUtils.replace( repoDir, "%20", " " );
-        }
-
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
-        return repoFactory.createArtifactRepository( configuration.getId(), repoDir, layout, null, null );
+        return createRepository( configuration.getLayout(), configuration.getId(), configuration.getDirectory());
     }
 
     public ProxiedArtifactRepository createProxiedRepository( ProxiedRepositoryConfiguration configuration )
@@ -126,10 +115,24 @@ public class DefaultConfiguredRepositoryFactory
 
     public ArtifactRepository createLocalRepository( Configuration configuration )
     {
-        ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( "default" );
-        File localRepository = new File( configuration.getLocalRepository() );
-        localRepository.mkdirs();
-        return repoFactory.createArtifactRepository( "local", localRepository.toURI().toString(), layout, null, null );
+        return createRepository( "default", "local", configuration.getLocalRepository() );
+    }
+
+    public ArtifactRepository createRepository( String layout, String id, String directory )
+    {
+        ArtifactRepositoryLayout repositoryLayout = (ArtifactRepositoryLayout) repositoryLayouts.get( layout );
+        File repository = new File( directory );
+        repository.mkdirs();
+
+        String repoDir = repository.toURI().toString();
+        //workaround for spaces non converted by PathUtils in wagon
+        //TODO: remove it when PathUtils will be fixed
+        if ( repoDir.indexOf( "%20" ) >= 0 )
+        {
+            repoDir = StringUtils.replace( repoDir, "%20", " " );
+        }
+
+        return repoFactory.createArtifactRepository( id, repoDir, repositoryLayout, null, null );
     }
 
     private static String getUpdatePolicy( String policy, int interval )

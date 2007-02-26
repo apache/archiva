@@ -19,6 +19,7 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.discoverer.Discoverer;
@@ -76,11 +77,25 @@ public class DefaultLegacyRepositoryConverter
 
         try
         {
-            legacyRepository = artifactRepositoryFactory.createArtifactRepository( "legacy", legacyRepositoryDirectory
-                .toURI().toURL().toString(), legacyLayout, null, null );
+            String legacyRepositoryDir = legacyRepositoryDirectory.toURI().toURL().toString();
+            String repositoryDir = repositoryDirectory.toURI().toURL().toString();
 
-            repository = artifactRepositoryFactory.createArtifactRepository( "default", repositoryDirectory.toURI()
-                .toURL().toString(), defaultLayout, null, null );
+            //workaround for spaces non converted by PathUtils in wagon
+            //TODO: remove it when PathUtils will be fixed
+            if ( legacyRepositoryDir.indexOf( "%20" ) >= 0 )
+            {
+                legacyRepositoryDir = StringUtils.replace( legacyRepositoryDir, "%20", " " );
+            }
+            if ( repositoryDir.indexOf( "%20" ) >= 0 )
+            {
+                repositoryDir = StringUtils.replace( repositoryDir, "%20", " " );
+            }
+
+            legacyRepository = artifactRepositoryFactory.createArtifactRepository( "legacy", legacyRepositoryDir,
+                                                                                   legacyLayout, null, null );
+
+            repository = artifactRepositoryFactory.createArtifactRepository( "default", repositoryDir, defaultLayout,
+                                                                             null, null );
         }
         catch ( MalformedURLException e )
         {
@@ -97,14 +112,14 @@ public class DefaultLegacyRepositoryConverter
         }
         catch ( DiscovererException e )
         {
-            throw new RepositoryConversionException( "Unable to convert repository due to discoverer error:"
-                + e.getMessage(), e );
+            throw new RepositoryConversionException(
+                "Unable to convert repository due to discoverer error:" + e.getMessage(), e );
         }
     }
 
     /**
      * Add a listener to the conversion process.
-     * 
+     *
      * @param listener the listener to add.
      */
     public void addConversionListener( ConversionListener listener )
@@ -114,7 +129,7 @@ public class DefaultLegacyRepositoryConverter
 
     /**
      * Remove a listener from the conversion process.
-     * 
+     *
      * @param listener the listener to remove.
      */
     public void removeConversionListener( ConversionListener listener )
