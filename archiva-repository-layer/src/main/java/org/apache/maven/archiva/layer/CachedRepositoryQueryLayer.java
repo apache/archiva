@@ -21,40 +21,38 @@ package org.apache.maven.archiva.layer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.codehaus.plexus.cache.Cache;
 
 import java.util.List;
 
-
 /**
- * CachedRepositoryQueryLayer 
+ * CachedRepositoryQueryLayer - simple wrapper around another non-cached Repository Query Layer.
  *
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.layer.RepositoryQueryLayer" role-hint="cached"
  */
 public class CachedRepositoryQueryLayer
     implements RepositoryQueryLayer
 {
+    /**
+     * @plexus.requirement
+     */
     private Cache cache;
 
-    public static final double CACHE_HIT_RATIO = 0.5;
-
+    /**
+     * @plexus.requirement
+     */
     private RepositoryQueryLayer layer;
 
     public CachedRepositoryQueryLayer( RepositoryQueryLayer layer )
     {
         this.layer = layer;
-
-        cache = new Cache( CACHE_HIT_RATIO );
     }
 
     public CachedRepositoryQueryLayer( RepositoryQueryLayer layer, Cache cache )
     {
         this.cache = cache;
         this.layer = layer;
-    }
-
-    public double getCacheHitRate()
-    {
-        return cache.getHitRate();
     }
 
     public boolean containsArtifact( Artifact artifact )

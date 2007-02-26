@@ -1,6 +1,4 @@
-package org.apache.maven.archiva.layer;
-
-import org.codehaus.plexus.cache.Cache;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -11,7 +9,7 @@ import org.codehaus.plexus.cache.Cache;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -22,36 +20,33 @@ import org.codehaus.plexus.cache.Cache;
  */
 
 /**
+ * RepositoryException 
  *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  */
-public class CachedRepositoryQueryLayerTest
-    extends AbstractRepositoryQueryLayerTestCase
+public class RepositoryException
+    extends Exception
 {
-    private Cache cache;
 
-    protected void setUp()
-        throws Exception
+    public RepositoryException()
     {
-        super.setUp();
-
-        cache = (Cache) lookup( Cache.ROLE, "test" );
-
-        queryLayer = new CachedRepositoryQueryLayer( new DefaultRepositoryQueryLayer( repository ), cache );
+        super();
     }
 
-    public void testUseFileCache()
+    public RepositoryException( String message, Throwable cause )
     {
-        testContainsArtifactTrue();
+        super( message, cause );
     }
 
-    public void testUseMetadataCache()
-        throws Exception
+    public RepositoryException( String message )
     {
-        testArtifactVersions();
+        super( message );
     }
 
-    public void testUseFileCacheOnSnapshot()
+    public RepositoryException( Throwable cause )
     {
-        testContainsSnapshotArtifactTrue();
+        super( cause );
     }
+
 }
