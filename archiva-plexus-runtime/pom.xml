@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-naming</artifactId>
-      <version>1.0-alpha-3-SNAPSHOT</version>
+      <version>1.0-alpha-3</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
