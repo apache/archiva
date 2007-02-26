@@ -23,6 +23,6 @@
     </dataSource>
   </transactionManager>
 
-  <sqlMap resource="org/apache/maven/archiva/database/CreateDatabases.xml"/>
+  <sqlMap resource="org/apache/maven/archiva/database/CreateTables.xml"/>
   <sqlMap resource="org/apache/maven/archiva/database/MetadataKey.xml"/>
 </sqlMapConfig>

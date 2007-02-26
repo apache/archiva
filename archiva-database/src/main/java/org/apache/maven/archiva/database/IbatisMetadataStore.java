@@ -63,11 +63,17 @@ public class IbatisMetadataStore
             // Create the tables
             
             getLogger().info( "Creating metadata keys instance table" );
-            sqlMap.update( "createMetadataKeyTable", null );
+            sqlMap.update( "initializeMetadataKeyTable", null );
             
             getLogger().info( "Creating repository metadata instance table" );
-            sqlMap.update( "createRepositoryMetadataTable", null );
+            sqlMap.update( "initializeRepositoryMetadataTable", null );
 
+            getLogger().info( "Creating repository health metadata instance table" );
+            sqlMap.update( "initializeHealthMetadataTable", null );
+            
+            getLogger().info( "Creating repository versions metadata instance table" );
+            sqlMap.update( "initializeVersionsMetadataTable", null );
+            
             sqlMap.commitTransaction();
         }
         catch ( SQLException e )

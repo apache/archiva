@@ -7,17 +7,17 @@
 
 <select id="getMetadataKey" resultClass="org.apache.maven.archiva.database.key.MetadataKey">
   SELECT 
-    METADATA_KEY as id    
-    GROUP_ID 	as groupId,
-    ARTIFACT_ID as artifactId,
-    VERSION 	as version, 
-  FROM METADATA_KEYS 
-  WHERE METADATA_KEY = #value# 
+    metadataKey as id    
+    groupId 	as groupId,
+    artifactId  as artifactId,
+    version 	as version, 
+  FROM MetadataKeys 
+  WHERE metadataKey = #value# 
 </select> 
 
 <insert id="addMetadataKey" parameterClass="org.apache.maven.archiva.database.key.MetadataKey"> 
   INSERT INTO 
-  METADATA_KEYS  ( GROUP_ID, ARTIFACT_ID, VERSION_ID ) 
+  MetadataKeys  ( groupId, artifactId, version ) 
   VALUES (#groupId#, #artifactId#, #version# ) 
 </insert> 
 
