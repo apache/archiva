@@ -37,6 +37,8 @@ import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
+import sun.security.action.GetLongAction;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -83,7 +85,7 @@ public class ProxiedDavServer
 
     private ArtifactRepository managedRepository;
 
-    private List/*<ArtifactRepository>*/ proxiedRepositories;
+    private List/*<ArtifactRepository>*/proxiedRepositories;
 
     private ProxyInfo wagonProxy;
 
@@ -157,7 +159,9 @@ public class ProxiedDavServer
         }
         catch ( ResourceDoesNotExistException e )
         {
-            throw new ServletException( "Unable to fetch resource, it does not exist.", e );
+            // TODO: getLogger().info( "Unable to fetch resource, it does not exist.", e );
+            // return an HTTP 404 instead of HTTP 500 error.
+            return;
         }
         catch ( ProxyException e )
         {
