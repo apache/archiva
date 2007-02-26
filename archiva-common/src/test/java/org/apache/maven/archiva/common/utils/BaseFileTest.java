@@ -19,12 +19,13 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
+import junit.framework.TestCase;
+import org.codehaus.plexus.util.StringUtils;
+
 import java.io.File;
 
-import junit.framework.TestCase;
-
 /**
- * BaseFileTest 
+ * BaseFileTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -38,9 +39,9 @@ public class BaseFileTest
         String pathFile = "path/to/resource.xml";
         BaseFile file = new BaseFile( repoDir, pathFile );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
 
     public void testFileFile()
@@ -49,9 +50,9 @@ public class BaseFileTest
         File pathFile = new File( "/home/user/foo/repository/path/to/resource.xml" );
         BaseFile file = new BaseFile( repoDir, pathFile );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
 
     public void testStringFile()
@@ -60,9 +61,9 @@ public class BaseFileTest
         File pathFile = new File( "/home/user/foo/repository/path/to/resource.xml" );
         BaseFile file = new BaseFile( repoDir, pathFile );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
 
     public void testFileThenSetBaseString()
@@ -72,9 +73,9 @@ public class BaseFileTest
         BaseFile file = new BaseFile( pathFile );
         file.setBaseDir( repoDir );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
 
     public void testFileThenSetBaseFile()
@@ -84,11 +85,11 @@ public class BaseFileTest
         BaseFile file = new BaseFile( pathFile );
         file.setBaseDir( repoDir );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
-    
+
     public void testStringThenSetBaseString()
     {
         String repoDir = "/home/user/foo/repository";
@@ -96,9 +97,9 @@ public class BaseFileTest
         BaseFile file = new BaseFile( pathFile );
         file.setBaseDir( repoDir );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
     }
 
     public void testStringThenSetBaseFile()
@@ -108,8 +109,23 @@ public class BaseFileTest
         BaseFile file = new BaseFile( pathFile );
         file.setBaseDir( repoDir );
 
-        assertEquals( "/home/user/foo/repository/path/to/resource.xml", file.getAbsolutePath() );
-        assertEquals( "path/to/resource.xml", file.getRelativePath() );
-        assertEquals( new File( "/home/user/foo/repository" ), file.getBaseDir() );
-    }    
+        assertAbsolutePath( "/home/user/foo/repository/path/to/resource.xml", file );
+        assertRelativePath( "path/to/resource.xml", file );
+        assertBasedir( "/home/user/foo/repository", file );
+    }
+
+    private void assertAbsolutePath( String expectedPath, BaseFile actualFile )
+    {
+        assertEquals( new File( expectedPath ).getAbsolutePath(), actualFile.getAbsolutePath() );
+    }
+
+    private void assertRelativePath( String expectedPath, BaseFile actualFile )
+    {
+        assertEquals( expectedPath, StringUtils.replace( actualFile.getRelativePath(), "\\", "/" ) );
+    }
+
+    private void assertBasedir( String expectedPath, BaseFile actualFile )
+    {
+        assertEquals( new File( expectedPath ), actualFile.getBaseDir() );
+    }
 }

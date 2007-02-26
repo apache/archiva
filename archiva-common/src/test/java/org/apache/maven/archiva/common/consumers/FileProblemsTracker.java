@@ -20,6 +20,7 @@ package org.apache.maven.archiva.common.consumers;
  */
 
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * FileProblemsTracker 
+ * FileProblemsTracker
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -46,6 +47,7 @@ public class FileProblemsTracker
 
     private void addProblem( String path, String message )
     {
+        path = StringUtils.replace( path, "\\", "/" );
         List problems = getProblems( path );
         problems.add( message );
         problemMap.put( path, problems );
