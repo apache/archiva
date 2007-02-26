@@ -35,7 +35,7 @@ public class CachedRepositoryQueryLayer
     implements RepositoryQueryLayer
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="repository-query"
      */
     private Cache cache;
 
@@ -43,16 +43,10 @@ public class CachedRepositoryQueryLayer
      * @plexus.requirement
      */
     private RepositoryQueryLayer layer;
-
-    public CachedRepositoryQueryLayer( RepositoryQueryLayer layer )
+    
+    public CachedRepositoryQueryLayer()
     {
-        this.layer = layer;
-    }
-
-    public CachedRepositoryQueryLayer( RepositoryQueryLayer layer, Cache cache )
-    {
-        this.cache = cache;
-        this.layer = layer;
+        
     }
 
     public boolean containsArtifact( Artifact artifact )

@@ -9,7 +9,7 @@ package org.apache.maven.archiva.layer;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,37 +19,26 @@ package org.apache.maven.archiva.layer;
  * under the License.
  */
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * CachedRepositoryQueryLayerTest 
+ * AllTests 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class CachedRepositoryQueryLayerTest
-    extends AbstractRepositoryQueryLayerTestCase
+public class AllTests
 {
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
 
-        queryLayer = (RepositoryQueryLayer) lookup( RepositoryQueryLayer.ROLE, "test-cached" );
+    public static Test suite()
+    {
+        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.layer" );
+        //$JUnit-BEGIN$
+        suite.addTestSuite( CachedRepositoryQueryLayerTest.class );
+        suite.addTestSuite( DefaultRepositoryQueryLayerTest.class );
+        //$JUnit-END$
+        return suite;
     }
 
-    public void testUseFileCache()
-    {
-        testContainsArtifactTrue();
-    }
-
-    public void testUseMetadataCache()
-        throws Exception
-    {
-        testArtifactVersions();
-    }
-
-    public void testUseFileCacheOnSnapshot()
-    {
-        testContainsSnapshotArtifactTrue();
-    }
 }
