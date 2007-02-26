@@ -26,6 +26,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.SelectorUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.util.Iterator;
@@ -67,8 +68,8 @@ public class RepositoryScanner
 
             if ( !consumer.init( this.repository ) )
             {
-                throw new IllegalStateException( "Consumer [" + consumer.getName()
-                    + "] is reporting that it is incompatible with the [" + repository.getId() + "] repository." );
+                throw new IllegalStateException( "Consumer [" + consumer.getName() +
+                    "] is reporting that it is incompatible with the [" + repository.getId() + "] repository." );
             }
         }
 
@@ -114,7 +115,7 @@ public class RepositoryScanner
             {
                 Consumer consumer = (Consumer) itConsumers.next();
 
-                if ( wantsFile( consumer, basefile.getRelativePath() ) )
+                if ( wantsFile( consumer, StringUtils.replace( basefile.getRelativePath(), "\\", "/" ) ) )
                 {
                     try
                     {
@@ -127,16 +128,14 @@ public class RepositoryScanner
                         /* Intentionally Catch all exceptions.
                          * So that the discoverer processing can continue.
                          */
-                        getLogger().error(
-                                           "Consumer [" + consumer.getName() + "] had an error when processing file ["
-                                               + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
+                        getLogger().error( "Consumer [" + consumer.getName() + "] had an error when processing file [" +
+                            basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
                     }
                 }
                 else
                 {
                     getLogger().debug(
-                                       "Skipping consumer " + consumer.getName() + " for file "
-                                           + basefile.getRelativePath() );
+                        "Skipping consumer " + consumer.getName() + " for file " + basefile.getRelativePath() );
                 }
             }
         }
@@ -179,7 +178,7 @@ public class RepositoryScanner
         // Not included, and Not excluded?  Default to EXCLUDE.
         return false;
     }
-    
+
     public long getOnlyModifiedAfterTimestamp()
     {
         return onlyModifiedAfterTimestamp;
