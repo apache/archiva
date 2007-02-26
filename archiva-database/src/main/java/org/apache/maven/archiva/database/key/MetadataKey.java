@@ -5,7 +5,7 @@ public class MetadataKey {
 	private String groupId;
 	private String artifactId;
 	private String version;
-	private long id;
+	private int metadataKey;
 	
 	public String getArtifactId() {
 		return artifactId;
@@ -19,11 +19,11 @@ public class MetadataKey {
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
-	public long getId() {
-		return id;
+	public int getMetadataKey() {
+		return metadataKey;
 	}
-	public void setId(long id) {
-		this.id = id;
+	public void setMetadataKey(int id) {
+		this.metadataKey = id;
 	}
 	public String getVersion() {
 		return version;

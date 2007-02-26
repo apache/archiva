@@ -1,6 +1,7 @@
 package org.apache.maven.archiva.database;
 
 import org.apache.maven.archiva.database.key.MetadataKey;
+import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.codehaus.plexus.PlexusTestCase;
 
 public class IbatisMetadataStoreTest
@@ -18,13 +19,27 @@ public class IbatisMetadataStoreTest
     {
         MetadataStore store = (MetadataStore) lookup( MetadataStore.ROLE, "ibatis" );
         
-        MetadataKey testMetadataKey = new MetadataKey();
+        assertNotNull( store );
+    }
+    
+    public void testMetadataKeyRetrieval() throws Exception
+    {
+        MetadataStore store = (MetadataStore) lookup( MetadataStore.ROLE, "ibatis" );
         
-        testMetadataKey.setArtifactId( "testArtfiactId" );
-        testMetadataKey.setGroupId( "testGroupId" );
-        testMetadataKey.setVersion( "testVersion" );
+        Metadata metadata = new Metadata();
+        metadata.setArtifactId( "testArtifactId" );
+        metadata.setGroupId( "testGroupId" );
+        metadata.setVersion( "testVersion" );
         
-        store.addMetadataKey( testMetadataKey );       
+        store.addMetadata( metadata );                
+        
+        MetadataKey metadataKey = store.getMetadataKey( metadata );
+        
+        assertTrue( metadataKey.getMetadataKey() > 0 );
+        assertEquals( metadataKey.getArtifactId(), metadata.getArtifactId() );
+        assertEquals( metadataKey.getGroupId(), metadata.getGroupId() );
+        assertEquals( metadataKey.getVersion(), metadata.getVersion() );
+        
     }
     
     

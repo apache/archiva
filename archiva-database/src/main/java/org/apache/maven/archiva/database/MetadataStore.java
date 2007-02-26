@@ -7,6 +7,8 @@ public interface MetadataStore
 {
     public static final String ROLE = MetadataStore.class.getName();
     
-    public void addMetadataKey( MetadataKey metadataKey ) throws MetadataStoreException;
+    public void addMetadata( Metadata metadata ) throws MetadataStoreException;
+    
+    public MetadataKey getMetadataKey( Metadata metadata ) throws MetadataStoreException;
     
 }

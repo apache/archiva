@@ -54,7 +54,7 @@ public class IbatisMetadataStore
                 String tableName = rs.getString( "TABLE_NAME" );
 
                 // if it does then we are already initialized
-                if ( tableName.toLowerCase().equals( "MetadataKeys" ) )
+                if ( tableName.toLowerCase().equals( "metadatakeys" ) )
                 {
                     return;
                 }
@@ -102,7 +102,7 @@ public class IbatisMetadataStore
         }
     }
     
-    public void addMetadataKey( MetadataKey metadataKey ) 
+    public void addMetadata( Metadata metadata ) 
         throws MetadataStoreException
     {
         SqlMapClient sqlMap = ibatisHelper.getSqlMapClient();
@@ -112,7 +112,7 @@ public class IbatisMetadataStore
             sqlMap.startTransaction();
 
             getLogger().info( "Adding metadata key" );
-            sqlMap.update( "addMetadataKey", metadataKey );
+            sqlMap.update( "addMetadataKey", metadata );
 
             sqlMap.commitTransaction();
         }
@@ -141,5 +141,46 @@ public class IbatisMetadataStore
             }
         }
     }
+    
+    public MetadataKey getMetadataKey( Metadata metadata ) 
+    throws MetadataStoreException
+    {
+    SqlMapClient sqlMap = ibatisHelper.getSqlMapClient();
+
+    try
+    {
+        sqlMap.startTransaction();
+
+        getLogger().info( "Getting metadata key" );
+        MetadataKey newMetadataKey = (MetadataKey) sqlMap.queryForObject( "getMetadataKey", metadata );
+        
+        return newMetadataKey;
+        
+    }
+    catch ( SQLException e )
+    {
+        getLogger().error( "Error while adding metadata, showing all linked exceptions in SQLException." );
+
+        while ( e != null )
+        {
+            getLogger().error( e.getMessage(), e );
+
+            e = e.getNextException();
+        }
+
+        throw new MetadataStoreException ( "Error while interacting with the database.", e );
+    }
+    finally
+    {
+        try
+        {
+            sqlMap.endTransaction();
+        }
+        catch ( SQLException e )
+        {
+            e.printStackTrace();
+        }
+    }
+}
 
 }
