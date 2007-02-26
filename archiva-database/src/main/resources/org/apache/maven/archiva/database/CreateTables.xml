@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CreateTables">
+
+<!-- 
+METADATA_KEYS is the index table for all other tables
+ -->
+<statement id="initalizeMetadataKeyTable">
+    CREATE TABLE MetadataKeys (
+      metadataKey     integer generated always as identity ( start with 1 ) primary key,
+      groupId         varchar(100) not null,
+      artifactId      varchar(100) not null,
+      version         varchar(100) not null
+    )
+</statement>
+
+<statement id="createRepositoryMetadataTable">
+    CREATE TABLE StepInstance (
+      repositoryId          integer,
+      repositoryName        varchar(100) not null,
+      latest        varchar(100) not null,
+      release            varchar(100) not null,
+      lastUpdated         long not null,
+      snapshotTimestamp   long not null,
+      snapshotBuildNumber long not null,
+      snapshotLocalCopy   boolean,
+      primary key( repositoryId ),
+      foreign key( metadataKey ) references MetadataKeys( metadataKey )
+    )
+</statement>
+
+</sqlMap>

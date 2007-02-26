@@ -29,9 +29,10 @@ import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
  */
 public class RepositoryMetadataDatabase
 {
+	
     public void create( RepositoryMetadata metadata )
     {
-
+    	
     }
 
     public RepositoryMetadata read( String groupId, String artifactId, String version )
