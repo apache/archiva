@@ -42,17 +42,20 @@ public class ArtifactPersistence
     {
         return new String[] { "ArtifactKeys" };
     }
-    
-    private ArtifactKey toKey(Artifact artifact)
+
+    private ArtifactKey toKey( Artifact artifact )
     {
         ArtifactKey key = new ArtifactKey();
         key.setGroupId( artifact.getGroupId() );
         key.setArtifactId( artifact.getArtifactId() );
-        key.set
+        key.setVersion( artifact.getVersion() );
+        key.setClassifier( artifact.getClassifier() );
+        key.setType( artifact.getType() );
         return key;
     }
 
-    public void create( Artifact artifact ) throws ArchivaDatabaseException
+    public void create( Artifact artifact )
+        throws ArchivaDatabaseException
     {
         SqlMapClient sqlMap = ibatisHelper.getSqlMapClient();
 
@@ -62,7 +65,6 @@ public class ArtifactPersistence
 
             getLogger().info( "Adding artifact." );
             sqlMap.update( "addArtifact", artifact );
-            
 
             sqlMap.commitTransaction();
         }
