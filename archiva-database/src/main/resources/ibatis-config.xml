@@ -4,6 +4,7 @@
     "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
 
 <sqlMapConfig>
+
   <settings
     cacheModelsEnabled="true"
     enhancementEnabled="true"
@@ -22,14 +23,8 @@
       <property name="JDBC.Password" value="${jdbc.password}"/>
     </dataSource>
   </transactionManager>
-  
-  <!--
-  <resultObjectFactory type="org.codehaus.plexus.ibatis.PlexusResultObjectFactory" >
-  	<property name="foo" value="bar"/>
-  </resultObjectFactory> 
-  -->
 
   <sqlMap resource="org/apache/maven/archiva/database/ManageTables.xml"/>
   <sqlMap resource="org/apache/maven/archiva/database/MetadataKey.xml"/>
   <sqlMap resource="org/apache/maven/archiva/database/RepositoryMetadata.xml"/>
-</sqlMapConfig>
+</sqlMapConfig> 
