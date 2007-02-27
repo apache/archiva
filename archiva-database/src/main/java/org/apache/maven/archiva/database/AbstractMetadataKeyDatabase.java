@@ -179,7 +179,7 @@ public class AbstractMetadataKeyDatabase
     
     protected void dropTable( String tableName )
     throws ArchivaDatabaseException    
-{
+    {
     SqlMapClient sqlMap = ibatisHelper.getSqlMapClient();
 
     try
@@ -231,6 +231,58 @@ public class AbstractMetadataKeyDatabase
     }
     
     
-    
+    protected boolean tableExists( String tableName )
+    throws ArchivaDatabaseException    
+{
+    SqlMapClient sqlMap = ibatisHelper.getSqlMapClient();
+
+    try
+    {
+        sqlMap.startTransaction();
+
+        Connection con = sqlMap.getCurrentConnection();
+
+        DatabaseMetaData databaseMetaData = con.getMetaData();
+
+        ResultSet rs = databaseMetaData.getTables( con.getCatalog(), null, null, null );
+
+        // check if the index database exists in the database
+        while ( rs.next() )
+        {
+            String dbTableName = rs.getString( "TABLE_NAME" );
+
+            // if it does then we are already initialized
+            if ( dbTableName.toLowerCase().equals( tableName.toLowerCase() ) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    catch ( SQLException e )
+    {
+        getLogger().error( "Error while check database, showing all linked exceptions in SQLException." );
+
+        while ( e != null )
+        {
+            getLogger().error( e.getMessage(), e );
+
+            e = e.getNextException();
+        }
+
+        throw new ArchivaDatabaseException( "Error while checking database.", e );
+    }
+    finally
+    {
+        try
+        {
+            sqlMap.endTransaction();
+        }
+        catch ( SQLException e )
+        {
+            e.printStackTrace();
+        }
+    }
+}
     
 }
