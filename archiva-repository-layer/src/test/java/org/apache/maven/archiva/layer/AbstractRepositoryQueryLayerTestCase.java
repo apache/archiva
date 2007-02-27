@@ -45,7 +45,7 @@ public abstract class AbstractRepositoryQueryLayerTestCase
         throws Exception
     {
         super.setUp();
-        File repositoryDirectory = getTestFile( "src/test/repository" );
+        File repositoryDirectory = getTestFile( "src/test/repositories/repository" );
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         ArtifactRepositoryFactory factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );

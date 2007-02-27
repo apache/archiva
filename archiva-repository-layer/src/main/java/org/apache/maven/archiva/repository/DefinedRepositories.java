@@ -35,35 +35,35 @@ public interface DefinedRepositories
      * @return the list of repositories.
      */
     public List getAllRepositories();
-    
+
     /**
      * Get the list of managed (local) repositories.
      * 
      * @return the list of managed (local) repositories.
      */
     public List getManagedRepositories();
-    
+
     /**
      * Get the list of remote repositories.
      * 
      * @return the list of remote repositories.
      */
     public List getRemoteRepositories();
-    
+
     /**
      * Add a repository.
      * 
      * @param repository the repository to add.
      */
-    public void addRepository(Repository repository);
-    
+    public void addRepository( Repository repository );
+
     /**
      * Remove a repository.
      * 
      * @param repository the repository to add.
      */
-    public void removeRepository(Repository repository);
-    
+    public void removeRepository( Repository repository );
+
     /**
      * Get a repository using the provided repository key.
      *  
