@@ -19,7 +19,6 @@ package org.apache.maven.archiva.layer;
  * under the License.
  */
 
-
 /**
  * CachedRepositoryQueryLayerTest 
  *
@@ -34,7 +33,9 @@ public class CachedRepositoryQueryLayerTest
     {
         super.setUp();
 
-        queryLayer = (RepositoryQueryLayer) lookup( RepositoryQueryLayer.ROLE, "test-cached" );
+        RepositoryQueryLayer defaultLayer = new DefaultRepositoryQueryLayer( repository );
+
+        queryLayer = new CachedRepositoryQueryLayer( defaultLayer );
     }
 
     public void testUseFileCache()

@@ -36,12 +36,13 @@ import java.util.List;
  * DefaultRepositoryQueryLayer 
  *
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.layer.RepositoryQueryLayer" role-hint="default"
  */
 public class DefaultRepositoryQueryLayer
     implements RepositoryQueryLayer
 {
     protected ArtifactRepository repository;
-
+    
     public DefaultRepositoryQueryLayer( ArtifactRepository repository )
     {
         this.repository = repository;

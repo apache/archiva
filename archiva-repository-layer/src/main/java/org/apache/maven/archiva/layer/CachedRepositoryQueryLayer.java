@@ -22,6 +22,9 @@ package org.apache.maven.archiva.layer;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.cache.Cache;
+import org.codehaus.plexus.cache.CacheException;
+import org.codehaus.plexus.cache.CacheHints;
+import org.codehaus.plexus.cache.factory.CacheFactory;
 
 import java.util.List;
 
@@ -29,24 +32,31 @@ import java.util.List;
  * CachedRepositoryQueryLayer - simple wrapper around another non-cached Repository Query Layer.
  *
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.layer.RepositoryQueryLayer" role-hint="cached"
  */
 public class CachedRepositoryQueryLayer
     implements RepositoryQueryLayer
 {
-    /**
-     * @plexus.requirement role-hint="repository-query"
-     */
     private Cache cache;
 
-    /**
-     * @plexus.requirement
-     */
     private RepositoryQueryLayer layer;
-    
-    public CachedRepositoryQueryLayer()
+
+    public CachedRepositoryQueryLayer( RepositoryQueryLayer layer )
+        throws RepositoryQueryLayerException
     {
+        this.layer = layer;
+        String repoId = layer.getRepository().getId();
         
+        CacheHints hints = new CacheHints();
+        hints.setName( repoId );
+        hints.setOverflowToDisk( false );
+        try
+        {
+            this.cache = CacheFactory.getInstance().getCache( repoId, hints );
+        }
+        catch ( CacheException e )
+        {
+            throw new RepositoryQueryLayerException( "Unable to initialize cache: " + e.getMessage(), e );
+        }
     }
 
     public boolean containsArtifact( Artifact artifact )
