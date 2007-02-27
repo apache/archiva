@@ -6,7 +6,16 @@ public class MetadataKey {
 	private String artifactId;
 	private String version;
 	private int metadataKey;
-	
+    
+    public MetadataKey( String groupId, String artifactId, String version )
+    {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
+    }
+   
+    public MetadataKey() {}
+    
 	public String getArtifactId() {
 		return artifactId;
 	}
