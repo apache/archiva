@@ -34,9 +34,7 @@
 <div id="contentArea">
 
 <%-- DO NOT REFORMAT THIS LINE --%>
-<c:set var="urlbase">${pageContext.request.scheme}://${pageContext.request.serverName}
-  :${pageContext.request.serverPort}${pageContext.request.contextPath}/repository/
-</c:set>
+<c:set var="urlbase">${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/repository/</c:set>
 
 <div>
   <div style="float: right">
