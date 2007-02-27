@@ -93,17 +93,21 @@ public class DownloadArtifact
         try
         {
             ManagedArtifact managedArtifact = managedRepositories.findArtifact( groupId, artifactId, version );
-            RepositoryConfiguration repoConfig = managedRepositories.getRepositoryConfiguration( managedArtifact
-                .getRepositoryId() );
-            String prefix = req.getContextPath() + "/repository/" + repoConfig.getUrlName();
 
-            if ( mini )
+            if ( managedArtifact != null )
             {
-                appendMini( sb, prefix, managedArtifact );
-            }
-            else
-            {
-                appendNormal( sb, prefix, managedArtifact );
+                RepositoryConfiguration repoConfig = managedRepositories.getRepositoryConfiguration( managedArtifact
+                    .getRepositoryId() );
+                String prefix = req.getContextPath() + "/repository/" + repoConfig.getUrlName();
+
+                if ( mini )
+                {
+                    appendMini( sb, prefix, managedArtifact );
+                }
+                else
+                {
+                    appendNormal( sb, prefix, managedArtifact );
+                }
             }
         }
         catch ( ProjectBuildingException e )
