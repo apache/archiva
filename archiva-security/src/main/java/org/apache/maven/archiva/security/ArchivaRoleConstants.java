@@ -30,6 +30,8 @@ public class ArchivaRoleConstants
     
     public static final String GLOBAL_REPOSITORY_MANAGER_ROLE = "Global Repository Manager";
 
+    public static final String GLOBAL_REPOSITORY_OBSERVER_ROLE = "Global Repository Observer";
+    
     public static final String REGISTERED_USER_ROLE = "Registered User";
 
     public static final String GUEST_ROLE = "Guest";
