@@ -35,6 +35,10 @@
       <artifactId>archiva-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-api</artifactId>
       <version>1.0-alpha-2-SNAPSHOT</version>
