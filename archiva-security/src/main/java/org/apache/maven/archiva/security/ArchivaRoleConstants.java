@@ -27,6 +27,8 @@ public class ArchivaRoleConstants
     public static final String SYSTEM_ADMINISTRATOR_ROLE = "System Administrator";
 
     public static final String USER_ADMINISTRATOR_ROLE = "User Administrator";
+    
+    public static final String GLOBAL_REPOSITORY_MANAGER_ROLE = "Global Repository Manager";
 
     public static final String REGISTERED_USER_ROLE = "Registered User";
 

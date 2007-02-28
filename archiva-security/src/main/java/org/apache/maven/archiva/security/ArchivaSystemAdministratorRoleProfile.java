@@ -46,12 +46,17 @@ public class ArchivaSystemAdministratorRoleProfile
         operations.add( ArchivaRoleConstants.OPERATION_RUN_INDEXER );
         operations.add( ArchivaRoleConstants.OPERATION_REGENERATE_INDEX );
         operations.add( ArchivaRoleConstants.OPERATION_ACCESS_REPORT ); // TODO: does this need to be templated?
-        operations.add( ArchivaRoleConstants.OPERATION_ADD_REPOSITORY );
-        operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
-        operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
         // we don't add access/upload repository operations. This isn't a sys-admin function, and we don't want to
         // encourage the use of the sys admin role for such operations. They can grant it as necessary.
         return operations;
+    }
+    
+    
+    public List getChildRoles()
+    {     
+        List childRoles = new ArrayList();
+        childRoles.add( ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
+        return childRoles;
     }
 
     public boolean isAssignable()
