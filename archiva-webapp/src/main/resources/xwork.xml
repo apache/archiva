@@ -293,7 +293,7 @@
       <interceptor-ref name="unconfiguredStack"/>
     </action>
 
-    <action name="runIndexer" class="runRepositoryTaskAction" method="runIndexer">
+    <action name="runIndexer" class="runRepositoryTaskAction" method="runRefresh">
       <result type="redirect-action">index</result>
     </action>
 
