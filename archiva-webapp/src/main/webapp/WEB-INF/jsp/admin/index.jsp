@@ -35,7 +35,7 @@
   <div>
     <div style="float: right">
       <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="archiva-edit-configuration" resource="*">
+      <pss:ifAuthorized permission="archiva-manage-configuration">
         <a href="<ww:url action="configure" />">Edit Configuration</a>
       </pss:ifAuthorized>
     </div>

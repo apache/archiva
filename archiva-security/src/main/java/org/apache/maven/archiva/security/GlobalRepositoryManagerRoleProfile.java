@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * @plexus.component role="org.codehaus.plexus.rbac.profile.RoleProfile"
- * role-hint="archiva-repository-administrator"
+ * role-hint="global-repository-manager"
  */
 public class GlobalRepositoryManagerRoleProfile
     extends AbstractRoleProfile
@@ -49,9 +49,21 @@ public class GlobalRepositoryManagerRoleProfile
     public List getOperations()
     {      
         List operations = new ArrayList();
+        operations.add( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION );
         operations.add( ArchivaRoleConstants.OPERATION_ADD_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
         return operations;
     }
+
+    public List getChildRoles()
+    {
+        List childRoles = new ArrayList();
+        childRoles.add( ArchivaRoleConstants.GLOBAL_REPOSITORY_OBSERVER_ROLE );
+        return childRoles;
+    }
+    
+    
+    
+    
 }

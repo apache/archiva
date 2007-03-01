@@ -25,6 +25,8 @@ import org.codehaus.plexus.rbac.profile.RoleProfileException;
 /**
  * Role profile manager.
  *
+ * Role Structures are laid out as documented http://docs.codehaus.org/display/MAVENUSER/Archiva+Security+Roles
+ *
  * @author Brett Porter
  * @todo composition over inheritence?
  * @plexus.component role="org.codehaus.plexus.rbac.profile.RoleProfileManager" role-hint="archiva"
@@ -35,8 +37,9 @@ public class ArchivaRoleProfileManager
     public void initialize()
         throws RoleProfileException
     {
-        getRole( "archiva-repository-manager-base" );
-
+        getRole( "global-repository-manager" );
+        getRole( "global-repository-observer" );
+        
         mergeRoleProfiles( "system-administrator", "archiva-system-administrator" );
         mergeRoleProfiles( "user-administrator", "archiva-user-administrator" );
         mergeRoleProfiles( "guest", "archiva-guest" );

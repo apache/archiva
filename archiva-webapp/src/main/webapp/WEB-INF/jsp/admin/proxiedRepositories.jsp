@@ -20,6 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
 
 <html>
 <head>
@@ -33,10 +34,14 @@
 
 <div id="contentArea">
   <div>
+   
     <%-- TODO replace with icons --%>
     <div style="float: right">
-      <a href="<ww:url action="addProxiedRepository" method="input" />">Add Repository</a>
+      <pss:ifAuthorized permission="archiva-manage-configuration">
+        <a href="<ww:url action="addProxiedRepository" method="input" />">Add Repository</a>
+      </pss:ifAuthorized>
     </div>
+    
     <h2>Proxied Repositories</h2>
   </div>
 
@@ -48,10 +53,12 @@
     <div>
       <div style="float: right">
           <%-- TODO replace with icons --%>
-        <a href="<ww:url action="editProxiedRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Edit
+        <pss:ifAuthorized permission="archiva-manage-configuration">
+          <a href="<ww:url action="editProxiedRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Edit
           Repository</a> | <a
           href="<ww:url action="deleteProxiedRepository" method="input"><ww:param name="repoId" value="%{'${repository.id}'}" /></ww:url>">Delete
-        Repository</a>
+          Repository</a>
+        </pss:ifAuthorized>
       </div>
       <h3>${repository.name}</h3>
       <table class="infoTable">

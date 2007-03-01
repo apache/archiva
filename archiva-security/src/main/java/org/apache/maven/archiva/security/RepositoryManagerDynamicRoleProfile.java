@@ -50,61 +50,17 @@ public class RepositoryManagerDynamicRoleProfile
     {
         List operations = new ArrayList();
 
-        // I'm not sure these are appropriate roles.
         operations.add( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY );
         operations.add( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY );
-
         operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
         operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
         return operations;
-    }
-
-
-    public List getChildRoles()
-    {
-        return Collections.singletonList( ArchivaRoleConstants.BASE_REPOSITORY_MANAGER );
-    }
-
-    public List getDynamicChildRoles( String string )
-    {
-        return Collections.singletonList(
-            ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + ArchivaRoleConstants.DELIMITER + string );
     }
 
     public boolean isAssignable()
     {
         return true;
     }
-    
-    public Role getRole( String resource )
-        throws RoleProfileException
-    {
-        try
-        {
-            if ( rbacManager.roleExists( getRoleName( resource ) ) )
-            {
-                return rbacManager.getRole( getRoleName( resource ) );
-            }
-            else
-            {
-                // first time assign the role to the group administrator since they need the access
-                Role newRole = generateRole( resource );
-
-                Role repoAdmin = rbacManager.getRole( ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE );
-                repoAdmin.addChildRoleName( newRole.getName() );
-                rbacManager.saveRole( repoAdmin );
-
-                return newRole;
-            }
-        }
-        catch ( RbacObjectNotFoundException ne )
-        {
-            throw new RoleProfileException( "unable to get role", ne );
-        }
-        catch ( RbacManagerException e )
-        {
-            throw new RoleProfileException( "system error with rbac manager", e );
-        }
-    }
+   
 }
 

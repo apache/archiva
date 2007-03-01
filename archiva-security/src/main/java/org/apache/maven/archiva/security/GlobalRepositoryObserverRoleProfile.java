@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * @plexus.component role="org.codehaus.plexus.rbac.profile.RoleProfile"
- * role-hint="archiva-repository-administrator"
+ * role-hint="global-repository-observer"
  */
 public class GlobalRepositoryObserverRoleProfile
     extends AbstractRoleProfile
@@ -48,6 +48,8 @@ public class GlobalRepositoryObserverRoleProfile
 
     public List getOperations()
     {      
-        return null;
+        List operations = new ArrayList();
+        operations.add( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+        return operations;
     }
 }

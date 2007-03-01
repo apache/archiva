@@ -57,34 +57,4 @@ public class RepositoryObserverDynamicRoleProfile
         return true;
     }
     
-    public Role getRole( String resource )
-    throws RoleProfileException
-{
-    try
-    {
-        if ( rbacManager.roleExists( getRoleName( resource ) ) )
-        {
-            return rbacManager.getRole( getRoleName( resource ) );
-        }
-        else
-        {
-            // first time assign the role to the group administrator since they need the access
-            Role newRole = generateRole( resource );
-
-            Role repoAdmin = rbacManager.getRole( ArchivaRoleConstants.GLOBAL_REPOSITORY_OBSERVER_ROLE );
-            repoAdmin.addChildRoleName( newRole.getName() );
-            rbacManager.saveRole( repoAdmin );
-
-            return newRole;
-        }
-    }
-    catch ( RbacObjectNotFoundException ne )
-    {
-        throw new RoleProfileException( "unable to get role", ne );
-    }
-    catch ( RbacManagerException e )
-    {
-        throw new RoleProfileException( "system error with rbac manager", e );
-    }
-}
 }
