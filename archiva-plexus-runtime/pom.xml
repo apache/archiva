@@ -140,6 +140,25 @@
           <finalName>archiva</finalName>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>config</id>
+            <phase>process-resources</phase>
+            <configuration>
+              <tasks>
+                <copy todir="target/plexus-archiva-runtime/conf">
+                  <fileset dir="src/main/appserver/conf" />
+                </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
