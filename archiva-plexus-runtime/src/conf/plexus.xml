@@ -71,7 +71,29 @@
               </property>
               <property>
                 <name>url</name>
-                <value>jdbc:derby:${plexus.home}/database;create=true</value>
+                <value>jdbc:derby:${plexus.home}/data/users/database;create=true</value>
+              </property>
+              <property>
+                <name>username</name>
+                <value>sa</value>
+              </property>
+              <property>
+                <name>password</name>
+                <value></value>
+              </property>
+            </properties>
+          </resource>
+          <resource>
+            <name>jdbc/archiva</name>
+            <type>javax.sql.DataSource</type>
+            <properties>
+              <property>
+                <name>driverClassName</name>
+                <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+              </property>
+              <property>
+                <name>url</name>
+                <value>jdbc:derby:${plexus.home}/data/archiva/database;create=true</value>
               </property>
               <property>
                 <name>username</name>
