@@ -87,7 +87,7 @@ public class DuplicateArtifactFileReportProcessor
             }
             catch ( DigesterException e )
             {
-                addWarning( artifact, null, "Unable to generate checksum for " + artifact.getFile() + ": " + e );
+                addWarning( artifact, "cant-checksum", "Unable to generate checksum for " + artifact.getFile() + ": " + e );
             }
 
             if ( checksum != null )
