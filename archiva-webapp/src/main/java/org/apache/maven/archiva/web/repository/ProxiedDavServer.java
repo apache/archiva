@@ -37,8 +37,6 @@ import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
-import sun.security.action.GetLongAction;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
