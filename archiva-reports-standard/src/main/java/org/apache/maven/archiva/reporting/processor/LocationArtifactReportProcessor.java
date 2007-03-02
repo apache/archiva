@@ -226,7 +226,7 @@ public class LocationArtifactReportProcessor
     private void addWarning( Artifact artifact, String reason )
     {
         // TODO: reason could be an i18n key derived from the processor and the problem ID and the
-        database.addWarning( artifact, ROLE_HINT, null, reason );
+        database.addWarning( artifact, ROLE_HINT, "bad-location", reason );
     }
 
     private Model readModel( InputStream entryStream )

@@ -73,11 +73,11 @@ public class ArtifactHealthConsumer
         }
         catch ( InvalidArtifactRTException e )
         {
-            database.addWarning( artifact, null, null, "Invalid artifact [" + artifact + "] : " + e );
+            database.addWarning( artifact, "health", "invalid", "Invalid artifact [" + artifact + "] : " + e );
         }
         catch ( ProjectBuildingException e )
         {
-            database.addWarning( artifact, null, null, "Error reading project model: " + e );
+            database.addWarning( artifact, "health", "project-build", "Error reading project model: " + e );
         }
         
         database.remove( artifact );
