@@ -71,6 +71,10 @@
     <level value="warn"/>
   </logger>
 
+  <logger name="org.codehaus.plexus.component.manager.ClassicSingletonComponentManager">
+    <level value="error"/>
+  </logger>
+
   <root>
     <priority value ="warn" />
     <appender-ref ref="console" />
