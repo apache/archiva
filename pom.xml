@@ -24,9 +24,6 @@
     <version>4</version>
     <relativePath>../pom/maven/pom.xml</relativePath>
   </parent>
-  <prerequisites>
-    <maven>2.0.5</maven>
-  </prerequisites>
   <groupId>org.apache.maven.archiva</groupId>
   <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
