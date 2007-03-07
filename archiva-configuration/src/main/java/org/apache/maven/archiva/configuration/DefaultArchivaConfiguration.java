@@ -27,6 +27,8 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 
+import java.util.Iterator;
+
 /**
  * Implementation of configuration holder that retrieves it from the registry.
  *
@@ -60,7 +62,7 @@ public class DefaultArchivaConfiguration
             configuration.setIndexPath( removeExpressions( configuration.getIndexPath() ) );
             configuration.setMinimalIndexPath( removeExpressions( configuration.getMinimalIndexPath() ) );
             configuration.setLocalRepository( removeExpressions( configuration.getLocalRepository() ) );
-            for ( java.util.Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+            for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
             {
                 RepositoryConfiguration c = (RepositoryConfiguration) i.next();
                 c.setDirectory( removeExpressions( c.getDirectory() ) );

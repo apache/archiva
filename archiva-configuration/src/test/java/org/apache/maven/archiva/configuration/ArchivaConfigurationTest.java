@@ -19,6 +19,7 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -139,5 +140,35 @@ public class ArchivaConfigurationTest
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
         configuration = archivaConfiguration.getConfiguration();
         assertEquals( "check value", "index-path", configuration.getIndexPath() );
+    }
+
+    public void testRemoveProxiedRepositoryAndStoreConfiguration()
+        throws Exception
+    {
+        // MRM-300
+
+        File src = getTestFile( "src/test/conf/with-proxied-repos.xml" );
+        File dest = getTestFile( "target/test/with-proxied-repos.xml" );
+        FileUtils.copyFile( src, dest );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-remove-proxied-repo" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        configuration.getProxiedRepositories().remove( 0 );
+
+        archivaConfiguration.save( configuration );
+
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
+        assertEquals( 1, configuration.getProxiedRepositories().size() );
+
+        release( archivaConfiguration );
+
+        // read it back
+        archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-back-remove-proxied-repo" );
+        configuration = archivaConfiguration.getConfiguration();
+        assertEquals( 1, configuration.getProxiedRepositories().size() );
     }
 }
