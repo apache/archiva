@@ -61,11 +61,13 @@
     <level value="error"/>
   </logger>
 
-<!--
   <logger name="JPOX.RDBMS.SQL">
-    <level value="debug"/>
+    <level value="error"/>
   </logger>
-  -->
+
+  <logger name="SQL">
+    <level value="error"/>
+  </logger>
 
   <logger name="freemarker">
     <level value="warn"/>
