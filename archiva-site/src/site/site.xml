@@ -30,6 +30,7 @@
       <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
       <item name="Maven Configuration" href="/guides/getting-started/maven-configuration.html"/>
       <item name="Security Configuration" href="/guides/security-configuration.html"/>
+      <item name="Other Configuration" href="/guides/configuration.html"/>
       <item name="Developing" href="/guides/developing/index.html"/>
     </menu>
     

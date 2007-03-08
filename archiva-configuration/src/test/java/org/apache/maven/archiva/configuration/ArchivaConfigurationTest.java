@@ -142,6 +142,68 @@ public class ArchivaConfigurationTest
         assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 
+    public void testStoreConfigurationUser()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        // TODO: remove with commons-configuration 1.4
+        userFile.getParentFile().mkdirs();
+        org.codehaus.plexus.util.FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+
+        Configuration configuration = new Configuration();
+        configuration.setIndexPath( "index-path" );
+
+        archivaConfiguration.save( configuration );
+
+        assertTrue( "Check file exists", userFile.exists() );
+        assertFalse( "Check file not created", baseFile.exists() );
+
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
+        assertEquals( "check value", "index-path", configuration.getIndexPath() );
+    }
+
+    public void testStoreConfigurationFallback()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        // TODO: remove with commons-configuration 1.4
+        baseFile.getParentFile().mkdirs();
+        org.codehaus.plexus.util.FileUtils.fileWrite( baseFile.getAbsolutePath(), "<configuration/>" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+
+        Configuration configuration = new Configuration();
+        configuration.setIndexPath( "index-path" );
+
+        archivaConfiguration.save( configuration );
+
+        assertTrue( "Check file exists", baseFile.exists() );
+        assertFalse( "Check file not created", userFile.exists() );
+
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
+        assertEquals( "check value", "index-path", configuration.getIndexPath() );
+    }
+
     public void testRemoveProxiedRepositoryAndStoreConfiguration()
         throws Exception
     {

@@ -39,8 +39,6 @@ Archiva Security Configuration
  
  * <<<$ARCHIVA_HOME/conf/security.properties>>>
  
- * <<<$ARCHIVA_HOME/apps/archiva/conf/security.properties>>>
- 
  []
  
  (In the above list, <<<~>>> is the home directory of the user who is running

@@ -27,7 +27,7 @@
       <configuration>
         <properties>
           <xml fileName="${basedir}/src/test/conf/archiva.xml"
-               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
     </component>

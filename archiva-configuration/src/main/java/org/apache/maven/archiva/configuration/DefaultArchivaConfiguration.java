@@ -26,6 +26,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.util.Iterator;
 
@@ -74,7 +75,11 @@ public class DefaultArchivaConfiguration
     public void save( Configuration configuration )
         throws RegistryException
     {
-        Registry section = registry.getSection( KEY );
+        Registry section = registry.getSection( KEY + ".user" );
+        if ( section == null )
+        {
+            section = registry.getSection( KEY + ".base" );
+        }
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
 
@@ -83,8 +88,16 @@ public class DefaultArchivaConfiguration
 
     public void addChangeListener( RegistryListener listener )
     {
-        Registry section = registry.getSection( KEY );
-        section.addChangeListener( listener );
+        Registry section = registry.getSection( KEY + ".user" );
+        if ( section != null )
+        {
+            section.addChangeListener( listener );
+        }
+        section = registry.getSection( KEY + ".base" );
+        if ( section != null )
+        {
+            section.addChangeListener( listener );
+        }
     }
 
     public void initialize()
@@ -105,8 +118,10 @@ public class DefaultArchivaConfiguration
 
     private String removeExpressions( String directory )
     {
-        String value = org.codehaus.plexus.util.StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base", "${appserver.base}" ) );
-        value = org.codehaus.plexus.util.StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home", "${appserver.home}" ) );
+        String value = StringUtils.replace( directory, "${appserver.base}",
+                                            registry.getString( "appserver.base", "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}",
+                                     registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
     }
 
