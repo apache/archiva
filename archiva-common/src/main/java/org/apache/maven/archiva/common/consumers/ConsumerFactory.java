@@ -49,7 +49,7 @@ public class ConsumerFactory
         Consumer consumer;
         try
         {
-            consumer = (Consumer) container.lookup( Consumer.ROLE, container.getLookupRealm() );
+            consumer = (Consumer) container.lookup( Consumer.ROLE, name, container.getLookupRealm() );
         }
         catch ( Throwable t )
         {
