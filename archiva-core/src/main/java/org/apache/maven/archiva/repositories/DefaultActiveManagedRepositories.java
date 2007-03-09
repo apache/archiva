@@ -45,6 +45,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -315,9 +316,15 @@ public class DefaultActiveManagedRepositories
                     lastDataRefreshTime = stats.getTimestampFinished();
                 }
             }
-            catch ( IOException e )
+            catch ( FileNotFoundException e)
             {
                 getLogger().info(
+                                  "No previous datarefresh timestamp available, as "
+                                      + DataRefreshExecutor.DATAREFRESH_FILE + " has never been generated." );
+            }
+            catch ( IOException e )
+            {
+                getLogger().warn(
                                   "Unable to load " + DataRefreshExecutor.DATAREFRESH_FILE
                                       + " to determine last refresh timestamp: " + e.getMessage(), e );
             }
