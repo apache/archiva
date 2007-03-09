@@ -54,7 +54,7 @@ public class DataRefreshExecutor
     extends AbstractLogEnabled
     implements TaskExecutor
 {
-    private static final String DATAREFRESH_FILE = ".datarefresh";
+    public static final String DATAREFRESH_FILE = ".datarefresh";
 
     /**
      * Configuration store.

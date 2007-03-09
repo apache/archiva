@@ -29,6 +29,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.discoverer.DiscovererStatistics;
+import org.apache.maven.archiva.scheduler.executors.DataRefreshExecutor;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -44,6 +45,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -305,9 +307,19 @@ public class DefaultActiveManagedRepositories
             ArtifactRepository repository = (ArtifactRepository) i.next();
 
             DiscovererStatistics stats = new DiscovererStatistics( repository );
-            if ( stats.getTimestampFinished() > lastDataRefreshTime )
+            try
             {
-                lastDataRefreshTime = stats.getTimestampFinished();
+                stats.load( DataRefreshExecutor.DATAREFRESH_FILE );
+                if ( stats.getTimestampFinished() > lastDataRefreshTime )
+                {
+                    lastDataRefreshTime = stats.getTimestampFinished();
+                }
+            }
+            catch ( IOException e )
+            {
+                getLogger().info(
+                                  "Unable to load " + DataRefreshExecutor.DATAREFRESH_FILE
+                                      + " to determine last refresh timestamp: " + e.getMessage(), e );
             }
         }
 
