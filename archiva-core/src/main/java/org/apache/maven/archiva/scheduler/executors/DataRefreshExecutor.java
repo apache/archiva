@@ -149,7 +149,7 @@ public class DataRefreshExecutor
                                      lastRunStats.getTimestampFinished(), null, null );
 
                 stats.dump( getLogger() );
-                lastRunStats.save( DATAREFRESH_FILE );
+                stats.save( DATAREFRESH_FILE );
             }
             catch ( DiscovererException e )
             {
