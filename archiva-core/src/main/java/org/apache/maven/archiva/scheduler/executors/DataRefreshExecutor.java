@@ -54,6 +54,8 @@ public class DataRefreshExecutor
     extends AbstractLogEnabled
     implements TaskExecutor
 {
+    private static final String DATAREFRESH_FILE = ".datarefresh";
+
     /**
      * Configuration store.
      *
@@ -131,7 +133,7 @@ public class DataRefreshExecutor
             DiscovererStatistics lastRunStats = new DiscovererStatistics( repository );
             try
             {
-                lastRunStats.load( ".datarefresh" );
+                lastRunStats.load( DATAREFRESH_FILE );
             }
             catch ( IOException e )
             {
@@ -147,12 +149,19 @@ public class DataRefreshExecutor
                                      lastRunStats.getTimestampFinished(), null, null );
 
                 stats.dump( getLogger() );
+                lastRunStats.save( DATAREFRESH_FILE );
             }
             catch ( DiscovererException e )
             {
                 getLogger().error(
                                    "Unable to run data refresh against repository [" + repository.getId() + "]: "
                                        + e.getMessage(), e );
+            }
+            catch ( IOException e )
+            {
+                getLogger().warn(
+                                  "Unable to save last run statistics for repository [" + repository.getId() + "]: "
+                                      + e.getMessage() );
             }
         }
 
