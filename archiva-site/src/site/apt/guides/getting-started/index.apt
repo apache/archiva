@@ -73,10 +73,24 @@ To deploy Archiva to Tomcat 5.5
            username="sa"
            password=""
            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-           url="jdbc:derby:database/archiva;create=true"
- />
+           url="jdbc:derby:database/archiva;create=true" />
+ 
+ <Resource name="jdbc/archiva" auth="Container" type="javax.sql.DataSource"
+           username="sa"
+           password=""
+           driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
+           url="jdbc:derby:database/archiva;create=true" />
+ 
+ <Resource name="mail/Session" auth="Container"
+            type="javax.mail.Session"
+            mail.smtp.host="localhost"/>
  </Context>
 +-------------------------------------------------------------------------+
+
+   * <<Note>>: Tomcat 5.5.20 and 5.5.23 are missing MailSessionFactory and a
+   few other classes.  JNDI mail sessions will <not> work.  Use Tomcat 5.5.17
+   instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
+   Bug 40668}} for a workaround.
 
    * Copy archiva/archiva-webapp/target/archiva-webapp-1.0-SNAPSHOT/WEB-INF/lib/derby-10.1.3.1.jar into the tomcat common/lib
 
