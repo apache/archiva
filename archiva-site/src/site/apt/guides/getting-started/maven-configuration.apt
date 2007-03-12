@@ -132,7 +132,9 @@ Configuring Maven-2 to use an Archiva repository
   </settings>
 +-------------------------------------------------------------------------+
 
-  [[4]] Configure the distributionManagement part of your pom.xml
+* Deploying to Archiva
+
+  [[1]] Configure the distributionManagement part of your pom.xml
  
 +-------------------------------------------------------------------------+
   <project>
@@ -153,7 +155,7 @@ Configuring Maven-2 to use an Archiva repository
   </project>
 +-------------------------------------------------------------------------+
 
-  [[5]] Add a build extension to your pom.xml to use webdav
+  [[2]] Add a build extension to your pom.xml to use webdav
 
 +-------------------------------------------------------------------------+
   <project>
@@ -171,4 +173,45 @@ Configuring Maven-2 to use an Archiva repository
   </project>
 +-------------------------------------------------------------------------+
 
-  [[6]] Finally the user that is running archiva (tomcat-user, plexus-user,..) must have write access to the deployment repository.   
+  [[3]] Finally the user that is running archiva (tomcat-user, plexus-user,..) must have write access to the deployment repository.   
+  
+* Deploying Third-Party Artifacts to Archiva
+
+  [[1]] In the directory from which you intend to execute "<<<mvn
+  deploy:deploy-file>>>", save the following content as <<<pom.xml>>>.
+  
++-------+
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>com.example</groupId>
+   <artifactId>webdav-deploy</artifactId>
+   <packaging>pom</packaging>
+   <version>1</version>
+   <name>Webdav Deployment POM</name>
+   
+   <build>
+      <extensions>
+         <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-webdav</artifactId>
+            <version>1.0-beta-2</version>
+         </extension>
+      </extensions>
+   </build>
+
+</project>
++-------+
+
+  This pom will not be deployed with the artifact, it simply serves to make the
+  wagon-webdav jar available to the build process.
+  
+  Alternately, save this file somewhere else, and use "<<<mvn ... -f
+  /path/to/filename>>>" to force the use of an alternate POM file.
+  
+  [[2]] Deploy the artifact:
+  
++------+
+mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
+    -DrepositoryId=deployment.webdav
+    -Durl=dav:URL-TO-ARCHIVA/repository/REPOSITORY-ID
++------+
