@@ -103,7 +103,7 @@
                jpox.primary-key="true" 
                jpox.value-strategy="off" 
                jpox.persistence-modifier="persistent">
-          <name>type</name>
+          <name>artifactType</name>
           <version>1.0.0</version>
           <type>String</type>
           <identity>true</identity>
@@ -134,7 +134,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -147,7 +147,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -160,7 +160,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -221,7 +221,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -234,7 +234,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -247,7 +247,7 @@
                        jpox.dependent="true"
                        java.generate-break="false"
                        java.generate-create="false">
-            <type>Result</type>
+            <type>ResultReason</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -263,7 +263,7 @@
       </fields>
     </class>
     <class stash.storable="true">
-      <name>Result</name>
+      <name>ResultReason</name>
       <version>1.0.0</version>
       <fields>
         <field xml.attribute="true">
@@ -302,13 +302,13 @@
           <code><![CDATA[
             public boolean equals( Object obj )
             {
-                if ( obj instanceof Result )
+                if ( obj instanceof ResultReason )
                 {
                     if ( this == obj )
                     {
                         return true;
                     }
-                    Result rhs = (Result) obj;
+                    ResultReason rhs = (ResultReason) obj;
                     return new org.apache.commons.lang.builder.EqualsBuilder()
                         .append( problem, rhs.problem )
                         .append( processor, rhs.processor )

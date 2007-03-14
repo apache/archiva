@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.database;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
 import org.apache.maven.archiva.reporting.model.MetadataResultsKey;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
 import java.util.Collections;
@@ -47,7 +47,7 @@ public class MetadataResultsDatabase
     public void addFailure( RepositoryMetadata metadata, String processor, String problem, String reason )
     {
         MetadataResults results = getMetadataResults( metadata );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getFailures().contains( result ) )
         {
@@ -60,7 +60,7 @@ public class MetadataResultsDatabase
     public void addWarning( RepositoryMetadata metadata, String processor, String problem, String reason )
     {
         MetadataResults results = getMetadataResults( metadata );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getWarnings().contains( result ) )
         {
@@ -73,7 +73,7 @@ public class MetadataResultsDatabase
     public void addNotice( RepositoryMetadata metadata, String processor, String problem, String reason )
     {
         MetadataResults results = getMetadataResults( metadata );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getNotices().contains( result ) )
         {

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.processor;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.Dependency;
@@ -91,7 +91,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( "Artifact does not exist in the repository", result.getReason() );
     }
 
@@ -161,7 +161,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyNotFoundMessage( createDependency( INVALID, INVALID, INVALID ) ), result.getReason() );
     }
 
@@ -181,7 +181,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
@@ -210,7 +210,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
@@ -229,7 +229,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyNotFoundMessage( dependency ), result.getReason() );
     }
 
@@ -249,7 +249,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyVersionInvalidMessage( dependency, "[" ), result.getReason() );
     }
 
@@ -282,7 +282,7 @@ public class DependencyArtifactReportProcessorTest
         ArtifactResults results = (ArtifactResults) failures.next();
         assertFalse( failures.hasNext() );
         failures = results.getFailures().iterator();
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( getDependencyVersionInvalidMessage( dependency, null ), result.getReason() );
     }
 

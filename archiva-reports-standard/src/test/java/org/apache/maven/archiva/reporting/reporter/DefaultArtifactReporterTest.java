@@ -24,7 +24,7 @@ import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ReportingDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -90,7 +90,7 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "Single Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -126,13 +126,13 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "First Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd failure", failures.hasNext() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         assertEquals( "check failure reason", "Second Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
@@ -151,7 +151,7 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getWarnings().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "Single Warning Message", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -172,13 +172,13 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getWarnings().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "First Warning", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd warning", warnings.hasNext() );
-        result = (Result) warnings.next();
+        result = (ResultReason) warnings.next();
         assertEquals( "check failure reason", "Second Warning", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
@@ -197,7 +197,7 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getNotices().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "Single Notice Message", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -218,13 +218,13 @@ public class DefaultArtifactReporterTest
         MetadataResults results = (MetadataResults) warnings.next();
         warnings = results.getNotices().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertMetadata( results );
         assertEquals( "check failure reason", "First Notice", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd warning", warnings.hasNext() );
-        result = (Result) warnings.next();
+        result = (ResultReason) warnings.next();
         assertEquals( "check failure reason", "Second Notice", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
@@ -243,7 +243,7 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "Single Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -266,7 +266,7 @@ public class DefaultArtifactReporterTest
         assertEquals( "check failure cause", StringUtils.defaultString( artifact.getVersion() ), results.getVersion() );
         assertEquals( "check failure cause", StringUtils.defaultString( artifact.getClassifier() ), results
             .getClassifier() );
-        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getType() ), results.getType() );
+        assertEquals( "check failure cause", StringUtils.defaultString( artifact.getType() ), results.getArtifactType() );
     }
 
     public void testArtifactMultipleFailures()
@@ -282,13 +282,13 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "First Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd failure", failures.hasNext() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         assertEquals( "check failure reason", "Second Failure Reason", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
@@ -307,7 +307,7 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getWarnings().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "Single Warning Message", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -328,13 +328,13 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getWarnings().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "First Warning", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd warning", warnings.hasNext() );
-        result = (Result) warnings.next();
+        result = (ResultReason) warnings.next();
         assertEquals( "check failure reason", "Second Warning", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
@@ -353,7 +353,7 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getNotices().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "Single Notice Message", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
@@ -374,13 +374,13 @@ public class DefaultArtifactReporterTest
         ArtifactResults results = (ArtifactResults) warnings.next();
         warnings = results.getNotices().iterator();
         assertTrue( "check there is a failure", warnings.hasNext() );
-        Result result = (Result) warnings.next();
+        ResultReason result = (ResultReason) warnings.next();
         assertArtifact( results );
         assertEquals( "check failure reason", "First Notice", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );
         assertTrue( "must have 2nd warning", warnings.hasNext() );
-        result = (Result) warnings.next();
+        result = (ResultReason) warnings.next();
         assertEquals( "check failure reason", "Second Notice", result.getReason() );
         assertEquals( "check failure parameters", PROCESSOR, result.getProcessor() );
         assertEquals( "check failure parameters", PROBLEM, result.getProblem() );

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.database;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.model.ArtifactResultsKey;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.Artifact;
 
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class ArtifactResultsDatabase
     public void addFailure( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getFailures().contains( result ) )
         {
@@ -67,7 +67,7 @@ public class ArtifactResultsDatabase
     public void addNotice( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getNotices().contains( result ) )
         {
@@ -80,7 +80,7 @@ public class ArtifactResultsDatabase
     public void addWarning( Artifact artifact, String processor, String problem, String reason )
     {
         ArtifactResults results = getArtifactResults( artifact );
-        Result result = createResult( processor, problem, reason );
+        ResultReason result = createResultReason( processor, problem, reason );
 
         if ( !results.getWarnings().contains( result ) )
         {
@@ -211,7 +211,7 @@ public class ArtifactResultsDatabase
         results.setGroupId( StringUtils.defaultString( artifact.getGroupId() ) );
         results.setArtifactId( StringUtils.defaultString( artifact.getArtifactId() ) );
         results.setVersion( StringUtils.defaultString( artifact.getVersion() ) );
-        results.setType( StringUtils.defaultString( artifact.getType() ) );
+        results.setArtifactType( StringUtils.defaultString( artifact.getType() ) );
         results.setClassifier( StringUtils.defaultString( artifact.getClassifier() ) );
 
         return results;
@@ -241,7 +241,7 @@ public class ArtifactResultsDatabase
         key.groupId = StringUtils.defaultString( artifact.getGroupId() );
         key.artifactId = StringUtils.defaultString( artifact.getArtifactId() );
         key.version = StringUtils.defaultString( artifact.getVersion() );
-        key.type = StringUtils.defaultString( artifact.getType() );
+        key.artifactType = StringUtils.defaultString( artifact.getType() );
         key.classifier = StringUtils.defaultString( artifact.getClassifier() );
 
         return (ArtifactResults) getObjectByKey( ArtifactResults.class, key );

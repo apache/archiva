@@ -38,7 +38,7 @@ public class ArtifactResultsKey
 
     public String version = "";
 
-    public String type = "";
+    public String artifactType = "";
 
     public String classifier = "";
 
@@ -53,13 +53,13 @@ public class ArtifactResultsKey
         groupId = parts[0];
         artifactId = parts[1];
         version = parts[2];
-        type = parts[3];
+        artifactType = parts[3];
         classifier = parts[4];
     }
 
     public String toString()
     {
-        return StringUtils.join( new String[] { groupId, artifactId, version, type, classifier }, ':' );
+        return StringUtils.join( new String[] { groupId, artifactId, version, artifactType, classifier }, ':' );
     }
 
     public int hashCode()
@@ -69,7 +69,7 @@ public class ArtifactResultsKey
         result = PRIME * result + ( ( groupId == null ) ? 0 : groupId.hashCode() );
         result = PRIME * result + ( ( artifactId == null ) ? 0 : artifactId.hashCode() );
         result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
-        result = PRIME * result + ( ( type == null ) ? 0 : type.hashCode() );
+        result = PRIME * result + ( ( artifactType == null ) ? 0 : artifactType.hashCode() );
         result = PRIME * result + ( ( classifier == null ) ? 0 : classifier.hashCode() );
         return result;
     }
@@ -129,14 +129,14 @@ public class ArtifactResultsKey
             return false;
         }
 
-        if ( type == null )
+        if ( artifactType == null )
         {
-            if ( other.type != null )
+            if ( other.artifactType != null )
             {
                 return false;
             }
         }
-        else if ( !type.equals( other.type ) )
+        else if ( !artifactType.equals( other.artifactType ) )
         {
             return false;
         }

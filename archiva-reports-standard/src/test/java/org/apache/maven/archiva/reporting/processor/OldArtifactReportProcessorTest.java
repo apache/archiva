@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.processor;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
 import org.apache.maven.archiva.reporting.model.ArtifactResults;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.Artifact;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -61,7 +61,7 @@ public class OldArtifactReportProcessorTest
         assertEquals( artifact.getVersion(), results.getVersion() );
         assertEquals( 1, results.getNotices().size() );
         Iterator i = results.getNotices().iterator();
-        Result result = (Result) i.next();
+        ResultReason result = (ResultReason) i.next();
         assertEquals( "old-artifact", result.getProcessor() );
     }
 

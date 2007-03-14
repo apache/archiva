@@ -19,7 +19,7 @@ package org.apache.maven.archiva.reporting.database;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 
 /**
  * AbstractResultsDatabase 
@@ -69,9 +69,9 @@ public abstract class AbstractResultsDatabase
      */
     public abstract int getNumNotices();
     
-    protected static Result createResult( String processor, String problem, String reason )
+    protected static ResultReason createResultReason( String processor, String problem, String reason )
     {
-        Result result = new Result();
+        ResultReason result = new ResultReason();
         result.setProcessor( processor );
         result.setProblem( problem );
         result.setReason( reason );

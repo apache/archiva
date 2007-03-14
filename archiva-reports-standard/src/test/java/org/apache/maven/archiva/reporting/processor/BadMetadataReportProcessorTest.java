@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.reporting.AbstractRepositoryReportsTestCase;
 import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.archiva.reporting.model.MetadataResults;
-import org.apache.maven.archiva.reporting.model.Result;
+import org.apache.maven.archiva.reporting.model.ResultReason;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
@@ -87,7 +87,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( metadata, results );
         assertEquals( "check reason", "Missing lastUpdated element inside the metadata.", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
@@ -107,9 +107,9 @@ public class BadMetadataReportProcessorTest
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         assertMetadata( metadata, results );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( "check reason", "Missing lastUpdated element inside the metadata.", result.getReason() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         boolean alpha1First = false;
         if ( result.getReason().indexOf( "alpha-1" ) > 0 )
         {
@@ -127,7 +127,7 @@ public class BadMetadataReportProcessorTest
                           "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
                               .getReason() );
         }
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         if ( !alpha1First )
         {
             assertEquals( "check reason",
@@ -158,7 +158,7 @@ public class BadMetadataReportProcessorTest
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
         assertMetadata( metadata, results );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertEquals( "check reason", "Missing lastUpdated element inside the metadata.", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
     }
@@ -197,7 +197,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
@@ -225,7 +225,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
@@ -252,14 +252,14 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason",
                       "Artifact version 1.0-alpha-3 is present in metadata but missing in the repository.", result
                           .getReason() );
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason",
                       "Artifact version 1.0-alpha-2 found in the repository but missing in the metadata.", result
@@ -293,7 +293,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Metadata plugin missing-plugin not found in the repository", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
@@ -311,7 +311,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Plugin snapshot-artifact is present in the repository but "
             + "missing in the metadata.", result.getReason() );
@@ -333,12 +333,12 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default3", result
             .getReason() );
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Missing or empty artifactId in group metadata for plugin default4", result
             .getReason() );
@@ -358,11 +358,11 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Missing or empty plugin prefix for artifactId artifactId.", result.getReason() );
         assertTrue( "check there is a 2nd failure", failures.hasNext() );
-        result = (Result) failures.next();
+        result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Missing or empty plugin prefix for artifactId snapshot-artifact.", result
             .getReason() );
@@ -382,7 +382,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         // TODO: should be more robust
         assertEquals( "check reason", "Duplicate plugin prefix found: default.", result.getReason() );
         assertFalse( "check no more failures", failures.hasNext() );
@@ -423,7 +423,7 @@ public class BadMetadataReportProcessorTest
         MetadataResults results = (MetadataResults) failures.next();
         failures = results.getFailures().iterator();
         assertTrue( "check there is a failure", failures.hasNext() );
-        Result result = (Result) failures.next();
+        ResultReason result = (ResultReason) failures.next();
         assertMetadata( metadata, results );
         // TODO: should be more robust
         assertEquals( "check reason", "Snapshot artifact 1.0-alpha-1-20050611.202024-2 does not exist.", result
