@@ -47,7 +47,7 @@ public class MetadataResultsDatabaseTest
     {
         super.setUp();
 
-        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE );
+        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE, "default" );
 
         Artifact artifact = new DefaultArtifact( "group", "artifact", VersionRange.createFromVersion( "1.0" ), "scope",
                                                  "type", "classifier", null );

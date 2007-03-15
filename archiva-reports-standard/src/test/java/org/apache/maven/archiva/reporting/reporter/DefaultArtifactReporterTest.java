@@ -56,7 +56,7 @@ public class DefaultArtifactReporterTest
     {
         super.setUp();
 
-        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
+        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE, "default" );
 
         ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 

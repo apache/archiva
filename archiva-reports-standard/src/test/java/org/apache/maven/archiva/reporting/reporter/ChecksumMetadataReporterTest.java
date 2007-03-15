@@ -58,8 +58,8 @@ public class ChecksumMetadataReporterTest
         super.setUp();
         metadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "checksum-metadata" );
         artifactReportProcessor = (ArtifactReportProcessor) lookup( ArtifactReportProcessor.ROLE, "checksum" );
-        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE );
-        artifactsDatabase = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE );
+        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE, "default" );
+        artifactsDatabase = (ArtifactResultsDatabase) lookup( ArtifactResultsDatabase.ROLE, "default" );
     }
 
     /**

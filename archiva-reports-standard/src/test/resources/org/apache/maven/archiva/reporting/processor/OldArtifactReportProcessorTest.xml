@@ -27,6 +27,7 @@
       <requirements>
         <requirement>
           <role>org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase</role>
+          <role-hint>default</role-hint>
           <field-name>database</field-name>
         </requirement>
       </requirements>

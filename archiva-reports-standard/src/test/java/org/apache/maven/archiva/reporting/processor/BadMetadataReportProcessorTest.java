@@ -57,7 +57,7 @@ public class BadMetadataReportProcessorTest
 
         artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
 
-        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE );
+        database = (MetadataResultsDatabase) lookup( MetadataResultsDatabase.ROLE, "default" );
 
         badMetadataReportProcessor = (MetadataReportProcessor) lookup( MetadataReportProcessor.ROLE, "bad-metadata" );
     }

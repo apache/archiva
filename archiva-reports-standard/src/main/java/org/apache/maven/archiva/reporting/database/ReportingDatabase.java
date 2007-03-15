@@ -26,18 +26,19 @@ import java.util.Iterator;
  * 
  * @todo i18n, including message formatting and parameterisation
  * @plexus.component role="org.apache.maven.archiva.reporting.database.ReportingDatabase"
+ *                   role-hint="default"
  */
 public class ReportingDatabase
 {
     public static final String ROLE = ReportingDatabase.class.getName();
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private ArtifactResultsDatabase artifactDatabase;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private MetadataResultsDatabase metadataDatabase;
 

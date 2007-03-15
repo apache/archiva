@@ -62,7 +62,7 @@ public class BadMetadataReportProcessor
     private RepositoryQueryLayerFactory repositoryQueryLayerFactory;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private MetadataResultsDatabase database;
 

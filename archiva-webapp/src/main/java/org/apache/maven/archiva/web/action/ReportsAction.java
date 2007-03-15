@@ -40,7 +40,7 @@ public class ReportsAction
     implements SecureAction
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private ReportingDatabase database;
 

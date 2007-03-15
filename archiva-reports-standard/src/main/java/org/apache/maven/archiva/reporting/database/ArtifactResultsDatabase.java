@@ -41,6 +41,7 @@ import javax.jdo.Transaction;
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase"
+ *                   role-hint="default"
  */
 public class ArtifactResultsDatabase
     extends AbstractResultsDatabase

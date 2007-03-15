@@ -36,7 +36,7 @@ public class ReportingDatabaseTest
         throws Exception
     {
         super.setUp();
-        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE );
+        database = (ReportingDatabase) lookup( ReportingDatabase.ROLE, "default" );
     }
 
     protected void tearDown()

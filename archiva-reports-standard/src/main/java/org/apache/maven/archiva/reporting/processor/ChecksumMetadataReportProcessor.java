@@ -49,7 +49,7 @@ public class ChecksumMetadataReportProcessor
     private Digester md5Digester;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private MetadataResultsDatabase database;
 

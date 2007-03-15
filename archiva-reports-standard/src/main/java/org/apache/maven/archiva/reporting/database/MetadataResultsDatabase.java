@@ -38,6 +38,7 @@ import javax.jdo.JDOObjectNotFoundException;
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.reporting.database.MetadataResultsDatabase"
+ *                   role-hint="default"
  */
 public class MetadataResultsDatabase
     extends AbstractResultsDatabase
