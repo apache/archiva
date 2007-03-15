@@ -20,8 +20,10 @@ package org.apache.maven.archiva.repository.scanner;
  */
 
 import org.apache.commons.lang.SystemUtils;
-import org.apache.maven.archiva.common.consumers.Consumer;
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.consumers.Consumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.SelectorUtils;
@@ -45,19 +47,21 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
 
     private List consumers;
 
-    private ArtifactRepository repository;
+    private ArchivaRepository repository;
 
     private boolean isCaseSensitive = true;
 
-    private ScanStatistics stats;
+    private RepositoryContentStatistics stats;
 
     private long onlyModifiedAfterTimestamp = 0;
 
-    public RepositoryScannerInstance( ArtifactRepository repository, List consumerList )
+    public RepositoryScannerInstance( ArchivaRepository repository, List consumerList )
     {
         this.repository = repository;
         this.consumers = consumerList;
-        stats = new ScanStatistics( repository );
+        stats = new RepositoryContentStatistics();
+        stats.setRepositoryId( repository.getId() );
+        
 
         Iterator it = this.consumers.iterator();
         while ( it.hasNext() )
@@ -77,36 +81,36 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
         }
     }
 
-    public ScanStatistics getStatistics()
+    public RepositoryContentStatistics getStatistics()
     {
         return stats;
     }
 
     public void directoryWalkStarting( File basedir )
     {
-        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getBasedir() );
-        stats.reset();
-        stats.timestampStarted = System.currentTimeMillis();
+        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getRepositoryURL() );
+        stats.triggerStart();
     }
 
     public void directoryWalkStep( int percentage, File file )
     {
         log.debug( "Walk Step: " + percentage + ", " + file );
+        
+        stats.increaseFileCount();
 
         // Timestamp finished points to the last successful scan, not this current one.
         if ( file.lastModified() < onlyModifiedAfterTimestamp )
         {
             // Skip file as no change has occured.
             log.debug( "Skipping, No Change: " + file.getAbsolutePath() );
-            stats.filesSkipped++;
             return;
         }
 
         synchronized ( consumers )
         {
-            stats.filesIncluded++;
+            stats.increaseNewFileCount();
 
-            BaseFile basefile = new BaseFile( repository.getBasedir(), file );
+            BaseFile basefile = new BaseFile( repository.getRepositoryURL().getPath(), file );
 
             Iterator itConsumers = this.consumers.iterator();
             while ( itConsumers.hasNext() )
@@ -118,7 +122,6 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
                     try
                     {
                         log.debug( "Sending to consumer: " + consumer.getName() );
-                        stats.filesConsumed++;
                         consumer.processFile( basefile );
                     }
                     catch ( Exception e )
@@ -141,8 +144,8 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
 
     public void directoryWalkFinished()
     {
-        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getBasedir() );
-        stats.timestampFinished = System.currentTimeMillis();
+        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getRepositoryURL() );
+        stats.triggerFinished();
     }
 
     private boolean wantsFile( Consumer consumer, String relativePath )

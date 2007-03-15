@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.connector;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.Repository;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
 
@@ -31,9 +31,9 @@ import java.util.List;
  */
 public interface RepositoryConnector
 {
-    public Repository getSourceRepository();
+    public ArchivaRepository getSourceRepository();
 
-    public Repository getTargetRepository();
+    public ArchivaRepository getTargetRepository();
 
     public List getBlacklist();
     

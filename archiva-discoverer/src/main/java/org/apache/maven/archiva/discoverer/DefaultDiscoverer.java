@@ -19,7 +19,7 @@ package org.apache.maven.archiva.discoverer;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.consumers.Consumer;
+import org.apache.maven.archiva.consumers.Consumer;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryWalker;

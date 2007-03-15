@@ -19,69 +19,152 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
 
 /**
- * RepositoryContentKey - the golden key for all content within the repository. 
+ * RepositoryContentKey - the jpox application key support class for all content within the repository.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryContentKey
+public class RepositoryContentKey implements Serializable
 {
-    private String artifactId;
-    
-    private String groupId;
+    /**
+     * The Repository ID. (JPOX Requires this remain public)
+     */
+    public String repositoryId = "";
 
-    private ArtifactRepository repository;
+    /**
+     * The Group ID. (JPOX Requires this remain public)
+     */
+    public String groupId = "";
 
-    private String version;
+    /**
+     * The Artifact ID. (JPOX Requires this remain public)
+     */
+    public String artifactId = "";
 
-    public RepositoryContentKey( ArtifactRepository repository, String groupId, String artifactId, String version )
+    /**
+     * The Version. (JPOX Requires this remain public)
+     */
+    public String version = "";
+
+    /**
+     * Default Constructor.  Required by JPOX.
+     */
+    public RepositoryContentKey()
     {
-        this.repository = repository;
-        this.groupId = groupId;
-        this.artifactId = artifactId;
-        this.version = version;
+
     }
 
-    public String getArtifactId()
+    /**
+     * Key Based Constructor.  Required by JPOX.
+     * 
+     * @param key the String representing this object's values.
+     */
+    public RepositoryContentKey( String key )
     {
-        return artifactId;
+        String parts[] = StringUtils.splitPreserveAllTokens( key, ':' );
+        repositoryId = parts[0];
+        groupId = parts[1];
+        artifactId = parts[2];
+        version = parts[3];
     }
 
-    public String getGroupId()
+    /**
+     * Get the String representation of this object. - Required by JPOX.
+     */
+    public String toString()
     {
-        return groupId;
+        return StringUtils.join( new String[] { repositoryId, groupId, artifactId, version } );
     }
 
-    public ArtifactRepository getRepository()
+    /**
+     * Get the hashcode for this object's values - Required by JPOX.
+     */
+    public int hashCode()
     {
-        return repository;
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        result = PRIME * result + ( ( groupId == null ) ? 0 : groupId.hashCode() );
+        result = PRIME * result + ( ( artifactId == null ) ? 0 : artifactId.hashCode() );
+        result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
+        return result;
     }
 
-    public String getVersion()
+    /**
+     * Get the equals for this object's values - Required by JPOX.
+     */
+    public boolean equals( Object obj )
     {
-        return version;
-    }
+        if ( this == obj )
+        {
+            return true;
+        }
 
-    public void setArtifactId( String artifactId )
-    {
-        this.artifactId = artifactId;
-    }
+        if ( obj == null )
+        {
+            return false;
+        }
 
-    public void setGroupId( String groupId )
-    {
-        this.groupId = groupId;
-    }
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
 
-    public void setRepository( ArtifactRepository repository )
-    {
-        this.repository = repository;
-    }
+        final RepositoryContentKey other = (RepositoryContentKey) obj;
 
-    public void setVersion( String version )
-    {
-        this.version = version;
+        if ( repositoryId == null )
+        {
+            if ( other.repositoryId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !repositoryId.equals( other.repositoryId ) )
+        {
+            return false;
+        }
+
+        if ( groupId == null )
+        {
+            if ( other.groupId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !groupId.equals( other.groupId ) )
+        {
+            return false;
+        }
+
+        if ( artifactId == null )
+        {
+            if ( other.artifactId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !artifactId.equals( other.artifactId ) )
+        {
+            return false;
+        }
+
+        if ( version == null )
+        {
+            if ( other.version != null )
+            {
+                return false;
+            }
+        }
+        else if ( !version.equals( other.version ) )
+        {
+            return false;
+        }
+
+        return true;
     }
 }

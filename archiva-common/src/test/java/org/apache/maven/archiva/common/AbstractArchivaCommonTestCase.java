@@ -23,12 +23,9 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,48 +37,6 @@ import java.util.List;
 public abstract class AbstractArchivaCommonTestCase
     extends PlexusTestCase
 {
-    protected ArtifactRepository getLegacyRepository()
-        throws Exception
-    {
-        File repoBaseDir = new File( getBasedir(), "src/test/legacy-repository" );
-        ArtifactRepository repository = createRepository( repoBaseDir, "legacy" );
-        resetRepositoryState( repository );
-        return repository;
-    }
-
-    protected ArtifactRepository getDefaultRepository()
-        throws Exception
-    {
-        File repoBaseDir = new File( getBasedir(), "src/test/repository" );
-        ArtifactRepository repository = createRepository( repoBaseDir, "default" );
-        resetRepositoryState( repository );
-        return repository;
-    }
-
-    private void resetRepositoryState( ArtifactRepository repository )
-        throws IOException
-    {
-        File repoBaseDir = new File( repository.getBasedir() );
-
-        List tmpfiles = FileUtils.getFiles( repoBaseDir, ".*", "" );
-        for ( Iterator it = tmpfiles.iterator(); it.hasNext(); )
-        {
-            File hit = (File) it.next();
-            if ( hit.exists() )
-            {
-                if ( hit.isFile() )
-                {
-                    hit.delete();
-                }
-
-                if ( hit.isDirectory() )
-                {
-                    FileUtils.deleteDirectory( hit );
-                }
-            }
-        }
-    }
-
     protected ArtifactRepository createRepository( File basedir, String layout )
         throws Exception
     {
