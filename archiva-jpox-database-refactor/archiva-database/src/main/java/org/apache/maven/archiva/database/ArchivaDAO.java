@@ -19,8 +19,8 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.ArchivaRepositoryModel;
 import org.apache.maven.archiva.model.RepositoryContent;
 
 import java.util.List;
@@ -56,21 +56,21 @@ public interface ArchivaDAO
 
     /* .\ Archiva Repository \.____________________________________________________________ */
 
-    public ArchivaRepository createRepository( String id, String url );
+    public ArchivaRepositoryModel createRepository( String id, String url );
 
-    public List /*<ArchivaRepository>*/getRepositories()
+    public List /*<ArchivaRepositoryModel>*/getRepositories()
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public ArchivaRepository getRepository( String id )
+    public ArchivaRepositoryModel getRepository( String id )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public List queryRepository( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public ArchivaRepository saveRepository( ArchivaRepository repository )
+    public ArchivaRepositoryModel saveRepository( ArchivaRepositoryModel repository )
         throws ArchivaDatabaseException;
 
-    public void deleteRepository( ArchivaRepository repository )
+    public void deleteRepository( ArchivaRepositoryModel repository )
         throws ArchivaDatabaseException;
 
     /* .\ Repository Content \.____________________________________________________________ */
@@ -93,18 +93,18 @@ public interface ArchivaDAO
 
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
-    public ArchivaArtifact createArtifact( RepositoryContent repoContent, String classifier, String type );
+    public ArchivaArtifactModel createArtifact( RepositoryContent repoContent, String classifier, String type );
 
-    public ArchivaArtifact getArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel getArtifact( RepositoryContent repoContent, String classifier, String type )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public List /*<ArchivaArtifact>*/queryArtifacts( Constraint constraint )
+    public List /*<ArchivaArtifactModel>*/queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )
+    public ArchivaArtifactModel saveArtifact( ArchivaArtifactModel artifact )
         throws ArchivaDatabaseException;
 
-    public void deleteArtifact( ArchivaArtifact artifact )
+    public void deleteArtifact( ArchivaArtifactModel artifact )
         throws ArchivaDatabaseException;
 
 }

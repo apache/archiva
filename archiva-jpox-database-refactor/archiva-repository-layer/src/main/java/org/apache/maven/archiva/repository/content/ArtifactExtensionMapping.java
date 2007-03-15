@@ -22,34 +22,15 @@ package org.apache.maven.archiva.repository.content;
 import org.apache.maven.archiva.repository.ArchivaArtifact;
 
 /**
- * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
- * the both the Path to Artifact, and Artifact to Path conversions.  
+ * ArtifactExtensionMapping - Utility to provide the mapping between an Artifact's extension and it's type and 
+ * vice versa. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface BidirectionalRepositoryLayout
+public interface ArtifactExtensionMapping
 {
-    /**
-     * Get the identifier for this layout.
-     * 
-     * @return the identifier for this layout.
-     */
-    public String getId();
+    public String getExtension( ArchivaArtifact artifact );
     
-    /**
-     * Given an ArchivaArtifact, return the relative path to the artifact.
-     * 
-     * @param artifact the artifact to compute the path of.
-     * @return the relative path to the artifact. 
-     */
-    public String pathOf( ArchivaArtifact artifact );
-
-    /**
-     * Given a repository relative path to a filename, return the ArchivaArtifact object suitable for the path.
-     * 
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the ArchivaArtifact representing the path. (or null if path cannot be converted to an ArchivaArtifact)
-     */
-    ArchivaArtifact toArtifact( String path );
+    public String getType( String filename );
 }

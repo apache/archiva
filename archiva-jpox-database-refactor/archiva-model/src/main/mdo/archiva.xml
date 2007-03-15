@@ -20,15 +20,15 @@
           <name>Repositories</name>
           <version>1.0.0+</version>
           <association>
-            <type>ArchivaRepository</type>
+            <type>ArchivaRepositoryModel</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
       </fields>
     </class>
-    <class stash.storable="true">
-      <superClass>AbstractArchivaRepository</superClass>
-      <name>ArchivaRepository</name>
+    <class stash.storable="true"
+           jpox.table="REPOSITORIES">
+      <name>ArchivaRepositoryModel</name>
       <version>1.0.0+</version>
       <fields>
         <field>
@@ -106,6 +106,7 @@
       </fields>
     </class>
     <class stash.storable="true"
+           jpox.table="REPOSITORY_CONTENT_KEYS"
            jpox.use-identifiers-as-primary-key="true"
            jpox.identity-type="application"
            jpox.identity-class="RepositoryContentKey">
@@ -176,7 +177,7 @@
         this.setVersion( version );
     }
 
-    public RepositoryContent( ArchivaRepository repository, String groupId, String artifactId, String version )
+    public RepositoryContent( ArchivaRepositoryModel repository, String groupId, String artifactId, String version )
     {
         this.setRepositoryId( repository.getId() );
         this.setGroupId( groupId );
@@ -187,8 +188,9 @@
         </codeSegment>
       </codeSegments>
     </class>
-    <class>
-      <name>ArchivaArtifact</name>
+    <class stash.storable="true"
+           jpox.table="ARTIFACTS">
+      <name>ArchivaArtifactModel</name>
       <version>1.0.0+</version>
       <fields>
         <field>
@@ -226,7 +228,8 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true"
+           jpox.table="REPOSITORY_METADATAS">
       <name>ArchivaRepositoryMetadata</name>
       <version>1.0.0+</version>
       <fields>
@@ -268,7 +271,8 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true"
+           jpox.table="HEALTH_PROBLEMS">
       <name>HealthProblem</name>
       <version>1.0.0+</version>
       <fields>
@@ -304,7 +308,8 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true"
+           jpox.table="HEALTH_ARTIFACTS">
       <name>ArchivaArtifactHealth</name>
       <version>1.0.0+</version>
       <fields>
@@ -314,7 +319,7 @@
           <version>1.0.0+</version>
           <required>true</required>
           <association>
-            <type>ArchivaArtifact</type>
+            <type>ArchivaArtifactModel</type>
             <multiplicity>1</multiplicity>
           </association>
           <description>
@@ -336,7 +341,8 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true"
+           jpox.table="HEALTH_REPOSITORY_METADATAS">
       <name>ArchivaRepositoryMetadataHealth</name>
       <version>1.0.0+</version>
       <fields>
@@ -368,7 +374,8 @@
         </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true"
+           jpox.table="REPOSITORY_STATS">
       <name>RepositoryContentStatistics</name>
       <version>1.0.0+</version>
       <fields>

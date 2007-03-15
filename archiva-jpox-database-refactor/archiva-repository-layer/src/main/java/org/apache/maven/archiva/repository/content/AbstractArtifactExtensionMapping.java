@@ -21,35 +21,38 @@ package org.apache.maven.archiva.repository.content;
 
 import org.apache.maven.archiva.repository.ArchivaArtifact;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
- * the both the Path to Artifact, and Artifact to Path conversions.  
+ * AbstractArtifactExtensionMapping 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface BidirectionalRepositoryLayout
+public abstract class AbstractArtifactExtensionMapping implements ArtifactExtensionMapping
 {
-    /**
-     * Get the identifier for this layout.
-     * 
-     * @return the identifier for this layout.
-     */
-    public String getId();
-    
-    /**
-     * Given an ArchivaArtifact, return the relative path to the artifact.
-     * 
-     * @param artifact the artifact to compute the path of.
-     * @return the relative path to the artifact. 
-     */
-    public String pathOf( ArchivaArtifact artifact );
+    protected final Map typeToExtensionMap;
 
-    /**
-     * Given a repository relative path to a filename, return the ArchivaArtifact object suitable for the path.
-     * 
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the ArchivaArtifact representing the path. (or null if path cannot be converted to an ArchivaArtifact)
-     */
-    ArchivaArtifact toArtifact( String path );
+    public AbstractArtifactExtensionMapping()
+    {
+        typeToExtensionMap = new HashMap();
+        typeToExtensionMap.put( "ejb-client", "jar" );
+        typeToExtensionMap.put( "ejb", "jar" );
+        typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
+        typeToExtensionMap.put( "distribution-zip", "zip" );
+        typeToExtensionMap.put( "java-source", "jar" );
+    }
+
+    public String getExtension( ArchivaArtifact artifact )
+    {
+        // Try specialized types first.
+        if ( typeToExtensionMap.containsKey( artifact.getType() ) )
+        {
+            return (String) typeToExtensionMap.get( artifact.getType() );
+        }
+
+        // Return type
+        return artifact.getType();
+    }
 }

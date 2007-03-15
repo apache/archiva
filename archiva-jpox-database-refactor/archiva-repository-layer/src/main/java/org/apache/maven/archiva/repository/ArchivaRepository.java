@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.model;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,29 +19,42 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.RepositoryURL;
+import org.apache.maven.archiva.model.ArchivaRepositoryModel;
 import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 /**
- * AbstractArchivaRepository 
+ * ArchivaRepository 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractArchivaRepository
+public class ArchivaRepository
 {
-    protected ArtifactRepositoryLayout layout;
-
     protected ArtifactRepositoryPolicy releases;
 
     protected ArtifactRepositoryPolicy snapshots;
 
+    private ArchivaRepositoryModel model;
+
+    private RepositoryURL url;
+
     protected boolean blacklisted;
 
-    public AbstractArchivaRepository()
+    /**
+     * Construct a Repository.
+     * 
+     * @param id the unique identifier for this repository.
+     * @param name the name for this repository.
+     * @param url the base URL for this repository (this should point to the top level URL for the entire repository)
+     * @param layout the layout technique for this repository.
+     */
+    public ArchivaRepository( String id, String name, String url )
     {
+        model = new ArchivaRepositoryModel();
 
+        model.setId( id );
+        model.setName( name );
+        setUrl( new RepositoryURL( url ) );
     }
 
     /**
@@ -52,21 +65,33 @@ public abstract class AbstractArchivaRepository
      * @param url the base URL for this repository (this should point to the top level URL for the entire repository)
      * @param layout the layout technique for this repository.
      */
-    public AbstractArchivaRepository( String id, String name, String url, ArtifactRepositoryLayout layout )
+    public ArchivaRepository( ArchivaRepositoryModel model )
     {
-        setId( id );
-        setName( name );
-        setUrl( url );
-        setLayout( layout );
+        this.model = model;
+
+        this.url = new RepositoryURL( model.getUrl() );
     }
 
-    public abstract void setUrl( String url );
+    public String getId()
+    {
+        return model.getId();
+    }
 
-    public abstract String getUrl();
+    public void setUrl( RepositoryURL url )
+    {
+        this.url = url;
+        model.setUrl( url.getUrl() );
+    }
 
-    public abstract void setName( String name );
+    public RepositoryURL getUrl()
+    {
+        return this.url;
+    }
 
-    public abstract void setId( String id );
+    public ArchivaRepositoryModel getModel()
+    {
+        return this.model;
+    }
 
     public boolean isBlacklisted()
     {
@@ -76,16 +101,6 @@ public abstract class AbstractArchivaRepository
     public void setBlacklisted( boolean blacklisted )
     {
         this.blacklisted = blacklisted;
-    }
-
-    public ArtifactRepositoryLayout getLayout()
-    {
-        return layout;
-    }
-
-    public void setLayout( ArtifactRepositoryLayout layout )
-    {
-        this.layout = layout;
     }
 
     public ArtifactRepositoryPolicy getReleases()
@@ -110,16 +125,11 @@ public abstract class AbstractArchivaRepository
 
     public boolean isRemote()
     {
-        return !getRepositoryURL().getProtocol().equals( "file" );
+        return this.url.getProtocol().equals( "file" );
     }
 
     public boolean isManaged()
     {
-        return getRepositoryURL().getProtocol().equals( "file" );
-    }
-
-    public RepositoryURL getRepositoryURL()
-    {
-        return new RepositoryURL( getUrl() );
+        return this.url.getProtocol().equals( "file" );
     }
 }
