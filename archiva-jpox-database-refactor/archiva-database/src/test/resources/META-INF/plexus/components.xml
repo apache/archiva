@@ -1,0 +1,30 @@
+<plexus>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.ibatis.PlexusIbatisHelper</role>
+      <implementation>org.codehaus.plexus.ibatis.DefaultPlexusIbatisHelper</implementation>
+      <role-hint>metadata</role-hint>
+      <configuration>
+        <resource>ibatis-config.xml</resource>
+        <properties>
+          <property>
+            <name>jdbc.driver</name>
+            <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+          </property>
+          <property>
+            <name>jdbc.url</name>
+            <value>jdbc:derby:${plexus.home}/testdb;create=true</value>
+          </property>
+          <property>
+            <name>jdbc.username</name>
+            <value>app</value>
+          </property>
+          <property>
+            <name>jdbc.password</name>
+            <value></value>
+          </property>
+        </properties>
+      </configuration>
+    </component>
+  </components>
+</plexus>

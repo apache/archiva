@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<document>
+  <properties>
+    <title>Archiva</title>
+  </properties>
+  <body>
+    <h1>Synchronisation</h1>
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
+
+    <div id="contentArea">
+      <h2>Apache</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:01:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:00:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>
+            <span class="statusOk">Success</span>
+          </td>
+        </tr>
+      </table>
+      <p>
+        <a href="#">Sync Now</a>
+      </p>
+      <h2>Codehaus</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:05:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:05:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>
+            <span class="statusFailed">FAILED</span>
+            : confluence wouldn't share CPU cycles with me
+          </td>
+        </tr>
+      </table>
+      <p>
+        <a href="#">Sync Now</a>
+      </p>
+      <h2>Open Symphony</h2>
+      <table>
+        <tr>
+          <th>Last Sync completed</th>
+          <td>1 February 13:11:04 (
+            <a href="#">View Report</a>
+            )
+          </td>
+        </tr>
+        <tr>
+          <th>Next sync</th>
+          <td>1 February 17:10:00</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>
+            <span class="statusWarn">WARNING</span>
+            : some warnings occurred during the conversion
+          </td>
+        </tr>
+      </table>
+      <p>
+        <a href="#">Sync Now</a>
+      </p>
+    </div>
+  </body>
+</document>
+

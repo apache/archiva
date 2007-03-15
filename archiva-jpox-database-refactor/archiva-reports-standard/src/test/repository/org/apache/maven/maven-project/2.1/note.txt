@@ -1,0 +1,4 @@
+- The artifact location does not match both the location specified in the file system pom
+	and in the pom included in the package.
+- The groupId, artifactId and version of the pom in the file system does not match 
+	the groupId, artifactId and version of the pom included in the package.

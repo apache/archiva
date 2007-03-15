@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<component-set>
+  <components>
+
+    <!-- TODO: Remove once CDC can handle correct cross-module descriptor creation. -->
+
+    <!-- SNIP:START -->
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>index-artifact</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.IndexArtifactConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>artifact-health</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.ArtifactHealthConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.common.consumers.Consumer</role>
+      <role-hint>metadata-health</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.RepositoryMetadataHealthConsumer</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.artifact.factory.ArtifactFactory</role>
+          <field-name>artifactFactory</field-name>
+        </requirement>
+      </requirements>
+    </component>
+
+    <!-- SNIP:END -->
+
+    <component>
+      <role>org.apache.maven.archiva.scheduler.executors.DataRefreshConsumers</role>
+      <implementation>org.apache.maven.archiva.scheduler.executors.DataRefreshConsumers</implementation>
+      <description>Mutable list of consumer for the Data Refresh.</description>
+      <configuration>
+        <consumer-names>
+          <consumer-name>index-artifact</consumer-name>
+          <consumer-name>artifact-health</consumer-name>
+          <consumer-name>metadata-health</consumer-name>
+        </consumer-names>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
+      <role-hint>data-refresh</role-hint>
+      <implementation>org.codehaus.plexus.taskqueue.DefaultTaskQueue</implementation>
+      <lifecycle-handler>plexus-configurable</lifecycle-handler>
+      <configuration>
+        <task-entry-evaluators>
+        </task-entry-evaluators>
+        <task-exit-evaluators>
+        </task-exit-evaluators>
+        <task-viability-evaluators>
+        </task-viability-evaluators>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
+      <role-hint>data-refresh</role-hint>
+      <implementation>org.codehaus.plexus.taskqueue.execution.ThreadedTaskQueueExecutor</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
+          <role-hint>data-refresh</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.taskqueue.TaskQueue</role>
+          <role-hint>data-refresh</role-hint>
+        </requirement>
+      </requirements>
+      <configuration>
+        <name>data-refresh</name>
+      </configuration>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>artifactCache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>EhcacheCache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent>
+        <disk-store-path>${appserver.base}/.cache/artifacts</disk-store-path>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>artifact-cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <time-to-idle-seconds>600</time-to-idle-seconds>
+        <time-to-live-seconds>300</time-to-live-seconds>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>projectCache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>EhcacheCache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent>
+        <disk-store-path>${appserver.base}/.cache/projects</disk-store-path>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>project-cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <time-to-idle-seconds>600</time-to-idle-seconds>
+        <time-to-live-seconds>300</time-to-live-seconds>
+      </configuration>
+    </component>
+
+  </components>
+</component-set>

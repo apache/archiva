@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<component-set>
+  <components>
+    <!-- TODO: wouldn't need to redeclare if it was composition -->
+    <!-- TODO: why is the container a requirement? -->
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfileManager</role>
+      <role-hint>archiva</role-hint>
+      <implementation>org.apache.maven.archiva.security.ArchivaRoleProfileManager</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+          <field-name>knownRoleProfiles</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
+          <field-name>knownDynamicRoleProfiles</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>archiva-system-administrator</role-hint>
+      <implementation>org.apache.maven.archiva.security.ArchivaSystemAdministratorRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>archiva-user-administrator</role-hint>
+      <implementation>org.apache.maven.archiva.security.ArchivaUserAdministratorRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>archiva-guest</role-hint>
+      <implementation>org.apache.maven.archiva.security.ArchivaGuestRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>global-repository-manager</role-hint>
+      <implementation>org.apache.maven.archiva.security.GlobalRepositoryManagerRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+        <component>
+      <role>org.codehaus.plexus.rbac.profile.RoleProfile</role>
+      <role-hint>global-repository-observer</role-hint>
+      <implementation>org.apache.maven.archiva.security.GlobalRepositoryObserverRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.PlexusContainer</role>
+          <field-name>container</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
+      <role-hint>archiva-repository-manager</role-hint>
+      <implementation>org.apache.maven.archiva.security.RepositoryManagerDynamicRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.rbac.profile.DynamicRoleProfile</role>
+      <role-hint>archiva-repository-observer</role-hint>
+      <implementation>org.apache.maven.archiva.security.RepositoryObserverDynamicRoleProfile</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.security.rbac.RBACManager</role>
+        </requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>
