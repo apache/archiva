@@ -21,10 +21,9 @@ package org.apache.maven.archiva.repository.scanner;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.Consumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.archiva.repository.ArchivaRepository;
+import org.apache.maven.archiva.repository.consumer.Consumer;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -88,7 +87,7 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
 
     public void directoryWalkStarting( File basedir )
     {
-        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getRepositoryURL() );
+        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getUrl() );
         stats.triggerStart();
     }
 
@@ -110,7 +109,7 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
         {
             stats.increaseNewFileCount();
 
-            BaseFile basefile = new BaseFile( repository.getRepositoryURL().getPath(), file );
+            BaseFile basefile = new BaseFile( repository.getUrl().getPath(), file );
 
             Iterator itConsumers = this.consumers.iterator();
             while ( itConsumers.hasNext() )
@@ -144,7 +143,7 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
 
     public void directoryWalkFinished()
     {
-        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getRepositoryURL() );
+        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getUrl() );
         stats.triggerFinished();
     }
 

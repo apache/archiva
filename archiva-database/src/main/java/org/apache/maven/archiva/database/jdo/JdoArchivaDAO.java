@@ -4,9 +4,8 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.constraints.ArchivaRepositoryByUrlConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.ArchivaRepositoryModel;
 import org.apache.maven.archiva.model.RepositoryContent;
 import org.apache.maven.archiva.model.RepositoryContentKey;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -33,9 +32,9 @@ public class JdoArchivaDAO
 
     /* .\ Archiva Repository \.____________________________________________________________ */
 
-    public ArchivaRepository createRepository( String id, String url )
+    public ArchivaRepositoryModel createRepository( String id, String url )
     {
-        ArchivaRepository repo;
+        ArchivaRepositoryModel repo;
 
         try
         {
@@ -43,7 +42,7 @@ public class JdoArchivaDAO
         }
         catch ( ArchivaDatabaseException e )
         {
-            repo = new ArchivaRepository();
+            repo = new ArchivaRepositoryModel();
             repo.setId( id );
             repo.setUrl( url );
         }
@@ -54,27 +53,27 @@ public class JdoArchivaDAO
     public List getRepositories()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.getAllObjects( ArchivaRepository.class );
+        return jdo.getAllObjects( ArchivaRepositoryModel.class );
     }
 
-    public ArchivaRepository getRepository( String id )
+    public ArchivaRepositoryModel getRepository( String id )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return (ArchivaRepository) jdo.getObjectById( ArchivaRepository.class, id, null );
+        return (ArchivaRepositoryModel) jdo.getObjectById( ArchivaRepositoryModel.class, id, null );
     }
 
     public List queryRepository( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.getAllObjects( ArchivaRepository.class, constraint );
+        return jdo.getAllObjects( ArchivaRepositoryModel.class, constraint );
     }
 
-    public ArchivaRepository saveRepository( ArchivaRepository repository )
+    public ArchivaRepositoryModel saveRepository( ArchivaRepositoryModel repository )
     {
-        return (ArchivaRepository) jdo.saveObject( repository );
+        return (ArchivaRepositoryModel) jdo.saveObject( repository );
     }
 
-    public void deleteRepository( ArchivaRepository repository )
+    public void deleteRepository( ArchivaRepositoryModel repository )
         throws ArchivaDatabaseException
     {
         jdo.removeObject( repository );
@@ -132,9 +131,9 @@ public class JdoArchivaDAO
 
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
-    public ArchivaArtifact createArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel createArtifact( RepositoryContent repoContent, String classifier, String type )
     {
-        ArchivaArtifact artifact;
+        ArchivaArtifactModel artifact;
 
         try
         {
@@ -142,7 +141,7 @@ public class JdoArchivaDAO
         }
         catch ( ArchivaDatabaseException e )
         {
-            artifact = new ArchivaArtifact();
+            artifact = new ArchivaArtifactModel();
             artifact.setContentKey( repoContent );
             artifact.setClassifier( classifier );
             artifact.setType( type );
@@ -151,7 +150,7 @@ public class JdoArchivaDAO
         return artifact;
     }
 
-    public ArchivaArtifact getArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel getArtifact( RepositoryContent repoContent, String classifier, String type )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         
@@ -165,14 +164,14 @@ public class JdoArchivaDAO
         return null;
     }
 
-    public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )
+    public ArchivaArtifactModel saveArtifact( ArchivaArtifactModel artifact )
         throws ArchivaDatabaseException
     {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public void deleteArtifact( ArchivaArtifact artifact )
+    public void deleteArtifact( ArchivaArtifactModel artifact )
         throws ArchivaDatabaseException
     {
         // TODO Auto-generated method stub

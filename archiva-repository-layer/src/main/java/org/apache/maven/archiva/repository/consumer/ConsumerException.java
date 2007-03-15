@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.connector;
+package org.apache.maven.archiva.repository.consumer;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +19,34 @@ package org.apache.maven.archiva.repository.connector;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaRepository;
-
-import java.util.List;
+import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.maven.archiva.common.utils.BaseFile;
 
 /**
- * RepositoryConnector 
+ * ConsumerException - details about the failure of a consumer.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface RepositoryConnector
+public class ConsumerException
+    extends ArchivaException
 {
-    public ArchivaRepository getSourceRepository();
+    private BaseFile file;
 
-    public ArchivaRepository getTargetRepository();
+    public ConsumerException( BaseFile file, String message, Throwable cause )
+    {
+        super( message, cause );
+        this.file = file;
+    }
 
-    public List getBlacklist();
-    
-    public List getWhitelist();
+    public ConsumerException( BaseFile file, String message )
+    {
+        super( message );
+        this.file = file;
+    }
+
+    public BaseFile getFile()
+    {
+        return file;
+    }
 }

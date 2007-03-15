@@ -19,10 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.Consumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.ArchivaRepository;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.consumer.Consumer;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -103,12 +103,12 @@ public class RepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        if ( !"file".equals( repository.getRepositoryURL().getProtocol() ) )
+        if ( !"file".equals( repository.getUrl().getProtocol() ) )
         {
             throw new UnsupportedOperationException( "Only filesystem repositories are supported." );
         }
 
-        File repositoryBase = new File( repository.getRepositoryURL().getPath() );
+        File repositoryBase = new File( repository.getUrl().getPath() );
 
         if ( !repositoryBase.exists() )
         {
