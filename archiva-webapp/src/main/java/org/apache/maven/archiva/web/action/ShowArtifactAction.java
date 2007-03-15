@@ -94,12 +94,12 @@ public class ShowArtifactAction
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryArtifactIndexFactory factory;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="maven"
      */
     private ArtifactMetadataSource artifactMetadataSource;
 

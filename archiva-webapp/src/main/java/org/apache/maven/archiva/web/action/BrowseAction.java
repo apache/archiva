@@ -49,7 +49,7 @@ public class BrowseAction
     extends PlexusActionSupport
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryArtifactIndexFactory factory;
 

@@ -64,7 +64,7 @@ public class SearchAction
     private Collection searchResults;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryArtifactIndexFactory factory;
 
