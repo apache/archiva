@@ -32,6 +32,7 @@
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory</role>
+          <role-hint>lucene</role-hint>
           <field-name>indexFactory</field-name>
         </requirement>
         <requirement>

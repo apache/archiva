@@ -46,7 +46,7 @@ public class IndexArtifactConsumer
     extends GenericArtifactConsumer
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryArtifactIndexFactory indexFactory;
     

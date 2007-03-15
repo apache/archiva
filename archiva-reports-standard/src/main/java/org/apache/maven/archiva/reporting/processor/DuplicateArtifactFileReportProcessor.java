@@ -53,7 +53,7 @@ public class DuplicateArtifactFileReportProcessor
     private Digester digester;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryArtifactIndexFactory indexFactory;
 
