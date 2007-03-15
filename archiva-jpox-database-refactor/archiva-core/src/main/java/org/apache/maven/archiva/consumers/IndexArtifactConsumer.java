@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.consumers.GenericArtifactConsumer;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;

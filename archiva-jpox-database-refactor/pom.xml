@@ -228,13 +228,13 @@
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-common</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <!--
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-common</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
       </dependency>
@@ -242,62 +242,77 @@
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-core</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-reports-standard</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-model</artifactId>
+        <version>${archiva.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-database</artifactId>
+        <version>${archiva.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-consumer-api</artifactId>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-discoverer</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-repository-layer</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-indexer</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-proxy</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-applet</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-security</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-configuration</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-converter</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-utils</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-webapp</artifactId>
-        <version>${pom.version}</version>
+        <version>${archiva.version}</version>
         <type>war</type>
       </dependency>
       <dependency>
@@ -552,6 +567,7 @@
     </pluginRepository>
   </pluginRepositories>
   <properties>
+    <archiva.version>1.0-SNAPSHOT</archiva.version>
     <maven.version>2.0.5</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
     <plexus-security.version>1.0-alpha-11-SNAPSHOT</plexus-security.version>

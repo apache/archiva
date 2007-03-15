@@ -19,8 +19,8 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.consumers.GenericArtifactConsumer;
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.consumers.GenericArtifactConsumer;
 import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.RepositoryConverter;

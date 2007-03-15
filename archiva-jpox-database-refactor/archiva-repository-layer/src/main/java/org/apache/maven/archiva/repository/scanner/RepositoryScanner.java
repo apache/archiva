@@ -19,9 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.consumers.Consumer;
+import org.apache.maven.archiva.consumers.Consumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -72,7 +73,7 @@ public class RepositoryScanner
      * @return the statistics for this scan.
      * @throws RepositoryException if there was a fundamental problem with getting the discoverer started.
      */
-    public ScanStatistics scan( ArtifactRepository repository, List consumers, boolean includeSnapshots )
+    public RepositoryContentStatistics scan( ArchivaRepository repository, List consumers, boolean includeSnapshots )
         throws RepositoryException
     {
         return scan( repository, consumers, includeSnapshots, 0, null, null );
@@ -93,7 +94,7 @@ public class RepositoryScanner
      * @return the statistics for this scan.
      * @throws RepositoryException if there was a fundamental problem with getting the discoverer started. 
      */
-    public ScanStatistics scan( ArtifactRepository repository, List consumers, boolean includeSnapshots,
+    public RepositoryContentStatistics scan( ArchivaRepository repository, List consumers, boolean includeSnapshots,
                                 long onlyModifiedAfterTimestamp, List extraFileExclusions, List extraFileInclusions )
         throws RepositoryException
     {
@@ -102,12 +103,12 @@ public class RepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        if ( !"file".equals( repository.getProtocol() ) )
+        if ( !"file".equals( repository.getRepositoryURL().getProtocol() ) )
         {
             throw new UnsupportedOperationException( "Only filesystem repositories are supported." );
         }
 
-        File repositoryBase = new File( repository.getBasedir() );
+        File repositoryBase = new File( repository.getRepositoryURL().getPath() );
 
         if ( !repositoryBase.exists() )
         {

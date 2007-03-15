@@ -3,9 +3,9 @@
  */
 package org.apache.maven.archiva.discoverer;
 
-import org.apache.maven.archiva.common.consumers.Consumer;
-import org.apache.maven.archiva.common.consumers.ConsumerException;
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.consumers.Consumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 
 import java.util.ArrayList;

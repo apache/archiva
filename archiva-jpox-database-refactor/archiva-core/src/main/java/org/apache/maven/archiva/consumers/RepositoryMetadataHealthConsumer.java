@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.consumers.GenericRepositoryMetadataConsumer;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.reporting.database.MetadataResultsDatabase;
 import org.apache.maven.archiva.reporting.group.ReportGroup;
