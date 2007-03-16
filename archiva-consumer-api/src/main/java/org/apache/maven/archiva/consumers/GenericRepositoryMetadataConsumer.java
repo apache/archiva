@@ -21,6 +21,8 @@ package org.apache.maven.archiva.consumers;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.repository.consumer.Consumer;
+import org.apache.maven.archiva.repository.consumer.ConsumerException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;

@@ -21,10 +21,8 @@ package org.apache.maven.archiva.repository;
 
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.RepositoryContent;
+import org.apache.maven.archiva.repository.version.VersionUtil;
 import org.codehaus.plexus.util.StringUtils;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ArchivaArtifact - Mutable artifact object.
@@ -34,16 +32,17 @@ import java.util.regex.Pattern;
  */
 public class ArchivaArtifact
 {
-    private static final String SNAPSHOT_VERSION = "SNAPSHOT";
-
-    private static final Pattern VERSION_FILE_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}\\.[0-9]{6})-([0-9]+)$" );
-
     private ArchivaArtifactModel model;
-    
+
     private String baseVersion;
-    
+
     private boolean snapshot = false;
-    
+
+    public ArchivaArtifact( String groupId, String artifactId, String version, String classifier, String type )
+    {
+        this( null, groupId, artifactId, version, classifier, type );
+    }
+
     public ArchivaArtifact( ArchivaRepository repository, String groupId, String artifactId, String version,
                             String classifier, String type )
     {
@@ -69,22 +68,19 @@ public class ArchivaArtifact
 
         model = new ArchivaArtifactModel();
 
-        model.setContentKey( new RepositoryContent( repository.getModel(), groupId, artifactId, version ) );
-        model.setClassifier( StringUtils.defaultString( classifier ) );
-        model.setType( type );
-        
-        // Determine Snapshot Base Version.
-        Matcher m = VERSION_FILE_PATTERN.matcher( version );
-        if ( m.matches() )
+        if( repository == null )
         {
-            this.baseVersion =  m.group( 1 ) + "-" + SNAPSHOT_VERSION ;
-            snapshot = true;
+            model.setContentKey( new RepositoryContent( groupId, artifactId, version ) );
         }
         else
         {
-            this.baseVersion = version;
-            snapshot = version.endsWith( SNAPSHOT_VERSION );
+            model.setContentKey( new RepositoryContent( repository.getModel(), groupId, artifactId, version ) );
         }
+        model.setClassifier( StringUtils.defaultString( classifier ) );
+        model.setType( type );
+
+        this.snapshot = VersionUtil.isSnapshot( version );
+        this.baseVersion = VersionUtil.getBaseVersion( version );
     }
 
     public String getGroupId()
@@ -106,12 +102,12 @@ public class ArchivaArtifact
     {
         return baseVersion;
     }
-    
+
     public boolean isSnapshot()
     {
         return snapshot;
     }
-    
+
     public String getClassifier()
     {
         return model.getClassifier();

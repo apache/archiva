@@ -20,7 +20,7 @@ package org.apache.maven.archiva.consumers;
  */
 
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.repository.consumer.ConsumerException;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.util.ArrayList;

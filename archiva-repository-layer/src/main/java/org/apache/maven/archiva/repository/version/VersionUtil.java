@@ -1,6 +1,4 @@
-package org.apache.maven.archiva.consumers;
-
-import org.apache.maven.archiva.repository.consumer.ConsumerFactory;
+package org.apache.maven.archiva.repository.version;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,33 +19,44 @@ import org.apache.maven.archiva.repository.consumer.ConsumerFactory;
  * under the License.
  */
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * AbstractGenericConsumerTestCase 
+ * VersionConstants 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractGenericConsumerTestCase
-    extends AbstractConsumerTestCase
+public class VersionUtil
 {
-    protected ConsumerFactory consumerFactory;
+    public static final String SNAPSHOT = "SNAPSHOT";
 
-    protected void setUp()
-        throws Exception
+    public static final Pattern UNIQUE_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}\\.[0-9]{6})-([0-9]+)$" );
+
+    public static boolean isSnapshot( String version )
     {
-        super.setUp();
-
-        consumerFactory = (ConsumerFactory) lookup( ConsumerFactory.ROLE );
+        Matcher m = UNIQUE_SNAPSHOT_PATTERN.matcher( version );
+        if ( m.matches() )
+        {
+            return true;
+        }
+        else
+        {
+            return version.endsWith( SNAPSHOT );
+        }
     }
 
-    protected void tearDown()
-        throws Exception
+    public static String getBaseVersion( String version )
     {
-        if ( consumerFactory != null )
+        Matcher m = UNIQUE_SNAPSHOT_PATTERN.matcher( version );
+        if ( m.matches() )
         {
-            release( consumerFactory );
+            return m.group( 1 ) + "-" + SNAPSHOT;
         }
-        super.tearDown();
+        else
+        {
+            return version;
+        }
     }
 }

@@ -20,6 +20,8 @@ package org.apache.maven.archiva.consumers;
  */
 
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.repository.consumer.Consumer;
+import org.apache.maven.archiva.repository.consumer.ConsumerException;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.IOUtil;

@@ -21,7 +21,8 @@ package org.apache.maven.archiva.consumers;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.ArchivaRepository;
+import org.apache.maven.archiva.repository.consumer.ConsumerException;
 import org.apache.maven.artifact.Artifact;
 
 import java.util.ArrayList;

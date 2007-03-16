@@ -169,6 +169,13 @@
         <codeSegment>
           <version>1.0.0+</version>
           <code>
+    public RepositoryContent( String groupId, String artifactId, String version )
+    {
+        this.setGroupId( groupId );
+        this.setArtifactId( artifactId );
+        this.setVersion( version );
+    }
+
     public RepositoryContent( String repositoryId, String groupId, String artifactId, String version )
     {
         this.setRepositoryId( repositoryId );

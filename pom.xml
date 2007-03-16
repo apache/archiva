@@ -121,7 +121,6 @@
     <module>archiva-applet</module>
     <module>archiva-converter</module>
     <module>archiva-common</module>
-    <module>archiva-discoverer</module>
     <module>archiva-reports-standard</module>
     <module>archiva-indexer</module>
     <module>archiva-webapp</module>
