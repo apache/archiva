@@ -1,6 +1,4 @@
-package org.apache.maven.archiva.consumers;
-
-import org.apache.maven.archiva.repository.consumer.ConsumerFactory;
+package org.apache.maven.archiva.repository.layout;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,33 +19,23 @@ import org.apache.maven.archiva.repository.consumer.ConsumerFactory;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.ArchivaException;
 
 /**
- * AbstractGenericConsumerTestCase 
+ * LayoutException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractGenericConsumerTestCase
-    extends AbstractConsumerTestCase
+public class LayoutException extends ArchivaException
 {
-    protected ConsumerFactory consumerFactory;
-
-    protected void setUp()
-        throws Exception
+    public LayoutException( String message, Throwable cause )
     {
-        super.setUp();
-
-        consumerFactory = (ConsumerFactory) lookup( ConsumerFactory.ROLE );
+        super( message, cause );
     }
 
-    protected void tearDown()
-        throws Exception
+    public LayoutException( String message )
     {
-        if ( consumerFactory != null )
-        {
-            release( consumerFactory );
-        }
-        super.tearDown();
+        super( message );
     }
 }

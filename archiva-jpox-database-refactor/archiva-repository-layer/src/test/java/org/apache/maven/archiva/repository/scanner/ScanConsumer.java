@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers;
+package org.apache.maven.archiva.repository.scanner;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,49 +19,64 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.repository.ArchivaRepository;
 import org.apache.maven.archiva.repository.consumer.Consumer;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.apache.maven.archiva.repository.consumer.ConsumerException;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * AbstractDiscovererConsumer 
+ * ScanConsumer 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractConsumer
-    extends AbstractLogEnabled
-    implements Consumer
+public class ScanConsumer implements Consumer
 {
-    /**
-     * @plexus.requirement
-     */
-    protected ArtifactFactory artifactFactory;
-    
-    protected ArchivaRepository repository;
-    
-    protected AbstractConsumer()
-    {
-        /* do nothing */
-    }
+    private int processCount = 0;
 
     public List getExcludePatterns()
     {
         return Collections.EMPTY_LIST;
     }
 
+    public List getIncludePatterns()
+    {
+        List includes = new ArrayList();
+        includes.add( "**/*.jar" );
+        return includes;
+    }
+
+    public String getName()
+    {
+        return "Scan Consumer";
+    }
+
     public boolean init( ArchivaRepository repository )
     {
-        this.repository = repository;
-        return isEnabled();
-    }
-    
-    protected boolean isEnabled()
-    {
         return true;
+    }
+
+    public void processFile( BaseFile file ) throws ConsumerException
+    {
+        this.processCount++;
+    }
+
+    public void processFileProblem( BaseFile file, String message )
+    {
+        /* do nothing */
+    }
+
+    public int getProcessCount()
+    {
+        return processCount;
+    }
+
+    public void setProcessCount( int processCount )
+    {
+        this.processCount = processCount;
     }
 }
