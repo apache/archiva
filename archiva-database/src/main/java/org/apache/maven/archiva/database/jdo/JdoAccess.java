@@ -51,12 +51,13 @@ import javax.jdo.spi.PersistenceCapable;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.database.jdo.JdoAccess" role-hint="default"
  */
 public class JdoAccess
     implements Initializable, InstanceLifecycleListener, StoreLifecycleListener
 {
     /**
-     * @plexus.requirement role-hint="users"
+     * @plexus.requirement role-hint="archiva"
      */
     private JdoFactory jdoFactory;
 
@@ -326,7 +327,7 @@ public class JdoAccess
                 + "' from jdo using null/empty id." );
         }
         
-        return getObjectById( clazz, (Object) id, fetchGroup ); 
+        return getObjectById( clazz, (Object) id, fetchGroup );
     }
 
     public boolean objectExists( Object object )

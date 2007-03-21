@@ -48,12 +48,6 @@ public class AbstractArchivaDatabaseTestCase
     protected void setUp()
         throws Exception
     {
-        File derbyDbDir = new File( "target/plexus-home/testdb" );
-        if ( derbyDbDir.exists() )
-        {
-            FileUtils.deleteDirectory( derbyDbDir );
-        }
-
         super.setUp();
         
         DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
@@ -61,10 +55,20 @@ public class AbstractArchivaDatabaseTestCase
 
         jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" ); 
 
+        /* derby version
+        File derbyDbDir = new File( "target/plexus-home/testdb" );
+        if ( derbyDbDir.exists() )
+        {
+            FileUtils.deleteDirectory( derbyDbDir );
+        }
+
         jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.apache.derby.jdbc.EmbeddedDriver" ) );   
+        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );
+         */   
 
-        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );   
-
+        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );   
+        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:hsqldb:mem:" + getName() ) );
+        
         jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) ); 
 
         jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) ); 
