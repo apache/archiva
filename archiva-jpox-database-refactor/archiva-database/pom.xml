@@ -90,11 +90,16 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
     </dependency>
-    <!--  TEST DEPS  -->
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.2.1.6</version>
+    </dependency>
+    <!--  TEST DEPS  -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>

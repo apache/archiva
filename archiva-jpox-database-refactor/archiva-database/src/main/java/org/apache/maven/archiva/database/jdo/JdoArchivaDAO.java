@@ -18,15 +18,14 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.database.ArchivaDAO"
- *                   role-hint="jdo"
+ * @plexus.component role-hint="jdo"
  */
 public class JdoArchivaDAO
     extends AbstractLogEnabled
     implements ArchivaDAO
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="default"
      */
     private JdoAccess jdo;
 
