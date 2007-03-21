@@ -95,7 +95,6 @@
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.2.1.6</version>
-      <!--<scope>test</scope>-->
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -105,11 +104,11 @@
     </dependency>
   </dependencies>
   <build>
-  <plugins>
-    <plugin>
+    <plugins>
+      <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
-    </plugin>
-  </plugins>
+      </plugin>
+    </plugins>
   </build>
 </project>
