@@ -27,7 +27,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-converter</artifactId>
-  <name>Archiva Repository Converter</name>
+  <name>Archiva Base :: Repository Converter</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>

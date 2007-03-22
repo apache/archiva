@@ -25,7 +25,7 @@
     <relativePath>../pom/maven/pom.xml</relativePath>
   </parent>
   <groupId>org.apache.maven.archiva</groupId>
-  <artifactId>archiva</artifactId>
+  <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva</name>
   <version>1.0-SNAPSHOT</version>
@@ -118,21 +118,13 @@
     </pluginManagement>
   </build>
   <modules>
-    <module>archiva-applet</module>
-    <module>archiva-converter</module>
-    <module>archiva-common</module>
-    <module>archiva-reports-standard</module>
-    <module>archiva-indexer</module>
-    <module>archiva-webapp</module>
-    <module>archiva-proxy</module>
-    <module>archiva-core</module>
-    <module>archiva-configuration</module>
-    <module>maven-meeper</module>
-    <module>archiva-repository-layer</module>
-    <module>archiva-plexus-application</module>
-    <module>archiva-plexus-runtime</module>
-    <module>archiva-security</module>
+    <module>archiva-api</module>
+    <module>archiva-base</module>
+    <module>archiva-database</module>
+    <module>archiva-reporting</module>
+    <module>archiva-web</module>
     <module>archiva-cli</module>
+    <module>maven-meeper</module>
   </modules>
   <dependencies>
     <dependency>
@@ -229,15 +221,6 @@
         <artifactId>archiva-common</artifactId>
         <version>${archiva.version}</version>
       </dependency>
-      <!--
-      <dependency>
-        <groupId>org.apache.maven.archiva</groupId>
-        <artifactId>archiva-common</artifactId>
-        <version>${archiva.version}</version>
-        <classifier>tests</classifier>
-        <scope>test</scope>
-      </dependency>
-       -->
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-core</artifactId>

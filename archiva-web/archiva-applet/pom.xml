@@ -23,11 +23,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva</artifactId>
+    <artifactId>archiva-web</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-applet</artifactId>
-  <name>Archiva Applet</name>
+  <name>Archiva Web :: Applet</name>
   <description>
     Applet for performing local operations on files such as creating a checksum of an artifact
     before uploading it.
