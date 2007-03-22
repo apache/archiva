@@ -32,238 +32,79 @@
   <classes>
     <class rootElement="true" xml.tagName="configuration">
       <name>Configuration</name>
-      <version>1.0.0</version>
+      <version>1.0.0+</version>
       <fields>
         <field>
           <name>repositories</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <association>
             <type>RepositoryConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
+          <description>The list of repositories that this archiva instance uses.</description>
         </field>
         <field>
-          <name>proxiedRepositories</name>
-          <version>1.0.0</version>
+          <name>proxyConnectors</name>
+          <version>1.0.0+</version>
           <association>
-            <type>ProxiedRepositoryConfiguration</type>
+            <type>RepositoryProxyConnectorConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
+          <description>The list of proxy connectors for this archiva instance.</description>
         </field>
+        <!-- To be introduced later.
         <field>
-          <name>syncedRepositories</name>
-          <version>1.0.0</version>
+          <name>syncConnectors</name>
+          <version>1.0.0+</version>
           <association>
-            <type>SyncedRepositoryConfiguration</type>
+            <type>RepositorySyncConnectorConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
-        </field>
-        <field>
-          <name>localRepository</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <description>
-            The location of the local repository.
-          </description>
-        </field>
-        <field>
-          <name>indexPath</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <description>
-            The location of the Lucene index to use for the repository. The default is the .index subdirectory of
-            the repository.
-          </description>
-        </field>
-        <field>
-          <name>minimalIndexPath</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <description>
-            The location of the reduced Lucene index to use for the repository. The default is the .small-index
-            subdirectory of the repository.
-          </description>
-        </field>
-        <field>
-          <name>dataRefreshCronExpression</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <description>When to run the data refresh task. Default is every 30 mins (translated as every 0 and 30 minute reading of every hour)</description>
-          <defaultValue>0 0,30 * * * ?</defaultValue>
-        </field>
-        <!-- 
-        <field>
-          <name>globalBlackListPatterns</name>
-          <version>1.0.0</version>
-          <description>Blacklisted patterns in the discovery process</description>
-          <association>
-            <type>String</type>
-            <multiplicity>*</multiplicity>
-          </association>
+          <description>The list of sync connectors for this archiva instance.</description>
         </field>
            -->
         <field>
-          <name>proxy</name>
-          <version>1.0.0</version>
+          <name>networkProxies</name>
+          <version>1.0.0+</version>
           <association>
-            <type>Proxy</type>
+            <type>ProxyConfiguration</type>
+            <multiplicity>*</multiplicity>
           </association>
-          <description>The network proxy to use for outgoing requests.</description>
+          <description>
+          	The list of network proxies to use for outgoing requests.
+          </description>
+        </field>
+        <field>
+          <name>fileProcessors</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>FileProcessor</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The file processors setup.
+          </description>
         </field>
       </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0</version>
-          <code><![CDATA[
-    public Configuration()
-    {
-        localRepository = new java.io.File( System.getProperty( "user.home" ), ".m2/repository" ).getAbsolutePath();
-    }
-
-    public boolean isValid()
-    {
-        boolean valid = true;
-
-        if ( indexPath == null )
-        {
-            valid = false;
-        }
-        else if ( getRepositories().isEmpty() )
-        {
-            valid = false;
-        }
-        return valid;
-    }
-
-    /**
-     * Perform any Upgrades and Adjustments needed to bring configuration up to the
-     * current configuration format.
-     */
-    public void sanitize()
-    {
-        for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration repo = (RepositoryConfiguration) i.next();
-
-            // Ensure that the repo.urlName is set.
-            if ( org.codehaus.plexus.util.StringUtils.isEmpty( repo.getUrlName() ) )
-            {
-                repo.setUrlName( repo.getId() );
-            }
-        }
-    }
-
-    public RepositoryConfiguration getRepositoryByUrlName( String urlName )
-    {
-        for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-            if ( urlName != null ? urlName.equals( repository.getUrlName() ) : repository.getUrlName() == null )
-            {
-                return repository;
-            }
-        }
-        return null;
-    }
-    
-    public RepositoryConfiguration getRepositoryById( String id )
-    {
-        for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
-            {
-                return repository;
-            }
-        }
-        return null;
-    }
-
-    public SyncedRepositoryConfiguration getSyncedRepositoryById( String id )
-    {
-        for ( java.util.Iterator i = getSyncedRepositories().iterator(); i.hasNext(); )
-        {
-            SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) i.next();
-            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
-            {
-                return repository;
-            }
-        }
-        return null;
-    }
-
-    public ProxiedRepositoryConfiguration getProxiedRepositoryById( String id )
-    {
-        for ( java.util.Iterator i = getProxiedRepositories().iterator(); i.hasNext(); )
-        {
-            ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) i.next();
-            if ( id != null ? id.equals( repository.getId() ) : repository.getId() == null )
-            {
-                return repository;
-            }
-        }
-        return null;
-    }
-
-    private java.util.Map repositoriesMap;
-
-    public java.util.Map getRepositoriesMap()
-    {
-        if ( repositoriesMap == null )
-        {
-            repositoriesMap = new java.util.HashMap();
-            for ( java.util.Iterator i = getRepositories().iterator(); i.hasNext(); )
-            {
-                RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
-                repositoriesMap.put( repository.getId(), repository );
-            }
-        }
-        return repositoriesMap;
-    }
-
-    private java.util.Map proxiedRepositoriesMap;
-
-    public java.util.Map getProxiedRepositoriesMap()
-    {
-        if ( proxiedRepositoriesMap == null )
-        {
-            proxiedRepositoriesMap = new java.util.HashMap();
-            for ( java.util.Iterator i = getProxiedRepositories().iterator(); i.hasNext(); )
-            {
-                ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) i.next();
-                proxiedRepositoriesMap.put( repository.getId(), repository );
-            }
-        }
-        return proxiedRepositoriesMap;
-    }
-
-    private java.util.Map syncedRepositoriesMap;
-
-    public java.util.Map getSyncedRepositoriesMap()
-    {
-        if ( syncedRepositoriesMap == null )
-        {
-            syncedRepositoriesMap = new java.util.HashMap();
-            for ( java.util.Iterator i = getSyncedRepositories().iterator(); i.hasNext(); )
-            {
-                SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) i.next();
-                syncedRepositoriesMap.put( repository.getId(), repository );
-            }
-        }
-        return syncedRepositoriesMap;
-    }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
     </class>
+    
+    <!-- 
+       ____                      _ _
+      |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
+      | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
+      |  _ <  __/ |_) | (_) \__ \ | || (_) | |  | |_| |
+      |_| \_\___| .__/ \___/|___/_|\__\___/|_|   \__, |
+                |_|                              |___/
+    
+      -->
+    
     <class>
-      <name>AbstractRepositoryConfiguration</name>
-      <abstract>true</abstract>
-      <version>1.0.0</version>
+      <name>RepositoryConfiguration</name>
+      <version>1.0.0+</version>
       <fields>
         <field>
           <name>id</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
           <description>
@@ -272,7 +113,7 @@
         </field>
         <field>
           <name>name</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
           <description>
@@ -280,8 +121,17 @@
           </description>
         </field>
         <field>
+          <name>url</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL for this repository.
+          </description>
+        </field>
+        <field>
           <name>layout</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
           <description>
@@ -290,191 +140,213 @@
           <!-- TODO: should be able to detect this from the repository (perhaps by metadata at the root) -->
           <defaultValue>default</defaultValue>
         </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0</version>
-          <code><![CDATA[
-    public String toString()
-    {
-        return name + " (" + id + ")";
-    }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-    </class>
-    <class>
-      <superClass>AbstractRepositoryConfiguration</superClass>
-      <name>RepositoryConfiguration</name>
-      <version>1.0.0</version>
-      <fields>
         <field>
-          <name>urlName</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The URL name for this repository.
-            Used to create the WebDAV URL for the repository such like - http://hostname.com/repository/${urlName}/
-          </description>
-        </field>
-        <field>
-          <name>directory</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The location of the repository to monitor.
-          </description>
-        </field>
-        <field>
-          <name>includeSnapshots</name>
-          <version>1.0.0</version>
+          <name>releases</name>
+          <version>1.0.0+</version>
           <type>boolean</type>
-          <description>Whether to include snapshot versions in the discovery process</description>
+          <description>True if this repository contains release versioned artifacts.</description>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>snapshots</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>True if this repository contains snapshot versioned artifacts.</description>
           <defaultValue>false</defaultValue>
         </field>
         <field>
           <name>indexed</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>boolean</type>
-          <description>Whether to index the artifacts in this repository.</description>
+          <description>True if this repository should be indexed.</description>
           <defaultValue>true</defaultValue>
         </field>
         <field>
+          <name>refreshCronExpression</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+          	When to run the refresh task. 
+          	Default is every 30 minutes (translated as every 0 and 30 minute reading of every hour)
+          </description>
+          <defaultValue>0 0,30 * * * ?</defaultValue>
+        </field>
+      </fields>
+    </class>
+    
+    <!-- 
+        ____                            _
+       / ___|___  _ __  _ __   ___  ___| |_ ___  _ __ ___
+      | |   / _ \| '_ \| '_ \ / _ \/ __| __/ _ \| '__/ __|
+      | |__| (_) | | | | | | |  __/ (__| || (_) | |  \__ \
+       \____\___/|_| |_|_| |_|\___|\___|\__\___/|_|  |___/
+    
+      -->
+    
+    <class>
+      <name>AbstractRepositoryConnectorConfiguration</name>
+      <abstract>true</abstract>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>sourceRepoId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Repository Source for this connector.
+          </description>
+        </field>
+        <field>
+          <name>targetRepoId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Repository Target for this connector.
+          </description>
+        </field>
+        <field>
+          <name>proxyId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The network proxy ID to use for this connector.
+          </description>
+        </field>
+        <field>
           <name>blackListPatterns</name>
-          <version>1.0.0</version>
-          <description>Blacklisted patterns in the discovery process</description>
+          <version>1.0.0+</version>
           <association>
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
+          <description>
+            The list of blacklisted patterns for this connector.
+          </description>
+        </field>
+        <field>
+          <name>whiteListPatterns</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of whitelisted patterns for this connector.
+          </description>
         </field>
       </fields>
     </class>
+    
     <class>
-      <superClass>AbstractRepositoryConfiguration</superClass>
-      <name>ProxiedRepositoryConfiguration</name>
-      <version>1.0.0</version>
+      <superClass>AbstractRepositoryConnectorConfiguration</superClass>
+      <name>RepositoryProxyConnectorConfiguration</name>
+      <version>1.0.0+</version>
       <fields>
         <field>
-          <name>url</name>
-          <version>1.0.0</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The URL of the remote repository to proxy.
-          </description>
-        </field>
-        <!-- TODO: would be much easier to have an association here, as long as it could be specified as a reference -->
-        <field>
-          <name>managedRepository</name>
-          <version>1.0.0</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The ID of the managed repository to use as the local storage for proxied artifacts.
-          </description>
-        </field>
-        <field>
           <name>snapshotsPolicy</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <defaultValue>disabled</defaultValue>
           <description>
-            The policy for snapshots: one of disabled, daily, hourly, interval, never
-            (allow snapshots, but never update once retrieved).
-          </description>
-        </field>
-        <field>
-          <name>snapshotsInterval</name>
-          <version>1.0.0</version>
-          <type>int</type>
-          <description>
-            The interval in minutes before updating snapshots if the policy is set to 'interval'.
+            The policy for snapshots: 
+              Can be one of the following keywords:
+                "disabled" - means retrieval isn't even attempted.
+                "daily"    - means snapshot is fetched, but only updated on
+                             a daily basis. (equivalent to "1440" minutes)
+                "hourly"   - means snapshot is fetched, but only updated on
+                             an hourly basis. (equivalent to "60" minutes)
+                "never"    - means snapshot is fetched once, but never updated.
+                             (equivalent to "-1" minutes)
+              Or it can be a number of minutes before updating of the snapshot.
           </description>
         </field>
         <field>
           <name>releasesPolicy</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
-          <defaultValue>daily</defaultValue>
+          <defaultValue>never</defaultValue>
           <description>
-            The policy for releases: one of disabled, daily, hourly, interval, never
-            (allow releases, but never update once retrieved).
+            The policy for releases: 
+              Can be one of the following keywords:
+                "disabled" - means retrieval isn't even attempted.
+                "daily"    - means release is fetched, but only updated on
+                             a daily basis. (equivalent to "1440" minutes)
+                "hourly"   - means release is fetched, but only updated on
+                             an hourly basis. (equivalent to "60" minutes)
+                "never"    - means release is fetched once, but never updated.
+                             (equivalent to "-1" minutes)
+              Or it can be a number of minutes before updating of the release.
           </description>
         </field>
         <field>
-          <name>releasesInterval</name>
-          <version>1.0.0</version>
-          <type>int</type>
+          <name>failurePolicy</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <defaultValue>not-found</defaultValue>
           <description>
-            The interval in minutes before updating releases if the policy is set to 'interval'.
-          </description>
-        </field>
-        <field>
-          <name>useNetworkProxy</name>
-          <version>1.0.0</version>
-          <type>boolean</type>
-          <defaultValue>false</defaultValue>
-          <description>
-            Whether to use the network proxy, if one is configured for the protocol of this repository.
-          </description>
-        </field>
-        <field>
-          <name>cacheFailures</name>
-          <version>1.0.0</version>
-          <type>boolean</type>
-          <defaultValue>false</defaultValue>
-          <description>
-            Whether to cache failures to avoid re-attempting them over the network. The cache will last for the duration
-            of the intervals specified above depending on whether it a release or snapshot.
-          </description>
-        </field>
-        <field>
-          <name>hardFail</name>
-          <version>1.0.0</version>
-          <type>boolean</type>
-          <defaultValue>false</defaultValue>
-          <description>
-            Whether to cause the entire request to fail if attempts to retrieve from this proxy fail.
+            The policy for dealing with proxy failures.
+              Can be one of the following keywords:
+                "not-found" - means if the retrieval has a failure, an HTTP 404 
+                              (not found) is returned to the client of this
+                              archiva instance.
+                              This policy setting will allow other proxies
+                              to be checked for content.
+                "failure"   - means if the retrieval has a failure, an HTTP 500
+                              (server error) is returned to the client of this
+                              archiva instance.
+                              This policy setting will return immediately to the
+                              client of the archiva instance and not allow 
+                              furthor attempts on other proxies for this content.
           </description>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+          
+   public static final String NEVER = "never";
+   
+   public static final String DISABLED = "disabled";
+   
+   public static final String DAILY = "daily";
+   
+   public static final String HOURLY = "hourly";
+   
+   public static final String NOT_FOUND = "not-found";
+   
+   public static final String FAILURE = "failure";
+          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
+    
     <class>
-      <superClass>AbstractRepositoryConfiguration</superClass>
-      <name>SyncedRepositoryConfiguration</name>
+      <superClass>AbstractRepositoryConnectorConfiguration</superClass>
+      <name>RepositorySynchConnectorConfiguration</name>
       <abstract>true</abstract>
-      <version>1.0.0</version>
+      <version>1.0.0+</version>
       <fields>
-        <!-- TODO: would be much easier to have an association here, as long as it could be specified as a reference -->
-        <field>
-          <name>managedRepository</name>
-          <version>1.0.0</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The ID of the managed repository to use as the local storage for proxied artifacts.
-          </description>
-        </field>
         <field>
           <name>cronExpression</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <description>When to run the sync mechanism. Default is every hour on the hour.</description>
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
         <field>
           <name>method</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>String</type>
           <description>The type of synchronization to use.</description>
           <defaultValue>rsync</defaultValue>
         </field>
         <field>
           <name>properties</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <type>Properties</type>
           <description>Configuration for the repository synchronization.</description>
           <association xml.mapStyle="inline">
@@ -484,53 +356,123 @@
         </field>
       </fields>
     </class>
+    
+    <!-- 
+       ____                _
+      |  _ \ _ __ _____  _(_) ___  ___
+      | |_) | '__/ _ \ \/ / |/ _ \/ __|
+      |  __/| | | (_) >  <| |  __/\__ \
+      |_|   |_|  \___/_/\_\_|\___||___/
+    
+      -->
+    
     <class>
-      <name>Proxy</name>
-      <version>1.0.0</version>
+      <name>ProxyConfiguration</name>
+      <version>1.0.0+</version>
       <fields>
         <field>
-          <name>protocol</name>
-          <version>1.0.0</version>
-          <description><![CDATA[The proxy protocol.]]></description>
+          <name>id</name>
+          <version>1.0.0+</version>
           <type>String</type>
+          <description>
+            The ID for this proxy.
+          </description>
+        </field>
+        <field>
+          <name>protocol</name>
+          <version>1.0.0+</version>
+          <description>
+            The network protocol to use with this proxy.
+          </description>
+          <type>String</type>
+          <required>true</required>
           <defaultValue>http</defaultValue>
         </field>
         <field>
-          <name>username</name>
-          <version>1.0.0</version>
-          <description><![CDATA[The proxy user.]]></description>
-          <type>String</type>
-        </field>
-        <field>
-          <name>password</name>
-          <version>1.0.0</version>
-          <description><![CDATA[The proxy password.]]></description>
-          <type>String</type>
-        </field>
-        <field>
-          <name>port</name>
-          <version>1.0.0</version>
-          <description><![CDATA[The proxy port.]]></description>
-          <type>int</type>
-          <defaultValue>8080</defaultValue>
-        </field>
-        <field>
           <name>host</name>
-          <version>1.0.0</version>
-          <description><![CDATA[The proxy host.]]></description>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy host.
+          </description>
           <type>String</type>
           <required>true</required>
         </field>
         <field>
-          <name>nonProxyHosts</name>
-          <version>1.0.0</version>
-          <description><![CDATA[
-                The list of non-proxied hosts (delimited by |).
-          ]]></description>
+          <name>port</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy port.
+          </description>
+          <type>int</type>
+          <defaultValue>8080</defaultValue>
+        </field>
+        <field>
+          <name>username</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy user.
+          </description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>password</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy password.
+          </description>
           <type>String</type>
         </field>
       </fields>
     </class>
+    
+    <!-- 
+       _____ _ _      ____
+      |  ___(_) | ___|  _ \ _ __ ___   ___ ___  ___ ___  ___  _ __
+      | |_  | | |/ _ \ |_) | '__/ _ \ / __/ _ \/ __/ __|/ _ \| '__|
+      |  _| | | |  __/  __/| | | (_) | (_|  __/\__ \__ \ (_) | |
+      |_|   |_|_|\___|_|   |_|  \___/ \___\___||___/___/\___/|_|
+    
+      -->
+    <class>
+      <name>FileProcessor</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The ID for this file processor
+          </description>
+        </field>
+        <field>
+          <name>patterns</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of patterns for this processor.
+          </description>
+        </field>
+        <field>
+          <name>consumers</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of consumer IDs for this file processor.
+          </description>
+        </field>
+      </fields>
+    </class>
+    
   </classes>
 </model>
 

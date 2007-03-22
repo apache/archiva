@@ -24,63 +24,54 @@ import org.codehaus.plexus.PlexusTestCase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author Edwin Punzalan
  */
-public class MavenProxyPropertyLoaderTest
-    extends PlexusTestCase
+public class MavenProxyPropertyLoaderTest extends PlexusTestCase
 {
-    private static final int DEFAULT_CACHE_PERIOD = 3600;
-
     private MavenProxyPropertyLoader loader;
 
-    public void testLoadValidMavenProxyConfiguration()
-        throws IOException, InvalidConfigurationException
+    public void testLoadValidMavenProxyConfiguration() throws IOException, InvalidConfigurationException
     {
         File confFile = getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
         Configuration configuration = new Configuration();
-        Proxy proxy = new Proxy();
+        ProxyConfiguration proxy = new ProxyConfiguration();
         proxy.setHost( "original-host" );
-        configuration.setProxy( proxy ); // overwritten
-        configuration.setIndexPath( "index-path" ); // existing value
+        configuration.addNetworkProxy( proxy ); // overwritten
 
         loader.load( new FileInputStream( confFile ), configuration );
 
-        List list = configuration.getRepositories();
-        assertEquals( "check single managed repository", 1, list.size() );
-        RepositoryConfiguration managedRepository = (RepositoryConfiguration) list.iterator().next();
-        assertEquals( "cache path changed", "target", managedRepository.getDirectory() );
+        List repos = configuration.getRepositories();
+        assertEquals( "Count repositories", 5, repos.size() );
 
-        assertEquals( "Count repositories", 4, configuration.getProxiedRepositories().size() );
+        Map repositoryIdMap = new HashMap();
 
-        list = configuration.getProxiedRepositories();
-        ProxiedRepositoryConfiguration repo = (ProxiedRepositoryConfiguration) list.get( 0 );
-        assertEquals( "Repository name not as expected", "local-repo", repo.getId() );
-        assertEquals( "Repository url does not match its name", "file://target", repo.getUrl() );
-        assertEquals( "Repository cache period check failed", 0, repo.getSnapshotsInterval() );
-        assertFalse( "Repository failure caching check failed", repo.isCacheFailures() );
+        for ( Iterator itRepo = repos.iterator(); itRepo.hasNext(); )
+        {
+            RepositoryConfiguration repo = (RepositoryConfiguration) itRepo.next();
+            repositoryIdMap.put( repo.getId(), repo );
+        }
 
-        repo = (ProxiedRepositoryConfiguration) list.get( 1 );
-        assertEquals( "Repository name not as expected", "www-ibiblio-org", repo.getId() );
-        assertEquals( "Repository url does not match its name", "http://www.ibiblio.org/maven2", repo.getUrl() );
-        assertEquals( "Repository cache period check failed", DEFAULT_CACHE_PERIOD, repo.getSnapshotsInterval() );
-        assertTrue( "Repository failure caching check failed", repo.isCacheFailures() );
+        assertRepositoryExists( repositoryIdMap, "local-repo", "file://target" );
 
-        repo = (ProxiedRepositoryConfiguration) list.get( 2 );
-        assertEquals( "Repository name not as expected", "dist-codehaus-org", repo.getId() );
-        assertEquals( "Repository url does not match its name", "http://dist.codehaus.org", repo.getUrl() );
-        assertEquals( "Repository cache period check failed", DEFAULT_CACHE_PERIOD, repo.getSnapshotsInterval() );
-        assertTrue( "Repository failure caching check failed", repo.isCacheFailures() );
+        assertRepositoryExists( repositoryIdMap, "www-ibiblio-org", "http://www.ibiblio.org/maven2" );
+        assertRepositoryExists( repositoryIdMap, "dist-codehaus-org", "http://dist.codehaus.org" );
+        assertRepositoryExists( repositoryIdMap, "private-example-com", "http://private.example.com/internal" );
+    }
 
-        repo = (ProxiedRepositoryConfiguration) list.get( 3 );
-        assertEquals( "Repository name not as expected", "private-example-com", repo.getId() );
-        assertEquals( "Repository url does not match its name", "http://private.example.com/internal", repo.getUrl() );
-        assertEquals( "Repository cache period check failed", DEFAULT_CACHE_PERIOD, repo.getSnapshotsInterval() );
-        assertFalse( "Repository failure caching check failed", repo.isCacheFailures() );
+    private void assertRepositoryExists( Map repoMap, String id, String expectedUrl )
+    {
+        RepositoryConfiguration repo = (RepositoryConfiguration) repoMap.get( id );
+        assertNotNull( "Repository id [" + id + "] should not be null", repo );
+        assertEquals( "Repository id", id, repo.getId() );
+        assertEquals( "Repository url", expectedUrl, repo.getUrl() );
     }
 
     public void testInvalidConfiguration()
@@ -97,8 +88,7 @@ public class MavenProxyPropertyLoaderTest
         }
     }
 
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
         loader = new MavenProxyPropertyLoader();
