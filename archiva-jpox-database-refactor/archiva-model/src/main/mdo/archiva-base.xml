@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
-<model jpox.table-prefix="ARCHIVA_"
+<model jpox.mapping-in-package="true"
+       jpox.table-prefix="ARCHIVA_"
        xsd.namespace="http://maven.apache.org/archiva/MODEL-1.0.0"
        xsd.target-namespace="http://maven.apache.org/archiva/MODEL-1.0.0">
   <id>archiva-base-model</id>
@@ -93,11 +94,13 @@
       -->
 
     <class stash.storable="true"
-           jpox.table="REPOSITORIES">
+           jpox.table="REPOSITORIES"
+           jpox.not-persisted-fields="modelEncoding">
       <name>ArchivaRepositoryModel</name>
       <version>1.0.0+</version>
       <fields>
-        <field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off">
           <name>id</name>
           <identity>true</identity>
           <version>1.0.0+</version>
@@ -148,26 +151,29 @@
             The layout of the repository.
             (Either 'default', or 'legacy')
           </description>
+          <defaultValue>default</defaultValue>
         </field>
         <field>
           <name>releasePolicy</name>
           <identity>false</identity>
           <version>1.0.0+</version>
-          <type>String</type>
+          <type>boolean</type>
           <required>true</required>
           <description>
             The releases policy of the repository.
           </description>
+          <defaultValue>true</defaultValue>
         </field>
         <field>
           <name>snapshotPolicy</name>
           <identity>false</identity>
           <version>1.0.0+</version>
-          <type>String</type>
+          <type>boolean</type>
           <required>true</required>
           <description>
             The snapshot policy of the repository.
           </description>
+          <defaultValue>false</defaultValue>
         </field>
       </fields>
     </class>
