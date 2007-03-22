@@ -42,6 +42,8 @@ public abstract class AbstractArtifactExtensionMapping implements ArtifactExtens
         typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
         typeToExtensionMap.put( "distribution-zip", "zip" );
         typeToExtensionMap.put( "java-source", "jar" );
+        typeToExtensionMap.put( "aspect", "jar" );
+        typeToExtensionMap.put( "uberjar", "jar" );
     }
 
     public String getExtension( ArchivaArtifact artifact )
