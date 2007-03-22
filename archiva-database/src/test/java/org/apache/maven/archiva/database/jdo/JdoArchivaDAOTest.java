@@ -25,6 +25,8 @@ import org.apache.maven.archiva.model.ArchivaRepositoryModel;
 
 import java.util.List;
 
+import javax.jdo.JDOHelper;
+
 /**
  * JdoArchivaDAOTest 
  *
@@ -35,33 +37,54 @@ public class JdoArchivaDAOTest extends AbstractArchivaDatabaseTestCase
 {
     public void testRepositoryCRUD() throws ArchivaDatabaseException
     {
+        // Create it
         ArchivaRepositoryModel repo = dao.createRepository( "testRepo", "http://localhost:8080/repository/foo" );
-
         assertNotNull( repo );
 
-        repo.setName( "The Test Repostitory." );
+        // Set some mandatory values
+        repo.setName( "The Test Repository." );
+        repo.setCreationSource( "Test Case" );
         repo.setLayoutName( "default" );
 
+        // Save it. 
         ArchivaRepositoryModel repoSaved = dao.saveRepository( repo );
         assertNotNull( repoSaved );
+        assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved ).toString() );
 
+        // Test that something has been saved.
         List repos = dao.getRepositories();
         assertNotNull( repos );
         assertEquals( 1, repos.size() );
-        
+
+        // Test that retreived object is what we expect.
+        ArchivaRepositoryModel firstRepo = (ArchivaRepositoryModel) repos.get( 0 );
+        assertNotNull( firstRepo );
+        assertEquals( "testRepo", repo.getId() );
+        assertEquals( "The Test Repository.", repo.getName() );
+        assertEquals( "Test Case", repo.getCreationSource() );
+        assertEquals( "default", repo.getLayoutName() );
+
+        // Change value and save.
         repoSaved.setName( "Saved Again" );
         dao.saveRepository( repoSaved );
-        
+
+        // Test that only 1 object is saved.
+        assertEquals( 1, dao.getRepositories().size() );
+
+        // Get the specific repo.
         ArchivaRepositoryModel actualRepo = dao.getRepository( "testRepo" );
         assertNotNull( actualRepo );
+
+        // Test expected values.
         assertEquals( "testRepo", actualRepo.getId() );
         assertEquals( "http://localhost:8080/repository/foo", actualRepo.getUrl() );
         assertEquals( "Saved Again", actualRepo.getName() );
-        
+
+        // Test that only 1 object is saved.
         assertEquals( 1, dao.getRepositories().size() );
-        
+
+        // Delete object.
         dao.deleteRepository( actualRepo );
         assertEquals( 0, dao.getRepositories().size() );
     }
 }
-
