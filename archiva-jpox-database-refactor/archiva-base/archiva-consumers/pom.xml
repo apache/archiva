@@ -17,13 +17,23 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva-parent</artifactId>
+    <artifactId>archiva-base</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>maven-meeper</artifactId>
+
+  <artifactId>archiva-consumers</artifactId>
+  <name>Archiva Consumers</name>
   <packaging>pom</packaging>
-  <name>Maven Meeper</name>
+
+  <modules>
+    <module>archiva-consumer-api</module>
+    <module>archiva-core-consumers</module>
+    <module>archiva-database-consumers</module>
+    <module>archiva-lucene-consumers</module>
+    <module>archiva-signature-consumers</module>
+  </modules>
 </project>

@@ -22,12 +22,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva</artifactId>
+    <artifactId>archiva-base</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-proxy</artifactId>
-  <name>Archiva Proxy</name>
+  <name>Archiva Base :: Proxy</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
