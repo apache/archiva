@@ -60,13 +60,10 @@ public class DefaultArchivaConfiguration
             configuration = new ConfigurationRegistryReader().read( registry.getSubset( KEY ) );
 
             // TODO: for commons-configuration 1.3 only
-            configuration.setIndexPath( removeExpressions( configuration.getIndexPath() ) );
-            configuration.setMinimalIndexPath( removeExpressions( configuration.getMinimalIndexPath() ) );
-            configuration.setLocalRepository( removeExpressions( configuration.getLocalRepository() ) );
             for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
             {
                 RepositoryConfiguration c = (RepositoryConfiguration) i.next();
-                c.setDirectory( removeExpressions( c.getDirectory() ) );
+                c.setUrl( removeExpressions( c.getUrl() ) );
             }
         }
         return configuration;
