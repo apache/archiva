@@ -130,20 +130,12 @@
             <goals>
               <goal>java</goal>
               <goal>jpox-metadata-class</goal>
+              <goal>jpox-jdo-mapping</goal>
               <!--
               <goal>xpp3-writer</goal>
               <goal>xpp3-reader</goal>
                -->
             </goals>
-          </execution>
-          <execution>
-            <id>jpox-jdo-mapping</id>
-            <goals>
-              <goal>jpox-jdo-mapping</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes/org/apache/maven/archiva/reporting/model/</outputDirectory>
-            </configuration>
           </execution>
         </executions>
       </plugin>
