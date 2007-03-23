@@ -20,6 +20,7 @@ package org.apache.maven.archiva.reporting.reporter;
  */
 
 import org.apache.maven.archiva.reporting.database.ArtifactResultsDatabase;
+import org.apache.maven.archiva.reporting.model.ArtifactResults;
 import org.apache.maven.archiva.reporting.processor.ArtifactReportProcessor;
 import org.apache.maven.artifact.Artifact;
 import org.codehaus.plexus.digest.DigesterException;
@@ -56,6 +57,9 @@ public class ChecksumArtifactReporterTest
 
         Artifact artifact = createArtifact( "checksumTest", "validArtifact", "1.0" );
 
+        ArtifactResults result = database.getArtifactResults( artifact );
+        database.clearResults( result );
+
         artifactReportProcessor.processArtifact( artifact, null );
         assertEquals( 0, database.getNumFailures() );
         assertEquals( 0, database.getNumWarnings() );
@@ -70,6 +74,9 @@ public class ChecksumArtifactReporterTest
         String s = "invalidArtifact";
         String s1 = "1.0";
         Artifact artifact = createArtifact( "checksumTest", s, s1 );
+
+        ArtifactResults result = database.getArtifactResults( artifact );
+        database.clearResults( result );
 
         artifactReportProcessor.processArtifact( artifact, null );
         assertEquals( 1, database.getNumFailures() );
