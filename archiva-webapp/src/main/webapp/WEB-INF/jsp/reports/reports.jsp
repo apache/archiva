@@ -41,7 +41,7 @@
       ${report.groupId} : ${report.artifactId} : ${report.version} : ${report.classifier} : ${report.type}
   </h3>
   <ul>
-    <c:forEach items="${repor.results}" var="result">
+    <c:forEach items="${report.results}" var="result">
       <li>
         <b>${result.reason}</b>
       </li>
