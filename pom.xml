@@ -114,6 +114,11 @@
             <tagBase>https://svn.apache.org/repos/asf/maven/archiva/tags</tagBase>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.modello</groupId>
+          <artifactId>modello-maven-plugin</artifactId>
+          <version>1.0-alpha-15</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
