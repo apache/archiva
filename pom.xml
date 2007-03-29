@@ -176,6 +176,26 @@
         <version>1.4</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.plexus.registry</groupId>
+        <artifactId>plexus-registry-api</artifactId>
+        <version>1.0-alpha-2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.registry</groupId>
+        <artifactId>plexus-registry-commons</artifactId>
+        <version>1.0-alpha-2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.cache</groupId>
+        <artifactId>plexus-cache-api</artifactId>
+        <version>1.0-alpha-2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.cache</groupId>
+        <artifactId>plexus-cache-ehcache</artifactId>
+        <version>1.0-alpha-2</version>
+      </dependency>
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>1.2</version>
@@ -208,7 +228,7 @@
       <dependency>
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-model-converter</artifactId>
-        <version>2.0.5-SNAPSHOT</version>
+        <version>2.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
@@ -559,6 +579,6 @@
   <properties>
     <maven.version>2.0.5</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
-    <plexus-security.version>1.0-alpha-11-SNAPSHOT</plexus-security.version>
+    <plexus-security.version>1.0-alpha-11</plexus-security.version>
   </properties>
 </project>

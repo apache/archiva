@@ -70,8 +70,11 @@
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
-      <version>1.0-alpha-2-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <!-- TEST DEPS -->
