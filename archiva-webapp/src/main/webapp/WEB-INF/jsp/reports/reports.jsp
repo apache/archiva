@@ -38,10 +38,24 @@
 
 <c:forEach items="${reports}" var="report">
   <h3>
-      ${report.groupId} : ${report.artifactId} : ${report.version} : ${report.classifier} : ${report.type}
+      ${report.groupId} : ${report.artifactId} : ${report.version} : ${report.classifier} : ${report.artifactType}
   </h3>
   <ul>
-    <c:forEach items="${report.results}" var="result">
+    <c:forEach items="${report.failures}" var="result">
+      <li>
+        <b>${result.reason}</b>
+      </li>
+    </c:forEach>
+  </ul>
+  <ul>
+    <c:forEach items="${report.warnings}" var="result">
+      <li>
+        <b>${result.reason}</b>
+      </li>
+    </c:forEach>
+  </ul>
+  <ul>
+    <c:forEach items="${report.notices}" var="result">
       <li>
         <b>${result.reason}</b>
       </li>
