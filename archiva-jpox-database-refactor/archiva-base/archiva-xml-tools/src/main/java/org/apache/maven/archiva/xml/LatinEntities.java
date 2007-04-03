@@ -298,7 +298,25 @@ public class LatinEntities
 
     public static String resolveEntity( String entity )
     {
-        String result = (String) defaultEntityMap.get( entity );
+        if ( entity == null )
+        {
+            // Invalid. null.
+            return entity;
+        }
+
+        if ( entity.trim().length() <= 0 )
+        {
+            // Invalid. empty.
+            return entity;
+        }
+
+        if ( !( entity.charAt( 0 ) == '&' ) && ( entity.charAt( entity.length() ) == ';' ) )
+        {
+            // Invalid, not an entity.
+            return entity;
+        }
+
+        String result = (String) defaultEntityMap.get( entity.substring( 1, entity.length() - 1 ) );
         if ( result == null )
         {
             return entity;
