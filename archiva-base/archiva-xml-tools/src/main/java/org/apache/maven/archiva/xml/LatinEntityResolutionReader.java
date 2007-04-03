@@ -170,12 +170,12 @@ public class LatinEntityResolutionReader
         int offset = 0;
         String entity;
         Matcher mat = this.entityPattern.matcher( line );
-        while ( mat.find() )
+        while ( mat.find( offset ) )
         {
             ret.append( line.substring( offset, mat.start() ) );
             entity = mat.group();
             ret.append( LatinEntities.resolveEntity( entity ) );
-            offset += mat.start() + entity.length();
+            offset = mat.start() + entity.length();
         }
         ret.append( line.substring( offset ) );
 
