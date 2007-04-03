@@ -49,7 +49,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * ArchivaCli 
+ *
  * @author Jason van Zyl
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  */
 public class ArchivaCli
     extends AbstractCli
@@ -160,14 +164,22 @@ public class ArchivaCli
             RepositoryContentStatistics stats = scanner.scan( repo, consumerList, true );
 
             SimpleDateFormat df = new SimpleDateFormat();
+            System.out.println( "" );
             System.out.println( ".\\ Scan of " + repo.getId() + " \\.__________________________________________" );
             System.out.println( "  Repository URL    : " + repo.getUrl() );
             System.out.println( "  Repository Name   : " + repo.getModel().getName() );
             System.out.println( "  Repository Layout : " + repo.getModel().getLayoutName() );
+            System.out.println( "  Consumers         : (" + consumerList.size() + " active)" );
+            for ( Iterator iter = consumerList.iterator(); iter.hasNext(); )
+            {
+                RepositoryContentConsumer consumer = (RepositoryContentConsumer) iter.next();
+                System.out.println( "                      " + consumer.getId() + " - " + consumer.getDescription() );
+            }
             System.out.println( "  Duration          : " + DateUtil.getDuration( stats.getDuration() ) );
             System.out.println( "  When Gathered     : " + df.format( stats.getWhenGathered() ) );
             System.out.println( "  Total File Count  : " + stats.getTotalFileCount() );
-            System.out.println( "  New File Count    : " + stats.getNewFileCount() );
+            long averageMsPerFile = ( stats.getDuration() / stats.getTotalFileCount() );
+            System.out.println( "  Avg Time Per File : " + DateUtil.getDuration( averageMsPerFile ) );
             System.out.println( "______________________________________________________________" );
         }
         catch ( RepositoryException e )
