@@ -138,4 +138,9 @@ public class LatinEntityResolutionReaderTest
     {
         assertProperRead( "no-prolog-with-entities.xml", "no-prolog-with-entities.xml-resolved", 409600 );
     }
+    
+    public void testNoLatinEntitiesHugeLine()
+    {
+        assertProperRead( "commons-codec-1.2.pom", "commons-codec-1.2.pom", 4096 );
+    }
 }
