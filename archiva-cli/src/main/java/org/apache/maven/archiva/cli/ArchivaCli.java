@@ -20,19 +20,32 @@ package org.apache.maven.archiva.cli;
  */
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.DateUtil;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.tools.cli.AbstractCli;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -46,6 +59,12 @@ public class ArchivaCli
     // ----------------------------------------------------------------------------
 
     public static final char CONVERT = 'c';
+
+    public static final char SCAN = 's';
+
+    public static final char CONSUMERS = 'u';
+
+    public static final char LIST_CONSUMERS = 'l';
 
     // ----------------------------------------------------------------------------
     // Properties controlling Repository conversion
@@ -68,11 +87,36 @@ public class ArchivaCli
         return "META-INF/maven/org.apache.maven.archiva/archiva-cli/pom.properties";
     }
 
+    private Option createOption( char shortOpt, String longOpt, int argCount, String description )
+    {
+        boolean hasArg = ( argCount > 0 );
+        Option opt = new Option( String.valueOf( shortOpt ), hasArg, description );
+        opt.setLongOpt( longOpt );
+        if ( hasArg )
+        {
+            opt.setArgs( argCount );
+        }
+        return opt;
+    }
+
     public Options buildCliOptions( Options options )
     {
-        options.addOption( OptionBuilder.withLongOpt( "convert" ).hasArg().withDescription(
-            "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion." )
-            .create( CONVERT ) );
+        Option convertOption = createOption( CONVERT, "convert", 1, "Convert a legacy Maven 1.x repository to a "
+            + "Maven 2.x repository using a properties file to describe the conversion." );
+        convertOption.setArgName( "conversion.properties" );
+        options.addOption( convertOption );
+
+        Option scanOption = createOption( SCAN, "scan", 1, "Scan the specified repository." );
+        scanOption.setArgName( "repository directory" );
+        options.addOption( scanOption );
+
+        Option consumerOption = createOption( CONSUMERS, "consumers", 1, "The consumers to use. "
+            + "(comma delimited. default: 'count-artifacts')" );
+        consumerOption.setArgName( "consumer list" );
+        options.addOption( consumerOption );
+
+        Option listConsumersOption = createOption( LIST_CONSUMERS, "listconsumers", 0, "List available consumers." );
+        options.addOption( listConsumersOption );
 
         return options;
     }
@@ -80,47 +124,147 @@ public class ArchivaCli
     public void invokePlexusComponent( CommandLine cli, PlexusContainer plexus )
         throws Exception
     {
-        LegacyRepositoryConverter legacyRepositoryConverter =
-            (LegacyRepositoryConverter) plexus.lookup( LegacyRepositoryConverter.ROLE );
-
         if ( cli.hasOption( CONVERT ) )
         {
-            Properties p = new Properties();
+            doConversion( cli, plexus );
+        }
+        else if ( cli.hasOption( SCAN ) )
+        {
+            doScan( cli, plexus );
+        }
+        else if ( cli.hasOption( LIST_CONSUMERS ) )
+        {
+            dumpAvailableConsumers( plexus );
+        }
+        else
+        {
+            displayHelp();
+        }
+    }
 
-            try
+    private void doScan( CommandLine cli, PlexusContainer plexus )
+        throws ConsumerException, ComponentLookupException
+    {
+        String path = cli.getOptionValue( SCAN );
+
+        ArchivaRepository repo = new ArchivaRepository( "cliRepo", "Archiva CLI Provided Repo", "file://" + path );
+
+        List consumerList = new ArrayList();
+
+        consumerList.addAll( getConsumerList( cli, plexus ) );
+
+        RepositoryScanner scanner = new RepositoryScanner();
+
+        try
+        {
+            RepositoryContentStatistics stats = scanner.scan( repo, consumerList, true );
+
+            SimpleDateFormat df = new SimpleDateFormat();
+            System.out.println( ".\\ Scan of " + repo.getId() + " \\.__________________________________________" );
+            System.out.println( "  Repository URL    : " + repo.getUrl() );
+            System.out.println( "  Repository Name   : " + repo.getModel().getName() );
+            System.out.println( "  Repository Layout : " + repo.getModel().getLayoutName() );
+            System.out.println( "  Duration          : " + DateUtil.getDuration( stats.getDuration() ) );
+            System.out.println( "  When Gathered     : " + df.format( stats.getWhenGathered() ) );
+            System.out.println( "  Total File Count  : " + stats.getTotalFileCount() );
+            System.out.println( "  New File Count    : " + stats.getNewFileCount() );
+            System.out.println( "______________________________________________________________" );
+        }
+        catch ( RepositoryException e )
+        {
+            e.printStackTrace( System.err );
+        }
+    }
+
+    private Collection getConsumerList( CommandLine cli, PlexusContainer plexus )
+        throws ComponentLookupException, ConsumerException
+    {
+        String specifiedConsumers = "count-artifacts";
+
+        if ( cli.hasOption( CONSUMERS ) )
+        {
+            specifiedConsumers = cli.getOptionValue( CONSUMERS );
+        }
+
+        List consumerList = new ArrayList();
+
+        Map availableConsumers = plexus.lookupMap( RepositoryContentConsumer.class );
+
+        String consumerArray[] = StringUtils.split( specifiedConsumers, ',' );
+
+        for ( int i = 0; i < consumerArray.length; i++ )
+        {
+            String specifiedConsumer = consumerArray[i];
+            if ( !availableConsumers.containsKey( specifiedConsumer ) )
             {
-                p.load( new FileInputStream( cli.getOptionValue( CONVERT ) ) );
-            }
-            catch ( IOException e )
-            {
-                showFatalError( "Cannot find properties file which describes the conversion.", e, true );
+                System.err.println( "Specified consumer [" + specifiedConsumer + "] not found." );
+                dumpAvailableConsumers( plexus );
+                System.exit( 1 );
             }
 
-            File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
+            consumerList.add( availableConsumers.get( specifiedConsumer ) );
+        }
 
-            File newRepositoryPath = new File( p.getProperty( TARGET_REPO_PATH ) );
+        return consumerList;
+    }
 
-            System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
+    private void dumpAvailableConsumers( PlexusContainer plexus )
+        throws ComponentLookupException
+    {
+        Map availableConsumers = plexus.lookupMap( RepositoryContentConsumer.class );
 
-            List fileExclusionPatterns = null;
+        System.out.println( ".\\ Available Consumer List \\.______________________________" );
 
-            String s = p.getProperty( BLACKLISTED_PATTERNS );
+        for ( Iterator iter = availableConsumers.entrySet().iterator(); iter.hasNext(); )
+        {
+            Map.Entry entry = (Map.Entry) iter.next();
+            String consumerHint = (String) entry.getKey();
+            RepositoryContentConsumer consumer = (RepositoryContentConsumer) entry.getValue();
+            System.out.println( "  " + consumerHint + ": " + consumer.getDescription() + " ("
+                + consumer.getClass().getName() + ")" );
+        }
+    }
 
-            if ( s != null )
-            {
-                fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
-            }
+    private void doConversion( CommandLine cli, PlexusContainer plexus )
+        throws ComponentLookupException
+    {
+        LegacyRepositoryConverter legacyRepositoryConverter = (LegacyRepositoryConverter) plexus
+            .lookup( LegacyRepositoryConverter.ROLE );
 
-            try
-            {
-                legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                                   fileExclusionPatterns,
-                                                                   true );
-            }
-            catch ( RepositoryConversionException e )
-            {
-                showFatalError( "Error converting repository.", e, true );
-            }
+        Properties p = new Properties();
+
+        try
+        {
+            p.load( new FileInputStream( cli.getOptionValue( CONVERT ) ) );
+        }
+        catch ( IOException e )
+        {
+            showFatalError( "Cannot find properties file which describes the conversion.", e, true );
+        }
+
+        File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
+
+        File newRepositoryPath = new File( p.getProperty( TARGET_REPO_PATH ) );
+
+        System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
+
+        List fileExclusionPatterns = null;
+
+        String s = p.getProperty( BLACKLISTED_PATTERNS );
+
+        if ( s != null )
+        {
+            fileExclusionPatterns = Arrays.asList( StringUtils.split( s, "," ) );
+        }
+
+        try
+        {
+            legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
+                                                               fileExclusionPatterns, true );
+        }
+        catch ( RepositoryConversionException e )
+        {
+            showFatalError( "Error converting repository.", e, true );
         }
     }
 }

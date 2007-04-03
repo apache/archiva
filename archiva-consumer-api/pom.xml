@@ -26,7 +26,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>archiva-consumer-api</artifactId>
+  <artifactId>archiva-consumer-api-OLD</artifactId>
   <name>Archiva Consumer API</name>
   <dependencies>
     <dependency>

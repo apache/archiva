@@ -30,6 +30,21 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-indexer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-consumer-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.connector;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
 

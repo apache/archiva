@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
@@ -68,7 +68,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
         assertEquals( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar",
                       layout.pathOf( artifact ) );
     }
-    
+
     public void testToArtifactBasicSimpleGroupId() throws LayoutException
     {
         ArchivaArtifact artifact = layout.toArtifact( "commons-lang/commons-lang/2.1/commons-lang-2.1.jar" );
@@ -95,11 +95,102 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
         // The 'java-source' type is correct.  You might be thinking of extension, which we are not testing here.
         assertArtifact( artifact, "com.foo.lib", "foo-lib", "2.1-alpha-1", "sources", "java-source" );
     }
-    
+
     public void testToArtifactUsingUniqueSnapshot() throws LayoutException
     {
         ArchivaArtifact artifact =
             layout.toArtifact( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar" );
         assertSnapshotArtifact( artifact, "com.foo", "foo-connector", "2.1-20060822.123456-35", "", "jar" );
+    }
+
+    public void testInvalidMissingType()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1/invalid-1" );
+            fail( "Should have detected missing type." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidNonSnapshotInSnapshotDir()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar" );
+            fail( "Should have detected non snapshot artifact inside of a snapshot dir." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidPathTooShort()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid-1.0.jar" );
+            fail( "Should have detected that path is too short." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidTimestampSnapshotNotInSnapshotDir()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
+            fail( "Shoult have detected Timestamped Snapshot artifact not inside of an Snapshot dir is invalid." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidVersionPathMismatch()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1.0/invalid-2.0.jar" );
+            fail( "Should have detected version mismatch between path and artifact." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidVersionPathMismatchAlt()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1.0/invalid-1.0b.jar" );
+            fail( "Should have version mismatch between directory and artifact." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidArtifactIdForPath()
+    {
+        try
+        {
+            layout.toArtifact( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar" );
+            fail( "Should have detected wrong artifact Id." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
     }
 }

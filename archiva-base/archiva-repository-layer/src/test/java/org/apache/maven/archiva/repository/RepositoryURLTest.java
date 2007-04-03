@@ -20,6 +20,8 @@ package org.apache.maven.archiva.repository;
  */
 
 
+import org.apache.maven.archiva.model.RepositoryURL;
+
 import java.net.MalformedURLException;
 
 import junit.framework.TestCase;

@@ -82,7 +82,7 @@ public class RepositoryLayoutUtils
      * @return the parts of the filename.
      * @throws LayoutException 
      */
-    public static String[] splitFilename( String filename, String possibleArtifactId ) throws LayoutException
+    public static FilenameParts splitFilename( String filename, String possibleArtifactId ) throws LayoutException
     {
         if ( StringUtils.isBlank( filename ) )
         {
@@ -91,11 +91,7 @@ public class RepositoryLayoutUtils
 
         String filestring = filename.trim();
 
-        String artifactId = "";
-        String version = "";
-        String classifier = "";
-        String extension = "";
-
+        FilenameParts parts = new FilenameParts();
         // I like working backwards.
 
         // Find the extension.
@@ -108,7 +104,7 @@ public class RepositoryLayoutUtils
         {
             if ( lowercaseFilename.endsWith( "." + ComplexExtensions[i] ) )
             {
-                extension = ComplexExtensions[i];
+                parts.extension = ComplexExtensions[i];
                 filestring = filestring.substring( 0, filestring.length() - ComplexExtensions[i].length() - 1 );
                 found = true;
             }
@@ -124,7 +120,7 @@ public class RepositoryLayoutUtils
                 // Bad Filename - No Extension
                 throw new LayoutException( "Unable to determine extension from filename " + filename );
             }
-            extension = filestring.substring( index + 1 );
+            parts.extension = filestring.substring( index + 1 );
             filestring = filestring.substring( 0, index );
         }
 
@@ -132,7 +128,7 @@ public class RepositoryLayoutUtils
 
         if ( ( possibleArtifactId != null ) && filename.startsWith( possibleArtifactId ) )
         {
-            artifactId = possibleArtifactId;
+            parts.artifactId = possibleArtifactId;
             filestring = filestring.substring( possibleArtifactId.length() + 1 );
         }
 
@@ -175,7 +171,7 @@ public class RepositoryLayoutUtils
 
             if ( ( mode == ARTIFACTID ) && ( i >= versionStart ) )
             {
-                if ( StringUtils.isBlank( artifactId ) )
+                if ( StringUtils.isBlank( parts.artifactId ) )
                 {
                     throw new LayoutException( "No Artifact Id detected." );
                 }
@@ -185,25 +181,13 @@ public class RepositoryLayoutUtils
             switch ( mode )
             {
                 case ARTIFACTID:
-                    if ( artifactId.length() > 0 )
-                    {
-                        artifactId += "-";
-                    }
-                    artifactId += part;
+                    parts.appendArtifactId( part );
                     break;
                 case VERSION:
-                    if ( version.length() > 0 )
-                    {
-                        version += "-";
-                    }
-                    version += part;
+                    parts.appendVersion( part );
                     break;
                 case CLASSIFIER:
-                    if ( classifier.length() > 0 )
-                    {
-                        classifier += "-";
-                    }
-                    classifier += part;
+                    parts.appendClassifier( part );
                     break;
             }
 
@@ -213,7 +197,7 @@ public class RepositoryLayoutUtils
             }
         }
 
-        return new String[] { artifactId, version, classifier, extension };
+        return parts;
     }
 
 }

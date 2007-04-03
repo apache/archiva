@@ -36,6 +36,10 @@ public class AllTests
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository" );
         //$JUnit-BEGIN$
         suite.addTestSuite( RepositoryURLTest.class );
+        suite.addTest( org.apache.maven.archiva.repository.metadata.AllTests.suite() );
+        suite.addTest( org.apache.maven.archiva.repository.project.AllTests.suite() );
+        suite.addTest( org.apache.maven.archiva.repository.scanner.AllTests.suite() );
+        suite.addTest( org.apache.maven.archiva.repository.layout.AllTests.suite() );
         //$JUnit-END$
         return suite;
     }

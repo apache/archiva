@@ -19,10 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.ArchivaRepository;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.consumer.Consumer;
 import org.codehaus.plexus.util.DirectoryWalker;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -146,14 +146,14 @@ public class RepositoryScanner
         Iterator it = consumers.iterator();
         while ( it.hasNext() )
         {
-            Consumer consumer = (Consumer) it.next();
+            RepositoryContentConsumer consumer = (RepositoryContentConsumer) it.next();
 
             /* NOTE: Do not insert the consumer exclusion patterns here.
              * Exclusion patterns are handled by RepositoryScanner.wantsFile(Consumer, String)
              * 
              * addUniqueElements( consumer.getExcludePatterns(), allExcludes );
              */
-            addUniqueElements( consumer.getIncludePatterns(), allIncludes );
+            addUniqueElements( consumer.getIncludes(), allIncludes );
         }
 
         if ( extraFileInclusions != null )

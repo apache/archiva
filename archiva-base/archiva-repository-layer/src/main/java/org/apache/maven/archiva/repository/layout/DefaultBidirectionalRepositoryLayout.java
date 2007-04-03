@@ -20,7 +20,8 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
 
@@ -32,8 +33,7 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
  * 
  * @plexus.component role-hint="default"
  */
-public class DefaultBidirectionalRepositoryLayout
-    implements BidirectionalRepositoryLayout
+public class DefaultBidirectionalRepositoryLayout implements BidirectionalRepositoryLayout
 {
     private static final char PATH_SEPARATOR = '/';
 
@@ -101,7 +101,7 @@ public class DefaultBidirectionalRepositoryLayout
         String filename = pathParts[partCount - 1];
 
         // Second to last is the baseVersion (the directory version)
-        // (Don't need it) String baseVersion = pathParts[partCount - 2];
+        String baseVersion = pathParts[partCount - 2];
 
         // Third to last is the artifact Id.
         String artifactId = pathParts[partCount - 3];
@@ -116,14 +116,26 @@ public class DefaultBidirectionalRepositoryLayout
             }
             groupId += pathParts[i];
         }
-        
+
         // Now we need to parse the filename to get the artifact version Id. 
-        String fileParts[] = RepositoryLayoutUtils.splitFilename( filename, artifactId );
-        String version = fileParts[1];
-        String classifier = fileParts[2];
+        FilenameParts fileParts = RepositoryLayoutUtils.splitFilename( filename, artifactId );
 
         String type = extensionMapper.getType( filename );
 
-        return new ArchivaArtifact( groupId, artifactId, version, classifier, type );
+        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, fileParts.version, fileParts.classifier, type );
+
+        // Sanity Checks.
+        String artifactBaseVersion = VersionUtil.getBaseVersion( fileParts.version );
+        if ( !artifactBaseVersion.equals( baseVersion ) )
+        {
+            throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
+        }
+        
+        if ( !artifactId.equals( fileParts.artifactId ) )
+        {
+            throw new LayoutException( "Invalid artifact Id" );
+        }
+
+        return artifact;
     }
 }

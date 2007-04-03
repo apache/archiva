@@ -31,66 +31,72 @@ public class RepositoryLayoutUtilsTest extends TestCase
 {
     public void testSplitFilenameBasic() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1.jar", "commons-lang" ), "commons-lang",
-                     "2.1", "", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1.jar", "commons-lang" ),
+                             "commons-lang", "2.1", null, "jar" );
     }
 
     public void testSplitFilenameAlphaVersion() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1.jar", "commons-lang" ),
-                     "commons-lang", "2.0-alpha-1", "", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1.jar", "commons-lang" ),
+                             "commons-lang", "2.0-alpha-1", null, "jar" );
     }
 
     public void testSplitFilenameSnapshot() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "foo-2.0-SNAPSHOT.jar", "foo" ), "foo", "2.0-SNAPSHOT", "",
-                     "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "foo-2.0-SNAPSHOT.jar", "foo" ), "foo",
+                             "2.0-SNAPSHOT", null, "jar" );
     }
 
     public void testSplitFilenameUniqueSnapshot() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "fletch-2.0-20060822-123456-35.tar.gz", "fletch" ), "fletch",
-                     "2.0-20060822-123456-35", "", "tar.gz" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "fletch-2.0-20060822-123456-35.tar.gz", "fletch" ),
+                             "fletch", "2.0-20060822-123456-35", null, "tar.gz" );
     }
 
     public void testSplitFilenameBasicClassifier() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1-sources.jar", "commons-lang" ),
-                     "commons-lang", "2.1", "sources", "jar" );
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1-javadoc.jar", "commons-lang" ),
-                     "commons-lang", "2.1", "javadoc", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1-sources.jar", "commons-lang" ),
+                             "commons-lang", "2.1", "sources", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1-javadoc.jar", "commons-lang" ),
+                             "commons-lang", "2.1", "javadoc", "jar" );
     }
 
     public void testSplitFilenameAlphaClassifier() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1-sources.jar", "commons-lang" ),
-                     "commons-lang", "2.0-alpha-1", "sources", "jar" );
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1-javadoc.jar", "commons-lang" ),
-                     "commons-lang", "2.0-alpha-1", "javadoc", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1-sources.jar",
+                                                                  "commons-lang" ), "commons-lang", "2.0-alpha-1",
+                             "sources", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.0-alpha-1-javadoc.jar",
+                                                                  "commons-lang" ), "commons-lang", "2.0-alpha-1",
+                             "javadoc", "jar" );
     }
 
     public void testSplitFilenameSnapshotClassifier() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-sources.jar", "commons-lang" ),
-                     "commons-lang", "3.1-SNAPSHOT", "sources", "jar" );
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-javadoc.jar", "commons-lang" ),
-                     "commons-lang", "3.1-SNAPSHOT", "javadoc", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-sources.jar",
+                                                                  "commons-lang" ), "commons-lang", "3.1-SNAPSHOT",
+                             "sources", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-javadoc.jar",
+                                                                  "commons-lang" ), "commons-lang", "3.1-SNAPSHOT",
+                             "javadoc", "jar" );
     }
 
     public void testSplitFilenameUniqueSnapshotClassifier() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-sources.jar", "commons-lang" ),
-                     "commons-lang", "3.1-SNAPSHOT", "sources", "jar" );
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-javadoc.jar", "commons-lang" ),
-                     "commons-lang", "3.1-SNAPSHOT", "javadoc", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-sources.jar",
+                                                                  "commons-lang" ), "commons-lang", "3.1-SNAPSHOT",
+                             "sources", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-3.1-SNAPSHOT-javadoc.jar",
+                                                                  "commons-lang" ), "commons-lang", "3.1-SNAPSHOT",
+                             "javadoc", "jar" );
     }
 
     public void testSplitFilenameApacheIncubator() throws LayoutException
     {
-        assertSplit( RepositoryLayoutUtils.splitFilename( "cxf-common-2.0-incubator-M1.pom", null ), "cxf-common",
-                     "2.0-incubator-M1", "", "pom" );
-        assertSplit( RepositoryLayoutUtils.splitFilename( "commonj-api_r1.1-1.0-incubator-M2.jar", null ),
-                     "commonj-api_r1.1", "1.0-incubator-M2", "", "jar" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "cxf-common-2.0-incubator-M1.pom", null ),
+                             "cxf-common", "2.0-incubator-M1", null, "pom" );
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commonj-api_r1.1-1.0-incubator-M2.jar", null ),
+                             "commonj-api_r1.1", "1.0-incubator-M2", null, "jar" );
     }
 
     public void testSplitFilenameBlankInputs()
@@ -108,7 +114,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             fail( "Should have thrown an IllegalArgumentException." );
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( "", null );
@@ -122,7 +128,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             fail( "Should have thrown an IllegalArgumentException." );
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( "   ", null );
@@ -136,7 +142,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             fail( "Should have thrown an IllegalArgumentException." );
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( " \t  \n  ", null );
@@ -151,7 +157,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
             fail( "Should have thrown an IllegalArgumentException." );
         }
     }
-    
+
     public void testSplitFilenameBadInputs()
     {
         try
@@ -163,7 +169,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             /* Expected Path */
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( "geronimo-store", null );
@@ -173,7 +179,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             /* Expected Path */
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( "The Sixth Sick Sheiks Sixth Sheep is Sick.", null );
@@ -183,7 +189,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         {
             /* Expected Path */
         }
-        
+
         try
         {
             RepositoryLayoutUtils.splitFilename( "1.0.jar", null );
@@ -195,12 +201,12 @@ public class RepositoryLayoutUtilsTest extends TestCase
         }
     }
 
-    private void assertSplit( String[] actualSplit, String artifactId, String version, String classifier,
-                              String extension )
+    private void assertFilenameParts( FilenameParts actualParts, String artifactId, String version, String classifier,
+                                      String extension )
     {
-        assertEquals( "Split - artifactId", artifactId, actualSplit[0] );
-        assertEquals( "Split - version", version, actualSplit[1] );
-        assertEquals( "Split - classifier", classifier, actualSplit[2] );
-        assertEquals( "Split - extension", extension, actualSplit[3] );
+        assertEquals( "Split - artifactId", artifactId, actualParts.artifactId );
+        assertEquals( "Split - version", version, actualParts.version );
+        assertEquals( "Split - classifier", classifier, actualParts.classifier );
+        assertEquals( "Split - extension", extension, actualParts.extension );
     }
 }

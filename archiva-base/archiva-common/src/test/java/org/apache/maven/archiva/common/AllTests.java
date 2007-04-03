@@ -35,7 +35,6 @@ public class AllTests
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.common" );
         //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.common.artifact.builder.AllTests.suite() );
         suite.addTest( org.apache.maven.archiva.common.utils.AllTests.suite() );
         //$JUnit-END$
         return suite;

@@ -21,9 +21,10 @@ package org.apache.maven.archiva.repository.scanner;
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.ArchivaRepository;
-import org.apache.maven.archiva.repository.consumer.Consumer;
 import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
@@ -60,17 +61,19 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
         this.consumers = consumerList;
         stats = new RepositoryContentStatistics();
         stats.setRepositoryId( repository.getId() );
-        
 
         Iterator it = this.consumers.iterator();
         while ( it.hasNext() )
         {
-            Consumer consumer = (Consumer) it.next();
-
-            if ( !consumer.init( this.repository ) )
+            RepositoryContentConsumer consumer = (RepositoryContentConsumer) it.next();
+            try
             {
-                throw new IllegalStateException( "Consumer [" + consumer.getName() +
-                    "] is reporting that it is incompatible with the [" + repository.getId() + "] repository." );
+                consumer.beginScan( repository );
+            }
+            catch ( ConsumerException e )
+            {
+                // TODO: remove bad consumers from list
+                log.warn( "Consumer [" + consumer.getId() + "] cannot begin: " + e.getMessage(), e );
             }
         }
 
@@ -94,7 +97,7 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
     public void directoryWalkStep( int percentage, File file )
     {
         log.debug( "Walk Step: " + percentage + ", " + file );
-        
+
         stats.increaseFileCount();
 
         // Timestamp finished points to the last successful scan, not this current one.
@@ -114,28 +117,27 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
             Iterator itConsumers = this.consumers.iterator();
             while ( itConsumers.hasNext() )
             {
-                Consumer consumer = (Consumer) itConsumers.next();
+                RepositoryContentConsumer consumer = (RepositoryContentConsumer) itConsumers.next();
 
                 if ( wantsFile( consumer, StringUtils.replace( basefile.getRelativePath(), "\\", "/" ) ) )
                 {
                     try
                     {
-                        log.debug( "Sending to consumer: " + consumer.getName() );
-                        consumer.processFile( basefile );
+                        log.debug( "Sending to consumer: " + consumer.getId() );
+                        consumer.processFile( basefile.getRelativePath() );
                     }
                     catch ( Exception e )
                     {
                         /* Intentionally Catch all exceptions.
                          * So that the discoverer processing can continue.
                          */
-                        log.error( "Consumer [" + consumer.getName() + "] had an error when processing file [" +
-                            basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
+                        log.error( "Consumer [" + consumer.getId() + "] had an error when processing file ["
+                                        + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
                     }
                 }
                 else
                 {
-                    log.debug(
-                        "Skipping consumer " + consumer.getName() + " for file " + basefile.getRelativePath() );
+                    log.debug( "Skipping consumer " + consumer.getId() + " for file " + basefile.getRelativePath() );
                 }
             }
         }
@@ -147,24 +149,27 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
         stats.triggerFinished();
     }
 
-    private boolean wantsFile( Consumer consumer, String relativePath )
+    private boolean wantsFile( RepositoryContentConsumer consumer, String relativePath )
     {
         Iterator it;
 
         // Test excludes first.
-        it = consumer.getExcludePatterns().iterator();
-        while ( it.hasNext() )
+        if ( consumer.getExcludes() != null )
         {
-            String pattern = (String) it.next();
-            if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
+            it = consumer.getExcludes().iterator();
+            while ( it.hasNext() )
             {
-                // Definately does NOT WANT FILE.
-                return false;
+                String pattern = (String) it.next();
+                if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
+                {
+                    // Definately does NOT WANT FILE.
+                    return false;
+                }
             }
         }
 
         // Now test includes.
-        it = consumer.getIncludePatterns().iterator();
+        it = consumer.getIncludes().iterator();
         while ( it.hasNext() )
         {
             String pattern = (String) it.next();

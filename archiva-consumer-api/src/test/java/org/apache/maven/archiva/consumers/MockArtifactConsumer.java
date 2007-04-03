@@ -21,6 +21,7 @@ package org.apache.maven.archiva.consumers;
 
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.consumers.core.GenericArtifactConsumer;
 import org.apache.maven.artifact.Artifact;
 
 import java.util.HashMap;

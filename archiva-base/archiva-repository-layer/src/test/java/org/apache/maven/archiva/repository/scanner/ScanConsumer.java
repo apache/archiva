@@ -19,13 +19,13 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.repository.ArchivaRepository;
-import org.apache.maven.archiva.repository.consumer.Consumer;
-import org.apache.maven.archiva.repository.consumer.ConsumerException;
+import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,38 +34,49 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class ScanConsumer implements Consumer
+public class ScanConsumer extends AbstractMonitoredConsumer implements RepositoryContentConsumer
 {
     private int processCount = 0;
 
-    public List getExcludePatterns()
+    private List includes = new ArrayList();
+
+    public List getExcludes()
     {
-        return Collections.EMPTY_LIST;
+        return null;
     }
 
-    public List getIncludePatterns()
+    public void setIncludes( String includesArray[] )
     {
-        List includes = new ArrayList();
-        includes.add( "**/*.jar" );
+        this.includes.clear();
+        this.includes.addAll( Arrays.asList( includesArray ) );
+    }
+
+    public List getIncludes()
+    {
         return includes;
     }
 
-    public String getName()
+    public String getId()
     {
-        return "Scan Consumer";
+        return "test-scan-consumer";
     }
 
-    public boolean init( ArchivaRepository repository )
+    public String getDescription()
     {
-        return true;
+        return "Scan Consumer (for testing)";
     }
 
-    public void processFile( BaseFile file ) throws ConsumerException
+    public void beginScan( ArchivaRepository repository ) throws ConsumerException
+    {
+        /* do nothing */
+    }
+
+    public void processFile( String path ) throws ConsumerException
     {
         this.processCount++;
     }
 
-    public void processFileProblem( BaseFile file, String message )
+    public void completeScan()
     {
         /* do nothing */
     }
@@ -78,5 +89,10 @@ public class ScanConsumer implements Consumer
     public void setProcessCount( int processCount )
     {
         this.processCount = processCount;
+    }
+
+    public boolean isPermanent()
+    {
+        return false;
     }
 }
