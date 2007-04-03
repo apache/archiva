@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,6 +44,8 @@ public abstract class AbstractArtifactExtensionMapping implements ArtifactExtens
         typeToExtensionMap.put( "java-source", "jar" );
         typeToExtensionMap.put( "aspect", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
+        typeToExtensionMap.put( "maven-plugin", "jar" );
+        typeToExtensionMap.put( "maven-archetype", "jar" );
     }
 
     public String getExtension( ArchivaArtifact artifact )

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 
 /**
@@ -103,5 +103,54 @@ public class LegacyBidirectionalRepositoryLayoutTest extends AbstractBidirection
     {
         ArchivaArtifact artifact = layout.toArtifact( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" );
         assertSnapshotArtifact( artifact, "directory-clients", "ldap-clients", "0.9.1-SNAPSHOT", "", "pom" );
+    }
+    
+    public void testInvalidNoType()
+    {
+        try
+        {
+            layout.toArtifact( "invalid/invalid/1/invalid-1" );
+            fail( "Should have detected no type." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidArtifactPackaging()
+    {
+        try
+        {
+            layout.toArtifact( "org.apache.maven.test/jars/artifactId-1.0.jar.md5" );
+            fail( "Should have detected wrong package extension." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+    
+    public void testInvalidNoArtifactId()
+    {
+        try
+        {
+            layout.toArtifact( "groupId/jars/-1.0.jar" );
+            fail( "Should have detected artifactId is missing" );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+        
+        try
+        {
+            layout.toArtifact( "groupId/jars/1.0.jar" );
+            fail( "Should have detected artifactId is missing" );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
     }
 }

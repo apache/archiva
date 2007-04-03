@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 /**
  * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does

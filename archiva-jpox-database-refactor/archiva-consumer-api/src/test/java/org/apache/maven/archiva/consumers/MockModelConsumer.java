@@ -20,7 +20,7 @@ package org.apache.maven.archiva.consumers;
  */
 
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.GenericModelConsumer;
+import org.apache.maven.archiva.consumers.core.GenericModelConsumer;
 import org.apache.maven.model.Model;
 
 import java.util.HashMap;

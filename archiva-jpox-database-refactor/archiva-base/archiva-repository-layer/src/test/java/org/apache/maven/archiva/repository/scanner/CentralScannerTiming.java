@@ -19,14 +19,19 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.common.utils.DateUtil;
+import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.ArchivaRepository;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.consumer.Consumer;
-import org.apache.maven.archiva.repository.consumer.ConsumerException;
+import org.apache.maven.archiva.repository.project.ProjectModel400Reader;
+import org.apache.maven.archiva.repository.project.ProjectModelException;
+import org.apache.maven.archiva.repository.project.ProjectModelReader;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,23 +56,36 @@ public class CentralScannerTiming
     {
         ArchivaRepository centralRepo = new ArchivaRepository( "central", "Central Mirror", "file://" + path );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-
         List consumerList = new ArrayList();
-        BasicConsumer consumer = new BasicConsumer();
-        consumerList.add( consumer );
+
+        // Basic - find the artifacts (no real processing)
+
+        consumerList.add( new BasicConsumer() );
+        timeIt( "Basic Scan", centralRepo, consumerList );
+
+        // POM - find the poms and read them.
+
+        consumerList.clear();
+        consumerList.add( new POMConsumer() );
+        timeIt( "POM Read", centralRepo, consumerList );
+    }
+
+    private void timeIt( String type, ArchivaRepository repo, List consumerList )
+    {
+        RepositoryScanner scanner = new RepositoryScanner();
 
         try
         {
-            RepositoryContentStatistics stats = scanner.scan( centralRepo, consumerList, true );
+            RepositoryContentStatistics stats = scanner.scan( repo, consumerList, true );
 
             SimpleDateFormat df = new SimpleDateFormat();
-            System.out.println( "-------" );
+            System.out.println( ".\\ " + type + " \\.__________________________________________" );
             System.out.println( "  Repository ID   : " + stats.getRepositoryId() );
             System.out.println( "  Duration        : " + DateUtil.getDuration( stats.getDuration() ) );
             System.out.println( "  When Gathered   : " + df.format( stats.getWhenGathered() ) );
             System.out.println( "  Total File Count: " + stats.getTotalFileCount() );
             System.out.println( "  New File Count  : " + stats.getNewFileCount() );
+            System.out.println( "______________________________________________________________" );
         }
         catch ( RepositoryException e )
         {
@@ -75,16 +93,87 @@ public class CentralScannerTiming
         }
     }
 
-    class BasicConsumer implements Consumer
+    class POMConsumer extends AbstractMonitoredConsumer implements RepositoryContentConsumer
     {
-        int count = 0;
+        private int count = 0;
 
-        public List getExcludePatterns()
+        private ProjectModelReader reader;
+
+        private ArchivaRepository repo;
+
+        public POMConsumer()
+        {
+            reader = new ProjectModel400Reader();
+        }
+
+        public List getExcludes()
         {
             return Collections.EMPTY_LIST;
         }
 
-        public List getIncludePatterns()
+        public List getIncludes()
+        {
+            List includes = new ArrayList();
+            includes.add( "**/*.pom" );
+            return includes;
+        }
+
+        public String getId()
+        {
+            return "pom-consumer";
+        }
+
+        public String getDescription()
+        {
+            return "Basic POM Consumer";
+        }
+
+        public boolean isPermanent()
+        {
+            return false;
+        }
+
+        public void beginScan( ArchivaRepository repository ) throws ConsumerException
+        {
+            repo = repository;
+        }
+
+        public void processFile( String path ) throws ConsumerException
+        {
+            count++;
+            if ( ( count % 1000 ) == 0 )
+            {
+                System.out.println( "Files Processed: " + count );
+            }
+
+            File pomFile = new File( repo.getUrl().getPath(), path );
+            try
+            {
+                ArchivaProjectModel model = reader.read( pomFile );
+            }
+            catch ( ProjectModelException e )
+            {
+                System.err.println( "Unable to process: " + pomFile );
+                e.printStackTrace( System.out );
+            }
+        }
+
+        public void completeScan()
+        {
+            /* do nothing */
+        }
+    }
+
+    class BasicConsumer extends AbstractMonitoredConsumer implements RepositoryContentConsumer
+    {
+        int count = 0;
+
+        public List getExcludes()
+        {
+            return Collections.EMPTY_LIST;
+        }
+
+        public List getIncludes()
         {
             List includes = new ArrayList();
             includes.add( "**/*.pom" );
@@ -94,9 +183,9 @@ public class CentralScannerTiming
             includes.add( "**/*.sar" );
             includes.add( "**/*.car" );
             includes.add( "**/*.mar" );
-//            includes.add( "**/*.sha1" );
-//            includes.add( "**/*.md5" );
-//            includes.add( "**/*.asc" );
+            //            includes.add( "**/*.sha1" );
+            //            includes.add( "**/*.md5" );
+            //            includes.add( "**/*.asc" );
             includes.add( "**/*.dtd" );
             includes.add( "**/*.tld" );
             includes.add( "**/*.gz" );
@@ -105,17 +194,27 @@ public class CentralScannerTiming
             return includes;
         }
 
-        public String getName()
+        public String getId()
+        {
+            return "test-scan-timing";
+        }
+
+        public String getDescription()
         {
             return "Basic No-op Consumer";
         }
 
-        public boolean init( ArchivaRepository repository )
+        public boolean isPermanent()
         {
-            return true;
+            return false;
         }
 
-        public void processFile( BaseFile file ) throws ConsumerException
+        public void beginScan( ArchivaRepository repository ) throws ConsumerException
+        {
+            /* do nothing */
+        }
+
+        public void processFile( String path ) throws ConsumerException
         {
             count++;
             if ( ( count % 1000 ) == 0 )
@@ -124,9 +223,9 @@ public class CentralScannerTiming
             }
         }
 
-        public void processFileProblem( BaseFile file, String message )
+        public void completeScan()
         {
-            /* no-op */
+            /* do nothing */
         }
     }
 }

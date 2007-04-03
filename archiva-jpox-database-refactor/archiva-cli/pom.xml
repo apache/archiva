@@ -33,9 +33,25 @@
       <artifactId>archiva-converter</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-component-api</artifactId>
+      <version>1.0-alpha-22</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <version>1.0-alpha-22</version>
+    </dependency>
+     -->
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-cli</artifactId>
-      <version>1.0</version>
+      <version>1.1</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

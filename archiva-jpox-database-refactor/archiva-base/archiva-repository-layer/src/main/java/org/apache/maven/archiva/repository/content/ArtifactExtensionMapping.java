@@ -19,7 +19,7 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 /**
  * ArtifactExtensionMapping - Utility to provide the mapping between an Artifact's extension and it's type and 

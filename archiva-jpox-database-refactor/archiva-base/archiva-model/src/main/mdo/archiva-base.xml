@@ -295,6 +295,13 @@
       <name>ArchivaArtifactModel</name>
       <version>1.0.0+</version>
       <fields>
+        <!-- 
+           NOTE TO ARCHIVA DEVELOPERS....
+           
+           The ArchivaArtifact object should contain no platform specifics!!
+           Put Java specifics in the ArchivaArtifactJavaDetails object.
+           Put .Net specifics in the ArchivaArtifactDotNetDetails object.
+         -->
         <field>
           <name>contentKey</name>
           <identity>true</identity>
@@ -349,15 +356,35 @@
           </description>
         </field>
         <field>
-          <name>checksumBytecode</name>
+          <name>lastModified</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>true</required>
+          <description>
+            The Last Modified Timestamp of this artifact.
+          </description>
+        </field>
+        <field jpox.column="FILE_SIZE">
+          <name>size</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>long</type>
+          <required>true</required>
+          <description>
+            The size of the artifact on disk.
+          </description>
+        </field>
+        <field>
+          <name>platform</name>
           <identity>false</identity>
           <version>1.0.0+</version>
           <type>String</type>
-          <required>false</required>
+          <required>true</required>
           <description>
-            The SHA1 checksum for the bytecode in the artifact file. (Can be empty if
-            the artifact contains no bytecode)
+            The platform of this artifact. (default: "java")
           </description>
+          <defaultValue>java</defaultValue>
         </field>
         <field>
           <name>whenIndexed</name>
@@ -380,6 +407,66 @@
           </description>
         </field>
       </fields>
+    </class>
+    <class stash.storable="true"
+           jpox.table="JAVA_ARTIFACT">
+      <name>ArchivaArtifactJavaDetails</name>
+      <interfaces>
+        <interface>org.apache.maven.archiva.model.ArchivaArtifactPlatformDetails</interface>
+      </interfaces>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>contentKey</name>
+          <identity>true</identity>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>RepositoryContent</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The content key for this java artifact details.
+          </description>
+        </field>
+        <field>
+          <name>checksumBytecode</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The SHA1 checksum for the bytecode in the artifact file. (Can be empty if
+            the artifact contains no bytecode)
+          </description>
+        </field>
+        <field>
+          <name>jdk</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The JDK revision of the bytecode. (Can be empty if the artifact contains no bytecode)
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Identify this implementation as a set of java details.
+     * 
+     * @return the Java platform string
+     */
+    public String getPlatform()
+    {
+        return "java";
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     <class stash.storable="true"
            jpox.table="REPOSITORY_METADATA">
@@ -423,6 +510,26 @@
           </description>
         </field>
         <field>
+          <name>lastModified</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>true</required>
+          <description>
+            The Last Modified Timestamp of this artifact.
+          </description>
+        </field>
+        <field jpox.column="FILE_SIZE">
+          <name>size</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <type>long</type>
+          <required>true</required>
+          <description>
+            The size of the artifact on disk.
+          </description>
+        </field>
+        <field>
           <name>whenIndexed</name>
           <identity>false</identity>
           <version>1.0.0+</version>
@@ -430,16 +537,6 @@
           <required>false</required>
           <description>
             The timestamp when this artifact was indexed.
-          </description>
-        </field>
-        <field>
-          <name>lastUpdated</name>
-          <identity>false</identity>
-          <version>1.0.0+</version>
-          <type>Date</type>
-          <required>false</required>
-          <description>
-            the timestamp when this artifact was indexed.
           </description>
         </field>
         <field>
@@ -503,6 +600,26 @@
           <type>String</type>
           <description>
             The declared packaging for this project model.
+          </description>
+        </field>
+        <field>
+          <name>name</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The name of this project.
+          </description>
+        </field>
+        <field>
+          <name>description</name>
+          <identity>false</identity>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The description of this project.
           </description>
         </field>
         <field>
@@ -953,14 +1070,14 @@
       <fields>
         <field>
           <name>groupId</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[The group ID of the project to exclude.]]></description>
           <type>String</type>
           <required>true</required>
         </field>
         <field>
           <name>artifactId</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[The artifact ID of the project to exclude.]]></description>
           <type>String</type>
           <required>true</required>
@@ -974,7 +1091,7 @@
       <fields>
         <field jpox.column="SCM_URL">
           <name>connection</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
               The source control management system URL
               that describes the repository and how to connect to the
@@ -987,7 +1104,7 @@
         </field>
         <field>
           <name>developerConnection</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
             Just like <code>connection</code>, but for developers, i.e. this scm connection
             will not be read only.
@@ -996,7 +1113,7 @@
         </field>
         <field>
           <name>url</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <description>
             <![CDATA[The URL to the project's browsable SCM repository, such as ViewVC or Fisheye.]]></description>
           <type>String</type>
@@ -1010,7 +1127,7 @@
       <fields>
         <field>
           <name>id</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
             A unique identifier for a repository. This is used to match the repository to configuration in
             the <code>settings.xml</code> file, for example.
@@ -1019,7 +1136,7 @@
         </field>
         <field>
           <name>name</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
             Human readable name of the repository.
           ]]></description>
@@ -1027,7 +1144,7 @@
         </field>
         <field>
           <name>url</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
              The url of the repository, in the form <code>protocol://hostname/path</code>.
           ]]></description>
@@ -1035,7 +1152,7 @@
         </field>
         <field>
           <name>layout</name>
-          <version>4.0.0</version>
+          <version>1.0.0+</version>
           <description><![CDATA[
             The type of layout this repository uses for locating and storing artifacts - can be <code>legacy</code> or
             <code>default</code>.

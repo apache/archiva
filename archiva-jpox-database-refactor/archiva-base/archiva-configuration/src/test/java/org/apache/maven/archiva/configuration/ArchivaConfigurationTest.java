@@ -23,7 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
-import java.util.Properties;
 
 /**
  * Test the configuration store.
@@ -53,13 +52,28 @@ public class ArchivaConfigurationTest extends PlexusTestCase
 
         assertEquals( "check repositories", 4, configuration.getRepositories().size() );
         assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors().size() );
-        assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
-        assertEquals( "check file processors", 12, configuration.getFileProcessors().size() );
+        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
+
+        RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
+        assertNotNull( "check repository scanning", repoScanning );
+        assertEquals( "check file types", 4, repoScanning.getFileTypes().size() );
+        assertEquals( "check good consumers", 8, repoScanning.getGoodConsumers().size() );
+        assertEquals( "check bad consumers", 1, repoScanning.getBadConsumers().size() );
+
+        FileType artifactTypes = repoScanning.getFileTypeById( "artifacts" );
+        assertNotNull( "check 'artifacts' file type", artifactTypes );
+        assertEquals( "check 'artifacts' patterns", 13, artifactTypes.getPatterns().size() );
+
+        DatabaseScanningConfiguration dbScanning = configuration.getDatabaseScanning();
+        assertNotNull( "check database scanning", dbScanning );
+        assertEquals( "check unprocessed consumers", 6, dbScanning.getUnprocessedConsumers().size() );
+        assertEquals( "check processed consumers", 3, dbScanning.getProcessedConsumers().size() );
 
         RepositoryConfiguration repository =
             (RepositoryConfiguration) configuration.getRepositories().iterator().next();
 
-        assertEquals( "check managed repositories", "file://${appserver.home}/repositories/internal", repository.getUrl() );
+        assertEquals( "check managed repositories", "file://${appserver.home}/repositories/internal",
+                      repository.getUrl() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );

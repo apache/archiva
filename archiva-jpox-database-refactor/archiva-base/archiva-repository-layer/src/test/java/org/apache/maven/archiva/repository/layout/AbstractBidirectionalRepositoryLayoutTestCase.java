@@ -20,8 +20,8 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.repository.ArchivaArtifact;
-import org.apache.maven.archiva.repository.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;

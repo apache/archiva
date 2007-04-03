@@ -20,7 +20,7 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.repository.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
 
@@ -118,18 +118,31 @@ public class LegacyBidirectionalRepositoryLayout implements BidirectionalReposit
         // The Group ID.
         String groupId = pathParts[0];
 
+        // The Expected Type.
+        String expectedType = pathParts[1];
+
         // The Filename.
         String filename = pathParts[2];
 
-        String fileParts[] = RepositoryLayoutUtils.splitFilename( filename, null );
-
-        String artifactId = fileParts[0];
-        String version = fileParts[1];
-        String classifier = fileParts[2];
+        FilenameParts fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
 
         String type = extensionMapper.getType( filename );
 
-        return new ArchivaArtifact( groupId, artifactId, version, classifier, type );
+        ArchivaArtifact artifact =
+            new ArchivaArtifact( groupId, fileParts.artifactId, fileParts.version, fileParts.classifier, type );
+
+        // Sanity Checks.
+        if ( StringUtils.isEmpty( fileParts.extension ) )
+        {
+            throw new LayoutException( "Invalid artifact, no extension." );
+        }
+
+        if ( !expectedType.equals( fileParts.extension + "s" ) )
+        {
+            throw new LayoutException( "Invalid artifact, extension and layout specified type mismatch." );
+        }
+
+        return artifact;
     }
 
 }

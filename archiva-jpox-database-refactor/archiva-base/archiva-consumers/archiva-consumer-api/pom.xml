@@ -30,6 +30,9 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
+    </dependency>
   </dependencies>
 </project>

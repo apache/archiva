@@ -20,7 +20,7 @@ package org.apache.maven.archiva.consumers;
  */
 
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.GenericRepositoryMetadataConsumer;
+import org.apache.maven.archiva.consumers.core.GenericRepositoryMetadataConsumer;
 import org.apache.maven.artifact.repository.metadata.RepositoryMetadata;
 
 import java.util.HashMap;
