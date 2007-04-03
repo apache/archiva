@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 /**
  * XMLReaderTest 
  *
@@ -35,23 +33,8 @@ import junit.framework.TestCase;
  * @version $Id$
  */
 public class XMLReaderTest
-    extends TestCase
+    extends AbstractArchivaXmlTestCase
 {
-    private File getExampleXml( String filename )
-    {
-        File examplesDir = new File( "src/test/examples" );
-        if ( !examplesDir.exists() )
-        {
-            fail( "Missing the examples directory: " + examplesDir.getAbsolutePath() );
-        }
-        File exampleFile = new File( examplesDir, filename );
-        if ( !exampleFile.exists() )
-        {
-            fail( "Missing the example xml file: " + exampleFile.getAbsolutePath() );
-        }
-        return exampleFile;
-    }
-
     private void assertElementTexts( List elementList, String[] expectedTexts )
     {
         assertEquals( "Element List Size", expectedTexts.length, elementList.size() );

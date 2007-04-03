@@ -21,11 +21,12 @@ package org.apache.maven.archiva.xml;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.io.Reader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * LatinEntityResolutionReader 
+ * LatinEntityResolutionReader - Read a Character Stream.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -33,23 +34,152 @@ import java.io.Reader;
 public class LatinEntityResolutionReader
     extends Reader
 {
-    private PushbackReader originalReader;
+    private BufferedReader originalReader;
+
+    private char leftover[];
+
+    private Pattern entityPattern;
 
     public LatinEntityResolutionReader( Reader reader )
     {
-        this.originalReader = new PushbackReader( reader );
+        this.originalReader = new BufferedReader( reader );
+        this.entityPattern = Pattern.compile( "\\&[a-zA-Z]+\\;" );
     }
 
-    public int read( char[] cbuf, int off, int len )
+    /**
+     * Read characters into a portion of an array. This method will block until some input is available, 
+     * an I/O error occurs, or the end of the stream is reached.
+     * 
+     * @param destbuf Destination buffer
+     * @param offset Offset (in destination buffer) at which to start storing characters
+     * @param length Maximum number of characters to read
+     * @return The number of characters read, or -1 if the end of the stream has been reached
+     * @throws IOException if an I/O error occurs.
+     */
+    public int read( char[] destbuf, int offset, int length )
         throws IOException
     {
-        char tmpbuf[] = new char[cbuf.length];
-        int count = this.originalReader.read( tmpbuf, off, len );
-        
-        StringBuffer sb = new StringBuffer();
-        
-        
-        return count;
+        int tmp_length;
+        int current_requested_offset = offset;
+        int current_requested_length = length;
+
+        // Drain leftover from last read request.
+        if ( leftover != null )
+        {
+            if ( leftover.length > length )
+            {
+                // Copy partial leftover.
+                System.arraycopy( leftover, 0, destbuf, current_requested_offset, length );
+
+                // Create new leftover of remaining.
+                char tmp[] = new char[length];
+                System.arraycopy( leftover, length, tmp, 0, length );
+                leftover = new char[tmp.length];
+                System.arraycopy( tmp, 0, leftover, 0, length );
+
+                // Return len
+                return length;
+            }
+            else
+            {
+                tmp_length = leftover.length;
+
+                // Copy full leftover
+                System.arraycopy( leftover, 0, destbuf, current_requested_offset, tmp_length );
+
+                // Empty out leftover (as there is now none left)
+                leftover = null;
+
+                // Adjust offset and lengths.
+                current_requested_offset += tmp_length;
+                current_requested_length -= tmp_length;
+            }
+        }
+
+        StringBuffer sbuf = getExpandedBuffer( current_requested_length );
+
+        // Have we reached the end of the buffer?
+        if ( sbuf == null )
+        {
+            // Do we have content?
+            if ( current_requested_offset > offset )
+            {
+                // Signal that we do, by calculating length.
+                return ( current_requested_offset - offset );
+            }
+
+            // No content. signal end of buffer.
+            return -1;
+        }
+
+        // Copy from expanded buf whatever length we can accomodate.
+        tmp_length = Math.min( sbuf.length(), current_requested_length );
+        sbuf.getChars( 0, tmp_length, destbuf, current_requested_offset );
+
+        // Create the leftover (if any)
+        if ( tmp_length < sbuf.length() )
+        {
+            leftover = new char[sbuf.length() - tmp_length];
+            sbuf.getChars( tmp_length, tmp_length + leftover.length, leftover, 0 );
+        }
+
+        // Calculate Actual Length and return.
+        return ( current_requested_offset - offset ) + tmp_length;
+    }
+
+    private StringBuffer getExpandedBuffer( int minimum_length )
+        throws IOException
+    {
+        StringBuffer buf = null;
+        String line = this.originalReader.readLine();
+        boolean done = ( line == null );
+
+        while ( !done )
+        {
+            if ( buf == null )
+            {
+                buf = new StringBuffer();
+            }
+
+            buf.append( expandLine( line ) );
+
+            // Add newline only if there is more data.
+            if ( this.originalReader.ready() )
+            {
+                buf.append( "\n" );
+            }
+
+            if ( buf.length() > minimum_length )
+            {
+                done = true;
+            }
+            else
+            {
+                line = this.originalReader.readLine();
+                done = ( line == null );
+            }
+        }
+
+        return buf;
+    }
+
+    private String expandLine( String line )
+    {
+        StringBuffer ret = new StringBuffer();
+
+        int offset = 0;
+        String entity;
+        Matcher mat = this.entityPattern.matcher( line );
+        while ( mat.find() )
+        {
+            ret.append( line.substring( offset, mat.start() ) );
+            entity = mat.group();
+            ret.append( LatinEntities.resolveEntity( entity ) );
+            offset += mat.start() + entity.length();
+        }
+        ret.append( line.substring( offset ) );
+
+        return ret.toString();
     }
 
     public void close()
