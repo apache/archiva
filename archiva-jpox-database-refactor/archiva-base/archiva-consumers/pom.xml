@@ -36,4 +36,13 @@
     <module>archiva-lucene-consumers</module>
     <module>archiva-signature-consumers</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

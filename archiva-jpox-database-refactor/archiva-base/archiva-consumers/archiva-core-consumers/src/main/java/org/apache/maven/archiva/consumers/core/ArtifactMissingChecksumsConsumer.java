@@ -45,7 +45,8 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role-hint="create-missing-checksums"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *                   role-hint="create-missing-checksums"
  *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer

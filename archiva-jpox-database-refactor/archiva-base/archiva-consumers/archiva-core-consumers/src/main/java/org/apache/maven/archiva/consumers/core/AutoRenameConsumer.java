@@ -26,6 +26,7 @@ import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +39,8 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role-hint="auto-remove"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *                   role-hint="auto-remove"
  *                   instantiation-strategy="per-lookup"
  */
 public class AutoRenameConsumer
@@ -54,6 +56,8 @@ public class AutoRenameConsumer
      * @plexus.configuration default-value="Automatically rename common artifact mistakes."
      */
     private String description;
+
+    private static final String RENAME_FAILURE = "rename_failure";
 
     private File repositoryDir;
 
@@ -125,7 +129,18 @@ public class AutoRenameConsumer
                 String extension = (String) itExtensions.next();
                 if ( path.endsWith( extension ) )
                 {
-                    // TODO: FileUtils.rename( from, to )
+                    String fixedExtension = (String) this.extensionRenameMap.get( extension );
+                    String correctedPath = path.substring( 0, path.length() - extension.length() ) + fixedExtension;
+                    File to = new File( this.repositoryDir, correctedPath );
+                    try
+                    {
+                        FileUtils.rename( file, to );
+                    }
+                    catch ( IOException e )
+                    {
+                        triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath
+                            + ": " + e.getMessage() );
+                    }
                 }
             }
 

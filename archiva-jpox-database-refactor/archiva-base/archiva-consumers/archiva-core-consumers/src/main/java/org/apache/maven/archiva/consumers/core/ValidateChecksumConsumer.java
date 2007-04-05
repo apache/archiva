@@ -42,7 +42,8 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role-hint="validate-checksums"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *                   role-hint="validate-checksums"
  *                   instantiation-strategy="per-lookup"
  */
 public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
