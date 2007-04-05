@@ -24,18 +24,61 @@ import org.apache.commons.lang.StringUtils;
 import java.io.Serializable;
 
 /**
- * RepositoryContentKey - the jpox application key support class for all content within the repository.
+ * <p>
+ * AbstractProjectKey - A versionless reference to a Project.
+ * This refers to all versions, and all artifacts of a project.
+ * This type of reference is typically used by {@link ArchivaRepositoryMetadata} objects.
+ * </p>
+ *
+ * <p>
+ *   If you require things like "Version" or "Type", consider the other keys below.
+ * </p>
+ * 
+ * <table border="1" cellpadding="3">
+ *   <tr>
+ *     <th>Key Type</th>
+ *     <th>Group ID</th>
+ *     <th>Artifact ID</th>
+ *     <th>Version</th>
+ *     <th>Classifier</th>
+ *     <th>Type</th>
+ *   </tr>
+ *   <tr>
+ *     <td>{@link AbstractProjectKey}</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td>&nbsp;</td>
+ *     <td>&nbsp;</td>
+ *     <td>&nbsp;</td>
+ *   </tr>
+ *   <tr>
+ *     <td>{@link AbstractVersionedKey}</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td>&nbsp;</td>
+ *     <td>&nbsp;</td>
+ *   </tr>
+ *   <tr>
+ *     <td>{@link AbstractArtifactKey}</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *     <td align="center">Yes</td>
+ *   </tr>
+ * </table>
+ * 
+ * <p>
+ * NOTE: This is a jpox required compound key handler class.
+ * </p>
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryContentKey implements Serializable
+public class AbstractProjectKey
+    implements Serializable
 {
-    /**
-     * The Repository ID. (JPOX Requires this remain public)
-     */
-    public String repositoryId = "";
-
     /**
      * The Group ID. (JPOX Requires this remain public)
      */
@@ -47,16 +90,11 @@ public class RepositoryContentKey implements Serializable
     public String artifactId = "";
 
     /**
-     * The Version. (JPOX Requires this remain public)
-     */
-    public String version = "";
-
-    /**
      * Default Constructor.  Required by JPOX.
      */
-    public RepositoryContentKey()
+    public AbstractProjectKey()
     {
-
+        /* do nothing */
     }
 
     /**
@@ -64,13 +102,11 @@ public class RepositoryContentKey implements Serializable
      * 
      * @param key the String representing this object's values.
      */
-    public RepositoryContentKey( String key )
+    public AbstractProjectKey( String key )
     {
-        String parts[] = StringUtils.splitPreserveAllTokens( key, ':' );
-        repositoryId = parts[0];
+        String parts[] = StringUtils.splitPreserveAllTokens( key, ":" );
         groupId = parts[1];
         artifactId = parts[2];
-        version = parts[3];
     }
 
     /**
@@ -78,7 +114,7 @@ public class RepositoryContentKey implements Serializable
      */
     public String toString()
     {
-        return StringUtils.join( new String[] { repositoryId, groupId, artifactId, version } );
+        return StringUtils.join( new String[] { groupId, artifactId } );
     }
 
     /**
@@ -87,11 +123,9 @@ public class RepositoryContentKey implements Serializable
     public int hashCode()
     {
         final int PRIME = 31;
-        int result = 1;
-        result = PRIME * result + ( ( repositoryId == null ) ? 0 : repositoryId.hashCode() );
+        int result = super.hashCode();
         result = PRIME * result + ( ( groupId == null ) ? 0 : groupId.hashCode() );
         result = PRIME * result + ( ( artifactId == null ) ? 0 : artifactId.hashCode() );
-        result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
         return result;
     }
 
@@ -105,7 +139,7 @@ public class RepositoryContentKey implements Serializable
             return true;
         }
 
-        if ( obj == null )
+        if ( !super.equals( obj ) )
         {
             return false;
         }
@@ -115,19 +149,7 @@ public class RepositoryContentKey implements Serializable
             return false;
         }
 
-        final RepositoryContentKey other = (RepositoryContentKey) obj;
-
-        if ( repositoryId == null )
-        {
-            if ( other.repositoryId != null )
-            {
-                return false;
-            }
-        }
-        else if ( !repositoryId.equals( other.repositoryId ) )
-        {
-            return false;
-        }
+        final AbstractProjectKey other = (AbstractProjectKey) obj;
 
         if ( groupId == null )
         {
@@ -149,18 +171,6 @@ public class RepositoryContentKey implements Serializable
             }
         }
         else if ( !artifactId.equals( other.artifactId ) )
-        {
-            return false;
-        }
-
-        if ( version == null )
-        {
-            if ( other.version != null )
-            {
-                return false;
-            }
-        }
-        else if ( !version.equals( other.version ) )
         {
             return false;
         }
