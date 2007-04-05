@@ -21,12 +21,10 @@ package org.apache.maven.archiva.repository.project.filters;
 
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.filters.ProjectModelExpressionExpander;
+import org.apache.maven.archiva.repository.project.ProjectModelFilter;
+import org.codehaus.plexus.PlexusTestCase;
 
 import java.util.Iterator;
-
-import junit.framework.TestCase;
 
 /**
  * ProjectModelExpressionExpanderTest 
@@ -35,10 +33,15 @@ import junit.framework.TestCase;
  * @version $Id$
  */
 public class ProjectModelExpressionExpanderTest
-    extends TestCase
+    extends PlexusTestCase
 {
+    private ProjectModelExpressionFilter lookupExpression() throws Exception
+    {
+        return (ProjectModelExpressionFilter) lookup( ProjectModelFilter.class, "expression" );
+    }
+    
     public void testExpressionEvaluation()
-        throws ProjectModelException
+        throws Exception
     {
         ArchivaProjectModel model = new ArchivaProjectModel();
         model.setGroupId( "org.apache.maven.archiva" );
@@ -51,7 +54,9 @@ public class ProjectModelExpressionExpanderTest
 
         model.addProperty( "archiva.version", "1.0-SNAPSHOT" );
 
-        ProjectModelExpressionExpander.evaluateExpressions( model );
+        ProjectModelExpressionFilter filter = lookupExpression();
+        
+        model = filter.filter( model );
 
         assertNotNull( model );
         assertEquals( "Group ID", "org.apache.maven.archiva", model.getGroupId() );
