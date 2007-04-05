@@ -35,7 +35,8 @@ public class AllTests
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.project" );
         //$JUnit-BEGIN$
-        suite.addTestSuite( ProjectModel400ReaderTest.class );
+        suite.addTest( org.apache.maven.archiva.repository.project.filters.AllTests.suite() );
+        suite.addTest( org.apache.maven.archiva.repository.project.readers.AllTests.suite() );
         //$JUnit-END$
         return suite;
     }

@@ -71,7 +71,10 @@ public class ArchivaArtifact
         model.setGroupId( groupId );
         model.setArtifactId( artifactId );
         model.setVersion( version );
-        model.setRepositoryId( repository.getId() );
+        if ( repository != null )
+        {
+            model.setRepositoryId( repository.getId() );
+        }
         model.setClassifier( StringUtils.defaultString( classifier ) );
         model.setType( type );
 

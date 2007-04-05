@@ -31,6 +31,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-digest</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-database</artifactId>
     </dependency>

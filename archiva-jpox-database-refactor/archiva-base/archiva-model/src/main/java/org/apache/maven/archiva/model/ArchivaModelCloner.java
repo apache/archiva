@@ -45,7 +45,7 @@ public class ArchivaModelCloner
         cloned.setGroupId( model.getGroupId() );
         cloned.setArtifactId( model.getArtifactId() );
         cloned.setVersion( model.getVersion() );
-        
+
         cloned.setParentProject( clone( model.getParentProject() ) );
 
         cloned.setName( model.getName() );
@@ -75,15 +75,15 @@ public class ArchivaModelCloner
         {
             return null;
         }
-        
+
         ArtifactReference cloned = new ArtifactReference();
-        
+
         cloned.setGroupId( artifactReference.getGroupId() );
         cloned.setArtifactId( artifactReference.getArtifactId() );
         cloned.setVersion( artifactReference.getVersion() );
         cloned.setClassifier( artifactReference.getClassifier() );
         cloned.setType( artifactReference.getType() );
-        
+
         return cloned;
     }
 
@@ -98,6 +98,30 @@ public class ArchivaModelCloner
 
         cloned.setSystem( ciManagement.getSystem() );
         cloned.setUrl( ciManagement.getUrl() );
+
+        return cloned;
+    }
+
+    public static Dependency clone( Dependency dependency )
+    {
+        if ( dependency == null )
+        {
+            return null;
+        }
+
+        Dependency cloned = new Dependency();
+
+        cloned.setGroupId( dependency.getGroupId() );
+        cloned.setArtifactId( dependency.getArtifactId() );
+        cloned.setVersion( dependency.getVersion() );
+
+        cloned.setClassifier( dependency.getClassifier() );
+        cloned.setType( dependency.getType() );
+        cloned.setScope( dependency.getScope() );
+        cloned.setOptional( dependency.isOptional() );
+        cloned.setSystemPath( dependency.getSystemPath() );
+        cloned.setUrl( dependency.getUrl() );
+        cloned.setExclusions( cloneExclusions( dependency.getExclusions() ) );
 
         return cloned;
     }
@@ -175,13 +199,13 @@ public class ArchivaModelCloner
         {
             return null;
         }
-        
+
         VersionedReference cloned = new VersionedReference();
-        
+
         cloned.setGroupId( versionedReference.getGroupId() );
         cloned.setArtifactId( versionedReference.getArtifactId() );
         cloned.setVersion( versionedReference.getVersion() );
-        
+
         return cloned;
     }
 
@@ -217,21 +241,13 @@ public class ArchivaModelCloner
         while ( it.hasNext() )
         {
             Dependency dep = (Dependency) it.next();
-            Dependency cloned = new Dependency();
-            
-            cloned.setGroupId( dep.getGroupId() );
-            cloned.setArtifactId( dep.getArtifactId() );
-            cloned.setVersion( dep.getVersion() );
-            
-            cloned.setClassifier( dep.getClassifier() );
-            cloned.setType( dep.getType() );
-            cloned.setScope( dep.getScope() );
-            cloned.setOptional( dep.isOptional() );
-            cloned.setSystemPath( dep.getSystemPath() );
-            cloned.setUrl( dep.getUrl() );
-            cloned.setExclusions( cloneExclusions( dep.getExclusions() ) );
 
-            ret.add( cloned );
+            Dependency cloned = clone( dep );
+
+            if ( cloned != null )
+            {
+                ret.add( cloned );
+            }
         }
 
         return ret;

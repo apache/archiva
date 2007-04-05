@@ -21,7 +21,6 @@ package org.apache.maven.archiva.database;
 
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaRepositoryModel;
-import org.apache.maven.archiva.model.RepositoryContent;
 
 import java.util.List;
 
@@ -73,29 +72,13 @@ public interface ArchivaDAO
     public void deleteRepository( ArchivaRepositoryModel repository )
         throws ArchivaDatabaseException;
 
-    /* .\ Repository Content \.____________________________________________________________ */
-
-    public RepositoryContent createRepositoryContent( String groupId, String artifactId, String version,
-                                                      String repositoryId );
-
-    public RepositoryContent getRepositoryContent( String groupId, String artifactId, String version,
-                                                   String repositoryId )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public List /*<RepositoryContent>*/queryRepositoryContents( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public RepositoryContent saveRepositoryContent( RepositoryContent repoContent )
-        throws ArchivaDatabaseException;
-
-    public void deleteRepositoryContent( RepositoryContent repoContent )
-        throws ArchivaDatabaseException;
-
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
-    public ArchivaArtifactModel createArtifact( RepositoryContent repoContent, String classifier, String type );
+    public ArchivaArtifactModel createArtifact( String groupId, String artifactId, String version, String classifier,
+                                                String type );
 
-    public ArchivaArtifactModel getArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel getArtifact( String groupId, String artifactId, String version, String classifier,
+                                             String type )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public List /*<ArchivaArtifactModel>*/queryArtifacts( Constraint constraint )

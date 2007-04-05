@@ -6,8 +6,6 @@ import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaRepositoryModel;
-import org.apache.maven.archiva.model.RepositoryContent;
-import org.apache.maven.archiva.model.RepositoryContentKey;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.List;
@@ -78,70 +76,22 @@ public class JdoArchivaDAO
         jdo.removeObject( repository );
     }
 
-    /* .\ Repository Content \.____________________________________________________________ */
-
-    public RepositoryContent createRepositoryContent( String groupId, String artifactId, String version,
-                                                      String repositoryId )
-    {
-        RepositoryContent repoContent;
-
-        try
-        {
-            repoContent = getRepositoryContent( groupId, artifactId, version, repositoryId );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            repoContent = new RepositoryContent( repositoryId, groupId, artifactId, version );
-        }
-
-        return repoContent;
-    }
-
-    public RepositoryContent getRepositoryContent( String groupId, String artifactId, String version,
-                                                   String repositoryId )
-        throws ObjectNotFoundException, ArchivaDatabaseException
-    {
-        RepositoryContentKey key = new RepositoryContentKey();
-        key.groupId = groupId;
-        key.artifactId = artifactId;
-        key.version = version;
-        key.repositoryId = repositoryId;
-
-        return (RepositoryContent) jdo.getObjectById( RepositoryContent.class, key, null );
-    }
-
-    public List queryRepositoryContents( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException
-    {
-        return jdo.getAllObjects( RepositoryContent.class, constraint );
-    }
-
-    public RepositoryContent saveRepositoryContent( RepositoryContent repoContent )
-        throws ArchivaDatabaseException
-    {
-        return (RepositoryContent) jdo.saveObject( repoContent );
-    }
-
-    public void deleteRepositoryContent( RepositoryContent repoContent )
-        throws ArchivaDatabaseException
-    {
-        jdo.removeObject( repoContent );
-    }
-
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
-    public ArchivaArtifactModel createArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel createArtifact( String groupId, String artifactId, String version, String classifier, String type )
     {
         ArchivaArtifactModel artifact;
 
         try
         {
-            artifact = getArtifact( repoContent, classifier, type );
+            artifact = getArtifact( groupId, artifactId, version, classifier, type );
         }
         catch ( ArchivaDatabaseException e )
         {
             artifact = new ArchivaArtifactModel();
-            artifact.setContentKey( repoContent );
+            artifact.setGroupId( groupId );
+            artifact.setArtifactId( artifactId );
+            artifact.setVersion( version );
             artifact.setClassifier( classifier );
             artifact.setType( type );
         }
@@ -149,7 +99,7 @@ public class JdoArchivaDAO
         return artifact;
     }
 
-    public ArchivaArtifactModel getArtifact( RepositoryContent repoContent, String classifier, String type )
+    public ArchivaArtifactModel getArtifact( String groupId, String artifactId, String version, String classifier, String type )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         

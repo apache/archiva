@@ -23,9 +23,9 @@ import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.project.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
+import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 
 import java.io.File;
 import java.util.ArrayList;
