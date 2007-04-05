@@ -49,7 +49,8 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role-hint="update-db-artifact"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *                   role-hint="update-db-artifact"
  *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactUpdateDatabaseConsumer

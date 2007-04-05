@@ -40,7 +40,8 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role-hint="auto-remove"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *                   role-hint="auto-remove"
  *                   instantiation-strategy="per-lookup"
  */
 public class AutoRemoveConsumer
