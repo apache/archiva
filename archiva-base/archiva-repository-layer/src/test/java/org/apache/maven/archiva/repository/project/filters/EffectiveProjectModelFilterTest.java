@@ -23,9 +23,10 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
+import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
-import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelBuilder;
+import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectResolver;
 import org.codehaus.plexus.PlexusTestCase;
@@ -35,15 +36,20 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * EffectiveProjectModelBuilderTest 
+ * EffectiveProjectModelFilterTest 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class EffectiveProjectModelBuilderTest
+public class EffectiveProjectModelFilterTest
     extends PlexusTestCase
 {
     private static final String DEFAULT_REPOSITORY = "src/test/repositories/default-repository";
+    
+    private EffectiveProjectModelFilter lookupEffective() throws Exception
+    {
+        return (EffectiveProjectModelFilter) lookup( ProjectModelFilter.class, "effective" );
+    }
 
     private ArchivaProjectModel createArchivaProjectModel( String path )
         throws ProjectModelException
@@ -70,13 +76,14 @@ public class EffectiveProjectModelBuilderTest
     public void testBuildEffectiveProject()
         throws Exception
     {
-        EffectiveProjectModelBuilder builder = new EffectiveProjectModelBuilder();
-        builder.addProjectModelResolver( createDefaultRepositoryResolver() );
+        EffectiveProjectModelFilter filter = lookupEffective();
+        
+        filter.addProjectModelResolver( createDefaultRepositoryResolver() );
 
         ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY
             + "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom" );
 
-        ArchivaProjectModel effectiveModel = builder.buildEffectiveProjectModel( startModel );
+        ArchivaProjectModel effectiveModel = filter.filter( startModel );
 
         ArchivaProjectModel expectedModel = createArchivaProjectModel( "src/test/effective-poms/"
             + "/archiva-model-effective.pom" );

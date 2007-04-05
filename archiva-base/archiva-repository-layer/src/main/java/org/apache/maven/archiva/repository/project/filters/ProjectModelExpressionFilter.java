@@ -19,10 +19,11 @@ package org.apache.maven.archiva.repository.project.filters;
  * under the License.
  */
 
+import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
+import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
 import org.codehaus.plexus.evaluator.sources.PropertiesExpressionSource;
@@ -32,24 +33,30 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * ProjectModelExpressionExpander 
+ * ProjectModelExpressionFilter 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelExpressionExpander"
+ * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
+ *                   role-hint="expression" 
+ *                   instantiation-strategy="per-lookup"
  */
-public class ProjectModelExpressionExpander
+public class ProjectModelExpressionFilter
+    implements ProjectModelFilter
 {
+    /**
+     * @plexus.requirement
+     */
+    private ExpressionEvaluator evaluator;
+
     /**
      * Find and Evaluate the Expressions present in the model.
      * 
      * @param model the model to correct.
      */
-    public static void evaluateExpressions( ArchivaProjectModel model )
+    public ArchivaProjectModel filter( final ArchivaProjectModel model )
         throws ProjectModelException
     {
-        ExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
-
         if ( model.getProperties() != null )
         {
             PropertiesExpressionSource propsSource = new PropertiesExpressionSource();
@@ -59,18 +66,22 @@ public class ProjectModelExpressionExpander
 
         evaluator.addExpressionSource( new SystemPropertyExpressionSource() );
 
+        ArchivaProjectModel ret = ArchivaModelCloner.clone( model );
+
         try
         {
-            model.setVersion( evaluator.expand( model.getVersion() ) );
-            model.setGroupId( evaluator.expand( model.getGroupId() ) );
+            ret.setVersion( evaluator.expand( ret.getVersion() ) );
+            ret.setGroupId( evaluator.expand( ret.getGroupId() ) );
 
-            evaluateExpressionsInDependencyList( evaluator, model.getDependencies() );
-            evaluateExpressionsInDependencyList( evaluator, model.getDependencyManagement() );
+            evaluateExpressionsInDependencyList( evaluator, ret.getDependencies() );
+            evaluateExpressionsInDependencyList( evaluator, ret.getDependencyManagement() );
         }
         catch ( EvaluatorException e )
         {
             throw new ProjectModelException( "Unable to evaluate expression in model: " + e.getMessage(), e );
         }
+        
+        return ret;
     }
 
     private static void evaluateExpressionsInDependencyList( ExpressionEvaluator evaluator, List dependencies )

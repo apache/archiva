@@ -25,6 +25,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
+import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 
@@ -39,12 +40,20 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelFilter" 
+ *                   role-hint="effective" 
+ *                   instantiation-strategy="per-lookup"
  */
-public class EffectiveProjectModelBuilder
+public class EffectiveProjectModelFilter implements ProjectModelFilter
 {
+    /**
+     * @plexus.requirement role-hint="expression"
+     */
+    private ProjectModelFilter expressionFilter;
+    
     private List projectModelResolvers;
-
-    public EffectiveProjectModelBuilder()
+    
+    public EffectiveProjectModelFilter()
     {
         projectModelResolvers = new ArrayList();
     }
@@ -71,7 +80,7 @@ public class EffectiveProjectModelBuilder
      * @return a the effective {@link ArchivaProjectModel}.
      * @throws ProjectModelException if there was a problem building the effective pom.
      */
-    public ArchivaProjectModel buildEffectiveProjectModel( ArchivaProjectModel project )
+    public ArchivaProjectModel filter( final ArchivaProjectModel project )
         throws ProjectModelException
     {
         if ( project == null )
@@ -88,7 +97,7 @@ public class EffectiveProjectModelBuilder
         ArchivaProjectModel effectiveProject = ArchivaModelCloner.clone( project );
 
         // Setup Expression Evaluation pieces.
-        ProjectModelExpressionExpander.evaluateExpressions( effectiveProject );
+        effectiveProject = expressionFilter.filter( effectiveProject );
 
         debug( "Starting build of effective with: " + effectiveProject );
 
@@ -197,7 +206,7 @@ public class EffectiveProjectModelBuilder
 
             if ( parentProject != null )
             {
-                ProjectModelExpressionExpander.evaluateExpressions( parentProject );
+                parentProject = expressionFilter.filter( parentProject );
                 parentProject = mergeParent( parentProject );
                 mixedProject = ProjectModelMerge.merge( pom, parentProject );
             }

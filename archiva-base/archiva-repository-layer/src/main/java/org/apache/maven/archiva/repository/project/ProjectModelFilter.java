@@ -34,6 +34,7 @@ public interface ProjectModelFilter
      * 
      * @param model the model to filter.
      * @return a new model representing the filtered state of the model.
+     * @throws ProjectModelException if there was a problem executing the filter.
      */
-    public ArchivaProjectModel filter( final ArchivaProjectModel model );
+    public ArchivaProjectModel filter( final ArchivaProjectModel model ) throws ProjectModelException;
 }

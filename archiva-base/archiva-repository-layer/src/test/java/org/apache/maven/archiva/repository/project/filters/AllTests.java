@@ -36,7 +36,7 @@ public class AllTests
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.project.filters" );
         //$JUnit-BEGIN$
         suite.addTestSuite( ProjectModelExpressionExpanderTest.class );
-        suite.addTestSuite( EffectiveProjectModelBuilderTest.class );
+        suite.addTestSuite( EffectiveProjectModelFilterTest.class );
         //$JUnit-END$
         return suite;
     }
