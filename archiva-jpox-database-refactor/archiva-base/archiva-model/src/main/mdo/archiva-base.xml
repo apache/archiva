@@ -58,18 +58,10 @@
           </association>
         </field>
         <field>
-          <name>artifactHealth</name>
+          <name>repositoryProblems</name>
           <version>1.0.0+</version>
           <association>
-            <type>ArchivaArtifactHealth</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-        <field>
-          <name>repositoryMetadataHealth</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>ArchivaRepositoryMetadataHealth</type>
+            <type>RepositoryProblem</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -102,7 +94,7 @@
         <field jpox.primary-key="true"
                jpox.value-strategy="off">
           <name>id</name>
-          <identity>true</identity>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -112,7 +104,7 @@
         </field>
         <field>
           <name>name</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -122,7 +114,7 @@
         </field>
         <field>
           <name>url</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -132,7 +124,7 @@
         </field>
         <field>
           <name>creationSource</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -143,7 +135,7 @@
         </field>
         <field>
           <name>layoutName</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -155,7 +147,7 @@
         </field>
         <field>
           <name>releasePolicy</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>boolean</type>
           <required>true</required>
@@ -166,7 +158,7 @@
         </field>
         <field>
           <name>snapshotPolicy</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>boolean</type>
           <required>true</required>
@@ -176,109 +168,6 @@
           <defaultValue>false</defaultValue>
         </field>
       </fields>
-    </class>
-    <class stash.storable="true"
-           jpox.table="REPOSITORY_CONTENT_KEYS"
-           jpox.use-identifiers-as-primary-key="true"
-           jpox.identity-type="application"
-           jpox.identity-class="RepositoryContentKey">
-      <name>RepositoryContent</name>
-      <version>1.0.0+</version>
-      <description>
-        Repository Content Identifier.
-      </description>
-      <fields>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
-          <name>groupId</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The Group ID of the repository content.
-          </description>
-        </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
-          <name>artifactId</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The Artifact ID of the repository content.
-          </description>
-        </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
-          <name>version</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>
-            The version of the repository content.
-          </description>
-        </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
-          <name>repositoryId</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <type>String</type>
-          <description>
-            The repository associated with this content.
-          </description>
-        </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code>
-          <![CDATA[
-    /**
-     * Default Constructor.
-     * NOTE: The RepositoryContent object is invalid, and cannot be persisted to
-     *       the database until you set the {@link #setGroupId(String)}, 
-     *       {@link #setArtifactId(String)}, and {@link #setVersion(String)} values
-     *       first.
-     */ 
-    public RepositoryContent()
-    {
-        /* Do nothing */
-    }
-
-    public RepositoryContent( String groupId, String artifactId, String version )
-    {
-        this.setGroupId( groupId );
-        this.setArtifactId( artifactId );
-        this.setVersion( version );
-    }
-
-    public RepositoryContent( String repositoryId, String groupId, String artifactId, String version )
-    {
-        this.setRepositoryId( repositoryId );
-        this.setGroupId( groupId );
-        this.setArtifactId( artifactId );
-        this.setVersion( version );
-    }
-
-    public RepositoryContent( ArchivaRepositoryModel repository, String groupId, String artifactId, String version )
-    {
-        this.setRepositoryId( repository.getId() );
-        this.setGroupId( groupId );
-        this.setArtifactId( artifactId );
-        this.setVersion( version );
-    }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
     </class>
 
     <!-- _______________________________________________________________
@@ -291,7 +180,10 @@
       -->
 
     <class stash.storable="true"
-           jpox.table="ARTIFACT">
+           jpox.table="ARTIFACT"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey">
       <name>ArchivaArtifactModel</name>
       <version>1.0.0+</version>
       <fields>
@@ -302,32 +194,60 @@
            Put Java specifics in the ArchivaArtifactJavaDetails object.
            Put .Net specifics in the ArchivaArtifactDotNetDetails object.
          -->
-        <field>
-          <name>contentKey</name>
-          <identity>true</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
           <required>true</required>
-          <association>
-            <type>RepositoryContent</type>
-            <multiplicity>1</multiplicity>
-          </association>
           <description>
-            The content key for this artifact.
+            The Group ID of the repository content.
           </description>
         </field>
-        <field>
-          <name>classifier</name>
-          <identity>false</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
           <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
             The classifier for this artifact.
           </description>
         </field>
-        <field jpox.column="FILE_TYPE">
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="FILE_TYPE">
           <name>type</name>
-          <identity>true</identity>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -336,8 +256,18 @@
           </description>
         </field>
         <field>
+          <name>repositoryId</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The repository associated with this content.
+          </description>
+        </field>
+        <field>
           <name>checksumMD5</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -347,7 +277,7 @@
         </field>
         <field>
           <name>checksumSHA1</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -357,7 +287,7 @@
         </field>
         <field>
           <name>lastModified</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>Date</type>
           <required>true</required>
@@ -367,7 +297,7 @@
         </field>
         <field jpox.column="FILE_SIZE">
           <name>size</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>long</type>
           <required>true</required>
@@ -377,7 +307,7 @@
         </field>
         <field>
           <name>platform</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -388,7 +318,7 @@
         </field>
         <field>
           <name>whenIndexed</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>Date</type>
           <required>false</required>
@@ -398,7 +328,7 @@
         </field>
         <field>
           <name>origin</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -409,29 +339,80 @@
       </fields>
     </class>
     <class stash.storable="true"
-           jpox.table="JAVA_ARTIFACT">
+           jpox.table="JAVA_ARTIFACT"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactJavaDetailsKey">
       <name>ArchivaArtifactJavaDetails</name>
       <interfaces>
         <interface>org.apache.maven.archiva.model.ArchivaArtifactPlatformDetails</interface>
       </interfaces>
       <version>1.0.0+</version>
       <fields>
-        <field>
-          <name>contentKey</name>
-          <identity>true</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
           <required>true</required>
-          <association>
-            <type>RepositoryContent</type>
-            <multiplicity>1</multiplicity>
-          </association>
           <description>
-            The content key for this java artifact details.
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The classifier for this artifact.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="FILE_TYPE">
+          <name>type</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The type of artifact.
           </description>
         </field>
         <field>
           <name>checksumBytecode</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -442,7 +423,7 @@
         </field>
         <field>
           <name>jdk</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -469,26 +450,40 @@
       </codeSegments>
     </class>
     <class stash.storable="true"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaRepositoryMetadataKey"
            jpox.table="REPOSITORY_METADATA">
       <name>ArchivaRepositoryMetadata</name>
       <version>1.0.0+</version>
       <fields>
-        <field>
-          <name>contentKey</name>
-          <identity>true</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
           <required>true</required>
-          <association>
-            <type>RepositoryContent</type>
-            <multiplicity>1</multiplicity>
-          </association>
           <description>
-            The content key for this repository metadata.
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
           </description>
         </field>
         <field>
           <name>releasedVersion</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <type>String</type>
@@ -498,7 +493,7 @@
         </field>
         <field>
           <name>availableVersions</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <association>
@@ -511,7 +506,7 @@
         </field>
         <field>
           <name>lastModified</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>Date</type>
           <required>true</required>
@@ -521,7 +516,7 @@
         </field>
         <field jpox.column="FILE_SIZE">
           <name>size</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>long</type>
           <required>true</required>
@@ -531,7 +526,7 @@
         </field>
         <field>
           <name>whenIndexed</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>Date</type>
           <required>false</required>
@@ -541,7 +536,7 @@
         </field>
         <field>
           <name>origin</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -562,30 +557,56 @@
      -->
 
     <class stash.storable="true"
-           jpox.table="PROJECT">
+           jpox.table="PROJECT"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey">
       <name>ArchivaProjectModel</name>
       <version>1.0.0+</version>
       <fields>
-        <field>
-          <name>contentKey</name>
-          <identity>true</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
           <required>true</required>
-          <association>
-            <type>RepositoryContent</type>
-            <multiplicity>1</multiplicity>
-          </association>
           <description>
-            The content key for this artifact.
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
           </description>
         </field>
         <field>
-          <name>parentContentKey</name>
-          <identity>false</identity>
+          <name>parentProject</name>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <association>
-            <type>RepositoryContent</type>
+            <type>VersionedReference</type>
             <multiplicity>1</multiplicity>
           </association>
           <description>
@@ -594,7 +615,7 @@
         </field>
         <field>
           <name>packaging</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>String</type>
@@ -604,7 +625,7 @@
         </field>
         <field>
           <name>name</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <type>String</type>
@@ -614,7 +635,7 @@
         </field>
         <field>
           <name>description</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <type>String</type>
@@ -624,7 +645,7 @@
         </field>
         <field>
           <name>origin</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>String</type>
@@ -634,7 +655,7 @@
         </field>
         <field>
           <name>whenIndexed</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>Date</type>
@@ -644,7 +665,7 @@
         </field>
         <field>
           <name>url</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <type>String</type>
@@ -654,7 +675,7 @@
         </field>
         <field>
           <name>organization</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <association>
@@ -663,7 +684,7 @@
         </field>
         <field>
           <name>licenses</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
           <association>
@@ -720,6 +741,17 @@
           </association>
         </field>
         <field>
+          <name>dependencyManagement</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of dependency management settings.
+          </description>
+          <association>
+            <type>Dependency</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
           <name>repositories</name>
           <version>1.0.0+</version>
           <description>
@@ -737,7 +769,7 @@
             The list of plugins that this project uses.
           </description>
           <association>
-            <type>RepositoryContent</type>
+            <type>ArtifactReference</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
@@ -748,12 +780,158 @@
             The list of reports that this project uses.
           </description>
           <association>
-            <type>RepositoryContent</type>
+            <type>ArtifactReference</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>buildExtensions</name>
+          <version>1.0.0+</version>
+          <description>
+            The list of build extensions that this project uses.
+          </description>
+          <association>
+            <type>ArtifactReference</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>properties</name>
+          <version>1.0.0+</version>
+          <description><![CDATA[
+            Properties on the project.  Only really used to resolve
+            variables inside of the project during an effective project
+            model resolution.
+          ]]></description>
+          <type>Properties</type>
+          <association xml.mapStyle="inline">
+            <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
         </field>
       </fields>
     </class>
+    
+    <class stash.storable="true"
+           jpox.table="VERSIONED_REFERENCE"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.VersionedReferenceKey">
+      <name>VersionedReference</name>
+      <description>A reference to another Versioned Project</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+      </fields>
+    </class>
+    
+    <class stash.storable="true"
+           jpox.table="ArtifactReference"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArtifactReferenceKey">
+      <name>ArtifactReference</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Group ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The classifier for this artifact.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="FILE_TYPE">
+          <name>type</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The type of artifact.
+          </description>
+        </field>
+      </fields>
+    </class>
+    
     <class stash.storable="true"
            jpox.table="ORGANIZATION">
       <name>Organization</name>
@@ -762,6 +940,7 @@
       <fields>
         <field>
           <name>name</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
           <description><![CDATA[The full name of the organization.]]></description>
           <type>String</type>
@@ -798,6 +977,7 @@
       <fields>
         <field jpox.column="LICENSE_ID">
           <name>id</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>int</type>
           <description>
@@ -834,16 +1014,17 @@
       </description>
       <version>1.0.0+</version>
       <fields>
+        <field>
+          <name>url</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description><![CDATA[URL for the issue management system used by the project.]]></description>
+          <type>String</type>
+        </field>
         <field jpox.column="SYSTEM_NAME">
           <name>system</name>
           <version>1.0.0+</version>
           <description><![CDATA[The name of the issue management system, e.g. Bugzilla]]></description>
-          <type>String</type>
-        </field>
-        <field>
-          <name>url</name>
-          <version>1.0.0+</version>
-          <description><![CDATA[URL for the issue management system used by the project.]]></description>
           <type>String</type>
         </field>
       </fields>
@@ -852,6 +1033,14 @@
       <name>CiManagement</name>
       <version>1.0.0+</version>
       <fields>
+        <field>
+          <name>url</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <description>
+            <![CDATA[URL for the continuous integration system used by the project if it has a web interface.]]></description>
+          <type>String</type>
+        </field>
         <field jpox.column="SYSTEM_NAME">
           <name>system</name>
           <version>1.0.0+</version>
@@ -859,16 +1048,9 @@
             <![CDATA[The name of the continuous integration system, e.g. <code>continuum</code>.]]></description>
           <type>String</type>
         </field>
-        <field>
-          <name>url</name>
-          <version>1.0.0+</version>
-          <description>
-            <![CDATA[URL for the continuous integration system used by the project if it has a web interface.]]></description>
-          <type>String</type>
-        </field>
       </fields>
     </class>
-    <class>
+    <class stash.storable="true">
       <name>Individual</name>
       <description>
         Description of a person who has contributed to the project.
@@ -877,15 +1059,16 @@
       <version>1.0.0+</version>
       <fields>
         <field>
-          <name>name</name>
+          <name>email</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
-          <description><![CDATA[The full name of the individual.]]></description>
+          <description><![CDATA[The email address of the individual.]]></description>
           <type>String</type>
         </field>
         <field>
-          <name>email</name>
+          <name>name</name>
           <version>1.0.0+</version>
-          <description><![CDATA[The email address of the individual.]]></description>
+          <description><![CDATA[The full name of the individual.]]></description>
           <type>String</type>
         </field>
         <field>
@@ -960,36 +1143,74 @@
         </field>
       </fields>
     </class>
+
     <class stash.storable="true"
-           jpox.table="DEPENDENCY">
+           jpox.table="DEPENDENCY"
+           jpox.use-identifiers-as-primary-key="false"
+           jpox.identity-type="application"
+           jpox.identity-class="org.apache.maven.archiva.model.jpox.DependencyKey">
       <name>Dependency</name>
       <version>1.0.0+</version>
       <fields>
-        <field>
-          <name>contentKey</name>
-          <identity>true</identity>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>groupId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
           <required>true</required>
-          <association>
-            <type>RepositoryContent</type>
-            <multiplicity>1</multiplicity>
-          </association>
           <description>
-            The content key for this dependency.
+            The Group ID of the repository content.
           </description>
         </field>
-        <field>
-          <name>url</name>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>artifactId</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
-          <description><![CDATA[
-            This url will be provided to the user if the jar file cannot be downloaded
-            from the central repository.
-          ]]></description>
           <type>String</type>
+          <required>true</required>
+          <description>
+            The Artifact ID of the repository content.
+          </description>
         </field>
-        <field jpox.column="DEPENDENCY_TYPE">
-          <name>type</name>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
           <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>classifier</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description><![CDATA[
+            The classifier of the dependency. This allows distinguishing two artifacts that belong to the same POM but
+            were built differently, and is appended to the filename after the version. For example,
+            <code>jdk14</code> and <code>jdk15</code>.
+          ]]></description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent"
+               jpox.column="DEPENDENCY_TYPE">
+          <name>type</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
           <description><![CDATA[
             The type of dependency. This defaults to <code>jar</code>. While it usually represents the extension on
             the filename of the dependency, that is not always the case. A type can be mapped to a different
@@ -999,19 +1220,16 @@
             New types can be defined by plugins that set
             <code>extensions</code> to <code>true</code>, so this is not a complete list.
           ]]></description>
-          <type>String</type>
           <defaultValue>jar</defaultValue>
         </field>
         <field>
-          <name>classifier</name>
+          <name>url</name>
           <version>1.0.0+</version>
           <description><![CDATA[
-            The classifier of the dependency. This allows distinguishing two artifacts that belong to the same POM but
-            were built differently, and is appended to the filename after the version. For example,
-            <code>jdk14</code> and <code>jdk15</code>.
+            This url will be provided to the user if the jar file cannot be downloaded
+            from the central repository.
           ]]></description>
           <type>String</type>
-          <required>false</required>
         </field>
         <field jpox.column="DEPENDENCY_SCOPE">
           <name>scope</name>
@@ -1196,13 +1414,58 @@
       -->
 
     <class stash.storable="true"
-           jpox.table="HEALTH_PROBLEMS">
-      <name>HealthProblem</name>
+           jpox.table="REPOSITORY_PROBLEMS">
+      <name>RepositoryProblem</name>
       <version>1.0.0+</version>
       <fields>
+        <field>
+          <name>repositoryId</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+          <description>
+            The repository associated with this path and problem.
+          </description>
+        </field>
+        <field jpox.column="REPO_PATH">
+          <name>path</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The path into the repository for the problem.
+          </description>
+        </field>
+        <field>
+          <name>groupId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The Group ID of the repository content with the problem.
+          </description>
+        </field>
+        <field>
+          <name>artifactId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The Artifact ID of the repository content with the problem.
+          </description>
+        </field>
+        <field>
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <description>
+            The version of the repository content with the problem.
+          </description>
+        </field>
         <field jpox.column="PROBLEM_TYPE">
           <name>type</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>String</type>
@@ -1212,7 +1475,7 @@
         </field>
         <field jpox.column="PROBLEM_ORIGIN">
           <name>origin</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>String</type>
@@ -1222,78 +1485,12 @@
         </field>
         <field>
           <name>message</name>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>true</required>
           <type>String</type>
           <description>
             The origin of the health problem.
-          </description>
-        </field>
-      </fields>
-    </class>
-    <class stash.storable="true"
-           jpox.table="HEALTH_ARTIFACTS">
-      <name>ArchivaArtifactHealth</name>
-      <version>1.0.0+</version>
-      <fields>
-        <field>
-          <name>artifact</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <association>
-            <type>ArchivaArtifactModel</type>
-            <multiplicity>1</multiplicity>
-          </association>
-          <description>
-            The Artifact to report on.
-          </description>
-        </field>
-        <field>
-          <name>problems</name>
-          <identity>false</identity>
-          <version>1.0.0+</version>
-          <required>false</required>
-          <association>
-            <type>HealthProblem</type>
-            <multiplicity>*</multiplicity>
-          </association>
-          <description>
-            The list of problems associated with this artifact.
-          </description>
-        </field>
-      </fields>
-    </class>
-    <class stash.storable="true"
-           jpox.table="HEALTH_REPOSITORY_METADATAS">
-      <name>ArchivaRepositoryMetadataHealth</name>
-      <version>1.0.0+</version>
-      <fields>
-        <field>
-          <name>repositoryMetadata</name>
-          <identity>true</identity>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <association>
-            <type>ArchivaRepositoryMetadata</type>
-            <multiplicity>1</multiplicity>
-          </association>
-          <description>
-            The ArchivaRepositoryMetadata to report on.
-          </description>
-        </field>
-        <field>
-          <name>problems</name>
-          <identity>false</identity>
-          <version>1.0.0+</version>
-          <required>false</required>
-          <association>
-            <type>HealthProblem</type>
-            <multiplicity>*</multiplicity>
-          </association>
-          <description>
-            The list of problems associated with this repository metadata.
           </description>
         </field>
       </fields>
@@ -1315,7 +1512,7 @@
         <field>
           <name>repositoryId</name>
           <version>1.0.0+</version>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <required>true</required>
           <type>String</type>
           <description>
@@ -1325,7 +1522,7 @@
         <field>
           <name>whenGathered</name>
           <version>1.0.0+</version>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <required>true</required>
           <type>Date</type>
           <description>
@@ -1335,7 +1532,7 @@
         <field>
           <name>duration</name>
           <version>1.0.0+</version>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <required>true</required>
           <type>long</type>
           <description>
@@ -1345,7 +1542,7 @@
         <field>
           <name>totalFileCount</name>
           <version>1.0.0+</version>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <required>true</required>
           <type>long</type>
           <description>
@@ -1355,7 +1552,7 @@
         <field>
           <name>newFileCount</name>
           <version>1.0.0+</version>
-          <identity>false</identity>
+          <identifier>false</identifier>
           <required>true</required>
           <type>long</type>
           <description>

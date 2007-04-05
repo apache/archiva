@@ -78,8 +78,10 @@
               <goal>xsd</goal>
               <goal>jpox-jdo-mapping</goal>
               <goal>jpox-metadata-class</goal>
+              <!--
               <goal>xpp3-writer</goal>
               <goal>xpp3-reader</goal>
+                -->
             </goals>
           </execution>
         </executions>

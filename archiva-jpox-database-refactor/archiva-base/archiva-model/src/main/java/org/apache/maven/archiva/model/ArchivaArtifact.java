@@ -19,8 +19,8 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * ArchivaArtifact - Mutable artifact object.
@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.StringUtils;
 public class ArchivaArtifact
 {
     private ArchivaArtifactModel model;
-    
+
     private ArchivaArtifactPlatformDetails platformDetails;
 
     private String baseVersion;
@@ -68,14 +68,10 @@ public class ArchivaArtifact
 
         model = new ArchivaArtifactModel();
 
-        if ( repository == null )
-        {
-            model.setContentKey( new RepositoryContent( groupId, artifactId, version ) );
-        }
-        else
-        {
-            model.setContentKey( new RepositoryContent( repository.getModel(), groupId, artifactId, version ) );
-        }
+        model.setGroupId( groupId );
+        model.setArtifactId( artifactId );
+        model.setVersion( version );
+        model.setRepositoryId( repository.getId() );
         model.setClassifier( StringUtils.defaultString( classifier ) );
         model.setType( type );
 
@@ -90,17 +86,17 @@ public class ArchivaArtifact
 
     public String getGroupId()
     {
-        return model.getContentKey().getGroupId();
+        return model.getGroupId();
     }
 
     public String getArtifactId()
     {
-        return model.getContentKey().getArtifactId();
+        return model.getArtifactId();
     }
 
     public String getVersion()
     {
-        return model.getContentKey().getVersion();
+        return model.getVersion();
     }
 
     public String getBaseVersion()
@@ -134,15 +130,11 @@ public class ArchivaArtifact
         int result = 1;
         if ( model != null )
         {
-            RepositoryContent key = model.getContentKey();
-            if ( key != null )
-            {
-                result = PRIME * result + ( ( key.getGroupId() == null ) ? 0 : key.getGroupId().hashCode() );
-                result = PRIME * result + ( ( key.getArtifactId() == null ) ? 0 : key.getArtifactId().hashCode() );
-                result = PRIME * result + ( ( key.getVersion() == null ) ? 0 : key.getVersion().hashCode() );
-                result = PRIME * result + ( ( model.getClassifier() == null ) ? 0 : model.getClassifier().hashCode() );
-                result = PRIME * result + ( ( model.getType() == null ) ? 0 : model.getType().hashCode() );
-            }
+            result = PRIME * result + ( ( model.getGroupId() == null ) ? 0 : model.getGroupId().hashCode() );
+            result = PRIME * result + ( ( model.getArtifactId() == null ) ? 0 : model.getArtifactId().hashCode() );
+            result = PRIME * result + ( ( model.getVersion() == null ) ? 0 : model.getVersion().hashCode() );
+            result = PRIME * result + ( ( model.getClassifier() == null ) ? 0 : model.getClassifier().hashCode() );
+            result = PRIME * result + ( ( model.getType() == null ) ? 0 : model.getType().hashCode() );
         }
         return result;
     }
@@ -173,63 +165,27 @@ public class ArchivaArtifact
                 return false;
             }
         }
-        else
-        {
-            RepositoryContent key = model.getContentKey();
-            RepositoryContent otherkey = other.model.getContentKey();
-
-            if ( key == null )
-            {
-                if ( otherkey != null )
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if ( !equals( key.getGroupId(), otherkey.getGroupId() )
-                                || !equals( key.getArtifactId(), otherkey.getArtifactId() )
-                                || !equals( key.getVersion(), otherkey.getVersion() )
-                                || !equals( model.getClassifier(), other.model.getClassifier() )
-                                || !equals( model.getType(), other.model.getType() ) )
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean equals( String left, String right )
-    {
-        if ( left == null )
-        {
-            if ( right != null )
-            {
-                return false;
-            }
-        }
-        else if ( !left.equals( right ) )
+        if ( !model.equals( other.model ) )
         {
             return false;
         }
+
         return true;
     }
 
     public String toString()
     {
         StringBuffer sb = new StringBuffer();
-        if ( model.getContentKey().getGroupId() != null )
+        if ( model.getGroupId() != null )
         {
-            sb.append( model.getContentKey().getGroupId() );
+            sb.append( model.getGroupId() );
             sb.append( ":" );
         }
         appendArtifactTypeClassifierString( sb );
         sb.append( ":" );
-        if ( model.getContentKey().getVersion() != null )
+        if ( model.getVersion() != null )
         {
-            sb.append( model.getContentKey().getVersion() );
+            sb.append( model.getVersion() );
         }
 
         return sb.toString();
@@ -237,7 +193,7 @@ public class ArchivaArtifact
 
     private void appendArtifactTypeClassifierString( StringBuffer sb )
     {
-        sb.append( model.getContentKey().getArtifactId() );
+        sb.append( model.getArtifactId() );
         sb.append( ":" );
         sb.append( getType() );
         if ( hasClassifier() )
