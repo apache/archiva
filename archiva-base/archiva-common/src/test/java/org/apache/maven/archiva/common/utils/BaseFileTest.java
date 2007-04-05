@@ -19,8 +19,9 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+
 import junit.framework.TestCase;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 

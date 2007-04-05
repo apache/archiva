@@ -20,7 +20,6 @@ package org.apache.maven.archiva.repository.metadata;
  */
 
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.model.RepositoryContent;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
 
@@ -49,13 +48,9 @@ public class RepositoryMetadataReader
             XMLReader xml = new XMLReader( "metadata", metadataFile );
 
             ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-
-            RepositoryContent contentKey = new RepositoryContent();
-            contentKey.setGroupId( xml.getElementText( "//metadata/groupId" ) );
-            contentKey.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
             
-            metadata.setContentKey( contentKey );
-
+            metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
+            metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
             metadata.setLastModified( new Date( metadataFile.lastModified() ) );
             metadata.setSize( metadataFile.length() );
             metadata.setWhenIndexed( new Date() );

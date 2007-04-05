@@ -20,10 +20,13 @@ package org.apache.maven.archiva.xml;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.dom4j.Namespace;
 import org.dom4j.Node;
+import org.dom4j.QName;
 import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 
@@ -34,8 +37,10 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * XMLReader - a set of common xml utility methods for reading content out of an xml file. 
@@ -50,6 +55,8 @@ public class XMLReader
     private String documentType;
 
     private Document document;
+
+    private Map namespaceMap = new HashMap();
 
     public XMLReader( String type, File file )
         throws XMLException
@@ -121,10 +128,21 @@ public class XMLReader
         }
     }
 
+    public String getDefaultNamespaceURI()
+    {
+        Namespace namespace = this.document.getRootElement().getNamespace();
+        return namespace.getURI();
+    }
+
+    public void addNamespaceMapping( String elementName, String uri )
+    {
+        this.namespaceMap.put( elementName, uri );
+    }
+
     public Element getElement( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = document.createXPath( xpathExpr );
+        XPath xpath = createXPath( xpathExpr );
         Object evaluated = xpath.selectSingleNode( document );
 
         if ( evaluated == null )
@@ -145,10 +163,20 @@ public class XMLReader
         }
     }
 
+    private XPath createXPath( String xpathExpr )
+    {
+        XPath xpath = document.createXPath( xpathExpr );
+        if ( !this.namespaceMap.isEmpty() )
+        {
+            xpath.setNamespaceURIs( this.namespaceMap );
+        }
+        return xpath;
+    }
+
     public boolean hasElement( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = document.createXPath( xpathExpr );
+        XPath xpath = createXPath( xpathExpr );
         Object evaluated = xpath.selectSingleNode( document );
 
         if ( evaluated == null )
@@ -159,10 +187,44 @@ public class XMLReader
         return true;
     }
 
+    /**
+     * Remove namespaces from entire document.
+     */
+    public void removeNamespaces()
+    {
+        removeNamespaces( this.document.getRootElement() );
+    }
+
+    /**
+     * Remove namespaces from element recursively.
+     */
+    public void removeNamespaces( Element elem )
+    {
+        elem.setQName( QName.get( elem.getName(), Namespace.NO_NAMESPACE, elem.getQualifiedName() ) );
+
+        Node n;
+
+        Iterator it = elem.elementIterator();
+        while ( it.hasNext() )
+        {
+            n = (Node) it.next();
+
+            switch ( n.getNodeType() )
+            {
+                case Node.ATTRIBUTE_NODE:
+                    ( (Attribute) n ).setNamespace( Namespace.NO_NAMESPACE );
+                    break;
+                case Node.ELEMENT_NODE:
+                    removeNamespaces( (Element) n );
+                    break;
+            }
+        }
+    }
+
     public String getElementText( Node context, String xpathExpr )
         throws XMLException
     {
-        XPath xpath = document.createXPath( xpathExpr );
+        XPath xpath = createXPath( xpathExpr );
         Object evaluated = xpath.selectSingleNode( context );
 
         if ( evaluated == null )
@@ -186,7 +248,7 @@ public class XMLReader
     public String getElementText( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = document.createXPath( xpathExpr );
+        XPath xpath = createXPath( xpathExpr );
         Object evaluated = xpath.selectSingleNode( document );
 
         if ( evaluated == null )
@@ -210,7 +272,7 @@ public class XMLReader
     public List getElementList( String xpathExpr )
         throws XMLException
     {
-        XPath xpath = document.createXPath( xpathExpr );
+        XPath xpath = createXPath( xpathExpr );
         Object evaluated = xpath.evaluate( document );
 
         if ( evaluated == null )
@@ -230,7 +292,7 @@ public class XMLReader
         else if ( evaluated instanceof Node )
         {
             List ret = new ArrayList();
-            ret.add( (Node) evaluated );
+            ret.add( evaluated );
             return ret;
         }
         else

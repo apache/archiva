@@ -28,9 +28,10 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.RepositoryContent;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.codehaus.plexus.digest.Digester;
+import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -38,6 +39,7 @@ import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,13 +52,16 @@ import java.util.Map;
  * @plexus.component role-hint="update-db-artifact"
  *                   instantiation-strategy="per-lookup"
  */
-public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
+public class ArtifactUpdateDatabaseConsumer
+    extends AbstractMonitoredConsumer
     implements RepositoryContentConsumer, RegistryListener, Initializable
 {
     private static final String TYPE_NOT_ARTIFACT = "file-not-artifact";
 
     private static final String DB_ERROR = "db-error";
-    
+
+    private static final String CHECKSUM_CALCULATION = null;
+
     /**
      * @plexus.configuration default-value="update-db-artifact"
      */
@@ -66,7 +71,7 @@ public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
      * @plexus.configuration default-value="Update the Artifact in the Database"
      */
     private String description;
-    
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -81,6 +86,16 @@ public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
     private Map bidirectionalLayoutMap;
+
+    /**
+     * @plexus.requirement role-hint="sha1"
+     */
+    private Digester digestSha1;
+
+    /**
+     * @plexus.requirement role-hint="md5";
+     */
+    private Digester digestMd5;
 
     private ArchivaRepository repository;
 
@@ -117,7 +132,8 @@ public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
         return this.includes;
     }
 
-    public void beginScan( ArchivaRepository repository ) throws ConsumerException
+    public void beginScan( ArchivaRepository repository )
+        throws ConsumerException
     {
         if ( !repository.isManaged() )
         {
@@ -131,31 +147,53 @@ public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
         if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
         {
             throw new ConsumerException( "Unable to process repository with layout [" + layoutName
-                            + "] as there is no coresponding " + BidirectionalRepositoryLayout.class.getName()
-                            + " implementation available." );
+                + "] as there is no coresponding " + BidirectionalRepositoryLayout.class.getName()
+                + " implementation available." );
         }
 
         this.layout = (BidirectionalRepositoryLayout) bidirectionalLayoutMap.get( layoutName );
     }
 
-    public void processFile( String path ) throws ConsumerException
+    public void processFile( String path )
+        throws ConsumerException
     {
         try
         {
             ArchivaArtifact artifact = layout.toArtifact( path );
-            
-            RepositoryContent repoContent = artifact.getModel().getContentKey();
-            repoContent.setRepositoryId( this.repository.getId() );
-            
+
+            artifact.getModel().setRepositoryId( this.repository.getId() );
+
             // Calculate the hashcodes.
-            
-            
+            File artifactFile = new File( this.repositoryDir, path );
+            try
+            {
+                artifact.getModel().setChecksumMD5( digestMd5.calc( artifactFile ) );
+            }
+            catch ( DigesterException e )
+            {
+                triggerConsumerWarning( CHECKSUM_CALCULATION, "Unable to calculate the MD5 checksum: " + e.getMessage() );
+            }
+
+            try
+            {
+                artifact.getModel().setChecksumSHA1( digestSha1.calc( artifactFile ) );
+            }
+            catch ( DigesterException e )
+            {
+                triggerConsumerWarning( CHECKSUM_CALCULATION, "Unable to calculate the SHA1 checksum: "
+                    + e.getMessage() );
+            }
+
+            artifact.getModel().setLastModified( new Date( artifactFile.lastModified() ) );
+            artifact.getModel().setSize( artifactFile.length() );
+            artifact.getModel().setOrigin( "FileSystem" );
+
             dao.saveArtifact( artifact.getModel() );
         }
         catch ( LayoutException e )
         {
             triggerConsumerError( TYPE_NOT_ARTIFACT, "Path " + path + " cannot be converted to artifact: "
-                            + e.getMessage() );
+                + e.getMessage() );
         }
         catch ( ArchivaDatabaseException e )
         {
@@ -192,7 +230,8 @@ public class ArtifactUpdateDatabaseConsumer extends AbstractMonitoredConsumer
         }
     }
 
-    public void initialize() throws InitializationException
+    public void initialize()
+        throws InitializationException
     {
         propertyNameTriggers = new ArrayList();
         propertyNameTriggers.add( "repositoryScanning" );

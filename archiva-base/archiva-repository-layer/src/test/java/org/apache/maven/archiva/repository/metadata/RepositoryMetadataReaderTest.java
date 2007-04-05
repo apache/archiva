@@ -42,8 +42,8 @@ public class RepositoryMetadataReaderTest extends PlexusTestCase
         ArchivaRepositoryMetadata metadata = reader.read( metadataFile );
 
         assertNotNull( metadata );
-        assertEquals( "Group Id", "org.apache.maven.shared", metadata.getContentKey().getGroupId() );
-        assertEquals( "Artifact Id", "maven-downloader", metadata.getContentKey().getArtifactId() );
+        assertEquals( "Group Id", "org.apache.maven.shared", metadata.getGroupId() );
+        assertEquals( "Artifact Id", "maven-downloader", metadata.getArtifactId() );
         assertEquals( "Released Version", "1.1", metadata.getReleasedVersion() );
         assertEquals( "List of Available Versions", 2, metadata.getAvailableVersions().size() );
         assertTrue( "Available version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
