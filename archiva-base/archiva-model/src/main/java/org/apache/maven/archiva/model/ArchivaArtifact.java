@@ -38,12 +38,7 @@ public class ArchivaArtifact
 
     private boolean snapshot = false;
 
-    public ArchivaArtifact( String groupId, String artifactId, String version, String classifier, String type )
-    {
-        this( null, groupId, artifactId, version, classifier, type );
-    }
-
-    public ArchivaArtifact( ArchivaRepository repository, String groupId, String artifactId, String version,
+    public ArchivaArtifact( String groupId, String artifactId, String version,
                             String classifier, String type )
     {
         if ( empty( groupId ) )
@@ -71,15 +66,18 @@ public class ArchivaArtifact
         model.setGroupId( groupId );
         model.setArtifactId( artifactId );
         model.setVersion( version );
-        if ( repository != null )
-        {
-            model.setRepositoryId( repository.getId() );
-        }
         model.setClassifier( StringUtils.defaultString( classifier ) );
         model.setType( type );
 
         this.snapshot = VersionUtil.isSnapshot( version );
         this.baseVersion = VersionUtil.getBaseVersion( version );
+    }
+
+    public ArchivaArtifact( ArchivaArtifactModel artifactModel )
+    {
+        this.model = artifactModel;
+        this.snapshot = VersionUtil.isSnapshot( model.getVersion() );
+        this.baseVersion = VersionUtil.getBaseVersion( model.getVersion() );
     }
 
     public ArchivaArtifactModel getModel()
