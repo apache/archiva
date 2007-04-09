@@ -77,7 +77,7 @@ import java.io.Serializable;
  * @version $Id$
  */
 public class AbstractProjectKey
-    implements Serializable
+    implements CompoundKey, Serializable
 {
     /**
      * The Group ID. (JPOX Requires this remain public)
@@ -105,8 +105,8 @@ public class AbstractProjectKey
     public AbstractProjectKey( String key )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( key, ":" );
-        groupId = parts[1];
-        artifactId = parts[2];
+        groupId = parts[0];
+        artifactId = parts[1];
     }
 
     /**

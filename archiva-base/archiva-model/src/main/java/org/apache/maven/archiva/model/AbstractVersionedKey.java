@@ -76,7 +76,8 @@ import java.io.Serializable;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractVersionedKey implements Serializable
+public class AbstractVersionedKey
+    implements CompoundKey, Serializable
 {
     /**
      * The Group ID. (JPOX Requires this remain public)
@@ -92,7 +93,7 @@ public class AbstractVersionedKey implements Serializable
      * The Version. (JPOX Requires this remain public)
      */
     public String version = "";
-    
+
     /**
      * Default Constructor.  Required by JPOX.
      */
@@ -100,7 +101,7 @@ public class AbstractVersionedKey implements Serializable
     {
         /* do nothing */
     }
-    
+
     /**
      * Key Based Constructor.  Required by JPOX.
      * 
@@ -109,17 +110,17 @@ public class AbstractVersionedKey implements Serializable
     public AbstractVersionedKey( String key )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( key, ":" );
-        groupId = parts[1];
-        artifactId = parts[2];
-        version = parts[3];
+        groupId = parts[0];
+        artifactId = parts[1];
+        version = parts[2];
     }
-    
+
     /**
      * Get the String representation of this object. - Required by JPOX.
      */
     public String toString()
     {
-        return StringUtils.join( new String[] { groupId, artifactId, version } );
+        return StringUtils.join( new String[] { groupId, artifactId, version }, ':' );
     }
 
     /**
@@ -144,19 +145,19 @@ public class AbstractVersionedKey implements Serializable
         {
             return true;
         }
-        
+
         if ( !super.equals( obj ) )
         {
             return false;
         }
-        
+
         if ( getClass() != obj.getClass() )
         {
             return false;
         }
-        
+
         final AbstractVersionedKey other = (AbstractVersionedKey) obj;
-        
+
         if ( groupId == null )
         {
             if ( other.groupId != null )
@@ -168,7 +169,7 @@ public class AbstractVersionedKey implements Serializable
         {
             return false;
         }
-        
+
         if ( artifactId == null )
         {
             if ( other.artifactId != null )
@@ -180,7 +181,7 @@ public class AbstractVersionedKey implements Serializable
         {
             return false;
         }
-        
+
         if ( version == null )
         {
             if ( other.version != null )
@@ -192,7 +193,7 @@ public class AbstractVersionedKey implements Serializable
         {
             return false;
         }
-        
+
         return true;
     }
 }

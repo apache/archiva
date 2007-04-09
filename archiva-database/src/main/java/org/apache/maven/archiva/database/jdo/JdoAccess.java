@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.model.CompoundKey;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -299,7 +300,16 @@ public class JdoAccess
                 pm.getFetchPlan().addGroup( fetchGroup );
             }
 
-            Object objectId = pm.newObjectIdInstance( clazz, id );
+            Object objectId = null;
+
+            if ( id instanceof CompoundKey )
+            {
+                objectId = pm.newObjectIdInstance( clazz, id.toString() );
+            }
+            else
+            {
+                objectId = pm.newObjectIdInstance( clazz, id );
+            }
 
             Object object = pm.getObjectById( objectId );
 
@@ -311,13 +321,15 @@ public class JdoAccess
         }
         catch ( JDOObjectNotFoundException e )
         {
-            throw new ObjectNotFoundException( "Unable to find Database Object '" + id + "' of type " + clazz.getName()
-                + " using fetch-group '" + fetchGroup + "'", e, id );
+            throw new ObjectNotFoundException( "Unable to find Database Object [" + id + "] of type " + clazz.getName()
+                + " using " + ( ( fetchGroup == null ) ? "no fetch-group" : "a fetch-group of [" + fetchGroup + "]" ),
+                                               e, id );
         }
         catch ( JDOException e )
         {
-            throw new ArchivaDatabaseException( "Error in JDO during get of Database object id '" + id + "' of type "
-                + clazz.getName() + " using fetch-group '" + fetchGroup + "'", e );
+            throw new ArchivaDatabaseException( "Error in JDO during get of Database object id [" + id + "] of type "
+                + clazz.getName() + " using "
+                + ( ( fetchGroup == null ) ? "no fetch-group" : "a fetch-group of [" + fetchGroup + "]" ), e );
         }
         finally
         {
