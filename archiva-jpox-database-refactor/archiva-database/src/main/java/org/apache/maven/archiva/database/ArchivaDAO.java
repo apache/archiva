@@ -19,11 +19,6 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
-import org.apache.maven.archiva.model.ArchivaRepositoryModel;
-
-import java.util.List;
-
 /**
  * ArchivaDAO - The interface for all content within the database.
  *
@@ -32,62 +27,9 @@ import java.util.List;
  */
 public interface ArchivaDAO
 {
-    /* NOTE TO ARCHIVA DEVELOPERS.
-     * 
-     * Please keep this interface clean and lean.
-     * We don't want a repeat of the Continuum Store.
-     * You should have the following methods per object type ...
-     * 
-     *   (Required Methods)
-     * 
-     *    DatabaseObject .createDatabaseObject( Required Params ) ;
-     *    List           .queryDatabaseObject( Constraint )       throws ObjectNotFoundException, DatabaseException;
-     *    DatabaseObject .saveDatabaseObject( DatabaseObject )    throws DatabaseException;
-     *    
-     *   (Optional Methods)
-     *   
-     *    DatabaseObject .getDatabaseObject( Id )                 throws ObjectNotFoundException, DatabaseException;
-     *    List           .getDatabaseObjects()                    throws ObjectNotFoundException, DatabaseException;
-     *    void           .deleteDatabaseObject( DatabaseObject )  throws DatabaseException;
-     *    
-     * This is the only list of options created in this DAO.
-     */
+    ArtifactDAO getArtifactDAO();
 
-    /* .\ Archiva Repository \.____________________________________________________________ */
+    ProjectModelDAO getProjectModelDAO();
 
-    public ArchivaRepositoryModel createRepository( String id, String url );
-
-    public List /*<ArchivaRepositoryModel>*/getRepositories()
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public ArchivaRepositoryModel getRepository( String id )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public List queryRepository( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public ArchivaRepositoryModel saveRepository( ArchivaRepositoryModel repository )
-        throws ArchivaDatabaseException;
-
-    public void deleteRepository( ArchivaRepositoryModel repository )
-        throws ArchivaDatabaseException;
-
-    /* .\ Archiva Artifact \. _____________________________________________________________ */
-
-    public ArchivaArtifactModel createArtifact( String groupId, String artifactId, String version, String classifier,
-                                                String type );
-
-    public ArchivaArtifactModel getArtifact( String groupId, String artifactId, String version, String classifier,
-                                             String type )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public List /*<ArchivaArtifactModel>*/queryArtifacts( Constraint constraint )
-        throws ObjectNotFoundException, ArchivaDatabaseException;
-
-    public ArchivaArtifactModel saveArtifact( ArchivaArtifactModel artifact )
-        throws ArchivaDatabaseException;
-
-    public void deleteArtifact( ArchivaArtifactModel artifact )
-        throws ArchivaDatabaseException;
-
+    RepositoryDAO getRepositoryDAO();
 }

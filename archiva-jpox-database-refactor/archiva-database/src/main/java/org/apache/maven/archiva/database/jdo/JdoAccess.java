@@ -51,7 +51,7 @@ import javax.jdo.spi.PersistenceCapable;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.database.jdo.JdoAccess" role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.database.jdo.JdoAccess" role-hint="archiva"
  */
 public class JdoAccess
     implements Initializable, InstanceLifecycleListener, StoreLifecycleListener
