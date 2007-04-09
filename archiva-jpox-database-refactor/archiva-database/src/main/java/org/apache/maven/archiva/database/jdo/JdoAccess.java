@@ -182,6 +182,8 @@ public class JdoAccess
 
             Query query = pm.newQuery( extent );
 
+            List result = null;
+
             if ( constraint != null )
             {
                 if ( constraint.getSortColumn() != null )
@@ -200,14 +202,70 @@ public class JdoAccess
                 {
                     pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
                 }
-                
+
                 if ( constraint.getWhereCondition() != null )
                 {
                     query.setFilter( constraint.getWhereCondition() );
                 }
-            }
 
-            List result = (List) query.execute();
+                if ( constraint.getDeclaredImports() != null )
+                {
+                    for ( int i = 0; i < constraint.getDeclaredImports().length; i++ )
+                    {
+                        String qimport = constraint.getDeclaredImports()[i];
+                        query.declareImports( qimport );
+                    }
+                }
+
+                if ( constraint.getDeclaredParameters() != null )
+                {
+                    if ( constraint.getParameters() == null )
+                    {
+                        throw new JDOException( "Unable to use query, there are declared parameters, "
+                            + "but no parameter objects to use." );
+                    }
+
+                    if ( constraint.getParameters().length != constraint.getDeclaredParameters().length )
+                    {
+                        throw new JDOException( "Unable to use query, there are <"
+                            + constraint.getDeclaredParameters().length + "> declared parameters, yet there are <"
+                            + constraint.getParameters().length + "> parameter objects to use.  This should be equal." );
+                    }
+
+                    for ( int i = 0; i < constraint.getDeclaredParameters().length; i++ )
+                    {
+                        String declaredParam = constraint.getDeclaredParameters()[i];
+                        query.declareParameters( declaredParam );
+                    }
+
+                    switch ( constraint.getParameters().length )
+                    {
+                        case 1:
+                            result = (List) query.execute( constraint.getParameters()[0] );
+                            break;
+                        case 2:
+                            result = (List) query
+                                .execute( constraint.getParameters()[0], constraint.getParameters()[1] );
+                            break;
+                        case 3:
+                            result = (List) query
+                                .execute( constraint.getParameters()[0], constraint.getParameters()[1], constraint
+                                    .getParameters()[2] );
+                            break;
+                        default:
+                            throw new JDOException( "Unable to use more than 3 parameters." );
+                    }
+                }
+                else
+                {
+                    // Process unparameterized query.
+                    result = (List) query.execute();
+                }
+            }
+            else
+            {
+                result = (List) query.execute();
+            }
 
             result = (List) pm.detachCopyAll( result );
 
@@ -221,63 +279,12 @@ public class JdoAccess
         }
     }
 
-    //    public List getUserAssignmentsForRoles( Class clazz, String ordering, Collection roleNames )
-    //    {
-    //        PersistenceManager pm = getPersistenceManager();
-    //        Transaction tx = pm.currentTransaction();
-    //
-    //        try
-    //        {
-    //            tx.begin();
-    //
-    //            Extent extent = pm.getExtent( clazz, true );
-    //
-    //            Query query = pm.newQuery( extent );
-    //
-    //            if ( ordering != null )
-    //            {
-    //                query.setOrdering( ordering );
-    //            }
-    //
-    //            query.declareImports( "import java.lang.String" );
-    //
-    //            StringBuffer filter = new StringBuffer();
-    //
-    //            Iterator i = roleNames.iterator();
-    //
-    //            if ( roleNames.size() > 0 )
-    //            {
-    //                filter.append( "this.roleNames.contains(\"" ).append( i.next() ).append( "\")" );
-    //
-    //                while ( i.hasNext() )
-    //                {
-    //                    filter.append( " || this.roleNames.contains(\"" ).append( i.next() ).append( "\")" );
-    //                }
-    //
-    //                query.setFilter( filter.toString() );
-    //            }
-    //
-    //            List result = (List) query.execute();
-    //
-    //            result = (List) pm.detachCopyAll( result );
-    //
-    //            tx.commit();
-    //
-    //            return result;
-    //        }
-    //        finally
-    //        {
-    //            rollbackIfActive( tx );
-    //        }
-    //    }
-
     public Object getObjectById( Class clazz, Object id, String fetchGroup )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         if ( id == null )
         {
-            throw new ObjectNotFoundException( "Unable to get object '" + clazz.getName()
-                + "' from jdo using null id." );
+            throw new ObjectNotFoundException( "Unable to get object '" + clazz.getName() + "' from jdo using null id." );
         }
 
         PersistenceManager pm = getPersistenceManager();
@@ -317,7 +324,7 @@ public class JdoAccess
             rollbackIfActive( tx );
         }
     }
-    
+
     public Object getObjectById( Class clazz, String id, String fetchGroup )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
@@ -326,7 +333,7 @@ public class JdoAccess
             throw new ObjectNotFoundException( "Unable to get object '" + clazz.getName()
                 + "' from jdo using null/empty id." );
         }
-        
+
         return getObjectById( clazz, (Object) id, fetchGroup );
     }
 

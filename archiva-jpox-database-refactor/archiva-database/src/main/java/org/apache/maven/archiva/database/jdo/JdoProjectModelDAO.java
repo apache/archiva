@@ -39,7 +39,7 @@ public class JdoProjectModelDAO
     implements ProjectModelDAO
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement role-hint="archiva"
      */
     private JdoAccess jdo;
 

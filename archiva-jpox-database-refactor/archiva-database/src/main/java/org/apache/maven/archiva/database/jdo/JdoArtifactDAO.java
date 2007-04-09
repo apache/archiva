@@ -24,7 +24,11 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
+import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,16 +40,17 @@ import java.util.List;
  * @plexus.component role-hint="jdo"
  */
 public class JdoArtifactDAO
-implements ArtifactDAO
+    implements ArtifactDAO
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement role-hint="archiva"
      */
     private JdoAccess jdo;
 
     /* .\ Archiva Artifact \. _____________________________________________________________ */
 
-    public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier, String type )
+    public ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
+                                           String type )
     {
         ArchivaArtifact artifact;
 
@@ -61,32 +66,57 @@ implements ArtifactDAO
         return artifact;
     }
 
-    public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier, String type )
+    public ArchivaArtifact getArtifact( String groupId, String artifactId, String version, String classifier,
+                                        String type )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
+        ArchivaArtifactModelKey key = new ArchivaArtifactModelKey();
+        key.groupId = groupId;
+        key.artifactId = artifactId;
+        key.version = version;
+        key.classifier = classifier;
+        key.type = type;
+
+        ArchivaArtifactModel model = (ArchivaArtifactModel) jdo.getObjectById( ArchivaArtifactModel.class, key, null );
         
-        return null;
+        return new ArchivaArtifact( model );
     }
 
     public List queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-        return null;
+        List results = jdo.getAllObjects( ArchivaArtifactModel.class, constraint );
+        if ( ( results == null ) || results.isEmpty() )
+        {
+            return results;
+        }
+
+        List ret = new ArrayList();
+        Iterator it = results.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaArtifactModel model = (ArchivaArtifactModel) it.next();
+            ret.add( new ArchivaArtifact( model ) );
+        }
+
+        return ret;
     }
 
     public ArchivaArtifact saveArtifact( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-        return null;
+        ArchivaArtifactModel model = (ArchivaArtifactModel) jdo.saveObject( artifact.getModel() );
+        if ( model == null )
+        {
+            return null;
+        }
+
+        return new ArchivaArtifact( model );
     }
 
     public void deleteArtifact( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-
+        jdo.removeObject( artifact.getModel() );
     }
-
 }

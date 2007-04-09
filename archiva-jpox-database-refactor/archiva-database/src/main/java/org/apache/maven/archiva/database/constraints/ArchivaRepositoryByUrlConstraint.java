@@ -9,6 +9,7 @@ import org.apache.maven.archiva.database.Constraint;
  * @version $Id$
  */
 public class ArchivaRepositoryByUrlConstraint
+    extends AbstractConstraint
     implements Constraint
 {
     private String whereCondition;
@@ -23,18 +24,8 @@ public class ArchivaRepositoryByUrlConstraint
         return whereCondition;
     }
 
-    public String getFetchLimits()
-    {
-        return null;
-    }
-
     public String getSortColumn()
     {
         return "url";
-    }
-
-    public String getSortDirection()
-    {
-        return Constraint.ASCENDING;
     }
 }

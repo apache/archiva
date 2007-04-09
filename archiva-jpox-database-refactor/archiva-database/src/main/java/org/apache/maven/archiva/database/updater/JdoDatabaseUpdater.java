@@ -25,7 +25,7 @@ import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.constraints.UnprocessedArtifactsConstraint;
+import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -35,6 +35,7 @@ import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class JdoDatabaseUpdater
 
     /**
      * The collection of available consumers.
-     * @plexus.requirement role=""
+     * @plexus.requirement role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
      */
     private Map availableConsumers;
 
@@ -82,10 +83,17 @@ public class JdoDatabaseUpdater
      */
     private List propertyNameTriggers = new ArrayList();
 
+    public void update()
+        throws ArchivaDatabaseException
+    {
+        updateAllUnprocessed();
+        updateAllProcessed();
+    }
+
     public void updateAllUnprocessed()
         throws ArchivaDatabaseException
     {
-        List unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new UnprocessedArtifactsConstraint() );
+        List unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
 
         beginConsumerLifecycle( this.activeUnprocessedConsumers );
 
@@ -106,6 +114,33 @@ public class JdoDatabaseUpdater
         finally
         {
             consumerConsumerLifecycle( this.activeUnprocessedConsumers );
+        }
+    }
+
+    public void updateAllProcessed()
+        throws ArchivaDatabaseException
+    {
+        List processedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+
+        beginConsumerLifecycle( this.activeProcessedConsumers );
+
+        try
+        {
+            // Process each consumer.
+            Iterator it = processedArtifacts.iterator();
+            while ( it.hasNext() )
+            {
+                ArchivaArtifact artifact = (ArchivaArtifact) it.next();
+
+                if ( !artifact.getModel().isProcessed() )
+                {
+                    updateProcessed( artifact );
+                }
+            }
+        }
+        finally
+        {
+            consumerConsumerLifecycle( this.activeProcessedConsumers );
         }
     }
 
@@ -142,7 +177,28 @@ public class JdoDatabaseUpdater
             }
             catch ( ConsumerException e )
             {
-                getLogger().warn( "Unable to process artifact: " + artifact );
+                getLogger().warn( "Unable to consume (unprocessed) artifact: " + artifact );
+            }
+        }
+
+        artifact.getModel().setWhenProcessed( new Date() );
+        dao.getArtifactDAO().saveArtifact( artifact );
+    }
+
+    public void updateProcessed( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException
+    {
+        Iterator it = this.activeProcessedConsumers.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
+            try
+            {
+                consumer.processArchivaArtifact( artifact );
+            }
+            catch ( ConsumerException e )
+            {
+                getLogger().warn( "Unable to consume (processed)  artifact: " + artifact );
             }
         }
     }
