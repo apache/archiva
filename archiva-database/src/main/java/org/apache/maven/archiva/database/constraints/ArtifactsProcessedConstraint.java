@@ -21,19 +21,42 @@ package org.apache.maven.archiva.database.constraints;
 
 import org.apache.maven.archiva.database.Constraint;
 
+import java.util.Date;
+
 /**
- * UnprocessedArtifactsConstraint 
+ * ArtifactsProcessedConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class UnprocessedArtifactsConstraint
+public class ArtifactsProcessedConstraint
+    extends AbstractConstraint
     implements Constraint
 {
+    private String whereClause;
 
-    public String getFetchLimits()
+    public ArtifactsProcessedConstraint( boolean isProcessed )
     {
-        return null;
+        if ( isProcessed )
+        {
+            whereClause = "whenProcessed != null";
+        }
+        else
+        {
+            whereClause = "whenProcessed == null";
+        }
+    }
+
+    /**
+     * A Constraint showing artifacts processed since date provided.
+     * @param since
+     */
+    public ArtifactsProcessedConstraint( Date since )
+    {
+        whereClause = "whenProcessed > since";
+        declImports = new String[] { "import java.util.Date" };
+        declParams = new String[] { "Date since" };
+        params = new Object[] { since };
     }
 
     public String getSortColumn()
@@ -41,14 +64,9 @@ public class UnprocessedArtifactsConstraint
         return "groupId";
     }
 
-    public String getSortDirection()
-    {
-        return Constraint.ASCENDING;
-    }
-
     public String getWhereCondition()
     {
-        return "whenProcessed == null";
+        return whereClause;
     }
 
 }

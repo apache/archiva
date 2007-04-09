@@ -20,7 +20,6 @@ package org.apache.maven.archiva.database;
  */
 
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
 import java.util.List;
 

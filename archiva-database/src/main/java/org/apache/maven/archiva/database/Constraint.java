@@ -39,4 +39,31 @@ public interface Constraint
      * @return the sort direction name. ("ASC" or "DESC") (only valid if {@link #getSortColumn()} is specified.)
      */
     public String getSortDirection();
+    
+    /**
+     * Get the declared imports used for this query. (optional)
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the imports. (can be null)
+     */
+    public String[] getDeclaredImports();
+    
+    /**
+     * Get the declared parameters used for this query. (optional)
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the parameters. (can be null)
+     */
+    public String[] getDeclaredParameters();
+    
+    /**
+     * Get the parameters used for this query. (required if using {@link #getDeclaredParameters()} )
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the parameters. (can be null)
+     */
+    public Object[] getParameters();
 }

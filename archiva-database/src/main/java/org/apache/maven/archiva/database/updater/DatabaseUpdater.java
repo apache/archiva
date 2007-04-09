@@ -31,18 +31,49 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 public interface DatabaseUpdater
 {
     /**
+     * Execute the {@link #updateAllUnprocessed()} and {@link #updateAllProcessed()}
+     * tasks in one go.
+     * 
+     * @throws ArchivaDatabaseException
+     */
+    public void update()
+        throws ArchivaDatabaseException;
+
+    /**
      * Update all unprocessed content.
      * 
      * @throws ArchivaDatabaseException if there was a fatal error with the database.
      */
     public void updateAllUnprocessed()
         throws ArchivaDatabaseException;
-    
+
     /**
      * Update specific unprocessed content.
      * 
      * @throws ArchivaDatabaseException if there was a fatal error with the database.
      */
     public void updateUnprocessed( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException;
+
+    /**
+     * Update all previously processed content.
+     * 
+     * This is done to allow archiva to remove content from the database that 
+     * may have been removed from the filesystem too.
+     * 
+     * @throws ArchivaDatabaseException if there was a fatal error with the database.
+     */
+    public void updateAllProcessed()
+        throws ArchivaDatabaseException;
+
+    /**
+     * Update specific processed content.
+     * 
+     * Example: This is done to allow a specific artifact to be removed from the
+     * database if it no longer exists on the filesystem.
+     * 
+     * @throws ArchivaDatabaseException if there was a fatal error with the database.
+     */
+    public void updateProcessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException;
 }
