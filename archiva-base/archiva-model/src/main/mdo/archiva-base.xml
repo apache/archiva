@@ -327,6 +327,16 @@
           </description>
         </field>
         <field>
+          <name>whenProcessed</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>Date</type>
+          <required>false</required>
+          <description>
+            When this artifact's contents was processed.
+          </description>
+        </field>
+        <field>
           <name>origin</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -337,6 +347,22 @@
           </description>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Identify if this artifact's contents have been processed or not.
+     * 
+     * @return true if the artifact's contents have been processed.
+     */
+    public boolean isProcessed()
+    {
+        return (whenProcessed == null);
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     <class stash.storable="true"
            jpox.table="JAVA_ARTIFACT"

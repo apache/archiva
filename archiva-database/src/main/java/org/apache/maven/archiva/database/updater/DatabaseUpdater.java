@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database.jdo;
+package org.apache.maven.archiva.database.updater;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,30 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 /**
- * JdoArchivaDAOTest 
+ * The database update component. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class JdoArchivaDAOTest
-    extends AbstractArchivaDatabaseTestCase
+public interface DatabaseUpdater
 {
-    public void testSubDAOs()
-    {
-        assertNotNull( "Artifact DAO", dao.getArtifactDAO() );
-        assertNotNull( "Repository DAO", dao.getRepositoryDAO() );
-    }
+    /**
+     * Update all unprocessed content.
+     * 
+     * @throws ArchivaDatabaseException if there was a fatal error with the database.
+     */
+    public void updateAllUnprocessed()
+        throws ArchivaDatabaseException;
+    
+    /**
+     * Update specific unprocessed content.
+     * 
+     * @throws ArchivaDatabaseException if there was a fatal error with the database.
+     */
+    public void updateUnprocessed( ArchivaArtifact artifact )
+        throws ArchivaDatabaseException;
 }

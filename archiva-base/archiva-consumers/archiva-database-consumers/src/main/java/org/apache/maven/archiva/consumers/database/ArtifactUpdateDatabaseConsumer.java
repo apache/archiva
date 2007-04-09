@@ -189,7 +189,7 @@ public class ArtifactUpdateDatabaseConsumer
             artifact.getModel().setSize( artifactFile.length() );
             artifact.getModel().setOrigin( "FileSystem" );
 
-            dao.saveArtifact( artifact.getModel() );
+            dao.getArtifactDAO().saveArtifact( artifact );
         }
         catch ( LayoutException e )
         {

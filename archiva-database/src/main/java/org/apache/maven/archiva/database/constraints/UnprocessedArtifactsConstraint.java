@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database.jdo;
+package org.apache.maven.archiva.database.constraints;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,36 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
+import org.apache.maven.archiva.database.Constraint;
 
 /**
- * JdoArchivaDAOTest 
+ * UnprocessedArtifactsConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class JdoArchivaDAOTest
-    extends AbstractArchivaDatabaseTestCase
+public class UnprocessedArtifactsConstraint
+    implements Constraint
 {
-    public void testSubDAOs()
+
+    public String getFetchLimits()
     {
-        assertNotNull( "Artifact DAO", dao.getArtifactDAO() );
-        assertNotNull( "Repository DAO", dao.getRepositoryDAO() );
+        return null;
     }
+
+    public String getSortColumn()
+    {
+        return "groupId";
+    }
+
+    public String getSortDirection()
+    {
+        return Constraint.ASCENDING;
+    }
+
+    public String getWhereCondition()
+    {
+        return "whenProcessed == null";
+    }
+
 }
