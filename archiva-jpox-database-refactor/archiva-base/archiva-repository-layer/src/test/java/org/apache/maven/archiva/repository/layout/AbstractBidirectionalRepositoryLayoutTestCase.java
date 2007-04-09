@@ -32,11 +32,13 @@ import java.io.File;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractBidirectionalRepositoryLayoutTestCase extends PlexusTestCase
+public class AbstractBidirectionalRepositoryLayoutTestCase
+    extends PlexusTestCase
 {
     protected ArchivaRepository repository;
 
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
 
@@ -63,8 +65,9 @@ public class AbstractBidirectionalRepositoryLayoutTestCase extends PlexusTestCas
     protected ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
                                               String type )
     {
-        ArchivaArtifact artifact = new ArchivaArtifact( repository, groupId, artifactId, version, classifier, type );
+        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         assertNotNull( artifact );
+        artifact.getModel().setRepositoryId( repository.getId() );
         return artifact;
     }
 
@@ -86,7 +89,7 @@ public class AbstractBidirectionalRepositoryLayoutTestCase extends PlexusTestCas
                                            String version, String classifier, String type )
     {
         String expectedId = groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
-        
+
         assertNotNull( expectedId + " - Should not be null.", actualArtifact );
 
         assertEquals( expectedId + " - Group ID", actualArtifact.getGroupId(), groupId );
