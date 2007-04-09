@@ -76,7 +76,8 @@ import java.io.Serializable;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractArtifactKey implements Serializable
+public class AbstractArtifactKey
+    implements CompoundKey, Serializable
 {
     /**
      * The Group ID. (JPOX Requires this remain public)
@@ -92,17 +93,17 @@ public class AbstractArtifactKey implements Serializable
      * The Version. (JPOX Requires this remain public)
      */
     public String version = "";
-    
+
     /**
      * The Classifier. (JPOX Requires this remain public)
      */
-    public String classifier;
-    
+    public String classifier = "";
+
     /**
      * The Type. (JPOX Requires this remain public)
      */
-    public String type;
-    
+    public String type = "";
+
     /**
      * Default Constructor.  Required by JPOX.
      */
@@ -110,7 +111,7 @@ public class AbstractArtifactKey implements Serializable
     {
         /* do nothing */
     }
-    
+
     /**
      * Key Based Constructor.  Required by JPOX.
      * 
@@ -119,19 +120,19 @@ public class AbstractArtifactKey implements Serializable
     public AbstractArtifactKey( String key )
     {
         String parts[] = StringUtils.splitPreserveAllTokens( key, ":" );
-        groupId = parts[1];
-        artifactId = parts[2];
-        version = parts[3];
-        classifier = parts[4];
-        type = parts[5];
+        groupId = parts[0];
+        artifactId = parts[1];
+        version = parts[2];
+        classifier = parts[3];
+        type = parts[4];
     }
-    
+
     /**
      * Get the String representation of this object. - Required by JPOX.
      */
     public String toString()
     {
-        return StringUtils.join( new String[] { groupId, artifactId, version, classifier, type } );
+        return StringUtils.join( new String[] { groupId, artifactId, version, classifier, type }, ':' );
     }
 
     /**
@@ -158,19 +159,19 @@ public class AbstractArtifactKey implements Serializable
         {
             return true;
         }
-        
+
         if ( !super.equals( obj ) )
         {
             return false;
         }
-        
+
         if ( getClass() != obj.getClass() )
         {
             return false;
         }
-        
+
         final AbstractArtifactKey other = (AbstractArtifactKey) obj;
-        
+
         if ( groupId == null )
         {
             if ( other.groupId != null )
@@ -182,7 +183,7 @@ public class AbstractArtifactKey implements Serializable
         {
             return false;
         }
-        
+
         if ( artifactId == null )
         {
             if ( other.artifactId != null )
@@ -194,7 +195,7 @@ public class AbstractArtifactKey implements Serializable
         {
             return false;
         }
-        
+
         if ( version == null )
         {
             if ( other.version != null )
@@ -206,7 +207,7 @@ public class AbstractArtifactKey implements Serializable
         {
             return false;
         }
-        
+
         if ( classifier == null )
         {
             if ( other.classifier != null )
@@ -218,7 +219,7 @@ public class AbstractArtifactKey implements Serializable
         {
             return false;
         }
-        
+
         if ( type == null )
         {
             if ( other.type != null )
@@ -230,7 +231,58 @@ public class AbstractArtifactKey implements Serializable
         {
             return false;
         }
-        
+
         return true;
     }
+
+    public void setGroupId( String groupId )
+    {
+        if ( StringUtils.isBlank( groupId ) )
+        {
+            throw new IllegalArgumentException( "A blank Group ID is not allowed." );
+        }
+
+        this.groupId = groupId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        if ( StringUtils.isBlank( artifactId ) )
+        {
+            throw new IllegalArgumentException( "A blank Artifact ID is not allowed." );
+        }
+
+        this.artifactId = artifactId;
+    }
+
+    public void setVersion( String version )
+    {
+        if ( StringUtils.isBlank( artifactId ) )
+        {
+            throw new IllegalArgumentException( "A blank version is not allowed." );
+        }
+
+        this.version = version;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = "";
+
+        if ( StringUtils.isNotBlank( classifier ) )
+        {
+            this.classifier = classifier;
+        }
+    }
+
+    public void setType( String type )
+    {
+        this.type = "";
+
+        if ( StringUtils.isNotBlank( type ) )
+        {
+            this.type = type;
+        }
+    }
+
 }

@@ -225,7 +225,7 @@
           <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
-          <required>false</required>
+          <required>true</required>
           <description>
             The version of the repository content.
           </description>
@@ -406,7 +406,7 @@
           <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
-          <required>false</required>
+          <required>true</required>
           <description>
             The version of the repository content.
           </description>
@@ -621,7 +621,7 @@
           <identifier>true</identifier>
           <version>1.0.0+</version>
           <type>String</type>
-          <required>false</required>
+          <required>true</required>
           <description>
             The version of the repository content.
           </description>

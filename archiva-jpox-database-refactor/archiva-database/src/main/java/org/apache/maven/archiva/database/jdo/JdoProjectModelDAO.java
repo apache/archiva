@@ -24,6 +24,7 @@ import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey;
 
 import java.util.List;
 
@@ -45,36 +46,49 @@ public class JdoProjectModelDAO
 
     public ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )
     {
-        
-        return null;
+        ArchivaProjectModel model;
+
+        try
+        {
+            model = getProjectModel( groupId, artifactId, version );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            model = new ArchivaProjectModel();
+            model.setGroupId( groupId );
+            model.setArtifactId( artifactId );
+            model.setVersion( version );
+        }
+
+        return model;
     }
 
     public ArchivaProjectModel getProjectModel( String groupId, String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        
-        return null;
+        ArchivaProjectModelKey key = new ArchivaProjectModelKey();
+        key.groupId = groupId;
+        key.artifactId = artifactId;
+        key.version = version;
+
+        return (ArchivaProjectModel) jdo.getObjectById( ArchivaProjectModel.class, key, null );
     }
 
-    public List queryProjectModel( Constraint constraint )
+    public List queryProjectModels( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return jdo.getAllObjects( ArchivaProjectModel.class, constraint );
     }
 
     public ArchivaProjectModel saveProjectModel( ArchivaProjectModel model )
         throws ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return (ArchivaProjectModel) jdo.saveObject( model );
     }
 
     public void deleteProjectModel( ArchivaProjectModel model )
         throws ArchivaDatabaseException
     {
-        // TODO Auto-generated method stub
-
+        jdo.removeObject( model );
     }
-
 }

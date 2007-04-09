@@ -26,6 +26,7 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ import java.util.List;
  * @plexus.component role-hint="jdo"
  */
 public class JdoArtifactDAO
+    extends AbstractLogEnabled
     implements ArtifactDAO
 {
     /**
@@ -60,6 +62,12 @@ public class JdoArtifactDAO
         }
         catch ( ArchivaDatabaseException e )
         {
+            if ( !( e instanceof ObjectNotFoundException ) )
+            {
+                getLogger().warn(
+                                  "Unable to get artifact [" + groupId + ":" + artifactId + ":" + version + ":"
+                                      + classifier + ":" + type + "]: " + e.getMessage(), e );
+            }
             artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         }
 
@@ -71,14 +79,14 @@ public class JdoArtifactDAO
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
         ArchivaArtifactModelKey key = new ArchivaArtifactModelKey();
-        key.groupId = groupId;
-        key.artifactId = artifactId;
-        key.version = version;
-        key.classifier = classifier;
-        key.type = type;
+        key.setGroupId( groupId );
+        key.setArtifactId( artifactId );
+        key.setVersion( version );
+        key.setClassifier( classifier );
+        key.setType( type );
 
         ArchivaArtifactModel model = (ArchivaArtifactModel) jdo.getObjectById( ArchivaArtifactModel.class, key, null );
-        
+
         return new ArchivaArtifact( model );
     }
 
