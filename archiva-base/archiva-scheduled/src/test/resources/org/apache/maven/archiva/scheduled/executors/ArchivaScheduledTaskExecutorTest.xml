@@ -19,8 +19,8 @@
   -->
 
 <component-set>
-
-  <component>
+  <components>
+    <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
       <role-hint>test-archiva-task-executor</role-hint>
       <implementation>org.apache.maven.archiva.scheduled.executors.ArchivaScheduledTaskExecutor</implementation>
@@ -63,5 +63,5 @@
         </properties>
       </configuration>
     </component>
-
+  </components>
 </component-set>
