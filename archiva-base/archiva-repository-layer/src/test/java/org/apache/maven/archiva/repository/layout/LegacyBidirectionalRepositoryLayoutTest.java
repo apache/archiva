@@ -43,28 +43,28 @@ public class LegacyBidirectionalRepositoryLayoutTest extends AbstractBidirection
     {
         ArchivaArtifact artifact = createArtifact( "com.foo", "foo-tool", "1.0", "", "jar" );
 
-        assertEquals( "com.foo/jars/foo-tool-1.0.jar", layout.pathOf( artifact ) );
+        assertEquals( "com.foo/jars/foo-tool-1.0.jar", layout.toPath( artifact ) );
     }
 
     public void testToPathEjbClient()
     {
         ArchivaArtifact artifact = createArtifact( "com.foo", "foo-client", "1.0", "", "ejb-client" );
 
-        assertEquals( "com.foo/ejbs/foo-client-1.0.jar", layout.pathOf( artifact ) );
+        assertEquals( "com.foo/ejbs/foo-client-1.0.jar", layout.toPath( artifact ) );
     }
 
     public void testToPathWithClassifier()
     {
         ArchivaArtifact artifact = createArtifact( "com.foo.lib", "foo-lib", "2.1-alpha-1", "sources", "jar" );
 
-        assertEquals( "com.foo.lib/javadoc.jars/foo-lib-2.1-alpha-1-sources.jar", layout.pathOf( artifact ) );
+        assertEquals( "com.foo.lib/javadoc.jars/foo-lib-2.1-alpha-1-sources.jar", layout.toPath( artifact ) );
     }
 
     public void testToPathUsingUniqueSnapshot()
     {
         ArchivaArtifact artifact = createArtifact( "com.foo", "foo-connector", "2.1-20060822.123456-35", "", "jar" );
 
-        assertEquals( "com.foo/jars/foo-connector-2.1-20060822.123456-35.jar", layout.pathOf( artifact ) );
+        assertEquals( "com.foo/jars/foo-connector-2.1-20060822.123456-35.jar", layout.toPath( artifact ) );
     }
 
     public void testToArtifactBasicSimpleGroupId() throws LayoutException

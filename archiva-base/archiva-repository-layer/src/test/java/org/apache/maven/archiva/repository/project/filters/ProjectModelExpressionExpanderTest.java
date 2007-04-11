@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.project.filters;
 
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.DependencyTree;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.codehaus.plexus.PlexusTestCase;
 
@@ -48,10 +49,14 @@ public class ProjectModelExpressionExpanderTest
         model.setArtifactId( "archiva-test-project" );
         model.setVersion( "1.0-SNAPSHOT" );
 
-        model.addDependency( createDependency( "org.apache.maven.archiva", "archiva-model", "${archiva.version}" ) );
-        model.addDependency( createDependency( "org.apache.maven.archiva", "archiva-common", "${archiva.version}" ) );
-        model.addDependency( createDependency( "org.apache.maven.archiva", "archiva-indexer", "${archiva.version}" ) );
+        DependencyTree depTree = new DependencyTree();
+        
+        depTree.addDependencyEdge( model.asDependency(), createDependency( "org.apache.maven.archiva", "archiva-model", "${archiva.version}" ) );
+        depTree.addDependencyEdge( model.asDependency(), createDependency( "org.apache.maven.archiva", "archiva-common", "${archiva.version}" ) );
+        depTree.addDependencyEdge( model.asDependency(), createDependency( "org.apache.maven.archiva", "archiva-indexer", "${archiva.version}" ) );
 
+        model.setDependencyTree( depTree );
+        
         model.addProperty( "archiva.version", "1.0-SNAPSHOT" );
 
         ProjectModelExpressionFilter filter = lookupExpression();
@@ -62,10 +67,11 @@ public class ProjectModelExpressionExpanderTest
         assertEquals( "Group ID", "org.apache.maven.archiva", model.getGroupId() );
         assertEquals( "Artifact ID", "archiva-test-project", model.getArtifactId() );
         assertEquals( "Version", "1.0-SNAPSHOT", model.getVersion() );
-        assertNotNull( "Dependencies", model.getDependencies() );
-        assertEquals( "Dependencies Size", 3, model.getDependencies().size() );
+        assertNotNull( "DependencyTree", model.getDependencyTree() );
+        assertNotNull( "DependencyTree.dependencies", model.getDependencyTree().getDependencyNodes() );
+        assertEquals( "Dependencies Size", 4, model.getDependencyTree().getDependencyNodes().size() );
 
-        Iterator it = model.getDependencies().iterator();
+        Iterator it = model.getDependencyTree().getDependencyNodes().iterator();
         while ( it.hasNext() )
         {
             Dependency dep = (Dependency) it.next();
@@ -82,6 +88,7 @@ public class ProjectModelExpressionExpanderTest
         dep.setGroupId( groupId );
         dep.setArtifactId( artifactId );
         dep.setVersion( version );
+        dep.setTransitive( false );
 
         return dep;
     }

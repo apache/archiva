@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.model.jpox;
+package org.apache.maven.archiva.repository.layout;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,27 +19,32 @@ package org.apache.maven.archiva.model.jpox;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.AbstractArtifactKey;
-
-import java.io.Serializable;
+import java.util.Map;
 
 /**
- * DependencyKey - unique classid-key for JPOX.
+ * BidirectionalRepositoryLayoutFactory 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory"
  */
-public class DependencyKey
-    extends AbstractArtifactKey
-    implements Serializable
+public class BidirectionalRepositoryLayoutFactory
 {
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
+     */
+    private Map layouts;
 
-    public DependencyKey()
+    public BidirectionalRepositoryLayout getLayout( String type )
+        throws LayoutException
     {
-    }
+        if ( !layouts.containsKey( type ) )
+        {
+            throw new LayoutException( "Layout type [" + type + "] does not exist.  " + "Available types ["
+                + layouts.keySet() + "]" );
+        }
 
-    public DependencyKey( String key )
-    {
-        super( key );
+        return (BidirectionalRepositoryLayout) layouts.get( type );
     }
 }

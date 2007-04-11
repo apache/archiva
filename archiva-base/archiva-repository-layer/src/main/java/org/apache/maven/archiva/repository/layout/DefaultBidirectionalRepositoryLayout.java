@@ -22,6 +22,8 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
 
@@ -33,7 +35,8 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
  * 
  * @plexus.component role-hint="default"
  */
-public class DefaultBidirectionalRepositoryLayout implements BidirectionalRepositoryLayout
+public class DefaultBidirectionalRepositoryLayout
+    implements BidirectionalRepositoryLayout
 {
     private static final char PATH_SEPARATOR = '/';
 
@@ -48,21 +51,46 @@ public class DefaultBidirectionalRepositoryLayout implements BidirectionalReposi
         return "default";
     }
 
-    public String pathOf( ArchivaArtifact artifact )
+    public String toPath( ArchivaArtifact reference )
+    {
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getBaseVersion(), reference
+            .getVersion(), reference.getClassifier(), reference.getType() );
+    }
+
+    public String toPath( ProjectReference reference )
+    {
+        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, null, null );
+    }
+
+    public String toPath( ArtifactReference artifact )
+    {
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getVersion(),
+                       artifact.getClassifier(), artifact.getType() );
+    }
+
+    private String toPath( String groupId, String artifactId, String baseVersion, String version, String classifier,
+                           String type )
     {
         StringBuffer path = new StringBuffer();
 
-        path.append( formatAsDirectory( artifact.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( artifact.getArtifactId() ).append( PATH_SEPARATOR );
-        path.append( artifact.getBaseVersion() ).append( PATH_SEPARATOR );
-        path.append( artifact.getArtifactId() ).append( ARTIFACT_SEPARATOR ).append( artifact.getVersion() );
+        path.append( formatAsDirectory( groupId ) ).append( PATH_SEPARATOR );
+        path.append( artifactId ).append( PATH_SEPARATOR );
 
-        if ( artifact.hasClassifier() )
+        if ( baseVersion != null )
         {
-            path.append( ARTIFACT_SEPARATOR ).append( artifact.getClassifier() );
-        }
+            path.append( baseVersion ).append( PATH_SEPARATOR );
+            if ( ( version != null ) && ( type != null ) )
+            {
+                path.append( artifactId ).append( ARTIFACT_SEPARATOR ).append( version );
 
-        path.append( GROUP_SEPARATOR ).append( extensionMapper.getExtension( artifact ) );
+                if ( StringUtils.isNotBlank( classifier ) )
+                {
+                    path.append( ARTIFACT_SEPARATOR ).append( classifier );
+                }
+
+                path.append( GROUP_SEPARATOR ).append( extensionMapper.getExtension( type ) );
+            }
+        }
 
         return path.toString();
     }
@@ -72,7 +100,8 @@ public class DefaultBidirectionalRepositoryLayout implements BidirectionalReposi
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
-    public ArchivaArtifact toArtifact( String path ) throws LayoutException
+    public ArchivaArtifact toArtifact( String path )
+        throws LayoutException
     {
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
 
@@ -91,7 +120,7 @@ public class DefaultBidirectionalRepositoryLayout implements BidirectionalReposi
         {
             // Illegal Path Parts Length.
             throw new LayoutException( "Not enough parts to the path [" + path
-                            + "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
+                + "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
         }
 
         // Maven 2.x path.
@@ -122,7 +151,8 @@ public class DefaultBidirectionalRepositoryLayout implements BidirectionalReposi
 
         String type = extensionMapper.getType( filename );
 
-        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, fileParts.version, fileParts.classifier, type );
+        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, fileParts.version, fileParts.classifier,
+                                                        type );
 
         // Sanity Checks.
         String artifactBaseVersion = VersionUtil.getBaseVersion( fileParts.version );
@@ -130,7 +160,7 @@ public class DefaultBidirectionalRepositoryLayout implements BidirectionalReposi
         {
             throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
         }
-        
+
         if ( !artifactId.equals( fileParts.artifactId ) )
         {
             throw new LayoutException( "Invalid artifact Id" );

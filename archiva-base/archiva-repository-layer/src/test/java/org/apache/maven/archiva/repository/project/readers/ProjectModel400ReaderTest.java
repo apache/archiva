@@ -63,8 +63,9 @@ public class ProjectModel400ReaderTest
         assertEquals( "Parent Artifact ID", "maven-shared-components", parentRef.getArtifactId() );
         assertEquals( "Parent Version", "4", parentRef.getVersion() );
 
-        assertNotNull( "Dependencies", project.getDependencies() );
-        assertEquals( "Dependencies.size", 3, project.getDependencies().size() );
+        assertNotNull( "DependencyTree", project.getDependencyTree() );
+        assertNotNull( "DependencyTree.dependencies", project.getDependencyTree().getDependencyNodes() );
+        assertEquals( "Dependencies.size", 3, project.getDependencyTree().getDependencyNodes().size() );
     }
 
     public void testLoadWithNamespace()
@@ -92,7 +93,8 @@ public class ProjectModel400ReaderTest
         assertEquals( "Parent Artifact ID", "archiva-base", parentRef.getArtifactId() );
         assertEquals( "Parent Version", "1.0-SNAPSHOT", parentRef.getVersion() );
         
-        assertNotNull( "Dependencies", project.getDependencies() );
-        assertEquals( "Dependencies.size", 6, project.getDependencies().size() );
+        assertNotNull( "DependencyTree", project.getDependencyTree() );
+        assertNotNull( "DependencyTree.dependencies", project.getDependencyTree().getDependencyNodes() );
+        assertEquals( "Dependencies.size", 6, project.getDependencyTree().getDependencyNodes().size() );
     }
 }

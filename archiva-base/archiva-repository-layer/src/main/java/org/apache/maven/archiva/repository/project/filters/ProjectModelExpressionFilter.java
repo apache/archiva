@@ -73,14 +73,18 @@ public class ProjectModelExpressionFilter
             ret.setVersion( evaluator.expand( ret.getVersion() ) );
             ret.setGroupId( evaluator.expand( ret.getGroupId() ) );
 
-            evaluateExpressionsInDependencyList( evaluator, ret.getDependencies() );
+            if ( ( ret.getDependencyTree() != null ) && !ret.getDependencyTree().isEmpty() )
+            {
+                evaluateExpressionsInDependencyList( evaluator, ret.getDependencyTree().getDependencyNodes() );
+            }
+
             evaluateExpressionsInDependencyList( evaluator, ret.getDependencyManagement() );
         }
         catch ( EvaluatorException e )
         {
             throw new ProjectModelException( "Unable to evaluate expression in model: " + e.getMessage(), e );
         }
-        
+
         return ret;
     }
 

@@ -19,8 +19,6 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +28,8 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractArtifactExtensionMapping implements ArtifactExtensionMapping
+public abstract class AbstractArtifactExtensionMapping
+    implements ArtifactExtensionMapping
 {
     protected final Map typeToExtensionMap;
 
@@ -48,15 +47,15 @@ public abstract class AbstractArtifactExtensionMapping implements ArtifactExtens
         typeToExtensionMap.put( "maven-archetype", "jar" );
     }
 
-    public String getExtension( ArchivaArtifact artifact )
+    public String getExtension( String type )
     {
         // Try specialized types first.
-        if ( typeToExtensionMap.containsKey( artifact.getType() ) )
+        if ( typeToExtensionMap.containsKey( type ) )
         {
-            return (String) typeToExtensionMap.get( artifact.getType() );
+            return (String) typeToExtensionMap.get( type );
         }
 
         // Return type
-        return artifact.getType();
+        return type;
     }
 }

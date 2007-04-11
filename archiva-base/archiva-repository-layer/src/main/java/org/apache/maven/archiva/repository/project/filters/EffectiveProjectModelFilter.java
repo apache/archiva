@@ -118,20 +118,20 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
 
     private void applyDependencyManagement( ArchivaProjectModel pom )
     {
-        if ( ( pom.getDependencyManagement() == null ) || ( pom.getDependencies() == null ) )
+        if ( ( pom.getDependencyManagement() == null ) || ( pom.getDependencyTree() == null ) )
         {
             // Nothing to do. All done!
             return;
         }
         
-        if ( pom.getDependencyManagement().isEmpty() || pom.getDependencies().isEmpty() )
+        if ( pom.getDependencyManagement().isEmpty() || pom.getDependencyTree().isEmpty() )
         {
             // Nothing to do. All done!
             return;
         }
 
         Map managedDependencies = createDependencyMap( pom.getDependencyManagement() );
-        Iterator it = pom.getDependencies().iterator();
+        Iterator it = pom.getDependencyTree().getDependencyNodes().iterator();
         while ( it.hasNext() )
         {
             Dependency dep = (Dependency) it.next();

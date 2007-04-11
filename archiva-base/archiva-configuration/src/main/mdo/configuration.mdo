@@ -67,7 +67,7 @@
           <name>networkProxies</name>
           <version>1.0.0+</version>
           <association>
-            <type>ProxyConfiguration</type>
+            <type>NetworkProxyConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
           <description>
@@ -321,16 +321,17 @@
           <type>String</type>
           <defaultValue>disabled</defaultValue>
           <description>
-            The policy for snapshots: 
-              Can be one of the following keywords:
-                "disabled" - means retrieval isn't even attempted.
-                "daily"    - means snapshot is fetched, but only updated on
-                             a daily basis. (equivalent to "1440" minutes)
-                "hourly"   - means snapshot is fetched, but only updated on
-                             an hourly basis. (equivalent to "60" minutes)
-                "never"    - means snapshot is fetched once, but never updated.
-                             (equivalent to "-1" minutes)
-              Or it can be a number of minutes before updating of the snapshot.
+            <![CDATA[
+            <p>
+            The policy for snapshots, one of the following:
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DISABLED disabled},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DAILY daily},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#HOURLY hourly},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#ONCE once}
+            </p>
+
+            @see org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy
+            ]]>
           </description>
         </field>
         <field>
@@ -339,60 +340,38 @@
           <type>String</type>
           <defaultValue>never</defaultValue>
           <description>
-            The policy for releases: 
-              Can be one of the following keywords:
-                "disabled" - means retrieval isn't even attempted.
-                "daily"    - means release is fetched, but only updated on
-                             a daily basis. (equivalent to "1440" minutes)
-                "hourly"   - means release is fetched, but only updated on
-                             an hourly basis. (equivalent to "60" minutes)
-                "never"    - means release is fetched once, but never updated.
-                             (equivalent to "-1" minutes)
-              Or it can be a number of minutes before updating of the release.
+            <![CDATA[
+            <p>
+            The policy for releases, one of the following:
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DISABLED disabled},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DAILY daily},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#HOURLY hourly},
+              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#ONCE once}
+            </p>
+
+            @see org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy
+            ]]>
           </description>
         </field>
         <field>
-          <name>failurePolicy</name>
+          <name>checksumPolicy</name>
           <version>1.0.0+</version>
           <type>String</type>
-          <defaultValue>not-found</defaultValue>
+          <defaultValue>fail</defaultValue>
           <description>
-            The policy for dealing with proxy failures.
-              Can be one of the following keywords:
-                "not-found" - means if the retrieval has a failure, an HTTP 404 
-                              (not found) is returned to the client of this
-                              archiva instance.
-                              This policy setting will allow other proxies
-                              to be checked for content.
-                "failure"   - means if the retrieval has a failure, an HTTP 500
-                              (server error) is returned to the client of this
-                              archiva instance.
-                              This policy setting will return immediately to the
-                              client of the archiva instance and not allow 
-                              furthor attempts on other proxies for this content.
+            <![CDATA[
+            <p>
+            The policy for dealing with checksums, one of the following: 
+              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#FAIL fail}, 
+              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#FIX fix}, or
+              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#IGNORE ignore}
+            </p>
+            
+            @see org.apache.maven.archiva.proxy.policy.ChecksumPolicy
+            ]]>
           </description>
         </field>
       </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-          
-   public static final String NEVER = "never";
-   
-   public static final String DISABLED = "disabled";
-   
-   public static final String DAILY = "daily";
-   
-   public static final String HOURLY = "hourly";
-   
-   public static final String NOT_FOUND = "not-found";
-   
-   public static final String FAILURE = "failure";
-          
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
     </class>
     
     <class>
@@ -438,7 +417,7 @@
       -->
     
     <class>
-      <name>ProxyConfiguration</name>
+      <name>NetworkProxyConfiguration</name>
       <version>1.0.0+</version>
       <fields>
         <field>
@@ -453,7 +432,7 @@
           <name>protocol</name>
           <version>1.0.0+</version>
           <description>
-            The network protocol to use with this proxy.
+            The network protocol to use with this proxy: "http", "socks-4"
           </description>
           <type>String</type>
           <required>true</required>

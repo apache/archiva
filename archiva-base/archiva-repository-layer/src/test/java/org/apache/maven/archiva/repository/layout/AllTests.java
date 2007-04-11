@@ -35,6 +35,8 @@ public class AllTests
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.layout" );
         //$JUnit-BEGIN$
+        suite.addTestSuite( AbstractBidirectionalRepositoryLayoutTestCase.class );
+        suite.addTestSuite( BidirectionalRepositoryLayoutFactoryTest.class );
         suite.addTestSuite( LegacyBidirectionalRepositoryLayoutTest.class );
         suite.addTestSuite( DefaultBidirectionalRepositoryLayoutTest.class );
         suite.addTestSuite( RepositoryLayoutUtilsTest.class );

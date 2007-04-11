@@ -54,6 +54,7 @@ public class ArchivaModelCloner
         cloned.setPackaging( model.getPackaging() );
         cloned.setOrigin( model.getOrigin() );
 
+        cloned.setMailingLists( cloneMailingLists( model.getMailingLists() ) );
         cloned.setCiManagement( clone( model.getCiManagement() ) );
         cloned.setIndividuals( cloneIndividuals( model.getIndividuals() ) );
         cloned.setIssueManagement( clone( model.getIssueManagement() ) );
@@ -61,7 +62,7 @@ public class ArchivaModelCloner
         cloned.setOrganization( clone( model.getOrganization() ) );
         cloned.setScm( clone( model.getScm() ) );
         cloned.setRepositories( cloneRepositories( model.getRepositories() ) );
-        cloned.setDependencies( cloneDependencies( model.getDependencies() ) );
+        cloned.setDependencyTree( clone( model.getDependencyTree() ) );
         cloned.setPlugins( clonePlugins( model.getPlugins() ) );
         cloned.setReports( cloneReports( model.getReports() ) );
         cloned.setDependencyManagement( cloneDependencies( model.getDependencyManagement() ) );
@@ -111,17 +112,51 @@ public class ArchivaModelCloner
 
         Dependency cloned = new Dependency();
 
+        // Identification
         cloned.setGroupId( dependency.getGroupId() );
         cloned.setArtifactId( dependency.getArtifactId() );
         cloned.setVersion( dependency.getVersion() );
-
         cloned.setClassifier( dependency.getClassifier() );
         cloned.setType( dependency.getType() );
+
+        // The rest.
+        cloned.setTransitive( dependency.isTransitive() );
         cloned.setScope( dependency.getScope() );
         cloned.setOptional( dependency.isOptional() );
         cloned.setSystemPath( dependency.getSystemPath() );
         cloned.setUrl( dependency.getUrl() );
         cloned.setExclusions( cloneExclusions( dependency.getExclusions() ) );
+
+        return cloned;
+    }
+
+    public static DependencyEdge clone( DependencyEdge edge )
+    {
+        if ( edge == null )
+        {
+            return null;
+        }
+
+        DependencyEdge cloned = new DependencyEdge();
+
+        cloned.setFromDependency( clone( edge.getFromDependency() ) );
+        cloned.setToDependency( clone( edge.getToDependency() ) );
+        cloned.setType( edge.getType() );
+
+        return cloned;
+    }
+
+    public static DependencyTree clone( DependencyTree dependencyTree )
+    {
+        if ( dependencyTree == null )
+        {
+            return null;
+        }
+
+        DependencyTree cloned = new DependencyTree();
+
+        cloned.setDependencyNodes( cloneDependencies( dependencyTree.getDependencyNodes() ) );
+        cloned.setDependencyEdges( cloneDependencyEdges( dependencyTree.getDependencyEdges() ) );
 
         return cloned;
     }
@@ -137,6 +172,25 @@ public class ArchivaModelCloner
 
         cloned.setSystem( issueManagement.getSystem() );
         cloned.setUrl( issueManagement.getUrl() );
+
+        return cloned;
+    }
+
+    public static MailingList clone( MailingList mailingList )
+    {
+        if ( mailingList == null )
+        {
+            return null;
+        }
+
+        MailingList cloned = new MailingList();
+
+        cloned.setName( mailingList.getName() );
+        cloned.setSubscribeAddress( mailingList.getSubscribeAddress() );
+        cloned.setUnsubscribeAddress( mailingList.getUnsubscribeAddress() );
+        cloned.setPostAddress( mailingList.getPostAddress() );
+        cloned.setMainArchiveUrl( mailingList.getMainArchiveUrl() );
+        cloned.setOtherArchives( cloneSimpleStringList( mailingList.getOtherArchives() ) );
 
         return cloned;
     }
@@ -242,12 +296,39 @@ public class ArchivaModelCloner
         {
             Dependency dep = (Dependency) it.next();
 
-            Dependency cloned = clone( dep );
-
-            if ( cloned != null )
+            if ( dep == null )
             {
-                ret.add( cloned );
+                // Skip null dependency.
+                continue;
             }
+
+            ret.add( clone( dep ) );
+        }
+
+        return ret;
+    }
+
+    public static List cloneDependencyEdges( List dependencyEdges )
+    {
+        if ( dependencyEdges == null )
+        {
+            return null;
+        }
+
+        List ret = new ArrayList();
+
+        Iterator it = dependencyEdges.iterator();
+        while ( it.hasNext() )
+        {
+            DependencyEdge edge = (DependencyEdge) it.next();
+
+            if ( edge == null )
+            {
+                // Skip empty edge.
+                continue;
+            }
+
+            ret.add( clone( edge ) );
         }
 
         return ret;
@@ -336,6 +417,32 @@ public class ArchivaModelCloner
         return ret;
     }
 
+    public static List cloneMailingLists( List mailingLists )
+    {
+        if ( mailingLists == null )
+        {
+            return null;
+        }
+
+        List ret = new ArrayList();
+
+        Iterator it = mailingLists.iterator();
+        while ( it.hasNext() )
+        {
+            MailingList mailingList = (MailingList) it.next();
+
+            if ( mailingList == null )
+            {
+                // Skip null mailing list.
+                continue;
+            }
+
+            ret.add( clone( mailingList ) );
+        }
+
+        return ret;
+    }
+
     public static List clonePlugins( List plugins )
     {
         return cloneArtifactReferences( plugins );
@@ -377,18 +484,24 @@ public class ArchivaModelCloner
 
     public static List cloneRoles( List roles )
     {
-        if ( roles == null )
+        return cloneSimpleStringList( roles );
+    }
+
+    private static List cloneSimpleStringList( List simple )
+    {
+        if ( simple == null )
         {
             return null;
         }
 
         List ret = new ArrayList();
 
-        Iterator it = roles.iterator();
+        Iterator it = simple.iterator();
+
         while ( it.hasNext() )
         {
-            String roleName = (String) it.next();
-            ret.add( roleName );
+            String txt = (String) it.next();
+            ret.add( txt );
         }
 
         return ret;
