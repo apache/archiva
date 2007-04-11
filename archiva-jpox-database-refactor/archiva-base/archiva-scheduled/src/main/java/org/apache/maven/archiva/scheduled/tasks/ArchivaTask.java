@@ -26,32 +26,43 @@ import org.codehaus.plexus.taskqueue.Task;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface RepositoryTask
+public interface ArchivaTask
     extends Task
 {
-    String QUEUE_POLICY_WAIT = "wait";
+    public static final String QUEUE_POLICY_WAIT = "wait";
 
-    String QUEUE_POLICY_SKIP = "skip";
+    public static final String QUEUE_POLICY_SKIP = "skip";
 
     /**
      * Gets the queue policy for this task.
      *
      * @return Queue policy for this task
      */
-    String getQueuePolicy();
+    public String getQueuePolicy();
 
     /**
      * Sets the queue policy for this task.
      *
      * @param policy
      */
-    void setQueuePolicy( String policy );
+    public void setQueuePolicy( String policy );
 
     /**
      * Sets the job name to represent a group of similar / identical job tasks.  Can be used to check the
      * task queue for similar / identical job tasks.
      */
-    void setJobName( String jobName );
+    public void setName( String name );
 
-    String getJobName();
+    /**
+     * obtains the name of the task
+     * @return
+     */
+    public String getName();
+
+    public long getMaxExecutionTime();
+
+    public void setMaxExecutionTime( long maxExecutionTime );
+
+
+   
 }

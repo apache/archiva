@@ -26,14 +26,17 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public interface RepositoryTaskScheduler
+public interface ArchivaTaskScheduler
 {
     /**
      * The Plexus component role.
      */
-    String ROLE = RepositoryTaskScheduler.class.getName();
+    public final static String ROLE = ArchivaTaskScheduler.class.getName();
 
-    void runDataRefresh()
-        throws TaskExecutionException;
+    public void runDatabaseTasks() throws TaskExecutionException;
 
+    public void runAllRepositoryTasks() throws TaskExecutionException;
+    
+    public void runRepositoryTasks( String repositoryId ) throws TaskExecutionException;
+    
 } 

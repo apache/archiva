@@ -20,7 +20,7 @@ package org.apache.maven.archiva.scheduled;
  */
 
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.codehaus.plexus.scheduler.AbstractJob;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -29,9 +29,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 /**
- * This class is the repository job that is executed by the scheduler.
+ * This class is the database job that is executed by the scheduler.
  */
-public class RepositoryTaskJob
+public class DatabaseTaskJob
     extends AbstractJob
 {
     static final String TASK_KEY = "EXECUTION";
@@ -39,8 +39,6 @@ public class RepositoryTaskJob
     static final String TASK_QUEUE = "TASK_QUEUE";
 
     static final String TASK_QUEUE_POLICY = "TASK_QUEUE_POLICY";
-    
-    static final String TASK_REPOSITORY = "TASK_REPOSITORY";
 
     /**
      * Execute the discoverer and the indexer.
@@ -58,7 +56,7 @@ public class RepositoryTaskJob
         TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
         String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        ArchivaTask task = new RepositoryTask();
+        ArchivaTask task = new DatabaseTask();
         task.setName( context.getJobDetail().getName() );
 
         try
