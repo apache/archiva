@@ -22,7 +22,7 @@ package org.apache.maven.archiva.database.jdo;
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.RepositoryDAO;
-import org.apache.maven.archiva.model.ArchivaRepositoryModel;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
 
@@ -41,18 +41,18 @@ public class JdoRepositoryDAOTest
         throws ArchivaDatabaseException
     {
         RepositoryDAO repoDao = dao.getRepositoryDAO();
-        
+
         // Create it
-        ArchivaRepositoryModel repo = repoDao.createRepository( "testRepo", "http://localhost:8080/repository/foo" );
+        ArchivaRepository repo = repoDao.createRepository( "testRepo", "Test Repository",
+                                                           "http://localhost:8080/repository/foo" );
         assertNotNull( repo );
 
         // Set some mandatory values
-        repo.setName( "The Test Repository." );
-        repo.setCreationSource( "Test Case" );
-        repo.setLayoutName( "default" );
+        repo.getModel().setCreationSource( "Test Case" );
+        repo.getModel().setLayoutName( "default" );
 
         // Save it. 
-        ArchivaRepositoryModel repoSaved = repoDao.saveRepository( repo );
+        ArchivaRepository repoSaved = repoDao.saveRepository( repo );
         assertNotNull( repoSaved );
         assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved ).toString() );
 
@@ -62,28 +62,28 @@ public class JdoRepositoryDAOTest
         assertEquals( 1, repos.size() );
 
         // Test that retreived object is what we expect.
-        ArchivaRepositoryModel firstRepo = (ArchivaRepositoryModel) repos.get( 0 );
+        ArchivaRepository firstRepo = (ArchivaRepository) repos.get( 0 );
         assertNotNull( firstRepo );
         assertEquals( "testRepo", repo.getId() );
-        assertEquals( "The Test Repository.", repo.getName() );
-        assertEquals( "Test Case", repo.getCreationSource() );
-        assertEquals( "default", repo.getLayoutName() );
+        assertEquals( "The Test Repository.", repo.getModel().getName() );
+        assertEquals( "Test Case", repo.getModel().getCreationSource() );
+        assertEquals( "default", repo.getModel().getLayoutName() );
 
         // Change value and save.
-        repoSaved.setName( "Saved Again" );
+        repoSaved.getModel().setCreationSource( "Changed" );
         repoDao.saveRepository( repoSaved );
 
         // Test that only 1 object is saved.
         assertEquals( 1, repoDao.getRepositories().size() );
 
         // Get the specific repo.
-        ArchivaRepositoryModel actualRepo = repoDao.getRepository( "testRepo" );
+        ArchivaRepository actualRepo = repoDao.getRepository( "testRepo" );
         assertNotNull( actualRepo );
 
         // Test expected values.
         assertEquals( "testRepo", actualRepo.getId() );
         assertEquals( "http://localhost:8080/repository/foo", actualRepo.getUrl() );
-        assertEquals( "Saved Again", actualRepo.getName() );
+        assertEquals( "Changed", actualRepo.getModel().getCreationSource() );
 
         // Test that only 1 object is saved.
         assertEquals( 1, repoDao.getRepositories().size() );

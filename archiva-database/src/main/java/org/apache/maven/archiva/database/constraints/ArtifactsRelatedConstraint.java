@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database;
+package org.apache.maven.archiva.database.constraints;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,19 +19,35 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.maven.archiva.database.Constraint;
+
 /**
- * ArchivaDAO - The interface for all content within the database.
+ * ArtifactsRelatedConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArchivaDAO
+public class ArtifactsRelatedConstraint
+    extends AbstractConstraint
+    implements Constraint
 {
-    public static final String ROLE = ArchivaDAO.class.getName();
+    private String whereClause;
 
-    ArtifactDAO getArtifactDAO();
+    public ArtifactsRelatedConstraint( String groupId, String artifactId, String version )
+    {
+        whereClause = "groupId == '" + StringEscapeUtils.escapeSql( groupId ) + "' AND artifactId == '"
+            + StringEscapeUtils.escapeSql( artifactId ) + "' AND version == '" + StringEscapeUtils.escapeSql( version )
+            + "'";
+    }
 
-    ProjectModelDAO getProjectModelDAO();
+    public String getSortColumn()
+    {
+        return "classifier";
+    }
 
-    RepositoryDAO getRepositoryDAO();
+    public String getWhereCondition()
+    {
+        return whereClause;
+    }
 }

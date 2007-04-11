@@ -19,9 +19,11 @@ package org.apache.maven.archiva.web.check;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
 import org.codehaus.plexus.rbac.profile.RoleProfileManager;
@@ -49,7 +51,7 @@ public class RoleExistanceEnvironmentCheck
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaDAO dao;
 
     /**
      * @plexus.requirement role-hint="archiva"
@@ -64,15 +66,14 @@ public class RoleExistanceEnvironmentCheck
         {
             try
             {
-                // check if there is potential for role/repo disconnect
-                Configuration configuration = archivaConfiguration.getConfiguration();
-                if ( configuration.isValid() )
-                {
-                    List repos = configuration.getRepositories();
+                List repos = dao.getRepositoryDAO().getRepositories();
 
-                    for ( Iterator i = repos.iterator(); i.hasNext(); )
+                if ( hasManagedRepository( repos ) )
+                {
+                    Iterator it = repos.iterator();
+                    while ( it.hasNext() )
                     {
-                        RepositoryConfiguration repository = (RepositoryConfiguration) i.next();
+                        RepositoryConfiguration repository = (RepositoryConfiguration) it.next();
 
                         roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
 
@@ -85,9 +86,33 @@ public class RoleExistanceEnvironmentCheck
                 list.add( this.getClass().getName() + "error initializing roles: " + rpe.getMessage() );
                 getLogger().info( "error initializing roles", rpe );
             }
+            catch ( ObjectNotFoundException e )
+            {
+                list.add( this.getClass().getName() + "error initializing roles (repository not found): " + e.getMessage() );
+                getLogger().info( "error initializing roles", e );
+            }
+            catch ( ArchivaDatabaseException e )
+            {
+                list.add( this.getClass().getName() + "error initializing roles (database error): " + e.getMessage() );
+                getLogger().info( "error initializing roles", e );
+            }
 
             checked = true;
         }
     }
 
+    public boolean hasManagedRepository( List repos )
+    {
+        Iterator it = repos.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaRepository repo = (ArchivaRepository) it.next();
+            if ( repo.isManaged() )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

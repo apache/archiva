@@ -19,7 +19,7 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaRepositoryModel;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
 
@@ -52,20 +52,20 @@ public interface RepositoryDAO
      * This is the only list of options created in this DAO.
      */
 
-    public ArchivaRepositoryModel createRepository( String id, String url );
+    public ArchivaRepository createRepository( String id, String name, String url );
 
-    public List /*<ArchivaRepositoryModel>*/getRepositories()
+    public List /*<ArchivaRepository>*/getRepositories()
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public ArchivaRepositoryModel getRepository( String id )
+    public ArchivaRepository getRepository( String id )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public List queryRepository( Constraint constraint )
+    public List /*<ArchivaRepository>*/queryRepositories( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public ArchivaRepositoryModel saveRepository( ArchivaRepositoryModel repository )
+    public ArchivaRepository saveRepository( ArchivaRepository repository )
         throws ArchivaDatabaseException;
 
-    public void deleteRepository( ArchivaRepositoryModel repository )
+    public void deleteRepository( ArchivaRepository repository )
         throws ArchivaDatabaseException;
 }

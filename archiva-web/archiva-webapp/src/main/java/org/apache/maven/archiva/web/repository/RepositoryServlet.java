@@ -20,8 +20,10 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
@@ -40,14 +42,15 @@ import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * RepositoryServlet
@@ -74,9 +77,15 @@ public class RepositoryServlet
      */
     private AuditLog audit;
 
-    private Configuration configuration;
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
 
-    private ArchivaConfiguration archivaConfiguration;
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration configuration;
 
     public void initComponents()
         throws ServletException
@@ -87,46 +96,73 @@ public class RepositoryServlet
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
         audit = (AuditLog) lookup( AuditLog.ROLE );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-        configuration = archivaConfiguration.getConfiguration();
-        archivaConfiguration.addChangeListener( this );
+        dao = (ArchivaDAO) lookup( ArchivaDAO.ROLE, "jdo" );
+        configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
+        configuration.addChangeListener( this );
     }
 
     public void initServers( ServletConfig servletConfig )
         throws DavServerException
     {
-        List repositories = configuration.getRepositories();
-        Iterator itrepos = repositories.iterator();
-        while ( itrepos.hasNext() )
+        try
         {
-            RepositoryConfiguration repoConfig = (RepositoryConfiguration) itrepos.next();
-            File repoDir = new File( repoConfig.getDirectory() );
-             
-            if ( !repoDir.exists() )
+            List repositories = dao.getRepositoryDAO().getRepositories();
+            Iterator itrepos = repositories.iterator();
+            while ( itrepos.hasNext() )
             {
-                repoDir.mkdirs();
+                ArchivaRepository repo = (ArchivaRepository) itrepos.next();
+                if ( !repo.isManaged() )
+                {
+                    // Skip non-managed.
+                    continue;
+                }
+
+                File repoDir = new File( repo.getUrl().getPath() );
+
+                if ( !repoDir.exists() )
+                {
+                    repoDir.mkdirs();
+                }
+
+                DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
+
+                server.addListener( audit );
             }
-
-            DavServerComponent server = createServer( repoConfig.getUrlName(),  repoDir, servletConfig );
-
-            server.addListener( audit );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            throw new DavServerException( "Unable to initialized dav servers: " + e.getMessage(), e );
         }
     }
 
-    public RepositoryConfiguration getRepositoryConfiguration( DavServerRequest request )
+    public ArchivaRepository getRepository( DavServerRequest request )
     {
-        return configuration.getRepositoryByUrlName( request.getPrefix() );
+        String id = request.getPrefix();
+        try
+        {
+            return dao.getRepositoryDAO().getRepository( id );
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            log( "Unable to find repository for id [" + id + "]" );
+            return null;
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            log( "Unable to find repository for id [" + id + "]: " + e.getMessage(), e );
+            return null;
+        }
     }
 
     public String getRepositoryName( DavServerRequest request )
     {
-        RepositoryConfiguration repoConfig = getRepositoryConfiguration( request );
+        ArchivaRepository repoConfig = getRepository( request );
         if ( repoConfig == null )
         {
             return "Unknown";
         }
 
-        return repoConfig.getName();
+        return repoConfig.getModel().getName();
     }
 
     public boolean isAuthenticated( DavServerRequest davRequest, HttpServletResponse response )
@@ -146,7 +182,6 @@ public class RepositoryServlet
                                     new AuthenticationException( "User Credentials Invalid" ) );
                 return false;
             }
-
         }
         catch ( AuthenticationException e )
         {
@@ -185,16 +220,15 @@ public class RepositoryServlet
                 permission = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD;
             }
 
-            AuthorizationResult authzResult =
-                securitySystem.authorize( securitySession, permission, getRepositoryConfiguration( davRequest )
-                    .getId() );
+            AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, davRequest
+                .getPrefix() );
 
             if ( !authzResult.isAuthorized() )
             {
                 if ( authzResult.getException() != null )
                 {
-                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
-                        ",permission=" + permission + "] : " + authzResult.getException().getMessage() );
+                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest
+                        + ",permission=" + permission + "] : " + authzResult.getException().getMessage() );
                 }
 
                 // Issue HTTP Challenge.
@@ -218,12 +252,9 @@ public class RepositoryServlet
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        configuration = archivaConfiguration.getConfiguration();
-
         if ( propertyName.startsWith( "repositories" ) )
         {
-            log( "Triggering managed repository configuration change with " + propertyName + " set to " +
-                propertyValue );
+            log( "Triggering managed repository configuration change with " + propertyName + " set to " + propertyValue );
             getDavManager().removeAllServers();
 
             try

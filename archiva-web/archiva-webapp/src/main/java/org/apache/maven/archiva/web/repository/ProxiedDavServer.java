@@ -74,11 +74,6 @@ public class ProxiedDavServer
      */
     private ProxyRequestHandler proxyRequestHandler;
 
-    /**
-     * @plexus.requirement
-     */
-    private ConfiguredRepositoryFactory repositoryFactory;
-
     private RepositoryConfiguration repositoryConfiguration;
 
     private ArtifactRepository managedRepository;

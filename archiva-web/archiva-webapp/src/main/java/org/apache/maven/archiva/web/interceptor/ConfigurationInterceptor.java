@@ -21,9 +21,13 @@ package org.apache.maven.archiva.web.interceptor;
 
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
+
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An interceptor that makes the application configuration available
@@ -39,7 +43,7 @@ public class ConfigurationInterceptor
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
+    private ArchivaDAO dao;
 
     /**
      * @param actionInvocation
@@ -49,20 +53,12 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
-        Configuration configuration = archivaConfiguration.getConfiguration();
+        List repos = dao.getRepositoryDAO().getRepositories();
 
-        if ( !configuration.isValid() )
+        if ( !hasManagedRepository( repos ) )
         {
-            if ( configuration.getRepositories().isEmpty() )
-            {
-                getLogger().info( "No repositories were configured - forwarding to repository configuration page" );
-                return "config-repository-needed";
-            }
-            else
-            {
-                getLogger().info( "Configuration is incomplete - forwarding to configuration page" );
-                return "config-needed";
-            }
+            getLogger().info( "No repositories exist - forwarding to repository configuration page" );
+            return "config-repository-needed";
         }
         else
         {
@@ -78,5 +74,30 @@ public class ConfigurationInterceptor
     public void init()
     {
         // This space left intentionally blank
+    }
+
+    public boolean hasManagedRepository( List repos )
+    {
+        if ( repos == null )
+        {
+            return false;
+        }
+
+        if ( repos.isEmpty() )
+        {
+            return false;
+        }
+
+        Iterator it = repos.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaRepository repo = (ArchivaRepository) it.next();
+            if ( repo.isManaged() )
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

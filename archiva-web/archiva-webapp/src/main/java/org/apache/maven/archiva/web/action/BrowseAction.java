@@ -22,11 +22,7 @@ package org.apache.maven.archiva.web.action;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
+import org.apache.maven.archiva.database.ArchivaDAO;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
@@ -51,12 +47,7 @@ public class BrowseAction
     /**
      * @plexus.requirement
      */
-    private RepositoryArtifactIndexFactory factory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ConfiguredRepositoryFactory repositoryFactory;
+    private ArchivaDAO dao;
 
     /**
      * @plexus.requirement
@@ -241,15 +232,6 @@ public class BrowseAction
             groups.add( node.getFullName() );
         }
         return groups;
-    }
-
-    private RepositoryArtifactIndex getIndex()
-        throws RepositoryIndexException
-    {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        File indexPath = new File( configuration.getIndexPath() );
-
-        return factory.createStandardIndex( indexPath );
     }
 
     public List getGroups()
