@@ -22,7 +22,7 @@ package org.apache.maven.archiva.scheduled.executors;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.scheduled.tasks.DataRefreshTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
@@ -45,17 +45,13 @@ public class DataRefreshExecutorTest
     {
         super.setUp();
 
-        taskExecutor = (TaskExecutor) lookup( "org.codehaus.plexus.taskqueue.execution.TaskExecutor", "data-refresh" );
+        taskExecutor = (TaskExecutor) lookup( "org.codehaus.plexus.taskqueue.execution.TaskExecutor", "archiva-task-executor" );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         Configuration configuration = archivaConfiguration.getConfiguration();
 
-        File indexPath = new File( configuration.getIndexPath() );
-        if ( indexPath.exists() )
-        {
-            FileUtils.deleteDirectory( indexPath );
-        }
+       
     }
 
     public void testExecutor()
@@ -65,7 +61,7 @@ public class DataRefreshExecutorTest
     }
 
     class TestDataRefreshTask
-        extends DataRefreshTask
+        extends RepositoryTask
     {
         public String getJobName()
         {
