@@ -45,8 +45,7 @@ public class ArchivaScheduledTaskExecutorTest
     {
         super.setUp();
 
-        taskExecutor = (TaskExecutor) lookup( "org.codehaus.plexus.taskqueue.execution.TaskExecutor", "test-archiva-task-executor" );
-       
+        taskExecutor = (TaskExecutor) lookup( TaskExecutor.class.getName(), "test-archiva-task-executor" );
     }
 
     public void testExecutor()
