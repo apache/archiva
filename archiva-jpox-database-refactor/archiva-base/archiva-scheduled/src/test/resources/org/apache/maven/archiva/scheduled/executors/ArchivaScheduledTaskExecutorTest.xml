@@ -22,7 +22,7 @@
 
   <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-      <role-hint>archiva-task-executor</role-hint>
+      <role-hint>test-archiva-task-executor</role-hint>
       <implementation>org.apache.maven.archiva.scheduled.executors.ArchivaScheduledTaskExecutor</implementation>
       <description></description>
       <requirements>
@@ -63,7 +63,5 @@
         </properties>
       </configuration>
     </component>
-
-   
 
 </component-set>
