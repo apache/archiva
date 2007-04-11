@@ -54,7 +54,8 @@ public class JdoRepositoryDAOTest
         // Save it. 
         ArchivaRepository repoSaved = repoDao.saveRepository( repo );
         assertNotNull( repoSaved );
-        assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved ).toString() );
+        assertNotNull( repoSaved.getModel() );
+        assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved.getModel() ).toString() );
 
         // Test that something has been saved.
         List repos = repoDao.getRepositories();
@@ -65,7 +66,7 @@ public class JdoRepositoryDAOTest
         ArchivaRepository firstRepo = (ArchivaRepository) repos.get( 0 );
         assertNotNull( firstRepo );
         assertEquals( "testRepo", repo.getId() );
-        assertEquals( "The Test Repository.", repo.getModel().getName() );
+        assertEquals( "Test Repository", repo.getModel().getName() );
         assertEquals( "Test Case", repo.getModel().getCreationSource() );
         assertEquals( "default", repo.getModel().getLayoutName() );
 
@@ -82,7 +83,7 @@ public class JdoRepositoryDAOTest
 
         // Test expected values.
         assertEquals( "testRepo", actualRepo.getId() );
-        assertEquals( "http://localhost:8080/repository/foo", actualRepo.getUrl() );
+        assertEquals( "http://localhost:8080/repository/foo", actualRepo.getUrl().toString() );
         assertEquals( "Changed", actualRepo.getModel().getCreationSource() );
 
         // Test that only 1 object is saved.
