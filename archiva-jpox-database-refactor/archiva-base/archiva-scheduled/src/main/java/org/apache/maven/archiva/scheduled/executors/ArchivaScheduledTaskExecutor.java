@@ -112,18 +112,10 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
         
         long time = System.currentTimeMillis();
 
-        
+        // insert repository scanning codelets here
         
         time = System.currentTimeMillis() - time;
 
         getLogger().info( "Finished repository task for " + time + "ms." );
-    }
-    
-    public void execute() throws TaskExecutionException
-    {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
-        
-
     }
 }

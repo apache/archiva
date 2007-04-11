@@ -51,15 +51,15 @@ public class ArchivaScheduledTaskExecutorTest
     public void testExecutor()
         throws TaskExecutionException
     {
-        taskExecutor.executeTask( new TestDataRefreshTask() );
+        taskExecutor.executeTask( new TestRepositoryTask() );
     }
 
-    class TestDataRefreshTask
+    class TestRepositoryTask
         extends RepositoryTask
     {
-        public String getJobName()
+        public String getName()
         {
-            return "TestDataRefresh";
+            return "TestRepositoryTask";
         }
     }
 }

@@ -56,17 +56,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
-      <exclusions>
-        <exclusion>
-          <groupId>logkit</groupId>
-          <artifactId>logkit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-container-default</artifactId>
     </dependency>
@@ -75,11 +64,17 @@
       <artifactId>plexus-registry-api</artifactId>
       <version>1.0-alpha-2</version>
     </dependency>
+    <!-- Test Dependencies -->
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
       <version>1.0-alpha-2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-core-consumers</artifactId>
+      <scope>test</scope> 
     </dependency>
   </dependencies>
   <build>
