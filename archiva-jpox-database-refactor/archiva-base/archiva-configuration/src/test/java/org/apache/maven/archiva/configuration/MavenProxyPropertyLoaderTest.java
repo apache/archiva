@@ -42,7 +42,7 @@ public class MavenProxyPropertyLoaderTest extends PlexusTestCase
         File confFile = getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
         Configuration configuration = new Configuration();
-        ProxyConfiguration proxy = new ProxyConfiguration();
+        NetworkProxyConfiguration proxy = new NetworkProxyConfiguration();
         proxy.setHost( "original-host" );
         configuration.addNetworkProxy( proxy ); // overwritten
 

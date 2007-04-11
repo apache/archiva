@@ -60,7 +60,7 @@ public class RepositoryProjectResolver
         ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
             .getVersion(), "", "pom" );
 
-        String path = layout.pathOf( artifact );
+        String path = layout.toPath( artifact );
         File repoFile = new File( this.repository.getUrl().getPath(), path );
 
         return reader.read( repoFile );

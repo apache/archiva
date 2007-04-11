@@ -22,18 +22,21 @@ package org.apache.maven.archiva.repository.project.filters;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.DependencyTree;
+import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
-import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectResolver;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * EffectiveProjectModelFilterTest 
@@ -45,8 +48,9 @@ public class EffectiveProjectModelFilterTest
     extends PlexusTestCase
 {
     private static final String DEFAULT_REPOSITORY = "src/test/repositories/default-repository";
-    
-    private EffectiveProjectModelFilter lookupEffective() throws Exception
+
+    private EffectiveProjectModelFilter lookupEffective()
+        throws Exception
     {
         return (EffectiveProjectModelFilter) lookup( ProjectModelFilter.class, "effective" );
     }
@@ -77,7 +81,7 @@ public class EffectiveProjectModelFilterTest
         throws Exception
     {
         EffectiveProjectModelFilter filter = lookupEffective();
-        
+
         filter.addProjectModelResolver( createDefaultRepositoryResolver() );
 
         ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY
@@ -95,33 +99,42 @@ public class EffectiveProjectModelFilterTest
     {
         assertEquals( "Equivalent Models", expectedModel, effectiveModel );
 
-        assertContainsSame( "Individuals", expectedModel.getIndividuals(), effectiveModel.getIndividuals() );
-        dumpDependencyList( "Expected", expectedModel.getDependencies() );
-        dumpDependencyList( "Effective", effectiveModel.getDependencies() );
-        assertContainsSame( "Dependencies", expectedModel.getDependencies(), effectiveModel.getDependencies() );
-        assertContainsSame( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
+        assertContainsSameIndividuals( "Individuals", expectedModel.getIndividuals(), effectiveModel.getIndividuals() );
+        dumpDependencyList( "Expected", expectedModel.getDependencyTree() );
+        dumpDependencyList( "Effective", effectiveModel.getDependencyTree() );
+        assertContainsSameDependencies( "Dependencies", expectedModel.getDependencyTree().getDependencyNodes(),
+                                        effectiveModel.getDependencyTree().getDependencyNodes() );
+        assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
             .getDependencyManagement() );
     }
-    
-    private void dumpDependencyList( String type, List deps )
+
+    private void dumpDependencyList( String type, DependencyTree tree )
     {
+        if ( tree == null )
+        {
+            System.out.println( " Tree [" + type + "] is null." );
+            return;
+        }
+
+        if ( tree.getDependencyNodes() == null )
+        {
+            System.out.println( " Tree [" + type + "] dependency list (nodes) is null." );
+            return;
+        }
+
+        List deps = tree.getDependencyNodes();
+
         System.out.println( ".\\ [" + type + "] Dependency List (size:" + deps.size() + ") \\.________________" );
         Iterator it = deps.iterator();
         while ( it.hasNext() )
         {
             Dependency dep = (Dependency) it.next();
-            System.out.println( "  " + toDependencyKey( dep ) );
+            System.out.println( "  " + Dependency.toKey( dep ) );
         }
         System.out.println( "" );
     }
-    
-    private String toDependencyKey( Dependency dep )
-    {
-        return "[" + dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion() + ":" + dep.getClassifier()
-            + ":" + dep.getType() + "]";
-    }
 
-    private void assertContainsSame( String listId, List expectedList, List effectiveList )
+    private void assertEquivalentLists( String listId, List expectedList, List effectiveList )
     {
         if ( ( expectedList == null ) && ( effectiveList == null ) )
         {
@@ -139,12 +152,69 @@ public class EffectiveProjectModelFilterTest
         }
 
         assertEquals( "[" + listId + "] List Size", expectedList.size(), expectedList.size() );
+    }
 
-        Iterator it = expectedList.iterator();
+    private void assertContainsSameIndividuals( String listId, List expectedList, List effectiveList )
+    {
+        assertEquivalentLists( listId, expectedList, effectiveList );
+
+        Map expectedMap = getIndividualsMap( expectedList );
+        Map effectiveMap = getIndividualsMap( effectiveList );
+
+        Iterator it = expectedMap.keySet().iterator();
+        while ( it.hasNext() )
+        {
+            String key = (String) it.next();
+
+            assertTrue( "Should exist in Effective [" + listId + "] list: " + key, effectiveMap.containsKey( key ) );
+        }
+    }
+
+    private void assertContainsSameDependencies( String listId, List expectedList, List effectiveList )
+    {
+        assertEquivalentLists( listId, expectedList, effectiveList );
+
+        Map expectedMap = getDependencyMap( expectedList );
+        Map effectiveMap = getDependencyMap( effectiveList );
+
+        Iterator it = expectedMap.keySet().iterator();
+        while ( it.hasNext() )
+        {
+            String key = (String) it.next();
+
+            assertTrue( "Should exist in Effective [" + listId + "] list: " + key, effectiveMap.containsKey( key ) );
+        }
+    }
+
+    private Map getIndividualsMap( List deps )
+    {
+        Map map = new HashMap();
+        Iterator it = deps.iterator();
         while ( it.hasNext() )
         {
             Object o = it.next();
-            assertTrue( "Should exist in Effective [" + listId + "] list: " + o, effectiveList.contains( o ) );
+            assertTrue( "List contains Individual entries. (found " + o.getClass().getName() + " instead)",
+                        o instanceof Individual );
+            Individual individual = (Individual) o;
+            String key = individual.getEmail();
+            map.put( key, individual );
         }
+        return map;
+    }
+
+    private Map getDependencyMap( List deps )
+    {
+        Map map = new HashMap();
+        Iterator it = deps.iterator();
+        while ( it.hasNext() )
+        {
+            Object o = it.next();
+            assertTrue( "List contains Dependency entries. (found " + o.getClass().getName() + " instead)",
+                        o instanceof Dependency );
+            Dependency dep = (Dependency) o;
+            String key = Dependency.toVersionlessKey( dep );
+            map.put( key, dep );
+        }
+        return map;
     }
 }

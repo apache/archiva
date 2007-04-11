@@ -20,6 +20,8 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
 
 /**
  * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
@@ -40,10 +42,26 @@ public interface BidirectionalRepositoryLayout
     /**
      * Given an ArchivaArtifact, return the relative path to the artifact.
      * 
-     * @param artifact the artifact to compute the path of.
+     * @param artifact the artifact to use.
      * @return the relative path to the artifact. 
      */
-    public String pathOf( ArchivaArtifact artifact );
+    public String toPath( ArchivaArtifact artifact );
+    
+    /**
+     * Given an ArtifactReference, return the relative path to the artifact.
+     * 
+     * @param artifact the artifact reference to use.
+     * @return the relative path to the artifact. 
+     */
+    public String toPath( ArtifactReference artifact );
+    
+    /**
+     * Given an ProjectReference, return the relative path to that reference.
+     * 
+     * @param project the project reference to use.
+     * @return the relative path to the project reference. 
+     */
+    public String toPath( ProjectReference project );
 
     /**
      * Given a repository relative path to a filename, return the ArchivaArtifact object suitable for the path.

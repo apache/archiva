@@ -21,6 +21,8 @@ package org.apache.maven.archiva.repository.layout;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
 
@@ -35,7 +37,8 @@ import java.util.Map;
  * 
  * @plexus.component role-hint="legacy"
  */
-public class LegacyBidirectionalRepositoryLayout implements BidirectionalRepositoryLayout
+public class LegacyBidirectionalRepositoryLayout
+    implements BidirectionalRepositoryLayout
 {
     private static final String PATH_SEPARATOR = "/";
 
@@ -56,34 +59,56 @@ public class LegacyBidirectionalRepositoryLayout implements BidirectionalReposit
         return "legacy";
     }
 
-    public String pathOf( ArchivaArtifact artifact )
+    public String toPath( ArchivaArtifact reference )
+    {
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference
+            .getVersion(), reference.getClassifier(), reference.getType() );
+    }
+
+    public String toPath( ProjectReference reference )
+    {
+        // TODO: Verify type
+        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, "metadata-xml" );
+    }
+
+    public String toPath( ArtifactReference artifact )
+    {
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(),
+                       artifact.getType() );
+    }
+
+    private String toPath( String groupId, String artifactId, String version, String classifier, String type )
     {
         StringBuffer path = new StringBuffer();
 
-        path.append( artifact.getGroupId() ).append( PATH_SEPARATOR );
-        path.append( getDirectory( artifact ) ).append( PATH_SEPARATOR );
-        path.append( artifact.getArtifactId() ).append( '-' ).append( artifact.getVersion() );
+        path.append( groupId ).append( PATH_SEPARATOR );
+        path.append( getDirectory( classifier, type ) ).append( PATH_SEPARATOR );
 
-        if ( artifact.hasClassifier() )
+        if ( version != null )
         {
-            path.append( '-' ).append( artifact.getClassifier() );
-        }
+            path.append( artifactId ).append( '-' ).append( version );
 
-        path.append( '.' ).append( extensionMapper.getExtension( artifact ) );
+            if ( StringUtils.isNotBlank( classifier ) )
+            {
+                path.append( '-' ).append( classifier );
+            }
+
+            path.append( '.' ).append( extensionMapper.getExtension( type ) );
+        }
 
         return path.toString();
     }
 
-    private String getDirectory( ArchivaArtifact artifact )
+    private String getDirectory( String classifier, String type )
     {
         // Special Cases involving classifiers and type.
-        if ( "jar".equals( artifact.getType() ) && "sources".equals( artifact.getClassifier() ) )
+        if ( "jar".equals( type ) && "sources".equals( classifier ) )
         {
             return "javadoc.jars";
         }
 
         // Special Cases involving only type.
-        String dirname = (String) typeToDirectoryMap.get( artifact.getType() );
+        String dirname = (String) typeToDirectoryMap.get( type );
 
         if ( dirname != null )
         {
@@ -91,10 +116,11 @@ public class LegacyBidirectionalRepositoryLayout implements BidirectionalReposit
         }
 
         // Default process.
-        return artifact.getType() + "s";
+        return type + "s";
     }
 
-    public ArchivaArtifact toArtifact( String path ) throws LayoutException
+    public ArchivaArtifact toArtifact( String path )
+        throws LayoutException
     {
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
 
@@ -112,7 +138,7 @@ public class LegacyBidirectionalRepositoryLayout implements BidirectionalReposit
         {
             // Illegal Path Parts Length.
             throw new LayoutException( "Invalid number of parts to the path [" + path
-                            + "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
+                + "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
         }
 
         // The Group ID.
@@ -128,8 +154,8 @@ public class LegacyBidirectionalRepositoryLayout implements BidirectionalReposit
 
         String type = extensionMapper.getType( filename );
 
-        ArchivaArtifact artifact =
-            new ArchivaArtifact( groupId, fileParts.artifactId, fileParts.version, fileParts.classifier, type );
+        ArchivaArtifact artifact = new ArchivaArtifact( groupId, fileParts.artifactId, fileParts.version,
+                                                        fileParts.classifier, type );
 
         // Sanity Checks.
         if ( StringUtils.isEmpty( fileParts.extension ) )

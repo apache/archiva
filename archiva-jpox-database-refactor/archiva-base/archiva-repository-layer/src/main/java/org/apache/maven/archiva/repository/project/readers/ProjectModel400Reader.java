@@ -25,10 +25,12 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.CiManagement;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.DependencyScope;
+import org.apache.maven.archiva.model.DependencyTree;
 import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.model.IssueManagement;
 import org.apache.maven.archiva.model.License;
+import org.apache.maven.archiva.model.MailingList;
 import org.apache.maven.archiva.model.Organization;
 import org.apache.maven.archiva.model.ProjectRepository;
 import org.apache.maven.archiva.model.Scm;
@@ -85,6 +87,7 @@ public class ProjectModel400Reader
 
             model.setParentProject( getParentProject( xml ) );
 
+            model.setMailingLists( getMailingLists( xml ) );
             model.setCiManagement( getCiManagement( xml ) );
             model.setIndividuals( getIndividuals( xml ) );
             model.setIssueManagement( getIssueManagement( xml ) );
@@ -93,7 +96,7 @@ public class ProjectModel400Reader
             model.setScm( getSCM( xml ) );
             model.setRepositories( getRepositories( xml ) );
 
-            model.setDependencies( getDependencies( xml ) );
+            model.setDependencyTree( getDependencyTree( xml ) );
             model.setDependencyManagement( getDependencyManagement( xml ) );
             model.setPlugins( getPlugins( xml ) );
             model.setReports( getReports( xml ) );
@@ -135,10 +138,20 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private List getDependencies( XMLReader xml )
+    private DependencyTree getDependencyTree( XMLReader xml )
         throws XMLException
     {
-        return getDependencyList( xml, new String[] { "dependencies" } );
+        DependencyTree tree = new DependencyTree();
+        List dependencies = getDependencyList( xml, new String[] { "dependencies" } );
+
+        Iterator it = dependencies.iterator();
+        while ( it.hasNext() )
+        {
+            Dependency dependency = (Dependency) it.next();
+            tree.addDependencyNode( dependency );
+        }
+
+        return tree;
     }
 
     private List getDependencyList( XMLReader xml, String parts[] )
@@ -185,8 +198,8 @@ public class ProjectModel400Reader
             if ( dependencyList.contains( dependency ) )
             {
                 // TODO: throw into monitor as issue.
-                System.err.println( "Duplicate non-unique dependency detected [" + StringUtils.join(parts, ":") + "]: "
-                    + toDependencyKey( dependency ) );
+                System.err.println( "Duplicate non-unique dependency detected [" + StringUtils.join( parts, ":" )
+                    + "]: " + toDependencyKey( dependency ) );
             }
 
             dependencyList.add( dependency );
@@ -297,6 +310,44 @@ public class ProjectModel400Reader
         }
 
         return null;
+    }
+
+    private List getMailingLists( XMLReader xml )
+        throws XMLException
+    {
+        List mailingLists = new ArrayList();
+
+        List mailingListElems = xml.getElementList( "//project/mailingLists/mailingList" );
+        Iterator it = mailingListElems.iterator();
+        while ( it.hasNext() )
+        {
+            Element elemMailingList = (Element) it.next();
+            MailingList mlist = new MailingList();
+
+            mlist.setName( elemMailingList.elementTextTrim( "name" ) );
+            mlist.setSubscribeAddress( elemMailingList.elementTextTrim( "subscribe" ) );
+            mlist.setUnsubscribeAddress( elemMailingList.elementTextTrim( "unsubscribe" ) );
+            mlist.setPostAddress( elemMailingList.elementTextTrim( "post" ) );
+            mlist.setMainArchiveUrl( elemMailingList.elementTextTrim( "archive" ) );
+
+            Element elemOtherArchives = elemMailingList.element( "otherArchives" );
+            if ( elemOtherArchives != null )
+            {
+                List otherArchives = new ArrayList();
+                Iterator itother = elemOtherArchives.elementIterator( "otherArchive" );
+                while ( itother.hasNext() )
+                {
+                    String otherArchive = ( (Element) itother.next() ).getTextTrim();
+                    otherArchives.add( otherArchive );
+                }
+
+                mlist.setOtherArchives( otherArchives );
+            }
+
+            mailingLists.add( mlist );
+        }
+
+        return mailingLists;
     }
 
     private List getLicenses( XMLReader xml )

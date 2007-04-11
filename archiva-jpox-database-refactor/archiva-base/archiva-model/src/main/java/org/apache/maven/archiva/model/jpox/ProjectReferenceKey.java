@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.content;
+package org.apache.maven.archiva.model.jpox;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +19,27 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.maven.archiva.model.AbstractProjectKey;
+
+import java.io.Serializable;
+
 /**
- * ArtifactExtensionMapping - Utility to provide the mapping between an Artifact's extension and it's type and 
- * vice versa. 
+ * ProjectReferenceKey - unique classid-key for JPOX. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArtifactExtensionMapping
+public class ProjectReferenceKey
+    extends AbstractProjectKey
+    implements Serializable
 {
-    public String getExtension( String type );
+    public ProjectReferenceKey()
+    {
+        super();
+    }
 
-    public String getType( String filename );
+    public ProjectReferenceKey( String key )
+    {
+        super( key );
+    }
 }

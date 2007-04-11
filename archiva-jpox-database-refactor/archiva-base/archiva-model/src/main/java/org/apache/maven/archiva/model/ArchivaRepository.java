@@ -19,8 +19,6 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
-
-
 /**
  * ArchivaRepository 
  *
@@ -29,14 +27,10 @@ package org.apache.maven.archiva.model;
  */
 public class ArchivaRepository
 {
-//    protected ArtifactRepositoryPolicy releases;
-//
-//    protected ArtifactRepositoryPolicy snapshots;
-
     private ArchivaRepositoryModel model;
 
     private RepositoryURL url;
-    
+
     protected boolean blacklisted;
 
     /**
@@ -59,10 +53,7 @@ public class ArchivaRepository
     /**
      * Construct a Repository.
      * 
-     * @param id the unique identifier for this repository.
-     * @param name the name for this repository.
-     * @param url the base URL for this repository (this should point to the top level URL for the entire repository)
-     * @param layout the layout technique for this repository.
+     * @param model the model to use
      */
     public ArchivaRepository( ArchivaRepositoryModel model )
     {
@@ -102,26 +93,6 @@ public class ArchivaRepository
         this.blacklisted = blacklisted;
     }
 
-//    public ArtifactRepositoryPolicy getReleases()
-//    {
-//        return releases;
-//    }
-//
-//    public void setReleases( ArtifactRepositoryPolicy releases )
-//    {
-//        this.releases = releases;
-//    }
-//
-//    public ArtifactRepositoryPolicy getSnapshots()
-//    {
-//        return snapshots;
-//    }
-//
-//    public void setSnapshots( ArtifactRepositoryPolicy snapshots )
-//    {
-//        this.snapshots = snapshots;
-//    }
-
     public boolean isRemote()
     {
         return this.url.getProtocol().equals( "file" );
@@ -130,5 +101,15 @@ public class ArchivaRepository
     public boolean isManaged()
     {
         return this.url.getProtocol().equals( "file" );
+    }
+
+    public String getLayoutType()
+    {
+        return this.model.getLayoutName();
+    }
+
+    public String getName()
+    {
+        return this.model.getName();
     }
 }

@@ -62,7 +62,7 @@ public class MavenProxyPropertyLoader
                 String key = tok.nextToken();
                 if ( StringUtils.isNotEmpty( key ) )
                 {
-                    ProxyConfiguration proxy = new ProxyConfiguration();
+                    NetworkProxyConfiguration proxy = new NetworkProxyConfiguration();
                     proxy.setHost( getMandatoryProperty( props, "proxy." + key + ".host" ) );
                     proxy.setPort( Integer.parseInt( getMandatoryProperty( props, "proxy." + key + ".port" ) ) );
 
@@ -104,9 +104,9 @@ public class MavenProxyPropertyLoader
             proxyConnector.setSourceRepoId( "maven-proxy" );
             proxyConnector.setTargetRepoId( key );
             proxyConnector.setProxyId( proxyKey );
-            proxyConnector.setFailurePolicy( RepositoryProxyConnectorConfiguration.NOT_FOUND );
-            proxyConnector.setSnapshotsPolicy( String.valueOf( cachePeriod ) );
-            proxyConnector.setReleasesPolicy( RepositoryProxyConnectorConfiguration.NEVER );
+            // TODO: convert cachePeriod to closest "daily" or "hourly"
+            proxyConnector.setSnapshotsPolicy( "daily" );
+            proxyConnector.setReleasesPolicy( "never" );
             
             configuration.addProxyConnector( proxyConnector );
         }

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.content;
+package org.apache.maven.archiva.proxy.policy;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +19,23 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import java.io.File;
+
 /**
- * ArtifactExtensionMapping - Utility to provide the mapping between an Artifact's extension and it's type and 
- * vice versa. 
+ * Policy to apply before the fetch of content. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArtifactExtensionMapping
+public interface PrefetchPolicy
 {
-    public String getExtension( String type );
-
-    public String getType( String filename );
+    /**
+     * Apply the policy using the provided policy code and local file.
+     * 
+     * @param policyCode the policy code to use.
+     * @param localFile the local file that might affect the policy.
+     * @return true if the policy passes, false if the policy prevents the
+     *         fetching of the content.
+     */
+    public boolean applyPolicy( String policyCode, File localFile );
 }
