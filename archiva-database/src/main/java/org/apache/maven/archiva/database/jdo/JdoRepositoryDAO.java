@@ -67,7 +67,7 @@ public class JdoRepositoryDAO
     public List getRepositories()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.getAllObjects( ArchivaRepositoryModel.class );
+        return queryRepositories( null );
     }
 
     public ArchivaRepository getRepository( String id )
