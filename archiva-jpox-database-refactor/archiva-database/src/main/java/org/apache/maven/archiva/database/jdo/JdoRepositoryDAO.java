@@ -23,8 +23,11 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.RepositoryDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArchivaRepositoryModel;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -42,12 +45,12 @@ public class JdoRepositoryDAO
      * @plexus.requirement role-hint="archiva"
      */
     private JdoAccess jdo;
-    
+
     /* .\ Archiva Repository \.____________________________________________________________ */
 
-    public ArchivaRepositoryModel createRepository( String id, String url )
+    public ArchivaRepository createRepository( String id, String name, String url )
     {
-        ArchivaRepositoryModel repo;
+        ArchivaRepository repo;
 
         try
         {
@@ -55,9 +58,7 @@ public class JdoRepositoryDAO
         }
         catch ( ArchivaDatabaseException e )
         {
-            repo = new ArchivaRepositoryModel();
-            repo.setId( id );
-            repo.setUrl( url );
+            repo = new ArchivaRepository( id, name, url );
         }
 
         return repo;
@@ -69,26 +70,49 @@ public class JdoRepositoryDAO
         return jdo.getAllObjects( ArchivaRepositoryModel.class );
     }
 
-    public ArchivaRepositoryModel getRepository( String id )
+    public ArchivaRepository getRepository( String id )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return (ArchivaRepositoryModel) jdo.getObjectById( ArchivaRepositoryModel.class, id, null );
+        ArchivaRepositoryModel model = (ArchivaRepositoryModel) jdo.getObjectById( ArchivaRepositoryModel.class, id,
+                                                                                   null );
+        return new ArchivaRepository( model );
     }
 
-    public List queryRepository( Constraint constraint )
+    public List queryRepositories( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.getAllObjects( ArchivaRepositoryModel.class, constraint );
+        List results = jdo.getAllObjects( ArchivaRepositoryModel.class, constraint );
+
+        if ( ( results == null ) || results.isEmpty() )
+        {
+            return results;
+        }
+
+        List ret = new ArrayList();
+        Iterator it = results.iterator();
+        while ( it.hasNext() )
+        {
+            ArchivaRepositoryModel model = (ArchivaRepositoryModel) it.next();
+            ret.add( new ArchivaRepository( model ) );
+        }
+
+        return ret;
     }
 
-    public ArchivaRepositoryModel saveRepository( ArchivaRepositoryModel repository )
+    public ArchivaRepository saveRepository( ArchivaRepository repository )
     {
-        return (ArchivaRepositoryModel) jdo.saveObject( repository );
+        ArchivaRepositoryModel model = (ArchivaRepositoryModel) jdo.saveObject( repository.getModel() );
+        if ( model == null )
+        {
+            return null;
+        }
+
+        return new ArchivaRepository( model );
     }
 
-    public void deleteRepository( ArchivaRepositoryModel repository )
+    public void deleteRepository( ArchivaRepository repository )
         throws ArchivaDatabaseException
     {
-        jdo.removeObject( repository );
+        jdo.removeObject( repository.getModel() );
     }
 }

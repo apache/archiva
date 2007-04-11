@@ -22,7 +22,6 @@ package org.apache.maven.archiva.database;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.util.FileUtils;
 import org.jpox.SchemaTool;
 
 import java.io.File;

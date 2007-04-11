@@ -62,12 +62,6 @@ public class JdoArtifactDAO
         }
         catch ( ArchivaDatabaseException e )
         {
-            if ( !( e instanceof ObjectNotFoundException ) )
-            {
-                getLogger().warn(
-                                  "Unable to get artifact [" + groupId + ":" + artifactId + ":" + version + ":"
-                                      + classifier + ":" + type + "]: " + e.getMessage(), e );
-            }
             artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         }
 
