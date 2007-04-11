@@ -46,7 +46,8 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUpdater" 
+ *   role-hint="jdo" 
  */
 public class JdoDatabaseUpdater
     extends AbstractLogEnabled
@@ -115,7 +116,7 @@ public class JdoDatabaseUpdater
         {
             consumerConsumerLifecycle( this.activeUnprocessedConsumers );
         }
-    }
+    } 
 
     public void updateAllProcessed()
         throws ArchivaDatabaseException
