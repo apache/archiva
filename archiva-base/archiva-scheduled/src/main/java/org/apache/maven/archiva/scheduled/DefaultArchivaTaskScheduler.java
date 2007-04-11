@@ -46,9 +46,10 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Default implementation of a scheduling component for the application.
+ * Default implementation of a scheduling component for archiva..
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
+ * @author <a href="mailto:jmcconnell@apache.org">Jesse McConnell</a>
  * @plexus.component role="org.apache.maven.archiva.scheduler.ArchivaTaskScheduler"
  */
 public class DefaultArchivaTaskScheduler

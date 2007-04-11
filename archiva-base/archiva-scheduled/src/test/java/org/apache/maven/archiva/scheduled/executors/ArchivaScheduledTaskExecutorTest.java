@@ -33,9 +33,9 @@ import java.io.File;
  * IndexerTaskExecutorTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * @version $Id$
+ * @version $Id:$
  */
-public class DataRefreshExecutorTest
+public class ArchivaScheduledTaskExecutorTest
     extends PlexusTestCase
 {
     private TaskExecutor taskExecutor;
@@ -46,11 +46,6 @@ public class DataRefreshExecutorTest
         super.setUp();
 
         taskExecutor = (TaskExecutor) lookup( "org.codehaus.plexus.taskqueue.execution.TaskExecutor", "archiva-task-executor" );
-
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-        Configuration configuration = archivaConfiguration.getConfiguration();
-
        
     }
 
