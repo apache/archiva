@@ -40,7 +40,6 @@
     <!-- DOES NOT COMPILE (yet)
       <module>archiva-converter</module> 
       <module>archiva-proxy</module> 
-      <module>archiva-scheduled</module>
     -->
   </modules>
 </project>
