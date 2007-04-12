@@ -22,7 +22,11 @@ package org.apache.maven.archiva.scheduled.executors;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.updater.DatabaseUpdater;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 
@@ -35,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -57,6 +62,17 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
      * @plexus.requirement role-hint="jdo"
      */
     private DatabaseUpdater databaseUpdater;
+    
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private RepositoryDAO repositoryDAO;
+    
+    /**
+     * The collection of available consumers.
+     * @plexus.requirement role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
+     */
+    private Map availableConsumers;
     
     public void executeTask( Task task ) throws TaskExecutionException
     {
@@ -112,10 +128,67 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
         
         long time = System.currentTimeMillis();
 
-        // insert repository scanning codelets here
+        try 
+        {
+            ArchivaRepository arepo = repositoryDAO.getRepository( task.getRepositoryId() );
+                    
+            RepositoryScanner scanner = new RepositoryScanner();
+            
+            scanner.scan( arepo, getActiveConsumerList(), true );
+            
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            throw new TaskExecutionException( "Database error when executing repository job.", e );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new TaskExecutionException( "Repository error when executing repository job.", e );
+        }
+        
         
         time = System.currentTimeMillis() - time;
 
         getLogger().info( "Finished repository task for " + time + "ms." );
     }
+    
+    
+    private List getActiveConsumerList()
+    {       
+        List activeConsumers = new ArrayList();
+        
+        List configuredGoodConsumers = archivaConfiguration.getConfiguration().getRepositoryScanning().getGoodConsumers();
+        List configuredBadConsumers = archivaConfiguration.getConfiguration().getRepositoryScanning().getBadConsumers();
+        
+        for ( Iterator i = configuredGoodConsumers.iterator(); i.hasNext(); )
+        {
+            String consumer = (String)i.next();
+            
+            if ( availableConsumers.containsKey( availableConsumers.get( consumer ) )  )
+            {
+                activeConsumers.add( availableConsumers.get( consumer ) );
+            }
+            else
+            {
+                getLogger().warn( "RequestedConsumer [" + consumer + "] does not exist. Skipping in repository scan." );
+            }
+        }
+        
+        for ( Iterator i = configuredBadConsumers.iterator(); i.hasNext(); )
+        {
+            String consumer = (String)i.next();
+            
+            if ( availableConsumers.containsKey( availableConsumers.get( consumer ) )  )
+            {
+                activeConsumers.add( availableConsumers.get( consumer ) );
+            }
+            else
+            {
+                getLogger().warn( "RequestedConsumer [" + consumer + "] does not exist. Skipping in repository scan." );
+            }
+        }
+        
+        return activeConsumers;
+    }
+    
 }
