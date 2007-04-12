@@ -24,6 +24,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.DateUtil;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
@@ -69,6 +70,8 @@ public class ArchivaCli
     public static final char CONSUMERS = 'u';
 
     public static final char LIST_CONSUMERS = 'l';
+    
+    public static final char DUMP_CONFIGURATION = 'd';
 
     // ----------------------------------------------------------------------------
     // Properties controlling Repository conversion
@@ -80,6 +83,13 @@ public class ArchivaCli
 
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
 
+    /**
+     * Configuration store.
+     *
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
+    
     public static void main( String[] args )
         throws Exception
     {
@@ -122,6 +132,9 @@ public class ArchivaCli
         Option listConsumersOption = createOption( LIST_CONSUMERS, "listconsumers", 0, "List available consumers." );
         options.addOption( listConsumersOption );
 
+        Option dumpConfig = createOption( DUMP_CONFIGURATION, "dumpconfig", 0, "Dump Current Configuration." );
+        options.addOption( dumpConfig );
+        
         return options;
     }
 
@@ -139,6 +152,10 @@ public class ArchivaCli
         else if ( cli.hasOption( LIST_CONSUMERS ) )
         {
             dumpAvailableConsumers( plexus );
+        }
+        else if ( cli.hasOption( DUMP_CONFIGURATION ) )
+        {
+            dumpConfiguration( plexus );
         }
         else
         {
@@ -278,5 +295,12 @@ public class ArchivaCli
         {
             showFatalError( "Error converting repository.", e, true );
         }
+    }
+    
+    private void dumpConfiguration( PlexusContainer plexus ) throws ComponentLookupException
+    {
+        archivaConfiguration = (ArchivaConfiguration) plexus.lookup( ArchivaConfiguration.ROLE );
+        
+        System.out.println( "File Type Count: " + archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().size() );
     }
 }
