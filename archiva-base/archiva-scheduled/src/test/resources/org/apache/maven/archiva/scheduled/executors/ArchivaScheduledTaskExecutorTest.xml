@@ -36,6 +36,15 @@
           <role-hint>jdo</role-hint>
           <field-name>databaseUpdater</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.database.RepositoryDAO</role>
+          <role-hint>jdo</role-hint>
+          <field-name>repositoryDAO</field-name>
+        </requirement>
+         <requirement>
+          <role>org.apache.maven.archiva.consumers.ArchivaArtifactConsumer</role>
+          <field-name>availableConsumers</field-name>
+        </requirement>
       </requirements>
     </component>
 
