@@ -40,7 +40,7 @@ import java.util.Map;
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
- *                   role-hint="auto-remove"
+ *                   role-hint="auto-rename"
  *                   instantiation-strategy="per-lookup"
  */
 public class AutoRenameConsumer
