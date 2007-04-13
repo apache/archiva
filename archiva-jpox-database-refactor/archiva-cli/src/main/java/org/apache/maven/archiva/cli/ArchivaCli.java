@@ -298,8 +298,8 @@ public class ArchivaCli
     }
     
     private void dumpConfiguration( PlexusContainer plexus ) throws ComponentLookupException
-    {
-        archivaConfiguration = (ArchivaConfiguration) plexus.lookup( ArchivaConfiguration.ROLE );
+    {    
+        archivaConfiguration = (ArchivaConfiguration) plexus.lookup( ArchivaConfiguration.ROLE, "cli" );
         
         System.out.println( "File Type Count: " + archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().size() );
     }

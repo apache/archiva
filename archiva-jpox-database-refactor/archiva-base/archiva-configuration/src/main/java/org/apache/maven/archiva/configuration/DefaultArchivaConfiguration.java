@@ -33,7 +33,7 @@ import java.util.Iterator;
 /**
  * Implementation of configuration holder that retrieves it from the registry.
  *
- * @plexus.component
+ * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener, Initializable

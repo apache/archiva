@@ -50,7 +50,7 @@
           <xml fileName="${appserver.home}/conf/shared.xml" config-optional="true"
                config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
-          <properties fileName="org/apache/maven/archiva/configuration/default-archiva.properties" config-at="org.apache.maven.archiva.base"/>
+          <xml fileName="org/apache/maven/archiva/configuration/default-archiva.xml" config-at="org.apache.maven.archiva.base"/>
           <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
                       config-at="org.codehaus.plexus.security"/>
           <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.security"/>
