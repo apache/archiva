@@ -98,7 +98,7 @@
          <plugin>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-maven-plugin</artifactId>
-            <version>1.3.3</version>
+            <version>1.3.5</version>
             <executions>
                <execution>
                   <id>generate</id>
@@ -143,6 +143,7 @@
       <module>archiva-base</module>
       <module>archiva-database</module>
       <module>archiva-reporting</module>
+      <module>archiva-scheduled</module>
       <module>archiva-web</module>
       <module>archiva-cli</module>
       <module>maven-meeper</module>
