@@ -1,5 +1,24 @@
 package org.apache.maven.archiva.policies;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -12,6 +31,15 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * ChecksumPolicy 
+ *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+ *                   role-hint="checksum"
+ */
 public class ChecksumPolicy
     extends AbstractLogEnabled
     implements PostDownloadPolicy
@@ -29,13 +57,6 @@ public class ChecksumPolicy
      * to the client side the corrected checksum.
      */
     public static final String FIX = "fix";
-
-    /**
-     * The IGNORE policy indicates that the checksum is never tested
-     * and even bad downloads and checksum files are left in place
-     * on the local repository.
-     */
-    public static final String IGNORED = "ignored";
 
     /**
      * @plexus.requirement role-hint="sha1"
@@ -88,147 +109,170 @@ public class ChecksumPolicy
 
         if ( FAIL.equals( policySetting ) )
         {
+            boolean checksPass = true;
+
+            // Both files missing is a failure.
             if ( !sha1File.exists() && !md5File.exists() )
             {
-                getLogger().error( "File " + localFile.getAbsolutePath() + " has no checksum files (sha1 or md5)." );
-                localFile.delete();
-                return false;
+                getLogger().error( "File " + localFile.getPath() + " has no checksum files (sha1 or md5)." );
+                checksPass = false;
             }
-
-            // Test for sha1 first, then md5
 
             if ( sha1File.exists() )
             {
-                try
+                // Bad sha1 checksum is a failure.
+                if ( !validateChecksum( sha1File, "sha1" ) )
                 {
-                    return checksumFile.isValidChecksum( sha1File );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    getLogger().warn( "Unable to find sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to process sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to process sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
+                    getLogger().warn( "SHA1 is incorrect for " + localFile.getPath() );
+                    checksPass = false;
                 }
             }
 
             if ( md5File.exists() )
             {
-                try
+                // Bad md5 checksum is a failure.
+                if ( !validateChecksum( md5File, "md5" ) )
                 {
-                    return checksumFile.isValidChecksum( md5File );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    getLogger().warn( "Unable to find md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to process md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to process md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
+                    getLogger().warn( "MD5 is incorrect for " + localFile.getPath() );
+                    checksPass = false;
                 }
             }
+
+            if ( !checksPass )
+            {
+                // On failure. delete files.
+                if ( sha1File.exists() )
+                {
+                    sha1File.delete();
+                }
+
+                if ( md5File.exists() )
+                {
+                    md5File.delete();
+                }
+
+                localFile.delete();
+            }
+
+            return checksPass;
         }
 
         if ( FIX.equals( policySetting ) )
         {
-            if ( !sha1File.exists() )
+            boolean checksPass = true;
+
+            if ( !fixChecksum( localFile, sha1File, digestSha1 ) )
             {
-                try
-                {
-                    checksumFile.createChecksum( localFile, digestSha1 );
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to create sha1 file: " + e.getMessage(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to create sha1 file: " + e.getMessage(), e );
-                    return false;
-                }
-            }
-            else
-            {
-                try
-                {
-                    checksumFile.isValidChecksum( sha1File );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    getLogger().warn( "Unable to find sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to process sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to process sha1 file: " + sha1File.getAbsolutePath(), e );
-                    return false;
-                }
+                checksPass = false;
             }
 
-            if ( !md5File.exists() )
+            if ( !fixChecksum( localFile, md5File, digestMd5 ) )
             {
-                try
-                {
-                    checksumFile.createChecksum( localFile, digestMd5 );
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to create md5 file: " + e.getMessage(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to create md5 file: " + e.getMessage(), e );
-                    return false;
-                }
+                checksPass = false;
             }
-            else
-            {
-                try
-                {
-                    return checksumFile.isValidChecksum( md5File );
-                }
-                catch ( FileNotFoundException e )
-                {
-                    getLogger().warn( "Unable to find md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( DigesterException e )
-                {
-                    getLogger().warn( "Unable to process md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
-                }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Unable to process md5 file: " + md5File.getAbsolutePath(), e );
-                    return false;
-                }
-            }
+
+            return checksPass;
         }
 
         getLogger().error( "Unhandled policyCode [" + policySetting + "]" );
         return false;
+    }
+
+    private boolean createChecksum( File localFile, Digester digester )
+    {
+        try
+        {
+            checksumFile.createChecksum( localFile, digester );
+            return true;
+        }
+        catch ( DigesterException e )
+        {
+            getLogger().warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
+            return false;
+        }
+        catch ( IOException e )
+        {
+            getLogger().warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
+            return false;
+        }
+    }
+
+    private boolean fixChecksum( File localFile, File hashFile, Digester digester )
+    {
+        String ext = digester.getFilenameExtension();
+
+        if ( !hashFile.getPath().endsWith( ext ) )
+        {
+            throw new IllegalArgumentException( "Cannot fix " + hashFile.getPath() + " using " + ext + " digester." );
+        }
+
+        // If hashfile doesn't exist, create it.
+        if ( !hashFile.exists() )
+        {
+            return createChecksum( localFile, digester );
+        }
+
+        // Validate checksum, if bad, recreate it.
+        try
+        {
+            if ( checksumFile.isValidChecksum( hashFile ) )
+            {
+                getLogger().debug( "Valid checksum: " + hashFile.getPath() );
+                return true;
+            }
+            else
+            {
+                getLogger().debug( "Not valid checksum: " + hashFile.getPath() );
+                return createChecksum( localFile, digester );
+            }
+        }
+        catch ( FileNotFoundException e )
+        {
+            getLogger().warn( "Unable to find " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
+        catch ( DigesterException e )
+        {
+            getLogger().warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
+        catch ( IOException e )
+        {
+            getLogger().warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
+    }
+
+    private boolean validateChecksum( File hashFile, String type )
+    {
+        try
+        {
+            boolean validity = checksumFile.isValidChecksum( hashFile );
+            if ( validity )
+            {
+                getLogger().debug( "Valid checksum: " + hashFile.getPath() );
+            }
+            else
+            {
+                getLogger().debug( "Not valid checksum: " + hashFile.getPath() );
+            }
+            return validity;
+        }
+        catch ( FileNotFoundException e )
+        {
+            getLogger().warn( "Unable to find " + type + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
+        catch ( DigesterException e )
+        {
+            getLogger().warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
+        catch ( IOException e )
+        {
+            getLogger().warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
+            return false;
+        }
     }
 
     public String getDefaultPolicySetting()

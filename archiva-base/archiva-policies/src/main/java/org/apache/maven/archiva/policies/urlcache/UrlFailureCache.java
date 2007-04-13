@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.policies.urlcache;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,25 +21,28 @@ package org.apache.maven.archiva.policies;
 
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Cache for requested URLs that cannot be fetched. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public interface UrlFailureCache
 {
-    public String getDefaultPolicySetting()
-    {
-        return AbstractUpdatePolicy.IGNORED;
-    }
-
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
+    /**
+     * Store a URL in the cache as failed.
+     * 
+     * @param url the url to store. 
+     */
+    public void cacheFailure( String url );
+    
+    /**
+     * Test if a specified URL has failed before.
+     * 
+     * NOTE: If the provided URL has failed, then making this call 
+     * should refresh the expiration time on that URL entry.
+     * 
+     * @param url the URL to test.
+     * @return true if it has failed before, false if not.
+     */
+    public boolean hasFailedBefore( String url );
 }
