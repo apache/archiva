@@ -47,7 +47,7 @@
           <name>proxyConnectors</name>
           <version>1.0.0+</version>
           <association>
-            <type>RepositoryProxyConnectorConfiguration</type>
+            <type>ProxyConnectorConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
           <description>The list of proxy connectors for this archiva instance.</description>
@@ -57,7 +57,7 @@
           <name>syncConnectors</name>
           <version>1.0.0+</version>
           <association>
-            <type>RepositorySyncConnectorConfiguration</type>
+            <type>SyncConnectorConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
           <description>The list of sync connectors for this archiva instance.</description>
@@ -307,76 +307,97 @@
             The list of whitelisted patterns for this connector.
           </description>
         </field>
+        <field>
+          <name>policies</name>
+          <version>1.0.0+</version>
+          <type>Properties</type>
+          <description>Policy configuration for the connector.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>        
+        <field>
+          <name>properties</name>
+          <version>1.0.0+</version>
+          <type>Properties</type>
+          <description>Configuration for the connector.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Obtain a specific policy from the underlying connector.
+     * 
+     * @param policyId the policy id to fetch.
+     * @param defaultValue the default value for the policy id.
+     * @return the configured policy value (or default value if not found).
+     */
+    public String getPolicy( String policyId, String defaultValue )
+    {
+        if ( this.getPolicies() == null )
+        {
+            return null;
+        }
+
+        return this.getPolicies().getProperty( policyId, defaultValue );
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     
     <class>
       <superClass>AbstractRepositoryConnectorConfiguration</superClass>
-      <name>RepositoryProxyConnectorConfiguration</name>
+      <name>ProxyConnectorConfiguration</name>
       <version>1.0.0+</version>
       <fields>
-        <field>
-          <name>snapshotsPolicy</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <defaultValue>disabled</defaultValue>
-          <description>
-            <![CDATA[
-            <p>
-            The policy for snapshots, one of the following:
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DISABLED disabled},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DAILY daily},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#HOURLY hourly},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#ONCE once}
-            </p>
-
-            @see org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy
-            ]]>
-          </description>
-        </field>
-        <field>
-          <name>releasesPolicy</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <defaultValue>never</defaultValue>
-          <description>
-            <![CDATA[
-            <p>
-            The policy for releases, one of the following:
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DISABLED disabled},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#DAILY daily},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#HOURLY hourly},
-              {@link org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy#ONCE once}
-            </p>
-
-            @see org.apache.maven.archiva.proxy.policy.ArtifactUpdatePolicy
-            ]]>
-          </description>
-        </field>
-        <field>
-          <name>checksumPolicy</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <defaultValue>fail</defaultValue>
-          <description>
-            <![CDATA[
-            <p>
-            The policy for dealing with checksums, one of the following: 
-              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#FAIL fail}, 
-              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#FIX fix}, or
-              {@link org.apache.maven.archiva.proxy.policy.ChecksumPolicy#IGNORE ignore}
-            </p>
-            
-            @see org.apache.maven.archiva.proxy.policy.ChecksumPolicy
-            ]]>
-          </description>
-        </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * The policy key {@link #getPolicies()} for snapshot handling.
+     * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy} 
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_SNAPSHOTS = "snapshots";
+
+    /**
+     * The policy key {@link #getPolicies()} for releases handling.
+     * See {@link org.apache.maven.archiva.policies.ReleasesPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_RELEASES = "releases";
+
+    /**
+     * The policy key {@link #getPolicies()} for checksum handling.
+     * See {@link org.apache.maven.archiva.policies.ChecksumPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_CHECKSUM = "checksum";
+
+    /**
+     * The policy key {@link #getPolicies()} for cache-failures handling.
+     * See {@link org.apache.maven.archiva.policies.CachedFailuresPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_CACHE_FAILURES = "cache-failures";
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     
     <class>
       <superClass>AbstractRepositoryConnectorConfiguration</superClass>
-      <name>RepositorySynchConnectorConfiguration</name>
+      <name>SyncConnectorConfiguration</name>
       <abstract>true</abstract>
       <version>1.0.0+</version>
       <fields>
@@ -393,16 +414,6 @@
           <type>String</type>
           <description>The type of synchronization to use.</description>
           <defaultValue>rsync</defaultValue>
-        </field>
-        <field>
-          <name>properties</name>
-          <version>1.0.0+</version>
-          <type>Properties</type>
-          <description>Configuration for the repository synchronization.</description>
-          <association xml.mapStyle="inline">
-            <type>String</type>
-            <multiplicity>*</multiplicity>
-          </association>
         </field>
       </fields>
     </class>
