@@ -180,6 +180,7 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
             
             if ( availableConsumers.containsKey( availableConsumers.get( consumer ) )  )
             {
+                getLogger().warn( "Using consumer " + consumer );
                 activeConsumers.add( availableConsumers.get( consumer ) );
             }
             else

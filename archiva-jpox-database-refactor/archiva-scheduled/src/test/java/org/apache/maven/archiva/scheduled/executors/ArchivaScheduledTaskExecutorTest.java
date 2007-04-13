@@ -19,21 +19,6 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.RepositoryDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-import org.jpox.SchemaTool;
-
 import java.io.File;
 import java.net.URL;
 import java.util.Iterator;
@@ -43,6 +28,17 @@ import java.util.Properties;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.RepositoryDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.jpox.SchemaTool;
 
 /**
  * IndexerTaskExecutorTest
@@ -61,6 +57,7 @@ public class ArchivaScheduledTaskExecutorTest
         throws Exception
     {
         super.setUp();
+        
         DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
         assertEquals( DefaultConfigurableJdoFactory.class.getName(), jdoFactory.getClass().getName() );
 
@@ -142,9 +139,16 @@ public class ArchivaScheduledTaskExecutorTest
     {
         RepositoryDAO repoDao = dao.getRepositoryDAO();
 
+        File repoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+
+        assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+
+        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
+
+        
         // Create it
         ArchivaRepository repo =
-            repoDao.createRepository( "testRepo", "Test Repository", "http://localhost:8080/repository/foo" );
+            repoDao.createRepository( "testRepo", "Test Repository", repoUri );
         assertNotNull( repo );
 
         // Set some mandatory values
