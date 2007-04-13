@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.policies.urlcache;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,27 +19,40 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.codehaus.plexus.cache.Cache;
+
+import java.util.Date;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * DefaultUrlFailureCache 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
+ * @plexus.component role="org.apache.maven.archiva.policies.urlcache.UrlFailureCache"
+ *                   role-hint="default"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public class DefaultUrlFailureCache
+    implements UrlFailureCache
 {
-    public String getDefaultPolicySetting()
+    /**
+     * @plexus.requirement role-hint="url-failures-cache"
+     */
+    private Cache urlCache;
+
+    public void cacheFailure( String url )
     {
-        return AbstractUpdatePolicy.IGNORED;
+        urlCache.register( url, new Date() );
     }
 
-    protected boolean isSnapshotPolicy()
+    public boolean hasFailedBefore( String url )
     {
+        if ( urlCache.hasKey( url ) )
+        {
+            urlCache.register( url, new Date() );
+            return true;
+        }
+
         return false;
     }
 }

@@ -35,6 +35,9 @@ public interface DownloadPolicy
      */
     public static final String IGNORED = "ignored";
     
+    public static final boolean PASS = true;
+    public static final boolean FAIL = false;
+    
     /**
      * Get the default policy setting.
      * 

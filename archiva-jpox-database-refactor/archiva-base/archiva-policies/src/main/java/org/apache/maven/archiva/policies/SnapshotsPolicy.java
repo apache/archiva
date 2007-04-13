@@ -26,8 +26,8 @@ package org.apache.maven.archiva.policies;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.policies.download.PreDownloadPolicy"
- *                   role-hint="releases"
+ * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+ *                   role-hint="snapshots"
  */
 public class SnapshotsPolicy
     extends AbstractUpdatePolicy
