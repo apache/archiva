@@ -19,7 +19,6 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
-
 /**
  * RepositoryURL - Mutable (and protocol forgiving) URL object.
  *
@@ -50,7 +49,7 @@ public class RepositoryURL
 
         int pos;
 
-        pos = url.indexOf( "://" );
+        pos = url.indexOf( ":/" );
         if ( pos == ( -1 ) )
         {
             throw new IllegalArgumentException( "Invalid URL, unable to parse protocol:// from " + url );
@@ -58,8 +57,23 @@ public class RepositoryURL
 
         protocol = url.substring( 0, pos );
 
+        // Determine the post protocol position.
+        int postProtocolPos = protocol.length() + 1;
+        while ( url.charAt( postProtocolPos ) == '/' )
+        {
+            postProtocolPos++;
+        }
+        
+        // Handle special case with file protocol (which has no host, port, username, or password)
+        if ( "file".equals( protocol ) )
+        {
+            path = "/" + url.substring( postProtocolPos );
+
+            return;
+        }
+
         // attempt to find the start of the 'path'
-        pos = url.indexOf( "/", protocol.length() + 3 );
+        pos = url.indexOf( "/", postProtocolPos );
 
         // no path specified - ex "http://localhost"
         if ( pos == ( -1 ) )
@@ -76,7 +90,7 @@ public class RepositoryURL
         }
 
         // get the middle section ( username : password @ hostname : port )
-        String middle = url.substring( protocol.length() + 3, pos );
+        String middle = url.substring( postProtocolPos, pos );
 
         pos = middle.indexOf( '@' );
 
