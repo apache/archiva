@@ -112,4 +112,16 @@ public class ArchivaRepository
     {
         return this.model.getName();
     }
+
+    public String toString()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append( "ArchivaRepository[" );
+        sb.append( this.model.getId() ).append( "," );
+        sb.append( this.model.getUrl() );
+        sb.append( "]" );
+
+        return sb.toString();
+    }
 }
