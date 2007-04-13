@@ -19,7 +19,10 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
+import java.net.MalformedURLException;
 
 /**
  * PathUtil - simple utility methods for path manipulation. 
@@ -29,6 +32,35 @@ import java.io.File;
  */
 public class PathUtil
 {
+    public static String toUrl( String path )
+    {
+        // Is our work already done for us?
+        if ( path.startsWith( "file:/" ) )
+        {
+            return path;
+        }
+        
+        return toUrl( new File( path ) );
+    }
+
+    public static String toUrl( File file )
+    {
+        try
+        {
+            return file.toURL().toExternalForm();
+        }
+        catch ( MalformedURLException e )
+        {
+            String pathCorrected = StringUtils.replaceChars( file.getAbsolutePath(), '\\', '/' );
+            if ( pathCorrected.startsWith( "file:/" ) )
+            {
+                return pathCorrected;
+            }
+
+            return "file://" + pathCorrected;
+        }
+    }
+
     public static String getRelative( String basedir, File file )
     {
         return getRelative( basedir, file.getAbsolutePath() );

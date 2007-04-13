@@ -50,38 +50,9 @@
   </dependencies>
   <build>
     <plugins>
-      <!--
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>test-jar</id>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-       -->
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
-        <!--
-        <executions>
-          <execution>
-            <id>merge</id>
-            <goals>
-              <goal>merge-descriptors</goal>
-            </goals>
-            <configuration>
-              <descriptors>
-                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
-                <descriptor>${project.build.directory}/generated-resources/plexus/META-INF/plexus/components.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-         -->
       </plugin>
     </plugins>
   </build>
