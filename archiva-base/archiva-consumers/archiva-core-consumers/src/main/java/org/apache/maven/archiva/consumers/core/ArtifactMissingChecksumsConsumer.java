@@ -228,7 +228,7 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
 
         if ( includes.isEmpty() )
         {
-            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list." );
+            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list.  Check the configuration sources." );
         }
     }
 }
