@@ -87,7 +87,6 @@
       <version>1.0-alpha-2</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
   <build>
     <plugins>
