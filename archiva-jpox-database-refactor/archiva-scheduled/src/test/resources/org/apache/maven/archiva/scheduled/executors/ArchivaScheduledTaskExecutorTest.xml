@@ -41,9 +41,13 @@
           <role-hint>jdo</role-hint>
           <field-name>repositoryDAO</field-name>
         </requirement>
-         <requirement>
+        <requirement>
           <role>org.apache.maven.archiva.consumers.ArchivaArtifactConsumer</role>
-          <field-name>availableConsumers</field-name>
+          <field-name>availableDBConsumers</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.consumers.RepositoryContentConsumer</role>
+          <field-name>availableRepositoryConsumers</field-name>
         </requirement>
       </requirements>
     </component>
