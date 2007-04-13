@@ -20,11 +20,12 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.maven.archiva.policies.SnapshotsPolicy;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -41,13 +42,14 @@ public class MavenProxyPropertyLoader
 
     private static final String REPO_LIST = "repo.list";
 
-    public void load( Properties props, Configuration configuration ) throws InvalidConfigurationException
+    public void load( Properties props, Configuration configuration )
+        throws InvalidConfigurationException
     {
         // set up the managed repository
         String localCachePath = getMandatoryProperty( props, REPO_LOCAL_STORE );
 
         RepositoryConfiguration config = new RepositoryConfiguration();
-        config.setUrl( toURL( localCachePath ) );
+        config.setUrl( PathUtil.toUrl( localCachePath ) );
         config.setName( "Imported Maven-Proxy Cache" );
         config.setId( "maven-proxy" );
         configuration.addRepository( config );
@@ -97,31 +99,20 @@ public class MavenProxyPropertyLoader
             repository.setIndexed( false );
             repository.setReleases( true );
             repository.setSnapshots( false );
-            
+
             configuration.addRepository( repository );
 
-            RepositoryProxyConnectorConfiguration proxyConnector = new RepositoryProxyConnectorConfiguration();
+            ProxyConnectorConfiguration proxyConnector = new ProxyConnectorConfiguration();
             proxyConnector.setSourceRepoId( "maven-proxy" );
             proxyConnector.setTargetRepoId( key );
             proxyConnector.setProxyId( proxyKey );
             // TODO: convert cachePeriod to closest "daily" or "hourly"
-            proxyConnector.setSnapshotsPolicy( "daily" );
-            proxyConnector.setReleasesPolicy( "never" );
-            
-            configuration.addProxyConnector( proxyConnector );
-        }
-    }
+            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, 
+                                      SnapshotsPolicy.DAILY );
+            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, 
+                                      ReleasesPolicy.IGNORED );
 
-    private String toURL( String path )
-    {
-        File file = new File( path );
-        try
-        {
-            return file.toURL().toExternalForm();
-        }
-        catch ( MalformedURLException e )
-        {
-            return "file://" + StringUtils.replaceChars( file.getAbsolutePath(), '\\', '/' );
+            configuration.addProxyConnector( proxyConnector );
         }
     }
 
@@ -142,14 +133,16 @@ public class MavenProxyPropertyLoader
         return result;
     }
 
-    public void load( InputStream is, Configuration configuration ) throws IOException, InvalidConfigurationException
+    public void load( InputStream is, Configuration configuration )
+        throws IOException, InvalidConfigurationException
     {
         Properties props = new Properties();
         props.load( is );
         load( props, configuration );
     }
 
-    private String getMandatoryProperty( Properties props, String key ) throws InvalidConfigurationException
+    private String getMandatoryProperty( Properties props, String key )
+        throws InvalidConfigurationException
     {
         String value = props.getProperty( key );
 

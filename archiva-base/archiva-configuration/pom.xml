@@ -30,6 +30,15 @@
   <name>Archiva Base :: Configuration</name>
   <dependencies>
     <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-policies</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-api</artifactId>
     </dependency>
