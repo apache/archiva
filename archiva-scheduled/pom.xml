@@ -50,10 +50,6 @@
       <artifactId>archiva-database-consumers</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-lucene-consumers</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-taskqueue</artifactId>
       <version>1.0-alpha-6</version>

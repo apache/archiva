@@ -22,6 +22,7 @@ package org.apache.maven.archiva.scheduled.executors;
 import java.io.File;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,8 +32,12 @@ import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.RepositoryDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
@@ -163,10 +168,34 @@ public class ArchivaScheduledTaskExecutorTest
 
         RepositoryTask repoTask = new RepositoryTask();
         
-        repoTask.setName( "testTask" );
+        repoTask.setName( "testRepoTask" );
         repoTask.setRepositoryId( "testRepo" );
         
         taskExecutor.executeTask( repoTask );
+        
+        ArtifactDAO adao = dao.getArtifactDAO();
+        
+        ArchivaArtifact artifact = adao.getArtifact( "javax.sql", "jdbc", "2.0", null, "jar" );
+        
+        assertNotNull( artifact );
+        
+        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        
+        assertNotNull( results );
+        assertEquals("Incorrect number of unprocessed artifacts detected.", results.size(), 8 );
+        
+        DatabaseTask dataTask = new DatabaseTask();
+        
+        dataTask.setName( "testDataTask" );
+
+        taskExecutor.executeTask( dataTask );
+        
+        List newResults = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        
+        assertNotNull( newResults );
+        assertEquals("Incorrect number of unprocessed artifacts detected.", newResults.size(), 0 );
+        assertEquals("Incorrect number of processed artifacts detected.", newResults.size(), 8 );
+        
 
     }
 
