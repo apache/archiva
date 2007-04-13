@@ -69,10 +69,17 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
     private RepositoryDAO repositoryDAO;
     
     /**
-     * The collection of available consumers.
+     * The collection of available database consumers.
      * @plexus.requirement role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
      */
-    private Map availableConsumers;
+    private Map availableDBConsumers;
+    
+    /**
+     * The collection of available repository consumers.
+     * @plexus.requirement role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+     */
+    private Map availableRepositoryConsumers;
+    
     
     public void executeTask( Task task ) throws TaskExecutionException
     {
@@ -164,9 +171,9 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
         {
             String consumer = (String)i.next();
             
-            if ( availableConsumers.containsKey( availableConsumers.get( consumer ) )  )
+            if ( availableRepositoryConsumers.containsKey( availableRepositoryConsumers.get( consumer ) )  )
             {
-                activeConsumers.add( availableConsumers.get( consumer ) );
+                activeConsumers.add( availableRepositoryConsumers.get( consumer ) );
             }
             else
             {
@@ -178,10 +185,10 @@ public class ArchivaScheduledTaskExecutor extends AbstractLogEnabled implements 
         {
             String consumer = (String)i.next();
             
-            if ( availableConsumers.containsKey( availableConsumers.get( consumer ) )  )
+            if ( availableRepositoryConsumers.containsKey( availableRepositoryConsumers.get( consumer ) )  )
             {
                 getLogger().warn( "Using consumer " + consumer );
-                activeConsumers.add( availableConsumers.get( consumer ) );
+                activeConsumers.add( availableRepositoryConsumers.get( consumer ) );
             }
             else
             {
