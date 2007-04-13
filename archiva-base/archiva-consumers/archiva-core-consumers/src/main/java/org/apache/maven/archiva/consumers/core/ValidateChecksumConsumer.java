@@ -43,7 +43,7 @@ import java.util.List;
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
- *                   role-hint="validate-checksums"
+ *                   role-hint="validate-checksum"
  *                   instantiation-strategy="per-lookup"
  */
 public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
