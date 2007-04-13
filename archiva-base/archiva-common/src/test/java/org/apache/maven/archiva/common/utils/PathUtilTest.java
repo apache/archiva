@@ -19,7 +19,9 @@ package org.apache.maven.archiva.common.utils;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
 
 import junit.framework.TestCase;
 
@@ -36,5 +38,41 @@ public class PathUtilTest
     {
         assertEquals( "path/to/resource.xml", PathUtil.getRelative( "/home/user/foo/repository",
                                                                     "/home/user/foo/repository/path/to/resource.xml" ) );
+    }
+
+    public void testToUrlRelativePath()
+    {
+        File workingDir = new File( "." );
+
+        String workingDirname = StringUtils.replaceChars( workingDir.getAbsolutePath(), '\\', '/' );
+
+        // Some JVM's retain the "." at the end of the path.  Drop it.
+        if ( workingDirname.endsWith( "/." ) )
+        {
+            workingDirname = workingDirname.substring( 0, workingDirname.length() - 2 );
+        }
+
+        String path = "path/to/resource.xml";
+        String expectedPath = "file:" + workingDirname + "/" + path;
+
+        assertEquals( expectedPath, PathUtil.toUrl( path ) );
+    }
+
+    public void testToUrlUsingFileUrl()
+    {
+        File workingDir = new File( "." );
+
+        String workingDirname = StringUtils.replaceChars( workingDir.getAbsolutePath(), '\\', '/' );
+
+        // Some JVM's retain the "." at the end of the path.  Drop it.
+        if ( workingDirname.endsWith( "/." ) )
+        {
+            workingDirname = workingDirname.substring( 0, workingDirname.length() - 2 );
+        }
+
+        String path = "path/to/resource.xml";
+        String expectedPath = "file:" + workingDirname + "/" + path;
+
+        assertEquals( expectedPath, PathUtil.toUrl( expectedPath ) );
     }
 }
