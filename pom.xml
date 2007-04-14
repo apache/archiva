@@ -68,6 +68,10 @@
     <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
   </scm>
   <distributionManagement>
+    <repository>
+      <id>apache.releases</id>
+      <url>scpexe://people.apache.org/www/people.apache.org/builds/maven/archiva/${version}/m2-staging-repository</url>
+    </repository>
     <site>
       <id>apache.website</id>
       <url>scpexe://people.apache.org/www/maven.apache.org/archiva/</url>
