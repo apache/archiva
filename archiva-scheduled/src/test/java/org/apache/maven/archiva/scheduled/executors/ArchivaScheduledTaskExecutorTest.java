@@ -179,10 +179,10 @@ public class ArchivaScheduledTaskExecutorTest
         
         assertNotNull( artifact );
         
-        List results = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         
-        assertNotNull( results );
-        assertEquals("Incorrect number of unprocessed artifacts detected.", results.size(), 8 );
+        assertNotNull( unprocessedResultList );
+        assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
         
         DatabaseTask dataTask = new DatabaseTask();
         
@@ -190,12 +190,10 @@ public class ArchivaScheduledTaskExecutorTest
 
         taskExecutor.executeTask( dataTask );
         
-        List newResults = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
+        List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
         
-        assertNotNull( newResults );
-        assertEquals("Incorrect number of unprocessed artifacts detected.", newResults.size(), 0 );
-        assertEquals("Incorrect number of processed artifacts detected.", newResults.size(), 8 );
-        
+        assertNotNull( processedResultList );
+        assertEquals("Incorrect number of processed artifacts detected.", 8, processedResultList.size() );      
 
     }
 
