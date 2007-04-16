@@ -100,9 +100,35 @@ public class DefaultBidirectionalRepositoryLayout
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
-    public ArchivaArtifact toArtifact( String path )
+    class PathReferences
+    {
+        public String groupId;
+
+        public String artifactId;
+
+        public String baseVersion;
+
+        public String type;
+
+        public FilenameParts fileParts;
+
+        public void appendGroupId( String part )
+        {
+            if ( groupId == null )
+            {
+                groupId = part;
+                return;
+            }
+
+            groupId += "." + part;
+        }
+    }
+
+    private PathReferences toPathReferences( String path, boolean parseFilename )
         throws LayoutException
     {
+        PathReferences prefs = new PathReferences();
+
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
 
         String pathParts[] = StringUtils.split( normalizedPath, '/' );
@@ -126,42 +152,60 @@ public class DefaultBidirectionalRepositoryLayout
         // Maven 2.x path.
         int partCount = pathParts.length;
 
-        // Last part is the filename
-        String filename = pathParts[partCount - 1];
-
         // Second to last is the baseVersion (the directory version)
-        String baseVersion = pathParts[partCount - 2];
+        prefs.baseVersion = pathParts[partCount - 2];
 
         // Third to last is the artifact Id.
-        String artifactId = pathParts[partCount - 3];
+        prefs.artifactId = pathParts[partCount - 3];
 
         // Remaining pieces are the groupId.
-        String groupId = "";
         for ( int i = 0; i <= partCount - 4; i++ )
         {
-            if ( groupId.length() > 0 )
-            {
-                groupId += ".";
-            }
-            groupId += pathParts[i];
+            prefs.appendGroupId( pathParts[i] );
         }
 
-        // Now we need to parse the filename to get the artifact version Id. 
-        FilenameParts fileParts = RepositoryLayoutUtils.splitFilename( filename, artifactId );
+        if ( parseFilename )
+        {
+            // Last part is the filename
+            String filename = pathParts[partCount - 1];
 
-        String type = extensionMapper.getType( filename );
+            // Now we need to parse the filename to get the artifact version Id. 
+            prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, prefs.artifactId );
 
-        ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, fileParts.version, fileParts.classifier,
-                                                        type );
+            prefs.type = extensionMapper.getType( filename );
+        }
+
+        return prefs;
+    }
+
+    public ProjectReference toProjectReference( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, false );
+        ProjectReference reference = new ProjectReference();
+        reference.setGroupId( pathrefs.groupId );
+        reference.setArtifactId( pathrefs.artifactId );
+
+        return reference;
+    }
+
+    public ArchivaArtifact toArtifact( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, true );
+
+        ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.artifactId,
+                                                        pathrefs.fileParts.version, pathrefs.fileParts.classifier,
+                                                        pathrefs.type );
 
         // Sanity Checks.
-        String artifactBaseVersion = VersionUtil.getBaseVersion( fileParts.version );
-        if ( !artifactBaseVersion.equals( baseVersion ) )
+        String artifactBaseVersion = VersionUtil.getBaseVersion( pathrefs.fileParts.version );
+        if ( !artifactBaseVersion.equals( pathrefs.baseVersion ) )
         {
             throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
         }
 
-        if ( !artifactId.equals( fileParts.artifactId ) )
+        if ( !pathrefs.artifactId.equals( pathrefs.fileParts.artifactId ) )
         {
             throw new LayoutException( "Invalid artifact Id" );
         }
