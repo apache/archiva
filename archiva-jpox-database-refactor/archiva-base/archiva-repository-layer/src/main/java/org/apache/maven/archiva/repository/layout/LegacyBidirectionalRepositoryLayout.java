@@ -61,8 +61,8 @@ public class LegacyBidirectionalRepositoryLayout
 
     public String toPath( ArchivaArtifact reference )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference
-            .getVersion(), reference.getClassifier(), reference.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
+            .getClassifier(), reference.getType() );
     }
 
     public String toPath( ProjectReference reference )
@@ -73,8 +73,8 @@ public class LegacyBidirectionalRepositoryLayout
 
     public String toPath( ArtifactReference artifact )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(),
-                       artifact.getType() );
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                       artifact.getClassifier(), artifact.getType() );
     }
 
     private String toPath( String groupId, String artifactId, String version, String classifier, String type )
@@ -119,9 +119,22 @@ public class LegacyBidirectionalRepositoryLayout
         return type + "s";
     }
 
-    public ArchivaArtifact toArtifact( String path )
+    class PathReferences
+    {
+        public String groupId;
+
+        public String pathType;
+
+        public String type;
+
+        public FilenameParts fileParts;
+    }
+
+    private PathReferences toPathReferences( String path, boolean parseFilename )
         throws LayoutException
     {
+        PathReferences prefs = new PathReferences();
+
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
 
         String pathParts[] = StringUtils.split( normalizedPath, '/' );
@@ -142,30 +155,49 @@ public class LegacyBidirectionalRepositoryLayout
         }
 
         // The Group ID.
-        String groupId = pathParts[0];
+        prefs.groupId = pathParts[0];
 
         // The Expected Type.
-        String expectedType = pathParts[1];
+        prefs.pathType = pathParts[1];
 
-        // The Filename.
-        String filename = pathParts[2];
+        if ( parseFilename )
+        {
+            // The Filename.
+            String filename = pathParts[2];
 
-        FilenameParts fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
+            prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
 
-        String type = extensionMapper.getType( filename );
+            prefs.type = extensionMapper.getType( filename );
+        }
 
-        ArchivaArtifact artifact = new ArchivaArtifact( groupId, fileParts.artifactId, fileParts.version,
-                                                        fileParts.classifier, type );
+        return prefs;
+    }
+
+    public ProjectReference toProjectReference( String path )
+        throws LayoutException
+    {
+        throw new LayoutException( "Cannot parse legacy paths to a Project Reference." );
+    }
+
+    public ArchivaArtifact toArtifact( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, true );
+
+        ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.fileParts.artifactId,
+                                                        pathrefs.fileParts.version, pathrefs.fileParts.classifier,
+                                                        pathrefs.type );
 
         // Sanity Checks.
-        if ( StringUtils.isEmpty( fileParts.extension ) )
+        if ( StringUtils.isEmpty( pathrefs.fileParts.extension ) )
         {
             throw new LayoutException( "Invalid artifact, no extension." );
         }
 
-        if ( !expectedType.equals( fileParts.extension + "s" ) )
+        if ( !pathrefs.pathType.equals( pathrefs.fileParts.extension + "s" ) )
         {
-            throw new LayoutException( "Invalid artifact, extension and layout specified type mismatch." );
+            throw new LayoutException( "Invalid artifact, mismatch on extension <" + pathrefs.fileParts.extension
+                + "> and layout specified type<" + pathrefs.pathType + ">." );
         }
 
         return artifact;

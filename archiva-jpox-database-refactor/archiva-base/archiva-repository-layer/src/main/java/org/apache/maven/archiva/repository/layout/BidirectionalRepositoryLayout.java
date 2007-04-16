@@ -71,4 +71,13 @@ public interface BidirectionalRepositoryLayout
      * @throws LayoutException if there was a problem converting the path to an artifact.
      */
     public ArchivaArtifact toArtifact( String path ) throws LayoutException;
+    
+    /**
+     * Given a repository relateive path to a filename, return the ProjectReference object suitable for the path.
+     * 
+     * @param path the path relative to the repository base dir for the artifact.
+     * @return the ProjectReference representing the path.  (or null if path cannot be converted to a ProjectReference)
+     * @throws LayoutException if there was a problem converting the path to an artifact.
+     */
+    public ProjectReference toProjectReference( String path ) throws LayoutException;
 }

@@ -35,6 +35,33 @@ class FilenameParts
 
     public String extension;
 
+    public String toFilename()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        if ( artifactId != null )
+        {
+            sb.append( artifactId );
+        }
+
+        if ( classifier != null )
+        {
+            sb.append( "-" ).append( classifier );
+        }
+
+        if ( version != null )
+        {
+            sb.append( "-" ).append( version );
+        }
+
+        if ( extension != null )
+        {
+            sb.append( "." ).append( extension );
+        }
+
+        return sb.toString();
+    }
+
     public void appendArtifactId( String piece )
     {
         if ( artifactId == null )
