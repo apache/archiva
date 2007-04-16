@@ -31,15 +31,16 @@
 
   <modules>
     <module>archiva-common</module>
+    <module>archiva-policies</module>
     <module>archiva-configuration</module>
     <module>archiva-consumers</module>
     <module>archiva-indexer</module>
     <module>archiva-model</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
+    <module>archiva-proxy</module>
     <!-- DOES NOT COMPILE (yet)
       <module>archiva-converter</module> 
-      <module>archiva-proxy</module> 
     -->
   </modules>
 </project>
