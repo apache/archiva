@@ -73,6 +73,7 @@ public class CachedFailuresPolicy
         if ( IGNORED.equals( policySetting ) )
         {
             // Ignore.
+            getLogger().debug( "OK to fetch, check-failures policy set to IGNORED." );
             return true;
         }
 
@@ -82,9 +83,12 @@ public class CachedFailuresPolicy
         {
             if ( urlFailureCache.hasFailedBefore( url ) )
             {
+                getLogger().debug( "NO to fetch, check-failures detected previous failure on url: " + url );
                 return false;
             }
         }
+        
+        getLogger().debug( "OK to fetch, check-failures detected no issues." );
 
         return true;
     }

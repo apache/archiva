@@ -88,28 +88,17 @@ public abstract class AbstractUpdatePolicy
     }
 
     protected abstract boolean isSnapshotPolicy();
+    
+    protected abstract String getUpdateMode();
 
     public boolean applyPolicy( String policySetting, Properties request, File localFile )
     {
         String version = request.getProperty( "version", "" );
         boolean isSnapshotVersion = false;
-        
-        if( StringUtils.isNotBlank( version ) )
+
+        if ( StringUtils.isNotBlank( version ) )
         {
             isSnapshotVersion = VersionUtil.isSnapshot( version );
-        }
-
-        // Test for mismatches.
-        if ( !isSnapshotVersion && isSnapshotPolicy() )
-        {
-            getLogger().debug( "Non-snapshot version detected in during snapshot policy. ignoring policy.");
-            return true;
-        }
-        
-        if ( isSnapshotVersion && !isSnapshotPolicy() )
-        {
-            getLogger().debug( "Snapshot version detected in during release policy. ignoring policy.");
-            return true;
         }
 
         if ( !validPolicyCodes.contains( policySetting ) )
@@ -118,32 +107,45 @@ public abstract class AbstractUpdatePolicy
             getLogger().error( "Unknown artifact-update policyCode [" + policySetting + "]" );
             return false;
         }
-        
+
         if ( IGNORED.equals( policySetting ) )
         {
-            // Disabled means no.
-            getLogger().debug( "OK to update, policy ignored." );
+            // Ignored means ok to update.
+            getLogger().debug( "OK to update, " + getUpdateMode() + " policy set to IGNORED." );
+            return true;
+        }
+
+        // Test for mismatches.
+        if ( !isSnapshotVersion && isSnapshotPolicy() )
+        {
+            getLogger().debug( "OK to update, snapshot policy does not apply for non-snapshot versions." );
+            return true;
+        }
+
+        if ( isSnapshotVersion && !isSnapshotPolicy() )
+        {
+            getLogger().debug( "OK to update, release policy does not apply for snapshot versions." );
             return true;
         }
 
         if ( DISABLED.equals( policySetting ) )
         {
             // Disabled means no.
-            getLogger().debug( "NO to update, disabled." );
+            getLogger().debug( "NO to update, " + getUpdateMode() + " policy set to DISABLED." );
             return false;
         }
 
         if ( !localFile.exists() )
         {
             // No file means it's ok.
-            getLogger().debug( "OK to update, local file does not exist." );
+            getLogger().debug( "OK to update " + getUpdateMode() + ", local file does not exist." );
             return true;
         }
 
         if ( ONCE.equals( policySetting ) )
         {
             // File exists, but policy is once.
-            getLogger().debug( "NO to update, local file exist (and policy is ONCE)." );
+            getLogger().debug( "NO to update" + getUpdateMode() + ", local file exist (and policy is ONCE)." );
             return false;
         }
 
