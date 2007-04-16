@@ -165,12 +165,7 @@
   <databaseScanning>
     <cronExpression>0 0 * * ?</cronExpression>
     <unprocessedConsumers>
-      <unprocessedConsumer>index-artifact</unprocessedConsumer>
-      <unprocessedConsumer>update-db-project</unprocessedConsumer>
-      <unprocessedConsumer>validate-repository-metadata</unprocessedConsumer>
-      <unprocessedConsumer>index-archive-toc</unprocessedConsumer>
-      <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
-      <unprocessedConsumer>index-public-methods</unprocessedConsumer>
+      <unprocessedConsumer>update-db-artifact</unprocessedConsumer>
     </unprocessedConsumers>
     <processedConsumers>
       <processedConsumer>not-present-remove-db-artifact</processedConsumer>

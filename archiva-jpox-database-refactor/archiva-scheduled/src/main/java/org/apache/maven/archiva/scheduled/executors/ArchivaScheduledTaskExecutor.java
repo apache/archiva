@@ -111,6 +111,7 @@ public class ArchivaScheduledTaskExecutor
 
         try
         {
+            getLogger().info( "Task: Updating unprocessed artifacts" );
             databaseUpdater.updateAllUnprocessed();
         }
         catch ( ArchivaDatabaseException e )
@@ -120,6 +121,7 @@ public class ArchivaScheduledTaskExecutor
 
         try
         {
+            getLogger().info( "Task: Updating processed artifacts" );
             databaseUpdater.updateAllProcessed();
         }
         catch ( ArchivaDatabaseException e )
