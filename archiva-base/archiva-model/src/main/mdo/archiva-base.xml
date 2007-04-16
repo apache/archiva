@@ -358,7 +358,7 @@
      */
     public boolean isProcessed()
     {
-        return (whenProcessed == null);
+        return !(whenProcessed == null);
     }          
           ]]></code>
         </codeSegment>
