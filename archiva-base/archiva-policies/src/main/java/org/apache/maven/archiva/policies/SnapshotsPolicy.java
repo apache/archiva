@@ -42,4 +42,9 @@ public class SnapshotsPolicy
     {
         return true;
     }
+    
+    protected String getUpdateMode()
+    {
+        return "snapshots";
+    }
 }

@@ -42,4 +42,9 @@ public class ReleasesPolicy
     {
         return false;
     }
+    
+    protected String getUpdateMode()
+    {
+        return "releases";
+    }
 }
