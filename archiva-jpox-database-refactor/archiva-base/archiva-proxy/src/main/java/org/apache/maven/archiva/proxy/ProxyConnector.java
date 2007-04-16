@@ -22,7 +22,9 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.connector.RepositoryConnector;
 
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * This represents a connector for a repository to repository proxy.
@@ -41,13 +43,9 @@ public class ProxyConnector
 
     private List whitelist;
 
-    private String snapshotsPolicy;
-
-    private String releasesPolicy;
-
-    private String checksumPolicy;
-    
     private String proxyId;
+
+    private Properties policies;
 
     public List getBlacklist()
     {
@@ -89,34 +87,14 @@ public class ProxyConnector
         this.whitelist = whitelist;
     }
 
-    public String getChecksumPolicy()
+    public Properties getPolicies()
     {
-        return checksumPolicy;
+        return policies;
     }
 
-    public void setChecksumPolicy( String failurePolicy )
+    public void setPolicies( Properties policies )
     {
-        this.checksumPolicy = failurePolicy;
-    }
-
-    public String getReleasesPolicy()
-    {
-        return releasesPolicy;
-    }
-
-    public void setReleasesPolicy( String releasesPolicy )
-    {
-        this.releasesPolicy = releasesPolicy;
-    }
-
-    public String getSnapshotsPolicy()
-    {
-        return snapshotsPolicy;
-    }
-
-    public void setSnapshotsPolicy( String snapshotsPolicy )
-    {
-        this.snapshotsPolicy = snapshotsPolicy;
+        this.policies = policies;
     }
 
     public String getProxyId()
@@ -127,5 +105,32 @@ public class ProxyConnector
     public void setProxyId( String proxyId )
     {
         this.proxyId = proxyId;
+    }
+
+    public String toString()
+    {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append( "ProxyConnector[\n" );
+        sb.append( "  source:" ).append( this.sourceRepository ).append( "\n" );
+        sb.append( "  target:" ).append( this.targetRepository ).append( "\n" );
+        sb.append( "  proxyId:" ).append( this.proxyId ).append( "\n" );
+
+        Enumeration keys = this.policies.propertyNames();
+        while ( keys.hasMoreElements() )
+        {
+            String name = (String) keys.nextElement();
+            sb.append( "  policy[" ).append( name ).append( "]:" );
+            sb.append( this.policies.getProperty( name ) ).append( "\n" );
+        }
+
+        sb.append( "]" );
+
+        return sb.toString();
+    }
+
+    public void setPolicy( String policyId, String policySetting )
+    {
+        // TODO Auto-generated method stub
     }
 }

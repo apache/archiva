@@ -31,6 +31,7 @@ import org.apache.maven.wagon.events.SessionListener;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +43,7 @@ import java.util.List;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class WagonDelegate
+    extends AbstractLogEnabled
     implements Wagon
 {
     private Wagon delegate;
@@ -51,6 +53,7 @@ public class WagonDelegate
     public void get( String resourceName, File destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
+        getLogger().debug( ".get(" + resourceName + ", " + destination + ")" );
         delegate.get( resourceName, destination );
         create( destination );
     }
@@ -58,6 +61,8 @@ public class WagonDelegate
     public boolean getIfNewer( String resourceName, File destination, long timestamp )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
+        getLogger().debug( ".getIfNewer(" + resourceName + ", " + destination + ", " + timestamp + ")" );
+
         boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
         createIfMissing( destination );
         return result;

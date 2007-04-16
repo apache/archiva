@@ -23,6 +23,7 @@ import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public interface RepositoryProxyConnectors
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public boolean fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
+    public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
         throws ProxyException;
     
     /**
@@ -60,7 +61,7 @@ public interface RepositoryProxyConnectors
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public boolean fetchFromProxies( ArchivaRepository repository, ProjectReference metadata )
+    public File fetchFromProxies( ArchivaRepository repository, ProjectReference metadata )
         throws ProxyException;
 
     /**
