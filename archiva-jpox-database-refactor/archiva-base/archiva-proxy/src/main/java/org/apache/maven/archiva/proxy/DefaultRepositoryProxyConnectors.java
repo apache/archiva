@@ -144,6 +144,10 @@ public class DefaultRepositoryProxyConnectors
                 BidirectionalRepositoryLayout targetLayout = layoutFactory.getLayout( targetRepository.getLayoutType() );
                 String targetPath = targetLayout.toPath( artifact );
 
+                getLogger().debug(
+                                   "Using target repository: " + targetRepository.getId() + " - layout: "
+                                       + targetRepository.getLayoutType() + " - targetPath: " + targetPath );
+
                 File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
                                                     requestProperties );
 
@@ -680,6 +684,7 @@ public class DefaultRepositoryProxyConnectors
         }
 
         ArchivaRepository repo = new ArchivaRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl() );
+        repo.getModel().setLayoutName( repoConfig.getLayout() );
         return repo;
     }
 
