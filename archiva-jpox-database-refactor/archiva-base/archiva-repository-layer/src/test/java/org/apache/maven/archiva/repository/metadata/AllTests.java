@@ -35,6 +35,7 @@ public class AllTests
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.metadata" );
         //$JUnit-BEGIN$
+        suite.addTestSuite( RepositoryMetadataWriterTest.class );
         suite.addTestSuite( RepositoryMetadataReaderTest.class );
         //$JUnit-END$
         return suite;

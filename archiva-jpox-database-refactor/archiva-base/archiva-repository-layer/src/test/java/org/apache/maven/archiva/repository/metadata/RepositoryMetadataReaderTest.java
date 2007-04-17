@@ -49,4 +49,23 @@ public class RepositoryMetadataReaderTest extends PlexusTestCase
         assertTrue( "Available version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
         assertTrue( "Available version 1.1", metadata.getAvailableVersions().contains( "1.1" ) );
     }
+    
+    public void testLoadComplex() throws RepositoryMetadataException
+    {
+        File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
+        File metadataFile = new File( defaultRepoDir, "org/apache/maven/samplejar/maven-metadata.xml" );
+
+        RepositoryMetadataReader reader = new RepositoryMetadataReader();
+
+        ArchivaRepositoryMetadata metadata = reader.read( metadataFile );
+
+        assertNotNull( metadata );
+        assertEquals( "Group Id", "org.apache.maven", metadata.getGroupId() );
+        assertEquals( "Artifact Id", "samplejar", metadata.getArtifactId() );
+        assertEquals( "Released Version", "2.0", metadata.getReleasedVersion() );
+        assertEquals( "Latest Version", "6.0-SNAPSHOT", metadata.getLatestVersion() );
+        assertEquals( "List of Available Versions", 18, metadata.getAvailableVersions().size() );
+        assertTrue( "Available version 6.0-20060311.183228-10", metadata.getAvailableVersions().contains( "6.0-20060311.183228-10" ) );
+        assertTrue( "Available version 6.0-SNAPSHOT", metadata.getAvailableVersions().contains( "6.0-SNAPSHOT" ) );
+    }
 }
