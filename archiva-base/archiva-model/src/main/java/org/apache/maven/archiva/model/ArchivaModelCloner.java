@@ -247,6 +247,21 @@ public class ArchivaModelCloner
         return cloned;
     }
 
+    public static SnapshotVersion clone( SnapshotVersion snapshotVersion )
+    {
+        if ( snapshotVersion == null )
+        {
+            return null;
+        }
+
+        SnapshotVersion cloned = new SnapshotVersion();
+
+        cloned.setTimestamp( snapshotVersion.getTimestamp() );
+        cloned.setBuildNumber( snapshotVersion.getBuildNumber() );
+
+        return cloned;
+    }
+
     public static VersionedReference clone( VersionedReference versionedReference )
     {
         if ( versionedReference == null )
@@ -505,5 +520,10 @@ public class ArchivaModelCloner
         }
 
         return ret;
+    }
+
+    public static List cloneAvailableVersions( List availableVersions )
+    {
+        return cloneSimpleStringList( availableVersions );
     }
 }

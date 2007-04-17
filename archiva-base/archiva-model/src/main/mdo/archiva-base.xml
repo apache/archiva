@@ -475,6 +475,16 @@
         </codeSegment>
       </codeSegments>
     </class>
+    
+    <!-- _______________________________________________________________
+         __  __      _            _       _
+        |  \/  | ___| |_ __ _  __| | __ _| |_ __ _
+        | |\/| |/ _ \ __/ _` |/ _` |/ _` | __/ _` |
+        | |  | |  __/ || (_| | (_| | (_| | || (_| |
+        |_|  |_|\___|\__\__,_|\__,_|\__,_|\__\__,_|
+        
+      -->
+    
     <class stash.storable="true"
            jpox.use-identifiers-as-primary-key="false"
            jpox.identity-type="application"
@@ -492,7 +502,7 @@
           <type>String</type>
           <required>true</required>
           <description>
-            The Group ID of the repository content.
+            The Group ID of the metadata.
           </description>
         </field>
         <field jpox.primary-key="true"
@@ -504,7 +514,29 @@
           <type>String</type>
           <required>true</required>
           <description>
-            The Artifact ID of the repository content.
+            The Artifact ID of the metadata.
+          </description>
+        </field>
+        <field jpox.primary-key="true"
+               jpox.value-strategy="off"
+               jpox.persistence-modifier="persistent">
+          <name>version</name>
+          <identifier>true</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Version of the metadata.
+          </description>
+        </field>
+        <field>
+          <name>latestVersion</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <type>String</type>
+          <description>
+            The latest version id.
           </description>
         </field>
         <field>
@@ -516,6 +548,19 @@
           <description>
             The released version id.
           </description>
+        </field>
+        <field>
+          <name>snapshotVersion</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>
+            The snapshot version id.
+          </description>
+          <association>
+            <type>SnapshotVersion</type>
+            <multiplicity>1</multiplicity>
+          </association>
         </field>
         <field>
           <name>availableVersions</name>
@@ -531,17 +576,27 @@
           </description>
         </field>
         <field>
-          <name>lastModified</name>
+          <name>lastUpdated</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            When the metadata was last updated.
+          </description>
+        </field>
+        <field>
+          <name>fileLastModified</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>Date</type>
           <required>true</required>
           <description>
-            The Last Modified Timestamp of this artifact.
+            The Last Modified Timestamp of this file.
           </description>
         </field>
         <field jpox.column="FILE_SIZE">
-          <name>size</name>
+          <name>fileSize</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>long</type>
@@ -571,7 +626,53 @@
           </description>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0</version>
+          <code>
+            public void updateTimestamp()
+            {
+                setLastUpdatedTimestamp( new java.util.Date() );
+            }
+
+            public void setLastUpdatedTimestamp( java.util.Date date )
+            {
+                java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
+                java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
+                fmt.setTimeZone( timezone );
+                setLastUpdated( fmt.format( date ) );
+            }
+          </code>
+        </codeSegment>
+      </codeSegments>
     </class>
+    
+    <class stash.storable="true"
+           jpox.table="REPOSITORY_METADATA_SNAPSHOTS">
+      <name>SnapshotVersion</name>
+      <description>The Snapshot Version</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field jpox.column="VERSION_TIMESTAMP">
+          <name>timestamp</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+          The unique timestamp for the snapshot version.
+          </description>
+        </field>
+        <field>
+          <name>buildNumber</name>
+          <type>int</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>The incremental build number of the snapshot.</description>
+        </field>
+      </fields>
+    </class>
+    
+    
     
     <!-- _______________________________________________________________
          ____       __

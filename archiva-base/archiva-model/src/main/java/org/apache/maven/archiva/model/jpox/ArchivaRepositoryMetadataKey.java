@@ -19,7 +19,7 @@ package org.apache.maven.archiva.model.jpox;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.AbstractProjectKey;
+import org.apache.maven.archiva.model.AbstractVersionedKey;
 
 import java.io.Serializable;
 
@@ -30,7 +30,7 @@ import java.io.Serializable;
  * @version $Id$
  */
 public class ArchivaRepositoryMetadataKey
-    extends AbstractProjectKey
+    extends AbstractVersionedKey
     implements Serializable
 {
 
