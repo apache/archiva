@@ -51,9 +51,9 @@ public class ManagedLegacyTransferTest
         saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-        File proxied2File = new File( REPOPATH_PROXIED2,
+        File proxied2File = new File( REPOPATH_PROXIED1,
                                       "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar" );
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
@@ -65,95 +65,43 @@ public class ManagedLegacyTransferTest
     public void testLegacyManagedRepoGetAlreadyPresent()
         throws Exception
     {
-        fail( "Implemented " + getName() );
+        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        ArtifactReference artifact = createArtifactReference( "legacy", path );
 
-        //        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        //        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
-        //        String expectedContents = FileUtils.readFileToString( expectedFile, null );
-        //        long originalModificationTime = expectedFile.lastModified();
-        //
-        //        assertTrue( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
-        //        assertTrue( "Check file created", file.exists() );
-        //        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
-        //        File proxiedFile = new File( proxiedRepository1.getBasedir(),
-        //                                     "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar" );
-        //        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
-        //        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
-        //        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
-        //        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime, file
-        //            .lastModified() );
-    }
+        assertTrue( expectedFile.exists() );
 
-    public void testLegacyProxyRepoGetNotPresent()
-        throws Exception
-    {
-        fail( "Implemented " + getName() );
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        //        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
-        //        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        //
-        //        expectedFile.delete();
-        //        assertFalse( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, legacyProxiedRepositories, defaultManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
-        //        assertTrue( "Check file created", file.exists() );
-        //        File proxiedFile = new File( legacyProxiedRepository.getBasedir(),
-        //                                     "org.apache.maven.test/jars/get-default-layout-1.0.jar" );
-        //        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
-        //        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
-        // TODO: timestamp preservation requires support for that in wagon
-        //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
-    }
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-    public void testLegacyProxyRepoGetAlreadyPresent()
-        throws Exception
-    {
-        fail( "Implemented " + getName() );
-
-        //        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        //        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        //        String expectedContents = FileUtils.readFileToString( expectedFile, null );
-        //        long originalModificationTime = expectedFile.lastModified();
-        //
-        //        assertTrue( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, legacyProxiedRepositories, defaultManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
-        //        assertTrue( "Check file created", file.exists() );
-        //        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
-        //        File proxiedFile = new File( legacyProxiedRepository.getBasedir(),
-        //                                     "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
-        //        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
-        //        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
-        //        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
-        //        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime, file
-        //            .lastModified() );
+        File proxied2File = new File( REPOPATH_PROXIED1,
+                                      "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar" );
+        assertFileEquals( expectedFile, downloadedFile, proxied2File );
+        assertNoTempFiles( expectedFile );
     }
 
     public void testLegacyManagedAndProxyRepoGetNotPresent()
         throws Exception
     {
-        fail( "Implemented " + getName() );
+        String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        ArtifactReference artifact = createArtifactReference( "legacy", path );
 
-        //        String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
-        //        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
-        //
-        //        assertFalse( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, legacyProxiedRepositories, legacyManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
-        //        assertTrue( "Check file created", file.exists() );
-        //        File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
-        //        String expectedContents = FileUtils.readFileToString( proxiedFile, null );
-        //        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, path );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
+
         // TODO: timestamp preservation requires support for that in wagon
         //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
@@ -161,61 +109,45 @@ public class ManagedLegacyTransferTest
     public void testLegacyManagedAndProxyRepoGetAlreadyPresent()
         throws Exception
     {
-        fail( "Implemented " + getName() );
+        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        ArtifactReference artifact = createArtifactReference( "legacy", path );
 
-        //        String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        //        File expectedFile = new File( legacyManagedRepository.getBasedir(), path );
-        //        String expectedContents = FileUtils.readFileToString( expectedFile, null );
-        //        long originalModificationTime = expectedFile.lastModified();
-        //
-        //        assertTrue( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, legacyProxiedRepositories, legacyManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
-        //        assertTrue( "Check file created", file.exists() );
-        //        assertEquals( "Check file contents", expectedContents, FileUtils.readFileToString( file, null ) );
-        //        File proxiedFile = new File( legacyProxiedRepository.getBasedir(), path );
-        //        String unexpectedContents = FileUtils.readFileToString( proxiedFile, null );
-        //        assertFalse( "Check file contents", unexpectedContents.equals( FileUtils.readFileToString( file, null ) ) );
-        //        assertFalse( "Check file timestamp is not that of proxy", proxiedFile.lastModified() == file.lastModified() );
-        //        assertEquals( "Check file timestamp is that of original managed file", originalModificationTime, file
-        //            .lastModified() );
-    }
+        assertTrue( expectedFile.exists() );
 
-    public void testLegacyRequestConvertedToDefaultPathInManagedRepo()
-        throws Exception
-    {
-        fail( "Implemented " + getName() );
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        // Check that a Maven1 legacy request is translated to a maven2 path in
-        // the managed repository.
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-        //        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        //        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        //        File expectedFile = new File( defaultManagedRepository.getBasedir(), path );
-        //        assertTrue( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( legacyPath, legacyProxiedRepositories, defaultManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, path );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
     }
 
     public void testDefaultRequestConvertedToLegacyPathInManagedRepo()
         throws Exception
     {
-        fail( "Implemented " + getName() );
-
         // Check that a Maven2 default request is translated to a legacy path in
         // the managed repository.
 
-        //        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        //        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        //        File expectedFile = new File( legacyManagedRepository.getBasedir(), legacyPath );
-        //        assertTrue( expectedFile.exists() );
-        //
-        //        File file = requestHandler.get( path, proxiedRepositories, legacyManagedRepository );
-        //
-        //        assertEquals( "Check file matches", expectedFile, file );
+        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, legacyPath );
+        ArtifactReference artifact = createArtifactReference( "legacy", legacyPath );
+
+        expectedFile.delete();
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
     }
 }

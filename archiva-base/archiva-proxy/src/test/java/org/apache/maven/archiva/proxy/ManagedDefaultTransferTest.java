@@ -307,4 +307,73 @@ public class ManagedDefaultTransferTest
         // TODO: How much information on each failure should we pass back to the user vs. logging in the proxy? 
     }
 
+    public void testLegacyProxyRepoGetAlreadyPresent()
+        throws Exception
+    {
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedDefaultDir, path );
+        ArtifactReference artifact = createArtifactReference( "default", path );
+
+        assertTrue( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY,
+                                     "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    public void testLegacyRequestConvertedToDefaultPathInManagedRepo()
+        throws Exception
+    {
+        // Check that a Maven1 legacy request is translated to a maven2 path in
+        // the managed repository.
+
+        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedDefaultDir, path );
+        ArtifactReference artifact = createArtifactReference( "default", path );
+
+        expectedFile.delete();
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    public void testLegacyProxyRepoGetNotPresent()
+        throws Exception
+    {
+        String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        File expectedFile = new File( managedDefaultDir, path );
+        ArtifactReference artifact = createArtifactReference( "default", path );
+
+        expectedFile.delete();
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, "org.apache.maven.test/jars/get-default-layout-1.0.jar" );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
+
+        // TODO: timestamp preservation requires support for that in wagon
+        //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
+    }
 }
