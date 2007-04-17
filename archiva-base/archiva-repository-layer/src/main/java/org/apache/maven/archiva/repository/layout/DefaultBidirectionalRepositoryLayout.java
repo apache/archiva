@@ -64,8 +64,9 @@ public class DefaultBidirectionalRepositoryLayout
 
     public String toPath( ArtifactReference artifact )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getVersion(),
-                       artifact.getClassifier(), artifact.getType() );
+        String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), baseVersion, artifact.getVersion(), artifact
+            .getClassifier(), artifact.getType() );
     }
 
     private String toPath( String groupId, String artifactId, String baseVersion, String version, String classifier,

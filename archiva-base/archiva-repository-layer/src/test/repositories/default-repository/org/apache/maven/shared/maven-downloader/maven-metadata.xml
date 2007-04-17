@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><metadata>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
   <groupId>org.apache.maven.shared</groupId>
   <artifactId>maven-downloader</artifactId>
   <version>1.0</version>

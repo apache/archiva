@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
@@ -29,11 +30,13 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectionalRepositoryLayoutTestCase
+public class DefaultBidirectionalRepositoryLayoutTest
+    extends AbstractBidirectionalRepositoryLayoutTestCase
 {
     private BidirectionalRepositoryLayout layout;
 
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
 
@@ -65,41 +68,65 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
     {
         ArchivaArtifact artifact = createArtifact( "com.foo", "foo-connector", "2.1-20060822.123456-35", "", "jar" );
 
-        assertEquals( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar",
-                      layout.toPath( artifact ) );
+        assertEquals( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar", layout
+            .toPath( artifact ) );
     }
 
-    public void testToArtifactBasicSimpleGroupId() throws LayoutException
+    public void testTimestampedSnapshotRoundtrip()
+        throws LayoutException
+    {
+        String originalPath = "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
+        ArchivaArtifact artifact = layout.toArtifact( originalPath );
+        assertArtifact( artifact, "org.apache.maven.test", "get-metadata-snapshot", "1.0-20050831.101112-1", "", "jar" );
+
+        assertEquals( originalPath, layout.toPath( artifact ) );
+
+        ArtifactReference aref = new ArtifactReference();
+        aref.setGroupId( artifact.getGroupId() );
+        aref.setArtifactId( artifact.getArtifactId() );
+        aref.setVersion( artifact.getVersion() );
+        aref.setClassifier( artifact.getClassifier() );
+        aref.setType( artifact.getType() );
+
+        assertEquals( originalPath, layout.toPath( aref ) );
+    }
+
+    public void testToArtifactBasicSimpleGroupId()
+        throws LayoutException
     {
         ArchivaArtifact artifact = layout.toArtifact( "commons-lang/commons-lang/2.1/commons-lang-2.1.jar" );
         assertArtifact( artifact, "commons-lang", "commons-lang", "2.1", "", "jar" );
     }
 
-    public void testToArtifactBasicLongGroupId() throws LayoutException
+    public void testToArtifactBasicLongGroupId()
+        throws LayoutException
     {
         ArchivaArtifact artifact = layout.toArtifact( "com/foo/foo-tool/1.0/foo-tool-1.0.jar" );
         assertArtifact( artifact, "com.foo", "foo-tool", "1.0", "", "jar" );
     }
 
-    public void testToArtifactEjbClient() throws LayoutException
+    public void testToArtifactEjbClient()
+        throws LayoutException
     {
         ArchivaArtifact artifact = layout.toArtifact( "com/foo/foo-client/1.0/foo-client-1.0.jar" );
         // The type is correct. as we cannot possibly know this is an ejb client without parsing the pom
         assertArtifact( artifact, "com.foo", "foo-client", "1.0", "", "jar" );
     }
 
-    public void testToArtifactWithClassifier() throws LayoutException
+    public void testToArtifactWithClassifier()
+        throws LayoutException
     {
-        ArchivaArtifact artifact =
-            layout.toArtifact( "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar" );
+        ArchivaArtifact artifact = layout
+            .toArtifact( "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar" );
         // The 'java-source' type is correct.  You might be thinking of extension, which we are not testing here.
         assertArtifact( artifact, "com.foo.lib", "foo-lib", "2.1-alpha-1", "sources", "java-source" );
     }
 
-    public void testToArtifactUsingUniqueSnapshot() throws LayoutException
+    public void testToArtifactUsingUniqueSnapshot()
+        throws LayoutException
     {
-        ArchivaArtifact artifact =
-            layout.toArtifact( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar" );
+        ArchivaArtifact artifact = layout
+            .toArtifact( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar" );
         assertSnapshotArtifact( artifact, "com.foo", "foo-connector", "2.1-20060822.123456-35", "", "jar" );
     }
 
@@ -115,7 +142,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidNonSnapshotInSnapshotDir()
     {
         try
@@ -128,7 +155,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidPathTooShort()
     {
         try
@@ -141,7 +168,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidTimestampSnapshotNotInSnapshotDir()
     {
         try
@@ -154,7 +181,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidVersionPathMismatch()
     {
         try
@@ -167,7 +194,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidVersionPathMismatchAlt()
     {
         try
@@ -180,7 +207,7 @@ public class DefaultBidirectionalRepositoryLayoutTest extends AbstractBidirectio
             /* expected path */
         }
     }
-    
+
     public void testInvalidArtifactIdForPath()
     {
         try

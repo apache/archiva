@@ -19,9 +19,12 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
+import org.dom4j.Element;
 
 import java.io.File;
 import java.util.Date;
@@ -41,22 +44,38 @@ public class RepositoryMetadataReader
      * @return the archiva repository metadata object that represents the provided file contents.
      * @throws RepositoryMetadataException
      */
-    public ArchivaRepositoryMetadata read( File metadataFile ) throws RepositoryMetadataException
+    public ArchivaRepositoryMetadata read( File metadataFile )
+        throws RepositoryMetadataException
     {
         try
         {
             XMLReader xml = new XMLReader( "metadata", metadataFile );
 
             ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-            
+
             metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
             metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
-            metadata.setLastModified( new Date( metadataFile.lastModified() ) );
-            metadata.setSize( metadataFile.length() );
-            metadata.setWhenIndexed( new Date() );
+            metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
+            metadata.setFileSize( metadataFile.length() );
+            metadata.setWhenIndexed( null );
 
+            metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
+            metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
             metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );
             metadata.setAvailableVersions( xml.getElementListText( "//metadata/versioning/versions/version" ) );
+
+            Element snapshotElem = xml.getElement( "//metadata/versioning/snapshot" );
+            if ( snapshotElem != null )
+            {
+                SnapshotVersion snapshot = new SnapshotVersion();
+                snapshot.setTimestamp( snapshotElem.elementTextTrim( "timestamp" ) );
+                String tmp = snapshotElem.elementTextTrim( "buildNumber" );
+                if( NumberUtils.isNumber( tmp ))
+                {
+                    snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
+                }
+                metadata.setSnapshotVersion( snapshot );
+            }
 
             return metadata;
         }

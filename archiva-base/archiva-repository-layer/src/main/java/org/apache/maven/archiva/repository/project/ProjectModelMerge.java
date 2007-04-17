@@ -62,15 +62,14 @@ public class ProjectModelMerge
     public static ArchivaProjectModel merge( ArchivaProjectModel mainProject, ArchivaProjectModel parentProject )
         throws ProjectModelException
     {
-        System.out.println( "## Merging: " + mainProject + " with " + parentProject );
         if ( mainProject == null )
         {
-            throw new ProjectModelException( "Cannot copy a null main project." );
+            throw new ProjectModelException( "Cannot merge with a null main project." );
         }
 
         if ( parentProject == null )
         {
-            throw new ProjectModelException( "Cannot copy to a null parent project." );
+            throw new ProjectModelException( "Cannot merge with a null parent project." );
         }
 
         ArchivaProjectModel merged = new ArchivaProjectModel();
