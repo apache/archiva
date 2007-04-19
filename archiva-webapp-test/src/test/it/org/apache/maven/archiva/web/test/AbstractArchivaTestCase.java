@@ -47,12 +47,12 @@ public abstract class AbstractArchivaTestCase
             setFieldValue( "id", "web-ui" );
             setFieldValue( "urlName", "web-ui" );
             setFieldValue( "name", "Web UI Test Managed Repository" );
-            setFieldValue( "directory", getBasedir() + "target/web-ui-dir" );
+            setFieldValue( "directory", getBasedir() + "/target/web-ui-dir" );
             clickButtonWithValue( "Add Repository" );
 
             //Set Index location
             assertPage( "Configuration" );
-            setFieldValue( "indexPath", getBasedir() + "target/web-ui-index" );
+            setFieldValue( "indexPath", getBasedir() + "/target/web-ui-index" );
             clickButtonWithValue( "Save Configuration" );
             assertPage( "Administration" );
         }

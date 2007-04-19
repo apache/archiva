@@ -105,6 +105,19 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy todir="${project.build.directory}/appserver-base">
+                  <fileset dir="src/appserver-base" />
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
+          <execution>
             <id>copy-container-conf</id>
             <phase>package</phase>
             <configuration>
@@ -115,7 +128,7 @@
                 <copy
                     todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.20/apache-tomcat-5.5.20/common/lib">
                   <fileset dir="${project.build.directory}/providedDependencies">
-                    <include name="**/derby-*.jar"/>
+                    <include name="**/*.jar"/>
                   </fileset>
                 </copy>
               </tasks>
@@ -198,7 +211,7 @@
             <output>${project.build.directory}/logs/${container.name}.out</output>
             <timeout>600000</timeout>
             <systemProperties>
-              <appserver.base>${project.build.directory}</appserver.base>
+              <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             </systemProperties>
           </container>
           <configuration>
