@@ -60,16 +60,17 @@ public abstract class AbstractArchivaTestCase
 
     public void assertHeader()
     {
-        assertTrue( "banner is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" ) );
-        assertTrue( "bannerLeft is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']" ) );
-        assertTrue( "bannerLeft link is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" ) );
-        assertTrue( "bannerLeft img is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" +
-            "/img[@src='" + getWebContext() + "/images/archiva.png']" ) );
+        assertTrue( "banner is missing", getSelenium().isElementPresent( "xpath=//div[@id='banner']" ) );
+        assertTrue( "bannerLeft is missing",
+                    getSelenium().isElementPresent( "xpath=//div[@id='banner']" + "/span[@id='bannerLeft']" ) );
+        assertTrue( "bannerLeft link is missing", getSelenium().isElementPresent(
+            "xpath=//div[@id='banner']" + "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" ) );
+        assertTrue( "bannerLeft img is missing", getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
+            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" + "/img[@src='" + getWebContext() +
+            "/images/archiva.png']" ) );
 
-        assertTrue( "bannerRight is missing",  getSelenium().isElementPresent( "xpath=//div[@id='banner']/span[@id='bannerRight']" ) );
+        assertTrue( "bannerRight is missing",
+                    getSelenium().isElementPresent( "xpath=//div[@id='banner']/span[@id='bannerRight']" ) );
     }
 
     protected String getTitlePrefix()
