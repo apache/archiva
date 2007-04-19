@@ -19,19 +19,15 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * DefaultBidirectionalRepositoryLayoutTest 
@@ -54,7 +50,11 @@ public class DefaultBidirectionalRepositoryLayoutTest
 
         public String type;
 
-        public String path;
+        public String pathArtifact;
+
+        public String pathVersiond;
+
+        public String pathProjectd;
 
         public LayoutExample( String groupId, String artifactId, String version, String classifier, String type )
         {
@@ -64,6 +64,30 @@ public class DefaultBidirectionalRepositoryLayoutTest
             this.version = version;
             this.classifier = classifier;
             this.type = type;
+        }
+
+        public void setDelimitedPath( String delimPath )
+        {
+            // Silly Test Writer! Don't end the path with a slash!
+            if ( delimPath.endsWith( "/" ) )
+            {
+                delimPath = delimPath.substring( 0, delimPath.length() - 1 );
+            }
+
+            String parts[] = StringUtils.split( delimPath, '|' );
+            switch ( parts.length )
+            {
+                case 3:
+                    this.pathArtifact = parts[0] + "/" + parts[1] + "/" + parts[2];
+                case 2:
+                    this.pathVersiond = parts[0] + "/" + parts[1] + "/maven-metadata.xml";
+                case 1:
+                    this.pathProjectd = parts[0] + "/maven-metadata.xml";
+                    break;
+                default:
+                    fail( "Unknown number of path pieces, expected between 1 and 3, got <" + parts.length + "> on <"
+                        + delimPath + ">" );
+            }
         }
 
         public boolean isSuitableForArtifactTest()
@@ -108,58 +132,65 @@ public class DefaultBidirectionalRepositoryLayoutTest
         LayoutExample example;
 
         // Artifact References
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", "", "jar" );
-        example.path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
+        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, "jar" );
+        example.setDelimitedPath( "com/foo/foo-tool|1.0|foo-tool-1.0.jar" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-client", "1.0", "", "ejb-client" );
-        example.path = "com/foo/foo-client/1.0/foo-client-1.0.jar";
+        example = new LayoutExample( "com.foo", "foo-client", "1.0", null, "ejb-client" );
+        example.setDelimitedPath( "com/foo/foo-client|1.0|foo-client-1.0.jar" );
         ret.add( example );
 
         example = new LayoutExample( "com.foo.lib", "foo-lib", "2.1-alpha-1", "sources", "java-source" );
-        example.path = "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar";
+        example.setDelimitedPath( "com/foo/lib/foo-lib|2.1-alpha-1|foo-lib-2.1-alpha-1-sources.jar" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", "", "jar" );
-        example.path = "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar";
+        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, "jar" );
+        example.setDelimitedPath( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar" );
         ret.add( example );
 
-        example = new LayoutExample( "org.apache.maven.test", "get-metadata-snapshot", "1.0-20050831.101112-1", "",
+        example = new LayoutExample( "org.apache.maven.test", "get-metadata-snapshot", "1.0-20050831.101112-1", null,
                                      "jar" );
-        example.path = "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
+        example
+            .setDelimitedPath( "org/apache/maven/test/get-metadata-snapshot|1.0-SNAPSHOT|get-metadata-snapshot-1.0-20050831.101112-1.jar" );
         ret.add( example );
 
-        example = new LayoutExample( "commons-lang", "commons-lang", "2.1", "", "jar" );
-        example.path = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
+        example = new LayoutExample( "commons-lang", "commons-lang", "2.1", null, "jar" );
+        example.setDelimitedPath( "commons-lang/commons-lang|2.1|commons-lang-2.1.jar" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", "", "jar" );
-        example.path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
+        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, "jar" );
+        example.setDelimitedPath( "com/foo/foo-tool|1.0|foo-tool-1.0.jar" );
         ret.add( example );
 
         // Versioned References (done here by setting classifier and type to null)
         example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, null );
-        example.path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
+        example.setDelimitedPath( "com/foo/foo-tool|1.0" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, null );
-        example.path = "com/foo/foo-tool/1.0/";
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, null );
-        example.path = "com/foo/foo-tool/1.0";
+        example = new LayoutExample( "net.i.have.a.really.long.path.just.for.the.hell.of.it", "a", "1.1-alpha-1", null,
+                                     null );
+        example.setDelimitedPath( "net/i/have/a/really/long/path/just/for/the/hell/of/it/a|1.1-alpha-1" );
         ret.add( example );
 
         example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, null );
-        example.path = "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar";
+        example.setDelimitedPath( "com/foo/foo-connector|2.1-SNAPSHOT" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, null );
-        example.path = "com/foo/foo-connector/2.1-SNAPSHOT/";
+        example = new LayoutExample( "com.foo", "foo-connector", "2.1-SNAPSHOT", null, null );
+        example.setDelimitedPath( "com/foo/foo-connector|2.1-SNAPSHOT" );
         ret.add( example );
 
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, null );
-        example.path = "com/foo/foo-connector/2.1-SNAPSHOT";
+        // Project References (done here by setting version, classifier, and type to null)
+        example = new LayoutExample( "com.foo", "foo-tool", null, null, null );
+        example.setDelimitedPath( "com/foo/foo-tool/" );
+        ret.add( example );
+
+        example = new LayoutExample( "net.i.have.a.really.long.path.just.for.the.hell.of.it", "a", null, null, null );
+        example.setDelimitedPath( "net/i/have/a/really/long/path/just/for/the/hell/of/it/a/" );
+        ret.add( example );
+
+        example = new LayoutExample( "com.foo", "foo-connector", null, null, null );
+        example.setDelimitedPath( "com/foo/foo-connector" );
         ret.add( example );
 
         return ret;
@@ -209,7 +240,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
             {
                 ArchivaArtifact artifact = createArtifact( example.groupId, example.artifactId, example.version,
                                                            example.classifier, example.type );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.path, layout.toPath( artifact ) );
+                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, layout.toPath( artifact ) );
             }
         }
     }
@@ -229,7 +260,8 @@ public class DefaultBidirectionalRepositoryLayoutTest
                 reference.setClassifier( example.classifier );
                 reference.setType( example.type );
 
-                assertEquals( "ArtifactReference <" + reference + "> to path:", example.path, layout.toPath( reference ) );
+                assertEquals( "ArtifactReference <" + reference + "> to path:", example.pathArtifact, layout
+                    .toPath( reference ) );
             }
         }
     }
@@ -240,14 +272,14 @@ public class DefaultBidirectionalRepositoryLayoutTest
         while ( it.hasNext() )
         {
             LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForVersionedTest() && example.isSuitableForArtifactTest() )
+            if ( example.isSuitableForVersionedTest() || example.isSuitableForArtifactTest() )
             {
                 VersionedReference reference = new VersionedReference();
                 reference.setGroupId( example.groupId );
                 reference.setArtifactId( example.artifactId );
                 reference.setVersion( example.version );
 
-                assertEquals( "VersionedReference <" + reference + "> to path:", example.path, layout
+                assertEquals( "VersionedReference <" + reference + "> to path:", example.pathVersiond, layout
                     .toPath( reference ) );
             }
         }
@@ -259,14 +291,15 @@ public class DefaultBidirectionalRepositoryLayoutTest
         while ( it.hasNext() )
         {
             LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForProjectTest() && example.isSuitableForVersionedTest()
-                && example.isSuitableForArtifactTest() )
+            if ( example.isSuitableForProjectTest() || example.isSuitableForVersionedTest()
+                || example.isSuitableForArtifactTest() )
             {
                 ProjectReference reference = new ProjectReference();
                 reference.setGroupId( example.groupId );
                 reference.setArtifactId( example.artifactId );
 
-                assertEquals( "ProjectReference <" + reference + "> to path:", example.path, layout.toPath( reference ) );
+                assertEquals( "ProjectReference <" + reference + "> to path:", example.pathProjectd, layout
+                    .toPath( reference ) );
             }
         }
     }
@@ -366,14 +399,13 @@ public class DefaultBidirectionalRepositoryLayoutTest
             LayoutExample example = (LayoutExample) it.next();
             if ( example.isSuitableForArtifactTest() )
             {
-                ArchivaArtifact artifact = layout.toArtifact( example.path );
+                ArchivaArtifact artifact = layout.toArtifact( example.pathArtifact );
                 assertArtifact( artifact, example.groupId, example.artifactId, example.version, example.classifier,
                                 example.type );
             }
         }
     }
 
-    /* TODO: Fix layout object to pass test.
     public void testPathToArtifactReference()
         throws LayoutException
     {
@@ -383,15 +415,13 @@ public class DefaultBidirectionalRepositoryLayoutTest
             LayoutExample example = (LayoutExample) it.next();
             if ( example.isSuitableForArtifactTest() )
             {
-                ArtifactReference reference = layout.toArtifactReference( example.path );
+                ArtifactReference reference = layout.toArtifactReference( example.pathArtifact );
                 assertArtifactReference( reference, example.groupId, example.artifactId, example.version,
                                          example.classifier, example.type );
             }
         }
     }
-    */
 
-    /* TODO: Fix layout object to pass test.
     public void testPathToVersionedReference()
         throws LayoutException
     {
@@ -401,13 +431,14 @@ public class DefaultBidirectionalRepositoryLayoutTest
             LayoutExample example = (LayoutExample) it.next();
             if ( example.isSuitableForVersionedTest() )
             {
-                VersionedReference reference = layout.toVersionedReference( example.path );
+                VersionedReference reference = layout.toVersionedReference( example.pathVersiond );
+                
+                String baseVersion = reference.getVersion();
 
-                assertVersionedReference( reference, example.groupId, example.artifactId, example.version );
+                assertVersionedReference( reference, example.groupId, example.artifactId, baseVersion );
             }
         }
     }
-    */
 
     public void testPathToProjectReference()
         throws LayoutException
@@ -418,7 +449,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
             LayoutExample example = (LayoutExample) it.next();
             if ( example.isSuitableForProjectTest() )
             {
-                ProjectReference reference = layout.toProjectReference( example.path );
+                ProjectReference reference = layout.toProjectReference( example.pathProjectd );
 
                 assertProjectReference( reference, example.groupId, example.artifactId );
             }
@@ -437,7 +468,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
                 ArchivaArtifact artifact = createArtifact( example.groupId, example.artifactId, example.version,
                                                            example.classifier, example.type );
                 String testPath = layout.toPath( artifact );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.path, testPath );
+                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, testPath );
                 ArchivaArtifact testArtifact = layout.toArtifact( testPath );
                 assertArtifact( testArtifact, artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                                 artifact.getClassifier(), artifact.getType() );
@@ -454,11 +485,11 @@ public class DefaultBidirectionalRepositoryLayoutTest
             LayoutExample example = (LayoutExample) it.next();
             if ( example.isSuitableForArtifactTest() )
             {
-                ArchivaArtifact artifact = layout.toArtifact( example.path );
+                ArchivaArtifact artifact = layout.toArtifact( example.pathArtifact );
                 assertArtifact( artifact, example.groupId, example.artifactId, example.version, example.classifier,
                                 example.type );
                 String testPath = layout.toPath( artifact );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.path, testPath );
+                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, testPath );
             }
         }
     }

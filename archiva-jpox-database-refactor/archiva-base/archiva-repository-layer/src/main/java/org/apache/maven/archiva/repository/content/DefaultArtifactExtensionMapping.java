@@ -26,12 +26,8 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.content.ArtifactExtensionMapping"
- *                   role-hint="default"
  */
 public class DefaultArtifactExtensionMapping extends AbstractArtifactExtensionMapping
-    implements ArtifactExtensionMapping
 {
     public DefaultArtifactExtensionMapping()
     {

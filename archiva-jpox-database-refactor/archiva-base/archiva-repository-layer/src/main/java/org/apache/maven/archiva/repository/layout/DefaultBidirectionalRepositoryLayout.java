@@ -25,7 +25,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
 
 /**
@@ -39,6 +38,8 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
 public class DefaultBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout
 {
+    private static final String MAVEN_METADATA = "maven-metadata.xml";
+
     class PathReferences
     {
         public String groupId;
@@ -69,7 +70,7 @@ public class DefaultBidirectionalRepositoryLayout
 
     private static final char ARTIFACT_SEPARATOR = '-';
 
-    private ArtifactExtensionMapping extensionMapper = new DefaultArtifactExtensionMapping();
+    private DefaultArtifactExtensionMapping extensionMapper = new DefaultArtifactExtensionMapping();
 
     public String getId()
     {
@@ -118,17 +119,36 @@ public class DefaultBidirectionalRepositoryLayout
 
     public String toPath( ProjectReference reference )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, null, null );
+        StringBuffer path = new StringBuffer();
+
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
     }
 
     public String toPath( VersionedReference reference )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), null, null, null );
+        StringBuffer path = new StringBuffer();
+
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
+        path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
     }
 
     public ProjectReference toProjectReference( String path )
         throws LayoutException
     {
+        if ( !path.endsWith( "/maven-metadata.xml" ) )
+        {
+            throw new LayoutException( "Only paths ending in '/maven-metadata.xml' can be "
+                + "converted to a ProjectReference." );
+        }
+
         PathReferences pathrefs = toPathReferences( path, false );
         ProjectReference reference = new ProjectReference();
         reference.setGroupId( pathrefs.groupId );
@@ -140,6 +160,12 @@ public class DefaultBidirectionalRepositoryLayout
     public VersionedReference toVersionedReference( String path )
         throws LayoutException
     {
+        if ( !path.endsWith( "/maven-metadata.xml" ) )
+        {
+            throw new LayoutException( "Only paths ending in '/maven-metadata.xml' can be "
+                + "converted to a VersionedReference." );
+        }
+
         PathReferences pathrefs = toPathReferences( path, false );
 
         VersionedReference reference = new VersionedReference();
@@ -209,15 +235,30 @@ public class DefaultBidirectionalRepositoryLayout
 
         // Maven 2.x path.
         int partCount = pathParts.length;
+        int filenamePos = partCount - 1;
+        int baseVersionPos = partCount - 2;
+        int artifactIdPos = partCount - 3;
+        int groupIdPos = partCount - 4;
 
         // Second to last is the baseVersion (the directory version)
-        prefs.baseVersion = pathParts[partCount - 2];
+        prefs.baseVersion = pathParts[baseVersionPos];
+
+        if ( "maven-metadata.xml".equals( pathParts[filenamePos] ) ) 
+        {
+            if( !VersionUtil.isVersion( prefs.baseVersion ) )
+            {
+                // We have a simple path without a version identifier.
+                prefs.baseVersion = null;
+                artifactIdPos++;
+                groupIdPos++;
+            }
+        }
 
         // Third to last is the artifact Id.
-        prefs.artifactId = pathParts[partCount - 3];
+        prefs.artifactId = pathParts[artifactIdPos];
 
         // Remaining pieces are the groupId.
-        for ( int i = 0; i <= partCount - 4; i++ )
+        for ( int i = 0; i <= groupIdPos; i++ )
         {
             prefs.appendGroupId( pathParts[i] );
         }
@@ -225,7 +266,7 @@ public class DefaultBidirectionalRepositoryLayout
         try
         {
             // Last part is the filename
-            String filename = pathParts[partCount - 1];
+            String filename = pathParts[filenamePos];
 
             // Now we need to parse the filename to get the artifact version Id. 
             prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, prefs.artifactId );
