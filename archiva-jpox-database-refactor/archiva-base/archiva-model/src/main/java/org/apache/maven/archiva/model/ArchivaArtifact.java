@@ -36,8 +36,6 @@ public class ArchivaArtifact
 
     private String baseVersion;
 
-    private boolean snapshot = false;
-
     public ArchivaArtifact( String groupId, String artifactId, String version,
                             String classifier, String type )
     {
@@ -68,15 +66,15 @@ public class ArchivaArtifact
         model.setVersion( version );
         model.setClassifier( StringUtils.defaultString( classifier ) );
         model.setType( type );
-
-        this.snapshot = VersionUtil.isSnapshot( version );
+        model.setSnapshot( VersionUtil.isSnapshot( version ) );
+        
         this.baseVersion = VersionUtil.getBaseVersion( version );
     }
 
     public ArchivaArtifact( ArchivaArtifactModel artifactModel )
     {
         this.model = artifactModel;
-        this.snapshot = VersionUtil.isSnapshot( model.getVersion() );
+        model.setSnapshot( VersionUtil.isSnapshot( model.getVersion() ) );
         this.baseVersion = VersionUtil.getBaseVersion( model.getVersion() );
     }
 
@@ -107,7 +105,7 @@ public class ArchivaArtifact
 
     public boolean isSnapshot()
     {
-        return snapshot;
+        return model.isSnapshot();
     }
 
     public String getClassifier()

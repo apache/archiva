@@ -120,32 +120,40 @@
         {
             return null;
         }
+        
+        return (RepositoryConfiguration) createRepositoryMap().get( id );
+    }
 
+    /**
+     * Create a RepositoryMap of the current repositories.
+     * 
+     * @return the map of repository id's, to repository configurations.
+     */
+    public java.util.Map createRepositoryMap()
+    {
+        java.util.Map ret = new java.util.HashMap();
+        
         // null repository list = null repo config.
         if ( getRepositories() == null )
         {
-            return null;
+            return ret;
         }
 
         // empty repository list == null repo config.
         if ( getRepositories().isEmpty() )
         {
-            return null;
+            return ret;
         }
-
-        // find the repository
+        
         java.util.Iterator it = getRepositories().iterator();
         while ( it.hasNext() )
         {
             RepositoryConfiguration repoConfig = (RepositoryConfiguration) it.next();
-            if ( id.equals( repoConfig.getId() ) )
-            {
-                return repoConfig;
-            }
+            ret.put( repoConfig.getId(), repoConfig );
         }
-
-        return null;
-    }          
+        
+        return ret;
+    }
           ]]></code>
         </codeSegment>
       </codeSegments>

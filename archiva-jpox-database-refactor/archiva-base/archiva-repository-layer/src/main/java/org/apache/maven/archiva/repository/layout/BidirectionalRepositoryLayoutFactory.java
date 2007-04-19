@@ -19,6 +19,18 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -30,11 +42,20 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory"
  */
 public class BidirectionalRepositoryLayoutFactory
+    extends AbstractLogEnabled
+    implements RegistryListener, Initializable
 {
     /**
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
     private Map layouts;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration configuration;
+    
+    private Map repositoryMap = new HashMap();
 
     public BidirectionalRepositoryLayout getLayout( String type )
         throws LayoutException
@@ -46,5 +67,52 @@ public class BidirectionalRepositoryLayoutFactory
         }
 
         return (BidirectionalRepositoryLayout) layouts.get( type );
+    }
+
+    public BidirectionalRepositoryLayout getLayout( ArchivaArtifact artifact )
+        throws LayoutException
+    {
+        if ( artifact == null )
+        {
+            throw new LayoutException( "Cannot determine layout using a null artifact." );
+        }
+        
+        String repoId = artifact.getModel().getRepositoryId();
+        if ( StringUtils.isBlank( repoId ) )
+        {
+            throw new LayoutException( "Cannot determine layout using artifact with no repository id: " + artifact );
+        }
+        
+        RepositoryConfiguration repo = (RepositoryConfiguration) this.repositoryMap.get( repoId );
+        return getLayout( repo.getLayout() );
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        if ( ConfigurationNames.isRepositories( propertyName ) )
+        {
+            initRepositoryMap();
+        }
+    }
+
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        /* do nothing */
+    }
+    
+    private void initRepositoryMap()
+    {
+        synchronized ( this.repositoryMap )
+        {
+            this.repositoryMap.clear();
+            this.repositoryMap.putAll( configuration.getConfiguration().createRepositoryMap() );
+        }
+    }
+
+    public void initialize()
+        throws InitializationException
+    {
+        initRepositoryMap();
+        configuration.addChangeListener( this );
     }
 }

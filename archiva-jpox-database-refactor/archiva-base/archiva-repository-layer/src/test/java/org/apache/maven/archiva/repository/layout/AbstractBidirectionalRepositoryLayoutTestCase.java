@@ -22,6 +22,9 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -78,11 +81,62 @@ public class AbstractBidirectionalRepositoryLayoutTestCase
 
         assertNotNull( expectedId + " - Should not be null.", actualArtifact );
 
-        assertEquals( expectedId + " - Group ID", actualArtifact.getGroupId(), groupId );
-        assertEquals( expectedId + " - Artifact ID", actualArtifact.getArtifactId(), artifactId );
-        assertEquals( expectedId + " - Version ID", actualArtifact.getVersion(), version );
-        assertEquals( expectedId + " - Classifier", actualArtifact.getClassifier(), classifier );
-        assertEquals( expectedId + " - Type", actualArtifact.getType(), type );
+        String expectedType = type;
+
+        // Special Case.
+        if ( "ejb-client".equals( type ) )
+        {
+            expectedType = "jar";
+        }
+
+        assertEquals( expectedId + " - Group ID", groupId, actualArtifact.getGroupId() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualArtifact.getArtifactId() );
+        assertEquals( expectedId + " - Version ID", version, actualArtifact.getVersion() );
+        assertEquals( expectedId + " - Classifier", classifier, actualArtifact.getClassifier() );
+        assertEquals( expectedId + " - Type", expectedType, actualArtifact.getType() );
+    }
+
+    protected void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
+                                            String version, String classifier, String type )
+    {
+        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier
+            + ":" + type;
+
+        assertNotNull( expectedId + " - Should not be null.", actualReference );
+
+        String expectedType = type;
+
+        // Special Case.
+        if ( "ejb-client".equals( type ) )
+        {
+            expectedType = "jar";
+        }
+
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
+        assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
+        assertEquals( expectedId + " - Type", expectedType, actualReference.getType() );
+    }
+
+    protected void assertVersionedReference( VersionedReference actualReference, String groupId, String artifactId,
+                                             String version )
+    {
+        String expectedId = "VersionedReference - " + groupId + ":" + artifactId + ":" + version;
+
+        assertNotNull( expectedId + " - Should not be null.", actualReference );
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
+    }
+
+    protected void assertProjectReference( ProjectReference actualReference, String groupId, String artifactId )
+    {
+        String expectedId = "ProjectReference - " + groupId + ":" + artifactId;
+
+        assertNotNull( expectedId + " - Should not be null.", actualReference );
+        assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
+        assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
     }
 
     protected void assertSnapshotArtifact( ArchivaArtifact actualArtifact, String groupId, String artifactId,

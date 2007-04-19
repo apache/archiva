@@ -20,6 +20,7 @@ package org.apache.maven.archiva.consumers.database;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileType;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -29,6 +30,7 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -41,7 +43,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ArtifactUpdateDatabaseConsumer - Take an artifact off of disk and put it into the repository.
@@ -84,9 +85,9 @@ public class ArtifactUpdateDatabaseConsumer
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
+     * @plexus.requirement
      */
-    private Map bidirectionalLayoutMap;
+    private BidirectionalRepositoryLayoutFactory layoutFactory;
 
     /**
      * @plexus.requirement role-hint="sha1"
@@ -103,8 +104,6 @@ public class ArtifactUpdateDatabaseConsumer
     private File repositoryDir;
 
     private BidirectionalRepositoryLayout layout;
-
-    private List propertyNameTriggers = new ArrayList();
 
     private List includes = new ArrayList();
 
@@ -144,15 +143,14 @@ public class ArtifactUpdateDatabaseConsumer
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
 
-        String layoutName = repository.getModel().getLayoutName();
-        if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
+        try
         {
-            throw new ConsumerException( "Unable to process repository with layout [" + layoutName
-                + "] as there is no coresponding " + BidirectionalRepositoryLayout.class.getName()
-                + " implementation available." );
+            this.layout = layoutFactory.getLayout( repository.getModel().getLayoutName() );
         }
-
-        this.layout = (BidirectionalRepositoryLayout) bidirectionalLayoutMap.get( layoutName );
+        catch ( LayoutException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
     }
 
     public void processFile( String path )
@@ -209,7 +207,7 @@ public class ArtifactUpdateDatabaseConsumer
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( propertyNameTriggers.contains( propertyName ) )
+        if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
             initIncludes();
         }
@@ -234,13 +232,6 @@ public class ArtifactUpdateDatabaseConsumer
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers = new ArrayList();
-        propertyNameTriggers.add( "repositoryScanning" );
-        propertyNameTriggers.add( "fileTypes" );
-        propertyNameTriggers.add( "fileType" );
-        propertyNameTriggers.add( "patterns" );
-        propertyNameTriggers.add( "pattern" );
-
         configuration.addChangeListener( this );
 
         initIncludes();

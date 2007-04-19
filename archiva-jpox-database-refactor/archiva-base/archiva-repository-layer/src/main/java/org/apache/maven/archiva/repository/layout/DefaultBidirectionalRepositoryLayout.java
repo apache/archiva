@@ -24,6 +24,7 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
 
@@ -38,6 +39,30 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
 public class DefaultBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout
 {
+    class PathReferences
+    {
+        public String groupId;
+
+        public String artifactId;
+
+        public String baseVersion;
+
+        public String type;
+
+        public FilenameParts fileParts;
+
+        public void appendGroupId( String part )
+        {
+            if ( groupId == null )
+            {
+                groupId = part;
+                return;
+            }
+
+            groupId += "." + part;
+        }
+    }
+
     private static final char PATH_SEPARATOR = '/';
 
     private static final char GROUP_SEPARATOR = '.';
@@ -51,10 +76,44 @@ public class DefaultBidirectionalRepositoryLayout
         return "default";
     }
 
-    public String toPath( ArchivaArtifact reference )
+    public ArchivaArtifact toArtifact( String path )
+        throws LayoutException
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getBaseVersion(), reference
-            .getVersion(), reference.getClassifier(), reference.getType() );
+        PathReferences pathrefs = toPathReferences( path, true );
+
+        ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.artifactId,
+                                                        pathrefs.fileParts.version, pathrefs.fileParts.classifier,
+                                                        pathrefs.type );
+
+        return artifact;
+    }
+
+    public ArtifactReference toArtifactReference( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, true );
+
+        ArtifactReference reference = new ArtifactReference();
+        reference.setGroupId( pathrefs.groupId );
+        reference.setArtifactId( pathrefs.artifactId );
+        reference.setVersion( pathrefs.fileParts.version );
+        reference.setClassifier( pathrefs.fileParts.classifier );
+        reference.setType( pathrefs.type );
+
+        return reference;
+    }
+
+    public String toPath( ArchivaArtifact artifact )
+    {
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(), artifact
+            .getVersion(), artifact.getClassifier(), artifact.getType() );
+    }
+
+    public String toPath( ArtifactReference reference )
+    {
+        String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
+                       reference.getClassifier(), reference.getType() );
     }
 
     public String toPath( ProjectReference reference )
@@ -62,11 +121,38 @@ public class DefaultBidirectionalRepositoryLayout
         return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, null, null );
     }
 
-    public String toPath( ArtifactReference artifact )
+    public String toPath( VersionedReference reference )
     {
-        String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), baseVersion, artifact.getVersion(), artifact
-            .getClassifier(), artifact.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), null, null, null );
+    }
+
+    public ProjectReference toProjectReference( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, false );
+        ProjectReference reference = new ProjectReference();
+        reference.setGroupId( pathrefs.groupId );
+        reference.setArtifactId( pathrefs.artifactId );
+
+        return reference;
+    }
+
+    public VersionedReference toVersionedReference( String path )
+        throws LayoutException
+    {
+        PathReferences pathrefs = toPathReferences( path, false );
+
+        VersionedReference reference = new VersionedReference();
+        reference.setGroupId( pathrefs.groupId );
+        reference.setArtifactId( pathrefs.artifactId );
+        reference.setVersion( pathrefs.baseVersion );
+
+        return reference;
+    }
+
+    private String formatAsDirectory( String directory )
+    {
+        return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
     private String toPath( String groupId, String artifactId, String baseVersion, String version, String classifier,
@@ -94,35 +180,6 @@ public class DefaultBidirectionalRepositoryLayout
         }
 
         return path.toString();
-    }
-
-    private String formatAsDirectory( String directory )
-    {
-        return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
-    }
-
-    class PathReferences
-    {
-        public String groupId;
-
-        public String artifactId;
-
-        public String baseVersion;
-
-        public String type;
-
-        public FilenameParts fileParts;
-
-        public void appendGroupId( String part )
-        {
-            if ( groupId == null )
-            {
-                groupId = part;
-                return;
-            }
-
-            groupId += "." + part;
-        }
     }
 
     private PathReferences toPathReferences( String path, boolean parseFilename )
@@ -165,7 +222,7 @@ public class DefaultBidirectionalRepositoryLayout
             prefs.appendGroupId( pathParts[i] );
         }
 
-        if ( parseFilename )
+        try
         {
             // Last part is the filename
             String filename = pathParts[partCount - 1];
@@ -175,42 +232,29 @@ public class DefaultBidirectionalRepositoryLayout
 
             prefs.type = extensionMapper.getType( filename );
         }
-
-        return prefs;
-    }
-
-    public ProjectReference toProjectReference( String path )
-        throws LayoutException
-    {
-        PathReferences pathrefs = toPathReferences( path, false );
-        ProjectReference reference = new ProjectReference();
-        reference.setGroupId( pathrefs.groupId );
-        reference.setArtifactId( pathrefs.artifactId );
-
-        return reference;
-    }
-
-    public ArchivaArtifact toArtifact( String path )
-        throws LayoutException
-    {
-        PathReferences pathrefs = toPathReferences( path, true );
-
-        ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.artifactId,
-                                                        pathrefs.fileParts.version, pathrefs.fileParts.classifier,
-                                                        pathrefs.type );
+        catch ( LayoutException e )
+        {
+            if ( parseFilename )
+            {
+                throw e;
+            }
+        }
 
         // Sanity Checks.
-        String artifactBaseVersion = VersionUtil.getBaseVersion( pathrefs.fileParts.version );
-        if ( !artifactBaseVersion.equals( pathrefs.baseVersion ) )
+        if ( prefs.fileParts != null )
         {
-            throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
+            String artifactBaseVersion = VersionUtil.getBaseVersion( prefs.fileParts.version );
+            if ( !artifactBaseVersion.equals( prefs.baseVersion ) )
+            {
+                throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
+            }
+
+            if ( !prefs.artifactId.equals( prefs.fileParts.artifactId ) )
+            {
+                throw new LayoutException( "Invalid artifact Id" );
+            }
         }
 
-        if ( !pathrefs.artifactId.equals( pathrefs.fileParts.artifactId ) )
-        {
-            throw new LayoutException( "Invalid artifact Id" );
-        }
-
-        return artifact;
+        return prefs;
     }
 }

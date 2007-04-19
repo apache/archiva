@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
 
@@ -59,10 +60,10 @@ public class LegacyBidirectionalRepositoryLayout
         return "legacy";
     }
 
-    public String toPath( ArchivaArtifact reference )
+    public String toPath( ArchivaArtifact artifact )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
-            .getClassifier(), reference.getType() );
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact
+            .getClassifier(), artifact.getType() );
     }
 
     public String toPath( ProjectReference reference )
@@ -71,10 +72,15 @@ public class LegacyBidirectionalRepositoryLayout
         return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, "metadata-xml" );
     }
 
-    public String toPath( ArtifactReference artifact )
+    public String toPath( VersionedReference reference )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                       artifact.getClassifier(), artifact.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), null, "metadata-xml" );
+    }
+
+    public String toPath( ArtifactReference reference )
+    {
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
+                       reference.getClassifier(), reference.getType() );
     }
 
     private String toPath( String groupId, String artifactId, String version, String classifier, String type )
@@ -201,6 +207,20 @@ public class LegacyBidirectionalRepositoryLayout
         }
 
         return artifact;
+    }
+
+    public ArtifactReference toArtifactReference( String path )
+        throws LayoutException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public VersionedReference toVersionedReference( String path )
+        throws LayoutException
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

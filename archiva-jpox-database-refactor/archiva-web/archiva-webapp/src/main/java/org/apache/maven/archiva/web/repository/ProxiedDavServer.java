@@ -22,13 +22,20 @@ package org.apache.maven.archiva.web.repository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Proxy;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.proxy.ProxyConnector;
 import org.apache.maven.archiva.proxy.ProxyException;
-import org.apache.maven.archiva.proxy.ProxyRequestHandler;
-import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
+import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
@@ -37,14 +44,16 @@ import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * ProxiedDavServer
@@ -69,18 +78,22 @@ public class ProxiedDavServer
     private ArchivaConfiguration archivaConfiguration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.proxy.ProxyRequestHandler"
-     * @todo seems to be a bug in qdox that the role above is required
+     * @plexus.requirement role-hint="default"
      */
-    private ProxyRequestHandler proxyRequestHandler;
+    private RepositoryProxyConnectors connectors;
+
+    /**
+     * @plexus.requirement
+     */
+    private BidirectionalRepositoryLayoutFactory layoutFactory;
+
+    private BidirectionalRepositoryLayout layout;
 
     private RepositoryConfiguration repositoryConfiguration;
 
-    private ArtifactRepository managedRepository;
+    private ArchivaRepository managedRepository;
 
     private List/*<ArtifactRepository>*/proxiedRepositories;
-
-    private ProxyInfo wagonProxy;
 
     public String getPrefix()
     {
@@ -111,20 +124,17 @@ public class ProxiedDavServer
 
         Configuration config = archivaConfiguration.getConfiguration();
 
-        wagonProxy = createWagonProxy( config.getProxy() );
+        repositoryConfiguration = config.findRepositoryById( getPrefix() );
 
-        repositoryConfiguration = config.getRepositoryByUrlName( getPrefix() );
+        managedRepository = ArchivaConfigurationAdaptor.toArchivaRepository( repositoryConfiguration );
 
-        managedRepository = repositoryFactory.createRepository( repositoryConfiguration );
-
-        for ( Iterator i = config.getProxiedRepositories().iterator(); i.hasNext(); )
+        try
         {
-            ProxiedRepositoryConfiguration proxiedRepoConfig = (ProxiedRepositoryConfiguration) i.next();
-
-            if ( proxiedRepoConfig.getManagedRepository().equals( repositoryConfiguration.getId() ) )
-            {
-                proxiedRepositories.add( repositoryFactory.createProxiedRepository( proxiedRepoConfig ) );
-            }
+            layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
+        }
+        catch ( LayoutException e )
+        {
+            throw new DavServerException( "Unable to initialize dav server: " + e.getMessage(), e );
         }
     }
 
@@ -145,14 +155,44 @@ public class ProxiedDavServer
     private void fetchContentFromProxies( DavServerRequest request )
         throws ServletException
     {
+        String resource = request.getLogicalResource();
+        
+        if( resource.endsWith( ".sha1" ) ||
+            resource.endsWith( ".md5") )
+        {
+            // Checksums are fetched with artifact / metadata.
+            return;
+        }
+        
         try
         {
-            proxyRequestHandler.get( request.getLogicalResource(), this.proxiedRepositories, this.managedRepository,
-                                     this.wagonProxy );
+            ProjectReference project;
+            VersionedReference versioned;
+            ArtifactReference artifact;
+            
+            artifact = layout.toArtifactReference( resource );
+            if( artifact != null )
+            {
+                connectors.fetchFromProxies( managedRepository, artifact );
+                return;
+            }
+            
+            versioned = layout.toVersionedReference( resource );
+            if( versioned != null )
+            {
+                connectors.fetchFromProxies( managedRepository, versioned );
+                return;
+            }
+            
+            project = layout.toProjectReference( resource );
+            if( project != null )
+            {
+                connectors.fetchFromProxies( managedRepository, project );
+                return;
+            }
         }
         catch ( ResourceDoesNotExistException e )
         {
-            // TODO: getLogger().info( "Unable to fetch resource, it does not exist.", e );
             // return an HTTP 404 instead of HTTP 500 error.
             return;
         }
@@ -160,22 +200,6 @@ public class ProxiedDavServer
         {
             throw new ServletException( "Unable to fetch resource.", e );
         }
-    }
-
-    private ProxyInfo createWagonProxy( Proxy proxy )
-    {
-        ProxyInfo proxyInfo = null;
-        if ( proxy != null && StringUtils.isNotEmpty( proxy.getHost() ) )
-        {
-            proxyInfo = new ProxyInfo();
-            proxyInfo.setHost( proxy.getHost() );
-            proxyInfo.setPort( proxy.getPort() );
-            proxyInfo.setUserName( proxy.getUsername() );
-            proxyInfo.setPassword( proxy.getPassword() );
-            proxyInfo.setNonProxyHosts( proxy.getNonProxyHosts() );
-            proxyInfo.setType( proxy.getProtocol() );
-        }
-        return proxyInfo;
     }
 
     public RepositoryConfiguration getRepositoryConfiguration()
