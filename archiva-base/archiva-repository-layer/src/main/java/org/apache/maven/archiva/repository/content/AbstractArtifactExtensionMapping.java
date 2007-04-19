@@ -29,7 +29,6 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class AbstractArtifactExtensionMapping
-    implements ArtifactExtensionMapping
 {
     protected final Map typeToExtensionMap;
 
@@ -41,6 +40,8 @@ public abstract class AbstractArtifactExtensionMapping
         typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
         typeToExtensionMap.put( "distribution-zip", "zip" );
         typeToExtensionMap.put( "java-source", "jar" );
+        typeToExtensionMap.put( "javadoc.jar", "jar" );
+        typeToExtensionMap.put( "javadoc", "jar" );
         typeToExtensionMap.put( "aspect", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
         typeToExtensionMap.put( "maven-plugin", "jar" );

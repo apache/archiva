@@ -24,7 +24,6 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
 
 import java.util.HashMap;
@@ -41,9 +40,11 @@ import java.util.Map;
 public class LegacyBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout
 {
+    private static final String MAVEN_METADATA = "maven-metadata.xml";
+
     private static final String PATH_SEPARATOR = "/";
 
-    private ArtifactExtensionMapping extensionMapper = new LegacyArtifactExtensionMapping();
+    private LegacyArtifactExtensionMapping extensionMapper = new LegacyArtifactExtensionMapping();
 
     private Map typeToDirectoryMap;
 
@@ -62,25 +63,37 @@ public class LegacyBidirectionalRepositoryLayout
 
     public String toPath( ArchivaArtifact artifact )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact
-            .getClassifier(), artifact.getType() );
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                       artifact.getClassifier(), artifact.getType() );
     }
 
     public String toPath( ProjectReference reference )
     {
-        // TODO: Verify type
-        return toPath( reference.getGroupId(), reference.getArtifactId(), null, null, "metadata-xml" );
+        StringBuffer path = new StringBuffer();
+
+        path.append( reference.getGroupId() ).append( PATH_SEPARATOR );
+        path.append( getDirectory( null, "jar" ) ).append( PATH_SEPARATOR );
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
     }
 
     public String toPath( VersionedReference reference )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), null, "metadata-xml" );
+        // NOTE: A legacy repository cannot contain a versioned reference to the metadata.
+        StringBuffer path = new StringBuffer();
+
+        path.append( reference.getGroupId() ).append( PATH_SEPARATOR );
+        path.append( getDirectory( null, "jar" ) ).append( PATH_SEPARATOR );
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
     }
 
     public String toPath( ArtifactReference reference )
     {
-        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
-                       reference.getClassifier(), reference.getType() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
+            .getClassifier(), reference.getType() );
     }
 
     private String toPath( String groupId, String artifactId, String version, String classifier, String type )
@@ -107,10 +120,18 @@ public class LegacyBidirectionalRepositoryLayout
 
     private String getDirectory( String classifier, String type )
     {
-        // Special Cases involving classifiers and type.
-        if ( "jar".equals( type ) && "sources".equals( classifier ) )
+        // Special Cases involving type + classifier
+        if ( "jar".equals( type ) && StringUtils.isNotBlank( classifier ) )
         {
-            return "javadoc.jars";
+            if ( "sources".equals( classifier ) )
+            {
+                return "source.jars";
+            }
+
+            if ( "javadoc".equals( classifier ) )
+            {
+                return "javadoc.jars";
+            }
         }
 
         // Special Cases involving only type.
@@ -173,7 +194,20 @@ public class LegacyBidirectionalRepositoryLayout
 
             prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
 
-            prefs.type = extensionMapper.getType( filename );
+            prefs.type = extensionMapper.getType( prefs.pathType, filename );
+
+            // Sanity Checks.
+            if ( StringUtils.isEmpty( prefs.fileParts.extension ) )
+            {
+                throw new LayoutException( "Invalid artifact, no extension." );
+            }
+
+            if ( !prefs.type.equals( prefs.fileParts.extension ) )
+            {
+                throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension
+                    + "> and expected layout specified type <" + prefs.type
+                    + "> (mapped from actual path provided type <" + prefs.pathType + ">)" );
+            }
         }
 
         return prefs;
@@ -194,32 +228,28 @@ public class LegacyBidirectionalRepositoryLayout
                                                         pathrefs.fileParts.version, pathrefs.fileParts.classifier,
                                                         pathrefs.type );
 
-        // Sanity Checks.
-        if ( StringUtils.isEmpty( pathrefs.fileParts.extension ) )
-        {
-            throw new LayoutException( "Invalid artifact, no extension." );
-        }
-
-        if ( !pathrefs.pathType.equals( pathrefs.fileParts.extension + "s" ) )
-        {
-            throw new LayoutException( "Invalid artifact, mismatch on extension <" + pathrefs.fileParts.extension
-                + "> and layout specified type<" + pathrefs.pathType + ">." );
-        }
-
         return artifact;
     }
 
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        // TODO Auto-generated method stub
-        return null;
+        PathReferences pathrefs = toPathReferences( path, true );
+
+        ArtifactReference reference = new ArtifactReference();
+
+        reference.setGroupId( pathrefs.groupId );
+        reference.setArtifactId( pathrefs.fileParts.artifactId );
+        reference.setVersion( pathrefs.fileParts.version );
+        reference.setClassifier( pathrefs.fileParts.classifier );
+        reference.setType( pathrefs.type );
+
+        return reference;
     }
 
     public VersionedReference toVersionedReference( String path )
         throws LayoutException
     {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -26,23 +26,20 @@ import org.apache.commons.lang.StringUtils;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.content.ArtifactExtensionMapping"
- *                   role-hint="legacy"
  */
-public class LegacyArtifactExtensionMapping extends AbstractArtifactExtensionMapping
-    implements ArtifactExtensionMapping
+public class LegacyArtifactExtensionMapping
+    extends AbstractArtifactExtensionMapping
 {
     public LegacyArtifactExtensionMapping()
     {
         super();
     }
 
-    public String getType( String filename )
+    public String getType( String pathType, String filename )
     {
         if ( StringUtils.isBlank( filename ) )
         {
-            return null;
+            return pathType;
         }
 
         String normalizedName = filename.toLowerCase().trim();
@@ -57,20 +54,15 @@ public class LegacyArtifactExtensionMapping extends AbstractArtifactExtensionMap
         }
         else if ( normalizedName.endsWith( "-sources.jar" ) )
         {
-            return "java-source";
+            return "jar";
         }
-        // TODO: handle type for -javadoc.jar ?
+        else if ( normalizedName.endsWith( "-javadoc.jar" ) )
+        {
+            return "jar";
+        }
         else
         {
-            int index = normalizedName.lastIndexOf( '.' );
-            if ( index >= 0 )
-            {
-                return normalizedName.substring( index + 1 );
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Filename " + filename + " does not have an extension." );
-            }
+            return pathType;
         }
     }
 }
