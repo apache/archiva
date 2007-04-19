@@ -46,17 +46,23 @@
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>central</targetRepoId>
       <proxyId />
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>once</releasePolicy>
-      <checksumPolicy>fix</checksumPolicy>
+      <policies>
+        <snapshots>disabled</snapshots>
+        <releases>once</releases>
+        <checksum>fix</checksum>
+        <cache-failures>cache</cache-failures>
+      </policies>
     </proxyConnector>
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
       <proxyId />
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>once</releasePolicy>
-      <checksumPolicy>fix</checksumPolicy>
+      <policies>
+        <snapshots>disabled</snapshots>
+        <releases>once</releases>
+        <checksum>fix</checksum>
+        <cache-failures>cache</cache-failures>
+      </policies>
       <whiteListPatterns>
         <whiteListPattern>javax/**</whiteListPattern>
       </whiteListPatterns>

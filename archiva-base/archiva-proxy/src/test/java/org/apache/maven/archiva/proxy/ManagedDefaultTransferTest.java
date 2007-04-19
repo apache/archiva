@@ -122,8 +122,24 @@ public class ManagedDefaultTransferTest
         long proxiedLastModified = proxiedFile.lastModified();
         long downloadedLastModified = downloadedFile.lastModified();
         assertFalse( "Check file timestamp is not that of proxy:", proxiedLastModified == downloadedLastModified );
-        assertEquals( "Check file timestamp is that of original managed file:", originalModificationTime,
-                      downloadedLastModified );
+
+        if ( originalModificationTime != downloadedLastModified )
+        {
+            /* On some systems the timestamp functions are not accurate enough.
+             * This delta is the amount of milliseconds of 'fudge factor' we allow for
+             * the unit test to still be considered 'passed'.
+             */
+            int delta = 1100;
+
+            long hirange = originalModificationTime + ( delta / 2 );
+            long lorange = originalModificationTime - ( delta / 2 );
+
+            if ( ( downloadedLastModified < lorange ) || ( downloadedLastModified > hirange ) )
+            {
+                fail( "Check file timestamp is that of original managed file: expected within range lo:<" + lorange
+                    + "> hi:<" + hirange + "> but was:<" + downloadedLastModified + ">" );
+            }
+        }
         assertNoTempFiles( expectedFile );
     }
 

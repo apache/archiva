@@ -99,6 +99,20 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <excludes>
+            <exclude>**/Abstract*</exclude>
+            <exclude>**/*TestCase.java</exclude>
+            <exclude>**/*Tests.java</exclude>
+            <exclude>**/*TestSuite.java</exclude>
+            <exclude>**/ArchivaScheduledTaskExecutorTest*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
         <executions>

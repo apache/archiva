@@ -20,14 +20,14 @@ package org.apache.maven.archiva.web.action.component;
  */
 
 import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
-import org.apache.maven.model.Model;
-import org.apache.maven.shared.app.company.CompanyPomHandler;
-import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
+// TODO import org.apache.maven.model.Model;
+// import org.apache.maven.shared.app.company.CompanyPomHandler;
+// import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
 
 /**
  * Stores the company information for displaying on the page.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="companyInfo"
+ * @TODO plexus.component role="com.opensymphony.xwork.Action" role-hint="companyInfo"
  */
 public class CompanyInfoAction
     extends AbstractConfiguredAction
@@ -39,18 +39,19 @@ public class CompanyInfoAction
     private String companyName;
 
     /**
-     * @plexus.requirement
+     * @TODO plexus.requirement
      */
-    private CompanyPomHandler handler;
+    // private CompanyPomHandler handler;
 
     /**
-     * @plexus.requirement
+     * @TODO plexus.requirement
      */
-    private MavenAppConfiguration appConfigurationStore;
+    // private MavenAppConfiguration appConfigurationStore;
 
     public String execute()
         throws Exception
     {
+        /* TODO
         Model model = handler.getCompanyPomModel( appConfigurationStore.getConfiguration().getCompanyPom(),
                                                   createLocalRepository() );
 
@@ -63,7 +64,7 @@ public class CompanyInfoAction
             }
 
             companyLogo = model.getProperties().getProperty( "organization.logo" );
-        }
+        }*/
 
         return SUCCESS;
     }

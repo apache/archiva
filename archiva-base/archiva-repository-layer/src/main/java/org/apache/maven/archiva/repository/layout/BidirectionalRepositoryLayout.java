@@ -22,6 +22,7 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 
 /**
  * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
@@ -50,34 +51,64 @@ public interface BidirectionalRepositoryLayout
     /**
      * Given an ArtifactReference, return the relative path to the artifact.
      * 
-     * @param artifact the artifact reference to use.
+     * @param reference the artifact reference to use.
      * @return the relative path to the artifact. 
      */
-    public String toPath( ArtifactReference artifact );
+    public String toPath( ArtifactReference reference );
+    
+    /**
+     * Given an {@link VersionedReference}, return the relative path to that reference.
+     * 
+     * @param reference the versioned project reference to use.
+     * @return the relative path to the project reference. 
+     */
+    public String toPath( VersionedReference reference );
     
     /**
      * Given an ProjectReference, return the relative path to that reference.
      * 
-     * @param project the project reference to use.
+     * @param reference the project reference to use.
      * @return the relative path to the project reference. 
      */
-    public String toPath( ProjectReference project );
+    public String toPath( ProjectReference reference );
 
     /**
-     * Given a repository relative path to a filename, return the ArchivaArtifact object suitable for the path.
+     * Given a repository relative path to a filename, return the {@link ArchivaArtifact} object suitable for the path.
      * 
      * @param path the path relative to the repository base dir for the artifact.
-     * @return the ArchivaArtifact representing the path. (or null if path cannot be converted to an ArchivaArtifact)
+     * @return the {@link ArchivaArtifact} representing the path. (or null if path cannot be converted to 
+     *         an {@link ArchivaArtifact})
      * @throws LayoutException if there was a problem converting the path to an artifact.
      */
     public ArchivaArtifact toArtifact( String path ) throws LayoutException;
     
     /**
-     * Given a repository relateive path to a filename, return the ProjectReference object suitable for the path.
+     * Given a repository relative path to a filename, return the {@link ProjectReference} object suitable for the path.
      * 
      * @param path the path relative to the repository base dir for the artifact.
-     * @return the ProjectReference representing the path.  (or null if path cannot be converted to a ProjectReference)
+     * @return the {@link ProjectReference} representing the path.  (or null if path cannot be converted to 
+     *         a {@link ProjectReference})
      * @throws LayoutException if there was a problem converting the path to an artifact.
      */
     public ProjectReference toProjectReference( String path ) throws LayoutException;
+    
+    /**
+     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
+     * 
+     * @param path the path relative to the repository base dir for the artifact.
+     * @return the {@link VersionedReference} representing the path.  (or null if path cannot be converted to 
+     *         a {@link VersionedReference})
+     * @throws LayoutException if there was a problem converting the path to an artifact.
+     */
+    public VersionedReference toVersionedReference( String path ) throws LayoutException;
+    
+    /**
+     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
+     * 
+     * @param path the path relative to the repository base dir for the artifact.
+     * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to 
+     *         a {@link ArtifactReference})
+     * @throws LayoutException if there was a problem converting the path to an artifact.
+     */
+    public ArtifactReference toArtifactReference( String path ) throws LayoutException;
 }

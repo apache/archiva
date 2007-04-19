@@ -265,6 +265,17 @@
             The repository associated with this content.
           </description>
         </field>
+        <field jpox.column="SNAPSHOT_VERSION">
+          <name>snapshot</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
+          <description>
+            True if this is a snapshot.
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
         <field>
           <name>checksumMD5</name>
           <identifier>false</identifier>

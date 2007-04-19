@@ -23,6 +23,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryDAO;
+import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -51,6 +52,11 @@ public class JdoArchivaDAO
      * @plexus.requirement role-hint="jdo"
      */
     private RepositoryDAO repositoryDAO;
+    
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private RepositoryProblemDAO repositoryProblemDAO;
 
     public ArtifactDAO getArtifactDAO()
     {
@@ -65,5 +71,10 @@ public class JdoArchivaDAO
     public RepositoryDAO getRepositoryDAO()
     {
         return repositoryDAO;
+    }
+
+    public RepositoryProblemDAO getRepositoryProblemDAO()
+    {
+        return repositoryProblemDAO;
     }
 }
