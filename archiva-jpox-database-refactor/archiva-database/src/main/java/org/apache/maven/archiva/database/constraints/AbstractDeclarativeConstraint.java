@@ -20,41 +20,45 @@ package org.apache.maven.archiva.database.constraints;
  */
 
 import org.apache.maven.archiva.database.Constraint;
-
-import java.util.Calendar;
-import java.util.Date;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
 
 /**
- * Constraint for snapshot artifacts that are of a certain age (in days) or older. 
+ * AbstractDeclarativeConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class OlderSnapshotArtifactsByAgeConstraint
-    extends AbstractDeclarativeConstraint
-    implements Constraint
+public abstract class AbstractDeclarativeConstraint
+    implements DeclarativeConstraint
 {
-    private String whereClause;
+    protected String[] declImports;
 
-    public OlderSnapshotArtifactsByAgeConstraint( int daysOld )
+    protected String[] declParams;
+
+    protected Object[] params;
+
+    public String getFetchLimits()
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
-        Date cutoffDate = cal.getTime();
-
-        whereClause = "this.lastModified <= cutoffDate && this.snapshot == true";
-        declImports = new String[] { "import java.util.Date" };
-        declParams = new String[] { "java.util.Date cutoffDate" };
-        params = new Object[] { cutoffDate };
+        return null;
     }
 
-    public String getSortColumn()
+    public String[] getDeclaredImports()
     {
-        return "groupId";
+        return declImports;
     }
 
-    public String getWhereCondition()
+    public String[] getDeclaredParameters()
     {
-        return whereClause;
+        return declParams;
+    }
+
+    public Object[] getParameters()
+    {
+        return params;
+    }
+
+    public String getSortDirection()
+    {
+        return Constraint.ASCENDING;
     }
 }

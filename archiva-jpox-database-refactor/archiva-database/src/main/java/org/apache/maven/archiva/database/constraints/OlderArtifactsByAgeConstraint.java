@@ -31,7 +31,7 @@ import java.util.Date;
  * @version $Id$
  */
 public class OlderArtifactsByAgeConstraint
-    extends AbstractConstraint
+    extends AbstractDeclarativeConstraint
     implements Constraint
 {
     private String whereClause;

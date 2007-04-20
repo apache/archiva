@@ -24,7 +24,10 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
+import org.apache.maven.archiva.database.SimpleConstraint;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+
+import java.util.List;
 
 /**
  * JdoArchivaDAO 
@@ -38,6 +41,11 @@ public class JdoArchivaDAO
     extends AbstractLogEnabled
     implements ArchivaDAO
 {
+    /**
+     * @plexus.requirement role-hint="archiva"
+     */
+    private JdoAccess jdo;
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -57,6 +65,11 @@ public class JdoArchivaDAO
      * @plexus.requirement role-hint="jdo"
      */
     private RepositoryProblemDAO repositoryProblemDAO;
+    
+    public List query( SimpleConstraint constraint )
+    {
+        return jdo.queryObjects( constraint );
+    }
 
     public ArtifactDAO getArtifactDAO()
     {

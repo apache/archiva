@@ -9,7 +9,7 @@ import org.apache.maven.archiva.database.Constraint;
  * @version $Id$
  */
 public class ArchivaRepositoryByUrlConstraint
-    extends AbstractConstraint
+    extends AbstractDeclarativeConstraint
     implements Constraint
 {
     private String whereCondition;

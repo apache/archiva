@@ -77,7 +77,7 @@ public class JdoProjectModelDAO
     public List queryProjectModels( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        return jdo.getAllObjects( ArchivaProjectModel.class, constraint );
+        return jdo.queryObjects( ArchivaProjectModel.class, constraint );
     }
 
     public ArchivaProjectModel saveProjectModel( ArchivaProjectModel model )

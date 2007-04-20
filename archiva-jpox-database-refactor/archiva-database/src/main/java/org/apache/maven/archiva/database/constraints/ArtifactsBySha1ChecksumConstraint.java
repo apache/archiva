@@ -28,7 +28,7 @@ import org.apache.maven.archiva.database.Constraint;
  * @version $Id$
  */
 public class ArtifactsBySha1ChecksumConstraint
-    extends AbstractConstraint
+    extends AbstractDeclarativeConstraint
     implements Constraint
 {
     private String whereClause;

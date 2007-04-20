@@ -20,46 +20,43 @@ package org.apache.maven.archiva.database.constraints;
  */
 
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
 /**
- * AbstractConstraint 
+ * UniqueGroupIdConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractConstraint
+public class UniqueGroupIdConstraint
+    extends AbstractSimpleConstraint
     implements Constraint
 {
-    protected String[] declImports;
-    protected String[] declParams;
-    protected Object[] params;
+    private String sql;
 
-    public String getFetchLimits()
+    public UniqueGroupIdConstraint()
     {
-        return null;
+        /* this assumes search for no groupId prefix */
+        sql = "SELECT groupId FROM " + ArchivaArtifactModel.class.getName()
+            + " GROUP BY groupId ORDER BY groupId ASCENDING";
     }
 
-    public String[] getDeclaredImports()
+    public UniqueGroupIdConstraint( String groupIdPrefix )
     {
-        return declImports;
+        sql = "SELECT groupId FROM " + ArchivaArtifactModel.class.getName()
+            + " WHERE groupId.startsWith(groupIdPrefix) PARAMETERS String groupIdPrefix"
+            + " GROUP BY groupId ORDER BY groupId ASCENDING";
+
+        super.params = new Object[] { groupIdPrefix };
     }
 
-    public String[] getDeclaredParameters()
+    public Class getResultClass()
     {
-        return declParams;
-    }
-    
-    public Object[] getParameters()
-    {
-        return params;
+        return String.class;
     }
 
-    public String getSortDirection()
+    public String getSelectSql()
     {
-        return Constraint.ASCENDING;
+        return sql;
     }
-
-    public abstract String getSortColumn();
-
-    public abstract String getWhereCondition();
 }

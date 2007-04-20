@@ -81,7 +81,7 @@ public class JdoRepositoryDAO
     public List queryRepositories( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        List results = jdo.getAllObjects( ArchivaRepositoryModel.class, constraint );
+        List results = jdo.queryObjects( ArchivaRepositoryModel.class, constraint );
 
         if ( ( results == null ) || results.isEmpty() )
         {

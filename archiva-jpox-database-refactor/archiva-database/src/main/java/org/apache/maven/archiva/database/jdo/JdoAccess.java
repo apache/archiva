@@ -22,13 +22,17 @@ package org.apache.maven.archiva.database.jdo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.DeclarativeConstraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.SimpleConstraint;
+import org.apache.maven.archiva.database.constraints.AbstractSimpleConstraint;
 import org.apache.maven.archiva.model.CompoundKey;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jdo.Extent;
@@ -167,10 +171,10 @@ public class JdoAccess
 
     public List getAllObjects( Class clazz )
     {
-        return getAllObjects( clazz, null );
+        return queryObjects( clazz, null );
     }
 
-    public List getAllObjects( Class clazz, Constraint constraint )
+    public List queryObjects( Class clazz, Constraint constraint )
     {
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -179,93 +183,26 @@ public class JdoAccess
         {
             tx.begin();
 
-            Extent extent = pm.getExtent( clazz, true );
-
-            Query query = pm.newQuery( extent );
-
             List result = null;
 
             if ( constraint != null )
             {
-                if ( constraint.getSortColumn() != null )
+                if ( constraint instanceof DeclarativeConstraint )
                 {
-                    String ordering = constraint.getSortColumn();
-
-                    if ( constraint.getSortDirection() != null )
-                    {
-                        ordering += " " + constraint.getSortDirection();
-                    }
-
-                    query.setOrdering( ordering );
+                    result = processConstraint( pm, clazz, (DeclarativeConstraint) constraint );
                 }
-
-                if ( constraint.getFetchLimits() != null )
+                else if ( constraint instanceof AbstractSimpleConstraint )
                 {
-                    pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
-                }
-
-                if ( constraint.getWhereCondition() != null )
-                {
-                    query.setFilter( constraint.getWhereCondition() );
-                }
-
-                if ( constraint.getDeclaredImports() != null )
-                {
-                    for ( int i = 0; i < constraint.getDeclaredImports().length; i++ )
-                    {
-                        String qimport = constraint.getDeclaredImports()[i];
-                        query.declareImports( qimport );
-                    }
-                }
-
-                if ( constraint.getDeclaredParameters() != null )
-                {
-                    if ( constraint.getParameters() == null )
-                    {
-                        throw new JDOException( "Unable to use query, there are declared parameters, "
-                            + "but no parameter objects to use." );
-                    }
-
-                    if ( constraint.getParameters().length != constraint.getDeclaredParameters().length )
-                    {
-                        throw new JDOException( "Unable to use query, there are <"
-                            + constraint.getDeclaredParameters().length + "> declared parameters, yet there are <"
-                            + constraint.getParameters().length + "> parameter objects to use.  This should be equal." );
-                    }
-
-                    for ( int i = 0; i < constraint.getDeclaredParameters().length; i++ )
-                    {
-                        String declaredParam = constraint.getDeclaredParameters()[i];
-                        query.declareParameters( declaredParam );
-                    }
-
-                    switch ( constraint.getParameters().length )
-                    {
-                        case 1:
-                            result = (List) query.execute( constraint.getParameters()[0] );
-                            break;
-                        case 2:
-                            result = (List) query
-                                .execute( constraint.getParameters()[0], constraint.getParameters()[1] );
-                            break;
-                        case 3:
-                            result = (List) query
-                                .execute( constraint.getParameters()[0], constraint.getParameters()[1], constraint
-                                    .getParameters()[2] );
-                            break;
-                        default:
-                            throw new JDOException( "Unable to use more than 3 parameters." );
-                    }
+                    result = processConstraint( pm, (SimpleConstraint) constraint );
                 }
                 else
                 {
-                    // Process unparameterized query.
-                    result = (List) query.execute();
+                    result = processUnconstrained( pm, clazz );
                 }
             }
             else
             {
-                result = (List) query.execute();
+                result = processUnconstrained( pm, clazz );
             }
 
             result = (List) pm.detachCopyAll( result );
@@ -277,6 +214,150 @@ public class JdoAccess
         finally
         {
             rollbackIfActive( tx );
+        }
+    }
+
+    public List queryObjects( SimpleConstraint constraint )
+    {
+        PersistenceManager pm = getPersistenceManager();
+        Transaction tx = pm.currentTransaction();
+
+        try
+        {
+            tx.begin();
+
+            List result = processConstraint( pm, constraint );
+
+            // Only detach if results are known to be persistable.
+            if ( constraint.isResultsPersistable() )
+            {
+                result = (List) pm.detachCopyAll( result );
+            }
+            else
+            {
+                List copiedResults = new ArrayList();
+                copiedResults.addAll( result );
+                result = copiedResults;
+            }
+
+            tx.commit();
+
+            return result;
+        }
+        finally
+        {
+            rollbackIfActive( tx );
+        }
+    }
+
+    private List processUnconstrained( PersistenceManager pm, Class clazz )
+    {
+        Extent extent = pm.getExtent( clazz, true );
+        Query query = pm.newQuery( extent );
+        return (List) query.execute();
+    }
+
+    private List processConstraint( PersistenceManager pm, SimpleConstraint constraint )
+    {
+        Query query = pm.newQuery( constraint.getSelectSql() );
+
+        if ( constraint.getResultClass() == null )
+        {
+            throw new IllegalStateException( "Unable to use a SimpleConstraint with a null result class." );
+        }
+
+        query.setResultClass( constraint.getResultClass() );
+
+        if ( constraint.getFetchLimits() != null )
+        {
+            pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
+        }
+
+        if ( constraint.getParameters() != null )
+        {
+            return processParameterizedQuery( query, constraint.getParameters() );
+        }
+
+        return (List) query.execute();
+    }
+
+    private List processConstraint( PersistenceManager pm, Class clazz, DeclarativeConstraint constraint )
+    {
+        Extent extent = pm.getExtent( clazz, true );
+        Query query = pm.newQuery( extent );
+
+        if ( constraint.getSortColumn() != null )
+        {
+            String ordering = constraint.getSortColumn();
+
+            if ( constraint.getSortDirection() != null )
+            {
+                ordering += " " + constraint.getSortDirection();
+            }
+
+            query.setOrdering( ordering );
+        }
+
+        if ( constraint.getFetchLimits() != null )
+        {
+            pm.getFetchPlan().addGroup( constraint.getFetchLimits() );
+        }
+
+        if ( constraint.getWhereCondition() != null )
+        {
+            query.setFilter( constraint.getWhereCondition() );
+        }
+
+        if ( constraint.getDeclaredImports() != null )
+        {
+            for ( int i = 0; i < constraint.getDeclaredImports().length; i++ )
+            {
+                String qimport = constraint.getDeclaredImports()[i];
+                query.declareImports( qimport );
+            }
+        }
+
+        if ( constraint.getDeclaredParameters() != null )
+        {
+            if ( constraint.getParameters() == null )
+            {
+                throw new JDOException( "Unable to use query, there are declared parameters, "
+                    + "but no parameter objects to use." );
+            }
+
+            if ( constraint.getParameters().length != constraint.getDeclaredParameters().length )
+            {
+                throw new JDOException( "Unable to use query, there are <" + constraint.getDeclaredParameters().length
+                    + "> declared parameters, yet there are <" + constraint.getParameters().length
+                    + "> parameter objects to use.  This should be equal." );
+            }
+
+            for ( int i = 0; i < constraint.getDeclaredParameters().length; i++ )
+            {
+                String declaredParam = constraint.getDeclaredParameters()[i];
+                query.declareParameters( declaredParam );
+            }
+
+            return processParameterizedQuery( query, constraint.getParameters() );
+        }
+        else
+        {
+            return (List) query.execute();
+        }
+    }
+
+    private List processParameterizedQuery( Query query, Object parameters[] )
+    {
+        switch ( parameters.length )
+        {
+            case 1:
+                return (List) query.execute( parameters[0] );
+            case 2:
+                return (List) query.execute( parameters[0], parameters[1] );
+            case 3:
+                return (List) query.execute( parameters[0], parameters[1], parameters[2] );
+            default:
+                throw new JDOException( "Unable to use more than 3 parameters." );
         }
     }
 

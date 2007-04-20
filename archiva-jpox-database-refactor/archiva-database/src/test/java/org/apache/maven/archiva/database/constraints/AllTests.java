@@ -19,42 +19,30 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.Constraint;
-
-import java.util.Calendar;
-import java.util.Date;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
- * Constraint for snapshot artifacts that are of a certain age (in days) or older. 
+ * IDE Provided Utility Class for all tests. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class OlderSnapshotArtifactsByAgeConstraint
-    extends AbstractDeclarativeConstraint
-    implements Constraint
+public class AllTests
 {
-    private String whereClause;
 
-    public OlderSnapshotArtifactsByAgeConstraint( int daysOld )
+    public static Test suite()
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
-        Date cutoffDate = cal.getTime();
-
-        whereClause = "this.lastModified <= cutoffDate && this.snapshot == true";
-        declImports = new String[] { "import java.util.Date" };
-        declParams = new String[] { "java.util.Date cutoffDate" };
-        params = new Object[] { cutoffDate };
+        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.database.constraints" );
+        //$JUnit-BEGIN$
+        suite.addTestSuite( ArtifactsProcessedConstraintTest.class );
+        suite.addTestSuite( ArtifactsBySha1ChecksumConstraintTest.class );
+        suite.addTestSuite( OlderArtifactsByAgeConstraintTest.class );
+        suite.addTestSuite( UniqueGroupIdConstraintTest.class );
+        suite.addTestSuite( OlderSnapshotArtifactsByAgeConstraintTest.class );
+        suite.addTestSuite( RecentArtifactsByAgeConstraintTest.class );
+        //$JUnit-END$
+        return suite;
     }
 
-    public String getSortColumn()
-    {
-        return "groupId";
-    }
-
-    public String getWhereCondition()
-    {
-        return whereClause;
-    }
 }
