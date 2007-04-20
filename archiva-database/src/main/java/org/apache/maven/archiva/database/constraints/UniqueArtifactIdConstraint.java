@@ -20,41 +20,41 @@ package org.apache.maven.archiva.database.constraints;
  */
 
 import org.apache.maven.archiva.database.Constraint;
-
-import java.util.Calendar;
-import java.util.Date;
+import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
 /**
- * Constraint for snapshot artifacts that are of a certain age (in days) or older. 
+ * Obtain a set of unique ArtifactIds for the specified groupId.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class OlderSnapshotArtifactsByAgeConstraint
-    extends AbstractDeclarativeConstraint
+public class UniqueArtifactIdConstraint
+    extends AbstractSimpleConstraint
     implements Constraint
 {
-    private String whereClause;
+    private String sql;
 
-    public OlderSnapshotArtifactsByAgeConstraint( int daysOld )
+    /**
+     * Obtain a set of unique ArtifactIds for the specified groupId.
+     * 
+     * @param groupId the groupId to search for artifactIds within.
+     */
+    public UniqueArtifactIdConstraint( String groupId )
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
-        Date cutoffDate = cal.getTime();
+        sql = "SELECT artifactId FROM " + ArchivaArtifactModel.class.getName()
+            + " WHERE groupId == selectedGroupId PARAMETERS String selectedGroupId"
+            + " GROUP BY artifactId ORDER BY artifactId ASCENDING";
 
-        whereClause = "this.lastModified <= cutoffDate && this.snapshot == true";
-        declImports = new String[] { "import java.util.Date" };
-        declParams = new String[] { "java.util.Date cutoffDate" };
-        params = new Object[] { cutoffDate };
+        super.params = new Object[] { groupId };
     }
 
-    public String getSortColumn()
+    public Class getResultClass()
     {
-        return "groupId";
+        return String.class;
     }
 
-    public String getWhereCondition()
+    public String getSelectSql()
     {
-        return whereClause;
+        return sql;
     }
 }

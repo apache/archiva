@@ -87,7 +87,7 @@ public class JdoArtifactDAO
     public List queryArtifacts( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        List results = jdo.getAllObjects( ArchivaArtifactModel.class, constraint );
+        List results = jdo.queryObjects( ArchivaArtifactModel.class, constraint );
         if ( ( results == null ) || results.isEmpty() )
         {
             return results;

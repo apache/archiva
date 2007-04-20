@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database.constraints;
+package org.apache.maven.archiva.database.browsing;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,34 +19,24 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 /**
- * RepositoryProblemByTypeConstraint 
+ * RepositoryBrowsing 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryProblemByTypeConstraint
-    extends AbstractDeclarativeConstraint
-    implements Constraint
+public interface RepositoryBrowsing
 {
-    private String whereClause;
+    public BrowsingResults getRoot();
 
-    public RepositoryProblemByTypeConstraint( String desiredType )
-    {
-        whereClause = "type == desiredType";
-        declParams = new String[] { "String desiredType" };
-        params = new Object[] { desiredType };
-    }
+    public BrowsingResults selectGroupId( String groupId );
 
-    public String getSortColumn()
-    {
-        return "groupId";
-    }
+    public BrowsingResults selectArtifactId( String groupId, String artifactId );
 
-    public String getWhereCondition()
-    {
-        return whereClause;
-    }
+    public ArchivaProjectModel selectVersion( String groupId, String artifactId, String version )
+        throws ObjectNotFoundException, ArchivaDatabaseException;
 }

@@ -19,6 +19,8 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import java.util.List;
+
 /**
  * ArchivaDAO - The interface for all content within the database.
  *
@@ -29,11 +31,19 @@ public interface ArchivaDAO
 {
     public static final String ROLE = ArchivaDAO.class.getName();
 
+    /**
+     * Perform a simple query against the database.
+     * 
+     * @param constraint the constraint to use.
+     * @return the List of results.
+     */
+    List query( SimpleConstraint constraint );
+
     ArtifactDAO getArtifactDAO();
 
     ProjectModelDAO getProjectModelDAO();
 
     RepositoryDAO getRepositoryDAO();
-    
+
     RepositoryProblemDAO getRepositoryProblemDAO();
 }

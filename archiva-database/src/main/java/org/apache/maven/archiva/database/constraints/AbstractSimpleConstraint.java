@@ -19,42 +19,31 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.Constraint;
-
-import java.util.Calendar;
-import java.util.Date;
+import org.apache.maven.archiva.database.SimpleConstraint;
 
 /**
- * Constraint for snapshot artifacts that are of a certain age (in days) or older. 
+ * Simple Constraint abstract for working with nearly-raw SQL strings. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class OlderSnapshotArtifactsByAgeConstraint
-    extends AbstractDeclarativeConstraint
-    implements Constraint
+public abstract class AbstractSimpleConstraint
+    implements SimpleConstraint
 {
-    private String whereClause;
-
-    public OlderSnapshotArtifactsByAgeConstraint( int daysOld )
+    protected Object[] params;
+    
+    public Object[] getParameters()
     {
-        Calendar cal = Calendar.getInstance();
-        cal.add( Calendar.DAY_OF_MONTH, ( -1 ) * daysOld );
-        Date cutoffDate = cal.getTime();
-
-        whereClause = "this.lastModified <= cutoffDate && this.snapshot == true";
-        declImports = new String[] { "import java.util.Date" };
-        declParams = new String[] { "java.util.Date cutoffDate" };
-        params = new Object[] { cutoffDate };
+        return params;
     }
 
-    public String getSortColumn()
+    public String getFetchLimits()
     {
-        return "groupId";
+        return null;
     }
 
-    public String getWhereCondition()
+    public boolean isResultsPersistable()
     {
-        return whereClause;
+        return false;
     }
 }

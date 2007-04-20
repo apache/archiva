@@ -19,25 +19,42 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-
 /**
- * Constraint - a generic object for dealing with database constraints. 
+ * SimpleConstraint 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @see DeclarativeConstraint
- * @see SimpleConstraint
  */
-public interface Constraint
+public interface SimpleConstraint extends Constraint
 {
-    public static final String ASCENDING = "ascending";
-
-    public static final String DESCENDING = "descending";
+    /**
+     * Get the parameters used for this query. (required if using parameterized SQL)
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the parameters. (can be null)
+     */
+    public Object[] getParameters();
 
     /**
-     * Get the fetch limits on the object.
+     * Get the SELECT query value for the constraint.
      * 
-     * @return the fetch limits on the object. (can be null) (O/RM specific)
+     * @return the SELECT value for this constraint. (can be null)
      */
-    public String getFetchLimits();
+    public abstract String getSelectSql();
+
+    /**
+     * For simple Constraints the results class must be specified.
+     * 
+     * @return the result class.
+     */
+    public Class getResultClass();
+    
+    /**
+     * When working with result classes that are not persistable,
+     * it is advisable to tell the underlying DAO to not do the persistable related efforts.
+     * 
+     * @return true if result classes are persistable.
+     */
+    public boolean isResultsPersistable();
 }

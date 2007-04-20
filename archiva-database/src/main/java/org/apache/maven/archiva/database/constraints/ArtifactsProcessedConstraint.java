@@ -30,7 +30,7 @@ import java.util.Date;
  * @version $Id$
  */
 public class ArtifactsProcessedConstraint
-    extends AbstractConstraint
+    extends AbstractDeclarativeConstraint
     implements Constraint
 {
     private String whereClause;
