@@ -45,11 +45,11 @@ public class SettingsTest
     {
         clickEditConfiguration();
 
-        setFieldValue( "indexPath", getBasedir() + "target/index" );
+        setFieldValue( "indexPath", getBasedir() + "/target/web-ui-index" );
         clickButtonWithValue( "Save Configuration" );
         waitPage();
         assertPage( "Administration" );
-        assertTextPresent( getBasedir() + "target/index" );
+        assertTextPresent( getBasedir() + "/target/web-ui-index" );
 
         logout();
     }
@@ -154,6 +154,31 @@ public class SettingsTest
 
         clickLinkWithText( "Settings" );
         assertPage( "Administration" );
+    }
+
+    public void tearDown()
+        throws Exception
+    {
+        clickEditConfiguration();
+        setFieldValue( "indexPath", getBasedir() + "/target/web-ui-index" );
+        setFieldValue( "second", "0" );
+        setFieldValue( "minute", "0,30" );
+        setFieldValue( "hour", "*" );
+        setFieldValue( "dayOfMonth", "*" );
+        setFieldValue( "month", "*" );
+        setFieldValue( "dayOfWeek", "?" );
+        setFieldValue( "year", "" );
+        setFieldValue( "proxy.port", "8080" );
+        setFieldValue( "proxy.host", "" );
+        setFieldValue( "proxy.username", "" );
+        setFieldValue( "proxy.password", "" );
+        clickButtonWithValue( "Save Configuration" );
+        waitPage();
+        assertPage( "Administration" );
+
+        logout();
+
+        super.tearDown();
     }
 
 }
