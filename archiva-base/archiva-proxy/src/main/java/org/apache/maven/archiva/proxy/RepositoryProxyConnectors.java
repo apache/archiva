@@ -22,6 +22,7 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 
 import java.io.File;
 import java.util.List;
@@ -47,6 +48,21 @@ public interface RepositoryProxyConnectors
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
     public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
+        throws ProxyException;
+    
+    /**
+     * Performs the metadata fetch operation against the target repositories
+     * of the provided source repository.
+     * 
+     * If the metadata is found, it is downloaded and placed into the source repository
+     * filesystem.
+     * 
+     * @param repository the source repository to use. (must be a managed repository)
+     * @param metadata the metadata to fetch.
+     * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
+     * @throws ProxyException if there was a problem fetching the content from the target repositories.
+     */
+    public File fetchFromProxies( ArchivaRepository repository, VersionedReference metadata )
         throws ProxyException;
     
     /**
