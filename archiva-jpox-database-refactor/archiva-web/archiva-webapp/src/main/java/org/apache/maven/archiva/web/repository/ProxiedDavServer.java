@@ -19,25 +19,19 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.proxy.ProxyConnector;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
 import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
@@ -46,10 +40,6 @@ import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -61,8 +51,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.codehaus.plexus.webdav.DavServerComponent"
- * role-hint="proxied"
- * instantiation-strategy="per-lookup"
+ *                   role-hint="proxied"
+ *                   instantiation-strategy="per-lookup"
  */
 public class ProxiedDavServer
     extends AbstractDavServerComponent
@@ -93,8 +83,6 @@ public class ProxiedDavServer
 
     private ArchivaRepository managedRepository;
 
-    private List/*<ArtifactRepository>*/proxiedRepositories;
-
     public String getPrefix()
     {
         return davServer.getPrefix();
@@ -119,8 +107,6 @@ public class ProxiedDavServer
         throws DavServerException
     {
         davServer.init( servletConfig );
-
-        proxiedRepositories = new ArrayList();
 
         Configuration config = archivaConfiguration.getConfiguration();
 
@@ -156,45 +142,60 @@ public class ProxiedDavServer
         throws ServletException
     {
         String resource = request.getLogicalResource();
-        
-        if( resource.endsWith( ".sha1" ) ||
-            resource.endsWith( ".md5") )
+
+        if ( resource.endsWith( ".sha1" ) || resource.endsWith( ".md5" ) )
         {
             // Checksums are fetched with artifact / metadata.
             return;
         }
-        
+
         try
         {
             ProjectReference project;
             VersionedReference versioned;
             ArtifactReference artifact;
-            
-            artifact = layout.toArtifactReference( resource );
-            if( artifact != null )
+
+            try
             {
-                connectors.fetchFromProxies( managedRepository, artifact );
-                return;
+                artifact = layout.toArtifactReference( resource );
+                if ( artifact != null )
+                {
+                    connectors.fetchFromProxies( managedRepository, artifact );
+                    return;
+                }
             }
-            
-            versioned = layout.toVersionedReference( resource );
-            if( versioned != null )
+            catch ( LayoutException e )
             {
-                connectors.fetchFromProxies( managedRepository, versioned );
-                return;
+                /* eat it */
             }
-            
-            project = layout.toProjectReference( resource );
-            if( project != null )
+
+            try
             {
-                connectors.fetchFromProxies( managedRepository, project );
-                return;
+                versioned = layout.toVersionedReference( resource );
+                if ( versioned != null )
+                {
+                    connectors.fetchFromProxies( managedRepository, versioned );
+                    return;
+                }
             }
-        }
-        catch ( ResourceDoesNotExistException e )
-        {
-            // return an HTTP 404 instead of HTTP 500 error.
-            return;
+            catch ( LayoutException e )
+            {
+                /* eat it */
+            }
+
+            try
+            {
+                project = layout.toProjectReference( resource );
+                if ( project != null )
+                {
+                    connectors.fetchFromProxies( managedRepository, project );
+                    return;
+                }
+            }
+            catch ( LayoutException e )
+            {
+                /* eat it */
+            }
         }
         catch ( ProxyException e )
         {
