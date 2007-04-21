@@ -28,7 +28,7 @@ package org.apache.maven.archiva.web.test;
 public class SettingsTest
     extends AbstractArchivaTestCase
 {
-
+    /*
     public void testRunIndexer()
     {
         clickSettings();
@@ -39,7 +39,7 @@ public class SettingsTest
         assertPage( "Administration" );
 
         logout();
-    }
+    } */
 
     public void testEditIndexDirectory()
     {

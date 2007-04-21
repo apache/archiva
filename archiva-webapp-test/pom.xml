@@ -112,7 +112,13 @@
             <configuration>
               <tasks>
                 <copy todir="${project.build.directory}/appserver-base">
-                  <fileset dir="src/appserver-base" />
+                  <fileset dir="src/test/resources/appserver-base" />
+                </copy>
+                <copy todir="${project.build.directory}/repository">
+                  <fileset dir="src/test/resources/repository" />
+                </copy>
+                <copy todir="${project.build.directory}/index">
+                  <fileset dir="src/test/resources/index" />
                 </copy>
               </tasks>
             </configuration>

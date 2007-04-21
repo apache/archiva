@@ -44,15 +44,15 @@ public abstract class AbstractArchivaTestCase
         if ( getTitle().equals( getTitlePrefix() + "Configuration" ) )
         {
             //Add Managed Repository
-            setFieldValue( "id", "web-ui" );
-            setFieldValue( "urlName", "web-ui" );
+            setFieldValue( "id", "test-repository" );
+            setFieldValue( "urlName", "test-repository" );
             setFieldValue( "name", "Web UI Test Managed Repository" );
-            setFieldValue( "directory", getBasedir() + "/target/web-ui-dir" );
+            setFieldValue( "directory", getBasedir() + "/target/repository" );
             clickButtonWithValue( "Add Repository" );
 
             //Set Index location
             assertPage( "Configuration" );
-            setFieldValue( "indexPath", getBasedir() + "/target/web-ui-index" );
+            setFieldValue( "indexPath", getBasedir() + "/target/index" );
             clickButtonWithValue( "Save Configuration" );
             assertPage( "Administration" );
         }
