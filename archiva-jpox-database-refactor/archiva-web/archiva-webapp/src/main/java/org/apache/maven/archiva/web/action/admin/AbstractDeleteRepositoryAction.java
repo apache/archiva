@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
@@ -72,35 +72,35 @@ public abstract class AbstractDeleteRepositoryAction
         {
             Configuration configuration = archivaConfiguration.getConfiguration();
 
-            AbstractRepositoryConfiguration existingRepository = getRepository( configuration );
-            if ( existingRepository == null )
-            {
-                addActionError( "A repository with that id does not exist" );
-                return ERROR;
-            }
-
-            // TODO: remove from index too!
-
-            removeRepository( configuration, existingRepository );
-
-            archivaConfiguration.save( configuration );
-
-            if ( "delete-contents".equals( operation ) )
-            {
-                removeContents( existingRepository );
-            }
+//            AbstractRepositoryConfiguration existingRepository = getRepository( configuration );
+//            if ( existingRepository == null )
+//            {
+//                addActionError( "A repository with that id does not exist" );
+//                return ERROR;
+//            }
+//
+//            // TODO: remove from index too!
+//
+//            removeRepository( configuration, existingRepository );
+//
+//            archivaConfiguration.save( configuration );
+//
+//            if ( "delete-contents".equals( operation ) )
+//            {
+//                removeContents( existingRepository );
+//            }
         }
 
         return SUCCESS;
     }
 
-    protected abstract void removeContents( AbstractRepositoryConfiguration existingRepository )
-        throws IOException;
-
-    protected abstract AbstractRepositoryConfiguration getRepository( Configuration configuration );
-
-    protected abstract void removeRepository( Configuration configuration,
-                                              AbstractRepositoryConfiguration existingRepository );
+//    protected abstract void removeContents( AbstractRepositoryConfiguration existingRepository )
+//        throws IOException;
+//
+//    protected abstract AbstractRepositoryConfiguration getRepository( Configuration configuration );
+//
+//    protected abstract void removeRepository( Configuration configuration,
+//                                              AbstractRepositoryConfiguration existingRepository );
 
     public String input()
     {

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
 
@@ -34,42 +34,42 @@ import java.io.IOException;
 public class ConfigureRepositoryAction
     extends AbstractConfigureRepositoryAction
 {
-    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeRepository( (RepositoryConfiguration) existingRepository );
-    }
-
-    protected AbstractRepositoryConfiguration getRepository( String id )
-    {
-        return configuration.getRepositoryById( id );
-    }
+//    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeRepository( (RepositoryConfiguration) existingRepository );
+//    }
+//
+//    protected AbstractRepositoryConfiguration getRepository( String id )
+//    {
+//        return configuration.getRepositoryById( id );
+//    }
 
     protected void addRepository()
         throws IOException, RoleProfileException
     {
-        RepositoryConfiguration repository = (RepositoryConfiguration) getRepository();
-
-        // Normalize the path
-        File file = new File( repository.getDirectory() );
-        repository.setDirectory( file.getCanonicalPath() );
-        if ( !file.exists() )
-        {
-            file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory!
-        }
-
-        configuration.addRepository( repository );
-
-        // TODO: double check these are configured on start up
-        roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
-
-        roleProfileManager.getDynamicRole( "archiva-repository-observer", repository.getId() );
+//        RepositoryConfiguration repository = (RepositoryConfiguration) getRepository();
+//
+//        // Normalize the path
+//        File file = new File( repository.getDirectory() );
+//        repository.setDirectory( file.getCanonicalPath() );
+//        if ( !file.exists() )
+//        {
+//            file.mkdirs();
+//            // TODO: error handling when this fails, or is not a directory!
+//        }
+//
+//        configuration.addRepository( repository );
+//
+//        // TODO: double check these are configured on start up
+//        roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
+//
+//        roleProfileManager.getDynamicRole( "archiva-repository-observer", repository.getId() );
     }
 
-    protected AbstractRepositoryConfiguration createRepository()
-    {
-        RepositoryConfiguration repository = new RepositoryConfiguration();
-        repository.setIndexed( false );
-        return repository;
-    }
+//    protected AbstractRepositoryConfiguration createRepository()
+//    {
+//        RepositoryConfiguration repository = new RepositoryConfiguration();
+//        repository.setIndexed( false );
+//        return repository;
+//    }
 }

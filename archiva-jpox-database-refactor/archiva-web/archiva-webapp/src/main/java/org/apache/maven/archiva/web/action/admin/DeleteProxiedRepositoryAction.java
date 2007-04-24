@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 
 import java.io.IOException;
 
@@ -33,19 +33,19 @@ import java.io.IOException;
 public class DeleteProxiedRepositoryAction
     extends AbstractDeleteRepositoryAction
 {
-    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
-    {
-        return configuration.getProxiedRepositoryById( repoId );
-    }
-
-    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeProxiedRepository( (ProxiedRepositoryConfiguration) existingRepository );
-    }
-
-    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
-        throws IOException
-    {
-        // TODO! delete it
-    }
+//    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
+//    {
+//        return configuration.getProxiedRepositoryById( repoId );
+//    }
+//
+//    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeProxiedRepository( (ProxiedRepositoryConfiguration) existingRepository );
+//    }
+//
+//    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
+//        throws IOException
+//    {
+//        // TODO! delete it
+//    }
 }

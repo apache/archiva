@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.repositories.ActiveManagedRepositories;
+//import org.apache.maven.archiva.repositories.ActiveManagedRepositories;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
@@ -56,10 +56,10 @@ public class ConfigureAction
      */
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     * @plexus.requirement
-     */
-    private ActiveManagedRepositories activeRepositories;
+//    /**
+//     * @plexus.requirement
+//     */
+//    private ActiveManagedRepositories activeRepositories;
 
     /**
      * The configuration.
@@ -101,19 +101,19 @@ public class ConfigureAction
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
-        configuration.setDataRefreshCronExpression( getCronExpression() );
+//        configuration.setDataRefreshCronExpression( getCronExpression() );
 
         // Normalize the path
-        File file = new File( configuration.getIndexPath() );
-        configuration.setIndexPath( file.getCanonicalPath() );
-        if ( !file.exists() )
-        {
-            file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory!
-        }
+//        File file = new File( configuration.getIndexPath() );
+//        configuration.setIndexPath( file.getCanonicalPath() );
+//        if ( !file.exists() )
+//        {
+//            file.mkdirs();
+//            // TODO: error handling when this fails, or is not a directory!
+//        }
 
         // Just double checking that our validation routines line up with what is expected in the configuration
-        assert configuration.isValid();
+//        assert configuration.isValid();
 
         archivaConfiguration.save( configuration );
 
@@ -126,7 +126,8 @@ public class ConfigureAction
 
     public String input()
     {
-        String[] cronEx = configuration.getDataRefreshCronExpression().split( " " );
+//        String[] cronEx = configuration.getDataRefreshCronExpression().split( " " );
+        String[] cronEx = new String[]{"0","0","*","*","*","*","*"};
         int i = 0;
 
         while ( i < cronEx.length )
@@ -158,11 +159,11 @@ public class ConfigureAction
             i++;
         }
 
-        if ( activeRepositories.getLastDataRefreshTime() != 0 )
-        {
-            lastIndexingTime = new Date( activeRepositories.getLastDataRefreshTime() ).toString();
-        }
-        else
+//        if ( activeRepositories.getLastDataRefreshTime() != 0 )
+//        {
+//            lastIndexingTime = new Date( activeRepositories.getLastDataRefreshTime() ).toString();
+//        }
+//        else
         {
             lastIndexingTime = "Never been run.";
         }

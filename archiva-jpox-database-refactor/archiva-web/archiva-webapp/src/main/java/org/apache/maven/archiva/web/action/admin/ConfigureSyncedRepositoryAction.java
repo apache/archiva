@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.SyncedRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.SyncedRepositoryConfiguration;
 
 import java.io.IOException;
 
@@ -32,26 +32,26 @@ import java.io.IOException;
 public class ConfigureSyncedRepositoryAction
     extends AbstractConfigureRepositoryAction
 {
-    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeSyncedRepository( (SyncedRepositoryConfiguration) existingRepository );
-    }
-
-    protected AbstractRepositoryConfiguration getRepository( String id )
-    {
-        return configuration.getSyncedRepositoryById( id );
-    }
+//    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeSyncedRepository( (SyncedRepositoryConfiguration) existingRepository );
+//    }
+//
+//    protected AbstractRepositoryConfiguration getRepository( String id )
+//    {
+//        return configuration.getSyncedRepositoryById( id );
+//    }
 
     protected void addRepository()
         throws IOException
     {
-        SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) getRepository();
-
-        configuration.addSyncedRepository( repository );
+//        SyncedRepositoryConfiguration repository = (SyncedRepositoryConfiguration) getRepository();
+//
+//        configuration.addSyncedRepository( repository );
     }
 
-    protected AbstractRepositoryConfiguration createRepository()
-    {
-        return new SyncedRepositoryConfiguration();
-    }
+//    protected AbstractRepositoryConfiguration createRepository()
+//    {
+//        return new SyncedRepositoryConfiguration();
+//    }
 }

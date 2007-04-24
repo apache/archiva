@@ -21,6 +21,7 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
@@ -105,8 +106,6 @@ public class DefaultRepositoryProxyConnectors
 
     private Map networkProxyMap = new HashMap();
 
-    private List propertyNameTriggers = new ArrayList();
-
     public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
         throws ProxyException
     {
@@ -165,7 +164,7 @@ public class DefaultRepositoryProxyConnectors
 
         return null;
     }
-    
+
     public File fetchFromProxies( ArchivaRepository repository, VersionedReference metadata )
         throws ProxyException
     {
@@ -629,7 +628,8 @@ public class DefaultRepositoryProxyConnectors
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( propertyNameTriggers.contains( propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isRepositories( propertyName )
+            || ConfigurationNames.isProxyConnector( propertyName ) )
         {
             initConnectorsAndNetworkProxies();
         }
@@ -743,37 +743,6 @@ public class DefaultRepositoryProxyConnectors
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers.add( "repositories" );
-        propertyNameTriggers.add( "repository" );
-        propertyNameTriggers.add( "id" );
-        propertyNameTriggers.add( "name" );
-        propertyNameTriggers.add( "url" );
-        propertyNameTriggers.add( "layout" );
-        propertyNameTriggers.add( "releases" );
-        propertyNameTriggers.add( "snapshots" );
-        propertyNameTriggers.add( "indexed" );
-
-        propertyNameTriggers.add( "proxyConnectors" );
-        propertyNameTriggers.add( "proxyConnector" );
-        propertyNameTriggers.add( "sourceRepoId" );
-        propertyNameTriggers.add( "targetRepoId" );
-        propertyNameTriggers.add( "proxyId" );
-        propertyNameTriggers.add( "snapshotsPolicy" );
-        propertyNameTriggers.add( "releasePolicy" );
-        propertyNameTriggers.add( "checksumPolicy" );
-        propertyNameTriggers.add( "whiteListPatterns" );
-        propertyNameTriggers.add( "whiteListPattern" );
-        propertyNameTriggers.add( "blackListPatterns" );
-        propertyNameTriggers.add( "blackListPattern" );
-
-        propertyNameTriggers.add( "networkProxies" );
-        propertyNameTriggers.add( "networkProxy" );
-        propertyNameTriggers.add( "protocol" );
-        propertyNameTriggers.add( "host" );
-        propertyNameTriggers.add( "port" );
-        propertyNameTriggers.add( "username" );
-        propertyNameTriggers.add( "password" );
-
         archivaConfiguration.addChangeListener( this );
         initConnectorsAndNetworkProxies();
     }
