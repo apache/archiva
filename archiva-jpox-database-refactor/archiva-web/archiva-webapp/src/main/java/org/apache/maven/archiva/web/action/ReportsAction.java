@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import org.apache.maven.archiva.reporting.database.ReportingDatabase;
+import org.apache.maven.archiva.reporting.ReportingManager;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
@@ -27,6 +27,7 @@ import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,15 +43,16 @@ public class ReportsAction
     /**
      * @plexus.requirement
      */
-    private ReportingDatabase database;
+    private ReportingManager reportingManager;
 
-    private List reports;
+    private List reports = new ArrayList();
 
     public String execute()
         throws Exception
     {
-        reports = database.getArtifactDatabase().getAllArtifactResults();
-        
+        reports.clear();
+        reports.addAll( reportingManager.getAvailableReports().values() );
+
         return SUCCESS;
     }
 
