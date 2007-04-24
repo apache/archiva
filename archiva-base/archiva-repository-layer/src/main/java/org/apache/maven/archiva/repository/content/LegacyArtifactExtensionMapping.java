@@ -62,7 +62,14 @@ public class LegacyArtifactExtensionMapping
         }
         else
         {
-            return pathType;
+            if ( pathType.endsWith( "s" ) )
+            {
+                return pathType.substring( 0, pathType.length() - 1 );
+            }
+            else
+            {
+                return pathType;
+            }
         }
     }
 }

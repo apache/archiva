@@ -19,10 +19,10 @@ package org.apache.maven.archiva.web.action.component;
  * under the License.
  */
 
-import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
 // TODO import org.apache.maven.model.Model;
 // import org.apache.maven.shared.app.company.CompanyPomHandler;
 // import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
  * Stores the company information for displaying on the page.
@@ -30,7 +30,7 @@ import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
  * @TODO plexus.component role="com.opensymphony.xwork.Action" role-hint="companyInfo"
  */
 public class CompanyInfoAction
-    extends AbstractConfiguredAction
+    extends PlexusActionSupport
 {
     private String companyLogo;
 

@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.SyncedRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.SyncedRepositoryConfiguration;
 
 import java.io.IOException;
 
@@ -33,19 +33,19 @@ import java.io.IOException;
 public class DeleteSyncedRepositoryAction
     extends AbstractDeleteRepositoryAction
 {
-    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
-    {
-        return configuration.getSyncedRepositoryById( repoId );
-    }
-
-    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeSyncedRepository( (SyncedRepositoryConfiguration) existingRepository );
-    }
-
-    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
-        throws IOException
-    {
-        // TODO! remove the contents
-    }
+//    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
+//    {
+//        return configuration.getSyncedRepositoryById( repoId );
+//    }
+//
+//    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeSyncedRepository( (SyncedRepositoryConfiguration) existingRepository );
+//    }
+//
+//    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
+//        throws IOException
+//    {
+//        // TODO! remove the contents
+//    }
 }

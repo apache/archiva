@@ -205,8 +205,8 @@ public class LegacyBidirectionalRepositoryLayout
             if ( !prefs.type.equals( prefs.fileParts.extension ) )
             {
                 throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension
-                    + "> and expected layout specified type <" + prefs.type
-                    + "> (mapped from actual path provided type <" + prefs.pathType + ">)" );
+                    + "> and expected layout specified type <" + prefs.pathType + "> (mapped type: <" + prefs.type
+                    + ">) on path <" + path + ">" );
             }
         }
 

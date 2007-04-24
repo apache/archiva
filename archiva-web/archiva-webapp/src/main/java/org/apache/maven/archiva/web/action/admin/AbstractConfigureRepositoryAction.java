@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.action.admin;
 
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
@@ -60,7 +60,7 @@ public abstract class AbstractConfigureRepositoryAction
     /**
      * The repository.
      */
-    private AbstractRepositoryConfiguration repository;
+//    private AbstractRepositoryConfiguration repository;
 
     /**
      * The repository ID to lookup when editing a repository.
@@ -77,12 +77,12 @@ public abstract class AbstractConfigureRepositoryAction
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
-        AbstractRepositoryConfiguration existingRepository = getRepository( repository.getId() );
-        if ( existingRepository != null )
-        {
-            addFieldError( "id", "A repository with that id already exists" );
-            return INPUT;
-        }
+//        AbstractRepositoryConfiguration existingRepository = getRepository( repository.getId() );
+//        if ( existingRepository != null )
+//        {
+//            addFieldError( "id", "A repository with that id already exists" );
+//            return INPUT;
+//        }
 
         return saveConfiguration();
     }
@@ -92,15 +92,15 @@ public abstract class AbstractConfigureRepositoryAction
     {
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
 
-        AbstractRepositoryConfiguration existingRepository = getRepository( repository.getId() );
-        removeRepository( existingRepository );
+//        AbstractRepositoryConfiguration existingRepository = getRepository( repository.getId() );
+//        removeRepository( existingRepository );
 
         return saveConfiguration();
     }
 
-    protected abstract void removeRepository( AbstractRepositoryConfiguration existingRepository );
-
-    protected abstract AbstractRepositoryConfiguration getRepository( String id );
+//    protected abstract void removeRepository( AbstractRepositoryConfiguration existingRepository );
+//
+//    protected abstract AbstractRepositoryConfiguration getRepository( String id );
 
     private String saveConfiguration()
         throws IOException, InvalidConfigurationException, RbacManagerException, RoleProfileException, RegistryException
@@ -126,23 +126,24 @@ public abstract class AbstractConfigureRepositoryAction
 
     public Object getModel()
     {
-        return repository;
+        return new Object();
+//        return repository;
     }
 
-    protected abstract AbstractRepositoryConfiguration createRepository();
+//    protected abstract AbstractRepositoryConfiguration createRepository();
 
     public void prepare()
     {
         configuration = archivaConfiguration.getConfiguration();
 
-        if ( repository == null )
-        {
-            repository = getRepository( repoId );
-        }
-        if ( repository == null )
-        {
-            repository = createRepository();
-        }
+//        if ( repository == null )
+//        {
+//            repository = getRepository( repoId );
+//        }
+//        if ( repository == null )
+//        {
+//            repository = createRepository();
+//        }
     }
 
     public String getRepoId()
@@ -155,10 +156,10 @@ public abstract class AbstractConfigureRepositoryAction
         this.repoId = repoId;
     }
 
-    protected AbstractRepositoryConfiguration getRepository()
-    {
-        return repository;
-    }
+//    protected AbstractRepositoryConfiguration getRepository()
+//    {
+//        return repository;
+//    }
 
     public Configuration getConfiguration()
     {

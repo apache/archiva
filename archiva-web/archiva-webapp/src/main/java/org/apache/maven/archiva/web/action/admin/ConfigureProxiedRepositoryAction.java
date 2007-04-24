@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 
 import java.io.IOException;
 
@@ -32,26 +32,26 @@ import java.io.IOException;
 public class ConfigureProxiedRepositoryAction
     extends AbstractConfigureRepositoryAction
 {
-    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeProxiedRepository( (ProxiedRepositoryConfiguration) existingRepository );
-    }
-
-    protected AbstractRepositoryConfiguration getRepository( String id )
-    {
-        return configuration.getProxiedRepositoryById( id );
-    }
+//    protected void removeRepository( AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeProxiedRepository( (ProxiedRepositoryConfiguration) existingRepository );
+//    }
+//
+//    protected AbstractRepositoryConfiguration getRepository( String id )
+//    {
+//        return configuration.getProxiedRepositoryById( id );
+//    }
 
     protected void addRepository()
         throws IOException
     {
-        ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) getRepository();
-
-        configuration.addProxiedRepository( repository );
+//        ProxiedRepositoryConfiguration repository = (ProxiedRepositoryConfiguration) getRepository();
+//
+//        configuration.addProxiedRepository( repository );
     }
 
-    protected AbstractRepositoryConfiguration createRepository()
-    {
-        return new ProxiedRepositoryConfiguration();
-    }
+//    protected AbstractRepositoryConfiguration createRepository()
+//    {
+//        return new ProxiedRepositoryConfiguration();
+//    }
 }

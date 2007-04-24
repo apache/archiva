@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+//import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.codehaus.plexus.rbac.profile.RoleProfileException;
@@ -35,32 +35,32 @@ import java.io.IOException;
 public class DeleteRepositoryAction
     extends AbstractDeleteRepositoryAction
 {
-    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
-    {
-        return configuration.getRepositoryById( repoId );
-    }
-
-    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
-    {
-        configuration.removeRepository( (RepositoryConfiguration) existingRepository );
-
-        try
-        {
-            removeRepositoryRoles( existingRepository );
-        }
-        catch ( RoleProfileException e )
-        {
-            getLogger().error( "Error removing user roles associated with repository " + existingRepository.getId() );
-        }
-    }
-
-    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
-        throws IOException
-    {
-        RepositoryConfiguration repository = (RepositoryConfiguration) existingRepository;
-        getLogger().info( "Removing " + repository.getDirectory() );
-        FileUtils.deleteDirectory( repository.getDirectory() );
-    }
+//    protected AbstractRepositoryConfiguration getRepository( Configuration configuration )
+//    {
+//        return configuration.getRepositoryById( repoId );
+//    }
+//
+//    protected void removeRepository( Configuration configuration, AbstractRepositoryConfiguration existingRepository )
+//    {
+//        configuration.removeRepository( (RepositoryConfiguration) existingRepository );
+//
+//        try
+//        {
+//            removeRepositoryRoles( existingRepository );
+//        }
+//        catch ( RoleProfileException e )
+//        {
+//            getLogger().error( "Error removing user roles associated with repository " + existingRepository.getId() );
+//        }
+//    }
+//
+//    protected void removeContents( AbstractRepositoryConfiguration existingRepository )
+//        throws IOException
+//    {
+//        RepositoryConfiguration repository = (RepositoryConfiguration) existingRepository;
+//        getLogger().info( "Removing " + repository.getDirectory() );
+//        FileUtils.deleteDirectory( repository.getDirectory() );
+//    }
 
     /**
      * Remove user roles associated with the repository
@@ -68,12 +68,12 @@ public class DeleteRepositoryAction
      * @param existingRepository
      * @throws RoleProfileException
      */
-    private void removeRepositoryRoles( AbstractRepositoryConfiguration existingRepository )
-        throws RoleProfileException
-    {
-        roleProfileManager.deleteDynamicRole( "archiva-repository-manager", existingRepository.getId() );
-        roleProfileManager.deleteDynamicRole( "archiva-repository-observer", existingRepository.getId() );
-
-        getLogger().info( "removed user roles associated with repository " + existingRepository.getId() );
-    }
+//    private void removeRepositoryRoles( AbstractRepositoryConfiguration existingRepository )
+//        throws RoleProfileException
+//    {
+//        roleProfileManager.deleteDynamicRole( "archiva-repository-manager", existingRepository.getId() );
+//        roleProfileManager.deleteDynamicRole( "archiva-repository-observer", existingRepository.getId() );
+//
+//        getLogger().info( "removed user roles associated with repository " + existingRepository.getId() );
+//    }
 }

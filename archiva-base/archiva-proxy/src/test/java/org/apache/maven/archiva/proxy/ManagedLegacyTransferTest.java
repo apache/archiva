@@ -43,21 +43,21 @@ public class ManagedLegacyTransferTest
         String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
         File expectedFile = new File( managedLegacyDir, path );
         ArtifactReference artifact = createArtifactReference( "legacy", path );
-
+    
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
-
+    
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-
+    
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
-
+    
         File proxied2File = new File( REPOPATH_PROXIED1,
                                       "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar" );
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
-
+    
         // TODO: timestamp preservation requires support for that in wagon
         //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }

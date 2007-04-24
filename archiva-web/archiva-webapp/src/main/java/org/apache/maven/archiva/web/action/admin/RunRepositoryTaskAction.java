@@ -19,13 +19,13 @@ package org.apache.maven.archiva.web.action.admin;
  * under the License.
  */
 
-import org.apache.maven.archiva.scheduler.RepositoryTaskScheduler;
+//import org.apache.maven.archiva.scheduler.RepositoryTaskScheduler;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
+//import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
@@ -37,15 +37,14 @@ public class RunRepositoryTaskAction
     extends PlexusActionSupport
     implements SecureAction
 {
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryTaskScheduler taskScheduler;
+//    /**
+//     * @plexus.requirement
+//     */
+//    private RepositoryTaskScheduler taskScheduler;
 
     public String runRefresh()
-        throws TaskExecutionException
     {
-        taskScheduler.runDataRefresh();
+//        taskScheduler.runDataRefresh();
 
         return SUCCESS;
     }

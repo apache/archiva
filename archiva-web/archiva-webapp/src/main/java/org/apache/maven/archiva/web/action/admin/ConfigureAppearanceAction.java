@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action.admin;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
+//import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
 //import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
 //import org.apache.maven.model.Model;
 //import org.apache.maven.project.ProjectBuildingException;
@@ -34,6 +34,7 @@ import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.IOException;
 
@@ -44,7 +45,7 @@ import java.io.IOException;
  * role-hint="configureAppearance"
  */
 public class ConfigureAppearanceAction
-    extends AbstractConfiguredAction
+    extends PlexusActionSupport
     implements ModelDriven, SecureAction, Preparable
 {
 //    /**
