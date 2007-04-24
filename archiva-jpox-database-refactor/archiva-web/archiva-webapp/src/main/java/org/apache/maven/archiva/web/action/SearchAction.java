@@ -19,26 +19,14 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.TermQuery;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndex;
-import org.apache.maven.archiva.indexer.RepositoryArtifactIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryArtifactIndex;
-import org.apache.maven.archiva.indexer.record.StandardIndexRecordFields;
-import org.apache.maven.archiva.web.util.VersionMerger;
+import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
+import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.io.File;
 import java.net.MalformedURLException;
-import java.util.Collection;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -57,62 +45,48 @@ public class SearchAction
      * The MD5 to search by.
      */
     private String md5;
+    
+    /**
+     * The Search Results.
+     */
+    private SearchResults results;
 
     /**
-     * Search results.
+     * @plexus.requirement role-hint="default"
      */
-    private Collection searchResults;
-
-    /**
-     * @plexus.requirement
-     */
-    private RepositoryArtifactIndexFactory factory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ConfiguredRepositoryFactory repositoryFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
+    private CrossRepositorySearch crossRepoSearch;
 
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
 
-    private String infoMessage;
-
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException, ParseException
     {
-        // TODO: give action message if indexing is in progress
+        /* TODO: give action message if indexing is in progress.
+         * This should be based off a count of 'unprocessed' artifacts.
+         * This (yet to be written) routine could tell the user that X artifacts are not yet 
+         * present in the full text search.
+         */
 
         assert q != null && q.length() != 0;
 
-        RepositoryArtifactIndex index = getIndex();
+        results = crossRepoSearch.searchForTerm( q );
 
-        if ( !index.exists() )
-        {
-            addActionError( "The repository is not yet indexed. Please wait, and then try again." );
-            return ERROR;
-        }
-
-        MultiFieldQueryParser parser = new MultiFieldQueryParser( new String[]{StandardIndexRecordFields.GROUPID,
-            StandardIndexRecordFields.ARTIFACTID, StandardIndexRecordFields.BASE_VERSION,
-            StandardIndexRecordFields.CLASSIFIER, StandardIndexRecordFields.CLASSES, StandardIndexRecordFields.FILES,
-            StandardIndexRecordFields.TYPE, StandardIndexRecordFields.PROJECT_NAME,
-            StandardIndexRecordFields.PROJECT_DESCRIPTION}, LuceneRepositoryArtifactIndex.getAnalyzer() );
-        searchResults = index.search( new LuceneQuery( parser.parse( q ) ) );
-
-        if ( searchResults.isEmpty() )
+        if ( results.isEmpty() )
         {
             addActionError( "No results found" );
             return INPUT;
         }
 
-        searchResults = VersionMerger.merge( searchResults );
+        // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
+        
+        /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in 
+         * the future to return relevant links better.
+         * I expect the lucene scoring system to take multiple hits on different areas of a single document
+         * to result in a higher score. 
+         *   - Joakim
+         */
 
         return SUCCESS;
     }
@@ -124,23 +98,15 @@ public class SearchAction
 
         assert md5 != null && md5.length() != 0;
 
-        RepositoryArtifactIndex index = getIndex();
-
-        if ( !index.exists() )
-        {
-            addActionError( "The repository is not yet indexed. Please wait, and then try again." );
-            return ERROR;
-        }
-
-        searchResults = index.search(
-            new LuceneQuery( new TermQuery( new Term( StandardIndexRecordFields.MD5, md5.toLowerCase() ) ) ) );
-
-        if ( searchResults.isEmpty() )
+        results = crossRepoSearch.searchForMd5( q );
+        
+        if ( results.isEmpty() )
         {
             addActionError( "No results found" );
             return INPUT;
         }
-        if ( searchResults.size() == 1 )
+        
+        if ( results.getHashcodeHits().size() == 1 )
         {
             return ARTIFACT;
         }
@@ -148,15 +114,6 @@ public class SearchAction
         {
             return RESULTS;
         }
-    }
-
-    private RepositoryArtifactIndex getIndex()
-        throws RepositoryIndexException
-    {
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        File indexPath = new File( configuration.getIndexPath() );
-
-        return factory.createStandardIndex( indexPath );
     }
 
     public String doInput()
@@ -182,20 +139,5 @@ public class SearchAction
     public void setMd5( String md5 )
     {
         this.md5 = md5;
-    }
-
-    public Collection getSearchResults()
-    {
-        return searchResults;
-    }
-
-    public String getInfoMessage()
-    {
-        return infoMessage;
-    }
-
-    public void setInfoMessage( String infoMessage )
-    {
-        this.infoMessage = infoMessage;
     }
 }

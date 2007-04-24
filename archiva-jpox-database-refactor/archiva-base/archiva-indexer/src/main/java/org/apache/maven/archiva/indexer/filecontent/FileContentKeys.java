@@ -27,6 +27,8 @@ package org.apache.maven.archiva.indexer.filecontent;
  */
 public class FileContentKeys
 {
+    public static final String ID = "filecontent";
+
     public static final String FILENAME = "filename";
 
     public static final String CONTENT = "content";

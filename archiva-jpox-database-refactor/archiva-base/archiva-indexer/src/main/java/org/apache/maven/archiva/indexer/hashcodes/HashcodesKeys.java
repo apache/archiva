@@ -29,6 +29,8 @@ import org.apache.maven.archiva.indexer.ArtifactKeys;
  */
 public class HashcodesKeys extends ArtifactKeys
 {
+    public static final String ID = "hashcodes";
+    
     public static final String MD5 = "md5";
 
     public static final String SHA1 = "sha1";

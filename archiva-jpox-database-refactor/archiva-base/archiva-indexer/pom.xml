@@ -31,7 +31,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-configuration</artifactId>
+      <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
@@ -61,6 +61,12 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>1.2_Java1.3</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>

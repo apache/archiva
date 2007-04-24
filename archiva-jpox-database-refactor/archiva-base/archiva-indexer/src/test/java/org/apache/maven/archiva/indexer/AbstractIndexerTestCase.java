@@ -46,7 +46,8 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractIndexerTestCase extends PlexusTestCase
+public abstract class AbstractIndexerTestCase
+    extends PlexusTestCase
 {
     protected RepositoryContentIndex index;
 
@@ -72,14 +73,32 @@ public abstract class AbstractIndexerTestCase extends PlexusTestCase
 
     public abstract LuceneIndexHandlers getIndexHandler();
 
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
 
-        RepositoryContentIndexFactory indexFactory =
-            (RepositoryContentIndexFactory) lookup( RepositoryContentIndexFactory.class.getName(), "lucene" );
+        RepositoryContentIndexFactory indexFactory = (RepositoryContentIndexFactory) lookup(
+                                                                                             RepositoryContentIndexFactory.class
+                                                                                                 .getName(), "lucene" );
 
+        ArchivaRepository repository = createTestIndex( getIndexName() );
+
+        index = createIndex( indexFactory, repository );
+
+        indexHandlers = getIndexHandler();
+    }
+
+    private ArchivaRepository createTestIndex( String indexName )
+        throws Exception, IOException
+    {
         File repoDir = new File( getBasedir(), "src/test/managed-repository" );
+        File testIndexesDir = new File( getBasedir(), "target/test-indexes" );
+
+        if ( !testIndexesDir.exists() )
+        {
+            testIndexesDir.mkdirs();
+        }
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -87,7 +106,7 @@ public abstract class AbstractIndexerTestCase extends PlexusTestCase
 
         ArchivaRepository repository = new ArchivaRepository( "testDefaultRepo", "Test Default Repository", repoUri );
 
-        File indexLocation = new File( "target/index-" + getIndexName() + "-" + getName() + "/" );
+        File indexLocation = new File( testIndexesDir, "/index-" + indexName + "-" + getName() + "/" );
 
         MockConfiguration config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 
@@ -103,10 +122,7 @@ public abstract class AbstractIndexerTestCase extends PlexusTestCase
         }
 
         config.getConfiguration().addRepository( repoConfig );
-
-        index = createIndex( indexFactory, repository );
-
-        indexHandlers = getIndexHandler();
+        return repository;
     }
 
     protected Map getArchivaArtifactDumpMap()
@@ -189,12 +205,14 @@ public abstract class AbstractIndexerTestCase extends PlexusTestCase
         return artifact;
     }
 
-    protected void createEmptyIndex() throws IOException
+    protected void createEmptyIndex()
+        throws IOException
     {
         createIndex( Collections.EMPTY_LIST );
     }
 
-    protected void createIndex( List documents ) throws IOException
+    protected void createIndex( List documents )
+        throws IOException
     {
         IndexWriter writer = new IndexWriter( index.getIndexDirectory(), indexHandlers.getAnalyzer(), true );
         for ( Iterator i = documents.iterator(); i.hasNext(); )

@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.indexer.query.Query;
 
@@ -41,23 +42,23 @@ public interface RepositoryContentIndex
      */
     void indexRecords( Collection records )
         throws RepositoryIndexException;
-    
+
     /**
      * Modify (potentially) existing records in the index.
      * 
      * @param records the collection of {@link LuceneRepositoryContentRecord} objects to modify in the index.
      * @throws RepositoryIndexException if there is a problem modifying the records.
      */
-    public void modifyRecords( Collection records ) 
+    public void modifyRecords( Collection records )
         throws RepositoryIndexException;
-    
+
     /**
      * Modify an existing (potential) record in the index.
      *  
      * @param record the record to modify.
      * @throws RepositoryIndexException if there is a problem modifying the record.
      */
-    public void modifyRecord( LuceneRepositoryContentRecord record ) 
+    public void modifyRecord( LuceneRepositoryContentRecord record )
         throws RepositoryIndexException;
 
     /**
@@ -106,11 +107,25 @@ public interface RepositoryContentIndex
      */
     Collection getAllRecordKeys()
         throws RepositoryIndexException;
-    
+
     /**
      * Get the index directory.
      * 
      * @return the index directory.
      */
     File getIndexDirectory();
+
+    /**
+     * Get the {@link QueryParser} appropriate for searches within this index.
+     * 
+     * @return the query parser;
+     */
+    QueryParser getQueryParser();
+
+    /**
+     * Get the id of index.
+     * 
+     * @return the id of index.
+     */
+    String getId();
 }

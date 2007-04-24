@@ -20,6 +20,8 @@ package org.apache.maven.archiva.indexer.bytecode;
  */
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 
@@ -29,16 +31,33 @@ import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class BytecodeHandlers implements LuceneIndexHandlers
+public class BytecodeHandlers
+    implements LuceneIndexHandlers
 {
     private BytecodeAnalyzer analyzer;
 
     private BytecodeEntryConverter converter;
 
+    private QueryParser queryParser;
+
     public BytecodeHandlers()
     {
         converter = new BytecodeEntryConverter();
         analyzer = new BytecodeAnalyzer();
+        queryParser = new MultiFieldQueryParser( new String[] {
+            BytecodeKeys.GROUPID,
+            BytecodeKeys.ARTIFACTID,
+            BytecodeKeys.VERSION,
+            BytecodeKeys.CLASSIFIER,
+            BytecodeKeys.TYPE,
+            BytecodeKeys.CLASSES,
+            BytecodeKeys.FILES,
+            BytecodeKeys.METHODS }, analyzer );
+    }
+    
+    public String getId()
+    {
+        return BytecodeKeys.ID;
     }
 
     public Analyzer getAnalyzer()
@@ -49,5 +68,10 @@ public class BytecodeHandlers implements LuceneIndexHandlers
     public LuceneEntryConverter getConverter()
     {
         return converter;
+    }
+
+    public QueryParser getQueryParser()
+    {
+        return queryParser;
     }
 }

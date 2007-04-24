@@ -27,13 +27,16 @@ import org.apache.maven.archiva.indexer.ArtifactKeys;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class BytecodeKeys extends ArtifactKeys
+public class BytecodeKeys
+    extends ArtifactKeys
 {
+    public static final String ID = "bytecode";
+
     public static final String CLASSES = "classes";
 
     public static final String METHODS = "methods";
 
     public static final String FILES = "files";
-    
+
     public static final String JDK = "jdk";
 }
