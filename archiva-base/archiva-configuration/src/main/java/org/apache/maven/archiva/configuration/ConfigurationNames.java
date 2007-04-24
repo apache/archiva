@@ -36,6 +36,8 @@ public class ConfigurationNames
 
     private static final Set repositories = new HashSet();
 
+    private static final Set proxyConnectors = new HashSet();
+
     static
     {
         repositories.add( "repositories" );
@@ -67,6 +69,19 @@ public class ConfigurationNames
         repositoryScanning.add( "goodConsumer" );
         repositoryScanning.add( "badConsumers" );
         repositoryScanning.add( "badConsumer" );
+
+        proxyConnectors.add( "proxyConnectors" );
+        proxyConnectors.add( "proxyConnector" );
+        proxyConnectors.add( "sourceRepoId" );
+        proxyConnectors.add( "targetRepoId" );
+        proxyConnectors.add( "proxyId" );
+        proxyConnectors.add( "snapshotsPolicy" );
+        proxyConnectors.add( "releasePolicy" );
+        proxyConnectors.add( "checksumPolicy" );
+        proxyConnectors.add( "whiteListPatterns" );
+        proxyConnectors.add( "whiteListPattern" );
+        proxyConnectors.add( "blackListPatterns" );
+        proxyConnectors.add( "blackListPattern" );
     }
 
     public static boolean isNetworkProxy( String propertyName )
@@ -88,15 +103,25 @@ public class ConfigurationNames
 
         return repositoryScanning.contains( propertyName );
     }
-    
+
     public static boolean isRepositories( String propertyName )
     {
-        if( empty(propertyName))
+        if ( empty( propertyName ) )
         {
             return false;
         }
-        
+
         return repositories.contains( propertyName );
+    }
+
+    public static boolean isProxyConnector( String propertyName )
+    {
+        if ( empty( propertyName ) )
+        {
+            return false;
+        }
+
+        return proxyConnectors.contains( propertyName );
     }
 
     private static boolean empty( String name )
