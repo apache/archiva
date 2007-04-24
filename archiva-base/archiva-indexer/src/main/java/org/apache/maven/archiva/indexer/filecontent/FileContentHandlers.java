@@ -20,6 +20,8 @@ package org.apache.maven.archiva.indexer.filecontent;
  */
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 
@@ -29,9 +31,27 @@ import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class FileContentHandlers implements LuceneIndexHandlers
+public class FileContentHandlers
+    implements LuceneIndexHandlers
 {
     private FileContentAnalyzer analyzer;
+
+    private FileContentConverter converter;
+
+    private QueryParser queryParser;
+
+    public FileContentHandlers()
+    {
+        analyzer = new FileContentAnalyzer();
+        converter = new FileContentConverter();
+        queryParser = new MultiFieldQueryParser( new String[] { FileContentKeys.FILENAME, FileContentKeys.CONTENT },
+                                                 analyzer );
+    }
+
+    public String getId()
+    {
+        return FileContentKeys.ID;
+    }
 
     public Analyzer getAnalyzer()
     {
@@ -40,6 +60,11 @@ public class FileContentHandlers implements LuceneIndexHandlers
 
     public LuceneEntryConverter getConverter()
     {
-        return null;
+        return converter;
+    }
+
+    public QueryParser getQueryParser()
+    {
+        return queryParser;
     }
 }

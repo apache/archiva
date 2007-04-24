@@ -21,8 +21,14 @@ package org.apache.maven.archiva.indexer;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.easymock.MockControl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * MockConfiguration 
@@ -37,9 +43,21 @@ public class MockConfiguration implements ArchivaConfiguration
 {
     private Configuration configuration = new Configuration();
 
+    private List listeners = new ArrayList();
+
+    private MockControl registryControl;
+
+    private Registry registryMock;
+
+    public MockConfiguration()
+    {
+        registryControl = MockControl.createNiceControl( Registry.class );
+        registryMock = (Registry) registryControl.getMock();
+    }
+
     public void addChangeListener( RegistryListener listener )
     {
-        /* do nothing */
+        listeners.add( listener );
     }
 
     public Configuration getConfiguration()
@@ -47,8 +65,26 @@ public class MockConfiguration implements ArchivaConfiguration
         return configuration;
     }
 
-    public void save( Configuration configuration ) throws RegistryException
+    public void save( Configuration configuration )
+        throws RegistryException
     {
         /* do nothing */
+    }
+
+    public void triggerChange( String name, String value )
+    {
+        Iterator it = listeners.iterator();
+        while ( it.hasNext() )
+        {
+            RegistryListener listener = (RegistryListener) it.next();
+            try
+            {
+                listener.afterConfigurationChange( registryMock, name, value );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }

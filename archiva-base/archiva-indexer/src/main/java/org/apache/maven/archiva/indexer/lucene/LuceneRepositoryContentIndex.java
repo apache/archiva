@@ -25,6 +25,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
@@ -46,18 +47,19 @@ import java.util.List;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public class LuceneRepositoryContentIndex implements RepositoryContentIndex
+public class LuceneRepositoryContentIndex
+    implements RepositoryContentIndex
 {
     /**
      * The max field length for a field in a document.
      */
     private static final int MAX_FIELD_LENGTH = 40000;
-    
+
     /**
      * The location of the index on the file system.
      */
     private File indexLocation;
-    
+
     /**
      * The Lucene Index Handlers
      */
@@ -69,14 +71,16 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         this.indexHandlers = handlers;
     }
 
-    public void indexRecords( Collection records ) throws RepositoryIndexException
+    public void indexRecords( Collection records )
+        throws RepositoryIndexException
     {
         deleteRecords( records );
 
         addRecords( records );
     }
-    
-    public void modifyRecords( Collection records ) throws RepositoryIndexException
+
+    public void modifyRecords( Collection records )
+        throws RepositoryIndexException
     {
         IndexModifier indexModifier = null;
         try
@@ -111,7 +115,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    public void modifyRecord( LuceneRepositoryContentRecord record ) throws RepositoryIndexException
+    public void modifyRecord( LuceneRepositoryContentRecord record )
+        throws RepositoryIndexException
     {
         IndexModifier indexModifier = null;
         try
@@ -141,7 +146,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    private void addRecords( Collection records ) throws RepositoryIndexException
+    private void addRecords( Collection records )
+        throws RepositoryIndexException
     {
         IndexWriter indexWriter;
         try
@@ -180,7 +186,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    public void deleteRecords( Collection records ) throws RepositoryIndexException
+    public void deleteRecords( Collection records )
+        throws RepositoryIndexException
     {
         if ( exists() )
         {
@@ -212,17 +219,20 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    public Collection getAllRecords() throws RepositoryIndexSearchException
+    public Collection getAllRecords()
+        throws RepositoryIndexSearchException
     {
         return search( new LuceneQuery( new MatchAllDocsQuery() ) );
     }
 
-    public Collection getAllRecordKeys() throws RepositoryIndexException
+    public Collection getAllRecordKeys()
+        throws RepositoryIndexException
     {
         return getAllFieldValues( LuceneDocumentMaker.PRIMARY_KEY );
     }
 
-    private List getAllFieldValues( String fieldName ) throws RepositoryIndexException
+    private List getAllFieldValues( String fieldName )
+        throws RepositoryIndexException
     {
         List keys = new ArrayList();
 
@@ -258,65 +268,66 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         return keys;
     }
 
-//    public List getAllGroupIds() throws RepositoryIndexException
-//    {
-//        return getAllFieldValues( StandardIndexRecordFields.GROUPID_EXACT );
-//    }
-//
-//    public List getArtifactIds( String groupId ) throws RepositoryIndexSearchException
-//    {
-//        return searchField( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
-//                            StandardIndexRecordFields.ARTIFACTID );
-//    }
-//
-//    public List getVersions( String groupId, String artifactId ) throws RepositoryIndexSearchException
-//    {
-//        BooleanQuery query = new BooleanQuery();
-//        query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
-//                   BooleanClause.Occur.MUST );
-//        query.add( new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, artifactId ) ),
-//                   BooleanClause.Occur.MUST );
-//
-//        return searchField( query, StandardIndexRecordFields.VERSION );
-//    }
+    //    public List getAllGroupIds() throws RepositoryIndexException
+    //    {
+    //        return getAllFieldValues( StandardIndexRecordFields.GROUPID_EXACT );
+    //    }
+    //
+    //    public List getArtifactIds( String groupId ) throws RepositoryIndexSearchException
+    //    {
+    //        return searchField( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
+    //                            StandardIndexRecordFields.ARTIFACTID );
+    //    }
+    //
+    //    public List getVersions( String groupId, String artifactId ) throws RepositoryIndexSearchException
+    //    {
+    //        BooleanQuery query = new BooleanQuery();
+    //        query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
+    //                   BooleanClause.Occur.MUST );
+    //        query.add( new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, artifactId ) ),
+    //                   BooleanClause.Occur.MUST );
+    //
+    //        return searchField( query, StandardIndexRecordFields.VERSION );
+    //    }
 
-//    private List searchField( org.apache.lucene.search.Query luceneQuery, String fieldName )
-//        throws RepositoryIndexSearchException
-//    {
-//        Set results = new LinkedHashSet();
-//
-//        IndexSearcher searcher;
-//        try
-//        {
-//            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
-//        }
-//        catch ( IOException e )
-//        {
-//            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
-//        }
-//
-//        try
-//        {
-//            Hits hits = searcher.search( luceneQuery );
-//            for ( int i = 0; i < hits.length(); i++ )
-//            {
-//                Document doc = hits.doc( i );
-//
-//                results.add( doc.get( fieldName ) );
-//            }
-//        }
-//        catch ( IOException e )
-//        {
-//            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
-//        }
-//        finally
-//        {
-//            closeQuietly( searcher );
-//        }
-//        return new ArrayList( results );
-//    }
+    //    private List searchField( org.apache.lucene.search.Query luceneQuery, String fieldName )
+    //        throws RepositoryIndexSearchException
+    //    {
+    //        Set results = new LinkedHashSet();
+    //
+    //        IndexSearcher searcher;
+    //        try
+    //        {
+    //            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
+    //        }
+    //        catch ( IOException e )
+    //        {
+    //            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
+    //        }
+    //
+    //        try
+    //        {
+    //            Hits hits = searcher.search( luceneQuery );
+    //            for ( int i = 0; i < hits.length(); i++ )
+    //            {
+    //                Document doc = hits.doc( i );
+    //
+    //                results.add( doc.get( fieldName ) );
+    //            }
+    //        }
+    //        catch ( IOException e )
+    //        {
+    //            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
+    //        }
+    //        finally
+    //        {
+    //            closeQuietly( searcher );
+    //        }
+    //        return new ArrayList( results );
+    //    }
 
-    public boolean exists() throws RepositoryIndexException
+    public boolean exists()
+        throws RepositoryIndexException
     {
         if ( IndexReader.indexExists( indexLocation ) )
         {
@@ -343,7 +354,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    public List search( Query query ) throws RepositoryIndexSearchException
+    public List search( Query query )
+        throws RepositoryIndexSearchException
     {
         LuceneQuery lQuery = (LuceneQuery) query;
 
@@ -385,7 +397,12 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
 
         return records;
     }
-    
+
+    public QueryParser getQueryParser()
+    {
+        return this.indexHandlers.getQueryParser();
+    }
+
     private static void closeQuietly( IndexSearcher searcher )
     {
         try
@@ -401,7 +418,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    private static void closeQuietly( TermEnum terms ) throws RepositoryIndexException
+    private static void closeQuietly( TermEnum terms )
+        throws RepositoryIndexException
     {
         if ( terms != null )
         {
@@ -416,7 +434,8 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
         }
     }
 
-    private static void closeQuietly( IndexWriter indexWriter ) throws RepositoryIndexException
+    private static void closeQuietly( IndexWriter indexWriter )
+        throws RepositoryIndexException
     {
         try
         {
@@ -465,5 +484,10 @@ public class LuceneRepositoryContentIndex implements RepositoryContentIndex
     public File getIndexDirectory()
     {
         return this.indexLocation;
+    }
+
+    public String getId()
+    {
+        return this.indexHandlers.getId();
     }
 }

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.lucene;
+package org.apache.maven.archiva.indexer.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,42 +19,18 @@ package org.apache.maven.archiva.indexer.lucene;
  * under the License.
  */
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.QueryParser;
+import java.io.File;
+import java.util.Map;
 
 /**
- * The important bits and pieces for handling a specific lucene index    
+ * IndexPopulator 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface LuceneIndexHandlers
+public interface IndexPopulator
 {
-    /**
-     * Get the converter to use with this index.
-     * 
-     * @return the converter to use.
-     */
-    public LuceneEntryConverter getConverter();
-    
-    /**
-     * Get the analyzer to user with this index. 
-     * 
-     * @return the analzer to use.
-     */
-    public Analyzer getAnalyzer();
-    
-    /**
-     * Get the {@link QueryParser} appropriate for searches within this index.
-     * 
-     * @return the query parser.
-     */
-    public QueryParser getQueryParser();
+    public Map getObjectMap();
 
-    /**
-     * Get the id of the index handler.
-     * 
-     * @return the id of the index handler.
-     */
-    public String getId();
+    public Map populate( File basedir );
 }
