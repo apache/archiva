@@ -20,38 +20,29 @@ package org.apache.maven.archiva.converter.legacy;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.converter.ConversionListener;
+import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.discoverer.Discoverer;
-import org.apache.maven.archiva.discoverer.DiscovererException;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Jason van Zyl
- * @plexus.component
- * @todo turn this into a general conversion component and hide all this crap here.
- * @todo it should be possible to move this to the converter module without causing it to gain additional dependencies
+ * DefaultLegacyRepositoryConverter 
+ *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
+ * @plexus.component 
  */
 public class DefaultLegacyRepositoryConverter
     implements LegacyRepositoryConverter
 {
-    /**
-     * @plexus.requirement role-hint="legacy"
-     */
-    private ArtifactRepositoryLayout legacyLayout;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private ArtifactRepositoryLayout defaultLayout;
-
     /**
      * @plexus.requirement
      */
@@ -60,80 +51,54 @@ public class DefaultLegacyRepositoryConverter
     /**
      * @plexus.requirement role-hint="default"
      */
-    private Discoverer discoverer;
+    private ArtifactRepositoryLayout defaultLayout;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.common.consumers.Consumer" role-hint="legacy-converter"
+     * @plexus.requirement role="org.apache.maven.archiva.consumers.RepositoryContentConsumer" 
+     *                     role-hint="artifact-legacy-to-default-converter"
      */
     private LegacyConverterArtifactConsumer legacyConverterConsumer;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
-                                         List fileExclusionPatterns, boolean includeSnapshots )
+                                         List fileExclusionPatterns )
         throws RepositoryConversionException
     {
-        ArtifactRepository legacyRepository;
-
-        ArtifactRepository repository;
-
         try
         {
-            String legacyRepositoryDir = legacyRepositoryDirectory.toURI().toURL().toString();
-            String repositoryDir = repositoryDirectory.toURI().toURL().toString();
+            String legacyRepositoryUrl = PathUtil.toUrl( legacyRepositoryDirectory );
+            String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            //workaround for spaces non converted by PathUtils in wagon
-            //TODO: remove it when PathUtils will be fixed
-            if ( legacyRepositoryDir.indexOf( "%20" ) >= 0 )
+            // workaround for spaces non converted by PathUtils in wagon
+            // TODO: remove it when PathUtils will be fixed
+            if ( legacyRepositoryUrl.indexOf( "%20" ) >= 0 )
             {
-                legacyRepositoryDir = StringUtils.replace( legacyRepositoryDir, "%20", " " );
+                legacyRepositoryUrl = StringUtils.replace( legacyRepositoryUrl, "%20", " " );
             }
-            if ( repositoryDir.indexOf( "%20" ) >= 0 )
+            if ( defaultRepositoryUrl.indexOf( "%20" ) >= 0 )
             {
-                repositoryDir = StringUtils.replace( repositoryDir, "%20", " " );
+                defaultRepositoryUrl = StringUtils.replace( defaultRepositoryUrl, "%20", " " );
             }
 
-            legacyRepository = artifactRepositoryFactory.createArtifactRepository( "legacy", legacyRepositoryDir,
-                                                                                   legacyLayout, null, null );
+            ArchivaRepository legacyRepository = new ArchivaRepository( "legacy", "Legacy Repository",
+                                                                        legacyRepositoryUrl );
+            legacyRepository.getModel().setLayoutName( "legacy" );
 
-            repository = artifactRepositoryFactory.createArtifactRepository( "default", repositoryDir, defaultLayout,
-                                                                             null, null );
+            ArtifactRepository repository = artifactRepositoryFactory.createArtifactRepository( "default",
+                                                                                                defaultRepositoryUrl,
+                                                                                                defaultLayout, null,
+                                                                                                null );
+            legacyConverterConsumer.setExcludes( fileExclusionPatterns );
+            legacyConverterConsumer.setDestinationRepository( repository );
+
+            List consumers = new ArrayList();
+            consumers.add( legacyConverterConsumer );
+
+            RepositoryScanner scanner = new RepositoryScanner();
+            scanner.scan( legacyRepository, consumers, true );
         }
-        catch ( MalformedURLException e )
+        catch ( RepositoryException e )
         {
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }
-
-        try
-        {
-            List consumers = new ArrayList();
-            legacyConverterConsumer.setDestinationRepository( repository );
-            consumers.add( legacyConverterConsumer );
-
-            discoverer.walkRepository( legacyRepository, consumers, includeSnapshots );
-        }
-        catch ( DiscovererException e )
-        {
-            throw new RepositoryConversionException(
-                "Unable to convert repository due to discoverer error:" + e.getMessage(), e );
-        }
-    }
-
-    /**
-     * Add a listener to the conversion process.
-     *
-     * @param listener the listener to add.
-     */
-    public void addConversionListener( ConversionListener listener )
-    {
-        legacyConverterConsumer.addConversionListener( listener );
-    }
-
-    /**
-     * Remove a listener from the conversion process.
-     *
-     * @param listener the listener to remove.
-     */
-    public void removeConversionListener( ConversionListener listener )
-    {
-        legacyConverterConsumer.removeConversionListener( listener );
     }
 }

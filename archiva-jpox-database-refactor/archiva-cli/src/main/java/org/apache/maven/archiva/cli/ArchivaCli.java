@@ -289,7 +289,7 @@ public class ArchivaCli
         try
         {
             legacyRepositoryConverter.convertLegacyRepository( oldRepositoryPath, newRepositoryPath,
-                                                               fileExclusionPatterns, true );
+                                                               fileExclusionPatterns );
         }
         catch ( RepositoryConversionException e )
         {
