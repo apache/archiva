@@ -62,6 +62,12 @@
       <artifactId>plexus-container-default</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-commons</artifactId>
+      <version>1.0-alpha-2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>1.2_Java1.3</version>
