@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
@@ -33,9 +34,27 @@ public class ArchivaConfigurationAdaptor
 {
     public static ArchivaRepository toArchivaRepository( RepositoryConfiguration config )
     {
+        if ( config == null )
+        {
+            throw new IllegalArgumentException( "Unable to convert null repository config to archiva repository." );
+        }
+
+        if ( StringUtils.isBlank( config.getId() ) )
+        {
+            throw new IllegalArgumentException( "Unable to repository config with blank ID to archiva repository." );
+        }
+
+        if ( StringUtils.isBlank( config.getUrl() ) )
+        {
+            throw new IllegalArgumentException(
+                                                "Unable to convert repository config with blank URL to archiva repository." );
+        }
+
         ArchivaRepository repository = new ArchivaRepository( config.getId(), config.getName(), config.getUrl() );
 
         repository.getModel().setLayoutName( config.getLayout() );
+        repository.getModel().setReleasePolicy( config.isReleases() );
+        repository.getModel().setSnapshotPolicy( config.isSnapshots() );
 
         return repository;
     }

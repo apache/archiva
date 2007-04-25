@@ -50,7 +50,7 @@ import java.util.List;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:jmcconnell@apache.org">Jesse McConnell</a>
- * @plexus.component role="org.apache.maven.archiva.scheduler.ArchivaTaskScheduler"
+ * @plexus.component role="org.apache.maven.archiva.scheduled.ArchivaTaskScheduler" role-hint="default"
  */
 public class DefaultArchivaTaskScheduler
     extends AbstractLogEnabled

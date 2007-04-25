@@ -196,12 +196,27 @@
 
   <load-on-start>
     <component>
-      <role>org.apache.maven.archiva.scheduler.RepositoryTaskScheduler</role>
+      <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+      <role-hint>default</role-hint>
     </component>
     <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>data-refresh</role-hint>
+      <role>org.apache.maven.archiva.web.startup.ConfigurationSynchronization</role>
+      <role-hint>default</role-hint>
     </component>
+    <component>
+      <role>org.apache.maven.archiva.web.startup.ConfigurationSynchronization</role>
+      <role-hint>default</role-hint>
+    </component>
+    <component>
+      <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
+      <role-hint>default</role-hint>
+    </component>
+    <!-- 
+    <component>
+      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
+      <role-hint>archiva-task-executor</role-hint>
+    </component>
+      -->
   </load-on-start>
 
   <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
