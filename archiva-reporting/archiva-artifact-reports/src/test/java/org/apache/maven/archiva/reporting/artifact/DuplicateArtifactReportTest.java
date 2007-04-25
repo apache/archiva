@@ -60,7 +60,7 @@ public class DuplicateArtifactReportTest
 
         artifactDao = dao.getArtifactDAO();
 
-        ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
+        ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "default" );
 
         RepositoryConfiguration repoConfig = new RepositoryConfiguration();
         repoConfig.setId( TESTABLE_REPO );
