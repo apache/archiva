@@ -35,6 +35,13 @@
       <version>1.0.0+</version>
       <fields>
         <field>
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>This is the version of the configuration format.</description>
+        </field>
+        <field>
           <name>repositories</name>
           <version>1.0.0+</version>
           <association>

@@ -73,7 +73,7 @@ public class RoleExistanceEnvironmentCheck
                     Iterator it = repos.iterator();
                     while ( it.hasNext() )
                     {
-                        RepositoryConfiguration repository = (RepositoryConfiguration) it.next();
+                        ArchivaRepository repository = (ArchivaRepository) it.next();
 
                         roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
 
