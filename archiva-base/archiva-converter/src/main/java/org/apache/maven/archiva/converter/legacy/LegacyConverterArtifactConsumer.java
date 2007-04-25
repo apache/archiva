@@ -19,13 +19,21 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.GenericArtifactConsumer;
-import org.apache.maven.archiva.converter.ConversionListener;
-import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.converter.RepositoryConverter;
+import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.converter.ArtifactConversionException;
+import org.apache.maven.artifact.converter.ArtifactConverter;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
@@ -34,38 +42,108 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.common.consumers.Consumers"
- *     role-hint="legacy-converter"
+ * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ *     role-hint="artifact-legacy-to-default-converter"
  *     instantiation-strategy="per-lookup"
  */
 public class LegacyConverterArtifactConsumer
-    extends GenericArtifactConsumer
+    extends AbstractMonitoredConsumer
+    implements RepositoryContentConsumer
 {
+    /**
+     * @plexus.requirement role-hint="legacy-to-default"
+     */
+    private ArtifactConverter artifactConverter;
+
     /**
      * @plexus.requirement
      */
-    private RepositoryConverter repositoryConverter;
+    private ArtifactFactory artifactFactory;
+
+    /**
+     * @plexus.requirement role-hint="legacy"
+     */
+    private BidirectionalRepositoryLayout bidirectionalLayout;
 
     private ArtifactRepository destinationRepository;
 
-    public void processArtifact( Artifact artifact, BaseFile file )
+    private List includes;
+
+    private List excludes;
+
+    public LegacyConverterArtifactConsumer()
+    {
+        includes = new ArrayList();
+        includes.add( "**/*.jar" );
+        includes.add( "**/*.ear" );
+        includes.add( "**/*.war" );
+    }
+
+    public void beginScan( ArchivaRepository repository )
+        throws ConsumerException
+    {
+
+    }
+
+    public void completeScan()
+    {
+
+    }
+
+    public List getExcludes()
+    {
+        return excludes;
+    }
+
+    public List getIncludes()
+    {
+        return includes;
+    }
+
+    public void processFile( String path )
+        throws ConsumerException
     {
         try
         {
-            repositoryConverter.convert( artifact, destinationRepository );
+            ArtifactReference reference = bidirectionalLayout.toArtifactReference( path );
+            Artifact artifact = artifactFactory.createArtifact( reference.getGroupId(), reference.getArtifactId(),
+                                                                reference.getVersion(), reference.getClassifier(),
+                                                                reference.getType() );
+            artifactConverter.convert( artifact, destinationRepository );
         }
-        catch ( RepositoryConversionException e )
+        catch ( LayoutException e )
         {
-            getLogger().error(
-                               "Unable to convert artifact " + artifact + " to destination repository "
-                                   + destinationRepository, e );
+            getLogger().warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+        }
+        catch ( ArtifactConversionException e )
+        {
+            getLogger().warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
         }
     }
 
-    public void processFileProblem( BaseFile path, String message )
+    public String getDescription()
     {
-        getLogger().error( "Artifact Build Failure on " + path + " : " + message );
-        // TODO: report this to the ConversionListener?
+        return "Legacy Artifact to Default Artifact Converter";
+    }
+
+    public String getId()
+    {
+        return "artifact-legacy-to-default-converter";
+    }
+
+    public boolean isPermanent()
+    {
+        return false;
+    }
+
+    public void setExcludes( List excludes )
+    {
+        this.excludes = excludes;
+    }
+
+    public void setIncludes( List includes )
+    {
+        this.includes = includes;
     }
 
     public ArtifactRepository getDestinationRepository()
@@ -77,29 +155,4 @@ public class LegacyConverterArtifactConsumer
     {
         this.destinationRepository = destinationRepository;
     }
-    
-    public String getName()
-    {
-        return "Legacy Artifact Converter Consumer";
-    }
-    
-    /**
-     * Add a listener to the conversion process.
-     * 
-     * @param listener the listener to add.
-     */
-    public void addConversionListener( ConversionListener listener )
-    {
-        repositoryConverter.addConversionListener( listener );
-    }
-
-    /**
-     * Remove a listener from the conversion process.
-     * 
-     * @param listener the listener to remove.
-     */
-    public void removeConversionListener( ConversionListener listener )
-    {
-        repositoryConverter.removeConversionListener( listener );
-    }    
 }

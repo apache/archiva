@@ -19,7 +19,6 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.maven.archiva.converter.ConversionListener;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 
 import java.io.File;
@@ -41,24 +40,9 @@ public interface LegacyRepositoryConverter
      * @param legacyRepositoryDirectory the directory of the legacy repository. 
      * @param destinationRepositoryDirectory the directory of the modern repository.
      * @param fileExclusionPatterns the list of patterns to exclude from the conversion.
-     * @param includeSnapshots true to include snapshots in conversion or not.
      * @throws RepositoryConversionException 
      */
     void convertLegacyRepository( File legacyRepositoryDirectory, File destinationRepositoryDirectory,
-                                  List fileExclusionPatterns, boolean includeSnapshots )
+                                  List fileExclusionPatterns )
         throws RepositoryConversionException;
-    
-    /**
-     * Add a listener to the conversion process.
-     * 
-     * @param listener the listener to add.
-     */
-    void addConversionListener( ConversionListener listener );
-    
-    /**
-     * Remove a listener from the conversion process.
-     * 
-     * @param listener the listener to remove.
-     */
-    void removeConversionListener( ConversionListener listener );
 }
