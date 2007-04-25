@@ -44,7 +44,7 @@ public class DefaultRepositoryBrowsing
     implements RepositoryBrowsing
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 
