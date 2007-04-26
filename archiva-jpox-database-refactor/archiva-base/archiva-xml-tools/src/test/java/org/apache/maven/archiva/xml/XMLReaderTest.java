@@ -35,11 +35,6 @@ import java.util.List;
 public class XMLReaderTest
     extends AbstractArchivaXmlTestCase
 {
-    private static final String OSLASH = "\u00f8";
-    private static final String TRYGVIS = "Trygve Laugst" + OSLASH + "l";
-    private static final String INFIN = "\u221e";
-    private static final String INFINITE_ARCHIVA = "The " + INFIN + " Archiva";
-    
     private void assertElementTexts( List elementList, String[] expectedTexts )
     {
         assertEquals( "Element List Size", expectedTexts.length, elementList.size() );

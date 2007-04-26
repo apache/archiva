@@ -44,8 +44,8 @@ public class XMLWriterTest
         Document doc = DocumentHelper.createDocument( basic );
 
         Element names = basic.addElement( "names" );
-        names.addElement( "name" ).setText( "Trygve Laugst\u00f8l" );
-        names.addElement( "name" ).setText( "The \u221e Archiva" );
+        names.addElement( "name" ).setText( TRYGVIS );
+        names.addElement( "name" ).setText( INFINITE_ARCHIVA );
 
         StringWriter actual = new StringWriter();
         XMLWriter.write( doc, actual );
