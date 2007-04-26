@@ -28,6 +28,9 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.reporting.ReportingManager"
+ *                   role-hint="default"
  */
 public class DefaultReportingManager
     extends AbstractLogEnabled

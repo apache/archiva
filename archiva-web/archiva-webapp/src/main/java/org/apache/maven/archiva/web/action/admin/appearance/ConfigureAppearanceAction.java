@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.admin;
+package org.apache.maven.archiva.web.action.admin.appearance;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,70 +21,68 @@ package org.apache.maven.archiva.web.action.admin;
 
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
+
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-//import org.apache.maven.archiva.web.action.AbstractConfiguredAction;
-//import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
-//import org.apache.maven.model.Model;
-//import org.apache.maven.project.ProjectBuildingException;
-//import org.apache.maven.shared.app.company.CompanyPomHandler;
-//import org.apache.maven.shared.app.configuration.Configuration;
-//import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
+import org.apache.maven.artifact.metadata.ArtifactMetadataRetrievalException;
+import org.apache.maven.model.Model;
+import org.apache.maven.project.ProjectBuildingException;
+import org.apache.maven.shared.app.company.CompanyPomHandler;
+import org.apache.maven.shared.app.configuration.Configuration;
+import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.IOException;
 
 /**
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @version $Id: ConfigurationAction.java 480950 2006-11-30 14:58:35Z evenisse $
- * @TODO plexus.component role="com.opensymphony.xwork.Action"
- * role-hint="configureAppearance"
+ * @plexus.component role="com.opensymphony.xwork.Action"
+ *                   role-hint="configureAppearance"
  */
 public class ConfigureAppearanceAction
-    extends PlexusActionSupport
+    extends AbstractAppearanceAction
     implements ModelDriven, SecureAction, Preparable
 {
-//    /**
-//     * @plexus.requirement
-//     */
-//    private MavenAppConfiguration appConfigurationStore;
-//
-//    /**
-//     * The configuration.
-//     */
-//    private Configuration configuration;
-//
-//    private Model companyModel;
-//
-//    /**
-//     * @plexus.requirement
-//     */
-//    private CompanyPomHandler companyPomHandler;
-//
+    /**
+     * @plexus.requirement
+     */
+    private MavenAppConfiguration appConfigurationStore;
+
+    /**
+     * The configuration.
+     */
+    private Configuration configuration;
+
+    private Model companyModel;
+
+    /**
+     * @plexus.requirement
+     */
+    private CompanyPomHandler companyPomHandler;
+
     public String execute()
         throws IOException, RegistryException
     {
-//        appConfigurationStore.save( configuration );
+        appConfigurationStore.save( configuration );
 
         return SUCCESS;
     }
 
     public Object getModel()
     {
-        return new Object();
-//        return configuration;
+        return configuration;
     }
 
     public void prepare()
-//        throws ProjectBuildingException, ArtifactMetadataRetrievalException
+        throws ProjectBuildingException, ArtifactMetadataRetrievalException
     {
-//        configuration = appConfigurationStore.getConfiguration();
-//
-//        companyModel = companyPomHandler.getCompanyPomModel( configuration.getCompanyPom(), createLocalRepository() );
+        configuration = appConfigurationStore.getConfiguration();
+
+        companyModel = companyPomHandler.getCompanyPomModel( configuration.getCompanyPom(), createLocalRepository() );
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -96,9 +94,9 @@ public class ConfigureAppearanceAction
 
         return bundle;
     }
-//
-//    public Model getCompanyModel()
-//    {
-//        return companyModel;
-//    }
+
+    public Model getCompanyModel()
+    {
+        return companyModel;
+    }
 }

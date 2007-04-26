@@ -59,7 +59,7 @@ public class DownloadArtifact
     extends Component
 {
     /**
-     * @plexus.requirement 
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 

@@ -50,7 +50,7 @@ public class ConfigurationSynchronization
     implements RegistryListener, Initializable
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 

@@ -100,12 +100,6 @@
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-app-configuration-web</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.maven</groupId>
-          <artifactId>maven-project</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -371,4 +365,27 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>mysql</id>
+      <dependencies>
+        <dependency>
+          <groupId>mysql</groupId>
+          <artifactId>mysql-connector-java</artifactId>
+          <version>5.0.4</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>maven-jetty-plugin</artifactId>
+            <configuration>
+              <jettyEnvXml>src/jetty-env-mysql.xml</jettyEnvXml>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

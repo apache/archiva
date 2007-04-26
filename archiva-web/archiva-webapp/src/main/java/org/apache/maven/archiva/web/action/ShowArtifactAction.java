@@ -52,7 +52,7 @@ public class ShowArtifactAction
     /* .\ Not Exposed \._____________________________________________ */
     
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 
