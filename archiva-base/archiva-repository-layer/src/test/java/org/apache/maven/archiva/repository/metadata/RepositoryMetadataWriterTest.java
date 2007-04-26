@@ -22,6 +22,7 @@ package org.apache.maven.archiva.repository.metadata;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.codehaus.plexus.PlexusTestCase;
+import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -55,6 +56,6 @@ public class RepositoryMetadataWriterTest
         StringWriter actual = new StringWriter();
         RepositoryMetadataWriter.write( metadata, actual );
 
-        assertEquals( "XML Contents", expectedContent, actual.toString() );
+        XMLAssert.assertXMLEqual( "XML Contents", expectedContent, actual.toString() );
     }
 }

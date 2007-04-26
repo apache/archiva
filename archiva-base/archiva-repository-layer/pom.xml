@@ -78,6 +78,13 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
