@@ -35,6 +35,11 @@ import java.util.List;
 public class XMLReaderTest
     extends AbstractArchivaXmlTestCase
 {
+    private static final String OSLASH = "\u00f8";
+    private static final String TRYGVIS = "Trygve Laugst" + OSLASH + "l";
+    private static final String INFIN = "\u221e";
+    private static final String INFINITE_ARCHIVA = "The " + INFIN + " Archiva";
+    
     private void assertElementTexts( List elementList, String[] expectedTexts )
     {
         assertEquals( "Element List Size", expectedTexts.length, elementList.size() );
@@ -70,7 +75,7 @@ public class XMLReaderTest
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List names = reader.getElementList( "//basic/names/name" );
-        assertElementTexts( names, new String[] { "Trygve Laugstøl", "The ∞ Archiva" } );
+        assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
     public void testNoPrologUtf8Read()
@@ -80,7 +85,7 @@ public class XMLReaderTest
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List names = reader.getElementList( "//basic/names/name" );
-        assertElementTexts( names, new String[] { "Trygve Laugstøl", "The ∞ Archiva" } );
+        assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
     public void testPrologUtf8Read()
@@ -90,7 +95,7 @@ public class XMLReaderTest
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List names = reader.getElementList( "//basic/names/name" );
-        assertElementTexts( names, new String[] { "Trygve Laugstøl", "The ∞ Archiva" } );
+        assertElementTexts( names, new String[] { TRYGVIS, INFINITE_ARCHIVA } );
     }
 
 }

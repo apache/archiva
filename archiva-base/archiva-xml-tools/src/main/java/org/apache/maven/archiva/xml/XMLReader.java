@@ -102,7 +102,7 @@ public class XMLReader
         try
         {
             InputStream in = url.openStream();
-            InputStreamReader inReader = new InputStreamReader( in );
+            InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
             LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
             this.document = reader.read( latinReader );
         }

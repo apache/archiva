@@ -33,9 +33,9 @@ public class LatinEntitiesTest
     public void testResolveEntity()
     {
         // Good Entities.
-        assertEquals( "©", LatinEntities.resolveEntity( "&copy;" ) );
-        assertEquals( "∞", LatinEntities.resolveEntity( "&infin;" ) );
-        assertEquals( "ø", LatinEntities.resolveEntity( "&oslash;" ) );
+        assertEquals( "\u00a9", LatinEntities.resolveEntity( "&copy;" ) );
+        assertEquals( "\u221e", LatinEntities.resolveEntity( "&infin;" ) );
+        assertEquals( "\u00f8", LatinEntities.resolveEntity( "&oslash;" ) );
 
         // Bad Entities.
         assertEquals( "", LatinEntities.resolveEntity( "" ) );
