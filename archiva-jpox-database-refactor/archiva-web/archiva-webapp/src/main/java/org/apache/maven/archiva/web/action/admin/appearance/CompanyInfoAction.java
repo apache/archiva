@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.component;
+package org.apache.maven.archiva.web.action.admin.appearance;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,18 +19,17 @@ package org.apache.maven.archiva.web.action.component;
  * under the License.
  */
 
-// TODO import org.apache.maven.model.Model;
-// import org.apache.maven.shared.app.company.CompanyPomHandler;
-// import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.model.Model;
+import org.apache.maven.shared.app.company.CompanyPomHandler;
+import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
 
 /**
  * Stores the company information for displaying on the page.
  *
- * @TODO plexus.component role="com.opensymphony.xwork.Action" role-hint="companyInfo"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="companyInfo"
  */
 public class CompanyInfoAction
-    extends PlexusActionSupport
+    extends AbstractAppearanceAction
 {
     private String companyLogo;
 
@@ -39,19 +38,18 @@ public class CompanyInfoAction
     private String companyName;
 
     /**
-     * @TODO plexus.requirement
+     * @plexus.requirement
      */
-    // private CompanyPomHandler handler;
+    private CompanyPomHandler handler;
 
     /**
-     * @TODO plexus.requirement
+     * @plexus.requirement
      */
-    // private MavenAppConfiguration appConfigurationStore;
+    private MavenAppConfiguration appConfigurationStore;
 
     public String execute()
         throws Exception
     {
-        /* TODO
         Model model = handler.getCompanyPomModel( appConfigurationStore.getConfiguration().getCompanyPom(),
                                                   createLocalRepository() );
 
@@ -64,7 +62,7 @@ public class CompanyInfoAction
             }
 
             companyLogo = model.getProperties().getProperty( "organization.logo" );
-        }*/
+        }
 
         return SUCCESS;
     }

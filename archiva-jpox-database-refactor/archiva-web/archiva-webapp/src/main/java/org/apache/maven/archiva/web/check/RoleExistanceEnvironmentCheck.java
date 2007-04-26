@@ -49,7 +49,7 @@ public class RoleExistanceEnvironmentCheck
     implements EnvironmentCheck
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 

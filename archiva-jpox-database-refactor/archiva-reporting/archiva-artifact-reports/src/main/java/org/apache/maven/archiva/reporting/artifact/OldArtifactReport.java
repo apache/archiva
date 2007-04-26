@@ -46,7 +46,7 @@ public class OldArtifactReport
     private String name;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 

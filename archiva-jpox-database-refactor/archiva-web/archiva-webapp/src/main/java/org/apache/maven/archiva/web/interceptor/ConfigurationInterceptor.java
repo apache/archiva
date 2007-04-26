@@ -41,7 +41,7 @@ public class ConfigurationInterceptor
     implements Interceptor
 {
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 
