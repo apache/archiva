@@ -64,6 +64,10 @@
       <artifactId>plexus-container-default</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-api</artifactId>
       <version>1.0-alpha-2-SNAPSHOT</version>
@@ -74,11 +78,6 @@
       <artifactId>plexus-cache-ehcache</artifactId>
       <version>1.0-alpha-2-SNAPSHOT</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xmlunit</groupId>
