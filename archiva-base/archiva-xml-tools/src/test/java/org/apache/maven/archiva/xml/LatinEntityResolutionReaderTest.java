@@ -115,30 +115,85 @@ public class LatinEntityResolutionReaderTest
         }
     }
 
+    private void assertProperRead( StringBuffer expected, String sourcePath, int bufSize )
+    {
+        try
+        {
+            File inputFile = getExampleXml( sourcePath );
+
+            FileReader fileReader = new FileReader( inputFile );
+            LatinEntityResolutionReader testReader = new LatinEntityResolutionReader( fileReader );
+
+            String actualOutput = toStringFromReader( testReader, bufSize );
+
+            assertEquals( "Proper Read: ", expected.toString(), actualOutput );
+        }
+        catch ( IOException e )
+        {
+            fail( "IOException: " + e.getMessage() );
+        }
+    }
+
     public void testReaderNormalBufsize()
         throws IOException
     {
-        assertProperRead( "no-prolog-with-entities.xml", "no-prolog-with-entities.xml-resolved", 4096 );
+        StringBuffer expected = new StringBuffer();
+
+        expected.append( "<basic>\n" );
+        expected.append( "  <names>\n" );
+        expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
+        expected.append( "    <name>" ).append( INFINITE_ARCHIVA ).append( "</name>\n" );
+        expected.append( "  </names>\n" );
+        expected.append( "</basic>" );
+
+        assertProperRead( expected, "no-prolog-with-entities.xml", 4096 );
     }
 
     public void testReaderSmallBufsize()
         throws IOException
     {
-        assertProperRead( "no-prolog-with-entities.xml", "no-prolog-with-entities.xml-resolved", 1024 );
+        StringBuffer expected = new StringBuffer();
+
+        expected.append( "<basic>\n" );
+        expected.append( "  <names>\n" );
+        expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
+        expected.append( "    <name>" ).append( INFINITE_ARCHIVA ).append( "</name>\n" );
+        expected.append( "  </names>\n" );
+        expected.append( "</basic>" );
+
+        assertProperRead( expected, "no-prolog-with-entities.xml", 1024 );
     }
 
     public void testReaderRediculouslyTinyBufsize()
         throws IOException
     {
-        assertProperRead( "no-prolog-with-entities.xml", "no-prolog-with-entities.xml-resolved", 32 );
+        StringBuffer expected = new StringBuffer();
+
+        expected.append( "<basic>\n" );
+        expected.append( "  <names>\n" );
+        expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
+        expected.append( "    <name>" ).append( INFINITE_ARCHIVA ).append( "</name>\n" );
+        expected.append( "  </names>\n" );
+        expected.append( "</basic>" );
+
+        assertProperRead( expected, "no-prolog-with-entities.xml", 32 );
     }
 
     public void testReaderHugeBufsize()
         throws IOException
     {
-        assertProperRead( "no-prolog-with-entities.xml", "no-prolog-with-entities.xml-resolved", 409600 );
+        StringBuffer expected = new StringBuffer();
+
+        expected.append( "<basic>\n" );
+        expected.append( "  <names>\n" );
+        expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
+        expected.append( "    <name>" ).append( INFINITE_ARCHIVA ).append( "</name>\n" );
+        expected.append( "  </names>\n" );
+        expected.append( "</basic>" );
+
+        assertProperRead( expected, "no-prolog-with-entities.xml", 409600 );
     }
-    
+
     public void testNoLatinEntitiesHugeLine()
     {
         assertProperRead( "commons-codec-1.2.pom", "commons-codec-1.2.pom", 4096 );
