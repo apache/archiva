@@ -19,7 +19,6 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
-import org.codehaus.plexus.util.FileUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -38,7 +37,16 @@ public class XMLWriterTest
     public void testWrite()
         throws Exception
     {
-        String expectedResults = FileUtils.fileRead( getExampleXml( "prolog-with-utf8.xml" ) );
+        StringBuffer expected = new StringBuffer();
+
+        expected.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
+        expected.append( "\n" );
+        expected.append( "<basic>\n" );
+        expected.append( "  <names>\n" );
+        expected.append( "    <name>" ).append( TRYGVIS ).append( "</name>\n" );
+        expected.append( "    <name>" ).append( INFINITE_ARCHIVA ).append( "</name>\n" );
+        expected.append( "  </names>\n" );
+        expected.append( "</basic>\n" );
 
         Element basic = DocumentHelper.createElement( "basic" );
         Document doc = DocumentHelper.createDocument( basic );
@@ -50,6 +58,6 @@ public class XMLWriterTest
         StringWriter actual = new StringWriter();
         XMLWriter.write( doc, actual );
 
-        assertEquals( "Comparision of contents:", expectedResults, actual.toString() );
+        assertEquals( "Comparision of contents:", expected.toString(), actual.toString() );
     }
 }
