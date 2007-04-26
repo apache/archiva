@@ -52,6 +52,11 @@ public class PathUtilTest
             workingDirname = workingDirname.substring( 0, workingDirname.length() - 2 );
         }
 
+        if ( !workingDirname.startsWith( "/" ) )
+        {
+            workingDirname = "/" + workingDirname;
+        }
+
         String path = "path/to/resource.xml";
         String expectedPath = "file:" + workingDirname + "/" + path;
 
@@ -68,6 +73,11 @@ public class PathUtilTest
         if ( workingDirname.endsWith( "/." ) )
         {
             workingDirname = workingDirname.substring( 0, workingDirname.length() - 2 );
+        }
+
+        if ( !workingDirname.startsWith( "/" ) )
+        {
+            workingDirname = "/" + workingDirname;
         }
 
         String path = "path/to/resource.xml";
