@@ -104,7 +104,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-slf4j-logging</artifactId>
-      <version>1.1-alpha-1-SNAPSHOT</version>
+      <version>1.1-alpha-1</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -141,12 +141,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-api</artifactId>
-      <version>1.0-alpha-2-SNAPSHOT</version>
+      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
-      <version>1.0-alpha-2-SNAPSHOT</version>
+      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -171,12 +171,12 @@
     <dependency>
       <groupId>org.codehaus.plexus.webdav</groupId>
       <artifactId>plexus-webdav-simple</artifactId>
-      <version>1.0-alpha-1</version>
+      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration</artifactId>
-      <version>1.0-alpha-6-SNAPSHOT</version>
+      <version>1.0-alpha-6</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
