@@ -28,7 +28,7 @@
    <artifactId>archiva-parent</artifactId>
    <packaging>pom</packaging>
    <name>Archiva</name>
-   <version>1.0-SNAPSHOT</version>
+   <version>1.0-alpha-1-SNAPSHOT</version>
    <description>
       Archiva is an application for managing one or more remote
       repositories, including administration, artifact handling,
@@ -155,6 +155,7 @@
       <module>archiva-scheduled</module>
       <module>archiva-web</module>
       <module>archiva-cli</module>
+      <module>archiva-site</module>
       <module>maven-meeper</module>
    </modules>
    <dependencies>
@@ -279,7 +280,12 @@
          </dependency>
          <dependency>
             <groupId>org.apache.maven.archiva</groupId>
-            <artifactId>archiva-reports-standard</artifactId>
+            <artifactId>archiva-report-manager</artifactId>
+            <version>${archiva.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.maven.archiva</groupId>
+            <artifactId>archiva-artifact-reports</artifactId>
             <version>${archiva.version}</version>
          </dependency>
          <dependency>
@@ -324,7 +330,7 @@
          </dependency>
          <dependency>
             <groupId>org.apache.maven.archiva</groupId>
-            <artifactId>archiva-discoverer</artifactId>
+            <artifactId>archiva-xml-tools</artifactId>
             <version>${archiva.version}</version>
          </dependency>
          <dependency>
@@ -364,7 +370,7 @@
          </dependency>
          <dependency>
             <groupId>org.apache.maven.archiva</groupId>
-            <artifactId>archiva-utils</artifactId>
+            <artifactId>archiva-scheduled</artifactId>
             <version>${archiva.version}</version>
          </dependency>
          <dependency>
@@ -636,7 +642,7 @@
       </pluginRepository>
    </pluginRepositories>
    <properties>
-      <archiva.version>1.0-SNAPSHOT</archiva.version>
+      <archiva.version>1.0-alpha-1-SNAPSHOT</archiva.version>
       <maven.version>2.0.5</maven.version>
       <wagon.version>1.0-beta-2</wagon.version>
       <plexus-security.version>1.0-alpha-11</plexus-security.version>

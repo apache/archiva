@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.maven.archiva</groupId>
   <artifactId>archiva-white-site</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-alpha-1-SNAPSHOT</version>
   <name>Archiva White Site</name>
   <inceptionYear>2005</inceptionYear>
   <reporting>

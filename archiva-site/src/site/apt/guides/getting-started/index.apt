@@ -30,11 +30,11 @@ To checkout the latest code
 
   Using Subversion, either checkout from {{http://svn.apache.org/repos/asf/maven/archiva/trunk/}} or to get all of Maven 2, checkout from {{http://svn.apache.org/repos/asf/maven/trunks/}}.
 
-To build 
+To build
 
   If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
 
-    * Download the 1.0 connector zip from: http://java.sun.com/j2ee/connector/download.html
+    * Download the 1.0 connector zip from: {{http://java.sun.com/j2ee/connector/download.html}}
 
     * Unpack the zip to get the jar
 
@@ -42,7 +42,7 @@ To build
 
     * Download the 1.0.1B jta zip from: {{http://java.sun.com/products/jta/}}
 
-    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
+    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip
 
   Otherwise:
 
@@ -51,7 +51,7 @@ To build
 
 To test-deploy Archiva on the embedded Jetty
 
-    * cd archiva-webapp
+    * cd archiva-web/archiva-webapp
 
     * mvn jetty:run
 
@@ -74,13 +74,13 @@ To deploy Archiva to Tomcat 5.5
            password=""
            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
            url="jdbc:derby:database/archiva;create=true" />
- 
+
  <Resource name="jdbc/archiva" auth="Container" type="javax.sql.DataSource"
            username="sa"
            password=""
            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
            url="jdbc:derby:database/archiva;create=true" />
- 
+
  <Resource name="mail/Session" auth="Container"
             type="javax.mail.Session"
             mail.smtp.host="localhost"/>
