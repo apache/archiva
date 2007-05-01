@@ -141,12 +141,20 @@
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-api</artifactId>
-      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
-      <version>1.0-alpha-2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.cache</groupId>
+      <artifactId>plexus-cache-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.cache</groupId>
+      <artifactId>plexus-cache-ehcache</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

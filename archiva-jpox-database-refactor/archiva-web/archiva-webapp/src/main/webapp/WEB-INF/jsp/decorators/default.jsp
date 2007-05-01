@@ -31,12 +31,10 @@
     <decorator:title default="Maven Archiva"/>
   </title>
 
-  <style type="text/css" media="all">
-    @import url( "<c:url value="/css/maven-base.css" />" );
-    @import url( "<c:url value="/css/maven-theme.css" />" );
-    @import url( "<c:url value="/css/pss/table.css" />" );
-    @import url( "<c:url value="/css/site.css" />" );
-  </style>
+  <link rel="stylesheet" href="<c:url value="/css/maven-base.css"/>" type="text/css" media="all"/>
+  <link rel="stylesheet" href="<c:url value="/css/maven-theme.css"/>" type="text/css" media="all"/>
+  <link rel="stylesheet" href="<c:url value="/css/pss/table.css"/>" type="text/css" media="all"/>
+  <link rel="stylesheet" href="<c:url value="/css/site.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
   <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" />
   <script type="text/javascript" src="<c:url value="/js/scriptaculous/prototype.js"/>"></script>

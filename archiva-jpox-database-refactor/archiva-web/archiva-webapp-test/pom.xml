@@ -42,6 +42,23 @@
       <version>1.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
+    
+    <!-- Dependencies below are provided by the appserver -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.1.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.1</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -69,11 +86,43 @@
               <outputDirectory>${project.build.directory}/${container.name}conf/webapps/archiva</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>prepare-provided-dependencies</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <excludeTransitive>false</excludeTransitive>
+              <outputDirectory>${project.build.directory}/providedDependencies</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <tasks>
+                <copy todir="${project.build.directory}/appserver-base">
+                  <fileset dir="src/test/resources/appserver-base" />
+                </copy>
+                <copy todir="${project.build.directory}/repository">
+                  <fileset dir="src/test/resources/repository" />
+                </copy>
+                <copy todir="${project.build.directory}/index">
+                  <fileset dir="src/test/resources/index" />
+                </copy>
+              </tasks>
+            </configuration>
+          </execution>
           <execution>
             <id>copy-container-conf</id>
             <phase>package</phase>
@@ -84,8 +133,8 @@
                 </copy>
                 <copy
                     todir="${project.build.directory}/installs/${container.name}/apache-tomcat-5.5.20/apache-tomcat-5.5.20/common/lib">
-                  <fileset dir="${project.build.directory}/${container.name}conf/webapps/archiva/WEB-INF/lib">
-                    <include name="**/derby-*.jar"/>
+                  <fileset dir="${project.build.directory}/providedDependencies">
+                    <include name="**/*.jar"/>
                   </fileset>
                 </copy>
               </tasks>
@@ -168,7 +217,7 @@
             <output>${project.build.directory}/logs/${container.name}.out</output>
             <timeout>600000</timeout>
             <systemProperties>
-              <appserver.base>${project.build.directory}</appserver.base>
+              <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             </systemProperties>
           </container>
           <configuration>
