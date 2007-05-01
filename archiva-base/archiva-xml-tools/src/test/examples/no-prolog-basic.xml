@@ -1,0 +1,14 @@
+<basic>
+  <fruits>
+    <fruit>
+      apple
+    </fruit>
+    <fruit><![CDATA[
+      cherry
+    ]]></fruit>
+    <fruit>
+      <![CDATA[pear]]>
+    </fruit>
+    <fruit>peach</fruit>
+  </fruits>
+</basic>

@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva</artifactId>
+    <artifactId>archiva-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -30,30 +30,44 @@
   <name>Archiva Database</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.ibatis</groupId>
-      <artifactId>ibatis-sqlmap</artifactId>
-      <version>2.3.0</version>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-consumer-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact-manager</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-configuration</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-repository-metadata</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-ibatis</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <artifactId>plexus-jdo2</artifactId>
+      <version>1.0-alpha-8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xmlParserAPIs</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
+      <groupId>jpox</groupId>
+      <artifactId>jpox</artifactId>
+      <version>1.1.7</version>
+      <scope>compile</scope>
+      <exclusions>
+        <!-- targeting JDK 1.4 we don't need this -->
+        <exclusion>
+          <groupId>javax.sql</groupId>
+          <artifactId>jdbc-stdext</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -83,12 +97,17 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
     </dependency>
-    <!--  TEST DEPS  -->
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.2.1.6</version>
-      <!--<scope>test</scope>-->
+    </dependency>
+    <!--  TEST DEPS  -->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -98,11 +117,11 @@
     </dependency>
   </dependencies>
   <build>
-  <plugins>
-    <plugin>
+    <plugins>
+      <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
-    </plugin>
-  </plugins>
+      </plugin>
+    </plugins>
   </build>
 </project>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <version>1</version>
+  <repositories>
+    <repository>
+      <id>internal</id>
+      <name>Archiva Managed Internal Repository</name>
+      <url>file://${appserver.home}/repositories/internal</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>false</snapshots>
+      <indexed>true</indexed>
+      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+    </repository>
+    <repository>
+      <id>snapshots</id>
+      <name>Archiva Managed Snapshot Repository</name>
+      <url>file://${appserver.home}/repositories/internal</url>
+      <layout>default</layout>
+      <releases>false</releases>
+      <snapshots>true</snapshots>
+      <indexed>true</indexed>
+      <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
+    </repository>
+    <repository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>http://repo1.maven.org/maven2</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>false</snapshots>
+      <indexed>false</indexed>
+    </repository>
+    <repository>
+      <id>maven2-repository.dev.java.net</id>
+      <name>Java.net Repository for Maven 2</name>
+      <url>https://maven2-repository.dev.java.net/nonav/repository</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>false</snapshots>
+      <indexed>false</indexed>
+    </repository>
+  </repositories>
+
+  <proxyConnectors>
+    <proxyConnector>
+      <sourceRepoId>internal</sourceRepoId>
+      <targetRepoId>central</targetRepoId>
+      <proxyId />
+      <policies>
+        <snapshots>disabled</snapshots>
+        <releases>once</releases>
+        <checksum>fix</checksum>
+        <cache-failures>cache</cache-failures>
+      </policies>
+    </proxyConnector>
+    <proxyConnector>
+      <sourceRepoId>internal</sourceRepoId>
+      <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
+      <proxyId />
+      <policies>
+        <snapshots>disabled</snapshots>
+        <releases>once</releases>
+        <checksum>fix</checksum>
+        <cache-failures>cache</cache-failures>
+      </policies>
+      <whiteListPatterns>
+        <whiteListPattern>javax/**</whiteListPattern>
+      </whiteListPatterns>
+    </proxyConnector>
+  </proxyConnectors>
+
+  <networkProxies>
+    <networkProxy>
+      <id>example</id>
+      <protocol>http</protocol>
+      <host>proxy.mycompany.com</host>
+      <port>8080</port>
+      <username>myself</username>
+      <password>mypass</password>
+    </networkProxy>
+  </networkProxies>
+
+  <repositoryScanning>
+    <fileTypes>
+      <fileType>
+        <id>artifacts</id>
+        <patterns>
+          <pattern>**/*.pom</pattern>
+          <pattern>**/*.jar</pattern>
+          <pattern>**/*.ear</pattern>
+          <pattern>**/*.war</pattern>
+          <pattern>**/*.car</pattern>
+          <pattern>**/*.sar</pattern>
+          <pattern>**/*.mar</pattern>
+          <pattern>**/*.rar</pattern>
+          <pattern>**/*.dtd</pattern>
+          <pattern>**/*.tld</pattern>
+          <pattern>**/*.tar.gz</pattern>
+          <pattern>**/*.tar.bz2</pattern>
+          <pattern>**/*.zip</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>indexable-content</id>
+        <patterns>
+          <pattern>**/*.txt</pattern>
+          <pattern>**/*.TXT</pattern>
+          <pattern>**/*.block</pattern>
+          <pattern>**/*.config</pattern>
+          <pattern>**/*.pom</pattern>
+          <pattern>**/*.xml</pattern>
+          <pattern>**/*.xsd</pattern>
+          <pattern>**/*.dtd</pattern>
+          <pattern>**/*.tld</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>auto-remove</id>
+        <patterns>
+          <pattern>**/*.bak</pattern>
+          <pattern>**/*~</pattern>
+          <pattern>**/*-</pattern>
+        </patterns>
+      </fileType>
+      <fileType>
+        <id>ignored</id>
+        <patterns>
+          <pattern>**/.htaccess</pattern>
+          <pattern>**/KEYS</pattern>
+          <pattern>**/*.rb</pattern>
+          <pattern>**/*.sh</pattern>
+          <pattern>**/.svn/**</pattern>
+          <pattern>**/.DAV/**</pattern>
+        </patterns>
+      </fileType>
+    </fileTypes>
+    <goodConsumers>
+      <goodConsumer>update-db-artifact</goodConsumer>
+      <goodConsumer>create-missing-checksums</goodConsumer>
+      <goodConsumer>update-db-repository-metadata</goodConsumer>
+      <goodConsumer>validate-checksum</goodConsumer>
+      <goodConsumer>validate-signature</goodConsumer>
+      <goodConsumer>index-content</goodConsumer>
+      <goodConsumer>auto-remove</goodConsumer>
+      <goodConsumer>auto-rename</goodConsumer>
+    </goodConsumers>
+    <badConsumers>
+      <badConsumer>update-db-bad-content</badConsumer>
+    </badConsumers>
+  </repositoryScanning>
+
+  <databaseScanning>
+    <cronExpression>0 0 * * ?</cronExpression>
+    <unprocessedConsumers>
+      <unprocessedConsumer>index-artifact</unprocessedConsumer>
+      <unprocessedConsumer>update-db-project</unprocessedConsumer>
+      <unprocessedConsumer>validate-repository-metadata</unprocessedConsumer>
+      <unprocessedConsumer>index-archive-toc</unprocessedConsumer>
+      <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
+      <unprocessedConsumer>index-public-methods</unprocessedConsumer>
+    </unprocessedConsumers>
+    <processedConsumers>
+      <processedConsumer>not-present-remove-db-artifact</processedConsumer>
+      <processedConsumer>not-present-remove-db-project</processedConsumer>
+      <processedConsumer>not-present-remove-indexed</processedConsumer>
+    </processedConsumers>
+  </databaseScanning>
+
+</configuration>

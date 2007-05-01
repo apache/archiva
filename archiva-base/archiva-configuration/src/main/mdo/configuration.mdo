@@ -1,0 +1,704 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<model>
+  <id>configuration</id>
+  <name>Configuration</name>
+  <description>
+    Configuration for the Maven Repository Manager.
+  </description>
+  <defaults>
+    <default>
+      <key>package</key>
+      <value>org.apache.maven.archiva.configuration</value>
+    </default>
+  </defaults>
+  <classes>
+    <class rootElement="true" xml.tagName="configuration">
+      <name>Configuration</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>version</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>This is the version of the configuration format.</description>
+        </field>
+        <field>
+          <name>repositories</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>RepositoryConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of repositories that this archiva instance uses.</description>
+        </field>
+        <field>
+          <name>proxyConnectors</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>ProxyConnectorConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of proxy connectors for this archiva instance.</description>
+        </field>
+        <!-- To be introduced later.
+        <field>
+          <name>syncConnectors</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>SyncConnectorConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of sync connectors for this archiva instance.</description>
+        </field>
+           -->
+        <field>
+          <name>networkProxies</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>NetworkProxyConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+          	The list of network proxies to use for outgoing requests.
+          </description>
+        </field>
+        <field>
+          <name>repositoryScanning</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>RepositoryScanningConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The repository scanning configuration.
+          </description>
+        </field>
+        <field>
+          <name>databaseScanning</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>DatabaseScanningConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The database scanning configuration.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Find {@link RepositoryConfiguration} with specified Id.
+     *  
+     * @param id the id of the repository to find.
+     * @return the repository configuration.
+     */
+    public RepositoryConfiguration findRepositoryById( String id )
+    {
+        // null id = null repo config.
+        if ( id == null )
+        {
+            return null;
+        }
+
+        // empty id = null repo config.
+        if ( id.trim().length() <= 0 )
+        {
+            return null;
+        }
+        
+        return (RepositoryConfiguration) createRepositoryMap().get( id );
+    }
+
+    /**
+     * Create a RepositoryMap of the current repositories.
+     * 
+     * @return the map of repository id's, to repository configurations.
+     */
+    public java.util.Map createRepositoryMap()
+    {
+        java.util.Map ret = new java.util.HashMap();
+        
+        // null repository list = null repo config.
+        if ( getRepositories() == null )
+        {
+            return ret;
+        }
+
+        // empty repository list == null repo config.
+        if ( getRepositories().isEmpty() )
+        {
+            return ret;
+        }
+        
+        java.util.Iterator it = getRepositories().iterator();
+        while ( it.hasNext() )
+        {
+            RepositoryConfiguration repoConfig = (RepositoryConfiguration) it.next();
+            ret.put( repoConfig.getId(), repoConfig );
+        }
+        
+        return ret;
+    }
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    
+    <!-- 
+       ____                      _ _
+      |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
+      | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
+      |  _ <  __/ |_) | (_) \__ \ | || (_) | |  | |_| |
+      |_| \_\___| .__/ \___/|___/_|\__\___/|_|   \__, |
+                |_|                              |___/
+    
+      -->
+    
+    <class>
+      <name>RepositoryConfiguration</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The repository identifier.
+          </description>
+        </field>
+        <field>
+          <name>name</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The descriptive name of the repository.
+          </description>
+        </field>
+        <field>
+          <name>url</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL for this repository.
+          </description>
+        </field>
+        <field>
+          <name>layout</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The layout of the repository. Valid values are "default" and "legacy".
+          </description>
+          <!-- TODO: should be able to detect this from the repository (perhaps by metadata at the root) -->
+          <defaultValue>default</defaultValue>
+        </field>
+        <field>
+          <name>releases</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>True if this repository contains release versioned artifacts.</description>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>snapshots</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>True if this repository contains snapshot versioned artifacts.</description>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
+          <name>indexed</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>True if this repository should be indexed.</description>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>indexDir</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The directory for the indexes of this repository.
+          </description>
+        </field>
+        <field>
+          <name>refreshCronExpression</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+          	When to run the refresh task. 
+          	Default is every 30 minutes (translated as every 0 and 30 minute reading of every hour)
+          </description>
+          <defaultValue>0 0,30 * * * ?</defaultValue>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Utility method to help determine if configuration refers to a remote repository.
+     * 
+     * @return true if configuration belongs to a remote repository. 
+     *      (note: false does not automatically mean this is a managed repository,
+     *      you must use {@link #isManaged()} to test for that.)
+     */
+    public boolean isRemote()
+    {
+        if ( this.url == null )
+        {
+            return false;
+        }
+
+        return !this.url.startsWith( "file" );
+    }
+
+    /**
+     * Utility method to help determine if configuration refers to a managed repository.
+     * 
+     * @return true if configuration belongs to a managed repository. 
+     *      (note: false does not automatically mean this is a remote repository,
+     *      you must use {@link #isRemote()} to test for that.)
+     */
+    public boolean isManaged()
+    {
+        if ( this.url == null )
+        {
+            return false;
+        }
+
+        return this.url.startsWith( "file" );
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    
+    <!-- 
+        ____                            _
+       / ___|___  _ __  _ __   ___  ___| |_ ___  _ __ ___
+      | |   / _ \| '_ \| '_ \ / _ \/ __| __/ _ \| '__/ __|
+      | |__| (_) | | | | | | |  __/ (__| || (_) | |  \__ \
+       \____\___/|_| |_|_| |_|\___|\___|\__\___/|_|  |___/
+    
+      -->
+    
+    <class>
+      <name>AbstractRepositoryConnectorConfiguration</name>
+      <abstract>true</abstract>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>sourceRepoId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Repository Source for this connector.
+          </description>
+        </field>
+        <field>
+          <name>targetRepoId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The Repository Target for this connector.
+          </description>
+        </field>
+        <field>
+          <name>proxyId</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The network proxy ID to use for this connector.
+          </description>
+        </field>
+        <field>
+          <name>blackListPatterns</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of blacklisted patterns for this connector.
+          </description>
+        </field>
+        <field>
+          <name>whiteListPatterns</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of whitelisted patterns for this connector.
+          </description>
+        </field>
+        <field>
+          <name>policies</name>
+          <version>1.0.0+</version>
+          <type>Properties</type>
+          <description>Policy configuration for the connector.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>        
+        <field>
+          <name>properties</name>
+          <version>1.0.0+</version>
+          <type>Properties</type>
+          <description>Configuration for the connector.</description>
+          <association xml.mapStyle="inline">
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Obtain a specific policy from the underlying connector.
+     * 
+     * @param policyId the policy id to fetch.
+     * @param defaultValue the default value for the policy id.
+     * @return the configured policy value (or default value if not found).
+     */
+    public String getPolicy( String policyId, String defaultValue )
+    {
+        if ( this.getPolicies() == null )
+        {
+            return null;
+        }
+
+        return this.getPolicies().getProperty( policyId, defaultValue );
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    
+    <class>
+      <superClass>AbstractRepositoryConnectorConfiguration</superClass>
+      <name>ProxyConnectorConfiguration</name>
+      <version>1.0.0+</version>
+      <fields>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * The policy key {@link #getPolicies()} for snapshot handling.
+     * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy} 
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_SNAPSHOTS = "snapshots";
+
+    /**
+     * The policy key {@link #getPolicies()} for releases handling.
+     * See {@link org.apache.maven.archiva.policies.ReleasesPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_RELEASES = "releases";
+
+    /**
+     * The policy key {@link #getPolicies()} for checksum handling.
+     * See {@link org.apache.maven.archiva.policies.ChecksumPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_CHECKSUM = "checksum";
+
+    /**
+     * The policy key {@link #getPolicies()} for cache-failures handling.
+     * See {@link org.apache.maven.archiva.policies.CachedFailuresPolicy}
+     * for details on potential values to this policy key.
+     */
+    public static final String POLICY_CACHE_FAILURES = "cache-failures";
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    
+    <class>
+      <superClass>AbstractRepositoryConnectorConfiguration</superClass>
+      <name>SyncConnectorConfiguration</name>
+      <abstract>true</abstract>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>cronExpression</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>When to run the sync mechanism. Default is every hour on the hour.</description>
+          <defaultValue>0 0 * * * ?</defaultValue>
+        </field>
+        <field>
+          <name>method</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>The type of synchronization to use.</description>
+          <defaultValue>rsync</defaultValue>
+        </field>
+      </fields>
+    </class>
+    
+    <!-- 
+       ____                _
+      |  _ \ _ __ _____  _(_) ___  ___
+      | |_) | '__/ _ \ \/ / |/ _ \/ __|
+      |  __/| | | (_) >  <| |  __/\__ \
+      |_|   |_|  \___/_/\_\_|\___||___/
+    
+      -->
+    
+    <class>
+      <name>NetworkProxyConfiguration</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The ID for this proxy.
+          </description>
+        </field>
+        <field>
+          <name>protocol</name>
+          <version>1.0.0+</version>
+          <description>
+            The network protocol to use with this proxy: "http", "socks-4"
+          </description>
+          <type>String</type>
+          <required>true</required>
+          <defaultValue>http</defaultValue>
+        </field>
+        <field>
+          <name>host</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy host.
+          </description>
+          <type>String</type>
+          <required>true</required>
+        </field>
+        <field>
+          <name>port</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy port.
+          </description>
+          <type>int</type>
+          <defaultValue>8080</defaultValue>
+        </field>
+        <field>
+          <name>username</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy user.
+          </description>
+          <type>String</type>
+        </field>
+        <field>
+          <name>password</name>
+          <version>1.0.0+</version>
+          <description>
+          	The proxy password.
+          </description>
+          <type>String</type>
+        </field>
+      </fields>
+    </class>
+    
+    <!-- 
+       ____                        _
+      / ___|  ___ __ _ _ __  _ __ (_)_ __   __ _
+      \___ \ / __/ _` | '_ \| '_ \| | '_ \ / _` |
+       ___) | (_| (_| | | | | | | | | | | | (_| |
+      |____/ \___\__,_|_| |_|_| |_|_|_| |_|\__, |
+                                           |___/
+    
+      -->
+    <class>
+      <name>RepositoryScanningConfiguration</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>fileTypes</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>FileType</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The FileTypes for the repository scanning configuration.
+          </description>
+        </field>
+        <field>
+          <name>goodConsumers</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of consumers for good content.
+          </description>
+        </field>
+        <field>
+          <name>badConsumers</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of consumer IDs for this file processor.
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Get a specific file type by ID.
+     * 
+     * @param id the id of the filetype to get. (null or empty will result in null return)
+     * @return the {@link FileType} or null if the id is not found.
+     */
+    public FileType getFileTypeById( String id )
+    {
+        if ( id == null )
+        {
+            return null;
+        }
+
+        if ( id.trim().length() <= 0 )
+        {
+            return null;
+        }
+
+        java.util.List types = getFileTypes();
+        if ( types == null )
+        {
+            return null;
+        }
+        
+        java.util.Iterator it = types.iterator();
+        while ( it.hasNext() )
+        {
+            FileType filetype = (FileType) it.next();
+            if ( id.equals( filetype.getId() ) )
+            {
+                return filetype;
+            }
+        }
+
+        return null;
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+    <class>
+      <name>FileType</name>
+      <version>1.0.0+</version>
+      <description>The FileType object</description>
+      <fields>
+        <field>
+          <name>id</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <type>String</type>
+        </field>
+        <field>
+          <name>patterns</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>DatabaseScanningConfiguration</name>
+      <version>1.0.0+</version>
+      <description>
+        The scanning configuration for unprocessed ArchivaArtifact database objects.
+      </description>
+      <fields>
+        <field>
+          <name>cronExpression</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>When to run the database scanning mechanism. Default is every hour on the hour.</description>
+          <defaultValue>0 0 * * * ?</defaultValue>
+        </field>
+        <field>
+          <name>unprocessedConsumers</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of consumers for the unprocessed ArchivaArtifact database objects.
+          </description>
+        </field>
+        <field>
+          <name>processedConsumers</name>
+          <version>1.0.0+</version>
+          <required>true</required>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of consumers for previously processed ArchivaArtifact database objects.
+          </description>
+        </field>
+      </fields>
+    </class>
+    
+  </classes>
+</model>
+
+
