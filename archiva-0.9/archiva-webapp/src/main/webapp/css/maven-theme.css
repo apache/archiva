@@ -1,0 +1,305 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+body {
+    padding: 0 0 10px 0;
+}
+
+body, td, th, select, input, li {
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+}
+
+select, input {
+    font-size: x-small;
+}
+
+th {
+    text-align: right;
+    padding-right: 1em;
+    font-size: x-small;
+    vertical-align: top;
+}
+
+.infoTable th {
+    width: 15em;
+}
+
+#contentBox h1 {
+    background-image: url( ../images/arrow.gif );
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 23px;
+    margin-bottom: 0.5em;
+    color: #333;
+    voice-family: inherit;
+    font-size: medium !important;
+}
+
+#contentBox h2 {
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 0;
+    margin-bottom: 0.5em;
+    color: #333;
+    voice-family: inherit;
+    font-size: small !important;
+}
+
+#contentBox h3 {
+    border-bottom: 1px solid #DFDEDE;
+    padding: 0 0 1px 0;
+    margin-bottom: 0.5em;
+    color: #333;
+    voice-family: inherit;
+    font-size: small !important;
+    margin-left: 2em;
+}
+
+table {
+    width: auto;
+}
+
+code {
+    font-family: Courier, monospace;
+    font-size: 13px;
+}
+
+#legend li.externalLink {
+    background: url( ../images/external.png ) left top no-repeat;
+    padding-left: 18px;
+}
+
+a.externalLink, a.externalLink:link, a.externalLink:visited, a.externalLink:active, a.externalLink:hover {
+    background: url( ../images/external.png ) right center no-repeat;
+    padding-right: 18px;
+}
+
+#legend li.newWindow {
+    background: url( ../images/newwindow.png ) left top no-repeat;
+    padding-left: 18px;
+}
+
+a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWindow:hover {
+    background: url( ../images/newwindow.png ) right center no-repeat;
+    padding-right: 18px;
+}
+
+p {
+    line-height: 1.3em;
+    font-size: small;
+}
+
+#breadcrumbs {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #999;
+    background-color: #F3B455;
+    padding: 2px 8px;
+}
+
+#navcolumn h5 {
+    color: gray;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 10px 0 1px 19px;
+}
+
+.source {
+    border: 1px solid #999;
+}
+
+dl {
+    padding: 4px 4px 4px 6px;
+    border: 1px solid #aaa;
+    background-color: #ffc;
+}
+
+dt {
+    color: #900;
+}
+
+#organizationLogo img, #projectLogo img, #projectLogo span {
+    margin: 8px;
+}
+
+#banner {
+    border-bottom: 1px solid #fff;
+    padding: 8px;
+}
+
+#breadcrumbs a:link {
+    text-decoration: none;
+}
+
+#breadcrumbs a:visited {
+    text-decoration: none;
+    color: #333
+}
+
+#breadcrumbs a:hover {
+    text-decoration: none;
+    color: white
+}
+
+.errormark, .warningmark, .donemark, .infomark {
+    background: url( ../images/icon_error_sml.gif ) no-repeat;
+}
+
+.warningmark {
+    background-image: url( ../images/icon_warning_sml.gif );
+}
+
+.donemark {
+    background-image: url( ../images/icon_success_sml.gif );
+}
+
+.infomark {
+    background-image: url( ../images/icon_info_sml.gif );
+}
+
+.booleanIcon {
+    padding-left: 20px;
+    height: 20px;
+}
+
+pre.pom {
+    font-size: 0.9em;
+    border: 1px solid #ddddff;
+    background-color: #f8f8ff;
+    padding: 5px;
+}
+
+pre.pom code {
+    font-size: 0.9em;
+}
+
+#leftColumn {
+    padding: 4px 4px 4px 4px;
+    overflow: hidden;
+}
+
+#navcolumn {
+    padding: 6px 0 0 2px;
+}
+
+#navcolumn li {
+    font-size: 9px;
+    text-indent: 19px;
+    line-height: 24px;
+    height: 25px;
+    width: 161px;
+    background-image: url( ../images/super.gif );
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    display: block;
+    padding-left: 0;
+}
+
+#navcolumn li li {
+    padding-left: 16px;
+    background: none;
+    display: block;
+}
+
+#navcolumn li li a:hover {
+    color: black !important;
+    background: none;
+    display: block;
+}
+
+#navcolumn li li a:active {
+    color: red !important;
+    background: none;
+    display: block;
+}
+
+#navcolumn li.collapsed {
+    background-image: url( ../images/super.gif );
+}
+
+#navcolumn li.expanded {
+    background-image: url( ../images/super.gif );
+    height: inherit;
+}
+
+#navcolumn li a:link {
+    color: #666;
+    display: block;
+}
+
+#navcolumn li a:hover {
+    color: #fff !important;
+    background: url( ../images/super_hl.gif ) 0 -25px no-repeat;
+    display: block;
+}
+
+#navcolumn li a:active {
+    color: #fff !important;
+    background: url( ../images/super_hl.gif ) 0 -50px no-repeat;
+    display: block;
+}
+
+#navcolumn li a:visited {
+    color: #666;
+    display: block;
+}
+
+#navcolumn li ul li {
+    color: #333 !important;
+    text-indent: 30px !important;
+    line-height: 20px !important;
+    height: 20px !important;
+    background-image: url( ../images/supersub.gif ) !important;
+    font-size: 9px;
+    width: 161px;
+    background-repeat: no-repeat;
+    display: block;
+    padding-left: 0;
+}
+
+#navcolumn li ul li a:hover {
+    color: #fff !important;
+    background: url( ../images/super_hl_sub.gif ) 0 -20px no-repeat;
+    background-position: right;
+    width: 161px;
+    display: block;
+}
+
+#footer {
+    background: url( ../images/footerborder.gif ) 0 5px repeat-x;
+    padding: 14px 4px 12px 4px;
+    margin-top: 2em;
+}
+
+a:link, a:visited {
+    color: #333;
+}
+
+#navcolumn a {
+    text-decoration: none;
+}
+
+a:active, a:hover {
+    color: #f30;
+}
+
+blockquote {
+    border-left: 1px solid #DFDEDE;
+    padding-left: 1em;
+}

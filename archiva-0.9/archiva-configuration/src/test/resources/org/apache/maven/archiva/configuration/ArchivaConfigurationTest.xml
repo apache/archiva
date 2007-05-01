@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-defaults</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>empty</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>empty</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-configuration</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>configured</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>configured</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <system/>
+          <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-save</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>save</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>save</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-save-user</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>save-user</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>save-user</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/test-file-user.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-read-saved</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>read-saved</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>read-saved</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-remove-proxied-repo</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>read-remove-proxied-repo</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>read-remove-proxied-repo</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/with-proxied-repos.xml"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-read-back-remove-proxied-repo</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>read-back-remove-proxied-repo</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>read-back-remove-proxied-repo</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/with-proxied-repos.xml"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+  </components>
+</component-set>

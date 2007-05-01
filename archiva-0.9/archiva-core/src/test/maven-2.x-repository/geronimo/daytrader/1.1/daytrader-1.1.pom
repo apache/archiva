@@ -1,0 +1,205 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>geronimo</groupId>
+    <artifactId>daytrader</artifactId>
+    <name>DayTrader :: Performance Benchmark Sample</name>
+    <packaging>pom</packaging>
+    <version>1.1</version>
+    <description>J2EE 1.4 Performance Benchmark Sample Application</description>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://issues.apache.org/jira/browse/GERONIMO</url>
+    </issueManagement>
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://ci.gbuild.org/continuum</url>
+        <notifiers>
+            <notifier>
+                <configuration>
+                    <address>scm@geronimo.apache.org</address>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    <inceptionYear>2005</inceptionYear>
+    <properties>
+        <!--
+        |
+        | daytrader module versions
+        |
+        -->
+        <daytraderVersion>1.1</daytraderVersion>
+    </properties>
+
+    <developers>
+        <developer>
+            <name>Jeff Genender</name>
+            <id>jgenender</id>
+            <email>jgenender@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Development</role>
+            </roles>
+            <timezone>+7</timezone>
+        </developer>
+        <developer>
+            <name>Matt Hogstrom</name>
+            <id>hogstrom</id>
+            <email>hogstrom@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Performance Analysis</role>
+            </roles>
+            <timezone>+5</timezone>
+        </developer>
+        <developer>
+            <name>Vincent Massol</name>
+            <id>vmassol</id>
+            <email>vmassol@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Build Engineer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Christopher Blythe</name>
+            <roles>
+                <role>Added code to improve stability and new features</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Stan (John) Cox</name>
+            <roles>
+                <role>Original Developer</role>
+            </roles>
+            <timezone>+5</timezone>
+        </contributor>
+        <contributor>
+            <name>Andrew Spyker</name>
+            <roles>
+                <role>Added the WSAppClient</role>
+            </roles>
+            <timezone>+5</timezone>
+        </contributor>
+    </contributors>
+    <dependencies/>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/</connection>
+        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/geronimo/gbuild/trunk/</url>
+    </scm>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+    </organization>
+    <modules>
+        <module>modules/ejb</module>
+        <module>modules/web</module>
+        <module>modules/streamer</module>
+        <module>modules/wsappclient</module>
+        <module>modules/ear</module>
+    </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>geronimo</groupId>
+                <artifactId>daytrader-wsappclient</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>geronimo</groupId>
+                <artifactId>daytrader-streamer</artifactId>
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+                <version>1.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+            <dependency>
+                <groupId>geronimo</groupId>
+                <artifactId>daytrader-ejb</artifactId>
+                <version>1.1</version>
+                <type>ejb</type>
+            </dependency>
+            <!--dependency>
+            <groupId>geronimo</groupId>
+            <artifactId>daytrader-ejb</artifactId>
+            <version>1.1</version>
+            <type>ejb-client</type>
+        </dependency-->
+        <dependency>
+            <groupId>geronimo</groupId>
+            <artifactId>daytrader-web</artifactId>
+            <version>1.1</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+<distributionManagement>
+    <repository>
+      <id>apache.releases</id>
+      <name>Apache Release Distribution Repository</name>
+      <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+    </repository>
+    <snapshotRepository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
+    </snapshotRepository>
+    <site>
+      <id>geronimo-website</id>
+      <url>scp://people.apache.org/www/geronimo.apache.org/maven/genesis/config/project-config/daytrader</url>
+    </site>
+</distributionManagement>
+<profiles>
+
+    <profile>
+        <id>db2</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+            <property>
+                <name>database</name>
+                <value>db2</value>
+            </property>
+        </activation>
+        <properties>
+            <jboss.mapping>DB2</jboss.mapping>
+        </properties>
+    </profile>
+
+    <profile>
+        <id>mysql</id>
+        <activation>
+            <property>
+                <name>database</name>
+                <value>mysql</value>
+            </property>
+        </activation>
+        <properties>
+            <jboss.mapping>mySQL</jboss.mapping>
+        </properties>
+    </profile>
+
+    <profile>
+        <id>test</id>
+        <modules>
+            <module>functional-tests</module>
+        </modules>
+    </profile>
+</profiles>
+</project>

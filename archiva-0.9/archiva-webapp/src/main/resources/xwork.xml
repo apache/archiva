@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1//EN"
+    "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
+
+<xwork>
+  <!-- TODO: better error handling for exceptions needed! -->
+  <include file="webwork-default.xml"/>
+
+  <!-- Include plexus-security xwork configurations. -->
+  <include file="xwork-security.xml"/>
+
+  <package name="base" extends="webwork-default">
+    <interceptors>
+      <interceptor name="configuration" class="configurationInterceptor"/>
+      <interceptor name="pssForceAdminUser" class="pssForceAdminUserInterceptor"/>
+      <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
+      <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
+      <interceptor name="pssEnvironmentChecker" class="pssEnvironmentCheckInterceptor"/>
+      <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterceptor"/>
+
+      <interceptor-stack name="unconfiguredStack">
+        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="pssEnvironmentChecker"/>
+        <interceptor-ref name="pssForceAdminUser"/>
+        <interceptor-ref name="pssAutoLogin"/>
+        <interceptor-ref name="pssPolicyEnforcement"/>
+        <interceptor-ref name="pssSecureActions"/>
+      </interceptor-stack>
+
+      <interceptor-stack name="configuredStack">
+        <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="pssEnvironmentChecker"/>
+        <interceptor-ref name="pssForceAdminUser"/>
+        <interceptor-ref name="pssAutoLogin"/>
+        <interceptor-ref name="pssPolicyEnforcement"/>
+        <interceptor-ref name="pssSecureActions"/>
+        <interceptor-ref name="configuration"/>
+      </interceptor-stack>
+
+      <interceptor-stack name="configuredPrepareParamsStack">
+        <interceptor-ref name="paramsPrepareParamsStack"/>
+        <interceptor-ref name="configuredStack"/>
+      </interceptor-stack>
+    </interceptors>
+
+    <!-- Default interceptor stack. -->
+    <default-interceptor-ref name="configuredStack"/>
+
+    <global-results>
+      <!-- TODO: want an extra message on the configure page when this first happens! -->
+      <!-- TODO: can we send them back to the original location afterwards? -->
+      <result name="config-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <param name="actionName">configure</param>
+      </result>
+
+      <!-- This redirect is triggered by the configuration interceptor -->
+      <result name="config-repository-needed" type="redirect-action">
+        <param name="namespace">/admin</param>
+        <param name="actionName">addRepository</param>
+        <param name="method">input</param>
+      </result>
+
+      <!-- The following security-* result names arrive from the plexus-security package -->
+      <result name="security-login-success" type="redirect-action">index</result>
+      <result name="security-login-cancel" type="redirect-action">index</result>
+      <result name="security-login-locked" type="redirect-action">
+        <param name="infoMessage">Account Locked</param>
+        <param name="actionName">index</param>
+      </result>
+      <result name="security-logout" type="redirect-action">index</result>
+      <result name="requires-authentication" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="requires-authorization" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-register-success" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-register-cancel" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-account-success" type="redirect-action">index</result>
+      <result name="security-account-cancel" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-admin-user-created" type="redirect-action">
+        <param name="actionName">login</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-admin-user-needed" type="redirect-action">
+        <param name="actionName">addadmin</param>
+        <param name="namespace">/security</param>
+      </result>
+      <result name="security-must-change-password" type="redirect-action">
+        <param name="actionName">password</param>
+        <param name="namespace">/security</param>
+      </result>
+
+      <!-- Generic Catchall for those action configurations that forget to
+           include a result for 'error' -->
+      <result name="error">/WEB-INF/jsp/generalError.jsp</result>
+    </global-results>
+  </package>
+
+  <!-- Configuration for the default package. -->
+  <package name="default" extends="base" namespace="/">
+
+    <!-- This is the redirection facility for plexus-security,
+         allowing plexus-security to call out from its own set of actions
+         into the application webapp, using global result names. -->
+    <action name="pssRedirect" class="pss-redirect" method="redirect">
+      <result type="redirect-action">browse</result>
+    </action>
+
+    <action name="index" class="searchAction" method="input">
+      <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
+
+    <action name="quickSearch" class="searchAction" method="quickSearch">
+      <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
+      <result>/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/quickSearch.jsp</result>
+    </action>
+
+    <action name="findArtifact" class="searchAction" method="input">
+      <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
+    </action>
+
+    <action name="checksumSearch" class="searchAction" method="findArtifact">
+      <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
+      <result name="results">/WEB-INF/jsp/results.jsp</result>
+      <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
+      <result name="artifact" type="redirect">
+        /browse/${searchResults[0].groupId}/${searchResults[0].artifactId}/${searchResults[0].version}
+      </result>
+    </action>
+
+    <action name="browse" class="browseAction" method="browse">
+      <result>/WEB-INF/jsp/browse.jsp</result>
+    </action>
+
+    <action name="browseGroup" class="browseAction" method="browseGroup">
+      <result>/WEB-INF/jsp/browseGroup.jsp</result>
+    </action>
+
+    <action name="browseArtifact" class="browseAction" method="browseArtifact">
+      <result>/WEB-INF/jsp/browseArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifact" class="showArtifactAction" method="artifact">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifactMailingLists" class="showArtifactAction" method="mailingLists">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifactReports" class="showArtifactAction" method="reports">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+    
+    <action name="showArtifactDependencies" class="showArtifactAction" method="dependencies">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifactDependees" class="showArtifactAction" method="dependees">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+    <action name="showArtifactDependencyTree" class="showArtifactAction" method="dependencyTree">
+      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+    </action>
+
+  </package>
+
+  <package name="components" namespace="/components" extends="webwork-default">
+    <default-interceptor-ref name="basicStack"/>
+    <action name="companyInfo" class="companyInfo">
+      <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
+    </action>
+  </package>
+
+  <!-- Configuration for the admin package. -->
+  <package name="admin" namespace="/admin" extends="base">
+
+    <action name="index" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/index.jsp</result>
+    </action>
+
+    <action name="managedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/managedRepositories.jsp</result>
+    </action>
+
+    <action name="addRepository" class="configureRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
+      <result type="redirect-action">managedRepositories</result>
+      <interceptor-ref name="unconfiguredStack"/>
+    </action>
+
+    <action name="editRepository" class="configureRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
+      <result type="redirect-action">managedRepositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteRepository" class="deleteRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
+      <result type="redirect-action">managedRepositories</result>
+    </action>
+
+    <action name="proxiedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/proxiedRepositories.jsp</result>
+    </action>
+
+    <action name="addProxiedRepository" class="configureProxiedRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
+    <action name="editProxiedRepository" class="configureProxiedRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteProxiedRepository" class="deleteProxiedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteProxiedRepository.jsp</result>
+      <result type="redirect-action">proxiedRepositories</result>
+    </action>
+
+    <action name="syncedRepositories" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/syncedRepositories.jsp</result>
+    </action>
+
+    <action name="addSyncedRepository" class="configureSyncedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/selectSyncedRepository.jsp</result>
+      <result type="chain">
+        <param name="actionName">addSelectedSyncedRepository</param>
+        <param name="method">input</param>
+      </result>
+    </action>
+
+    <action name="addSelectedSyncedRepository" class="configureSyncedRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
+    </action>
+
+    <action name="editSyncedRepository" class="configureSyncedRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteSyncedRepository" class="deleteSyncedRepositoryAction">
+      <result name="input">/WEB-INF/jsp/admin/deleteSyncedRepository.jsp</result>
+      <result type="redirect-action">syncedRepositories</result>
+    </action>
+
+    <action name="configure" class="configureAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
+      <interceptor-ref name="unconfiguredStack"/>
+    </action>
+
+    <action name="saveConfiguration" class="configureAction">
+      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
+      <result>/WEB-INF/jsp/admin/index.jsp</result>
+      <interceptor-ref name="unconfiguredStack"/>
+    </action>
+
+    <action name="runIndexer" class="runRepositoryTaskAction" method="runRefresh">
+      <result type="redirect-action">index</result>
+    </action>
+
+    <action name="reports" class="reportsAction">
+      <result>/WEB-INF/jsp/reports/reports.jsp</result>
+    </action>
+
+    <action name="runReport" class="reportsAction" method="runReport">
+      <interceptor-ref name="configuredStack"/>
+      <interceptor-ref name="execAndWait"/>
+      <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
+      <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
+    </action>
+
+    <action name="configureAppearance" class="configureAppearance" method="input">
+      <result name="input">/WEB-INF/jsp/admin/appearance.jsp</result>
+    </action>
+
+    <action name="editAppearance" class="configureAppearance" method="input">
+      <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
+    </action>
+
+    <action name="saveAppearance" class="configureAppearance">
+      <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
+      <result type="redirect-action">
+        <param name="actionName">configureAppearance</param>
+        <param name="namespace">/admin</param>
+      </result>
+    </action>
+
+    <action name="editCompanyPom" class="editPom" method="input">
+      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
+    </action>
+
+    <action name="saveCompanyPom" class="editPom">
+      <result name="input">/WEB-INF/jsp/admin/editPom.jsp</result>
+      <result type="redirect-action">
+        <param name="actionName">configureAppearance</param>
+        <param name="namespace">/admin</param>
+      </result>
+    </action>
+  </package>
+</xwork>
+

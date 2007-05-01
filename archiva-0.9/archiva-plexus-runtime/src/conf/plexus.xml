@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<plexus>
+  <load-on-start>
+    <component>
+      <role>org.codehaus.plexus.naming.Naming</role>
+      <role-hint>dataSources</role-hint>
+    </component>
+  </load-on-start>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.naming.Naming</role>
+      <implementation>org.codehaus.plexus.naming.DefaultNaming</implementation>
+      <role-hint>dataSources</role-hint>
+      <configuration>
+        <!-- Example override:
+                <environments>
+                  <environment>
+                    <name>org/apache/maven/archiva/indexPath</name>
+                    <value>${user.home}/.m2/my-index</value>
+                    <type>java.lang.String</type>
+                  </environment>
+                </environments>
+        -->
+        <resources>
+          <!--
+               Mail Session
+          -->
+          <resource>
+            <name>mail/Session</name>
+            <type>javax.mail.Session</type>
+            <properties>
+              <property>
+                <name>mail.smtp.host</name>
+                <value>localhost</value>
+              </property>
+              <property>
+                <name>mail.smtp.port</name>
+                <value>25</value>
+              </property>
+            </properties>
+          </resource>
+          <!--
+               Datasources
+          -->
+          <resource>
+            <name>jdbc/users</name>
+            <type>javax.sql.DataSource</type>
+            <properties>
+              <property>
+                <name>driverClassName</name>
+                <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+              </property>
+              <property>
+                <name>url</name>
+                <value>jdbc:derby:${plexus.home}/data/users/database;create=true</value>
+              </property>
+              <property>
+                <name>username</name>
+                <value>sa</value>
+              </property>
+              <property>
+                <name>password</name>
+                <value></value>
+              </property>
+            </properties>
+          </resource>
+          <resource>
+            <name>jdbc/archiva</name>
+            <type>javax.sql.DataSource</type>
+            <properties>
+              <property>
+                <name>driverClassName</name>
+                <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+              </property>
+              <property>
+                <name>url</name>
+                <value>jdbc:derby:${plexus.home}/data/archiva/database;create=true</value>
+              </property>
+              <property>
+                <name>username</name>
+                <value>sa</value>
+              </property>
+              <property>
+                <name>password</name>
+                <value></value>
+              </property>
+            </properties>
+          </resource>
+        </resources>
+      </configuration>
+    </component>
+  </components>
+</plexus>
+

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.apache.geronimo.genesis.config</groupId>
+        <artifactId>project-config</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </parent>
+    
+    <groupId>org.apache.geronimo.daytrader</groupId>
+    <artifactId>daytrader</artifactId>
+    <name>DayTrader :: Performance Benchmark Sample</name>
+    <packaging>pom</packaging>
+    <version>2.0-SNAPSHOT</version>
+    <description>J2EE 1.4 Performance Benchmark Sample Application</description>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://issues.apache.org/jira/browse/GERONIMO</url>
+    </issueManagement>
+    <ciManagement>
+        <system>continuum</system>
+        <url>http://ci.gbuild.org/continuum</url>
+        <notifiers>
+            <notifier>
+                <configuration>
+                    <address>scm@geronimo.apache.org</address>
+                </configuration>
+            </notifier>
+        </notifiers>
+    </ciManagement>
+    <inceptionYear>2005</inceptionYear>
+
+    <developers>
+        <developer>
+            <name>Jeff Genender</name>
+            <id>jgenender</id>
+            <email>jgenender@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Development</role>
+            </roles>
+            <timezone>+7</timezone>
+        </developer>
+        <developer>
+            <name>Matt Hogstrom</name>
+            <id>hogstrom</id>
+            <email>hogstrom@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Performance Analysis</role>
+            </roles>
+            <timezone>+5</timezone>
+        </developer>
+        <developer>
+            <name>Vincent Massol</name>
+            <id>vmassol</id>
+            <email>vmassol@apache.org</email>
+            <organization>Apache Software Foundation</organization>
+            <roles>
+                <role>Build Engineer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Christopher Blythe</name>
+            <roles>
+                <role>Added code to improve stability and new features</role>
+            </roles>
+        </contributor>
+        <contributor>
+            <name>Stan (John) Cox</name>
+            <roles>
+                <role>Original Developer</role>
+            </roles>
+            <timezone>+5</timezone>
+        </contributor>
+        <contributor>
+            <name>Andrew Spyker</name>
+            <roles>
+                <role>Added the WSAppClient</role>
+            </roles>
+            <timezone>+5</timezone>
+        </contributor>
+    </contributors>
+    <dependencies/>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/</connection>
+        <developerConnection>scm:svn:http://svn.apache.org/repos/asf/geronimo/daytrader/trunk/</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/geronimo/gbuild/trunk/</url>
+    </scm>
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+    </organization>
+    <modules>
+        <module>modules/ejb</module>
+        <module>modules/web</module>
+        <module>modules/streamer</module>
+        <module>modules/wsappclient</module>
+        <module>modules/ear</module>
+    </modules>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ejb_2.1_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jaxrpc_1.1_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jms_1.1_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-qname_1.1_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-servlet_2.4_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jsp_2.0_spec</artifactId>
+                <version>[1.0,2.0)</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jpa_3.0_spec</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.openjpa</groupId>
+                <artifactId>openjpa-all</artifactId>
+                <version>0.9.6-incubating</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.geronimo.genesis.plugins</groupId>
+                <artifactId>tools-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>validate-java-version</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>require-java-version</goal>
+                        </goals>
+                        <configuration>
+                            <version>1.5*</version>
+                        </configuration>
+                    </execution>
+
+                    <!--
+                    NOTE: This will copy LICENSE.txt and NOTICE.txt to classes/META-INF.
+
+                          Its a itty-bitty HACK to avoid adding resource definitions to
+                          the build, which causes the Eclipse plugin to generate invalid
+                          .classpath files. :-(
+                    -->
+                    <execution>
+                        <id>install-legal-files</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-legal-files</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-idea-plugin</artifactId>
+                <configuration>
+                    <jdkName>1.5</jdkName>
+                    <linkModules>true</linkModules>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagBase>https://svn.apache.org/repos/asf/geronimo/daytrader/tags</tagBase>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <repositories>
+        <!--
+        NOTE: The default repositories are picked up by Genesis, but need to
+              specify where Genesis lives to pick it up + any additional repositories.
+        -->
+        <repository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    
+    <profiles>
+
+        <profile>
+            <id>db2</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>database</name>
+                    <value>db2</value>
+                </property>
+            </activation>
+            <properties>
+                <jboss.mapping>DB2</jboss.mapping>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mysql</id>
+            <activation>
+                <property>
+                    <name>database</name>
+                    <value>mysql</value>
+                </property>
+            </activation>
+            <properties>
+                <jboss.mapping>mySQL</jboss.mapping>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>test</id>
+            <modules>
+                <module>functional-tests</module>
+            </modules>
+        </profile>
+    </profiles>
+</project>
