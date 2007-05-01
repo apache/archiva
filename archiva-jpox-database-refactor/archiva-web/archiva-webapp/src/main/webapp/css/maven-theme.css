@@ -23,11 +23,26 @@ body {
 
 body, td, th, select, input, li {
     font-family: Verdana, Helvetica, Arial, sans-serif;
-    font-size: 13px;
+    font-size: 11pt;
 }
 
 select, input {
-    font-size: x-small;
+    font-size: 0.9em;
+    border: 1px solid #AAAAAA;
+}
+
+select {
+    padding-left: 3px;
+	height: 1.4em;	
+}
+
+input {
+    padding: 2px;
+}
+
+label .required {
+	color: red;
+	font-weight: bold;
 }
 
 th {
@@ -302,4 +317,14 @@ a:active, a:hover {
 blockquote {
     border-left: 1px solid #DFDEDE;
     padding-left: 1em;
+}
+
+.missing {
+	background-color: red;
+	color: white;
+	font-weight: bold;
+	padding: 4px;
+	margin-left: 20px;
+	margin-right: 20px;
+	
 }

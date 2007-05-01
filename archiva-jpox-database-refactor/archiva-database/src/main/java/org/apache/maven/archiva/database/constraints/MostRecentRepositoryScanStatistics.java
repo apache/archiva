@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database;
+package org.apache.maven.archiva.database.constraints;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,40 +19,36 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
-import java.io.Serializable;
-import java.util.List;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
 /**
- * ArchivaDAO - The interface for all content within the database.
+ * MostRecentRepositoryScanStatistics 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface ArchivaDAO
+public class MostRecentRepositoryScanStatistics
+    extends AbstractSimpleConstraint
 {
-    public static final String ROLE = ArchivaDAO.class.getName();
+    private String sql;
 
-    /**
-     * Perform a simple query against the database.
-     * 
-     * @param constraint the constraint to use.
-     * @return the List of results.
-     */
-    List query( SimpleConstraint constraint );
+    public MostRecentRepositoryScanStatistics( String repoId )
+    {
+        sql = "SELECT FROM " + RepositoryContentStatistics.class.getName()
+            + " WHERE repositoryId == repoId PARAMETERS String repoId"
+            + " ORDER BY whenGathered DESCENDING"
+            + " RANGE 1,1";
 
-    /**
-     * Perform a simple save of a peristable object to the database.
-     * 
-     * @param o the serializable (persistable) object to save.
-     * @return the post-serialized object.
-     */
-    Object save( Serializable obj );
+        super.params = new Object[] { repoId };
+    }
 
-    ArtifactDAO getArtifactDAO();
+    public Class getResultClass()
+    {
+        return RepositoryContentStatistics.class;
+    }
 
-    ProjectModelDAO getProjectModelDAO();
-
-    RepositoryDAO getRepositoryDAO();
-
-    RepositoryProblemDAO getRepositoryProblemDAO();
+    public String getSelectSql()
+    {
+        return sql;
+    }
 }

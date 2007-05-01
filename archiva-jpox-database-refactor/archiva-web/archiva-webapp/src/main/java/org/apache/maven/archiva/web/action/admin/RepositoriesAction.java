@@ -26,12 +26,20 @@ import com.opensymphony.xwork.Validateable;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.admin.models.AdminModel;
+import org.apache.maven.archiva.web.action.admin.models.AdminRepositoryConfiguration;
+import org.apache.maven.archiva.web.util.ContextUtils;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,33 +56,41 @@ public class RepositoriesAction
     implements ModelDriven, Preparable, Validateable, SecureAction, ServletRequestAware
 {
     /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
-
-    /**
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
 
-    private HttpServletRequest request;
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
 
     private AdminModel model;
 
+    private String baseUrl;
+
     public Object getModel()
     {
-        return model;
+        return getAdminModel();
     }
 
     public void prepare()
         throws Exception
     {
-        model = new AdminModel( archivaConfiguration.getConfiguration() );
+        model = null;
+        getModel();
     }
 
     public void validate()
     {
         super.validate();
+    }
+
+    public String execute()
+        throws Exception
+    {
+        getLogger().info( ".execute()" );
+        return super.execute();
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -90,22 +106,44 @@ public class RepositoriesAction
 
     public void setServletRequest( HttpServletRequest request )
     {
-        this.request = request;
-        StringBuffer baseUrl = new StringBuffer();
+        this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
+    }
 
-        baseUrl.append( request.getScheme() );
-        baseUrl.append( request.getServerName() );
-        int portnum = request.getServerPort();
-
-        // Only add port if non-standard.
-        if ( ( "https".equalsIgnoreCase( request.getScheme() ) && ( portnum != 443 ) )
-            || ( "http".equalsIgnoreCase( request.getScheme() ) && ( portnum != 80 ) ) )
+    public AdminModel getAdminModel()
+    {
+        if ( model == null )
         {
-            baseUrl.append( ":" ).append( String.valueOf( portnum ) );
+            model = new AdminModel( archivaConfiguration.getConfiguration() );
+            model.setBaseUrl( baseUrl );
+            updateLastIndexed( model.getManagedRepositories() );
         }
-        baseUrl.append( request.getContextPath() );
-        baseUrl.append( "/repository" );
 
-        model.setBaseUrl( baseUrl.toString() );
+        return model;
+    }
+
+    private void updateLastIndexed( List managedRepositories )
+    {
+        Iterator it = managedRepositories.iterator();
+        while ( it.hasNext() )
+        {
+            AdminRepositoryConfiguration config = (AdminRepositoryConfiguration) it.next();
+
+            List results = dao.query( new MostRecentRepositoryScanStatistics( config.getId() ) );
+            if ( !results.isEmpty() )
+            {
+                RepositoryContentStatistics stats = (RepositoryContentStatistics) results.get( 0 );
+                config.setStats( stats );
+            }
+        }
+    }
+
+    public String getBaseUrlB()
+    {
+        return baseUrl;
+    }
+
+    public void setBaseUrlB( String baseUrl )
+    {
+        this.baseUrl = baseUrl;
     }
 }

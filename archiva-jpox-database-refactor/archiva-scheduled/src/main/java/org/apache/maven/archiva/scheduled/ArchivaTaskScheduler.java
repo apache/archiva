@@ -32,11 +32,15 @@ public interface ArchivaTaskScheduler
      * The Plexus component role.
      */
     public final static String ROLE = ArchivaTaskScheduler.class.getName();
-
-    public void runDatabaseTasks() throws TaskExecutionException;
-
-    public void runAllRepositoryTasks() throws TaskExecutionException;
     
-    public void runRepositoryTasks( String repositoryId ) throws TaskExecutionException;
-    
-} 
+    public ArchivaTaskQueue getTaskQueue();
+
+    public void scheduleAllRepositoryTasks()
+        throws TaskExecutionException;
+
+    public void scheduleDatabaseTasks()
+        throws TaskExecutionException;
+
+    public void scheduleRepositoryTask( String repositoryId )
+        throws TaskExecutionException;
+}

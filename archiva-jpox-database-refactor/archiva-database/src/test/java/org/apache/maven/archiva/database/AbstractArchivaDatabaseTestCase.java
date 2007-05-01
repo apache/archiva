@@ -26,6 +26,8 @@ import org.jpox.SchemaTool;
 
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -42,41 +44,43 @@ import javax.jdo.PersistenceManagerFactory;
 public class AbstractArchivaDatabaseTestCase
     extends PlexusTestCase
 {
+    private static final String TIMESTAMP = "yyyy/MM/dd HH:mm:ss";
+
     protected ArchivaDAO dao;
-    
+
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        
+
         DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
         assertEquals( DefaultConfigurableJdoFactory.class.getName(), jdoFactory.getClass().getName() );
 
-        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" ); 
+        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" );
 
         /* derby version
-        File derbyDbDir = new File( "target/plexus-home/testdb" );
-        if ( derbyDbDir.exists() )
-        {
-            FileUtils.deleteDirectory( derbyDbDir );
-        }
+         File derbyDbDir = new File( "target/plexus-home/testdb" );
+         if ( derbyDbDir.exists() )
+         {
+         FileUtils.deleteDirectory( derbyDbDir );
+         }
 
-        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.apache.derby.jdbc.EmbeddedDriver" ) );   
-        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );
-         */   
+         jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.apache.derby.jdbc.EmbeddedDriver" ) );   
+         jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );
+         */
 
-        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );   
+        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );
         jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:hsqldb:mem:" + getName() ) );
-        
-        jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) ); 
 
-        jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) ); 
+        jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) );
 
-        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_COMMITTED" );  
+        jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) );
 
-        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_COMMITTED" );  
+        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_COMMITTED" );
 
-        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" );  
+        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_COMMITTED" );
+
+        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" );
 
         jdoFactory.setProperty( "javax.jdo.option.RetainValues", "true" );
 
@@ -99,8 +103,7 @@ public class AbstractArchivaDatabaseTestCase
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
-        URL jdoFileUrls[] = new URL[] { getClass()
-            .getResource( "/org/apache/maven/archiva/model/package.jdo" ) }; 
+        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
 
         if ( ( jdoFileUrls == null ) || ( jdoFileUrls[0] == null ) )
         {
@@ -122,5 +125,19 @@ public class AbstractArchivaDatabaseTestCase
         pm.close();
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
+    }
+
+    protected Date toDate( String txt )
+        throws Exception
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( TIMESTAMP );
+        return sdf.parse( txt );
+    }
+
+    protected String fromDate( Date date )
+        throws Exception
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( TIMESTAMP );
+        return sdf.format( date );
     }
 }

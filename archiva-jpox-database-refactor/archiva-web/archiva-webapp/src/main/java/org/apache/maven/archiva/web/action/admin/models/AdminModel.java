@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.admin;
+package org.apache.maven.archiva.web.action.admin.models;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,11 +21,12 @@ package org.apache.maven.archiva.web.action.admin;
 
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.model.RepositoryURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * AdminModel 
@@ -36,10 +37,12 @@ import java.util.List;
 public class AdminModel
 {
     private String baseUrl;
-    
+
     private List managedRepositories = new ArrayList();
 
     private List remoteRepositories = new ArrayList();
+
+    private Map repoMap = new HashMap();
 
     public AdminModel()
     {
@@ -48,18 +51,24 @@ public class AdminModel
 
     public AdminModel( Configuration configuration )
     {
+        repoMap.putAll( configuration.createRepositoryMap() );
+
         Iterator it = configuration.getRepositories().iterator();
         while ( it.hasNext() )
         {
             RepositoryConfiguration repoconfig = (RepositoryConfiguration) it.next();
-            RepositoryURL repourl = new RepositoryURL( repoconfig.getUrl() );
-            if ( "file".equals( repourl.getProtocol() ) )
+            if ( repoconfig.isManaged() )
             {
-                managedRepositories.add( repoconfig );
+                managedRepositories.add( new AdminRepositoryConfiguration( repoconfig ) );
+            }
+            else if ( repoconfig.isRemote() )
+            {
+                remoteRepositories.add( repoconfig );
             }
             else
             {
-                remoteRepositories.add( repoconfig );
+                // Should never occur, but it is possible that the configuration could
+                // contain a repository configuration which is null.
             }
         }
     }
@@ -92,5 +101,10 @@ public class AdminModel
     public void setBaseUrl( String baseUrl )
     {
         this.baseUrl = baseUrl;
+    }
+
+    public String toString()
+    {
+        return "[ActionModel]";
     }
 }

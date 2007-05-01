@@ -23,7 +23,6 @@ import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -57,13 +56,6 @@ public class ArtifactsProcessedConstraintTest
         return artifact;
     }
 
-    private Date toDate( String txt )
-        throws Exception
-    {
-        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss" );
-        return sdf.parse( txt );
-    }
-    
     public void assertResults( String type, List results, String expectedArtifacts[] )
     {
         assertNotNull( "Results[" + type + "] should not be null.", results );
