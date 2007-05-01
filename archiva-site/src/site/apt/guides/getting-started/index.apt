@@ -42,7 +42,7 @@ To build
 
     * Download the 1.0.1B jta zip from: {{http://java.sun.com/products/jta/}}
 
-    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
+    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip 
 
   Otherwise:
 
@@ -92,7 +92,7 @@ To deploy Archiva to Tomcat 5.5
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
-   * Copy archiva/archiva-webapp/target/archiva-webapp-1.0-SNAPSHOT/WEB-INF/lib/derby-10.1.3.1.jar into the tomcat common/lib
+   * Copy $HOME/.m2/org/apache/derby/derby/10.1.3.1/derby-10.1.3.1.jar (or from the remote repository) into the tomcat common/lib
 
    * To deal with a current bug, you'll also need to add the following to your ${catalina.home}/conf/web.xml in the relevant section (search for jspx):
 

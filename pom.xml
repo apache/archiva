@@ -21,7 +21,7 @@
    <parent>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-parent</artifactId>
-      <version>4</version>
+      <version>5</version>
       <relativePath>../pom/maven/pom.xml</relativePath>
    </parent>
    <groupId>org.apache.maven.archiva</groupId>
@@ -86,6 +86,10 @@
       <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
    </scm>
    <distributionManagement>
+      <repository>
+        <id>apache.releases</id>
+        <url>scpexe://people.apache.org/www/people.apache.org/builds/maven/archiva/${version}/m2-staging-repository</url>
+      </repository>
       <site>
          <id>apache.website</id>
          <url>
@@ -136,6 +140,11 @@
                   </tagBase>
                </configuration>
             </plugin>
+            <plugin>
+               <groupId>org.codehaus.modello</groupId>
+               <artifactId>modello-maven-plugin</artifactId>
+               <version>1.0-alpha-15</version>
+            </plugin>
          </plugins>
       </pluginManagement>
    </build>
@@ -182,6 +191,26 @@
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
             <version>1.4</version>
+         </dependency>
+         <dependency>
+            <groupId>org.codehaus.plexus.registry</groupId>
+            <artifactId>plexus-registry-api</artifactId>
+            <version>1.0-alpha-2</version>
+         </dependency>
+         <dependency>
+            <groupId>org.codehaus.plexus.registry</groupId>
+            <artifactId>plexus-registry-commons</artifactId>
+            <version>1.0-alpha-2</version>
+         </dependency>
+         <dependency>
+            <groupId>org.codehaus.plexus.cache</groupId>
+            <artifactId>plexus-cache-api</artifactId>
+            <version>1.0-alpha-2</version>
+         </dependency>
+         <dependency>
+            <groupId>org.codehaus.plexus.cache</groupId>
+            <artifactId>plexus-cache-ehcache</artifactId>
+            <version>1.0-alpha-2</version>
          </dependency>
          <dependency>
             <groupId>org.slf4j</groupId>

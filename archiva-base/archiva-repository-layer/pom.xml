@@ -70,13 +70,11 @@
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-api</artifactId>
-      <version>1.0-alpha-2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-ehcache</artifactId>
-      <version>1.0-alpha-2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

@@ -106,6 +106,16 @@ retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
 # ------------------------------------------------------------------------
+# Cica.es synchronization: sync the central repository to Cica.es 
+# ------------------------------------------------------------------------
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Cica, or hit ^C to quit." && echo
+
+./synchronize-central-to-cica.sh $syncProperties
+retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+
+# ------------------------------------------------------------------------
 # Copy the mod_rewrite rules to the Maven 1.x repository
 # ------------------------------------------------------------------------
 

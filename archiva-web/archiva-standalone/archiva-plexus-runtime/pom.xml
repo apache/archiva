@@ -141,7 +141,7 @@
         </executions>
         <configuration>
           <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>archiva</finalName>
+          <finalName>archiva-${version}</finalName>
         </configuration>
       </plugin>
       <plugin>

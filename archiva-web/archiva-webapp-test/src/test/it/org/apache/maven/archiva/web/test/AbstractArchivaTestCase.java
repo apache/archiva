@@ -44,15 +44,15 @@ public abstract class AbstractArchivaTestCase
         if ( getTitle().equals( getTitlePrefix() + "Configuration" ) )
         {
             //Add Managed Repository
-            setFieldValue( "id", "web-ui" );
-            setFieldValue( "urlName", "web-ui" );
+            setFieldValue( "id", "test-repository" );
+            setFieldValue( "urlName", "test-repository" );
             setFieldValue( "name", "Web UI Test Managed Repository" );
-            setFieldValue( "directory", getBasedir() + "target/web-ui-dir" );
+            setFieldValue( "directory", getBasedir() + "/target/repository" );
             clickButtonWithValue( "Add Repository" );
 
             //Set Index location
             assertPage( "Configuration" );
-            setFieldValue( "indexPath", getBasedir() + "target/web-ui-index" );
+            setFieldValue( "indexPath", getBasedir() + "/target/index" );
             clickButtonWithValue( "Save Configuration" );
             assertPage( "Administration" );
         }
@@ -60,16 +60,17 @@ public abstract class AbstractArchivaTestCase
 
     public void assertHeader()
     {
-        assertTrue( "banner is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" ) );
-        assertTrue( "bannerLeft is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']" ) );
-        assertTrue( "bannerLeft link is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" ) );
-        assertTrue( "bannerLeft img is missing" , getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
-            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" +
-            "/img[@src='" + getWebContext() + "/images/archiva.png']" ) );
+        assertTrue( "banner is missing", getSelenium().isElementPresent( "xpath=//div[@id='banner']" ) );
+        assertTrue( "bannerLeft is missing",
+                    getSelenium().isElementPresent( "xpath=//div[@id='banner']" + "/span[@id='bannerLeft']" ) );
+        assertTrue( "bannerLeft link is missing", getSelenium().isElementPresent(
+            "xpath=//div[@id='banner']" + "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" ) );
+        assertTrue( "bannerLeft img is missing", getSelenium().isElementPresent( "xpath=//div[@id='banner']" +
+            "/span[@id='bannerLeft']/a[@href='http://maven.apache.org/archiva/']" + "/img[@src='" + getWebContext() +
+            "/images/archiva.png']" ) );
 
-        assertTrue( "bannerRight is missing",  getSelenium().isElementPresent( "xpath=//div[@id='banner']/span[@id='bannerRight']" ) );
+        assertTrue( "bannerRight is missing",
+                    getSelenium().isElementPresent( "xpath=//div[@id='banner']/span[@id='bannerRight']" ) );
     }
 
     protected String getTitlePrefix()
