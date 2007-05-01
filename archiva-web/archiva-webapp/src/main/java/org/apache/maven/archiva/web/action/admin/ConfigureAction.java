@@ -60,6 +60,7 @@ public class ConfigureAction
     
     public void validate()
     {
+        getLogger().info( "validate()" );
         //validate cron expression
     }
 
@@ -67,6 +68,7 @@ public class ConfigureAction
         throws IOException, RepositoryIndexException, RepositoryIndexSearchException, InvalidConfigurationException,
         RegistryException
     {
+        getLogger().info( "execute()" );
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
 

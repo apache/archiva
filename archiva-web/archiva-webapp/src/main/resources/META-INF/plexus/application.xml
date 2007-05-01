@@ -211,12 +211,10 @@
       <role>org.apache.maven.archiva.scheduled.ArchivaTaskScheduler</role>
       <role-hint>default</role-hint>
     </component>
-    <!-- 
     <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
+      <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
       <role-hint>archiva-task-executor</role-hint>
     </component>
-      -->
   </load-on-start>
 
   <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">

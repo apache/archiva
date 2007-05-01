@@ -258,6 +258,46 @@
           <defaultValue>0 0,30 * * * ?</defaultValue>
         </field>
       </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    /**
+     * Utility method to help determine if configuration refers to a remote repository.
+     * 
+     * @return true if configuration belongs to a remote repository. 
+     *      (note: false does not automatically mean this is a managed repository,
+     *      you must use {@link #isManaged()} to test for that.)
+     */
+    public boolean isRemote()
+    {
+        if ( this.url == null )
+        {
+            return false;
+        }
+
+        return !this.url.startsWith( "file" );
+    }
+
+    /**
+     * Utility method to help determine if configuration refers to a managed repository.
+     * 
+     * @return true if configuration belongs to a managed repository. 
+     *      (note: false does not automatically mean this is a remote repository,
+     *      you must use {@link #isRemote()} to test for that.)
+     */
+    public boolean isManaged()
+    {
+        if ( this.url == null )
+        {
+            return false;
+        }
+
+        return this.url.startsWith( "file" );
+    }          
+          ]]></code>
+        </codeSegment>
+      </codeSegments>
     </class>
     
     <!-- 

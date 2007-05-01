@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -121,7 +122,12 @@ public class RepositoryServlet
 
                 if ( !repoDir.exists() )
                 {
-                    repoDir.mkdirs();
+                    if ( !repoDir.mkdirs() )
+                    {
+                        // Skip invalid directories.
+                        log( "Unable to create missing directory for " + repo.getUrl().getPath() );
+                        continue;
+                    }
                 }
 
                 DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
@@ -252,9 +258,8 @@ public class RepositoryServlet
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( propertyName.startsWith( "repositories" ) )
+        if ( ConfigurationNames.isRepositories( propertyName ) )
         {
-            log( "Triggering managed repository configuration change with " + propertyName + " set to " + propertyValue );
             getDavManager().removeAllServers();
 
             try
@@ -266,10 +271,6 @@ public class RepositoryServlet
                 log( "Error restarting WebDAV server after configuration change - service disabled: " + e.getMessage(),
                      e );
             }
-        }
-        else
-        {
-            log( "Not triggering managed repository configuration change with " + propertyName );
         }
     }
 }

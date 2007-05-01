@@ -34,10 +34,10 @@
   <h2>Edit Managed Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="editRepository" namespace="/admin" validate="true">
+  <ww:form method="post" action="saveRepository" namespace="/admin" validate="false">
+    <ww:hidden name="mode"/>  
     <ww:hidden name="id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
-    <ww:checkbox name="indexed" fieldValue="true" label="Indexed"/>
     <ww:submit value="Update Repository"/>
   </ww:form>
 

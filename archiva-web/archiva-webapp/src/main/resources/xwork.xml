@@ -30,40 +30,52 @@
 
   <package name="base" extends="webwork-default">
     <interceptors>
+      <interceptor name="strange" class="webwork-is-doing-strange-things"/>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="pssForceAdminUser" class="pssForceAdminUserInterceptor"/>
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
-      <interceptor name="pssEnvironmentChecker" class="pssEnvironmentCheckInterceptor"/>
       <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterceptor"/>
 
-      <interceptor-stack name="unconfiguredStack">
-        <interceptor-ref name="defaultStack"/>
-        <interceptor-ref name="pssEnvironmentChecker"/>
+      <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
-        <interceptor-ref name="pssPolicyEnforcement"/>
+        <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="pssSecureActions"/>
+        <interceptor-ref name="pssPolicyEnforcement"/>
+        <interceptor-ref name="configuration"/>
+        <interceptor-ref name="validation">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+        <interceptor-ref name="workflow">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
       </interceptor-stack>
 
-      <interceptor-stack name="configuredStack">
-        <interceptor-ref name="defaultStack"/>
-        <interceptor-ref name="pssEnvironmentChecker"/>
+      <interceptor-stack name="unconfiguredArchivaStack">
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
+        <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="pssPolicyEnforcement"/>
         <interceptor-ref name="pssSecureActions"/>
-        <interceptor-ref name="configuration"/>
+        <interceptor-ref name="validation">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+        <interceptor-ref name="workflow">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
       </interceptor-stack>
 
       <interceptor-stack name="configuredPrepareParamsStack">
-        <interceptor-ref name="paramsPrepareParamsStack"/>
-        <interceptor-ref name="configuredStack"/>
+        <!-- <interceptor-ref name="prepare" /> -->
+        <interceptor-ref name="params" />
+        <interceptor-ref name="configuredArchivaStack"/>
       </interceptor-stack>
+
     </interceptors>
 
     <!-- Default interceptor stack. -->
-    <default-interceptor-ref name="configuredStack"/>
+    <default-interceptor-ref name="configuredArchivaStack"/>
 
     <global-results>
       <!-- TODO: want an extra message on the configure page when this first happens! -->
@@ -216,33 +228,42 @@
     <action name="repositories" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
     </action>
+    
+    <action name="indexRepository" class="indexRepositoryAction" method="run">
+      <result type="redirect-action">repositories</result>
+    </action>
 
     <action name="addRepository" class="configureRepositoryAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
-      <result type="redirect-action">managedRepositories</result>
-      <interceptor-ref name="unconfiguredStack"/>
+      <result type="redirect-action">repositories</result>
+      <!-- <interceptor-ref name="unconfiguredArchivaStack"/> -->
     </action>
 
-    <action name="editRepository" class="configureRepositoryAction" method="edit">
+    <action name="editRepository" class="editRepositoryAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
-      <result type="redirect-action">managedRepositories</result>
+      <result name="error" type="redirect-action">repositories</result>
+      <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="saveRepository" class="saveRepositoryAction" method="save">
+      <result name="success" type="redirect-action">repositories</result>
     </action>
 
     <action name="deleteRepository" class="deleteRepositoryAction">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
-      <result type="redirect-action">managedRepositories</result>
+      <result type="redirect-action">repositories</result>
     </action>
 
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
-      <interceptor-ref name="unconfiguredStack"/>
+      <interceptor-ref name="unconfiguredArchivaStack"/>
     </action>
 
     <action name="saveConfiguration" class="configureAction">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <result>/WEB-INF/jsp/admin/index.jsp</result>
-      <interceptor-ref name="unconfiguredStack"/>
+      <interceptor-ref name="unconfiguredArchivaStack"/>
     </action>
 
     <action name="reports" class="reportsAction">
@@ -250,7 +271,7 @@
     </action>
 
     <action name="runReport" class="reportsAction" method="runReport">
-      <interceptor-ref name="configuredStack"/>
+      <interceptor-ref name="configuredArchivaStack"/>
       <interceptor-ref name="execAndWait"/>
       <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
       <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>

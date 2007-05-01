@@ -38,6 +38,7 @@
     @import url( "<c:url value="/css/site.css" />" );
   </style>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
+  <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" />
   <script type="text/javascript" src="<c:url value="/js/scriptaculous/prototype.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/scriptaculous/scriptaculous.js"/>"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
@@ -127,11 +128,13 @@
             <my:currentWWUrl action="index" namespace="/admin">Settings</my:currentWWUrl>
           </li>
           <li class="none">
-            <my:currentWWUrl action="managedRepositories" namespace="/admin">Managed Repositories</my:currentWWUrl>
+            <my:currentWWUrl action="repositories" namespace="/admin">Repositories</my:currentWWUrl>
           </li>
+          <%-- 
           <li class="none">
             <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
           </li>
+          --%>
 
                 <%-- TODO: add back after synced repos are implemented
                           <li class="none">

@@ -34,11 +34,13 @@
 <c:set var="text">
   <jsp:doBody/>
 </c:set>
+<a href="${url}">
 <c:choose>
   <c:when test="${currentUrl == url}">
     <b>${text}</b>
   </c:when>
   <c:otherwise>
-    <a href="${url}">${text}</a>
+    ${text}
   </c:otherwise>
 </c:choose>
+</a>

@@ -20,12 +20,8 @@ package org.apache.maven.archiva.scheduled;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.RepositoryDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
@@ -34,7 +30,6 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.codehaus.plexus.taskqueue.TaskQueue;
-import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
@@ -73,12 +68,12 @@ public class DefaultArchivaTaskScheduler
     private ArchivaConfiguration archivaConfiguration;
   
     
-    public static final String DATABASE_DISCOVERER_GROUP = "database-group";
+    public static final String DATABASE_SCAN_GROUP = "database-group";
     
     public static final String DATABASE_JOB = "database-job";
     public static final String DATABASE_JOB_TRIGGER = "database-job-trigger";
    
-    public static final String REPOSITORY_DISCOVERER_GROUP = "repository-group";
+    public static final String REPOSITORY_SCAN_GROUP = "repository-group";
     
     public static final String REPOSITORY_JOB = "repository-job";
     public static final String REPOSITORY_JOB_TRIGGER = "repository-job-trigger";
@@ -119,17 +114,18 @@ public class DefaultArchivaTaskScheduler
         
         // setup the unprocessed artifact job
         JobDetail repositoryJob =
-            new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId() , REPOSITORY_DISCOVERER_GROUP, RepositoryTaskJob.class );
+            new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId() , REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( RepositoryTaskJob.TASK_QUEUE, archivaTaskQueue );
+        dataMap.put( RepositoryTaskJob.TASK_QUEUE_POLICY, ArchivaTask.QUEUE_POLICY_WAIT );
         dataMap.put( RepositoryTaskJob.TASK_REPOSITORY, repoConfig.getId() );
         repositoryJob.setJobDataMap( dataMap );
        
         try 
         {
             CronTrigger trigger =
-                new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId() , REPOSITORY_DISCOVERER_GROUP, cronString );
+                new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId() , REPOSITORY_SCAN_GROUP, cronString );
         
             scheduler.scheduleJob( repositoryJob, trigger );
         }
@@ -147,7 +143,7 @@ public class DefaultArchivaTaskScheduler
         
         // setup the unprocessed artifact job
         JobDetail databaseJob =
-            new JobDetail( DATABASE_JOB, DATABASE_DISCOVERER_GROUP, DatabaseTaskJob.class );
+            new JobDetail( DATABASE_JOB, DATABASE_SCAN_GROUP, DatabaseTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( DatabaseTaskJob.TASK_QUEUE, archivaTaskQueue );
@@ -156,7 +152,7 @@ public class DefaultArchivaTaskScheduler
         try 
         {
             CronTrigger trigger =
-                new CronTrigger( DATABASE_JOB_TRIGGER, DATABASE_DISCOVERER_GROUP, cronString );
+                new CronTrigger( DATABASE_JOB_TRIGGER, DATABASE_SCAN_GROUP, cronString );
         
             scheduler.scheduleJob( databaseJob, trigger );
         }
@@ -172,7 +168,7 @@ public class DefaultArchivaTaskScheduler
     {
         try
         {
-            scheduler.unscheduleJob( DATABASE_JOB, DATABASE_DISCOVERER_GROUP );         
+            scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );         
         }
         catch ( SchedulerException e )
         {
@@ -198,7 +194,7 @@ public class DefaultArchivaTaskScheduler
             
             try
             {
-                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_DISCOVERER_GROUP );
+                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
             
                 scheduleDatabaseJobs();
             }
@@ -224,7 +220,7 @@ public class DefaultArchivaTaskScheduler
                     try
                     {
                         // unschedule handles jobs that might not exist
-                        scheduler.unscheduleJob( REPOSITORY_JOB + ":" + repoConfig.getId() , REPOSITORY_DISCOVERER_GROUP );
+                        scheduler.unscheduleJob( REPOSITORY_JOB + ":" + repoConfig.getId() , REPOSITORY_SCAN_GROUP );
                         scheduleRepositoryJobs( repoConfig );
                     }
                     catch ( SchedulerException e )
@@ -236,7 +232,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    public void runAllRepositoryTasks() throws TaskExecutionException
+    public void scheduleAllRepositoryTasks() throws TaskExecutionException
     {
         try
         {
@@ -256,7 +252,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    public void runDatabaseTasks() throws TaskExecutionException
+    public void scheduleDatabaseTasks() throws TaskExecutionException
     {
         try
         {
@@ -269,7 +265,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    public void runRepositoryTasks( String repositoryId ) throws TaskExecutionException
+    public void scheduleRepositoryTask( String repositoryId ) throws TaskExecutionException
     {
         try
         {
@@ -282,7 +278,9 @@ public class DefaultArchivaTaskScheduler
             throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
         } 
     }
-
     
-    
+    public ArchivaTaskQueue getTaskQueue()
+    {
+        return (ArchivaTaskQueue) archivaTaskQueue;
+    }
 }

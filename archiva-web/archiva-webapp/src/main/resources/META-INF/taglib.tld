@@ -78,5 +78,22 @@
       
    </tag>
 
+   <tag>
+
+      <name>copy-paste-snippet</name>
+      <tag-class>org.apache.maven.archiva.web.tags.CopyPasteSnippetTag</tag-class>
+      <body-content>empty</body-content>
+      <description><![CDATA[Render a copy paste snippet for the provided object]]></description>
+
+      <attribute>
+        <name>object</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The Object to Render]]></description>
+      </attribute>
+      
+   </tag>
+   
    
 </taglib>

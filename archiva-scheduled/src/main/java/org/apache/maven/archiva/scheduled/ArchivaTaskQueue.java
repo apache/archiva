@@ -19,7 +19,15 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.taskqueue.DefaultTaskQueue;
+import org.codehaus.plexus.taskqueue.Task;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * ArchivaTaskQueue 
@@ -38,5 +46,75 @@ public class ArchivaTaskQueue
     {
         super();
         /* do nothing special */
+    }
+
+    public boolean hasDatabaseTaskInQueue()
+    {
+        try
+        {
+            List queue = getQueueSnapshot();
+            Iterator it = queue.iterator();
+            while ( it.hasNext() )
+            {
+                Task task = (Task) it.next();
+                if ( task instanceof DatabaseTask )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch ( TaskQueueException e )
+        {
+            return false;
+        }
+    }
+
+    public boolean hasFilesystemTaskInQueue()
+    {
+        try
+        {
+            List queue = getQueueSnapshot();
+            Iterator it = queue.iterator();
+            while ( it.hasNext() )
+            {
+                Task task = (Task) it.next();
+                if ( task instanceof RepositoryTask )
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch ( TaskQueueException e )
+        {
+            return false;
+        }
+    }
+
+    public boolean hasRepositoryTaskInQueue( String repoid )
+    {
+        try
+        {
+            List queue = getQueueSnapshot();
+            Iterator it = queue.iterator();
+            while ( it.hasNext() )
+            {
+                Task task = (Task) it.next();
+                if ( task instanceof RepositoryTask )
+                {
+                    RepositoryTask rtask = (RepositoryTask) task;
+                    if ( StringUtils.equals( repoid, rtask.getRepositoryId() ) )
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        catch ( TaskQueueException e )
+        {
+            return false;
+        }
     }
 }
