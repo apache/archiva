@@ -290,6 +290,11 @@
          </dependency>
          <dependency>
             <groupId>org.apache.maven.archiva</groupId>
+            <artifactId>archiva-policies</artifactId>
+            <version>${archiva.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.maven.archiva</groupId>
             <artifactId>archiva-model</artifactId>
             <version>${archiva.version}</version>
          </dependency>
