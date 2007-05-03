@@ -1,1 +1,3 @@
-<configuration />
+<configuration>
+  <localRepository></localRepository>
+</configuration>
