@@ -16,19 +16,16 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>archiva</artifactId>
     <groupId>org.apache.maven.archiva</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.9-alpha-2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-site</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Site</name>
-
   <reporting>
     <excludeDefaults>true</excludeDefaults>
     <plugins>
@@ -56,14 +53,12 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk/</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk/</url>
   </scm>
-
   <distributionManagement>
     <site>
       <id>apache.website</id>
       <url>scp://people.apache.org/www/maven.apache.org/archiva</url>
     </site>
   </distributionManagement>
-
   <mailingLists>
     <mailingList>
       <name>Maven Archiva User List</name>
