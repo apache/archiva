@@ -36,11 +36,15 @@
       <interceptor name="pssSecureActions" class="pssSecureActionInterceptor"/>
       <interceptor name="pssAutoLogin" class="pssAutoLoginInterceptor"/>
       <interceptor name="pssPolicyEnforcement" class="pssPolicyEnforcementInterceptor"/>
-
+      <interceptor name="paramFilter" class="com.opensymphony.xwork.interceptor.ParameterFilterInterceptor" />
+      
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="pssForceAdminUser"/>
         <interceptor-ref name="pssAutoLogin"/>
         <interceptor-ref name="defaultStack"/>
+        <interceptor-ref name="paramFilter">
+          <param name="blocked">externalResult</param>
+        </interceptor-ref>
         <interceptor-ref name="pssSecureActions"/>
         <interceptor-ref name="pssPolicyEnforcement"/>
         <interceptor-ref name="configuration"/>
@@ -225,8 +229,11 @@
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
     </action>
     
+    <!-- .\ REPOSITORIES \.____________________________________________ -->
+    
     <action name="repositories" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
+      <result name="confirm" type="redirect-action">deleteRepository</result>
     </action>
     
     <action name="indexRepository" class="indexRepositoryAction" method="run">
@@ -235,26 +242,85 @@
 
     <action name="addRepository" class="configureRepositoryAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
-      <result type="redirect-action">repositories</result>
-      <!-- <interceptor-ref name="unconfiguredArchivaStack"/> -->
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="editRepository" class="editRepositoryAction" method="edit">
+    <action name="editRepository" class="configureRepositoryAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="error" type="redirect-action">repositories</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
     
-    <action name="saveRepository" class="saveRepositoryAction" method="save">
+    <action name="saveRepository" class="configureRepositoryAction" method="save">
       <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="deleteRepository" class="deleteRepositoryAction">
+    <action name="deleteRepository" class="configureRepositoryAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
-      <result type="redirect-action">repositories</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
+    <!-- .\ PROXY CONNECTORS \.________________________________________ -->
+    
+    <action name="proxyConnectors" class="proxyConnectorsAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/proxyConnectors.jsp</result>
+    </action>
+    
+    <action name="addProxyConnector" class="configureProxyConnectorAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="configureProxyConnector" class="configureProxyConnectorAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="editProxyConnector" class="configureProxyConnectorAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="saveProxyConnector" class="configureProxyConnectorAction" method="save">
+      <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="deleteProxyConnector" class="configureProxyConnectorAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/deleteProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <!-- .\ NETWORK PROXIES \._________________________________________ -->
+    
+    <action name="networkProxies" class="networkProxiesAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/networkProxies.jsp</result>
+    </action>
+    
+    <!-- .\ REPOSITORY SCANNING \._____________________________________ -->
+    
+    <action name="repositoryScanning" class="repositoryScanningAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+    </action>
+    
+    <!-- .\ DATABASE \.________________________________________________ -->
+    
+    <action name="database" class="databaseAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
+    </action>
+    
+    <!-- .\ CONFIGURATION \.___________________________________________ -->
+    
+    
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
       <interceptor-ref name="unconfiguredArchivaStack"/>

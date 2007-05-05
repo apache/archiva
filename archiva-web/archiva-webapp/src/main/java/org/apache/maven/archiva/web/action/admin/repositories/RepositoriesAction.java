@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.admin;
+package org.apache.maven.archiva.web.action.admin.repositories;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,17 +20,17 @@ package org.apache.maven.archiva.web.action.admin;
  */
 
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.list.TransformedList;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.util.LocalRepositoryPredicate;
+import org.apache.maven.archiva.configuration.util.RemoteRepositoryPredicate;
+import org.apache.maven.archiva.configuration.util.RepositoryConfigurationComparator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.apache.maven.archiva.web.action.admin.models.AdminModel;
-import org.apache.maven.archiva.web.action.admin.models.AdminRepositoryConfiguration;
 import org.apache.maven.archiva.web.util.ContextUtils;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
@@ -38,7 +38,8 @@ import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,44 +54,27 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RepositoriesAction
     extends PlexusActionSupport
-    implements ModelDriven, Preparable, Validateable, SecureAction, ServletRequestAware
+    implements SecureAction, ServletRequestAware, Preparable
 {
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement role-hint="adminrepoconfig"
      */
-    private ArchivaDAO dao;
+    private Transformer repoConfigToAdmin;
 
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
 
-    private AdminModel model;
+    private List managedRepositories;
+
+    private List remoteRepositories;
 
     private String baseUrl;
 
-    public Object getModel()
+    public void setServletRequest( HttpServletRequest request )
     {
-        return getAdminModel();
-    }
-
-    public void prepare()
-        throws Exception
-    {
-        model = null;
-        getModel();
-    }
-
-    public void validate()
-    {
-        super.validate();
-    }
-
-    public String execute()
-        throws Exception
-    {
-        getLogger().info( ".execute()" );
-        return super.execute();
+        this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -104,46 +88,33 @@ public class RepositoriesAction
         return bundle;
     }
 
-    public void setServletRequest( HttpServletRequest request )
+    public void prepare()
+        throws Exception
     {
-        this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        remoteRepositories = TransformedList.decorate( new ArrayList(), repoConfigToAdmin );
+        managedRepositories = TransformedList.decorate( new ArrayList(), repoConfigToAdmin );
+
+        remoteRepositories.addAll( CollectionUtils.select( config.getRepositories(), RemoteRepositoryPredicate.getInstance() ) );
+        managedRepositories.addAll( CollectionUtils.select( config.getRepositories(), LocalRepositoryPredicate.getInstance() ) );
+
+        Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
+        Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
     }
 
-    public AdminModel getAdminModel()
+    public List getManagedRepositories()
     {
-        if ( model == null )
-        {
-            model = new AdminModel( archivaConfiguration.getConfiguration() );
-            model.setBaseUrl( baseUrl );
-            updateLastIndexed( model.getManagedRepositories() );
-        }
-
-        return model;
+        return managedRepositories;
     }
 
-    private void updateLastIndexed( List managedRepositories )
+    public List getRemoteRepositories()
     {
-        Iterator it = managedRepositories.iterator();
-        while ( it.hasNext() )
-        {
-            AdminRepositoryConfiguration config = (AdminRepositoryConfiguration) it.next();
-
-            List results = dao.query( new MostRecentRepositoryScanStatistics( config.getId() ) );
-            if ( !results.isEmpty() )
-            {
-                RepositoryContentStatistics stats = (RepositoryContentStatistics) results.get( 0 );
-                config.setStats( stats );
-            }
-        }
+        return remoteRepositories;
     }
 
-    public String getBaseUrlB()
+    public String getBaseUrl()
     {
         return baseUrl;
-    }
-
-    public void setBaseUrlB( String baseUrl )
-    {
-        this.baseUrl = baseUrl;
     }
 }

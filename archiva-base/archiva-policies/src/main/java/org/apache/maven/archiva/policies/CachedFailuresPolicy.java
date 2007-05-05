@@ -24,9 +24,9 @@ import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before. 
@@ -53,17 +53,17 @@ public class CachedFailuresPolicy
      */
     private UrlFailureCache urlFailureCache;
 
-    private Set validPolicyCodes = new HashSet();
+    private List options = new ArrayList();
 
     public CachedFailuresPolicy()
     {
-        validPolicyCodes.add( IGNORED );
-        validPolicyCodes.add( CACHED );
+        options.add( IGNORED );
+        options.add( CACHED );
     }
 
     public boolean applyPolicy( String policySetting, Properties request, File localFile )
     {
-        if ( !validPolicyCodes.contains( policySetting ) )
+        if ( !options.contains( policySetting ) )
         {
             // No valid code? false it is then.
             getLogger().error( "Unknown checksum policyCode [" + policySetting + "]" );
@@ -93,8 +93,18 @@ public class CachedFailuresPolicy
         return true;
     }
 
-    public String getDefaultPolicySetting()
+    public String getDefaultOption()
     {
         return IGNORED;
+    }
+
+    public String getId()
+    {
+        return "cache-failures";
+    }
+
+    public List getOptions()
+    {
+        return options;
     }
 }

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.configuration.util;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,37 +19,45 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+
+import java.util.Comparator;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * RepositoryConfigurationComparator 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public class RepositoryConfigurationComparator
+    implements Comparator
 {
-    public String getDefaultOption()
+
+    public int compare( Object o1, Object o2 )
     {
-        return AbstractUpdatePolicy.IGNORED;
+        if ( o1 == null && o2 == null )
+        {
+            return 0;
+        }
+
+        if ( o1 == null && o2 != null )
+        {
+            return 1;
+        }
+
+        if ( o1 != null && o2 == null )
+        {
+            return -1;
+        }
+
+        if ( ( o1 instanceof RepositoryConfiguration ) && ( o2 instanceof RepositoryConfiguration ) )
+        {
+            String id1 = ( (RepositoryConfiguration) o1 ).getId();
+            String id2 = ( (RepositoryConfiguration) o2 ).getId();
+            return id1.compareToIgnoreCase( id2 );
+        }
+
+        return 0;
     }
 
-    protected boolean isSnapshotPolicy()
-    {
-        return false;
-    }
-    
-    protected String getUpdateMode()
-    {
-        return "releases";
-    }
-
-    public String getId()
-    {
-        return "releases";
-    }
 }

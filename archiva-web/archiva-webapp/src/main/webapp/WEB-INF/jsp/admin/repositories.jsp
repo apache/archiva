@@ -37,28 +37,30 @@
 <ww:actionerror />
 <ww:actionmessage />
 
-<div>
-  <div style="float: right">
-    <%-- TODO replace with icons --%>
-    <pss:ifAuthorized permission="archiva-manage-configuration">
-      <ww:url id="addRepositoryUrl" action="addRepository"/>
-      <ww:a href="%{addRepositoryUrl}">Add Repository</ww:a>
-    </pss:ifAuthorized>
+  <div>
+    <div style="float: right">
+      <%-- TODO replace with icons --%>
+      <pss:ifAuthorized permission="archiva-manage-configuration">
+        <ww:url id="addRepositoryUrl" action="addRepository"/>
+        <ww:a href="%{addRepositoryUrl}">
+        <img src="<c:url value="/images/icons/create.png" />" />
+        Add Repository</ww:a>
+      </pss:ifAuthorized>
+    </div>
+    <h2>Local Repositories</h2>
   </div>
-  <h2>Managed Repositories</h2>
-</div>
 
 <c:choose>
-  <c:when test="${empty(model.managedRepositories)}">
-    <%-- No Managed Repositories. --%>
-    <strong>There are no managed repositories configured yet.</strong>
+  <c:when test="${empty(managedRepositories)}">
+    <%-- No Local Repositories. --%>
+    <strong>There are no local repositories configured yet.</strong>
   </c:when>
   <c:otherwise>
     <%-- Display the repositories. --%>
     
-	<c:forEach items="${model.managedRepositories}" var="repository" varStatus="i">
+	<c:forEach items="${managedRepositories}" var="repository" varStatus="i">
   
-      <div>
+      <div class="repository">
 
         <div style="float: right">
           <%-- TODO: make some icons --%>
@@ -69,12 +71,20 @@
             <ww:url id="deleteRepositoryUrl" action="deleteRepository" method="confirm">
               <ww:param name="repoid" value="%{'${repository.id}'}" />
             </ww:url>
-            <ww:a href="%{editRepositoryUrl}">Edit Repository</ww:a>
-            <ww:a href="%{deleteRepositoryUrl}">Delete Repository</ww:a>
+            <ww:a href="%{editRepositoryUrl}">
+            <img src="<c:url value="/images/icons/edit.png" />" />
+            Edit Repository</ww:a>
+            <ww:a href="%{deleteRepositoryUrl}">
+            <img src="<c:url value="/images/icons/delete.gif" />" />
+            Delete Repository</ww:a>
           </pss:ifAnyAuthorized>
         </div>
         
-        <h3>${repository.name}</h3>
+        <div style="float: left">
+          <img src="<c:url value="/images/archiva-splat-32.gif"/>" />
+        </div>
+        
+        <h3 class="repository">${repository.name}</h3>
         
         <table class="infoTable">
           <tr>
@@ -93,7 +103,7 @@
           </tr>
           <tr>
             <th>WebDAV URL</th>
-            <td><a href="${model.baseUrl}/${repository.id}/">${model.baseUrl}/${repository.id}/</a></td>
+            <td><a href="${baseUrl}/${repository.id}/">${baseUrl}/${repository.id}/</a></td>
           </tr>
           <tr>
             <th>Type</th>
@@ -176,6 +186,83 @@
       </div>
 	</c:forEach>
 	
+  </c:otherwise>
+</c:choose>
+
+  <h2>Remote Repositories</h2>
+
+<c:choose>
+  <c:when test="${empty(remoteRepositories)}">
+    <%-- No Remote Repositories. --%>
+    <strong>There are no remote repositories configured yet.</strong>
+  </c:when>
+  <c:otherwise>
+    <%-- Display the repositories. --%>
+    
+    <c:forEach items="${remoteRepositories}" var="repository" varStatus="i">
+      <div class="repository">
+
+        <div style="float: right">
+          <%-- TODO: make some icons --%>
+          <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
+            <ww:url id="editRepositoryUrl" action="editRepository">
+              <ww:param name="repoid" value="%{'${repository.id}'}" />
+            </ww:url>
+            <ww:url id="deleteRepositoryUrl" action="deleteRepository" method="confirm">
+              <ww:param name="repoid" value="%{'${repository.id}'}" />
+            </ww:url>
+            <ww:a href="%{editRepositoryUrl}">
+            <img src="<c:url value="/images/icons/edit.png" />" />
+            Edit Repository</ww:a>
+            <ww:a href="%{deleteRepositoryUrl}">
+            <img src="<c:url value="/images/icons/delete.gif" />" />
+            Delete Repository</ww:a>
+          </pss:ifAnyAuthorized>
+        </div>
+        
+        <div style="float: left">
+          <img src="<c:url value="/images/archiva-world.png"/>" />
+        </div>
+        
+        <h3 class="repository">${repository.name}</h3>
+        
+        <table class="infoTable">
+          <tr>
+            <th>Identifier</th>
+            <td>
+              <code>${repository.id}</code>
+            </td>
+          </tr>
+          <tr>
+            <th>URL</th>
+            <td>${repository.url}</td>
+          </tr>
+          <tr>
+            <th>Type</th>
+              <%-- TODO: can probably just use layout appended to a key prefix in i18n to simplify this --%>
+            <td>
+              <c:choose>
+                <c:when test="${repository.layout == 'default'}">
+                  Maven 2.x Repository
+                </c:when>
+                <c:otherwise>
+                  Maven 1.x Repository
+                </c:otherwise>
+              </c:choose>
+            </td>
+          </tr>
+          <tr>
+            <th>Releases Included</th>
+            <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
+          </tr>
+          <tr>
+            <th>Snapshots Included</th>
+            <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
+          </tr>
+        </table>
+      
+      </div>
+    </c:forEach>
   </c:otherwise>
 </c:choose>
 

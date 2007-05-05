@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.configuration.util;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,37 +19,37 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.collections.Predicate;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Predicate for {@link RepositoryConfiguration} objects that are local (aka managed) 
+ * {@link RepositoryConfiguration#isManaged()} 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public class LocalRepositoryPredicate
+    implements Predicate
 {
-    public String getDefaultOption()
+    public static final Predicate INSTANCE = new LocalRepositoryPredicate();
+
+    public static Predicate getInstance()
     {
-        return AbstractUpdatePolicy.IGNORED;
+        return INSTANCE;
     }
 
-    protected boolean isSnapshotPolicy()
+    public boolean evaluate( Object object )
     {
-        return false;
-    }
-    
-    protected String getUpdateMode()
-    {
-        return "releases";
+        boolean satisfies = false;
+
+        if ( object instanceof RepositoryConfiguration )
+        {
+            RepositoryConfiguration repoconfig = (RepositoryConfiguration) object;
+            return repoconfig.isManaged();
+        }
+
+        return satisfies;
     }
 
-    public String getId()
-    {
-        return "releases";
-    }
 }

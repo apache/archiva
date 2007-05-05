@@ -27,9 +27,9 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * ChecksumPolicy 
@@ -73,18 +73,18 @@ public class ChecksumPolicy
      */
     private ChecksumFile checksumFile;
 
-    private Set validPolicyCodes = new HashSet();
+    private List options = new ArrayList();
 
     public ChecksumPolicy()
     {
-        validPolicyCodes.add( FAIL );
-        validPolicyCodes.add( FIX );
-        validPolicyCodes.add( IGNORED );
+        options.add( FAIL );
+        options.add( FIX );
+        options.add( IGNORED );
     }
 
     public boolean applyPolicy( String policySetting, Properties request, File localFile )
     {
-        if ( !validPolicyCodes.contains( policySetting ) )
+        if ( !options.contains( policySetting ) )
         {
             // No valid code? false it is then.
             getLogger().error( "Unknown checksum policyCode [" + policySetting + "]" );
@@ -275,9 +275,19 @@ public class ChecksumPolicy
         }
     }
 
-    public String getDefaultPolicySetting()
+    public String getDefaultOption()
     {
         return FIX;
+    }
+
+    public String getId()
+    {
+        return "checksum";
+    }
+
+    public List getOptions()
+    {
+        return options;
     }
 
 }

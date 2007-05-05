@@ -211,3 +211,77 @@ ul.dependencyTree span.artifact-link {
 	background-color: #F3B455 !important;
 }
 
+div.repository h3 {
+	border-bottom: 0px !important;
+	padding-left: 15px !important;
+}
+
+div.repository {
+	border-bottom: 1px solid #DFDEDE;
+}
+
+tr.proxyConnector {
+	border-bottom: 1px solid #DFDEDE;
+}
+
+tr.proxyConnector td.managedRepo div,
+tr.proxyConnector td.remoteRepo div {
+    border: 1px dotted gray;
+	padding: 5px;
+	background-color: white;
+}
+
+tr.proxyConnector td.managedRepo img,
+tr.proxyConnector td.remoteRepo img {
+	float: left;
+	border: 0px;
+}
+
+tr.proxyConnector td.managedRepo div p,
+tr.proxyConnector td.remoteRepo div p {
+	margin: 0px;
+	margin-left: 40px;
+	padding: 0px;
+}
+
+tr.proxyConnector td.managedRepo div p.id,
+tr.proxyConnector td.remoteRepo div p.id {
+	font-family: monospace;
+}
+
+tr.proxyConnector td.connector {
+	padding-left: 10px;
+	padding-right: 10px;	
+}
+
+tr.proxyConnector td.connector div.wrap {
+	margin-left: 10px;
+	margin-right: 10px;
+	padding: 5px;
+	border: 1px solid gray;
+	background-color: #eeeeee;
+}
+
+tr.proxyConnector td.connector div.controls {
+	float: right;
+}
+
+tr.proxyConnector td.connector div h4 {
+	font-size: 1.0em;
+	margin: 0px;
+}
+
+tr.proxyConnector td.connector table {
+	border: 0px;
+	background-color: transparent;
+	font-size: 0.8em;
+}
+
+tr.proxyConnector td.connector table p {
+	margin: 0px;
+	padding: 0px;
+}
+
+tr.seperator td {
+	border-top: 1px dashed #dddddd !important;
+}

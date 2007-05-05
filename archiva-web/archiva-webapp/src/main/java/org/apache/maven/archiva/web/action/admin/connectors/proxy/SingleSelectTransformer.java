@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.web.action.admin.connectors.proxy;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,37 +19,38 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.collections.Transformer;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * Ensure that input strings are never arrays.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public class SingleSelectTransformer
+    implements Transformer
 {
-    public String getDefaultOption()
+    private static Transformer INSTANCE = new SingleSelectTransformer();
+
+    public Object transform( Object input )
     {
-        return AbstractUpdatePolicy.IGNORED;
+        if ( input instanceof String )
+        {
+            if ( input.getClass().isArray() )
+            {
+                String arr[] = (String[]) input;
+                if ( arr.length > 0 )
+                {
+                    return arr[0];
+                }
+            }
+        }
+        return null;
     }
 
-    protected boolean isSnapshotPolicy()
+    public static Transformer getInstance()
     {
-        return false;
-    }
-    
-    protected String getUpdateMode()
-    {
-        return "releases";
+        return INSTANCE;
     }
 
-    public String getId()
-    {
-        return "releases";
-    }
 }

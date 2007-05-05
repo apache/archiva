@@ -20,6 +20,7 @@ package org.apache.maven.archiva.policies;
  */
 
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -39,11 +40,25 @@ public interface DownloadPolicy
     public static final boolean FAIL = false;
     
     /**
-     * Get the default policy setting.
+     * Get the list of options for this policy.
      * 
-     * @return the default policy setting.
+     * @return the list of options for this policy.
      */
-    public String getDefaultPolicySetting();
+    public List getOptions();
+
+    /**
+     * Get the default option for this policy.
+     * 
+     * @return the default policy for this policy.
+     */
+    public String getDefaultOption();
+
+    /**
+     * Get the id for this policy.
+     * 
+     * @return the id for this policy.
+     */
+    public String getId();
 
     /**
      * Apply the download policy.

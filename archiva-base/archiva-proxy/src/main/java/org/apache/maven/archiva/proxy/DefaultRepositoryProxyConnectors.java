@@ -20,6 +20,7 @@ package org.apache.maven.archiva.proxy;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
@@ -494,7 +495,7 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private boolean applyPolicies( Properties policySettings, Map downloadPolicies, Properties request, File localFile )
+    private boolean applyPolicies( Map policySettings, Map downloadPolicies, Properties request, File localFile )
     {
         Iterator it = downloadPolicies.entrySet().iterator();
         while ( it.hasNext() )
@@ -502,8 +503,8 @@ public class DefaultRepositoryProxyConnectors
             Map.Entry entry = (Entry) it.next();
             String key = (String) entry.getKey();
             DownloadPolicy policy = (DownloadPolicy) entry.getValue();
-            String defaultSetting = policy.getDefaultPolicySetting();
-            String setting = policySettings.getProperty( key, defaultSetting );
+            String defaultSetting = policy.getDefaultOption();
+            String setting = StringUtils.defaultString( (String) policySettings.get( key ), defaultSetting );
 
             getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
             if ( !policy.applyPolicy( setting, request, localFile ) )

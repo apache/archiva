@@ -22,9 +22,9 @@ package org.apache.maven.archiva.proxy;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.connector.RepositoryConnector;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
 
 /**
  * This represents a connector for a repository to repository proxy.
@@ -45,7 +45,7 @@ public class ProxyConnector
 
     private String proxyId;
 
-    private Properties policies;
+    private Map policies;
 
     public List getBlacklist()
     {
@@ -87,12 +87,12 @@ public class ProxyConnector
         this.whitelist = whitelist;
     }
 
-    public Properties getPolicies()
+    public Map getPolicies()
     {
         return policies;
     }
 
-    public void setPolicies( Properties policies )
+    public void setPolicies( Map policies )
     {
         this.policies = policies;
     }
@@ -116,12 +116,12 @@ public class ProxyConnector
         sb.append( "  target:" ).append( this.targetRepository ).append( "\n" );
         sb.append( "  proxyId:" ).append( this.proxyId ).append( "\n" );
 
-        Enumeration keys = this.policies.propertyNames();
-        while ( keys.hasMoreElements() )
+        Iterator keys = this.policies.keySet().iterator();
+        while ( keys.hasNext() )
         {
-            String name = (String) keys.nextElement();
+            String name = (String) keys.next();
             sb.append( "  policy[" ).append( name ).append( "]:" );
-            sb.append( this.policies.getProperty( name ) ).append( "\n" );
+            sb.append( this.policies.get( name ) ).append( "\n" );
         }
 
         sb.append( "]" );
@@ -131,6 +131,6 @@ public class ProxyConnector
 
     public void setPolicy( String policyId, String policySetting )
     {
-        // TODO Auto-generated method stub
+        this.policies.put( policyId, policySetting );
     }
 }

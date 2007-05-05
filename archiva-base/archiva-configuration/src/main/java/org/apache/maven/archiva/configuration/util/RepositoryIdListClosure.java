@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies;
+package org.apache.maven.archiva.configuration.util;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,37 +19,38 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.collections.Closure;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+
+import java.util.List;
 
 /**
- * {@link PreDownloadPolicy} to apply for released versions.
+ * RepositoryIdListClosure 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="releases"
  */
-public class ReleasesPolicy
-    extends AbstractUpdatePolicy
-    implements PreDownloadPolicy
+public class RepositoryIdListClosure
+    implements Closure
 {
-    public String getDefaultOption()
+    private List list;
+
+    public RepositoryIdListClosure( List list )
     {
-        return AbstractUpdatePolicy.IGNORED;
+        this.list = list;
     }
 
-    protected boolean isSnapshotPolicy()
+    public void execute( Object input )
     {
-        return false;
-    }
-    
-    protected String getUpdateMode()
-    {
-        return "releases";
+        if ( input instanceof RepositoryConfiguration )
+        {
+            RepositoryConfiguration repoconfig = (RepositoryConfiguration) input;
+            list.add( repoconfig.getId() );
+        }
     }
 
-    public String getId()
+    public List getList()
     {
-        return "releases";
+        return list;
     }
 }

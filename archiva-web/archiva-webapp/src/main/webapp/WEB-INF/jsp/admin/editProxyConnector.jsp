@@ -21,28 +21,29 @@
 
 <html>
 <head>
-  <title>Admin: Edit Repository</title>
+  <title>Admin : Edit Proxy Connector</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Edit Repository</h1>
+<h1>Admin : Edit Proxy Connector</h1>
 
 <div id="contentArea">
 
-  <h2>Edit Repository</h2>
+  <h2>Edit Proxy Connector</h2>
 
+  <ww:actionerror/>
   <ww:actionmessage/>
-  <ww:form method="post" action="saveRepository" namespace="/admin" validate="false">
-    <ww:hidden name="mode" value="edit"/>  
-    <ww:hidden name="repository.id"/>
-    <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <ww:submit value="Update Repository"/>
+  
+  <ww:form method="post" action="saveProxyConnector" namespace="/admin" validate="false">
+    <ww:hidden name="mode"/>  
+    <%@ include file="/WEB-INF/jsp/admin/include/proxyConnectorForm.jspf" %>
+    <ww:submit value="Save Proxy Connector"/>
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("saveRepository_name").focus();
+    document.getElementById("saveProxyConnector_proxyId").focus();
   </script>
 
 </div>

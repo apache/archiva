@@ -116,6 +116,10 @@
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
         </pss:ifAuthorized>
+        <%-- TODO: future options here.
+             * Repository Statistics.
+             * Web Services Statistics.
+          --%>
       </ul>
     </pss:ifAnyAuthorized>
 
@@ -123,22 +127,24 @@
       <h5>Administration</h5>
       <ul>
           <li class="none">
-            <my:currentWWUrl action="index" namespace="/admin">Settings</my:currentWWUrl>
-          </li>
-          <li class="none">
             <my:currentWWUrl action="repositories" namespace="/admin">Repositories</my:currentWWUrl>
           </li>
-          <%-- 
           <li class="none">
-            <my:currentWWUrl action="proxiedRepositories" namespace="/admin">Proxied Repositories</my:currentWWUrl>
+            <my:currentWWUrl action="proxyConnectors" namespace="/admin">Proxy Connectors</my:currentWWUrl>
           </li>
-          --%>
-
-                <%-- TODO: add back after synced repos are implemented
-                          <li class="none">
-                            <my:currentWWUrl action="syncedRepositories" namespace="/admin">Synced Repositories</my:currentWWUrl>
-                          </li>
-                --%>
+          <li class="none">
+            <my:currentWWUrl action="networkProxies" namespace="/admin">Network Proxies</my:currentWWUrl>
+          </li>
+          <li class="none">
+            <my:currentWWUrl action="repositoryScanning" namespace="/admin">Repository Scanning</my:currentWWUrl>
+          </li>
+          <li class="none">
+            <my:currentWWUrl action="database" namespace="/admin">Database</my:currentWWUrl>
+          </li>
+          <%-- TODO: future options here.
+               * Repository Syncing Connectors. (rsync, ftp, scp, etc...)
+               * Web Services (enable / disable), role based?
+            --%>
       </ul>
     </pss:ifAuthorized>
 

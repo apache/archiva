@@ -24,10 +24,10 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * AbstractUpdatePolicy 
@@ -76,20 +76,25 @@ public abstract class AbstractUpdatePolicy
      */
     public static final String ONCE = "once";
 
-    private Set validPolicyCodes = new HashSet();
+    private List options = new ArrayList();
 
     public AbstractUpdatePolicy()
     {
-        validPolicyCodes.add( IGNORED );
-        validPolicyCodes.add( DISABLED );
-        validPolicyCodes.add( DAILY );
-        validPolicyCodes.add( HOURLY );
-        validPolicyCodes.add( ONCE );
+        options.add( IGNORED );
+        options.add( DISABLED );
+        options.add( DAILY );
+        options.add( HOURLY );
+        options.add( ONCE );
     }
 
     protected abstract boolean isSnapshotPolicy();
     
     protected abstract String getUpdateMode();
+    
+    public List getOptions()
+    {
+        return options;
+    }
 
     public boolean applyPolicy( String policySetting, Properties request, File localFile )
     {
@@ -101,7 +106,7 @@ public abstract class AbstractUpdatePolicy
             isSnapshotVersion = VersionUtil.isSnapshot( version );
         }
 
-        if ( !validPolicyCodes.contains( policySetting ) )
+        if ( !options.contains( policySetting ) )
         {
             // No valid code? false it is then.
             getLogger().error( "Unknown artifact-update policyCode [" + policySetting + "]" );

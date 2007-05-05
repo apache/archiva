@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.action.admin.models;
+package org.apache.maven.archiva.web.action.admin.repositories;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,8 +36,6 @@ import java.io.File;
 public class AdminRepositoryConfiguration
     extends RepositoryConfiguration
 {
-    private String directory;
-
     private RepositoryContentStatistics stats;
 
     public AdminRepositoryConfiguration()
@@ -70,23 +68,33 @@ public class AdminRepositoryConfiguration
 
     public boolean isDirectoryExists()
     {
-        if ( StringUtils.isBlank( directory ) )
+        if ( StringUtils.isBlank( getDirectory() ) )
         {
             return false;
         }
 
-        File dir = new File( directory );
+        File dir = new File( getDirectory() );
         return ( dir.exists() && dir.isDirectory() );
     }
 
     public String getDirectory()
     {
-        return directory;
+        if ( this.isManaged() )
+        {
+            if ( StringUtils.isBlank( this.getUrl() ) )
+            {
+                return null;
+            }
+
+            RepositoryURL url = new RepositoryURL( this.getUrl() );
+            return url.getPath();
+        }
+
+        return null;
     }
 
     public void setDirectory( String directory )
     {
-        this.directory = directory;
         this.setUrl( PathUtil.toUrl( directory ) );
     }
 

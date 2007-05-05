@@ -33,7 +33,7 @@ public class SnapshotsPolicy
     extends AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
-    public String getDefaultPolicySetting()
+    public String getDefaultOption()
     {
         return AbstractUpdatePolicy.IGNORED;
     }
@@ -44,6 +44,11 @@ public class SnapshotsPolicy
     }
     
     protected String getUpdateMode()
+    {
+        return "snapshots";
+    }
+
+    public String getId()
     {
         return "snapshots";
     }

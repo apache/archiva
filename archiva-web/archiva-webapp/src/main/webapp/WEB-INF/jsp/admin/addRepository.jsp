@@ -21,27 +21,28 @@
 
 <html>
 <head>
-  <title>Configuration</title>
+  <title>Admin: Add Repository</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Configuration</h1>
+<h1>Admin: Add Repository</h1>
 
 <div id="contentArea">
 
-  <h2>Add Managed Repository</h2>
+  <h2>Add Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="addRepository" namespace="/admin" validate="true">
-    <ww:textfield name="model.id" label="Identifier" size="10" required="true"/>
-    <%@ include file="/WEB-INF/jsp/admin/include/managedRepositoryForm.jspf" %>
+  <ww:form method="post" action="saveRepository" namespace="/admin" validate="true">
+    <ww:hidden name="mode" value="add"/>
+    <ww:textfield name="repository.id" label="Identifier" size="10" required="true"/>
+    <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
     <ww:submit value="Add Repository"/>
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("addRepository_id").focus();
+    document.getElementById("saveRepository_id").focus();
   </script>
 
 </div>

@@ -37,11 +37,11 @@
     <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
   </blockquote>
 
-  <ww:form method="post" action="deleteRepository" namespace="/admin" validate="true">
-    <ww:hidden name="repoId"/>
+  <ww:form method="post" action="deleteRepository!delete" namespace="/admin" validate="true">
+    <ww:hidden name="repoid"/>
     <ww:radio list="#@java.util.LinkedHashMap@{'delete-contents' : 'Remove the repository and delete its contents from disk',
     'delete-entry' : 'Remove the repository from the management list, but leave the contents unmodified',
-    'unmodified' : 'Leave the repository unmodified'}" name="operation" theme="archiva"/>
+    'unmodified' : 'Leave the repository unmodified'}" name="mode" theme="archiva"/>
     <ww:submit value="Go"/>
   </ww:form>
 </div>

@@ -365,7 +365,7 @@
         <field>
           <name>policies</name>
           <version>1.0.0+</version>
-          <type>Properties</type>
+          <type>Map</type>
           <description>Policy configuration for the connector.</description>
           <association xml.mapStyle="inline">
             <type>String</type>
@@ -375,7 +375,7 @@
         <field>
           <name>properties</name>
           <version>1.0.0+</version>
-          <type>Properties</type>
+          <type>Map</type>
           <description>Configuration for the connector.</description>
           <association xml.mapStyle="inline">
             <type>String</type>
@@ -401,8 +401,15 @@
             return null;
         }
 
-        return this.getPolicies().getProperty( policyId, defaultValue );
-    }          
+        Object value = this.getPolicies().get( policyId );
+
+        if ( value == null )
+        {
+            return defaultValue;
+        }
+
+        return (String) value;
+    }
           ]]></code>
         </codeSegment>
       </codeSegments>
