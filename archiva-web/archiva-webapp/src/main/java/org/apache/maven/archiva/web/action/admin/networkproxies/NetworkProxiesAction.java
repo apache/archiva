@@ -19,17 +19,17 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  * under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * NetworkProxiesAction 
@@ -40,34 +40,40 @@ import javax.servlet.http.HttpServletRequest;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="networkProxiesAction"
  */
 public class NetworkProxiesAction
-extends PlexusActionSupport
-implements ModelDriven, Preparable, Validateable, SecureAction, ServletRequestAware
+    extends PlexusActionSupport
+    implements Preparable, SecureAction
 {
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration configuration;
 
-    public Object getModel()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    private List networkProxies;
 
     public void prepare()
         throws Exception
     {
-        // TODO Auto-generated method stub
-        
+        networkProxies = configuration.getConfiguration().getNetworkProxies();
     }
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        // TODO Auto-generated method stub
-        return null;
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
+
+        return bundle;
     }
 
-    public void setServletRequest( HttpServletRequest request )
+    public List getNetworkProxies()
     {
-        // TODO Auto-generated method stub
-        
+        return networkProxies;
     }
 
+    public void setNetworkProxies( List networkProxies )
+    {
+        this.networkProxies = networkProxies;
+    }
 }

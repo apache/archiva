@@ -37,18 +37,16 @@
 <ww:actionerror />
 <ww:actionmessage />
 
-  <div>
-    <div style="float: right">
-      <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="archiva-manage-configuration">
-        <ww:url id="addRepositoryUrl" action="addRepository"/>
-        <ww:a href="%{addRepositoryUrl}">
-        <img src="<c:url value="/images/icons/create.png" />" />
-        Add Repository</ww:a>
-      </pss:ifAuthorized>
-    </div>
-    <h2>Local Repositories</h2>
+<div class="admin">
+  <div class="controls">
+    <pss:ifAuthorized permission="archiva-manage-configuration">
+      <ww:url id="addRepositoryUrl" action="addRepository"/>
+      <ww:a href="%{addRepositoryUrl}">
+      <img src="<c:url value="/images/icons/create.png" />" />
+      Add Repository</ww:a>
+    </pss:ifAuthorized>
   </div>
+  <h2>Local Repositories</h2>
 
 <c:choose>
   <c:when test="${empty(managedRepositories)}">
@@ -59,10 +57,18 @@
     <%-- Display the repositories. --%>
     
 	<c:forEach items="${managedRepositories}" var="repository" varStatus="i">
+      <c:choose>
+        <c:when test='${(i.index)%2 eq 0}'>
+          <c:set var="rowColor" value="dark" scope="page" />
+        </c:when>
+        <c:otherwise>
+          <c:set var="rowColor" value="lite" scope="page" />
+        </c:otherwise>
+      </c:choose>
   
-      <div class="repository">
+      <div class="repository ${rowColor}">
 
-        <div style="float: right">
+        <div class="controls">
           <%-- TODO: make some icons --%>
           <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
             <ww:url id="editRepositoryUrl" action="editRepository">
@@ -200,9 +206,18 @@
     <%-- Display the repositories. --%>
     
     <c:forEach items="${remoteRepositories}" var="repository" varStatus="i">
-      <div class="repository">
+      <c:choose>
+        <c:when test='${(i.index)%2 eq 0}'>
+          <c:set var="rowColor" value="dark" scope="page" />
+        </c:when>
+        <c:otherwise>
+          <c:set var="rowColor" value="lite" scope="page" />
+        </c:otherwise>
+      </c:choose>
+      
+      <div class="repository ${rowColor}">
 
-        <div style="float: right">
+        <div class="controls">
           <%-- TODO: make some icons --%>
           <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
             <ww:url id="editRepositoryUrl" action="editRepository">

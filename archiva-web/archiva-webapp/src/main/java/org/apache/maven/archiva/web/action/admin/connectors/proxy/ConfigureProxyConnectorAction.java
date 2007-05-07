@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
+import com.opensymphony.xwork.Validateable;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
@@ -63,7 +64,7 @@ import java.util.Map.Entry;
  */
 public class ConfigureProxyConnectorAction
     extends PlexusActionSupport
-    implements SecureAction, Preparable, Initializable
+    implements SecureAction, Preparable, Validateable, Initializable
 {
     private static final String DIRECT_CONNECTION = "(direct connection)";
 
@@ -128,26 +129,22 @@ public class ConfigureProxyConnectorAction
 
     public String add()
     {
-        getLogger().info( ".add()" );
         this.mode = "add";
         return INPUT;
     }
 
     public String confirm()
     {
-        getLogger().info( ".confirm()" );
         return INPUT;
     }
 
     public String delete()
     {
-        getLogger().info( ".delete()" );
         return INPUT;
     }
 
     public String addProperty()
     {
-        getLogger().info( ".addProperty()" );
         String key = getPropertyKey();
         String value = getPropertyValue();
 
@@ -173,7 +170,6 @@ public class ConfigureProxyConnectorAction
 
     public String removeProperty()
     {
-        getLogger().info( ".removeProperty()" );
         String key = getPropertyKey();
 
         if ( StringUtils.isBlank( key ) )
@@ -193,7 +189,6 @@ public class ConfigureProxyConnectorAction
 
     public String addWhiteListPattern()
     {
-        getLogger().info( ".addWhiteListPattern()" );
         String pattern = getWhiteListPattern();
 
         if ( StringUtils.isBlank( pattern ) )
@@ -203,10 +198,6 @@ public class ConfigureProxyConnectorAction
 
         if ( !hasActionErrors() )
         {
-            getLogger().info(
-                              "whitelist patterns: (" + getConnector().getWhiteListPatterns().size() + "): "
-                                  + getConnector().getWhiteListPatterns() );
-
             getConnector().getWhiteListPatterns().add( pattern );
             setWhiteListPattern( null );
         }
@@ -217,7 +208,6 @@ public class ConfigureProxyConnectorAction
     public String removeWhiteListPattern()
     {
         String pattern = getPattern();
-        getLogger().info( ".removeWhiteListPattern(" + pattern + ")" );
 
         if ( StringUtils.isBlank( pattern ) )
         {
@@ -235,7 +225,6 @@ public class ConfigureProxyConnectorAction
 
     public String addBlackListPattern()
     {
-        getLogger().info( ".addBlackListPattern()" );
         String pattern = getBlackListPattern();
 
         if ( StringUtils.isBlank( pattern ) )
@@ -254,7 +243,6 @@ public class ConfigureProxyConnectorAction
 
     public String removeBlackListPattern()
     {
-        getLogger().info( ".removeBlackListPattern()" );
         String pattern = getBlackListPattern();
 
         if ( StringUtils.isBlank( pattern ) )
@@ -273,7 +261,6 @@ public class ConfigureProxyConnectorAction
 
     public String edit()
     {
-        getLogger().info( ".edit()" );
         this.mode = "edit";
         return INPUT;
     }
@@ -359,7 +346,6 @@ public class ConfigureProxyConnectorAction
 
     public String input()
     {
-        getLogger().info( "input()" );
         return INPUT;
     }
 
@@ -369,13 +355,10 @@ public class ConfigureProxyConnectorAction
         String sourceId = getSource();
         String targetId = getTarget();
 
-        getLogger().info( ".prepare() - sourceId [" + sourceId + "], targetId [" + targetId + "]" );
-
         if ( StringUtils.isBlank( sourceId ) || StringUtils.isBlank( targetId ) )
         {
             if ( this.connector == null )
             {
-                getLogger().info( "Creating new connector." );
                 this.connector = new ProxyConnectorConfiguration();
             }
         }
@@ -383,7 +366,6 @@ public class ConfigureProxyConnectorAction
         {
             this.connector = findProxyConnector( sourceId, targetId );
         }
-        getLogger().info( "Connector: " + connector );
 
         Configuration config = archivaConfiguration.getConfiguration();
 
@@ -425,13 +407,6 @@ public class ConfigureProxyConnectorAction
 
         String sourceId = getConnector().getSourceRepoId();
         String targetId = getConnector().getTargetRepoId();
-
-        getLogger().info( ".save(" + mode + ":" + sourceId + "->" + targetId + ")" );
-
-        if ( !isValid( getConnector() ) )
-        {
-            return INPUT;
-        }
 
         if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
         {
@@ -527,13 +502,14 @@ public class ConfigureProxyConnectorAction
         ProxyConnectorSelectionPredicate selectedProxy = new ProxyConnectorSelectionPredicate( sourceId, targetId );
         return (ProxyConnectorConfiguration) CollectionUtils.find( config.getProxyConnectors(), selectedProxy );
     }
-
-    private boolean isValid( ProxyConnectorConfiguration proxyConnector )
+    
+    public void validate()
     {
+        ProxyConnectorConfiguration proxyConnector = getConnector();
+        
         if ( proxyConnector.getPolicies() == null )
         {
             addActionError( "Policies must be set." );
-            return false;
         }
 
         Iterator it = policyMap.entrySet().iterator();
@@ -568,13 +544,6 @@ public class ConfigureProxyConnectorAction
                 continue;
             }
         }
-
-        if ( hasActionErrors() || hasActionMessages() )
-        {
-            return false;
-        }
-
-        return true;
     }
 
     private void removeConnector( String sourceId, String targetId )

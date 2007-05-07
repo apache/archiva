@@ -285,3 +285,26 @@ tr.proxyConnector td.connector table p {
 tr.seperator td {
 	border-top: 1px dashed #dddddd !important;
 }
+
+div.admin div.dark,
+div.admin div.lite {
+	border: 1px solid #aaaaaa;	
+	font-size: 11pt;
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-bottom: 5px;
+	padding: 5px;
+}
+
+div.admin div.lite {
+	background-color: white;
+}
+
+div.admin div.dark {
+	background-color: #eeeeee;
+}
+
+div.admin div.controls {
+	float: right;
+	font-size: 8pt !important;
+}

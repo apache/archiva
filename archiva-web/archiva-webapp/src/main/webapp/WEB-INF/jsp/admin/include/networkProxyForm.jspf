@@ -16,35 +16,11 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   --%>
-
 <%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<html>
-<head>
-  <title>Admin: Delete Repository</title>
-  <ww:head/>
-</head>
-
-<body>
-
-<h1>Admin: Delete Repository</h1>
-
-<div id="contentArea">
-
-  <h2>Delete Repository</h2>
-
-  <blockquote>
-    <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
-  </blockquote>
-
-  <ww:form method="post" action="deleteRepository!delete" namespace="/admin" validate="true">
-    <ww:hidden name="repoid"/>
-    <ww:radio list="#@java.util.LinkedHashMap@{'delete-contents' : 'Remove the repository and delete its contents from disk',
-    'delete-entry' : 'Remove the repository from the management list, but leave the contents unmodified',
-    'unmodified' : 'Leave the repository unmodified'}" name="mode" theme="archiva"/>
-    <ww:submit value="Go"/>
-  </ww:form>
-</div>
-
-</body>
-</html>
+<ww:textfield name="proxy.protocol" label="Protocol" size="5" required="true"/>
+<ww:textfield name="proxy.host" label="Hostname" size="50" required="true"/>  
+<ww:textfield name="proxy.port" label="Port" size="5" required="true" />
+<ww:textfield name="proxy.username" label="Username" size="25" required="false" />
+<ww:password name="proxy.password" label="Password" size="25" required="false" />

@@ -21,29 +21,30 @@
 
 <html>
 <head>
-  <title>Admin: Delete Repository</title>
+  <title>Admin: Edit Network Proxy</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Delete Repository</h1>
+<h1>Admin: Network Proxy</h1>
 
 <div id="contentArea">
 
-  <h2>Delete Repository</h2>
+  <h2>Edit Network Proxy</h2>
 
-  <blockquote>
-    <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
-  </blockquote>
-
-  <ww:form method="post" action="deleteRepository!delete" namespace="/admin" validate="true">
-    <ww:hidden name="repoid"/>
-    <ww:radio list="#@java.util.LinkedHashMap@{'delete-contents' : 'Remove the repository and delete its contents from disk',
-    'delete-entry' : 'Remove the repository from the management list, but leave the contents unmodified',
-    'unmodified' : 'Leave the repository unmodified'}" name="mode" theme="archiva"/>
-    <ww:submit value="Go"/>
+  <ww:actionmessage/>
+  <ww:form method="post" action="saveNetworkProxy" namespace="/admin" validate="false">
+    <ww:hidden name="mode" value="edit"/>  
+    <ww:hidden name="proxy.id"/>
+    <%@ include file="/WEB-INF/jsp/admin/include/networkProxyForm.jspf" %>
+    <ww:submit value="Save Network Proxy"/>
   </ww:form>
+
+  <script type="text/javascript">
+    document.getElementById("saveNetworkProxy_host").focus();
+  </script>
+
 </div>
 
 </body>

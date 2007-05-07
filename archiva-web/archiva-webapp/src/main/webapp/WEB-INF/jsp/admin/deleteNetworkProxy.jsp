@@ -21,28 +21,29 @@
 
 <html>
 <head>
-  <title>Admin: Delete Repository</title>
+  <title>Admin: Delete Network Proxy</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Delete Repository</h1>
+<h1>Admin: Delete Network Proxy</h1>
 
 <div id="contentArea">
 
-  <h2>Delete Repository</h2>
+  <h2>Delete Network Proxy</h2>
 
   <blockquote>
     <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
   </blockquote>
+  
+  <p>
+  Are you sure you want to delete network proxy ${proxyid} ?
+  </p>
 
-  <ww:form method="post" action="deleteRepository!delete" namespace="/admin" validate="true">
-    <ww:hidden name="repoid"/>
-    <ww:radio list="#@java.util.LinkedHashMap@{'delete-contents' : 'Remove the repository and delete its contents from disk',
-    'delete-entry' : 'Remove the repository from the management list, but leave the contents unmodified',
-    'unmodified' : 'Leave the repository unmodified'}" name="mode" theme="archiva"/>
-    <ww:submit value="Go"/>
+  <ww:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
+    <ww:hidden name="proxyid"/>
+    <ww:submit value="Delete"/>
   </ww:form>
 </div>
 

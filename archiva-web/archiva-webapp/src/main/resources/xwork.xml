@@ -306,6 +306,30 @@
       <result name="input">/WEB-INF/jsp/admin/networkProxies.jsp</result>
     </action>
     
+    <action name="addNetworkProxy" class="configureNetworkProxyAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addNetworkProxy.jsp</result>
+      <result name="success" type="redirect-action">networkProxies</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="editNetworkProxy" class="configureNetworkProxyAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
+      <result name="success" type="redirect-action">networkProxies</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="saveNetworkProxy" class="configureNetworkProxyAction" method="save">
+      <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
+      <result name="success" type="redirect-action">networkProxies</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
+    <action name="deleteNetworkProxy" class="configureNetworkProxyAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/deleteNetworkProxy.jsp</result>
+      <result name="success" type="redirect-action">networkProxies</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+    
     <!-- .\ REPOSITORY SCANNING \._____________________________________ -->
     
     <action name="repositoryScanning" class="repositoryScanningAction" method="input">
