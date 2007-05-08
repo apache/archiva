@@ -19,27 +19,26 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.updater.DatabaseUpdater;
 import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumerUtil;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +64,11 @@ public class ArchivaScheduledTaskExecutor
     /**
      * @plexus.requirement role-hint="jdo"
      */
+    private ArchivaDAO dao;
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
     private DatabaseUpdater databaseUpdater;
 
     /**
@@ -80,9 +84,10 @@ public class ArchivaScheduledTaskExecutor
 
     /**
      * The collection of available repository consumers.
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+     * 
+     * @plexus.requirement
      */
-    private Map availableRepositoryConsumers;
+    private RepositoryContentConsumerUtil repositoryContentConsumerUtil;
 
     public void executeTask( Task task )
         throws TaskExecutionException
@@ -140,16 +145,17 @@ public class ArchivaScheduledTaskExecutor
     {
         getLogger().info( "Executing task from queue with job name: " + task.getName() );
 
-        long time = System.currentTimeMillis();
-
         try
         {
             ArchivaRepository arepo = repositoryDAO.getRepository( task.getRepositoryId() );
 
             RepositoryScanner scanner = new RepositoryScanner();
 
-            scanner.scan( arepo, getActiveConsumerList(), true );
+            RepositoryContentStatistics stats = scanner.scan( arepo, getActiveConsumerList(), true );
 
+            dao.save( stats );
+
+            getLogger().info( "Finished repository task: " + stats.getDuration() + " ms." );
         }
         catch ( ArchivaDatabaseException e )
         {
@@ -159,10 +165,6 @@ public class ArchivaScheduledTaskExecutor
         {
             throw new TaskExecutionException( "Repository error when executing repository job.", e );
         }
-
-        time = System.currentTimeMillis() - time;
-
-        getLogger().info( "Finished repository task for " + time + "ms." );
     }
 
     private List getActiveConsumerList()
@@ -172,44 +174,16 @@ public class ArchivaScheduledTaskExecutor
         RepositoryScanningConfiguration repoScanningConfig = archivaConfiguration.getConfiguration()
             .getRepositoryScanning();
 
-        List configuredGoodConsumers = repoScanningConfig.getGoodConsumers();
-        List configuredBadConsumers = repoScanningConfig.getBadConsumers();
-        
-        getLogger().info( "Available Repository Consumers: " + availableRepositoryConsumers );
+        List configuredGoodConsumers = new ArrayList();
+        List configuredBadConsumers = new ArrayList();
 
-        for ( Iterator i = configuredGoodConsumers.iterator(); i.hasNext(); )
-        {
-            String desiredConsumerId = (String) i.next();
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) availableRepositoryConsumers
-                .get( desiredConsumerId );
+        configuredGoodConsumers.addAll( CollectionUtils.select( repoScanningConfig.getGoodConsumers(),
+                                                                repositoryContentConsumerUtil
+                                                                    .getKnownSelectionPredicate() ) );
 
-            if ( consumer == null )
-            {
-                getLogger().warn(
-                                  "Desired Consumer [" + desiredConsumerId
-                                      + "] does not exist.  Skipping in repository scan." );
-                continue;
-            }
-
-            activeConsumers.add( consumer );
-        }
-
-        for ( Iterator i = configuredBadConsumers.iterator(); i.hasNext(); )
-        {
-            String desiredConsumerId = (String) i.next();
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) availableRepositoryConsumers
-                .get( desiredConsumerId );
-
-            if ( consumer == null )
-            {
-                getLogger().warn(
-                                  "Desired Consumer [" + desiredConsumerId
-                                      + "] does not exist.  Skipping in repository scan." );
-                continue;
-            }
-
-            activeConsumers.add( consumer );
-        }
+        configuredBadConsumers.addAll( CollectionUtils.select( repoScanningConfig.getBadConsumers(),
+                                                               repositoryContentConsumerUtil
+                                                                   .getInvalidSelectionPredicate() ) );
 
         return activeConsumers;
     }

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.artifact;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
@@ -84,6 +84,11 @@ public class LocationArtifactsConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+    
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -331,11 +336,7 @@ public class LocationArtifactsConsumer
     {
         includes.clear();
 
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning().getFileTypeById( "artifacts" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     private void initRepositoryMap()

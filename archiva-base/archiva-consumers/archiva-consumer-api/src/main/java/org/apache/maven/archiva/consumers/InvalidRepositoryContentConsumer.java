@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.consumers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,44 +19,14 @@ package org.apache.maven.archiva.configuration.util;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
-
-import java.util.Comparator;
-
 /**
- * NetworkProxyComparator 
+ * Consumer for Invalid Repository Content 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class NetworkProxyComparator
-    implements Comparator
+public interface InvalidRepositoryContentConsumer
+    extends RepositoryContentConsumer
 {
 
-    public int compare( Object o1, Object o2 )
-    {
-        if ( o1 == null && o2 == null )
-        {
-            return 0;
-        }
-
-        if ( o1 == null && o2 != null )
-        {
-            return 1;
-        }
-
-        if ( o1 != null && o2 == null )
-        {
-            return -1;
-        }
-
-        if ( ( o1 instanceof NetworkProxyConfiguration ) && ( o2 instanceof NetworkProxyConfiguration ) )
-        {
-            String id1 = ( (NetworkProxyConfiguration) o1 ).getId();
-            String id2 = ( (NetworkProxyConfiguration) o2 ).getId();
-            return id1.compareToIgnoreCase( id2 );
-        }
-
-        return 0;
-    }
 }

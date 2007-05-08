@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.configuration.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,38 +19,37 @@ package org.apache.maven.archiva.configuration.util;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.Predicate;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 
-import java.util.List;
-
 /**
- * RepositoryIdListClosure 
+ * Predicate for {@link RepositoryConfiguration} objects that are local (aka managed) 
+ * {@link RepositoryConfiguration#isManaged()} 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryIdListClosure
-    implements Closure
+public class LocalRepositoryPredicate
+    implements Predicate
 {
-    private List list;
+    public static final Predicate INSTANCE = new LocalRepositoryPredicate();
 
-    public RepositoryIdListClosure( List list )
+    public static Predicate getInstance()
     {
-        this.list = list;
+        return INSTANCE;
     }
 
-    public void execute( Object input )
+    public boolean evaluate( Object object )
     {
-        if ( input instanceof RepositoryConfiguration )
+        boolean satisfies = false;
+
+        if ( object instanceof RepositoryConfiguration )
         {
-            RepositoryConfiguration repoconfig = (RepositoryConfiguration) input;
-            list.add( repoconfig.getId() );
+            RepositoryConfiguration repoconfig = (RepositoryConfiguration) object;
+            return repoconfig.isManaged();
         }
+
+        return satisfies;
     }
 
-    public List getList()
-    {
-        return list;
-    }
 }

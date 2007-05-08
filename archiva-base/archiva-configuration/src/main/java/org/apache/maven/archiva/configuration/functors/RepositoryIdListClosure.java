@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.configuration.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,36 +19,38 @@ package org.apache.maven.archiva.configuration.util;
  * under the License.
  */
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 
+import java.util.List;
+
 /**
- * Predicate for {@link RepositoryConfiguration} objects that are remote 
- * {@link RepositoryConfiguration#isRemote()} 
+ * RepositoryIdListClosure 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RemoteRepositoryPredicate
-    implements Predicate
+public class RepositoryIdListClosure
+    implements Closure
 {
-    public static final Predicate INSTANCE = new RemoteRepositoryPredicate();
+    private List list;
 
-    public static Predicate getInstance()
+    public RepositoryIdListClosure( List list )
     {
-        return INSTANCE;
+        this.list = list;
     }
 
-    public boolean evaluate( Object object )
+    public void execute( Object input )
     {
-        boolean satisfies = false;
-
-        if ( object instanceof RepositoryConfiguration )
+        if ( input instanceof RepositoryConfiguration )
         {
-            RepositoryConfiguration repoconfig = (RepositoryConfiguration) object;
-            return repoconfig.isRemote();
+            RepositoryConfiguration repoconfig = (RepositoryConfiguration) input;
+            list.add( repoconfig.getId() );
         }
+    }
 
-        return satisfies;
+    public List getList()
+    {
+        return list;
     }
 }

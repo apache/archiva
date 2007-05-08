@@ -21,6 +21,7 @@ package org.apache.maven.archiva.converter.legacy;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -42,13 +43,13 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *     role-hint="artifact-legacy-to-default-converter"
  *     instantiation-strategy="per-lookup"
  */
 public class LegacyConverterArtifactConsumer
     extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer
+    implements KnownRepositoryContentConsumer
 {
     /**
      * @plexus.requirement role-hint="legacy-to-default"

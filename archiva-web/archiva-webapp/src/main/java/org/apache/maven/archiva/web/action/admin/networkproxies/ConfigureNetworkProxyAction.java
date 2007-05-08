@@ -28,7 +28,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.maven.archiva.configuration.util.NetworkProxySelectionPredicate;
+import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.security.rbac.Resource;

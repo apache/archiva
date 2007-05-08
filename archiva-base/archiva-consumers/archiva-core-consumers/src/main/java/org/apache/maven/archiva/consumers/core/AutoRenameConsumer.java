@@ -21,6 +21,7 @@ package org.apache.maven.archiva.consumers.core;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.util.FileUtils;
@@ -39,13 +40,13 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="auto-rename"
  *                   instantiation-strategy="per-lookup"
  */
 public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer
+    implements KnownRepositoryContentConsumer
 {
     /**
      * @plexus.configuration default-value="auto-rename"

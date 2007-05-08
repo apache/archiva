@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.configuration.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,33 +20,37 @@ package org.apache.maven.archiva.configuration.util;
  */
 
 import org.apache.commons.collections.Predicate;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 
 /**
- * Predicate for {@link RepositoryConfiguration} objects that are local (aka managed) 
- * {@link RepositoryConfiguration#isManaged()} 
+ * ProxyConnectorPredicate 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class LocalRepositoryPredicate
+public class ProxyConnectorSelectionPredicate
     implements Predicate
 {
-    public static final Predicate INSTANCE = new LocalRepositoryPredicate();
+    private String sourceId;
 
-    public static Predicate getInstance()
+    private String targetId;
+
+    public ProxyConnectorSelectionPredicate( String sourceId, String targetId )
     {
-        return INSTANCE;
+        this.sourceId = sourceId;
+        this.targetId = targetId;
     }
 
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;
 
-        if ( object instanceof RepositoryConfiguration )
+        if ( object instanceof ProxyConnectorConfiguration )
         {
-            RepositoryConfiguration repoconfig = (RepositoryConfiguration) object;
-            return repoconfig.isManaged();
+            ProxyConnectorConfiguration connector = (ProxyConnectorConfiguration) object;
+            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils
+                .equals( targetId, connector.getTargetRepoId() ) );
         }
 
         return satisfies;

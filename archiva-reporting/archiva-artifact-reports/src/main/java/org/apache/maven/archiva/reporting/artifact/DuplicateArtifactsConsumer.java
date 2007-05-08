@@ -22,7 +22,7 @@ package org.apache.maven.archiva.reporting.artifact;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -32,7 +32,6 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsBySha1ChecksumConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.reporting.artifact.DuplicateArtifactReport;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -72,6 +71,11 @@ public class DuplicateArtifactsConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -149,8 +153,8 @@ public class DuplicateArtifactsConsumer
             while ( it.hasNext() )
             {
                 ArchivaArtifact dupArtifact = (ArchivaArtifact) it.next();
-                
-                if( dupArtifact.equals( artifact ) )
+
+                if ( dupArtifact.equals( artifact ) )
                 {
                     // Skip reference to itself.
                     continue;
@@ -212,11 +216,7 @@ public class DuplicateArtifactsConsumer
     {
         includes.clear();
 
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning().getFileTypeById( "artifacts" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     public void initialize()

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.configuration.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,36 +19,45 @@ package org.apache.maven.archiva.configuration.util;
  * under the License.
  */
 
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+
+import java.util.Comparator;
 
 /**
- * NetworkProxySelectionPredicate 
+ * RepositoryConfigurationComparator 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class NetworkProxySelectionPredicate
-    implements Predicate
+public class RepositoryConfigurationComparator
+    implements Comparator
 {
-    private String proxyId;
 
-    public NetworkProxySelectionPredicate( String id )
+    public int compare( Object o1, Object o2 )
     {
-        this.proxyId = id;
-    }
-
-    public boolean evaluate( Object object )
-    {
-        boolean satisfies = false;
-
-        if ( object instanceof NetworkProxyConfiguration )
+        if ( o1 == null && o2 == null )
         {
-            NetworkProxyConfiguration proxy = (NetworkProxyConfiguration) object;
-            return ( StringUtils.equals( proxyId, proxy.getId() ) );
+            return 0;
         }
 
-        return satisfies;
+        if ( o1 == null && o2 != null )
+        {
+            return 1;
+        }
+
+        if ( o1 != null && o2 == null )
+        {
+            return -1;
+        }
+
+        if ( ( o1 instanceof RepositoryConfiguration ) && ( o2 instanceof RepositoryConfiguration ) )
+        {
+            String id1 = ( (RepositoryConfiguration) o1 ).getId();
+            String id2 = ( (RepositoryConfiguration) o2 ).getId();
+            return id1.compareToIgnoreCase( id2 );
+        }
+
+        return 0;
     }
+
 }

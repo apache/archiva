@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Test the configuration store.
@@ -31,10 +32,14 @@ import java.io.File;
  */
 public class ArchivaConfigurationTest extends PlexusTestCase
 {
+    private FileTypes filetypes;
+    
     public void testDefaults() throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
+        
+        filetypes = (FileTypes) lookup( FileTypes.class );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
@@ -60,9 +65,9 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         assertEquals( "check good consumers", 8, repoScanning.getGoodConsumers().size() );
         assertEquals( "check bad consumers", 1, repoScanning.getBadConsumers().size() );
 
-        FileType artifactTypes = repoScanning.getFileTypeById( "artifacts" );
-        assertNotNull( "check 'artifacts' file type", artifactTypes );
-        assertEquals( "check 'artifacts' patterns", 13, artifactTypes.getPatterns().size() );
+        List patterns = filetypes.getFileTypePatterns( "artifacts" );
+        assertNotNull( "check 'artifacts' file type", patterns );
+        assertEquals( "check 'artifacts' patterns", 13, patterns.size() );
 
         DatabaseScanningConfiguration dbScanning = configuration.getDatabaseScanning();
         assertNotNull( "check database scanning", dbScanning );

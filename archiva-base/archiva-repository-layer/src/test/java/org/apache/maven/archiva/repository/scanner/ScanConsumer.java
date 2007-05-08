@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.scanner;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
@@ -34,7 +35,7 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class ScanConsumer extends AbstractMonitoredConsumer implements RepositoryContentConsumer
+public class ScanConsumer extends AbstractMonitoredConsumer implements KnownRepositoryContentConsumer
 {
     private int processCount = 0;
 

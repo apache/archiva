@@ -21,10 +21,10 @@ package org.apache.maven.archiva.consumers.database;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -50,13 +50,13 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="update-db-artifact"
  *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactUpdateDatabaseConsumer
     extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     private static final String TYPE_NOT_ARTIFACT = "file-not-artifact";
 
@@ -83,6 +83,11 @@ public class ArtifactUpdateDatabaseConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+    
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     /**
      * @plexus.requirement
@@ -222,11 +227,7 @@ public class ArtifactUpdateDatabaseConsumer
     {
         includes.clear();
 
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning().getFileTypeById( "artifacts" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     public void initialize()
@@ -235,10 +236,5 @@ public class ArtifactUpdateDatabaseConsumer
         configuration.addChangeListener( this );
 
         initIncludes();
-
-        if ( includes.isEmpty() )
-        {
-            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list." );
-        }
     }
 }

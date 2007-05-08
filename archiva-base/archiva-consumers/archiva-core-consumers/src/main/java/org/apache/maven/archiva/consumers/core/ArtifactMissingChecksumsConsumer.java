@@ -20,10 +20,10 @@ package org.apache.maven.archiva.consumers.core;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.codehaus.plexus.digest.ChecksumFile;
@@ -45,12 +45,12 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="create-missing-checksums"
  *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     /**
      * @plexus.configuration default-value="create-missing-checksums"
@@ -66,6 +66,11 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+    
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
@@ -206,11 +211,7 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
     {
         includes.clear();
         
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning().getFileTypeById( "artifacts" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     public void initialize() throws InitializationException
@@ -225,10 +226,5 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
         configuration.addChangeListener( this );
 
         initIncludes();
-
-        if ( includes.isEmpty() )
-        {
-            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list.  Check the configuration sources." );
-        }
     }
 }

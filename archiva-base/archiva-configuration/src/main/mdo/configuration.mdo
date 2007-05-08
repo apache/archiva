@@ -598,6 +598,7 @@
           </description>
         </field>
       </fields>
+        <!-- 
       <codeSegments>
         <codeSegment>
           <version>1.0.0+</version>
@@ -641,6 +642,7 @@
           ]]></code>
         </codeSegment>
       </codeSegments>
+       -->
     </class>
     <class>
       <name>FileType</name>

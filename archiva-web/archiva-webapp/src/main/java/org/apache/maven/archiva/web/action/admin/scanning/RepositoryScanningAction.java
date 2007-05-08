@@ -19,17 +19,23 @@ package org.apache.maven.archiva.web.action.admin.scanning;
  * under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * RepositoryScanningAction 
@@ -40,34 +46,74 @@ import javax.servlet.http.HttpServletRequest;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="repositoryScanningAction"
  */
 public class RepositoryScanningAction
-extends PlexusActionSupport
-implements ModelDriven, Preparable, Validateable, SecureAction, ServletRequestAware
+    extends PlexusActionSupport
+    implements Preparable, Validateable, SecureAction
 {
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
 
-    public Object getModel()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    private Map fileTypeMap;
+
+    private List goodConsumers = new ArrayList();
+
+    private List badConsumers = new ArrayList();
 
     public void prepare()
         throws Exception
     {
-        // TODO Auto-generated method stub
-        
+        Configuration config = archivaConfiguration.getConfiguration();
+        FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
+
+        CollectionUtils.forAllDo( config.getRepositoryScanning().getFileTypes(), filetypeToMapClosure );
+        fileTypeMap = filetypeToMapClosure.getMap();
+
+        goodConsumers.clear();
+        goodConsumers.addAll( config.getRepositoryScanning().getGoodConsumers() );
+
+        badConsumers.clear();
+        badConsumers.addAll( config.getRepositoryScanning().getBadConsumers() );
     }
 
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        // TODO Auto-generated method stub
-        return null;
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
+
+        return bundle;
     }
 
-    public void setServletRequest( HttpServletRequest request )
+    public List getBadConsumers()
     {
-        // TODO Auto-generated method stub
-        
+        return badConsumers;
     }
 
+    public void setBadConsumers( List badConsumers )
+    {
+        this.badConsumers = badConsumers;
+    }
+
+    public Map getFileTypeMap()
+    {
+        return fileTypeMap;
+    }
+
+    public void setFileTypeMap( Map fileTypeMap )
+    {
+        this.fileTypeMap = fileTypeMap;
+    }
+
+    public List getGoodConsumers()
+    {
+        return goodConsumers;
+    }
+
+    public void setGoodConsumers( List goodConsumers )
+    {
+        this.goodConsumers = goodConsumers;
+    }
 }

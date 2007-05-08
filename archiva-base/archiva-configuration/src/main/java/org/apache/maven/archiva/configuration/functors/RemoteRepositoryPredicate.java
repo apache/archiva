@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.configuration.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,40 +20,35 @@ package org.apache.maven.archiva.configuration.util;
  */
 
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 
 /**
- * ProxyConnectorPredicate 
+ * Predicate for {@link RepositoryConfiguration} objects that are remote 
+ * {@link RepositoryConfiguration#isRemote()} 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class ProxyConnectorSelectionPredicate
+public class RemoteRepositoryPredicate
     implements Predicate
 {
-    private String sourceId;
+    public static final Predicate INSTANCE = new RemoteRepositoryPredicate();
 
-    private String targetId;
-
-    public ProxyConnectorSelectionPredicate( String sourceId, String targetId )
+    public static Predicate getInstance()
     {
-        this.sourceId = sourceId;
-        this.targetId = targetId;
+        return INSTANCE;
     }
 
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;
 
-        if ( object instanceof ProxyConnectorConfiguration )
+        if ( object instanceof RepositoryConfiguration )
         {
-            ProxyConnectorConfiguration connector = (ProxyConnectorConfiguration) object;
-            return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils
-                .equals( targetId, connector.getTargetRepoId() ) );
+            RepositoryConfiguration repoconfig = (RepositoryConfiguration) object;
+            return repoconfig.isRemote();
         }
 
         return satisfies;
     }
-
 }

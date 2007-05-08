@@ -21,10 +21,10 @@ package org.apache.maven.archiva.consumers.lucene;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
@@ -46,13 +46,13 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="index-content"
  *                   instantiation-strategy="per-lookup"
  */
 public class IndexContentConsumer
     extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     private static final String READ_CONTENT = "read_content";
 
@@ -72,6 +72,11 @@ public class IndexContentConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+    
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     /**
      * @plexus.requirement
@@ -167,12 +172,7 @@ public class IndexContentConsumer
     {
         includes.clear();
 
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning()
-            .getFileTypeById( "indexable-content" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ));
     }
 
     public void initialize()
@@ -188,10 +188,5 @@ public class IndexContentConsumer
         configuration.addChangeListener( this );
 
         initIncludes();
-
-        if ( includes.isEmpty() )
-        {
-            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list." );
-        }
     }
 }

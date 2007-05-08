@@ -20,10 +20,10 @@ package org.apache.maven.archiva.consumers.core;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -40,13 +40,13 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.consumers.RepositoryContentConsumer"
+ * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
  *                   role-hint="auto-remove"
  *                   instantiation-strategy="per-lookup"
  */
 public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
-    implements RepositoryContentConsumer, RegistryListener, Initializable
+    implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     /**
      * @plexus.configuration default-value="auto-remove"
@@ -62,6 +62,11 @@ public class AutoRemoveConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+    
+    /**
+     * @plexus.requirement
+     */
+    private FileTypes filetypes;
 
     private File repositoryDir;
 
@@ -137,13 +142,8 @@ public class AutoRemoveConsumer
     private void initIncludes()
     {
         includes.clear();
-
-        FileType artifactTypes = configuration.getConfiguration().getRepositoryScanning()
-            .getFileTypeById( "auto-remove" );
-        if ( artifactTypes != null )
-        {
-            includes.addAll( artifactTypes.getPatterns() );
-        }
+        
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
     public void initialize()
@@ -159,10 +159,5 @@ public class AutoRemoveConsumer
         configuration.addChangeListener( this );
 
         initIncludes();
-
-        if ( includes.isEmpty() )
-        {
-            throw new InitializationException( "Unable to use " + getId() + " due to empty includes list." );
-        }
     }
 }

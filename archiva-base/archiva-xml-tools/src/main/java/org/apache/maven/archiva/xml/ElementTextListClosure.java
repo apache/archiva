@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.configuration.util;
+package org.apache.maven.archiva.xml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,45 +19,34 @@ package org.apache.maven.archiva.configuration.util;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.commons.collections.Closure;
+import org.dom4j.Element;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * RepositoryConfigurationComparator 
+ * Gather the text from a collection of {@link Element}'s into a {@link List}
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryConfigurationComparator
-    implements Comparator
+public class ElementTextListClosure
+    implements Closure
 {
+    private List list = new ArrayList();
 
-    public int compare( Object o1, Object o2 )
+    public void execute( Object input )
     {
-        if ( o1 == null && o2 == null )
+        if ( input instanceof Element )
         {
-            return 0;
+            Element elem = (Element) input;
+            list.add( elem.getTextTrim() );
         }
-
-        if ( o1 == null && o2 != null )
-        {
-            return 1;
-        }
-
-        if ( o1 != null && o2 == null )
-        {
-            return -1;
-        }
-
-        if ( ( o1 instanceof RepositoryConfiguration ) && ( o2 instanceof RepositoryConfiguration ) )
-        {
-            String id1 = ( (RepositoryConfiguration) o1 ).getId();
-            String id2 = ( (RepositoryConfiguration) o2 ).getId();
-            return id1.compareToIgnoreCase( id2 );
-        }
-
-        return 0;
     }
 
+    public List getList()
+    {
+        return list;
+    }
 }
