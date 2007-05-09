@@ -574,7 +574,7 @@
           </description>
         </field>
         <field>
-          <name>goodConsumers</name>
+          <name>knownContentConsumers</name>
           <version>1.0.0+</version>
           <required>true</required>
           <association>
@@ -582,11 +582,11 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>
-            The list of consumers for good content.
+            The list of active consumers IDs for known content.
           </description>
         </field>
         <field>
-          <name>badConsumers</name>
+          <name>invalidContentConsumers</name>
           <version>1.0.0+</version>
           <required>true</required>
           <association>
@@ -594,55 +594,10 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>
-            The list of consumer IDs for this file processor.
+            The list of active consumer IDs for invalid content.
           </description>
         </field>
       </fields>
-        <!-- 
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    /**
-     * Get a specific file type by ID.
-     * 
-     * @param id the id of the filetype to get. (null or empty will result in null return)
-     * @return the {@link FileType} or null if the id is not found.
-     */
-    public FileType getFileTypeById( String id )
-    {
-        if ( id == null )
-        {
-            return null;
-        }
-
-        if ( id.trim().length() <= 0 )
-        {
-            return null;
-        }
-
-        java.util.List types = getFileTypes();
-        if ( types == null )
-        {
-            return null;
-        }
-        
-        java.util.Iterator it = types.iterator();
-        while ( it.hasNext() )
-        {
-            FileType filetype = (FileType) it.next();
-            if ( id.equals( filetype.getId() ) )
-            {
-                return filetype;
-            }
-        }
-
-        return null;
-    }          
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-       -->
     </class>
     <class>
       <name>FileType</name>
@@ -693,7 +648,7 @@
           </description>
         </field>
         <field>
-          <name>processedConsumers</name>
+          <name>cleanupConsumers</name>
           <version>1.0.0+</version>
           <required>true</required>
           <association>
@@ -701,7 +656,9 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>
-            The list of consumers for previously processed ArchivaArtifact database objects.
+            The list of consumers for previously processed ArchivaArtifact database 
+            objects that no longer exist on the filesystem, and might need to 
+            undergo a cleanup.
           </description>
         </field>
       </fields>

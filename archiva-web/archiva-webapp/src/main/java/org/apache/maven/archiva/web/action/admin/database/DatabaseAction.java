@@ -19,17 +19,23 @@ package org.apache.maven.archiva.web.action.admin.database;
  * under the License.
  */
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
-import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
+import org.apache.maven.archiva.database.updater.DatabaseConsumers;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
+import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DatabaseAction 
@@ -40,34 +46,101 @@ import javax.servlet.http.HttpServletRequest;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="databaseAction"
  */
 public class DatabaseAction
-extends PlexusActionSupport
-implements ModelDriven, Preparable, Validateable, SecureAction, ServletRequestAware
+    extends PlexusActionSupport
+    implements Preparable, SecureAction
 {
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
 
-    public Object getModel()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    /**
+     * @plexus.requirement
+     */
+    private DatabaseConsumers databaseConsumers;
+
+    private String cron;
+
+    /**
+     * List of {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
+     */
+    private List unprocessedConsumers;
+
+    /**
+     * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
+     */
+    private List cleanupConsumers;
 
     public void prepare()
         throws Exception
     {
-        // TODO Auto-generated method stub
+        Configuration config = archivaConfiguration.getConfiguration();
+        DatabaseScanningConfiguration dbscanning = config.getDatabaseScanning();
+
+        this.cron = dbscanning.getCronExpression();
+
+        AddAdminDatabaseConsumerClosure addAdminDbConsumer;
         
+        getLogger().info( "Total Available Unprocessed Consumers: " + databaseConsumers.getAvailableUnprocessedConsumers().size() );
+        getLogger().info( "Total Available Cleanup Consumers: " + databaseConsumers.getAvailableCleanupConsumers().size() );
+
+        addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getUnprocessedConsumers() );
+        CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
+        this.unprocessedConsumers = addAdminDbConsumer.getList();
+        Collections.sort( this.unprocessedConsumers, AdminRepositoryConsumerComparator.getInstance() );
+
+        addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getCleanupConsumers() );
+        CollectionUtils.forAllDo( databaseConsumers.getAvailableCleanupConsumers(), addAdminDbConsumer );
+        this.cleanupConsumers = addAdminDbConsumer.getList();
+        Collections.sort( this.cleanupConsumers, AdminRepositoryConsumerComparator.getInstance() );
     }
 
+    public String updateUnprocessedConsumers()
+    {
+        getLogger().info( "updateUnprocesedConsumers()" );
+        return INPUT;
+    }
+
+    public String updateCleanupConsumers()
+    {
+        getLogger().info( "updateCleanupConsumers()" );
+        return INPUT;
+    }
+    
+    public String updateSchedule()
+    {
+        getLogger().info( "updateSchedule()" );
+        return INPUT;
+    }
+    
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
-        // TODO Auto-generated method stub
-        return null;
+        SecureActionBundle bundle = new SecureActionBundle();
+
+        bundle.setRequiresAuthentication( true );
+        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
+
+        return bundle;
     }
 
-    public void setServletRequest( HttpServletRequest request )
+    public String getCron()
     {
-        // TODO Auto-generated method stub
-        
+        return cron;
     }
 
+    public void setCron( String cron )
+    {
+        this.cron = cron;
+    }
+
+    public List getCleanupConsumers()
+    {
+        return cleanupConsumers;
+    }
+
+    public List getUnprocessedConsumers()
+    {
+        return unprocessedConsumers;
+    }
 }

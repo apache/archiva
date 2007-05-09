@@ -60,8 +60,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
         assertNotNull( "check repository scanning", repoScanning );
         assertEquals( "check file types", 4, repoScanning.getFileTypes().size() );
-        assertEquals( "check good consumers", 8, repoScanning.getGoodConsumers().size() );
-        assertEquals( "check bad consumers", 1, repoScanning.getBadConsumers().size() );
+        assertEquals( "check known consumers", 8, repoScanning.getKnownContentConsumers().size() );
+        assertEquals( "check invalid consumers", 1, repoScanning.getInvalidContentConsumers().size() );
 
         List patterns = filetypes.getFileTypePatterns( "artifacts" );
         assertNotNull( "check 'artifacts' file type", patterns );
@@ -70,7 +70,7 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         DatabaseScanningConfiguration dbScanning = configuration.getDatabaseScanning();
         assertNotNull( "check database scanning", dbScanning );
         assertEquals( "check unprocessed consumers", 6, dbScanning.getUnprocessedConsumers().size() );
-        assertEquals( "check processed consumers", 3, dbScanning.getProcessedConsumers().size() );
+        assertEquals( "check cleanup consumers", 3, dbScanning.getCleanupConsumers().size() );
 
         RepositoryConfiguration repository =
             (RepositoryConfiguration) configuration.getRepositories().iterator().next();

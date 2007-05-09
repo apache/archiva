@@ -336,30 +336,6 @@
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
     </action>
     
-    <action name="addRepositoryScanning" class="configureScanningAction" method="add">
-      <result name="input">/WEB-INF/jsp/admin/addRepositoryScanning.jsp</result>
-      <result name="success" type="redirect-action">repositoryScanning</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-    
-    <action name="editRepositoryScanning" class="configureScanningAction" method="edit">
-      <result name="input">/WEB-INF/jsp/admin/editRepositoryScanning.jsp</result>
-      <result name="success" type="redirect-action">repositoryScanning</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-    
-    <action name="saveRepositoryScanning" class="configureScanningAction" method="save">
-      <result name="input">/WEB-INF/jsp/admin/editRepositoryScanning.jsp</result>
-      <result name="success" type="redirect-action">repositoryScanning</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-    
-    <action name="deleteRepositoryScanning" class="configureScanningAction" method="confirm">
-      <result name="input">/WEB-INF/jsp/admin/deleteRepositoryScanning.jsp</result>
-      <result name="success" type="redirect-action">repositoryScanning</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-    
     <!-- .\ DATABASE \.________________________________________________ -->
     
     <action name="database" class="databaseAction" method="input">
@@ -367,7 +343,6 @@
     </action>
     
     <!-- .\ CONFIGURATION \.___________________________________________ -->
-    
     
     <action name="configure" class="configureAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>

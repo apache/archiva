@@ -23,10 +23,16 @@ import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.security.rbac.Resource;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
@@ -55,58 +61,100 @@ public class RepositoryScanningAction
      */
     private ArchivaConfiguration archivaConfiguration;
 
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentConsumers repoconsumerUtil;
+
     private Map fileTypeMap;
-    
+
     private List fileTypeIds;
 
-    private List goodConsumers = new ArrayList();
+    /**
+     * List of {@link AdminRepositoryConsumer} objects for consumers of known content.
+     */
+    private List knownContentConsumers = new ArrayList();
 
-    private List badConsumers = new ArrayList();
-    
+    /**
+     * List of {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
+     */
+    private List invalidContentConsumers = new ArrayList();
+
     private String pattern;
-    
+
     private String fileTypeId;
 
-    public void prepare()
-        throws Exception
+    public void addActionError( String anErrorMessage )
     {
-        Configuration config = archivaConfiguration.getConfiguration();
-        FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
-
-        CollectionUtils.forAllDo( config.getRepositoryScanning().getFileTypes(), filetypeToMapClosure );
-        fileTypeMap = filetypeToMapClosure.getMap();
-
-        goodConsumers.clear();
-        goodConsumers.addAll( config.getRepositoryScanning().getGoodConsumers() );
-
-        badConsumers.clear();
-        badConsumers.addAll( config.getRepositoryScanning().getBadConsumers() );
-        
-        fileTypeIds = new ArrayList();
-        fileTypeIds.addAll( fileTypeMap.keySet() );
-        Collections.sort( fileTypeIds );
+        super.addActionError( anErrorMessage );
+        getLogger().warn( "[ActionError] " + anErrorMessage );
     }
     
-    public String removeFiletypePattern()
+    public void addActionMessage( String aMessage )
     {
-        getLogger().info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
-        
-        // TODO: remove the filetype
-        // TODO: save configuration
-        
-        return INPUT;
+        super.addActionMessage( aMessage );
+        getLogger().info( "[ActionMessage] " + aMessage );
     }
     
     public String addFiletypePattern()
     {
         getLogger().info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
-        
-        // TODO: add the filetype.
-        // TODO: report error if filetype pattern already exists.
-        // TODO: report success (message) if added successfully.
-        // TODO: save configuration each time.
-        
-        return INPUT;
+
+        if ( !isValidFiletypeCommand() )
+        {
+            return INPUT;
+        }
+
+        String id = getFileTypeId();
+        String pattern = getPattern();
+
+        FileType filetype = findFileType( id );
+        if ( filetype == null )
+        {
+            addActionError( "Pattern not added, unable to find filetype " + id );
+            return INPUT;
+        }
+
+        if ( filetype.getPatterns().contains( pattern ) )
+        {
+            addActionError( "Not adding pattern \"" + pattern + "\" to filetype " + id + " as it already exists." );
+            return INPUT;
+        }
+
+        filetype.addPattern( pattern );
+        addActionMessage( "Added pattern \"" + pattern + "\" to filetype " + id );
+
+        return saveConfiguration();
+    }
+
+    public String getFileTypeId()
+    {
+        return fileTypeId;
+    }
+
+    public List getFileTypeIds()
+    {
+        return fileTypeIds;
+    }
+
+    public Map getFileTypeMap()
+    {
+        return fileTypeMap;
+    }
+
+    public List getInvalidContentConsumers()
+    {
+        return invalidContentConsumers;
+    }
+
+    public List getKnownContentConsumers()
+    {
+        return knownContentConsumers;
+    }
+
+    public String getPattern()
+    {
+        return pattern;
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -120,24 +168,55 @@ public class RepositoryScanningAction
         return bundle;
     }
 
-    public List getBadConsumers()
+    public void prepare()
+        throws Exception
     {
-        return badConsumers;
+        Configuration config = archivaConfiguration.getConfiguration();
+        RepositoryScanningConfiguration reposcanning = config.getRepositoryScanning();
+
+        FiletypeToMapClosure filetypeToMapClosure = new FiletypeToMapClosure();
+
+        CollectionUtils.forAllDo( reposcanning.getFileTypes(), filetypeToMapClosure );
+        fileTypeMap = filetypeToMapClosure.getMap();
+
+        AddAdminRepoConsumerClosure addAdminRepoConsumer;
+
+        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getKnownContentConsumers() );
+        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
+        knownContentConsumers.clear();
+        knownContentConsumers.addAll( addAdminRepoConsumer.getList() );
+        Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+
+        addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getInvalidContentConsumers() );
+        CollectionUtils.forAllDo( repoconsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
+        invalidContentConsumers.clear();
+        invalidContentConsumers.addAll( addAdminRepoConsumer.getList() );
+        Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+
+        fileTypeIds = new ArrayList();
+        fileTypeIds.addAll( fileTypeMap.keySet() );
+        Collections.sort( fileTypeIds );
     }
 
-    public Map getFileTypeMap()
+    public String removeFiletypePattern()
     {
-        return fileTypeMap;
-    }
+        getLogger().info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
 
-    public List getGoodConsumers()
-    {
-        return goodConsumers;
-    }
+        if ( !isValidFiletypeCommand() )
+        {
+            return INPUT;
+        }
 
-    public String getFileTypeId()
-    {
-        return fileTypeId;
+        FileType filetype = findFileType( getFileTypeId() );
+        if ( filetype == null )
+        {
+            addActionError( "Pattern not removed, unable to find filetype " + getFileTypeId() );
+            return INPUT;
+        }
+
+        filetype.removePattern( getPattern() );
+
+        return saveConfiguration();
     }
 
     public void setFileTypeId( String fileTypeId )
@@ -145,18 +224,56 @@ public class RepositoryScanningAction
         this.fileTypeId = fileTypeId;
     }
 
-    public String getPattern()
-    {
-        return pattern;
-    }
-
     public void setPattern( String pattern )
     {
         this.pattern = pattern;
     }
 
-    public List getFileTypeIds()
+    public String updateInvalidConsumers()
     {
-        return fileTypeIds;
+        addActionMessage("Update Invalid Consumers");
+        return INPUT;
+    }
+
+    public String updateKnownConsumers()
+    {
+        addActionMessage("Update Known Consumers");
+        return INPUT;
+    }
+
+    private FileType findFileType( String id )
+    {
+        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
+        return (FileType) CollectionUtils.find( scanning.getFileTypes(), new FiletypeSelectionPredicate( id ) );
+    }
+
+    private boolean isValidFiletypeCommand()
+    {
+        if ( StringUtils.isBlank( getFileTypeId() ) )
+        {
+            addActionError( "Unable to process blank filetype id." );
+        }
+
+        if ( StringUtils.isBlank( getPattern() ) )
+        {
+            addActionError( "Unable to process blank pattern." );
+        }
+
+        return !hasActionErrors();
+    }
+
+    private String saveConfiguration()
+    {
+        try
+        {
+            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Unable to save configuration: " + e.getMessage() );
+        }
+
+        return INPUT;
     }
 }

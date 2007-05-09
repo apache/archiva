@@ -217,7 +217,7 @@ public class JdoDatabaseUpdater
         }
 
         this.activeUnprocessedConsumers.addAll( getActiveConsumerList( dbScanning.getUnprocessedConsumers() ) );
-        this.activeProcessedConsumers.addAll( getActiveConsumerList( dbScanning.getProcessedConsumers() ) );
+        this.activeProcessedConsumers.addAll( getActiveConsumerList( dbScanning.getCleanupConsumers() ) );
     }
 
     private List getActiveConsumerList( List potentialConsumerList )

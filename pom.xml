@@ -325,6 +325,11 @@
          </dependency>
          <dependency>
             <groupId>org.apache.maven.archiva</groupId>
+            <artifactId>archiva-signature-consumers</artifactId>
+            <version>${archiva.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.maven.archiva</groupId>
             <artifactId>archiva-model</artifactId>
             <version>${archiva.version}</version>
          </dependency>

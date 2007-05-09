@@ -51,7 +51,7 @@ public class DefaultRepositoryScanner
     /**
      * @plexus.requirement
      */
-    private RepositoryContentConsumerUtil consumerUtil;
+    private RepositoryContentConsumers consumerUtil;
 
     public RepositoryContentStatistics scan( ArchivaRepository repository, long changesSince )
         throws RepositoryException

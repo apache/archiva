@@ -147,19 +147,19 @@
         </patterns>
       </fileType>
     </fileTypes>
-    <goodConsumers>
-      <goodConsumer>update-db-artifact</goodConsumer>
-      <goodConsumer>create-missing-checksums</goodConsumer>
-      <goodConsumer>update-db-repository-metadata</goodConsumer>
-      <goodConsumer>validate-checksum</goodConsumer>
-      <goodConsumer>validate-signature</goodConsumer>
-      <goodConsumer>index-content</goodConsumer>
-      <goodConsumer>auto-remove</goodConsumer>
-      <goodConsumer>auto-rename</goodConsumer>
-    </goodConsumers>
-    <badConsumers>
-      <badConsumer>update-db-bad-content</badConsumer>
-    </badConsumers>
+    <knownContentConsumers>
+      <knownContentConsumer>update-db-artifact</knownContentConsumer>
+      <knownContentConsumer>create-missing-checksums</knownContentConsumer>
+      <knownContentConsumer>update-db-repository-metadata</knownContentConsumer>
+      <knownContentConsumer>validate-checksum</knownContentConsumer>
+      <knownContentConsumer>validate-signature</knownContentConsumer>
+      <knownContentConsumer>index-content</knownContentConsumer>
+      <knownContentConsumer>auto-remove</knownContentConsumer>
+      <knownContentConsumer>auto-rename</knownContentConsumer>
+    </knownContentConsumers>
+    <invalidContentConsumers>
+      <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>
+    </invalidContentConsumers>
   </repositoryScanning>
 
   <databaseScanning>
@@ -172,11 +172,11 @@
       <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
       <unprocessedConsumer>index-public-methods</unprocessedConsumer>
     </unprocessedConsumers>
-    <processedConsumers>
-      <processedConsumer>not-present-remove-db-artifact</processedConsumer>
-      <processedConsumer>not-present-remove-db-project</processedConsumer>
-      <processedConsumer>not-present-remove-indexed</processedConsumer>
-    </processedConsumers>
+    <cleanupConsumers>
+      <cleanupConsumer>not-present-remove-db-artifact</cleanupConsumer>
+      <cleanupConsumer>not-present-remove-db-project</cleanupConsumer>
+      <cleanupConsumer>not-present-remove-indexed</cleanupConsumer>
+    </cleanupConsumers>
   </databaseScanning>
 
 </configuration>

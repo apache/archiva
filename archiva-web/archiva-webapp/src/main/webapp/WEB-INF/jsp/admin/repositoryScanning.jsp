@@ -144,65 +144,113 @@
   </c:otherwise>
 </c:choose>
 
-<h2>Repository Scanning - Consumers of Good Content</h2>
+<h2>Repository Scanning - Consumers of Known Content</h2>
 
 <c:choose>
-  <c:when test="${empty(goodConsumers)}">
+  <c:when test="${empty(knownContentConsumers)}">
     <%-- No Good Consumers. Eeek! --%>
-    <strong>There are no good consumers configured.</strong>
+    <strong>There are no consumers of known content available.</strong>
   </c:when>
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <table>
-      <c:forEach items="${goodConsumers}" var="consumer" varStatus="i">
+    <ww:form method="post" action="repositoryScanning!updateKnownConsumers" 
+             namespace="/admin" validate="false" theme="simple">
+    <table class="consumers">
+      <tr>
+        <th>&nbsp;</th>
+        <th>Enabled?</th>
+        <th>ID</th>
+        <th>Description</th>
+      </tr>
+      <c:forEach items="${knownContentConsumers}" var="consumer" varStatus="i">
         <c:choose>
           <c:when test='${(i.index)%2 eq 0}'>
-            <c:set var="rowColor" value="dark" scope="page" />
+            <c:set var="bgcolor" value="even" scope="page" />
           </c:when>
           <c:otherwise>
-            <c:set var="rowColor" value="lite" scope="page" />
+            <c:set var="bgcolor" value="odd" scope="page" />
           </c:otherwise>
         </c:choose>
 
         <tr>
-          <td><code>${consumer}</code></td>
-          <td><img src="<c:url value="/images/icons/delete.gif" />" /></td>
+          <td class="${bgcolor}">
+            <ww:checkbox name="enabledKnownConsumer[]" theme="simple" value="${consumer.enabled}" />
+          </td>
+          <td class="${bgcolor}">
+            <c:if test="${consumer.enabled}">
+              <strong>enabled</strong>
+            </c:if>
+          </td>
+          <td class="${bgcolor}">
+            <code>${consumer.id}</code>
+          </td>
+          <td class="${bgcolor}">${consumer.description}</td>
         </tr>
       </c:forEach>
+      <tr>
+        <td colspan="4">
+          <ww:submit value="Update Consumers" />
+        </td>
+      </tr>
     </table>
+    </ww:form>
 
   </c:otherwise>
 </c:choose>
 
 
-<h2>Repository Scanning - Consumers of Bad Content</h2>
+<h2>Repository Scanning - Consumers of Invalid Content</h2>
 
 <c:choose>
-  <c:when test="${empty(badConsumers)}">
-    <%-- No Bad Consumers. Eeek! --%>
-    <strong>There are no bad consumers configured.</strong>
+  <c:when test="${empty(invalidContentConsumers)}">
+    <%-- No Consumers. Eeek! --%>
+    <strong>There are no consumers of invalid content available.</strong>
   </c:when>
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <table>
-      <c:forEach items="${badConsumers}" var="consumer" varStatus="i">
+    <ww:form method="post" action="repositoryScanning!updateInvalidConsumers" 
+             namespace="/admin" validate="false" theme="simple">
+    <table class="consumers">
+      <tr>
+        <th>&nbsp;</th>
+        <th>Enabled?</th>
+        <th>ID</th>
+        <th>Description</th>
+      </tr>
+      <c:forEach items="${invalidContentConsumers}" var="consumer" varStatus="i">
         <c:choose>
           <c:when test='${(i.index)%2 eq 0}'>
-            <c:set var="rowColor" value="dark" scope="page" />
+            <c:set var="bgcolor" value="even" scope="page" />
           </c:when>
           <c:otherwise>
-            <c:set var="rowColor" value="lite" scope="page" />
+            <c:set var="bgcolor" value="odd" scope="page" />
           </c:otherwise>
         </c:choose>
 
         <tr>
-          <td><code>${consumer}</code></td>
-          <td><img src="<c:url value="/images/icons/delete.gif" />" /></td>
+          <td class="${bgcolor}">
+            <ww:checkbox name="enabledUnknownConsumer[]" theme="simple" value="${consumer.enabled}" />
+          </td>
+          <td class="${bgcolor}">
+            <c:if test="${consumer.enabled}">
+              <strong>enabled</strong>
+            </c:if>
+          </td>
+          <td class="${bgcolor}">
+            <code>${consumer.id}</code>
+          </td>
+          <td class="${bgcolor}">${consumer.description}</td>
         </tr>
       </c:forEach>
+      <tr>
+        <td colspan="4">
+          <ww:submit value="Update Consumers" />
+        </td>
+      </tr>
     </table>
+    </ww:form>
 
   </c:otherwise>
 </c:choose></div>

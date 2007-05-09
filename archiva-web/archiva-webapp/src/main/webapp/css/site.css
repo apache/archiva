@@ -43,7 +43,6 @@
 	float: right;
 	font-size: small;
 	font-weight: bold;
-	xmargin: 0px auto;
 	margin: 15px auto 0px auto;
 	height: auto;
 	width: 150px;
@@ -148,7 +147,9 @@
 }
 
 .actionMessage {
+	font-size: 1.0em;
 	font-weight: bold;
+	color: blue;
 }
 
 .errorBullet {
@@ -318,11 +319,27 @@ div.filetype table td.controls {
 	width: 5%;
 }
 
-div.filetype table td.odd {
+div.filetype table td.odd,
+div.admin table.consumers td.odd {
 	background-color: #dddddd;	
 }
 
-div.filetype table td.event {
+div.filetype table td.even,
+div.admin table.consumers td.even {
 	background-color: white;	
 }
 
+div.admin table.consumers {
+	margin-left: 15px;
+	border: 1px solid gray;
+}
+
+div.admin table.consumers th {
+	font-size: 1.0em;
+	background-color: #cccccc;
+	text-align: left;
+}
+
+div.admin table.consumers td strong {
+	font-size: 0.8em;
+}

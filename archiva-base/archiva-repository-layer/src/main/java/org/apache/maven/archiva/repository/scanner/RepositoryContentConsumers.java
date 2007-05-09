@@ -41,9 +41,9 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumerUtil"
+ * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers"
  */
-public class RepositoryContentConsumerUtil
+public class RepositoryContentConsumers
 {
     /**
      * @plexus.requirement
@@ -53,12 +53,12 @@ public class RepositoryContentConsumerUtil
     /**
      * @plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
      */
-    private List availableGoodConsumers;
+    private List availableKnownConsumers;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer"
      */
-    private List availableBadConsumers;
+    private List availableInvalidConsumers;
 
     class SelectedKnownRepoConsumersPredicate
         implements Predicate
@@ -72,7 +72,7 @@ public class RepositoryContentConsumerUtil
                 KnownRepositoryContentConsumer known = (KnownRepositoryContentConsumer) object;
                 Configuration config = archivaConfiguration.getConfiguration();
 
-                return config.getRepositoryScanning().getGoodConsumers().contains( known.getId() );
+                return config.getRepositoryScanning().getKnownContentConsumers().contains( known.getId() );
             }
 
             return satisfies;
@@ -87,12 +87,12 @@ public class RepositoryContentConsumerUtil
         {
             boolean satisfies = false;
 
-            if ( object instanceof KnownRepositoryContentConsumer )
+            if ( object instanceof InvalidRepositoryContentConsumer )
             {
                 InvalidRepositoryContentConsumer invalid = (InvalidRepositoryContentConsumer) object;
                 Configuration config = archivaConfiguration.getConfiguration();
 
-                return config.getRepositoryScanning().getBadConsumers().contains( invalid.getId() );
+                return config.getRepositoryScanning().getInvalidContentConsumers().contains( invalid.getId() );
             }
 
             return satisfies;
@@ -128,25 +128,33 @@ public class RepositoryContentConsumerUtil
     {
         return new SelectedInvalidRepoConsumersPredicate();
     }
+    
+    public List getSelectedKnownConsumerIds()
+    {
+        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
+        return scanning.getKnownContentConsumers();
+    }
+    
+    public List getSelectedInvalidConsumerIds()
+    {
+        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
+        return scanning.getInvalidContentConsumers();
+    }
 
     public Map getSelectedKnownConsumersMap()
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-
         RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
         Closure ifclosure = IfClosure.getInstance( getKnownSelectionPredicate(), consumerMapClosure );
-        CollectionUtils.forAllDo( scanning.getGoodConsumers(), ifclosure );
+        CollectionUtils.forAllDo( availableKnownConsumers, ifclosure );
 
         return consumerMapClosure.getMap();
     }
 
     public Map getSelectedInvalidConsumersMap()
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-
         RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
         Closure ifclosure = IfClosure.getInstance( getInvalidSelectionPredicate(), consumerMapClosure );
-        CollectionUtils.forAllDo( scanning.getGoodConsumers(), ifclosure );
+        CollectionUtils.forAllDo( availableInvalidConsumers, ifclosure );
 
         return consumerMapClosure.getMap();
     }
@@ -156,7 +164,7 @@ public class RepositoryContentConsumerUtil
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
 
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( scanning.getGoodConsumers(), getKnownSelectionPredicate() ));
+        ret.addAll( CollectionUtils.select( scanning.getKnownContentConsumers(), getKnownSelectionPredicate() ));
 
         return ret;
     }
@@ -166,18 +174,18 @@ public class RepositoryContentConsumerUtil
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
 
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( scanning.getBadConsumers(), getInvalidSelectionPredicate() ));
+        ret.addAll( CollectionUtils.select( scanning.getInvalidContentConsumers(), getInvalidSelectionPredicate() ));
 
         return ret;
     }
 
     public List getAvailableKnownConsumers()
     {
-        return availableGoodConsumers;
+        return availableKnownConsumers;
     }
 
     public List getAvailableInvalidConsumers()
     {
-        return availableBadConsumers;
+        return availableInvalidConsumers;
     }
 }

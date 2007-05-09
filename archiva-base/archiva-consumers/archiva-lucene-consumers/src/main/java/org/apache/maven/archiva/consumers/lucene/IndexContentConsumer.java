@@ -79,7 +79,7 @@ public class IndexContentConsumer
     private FileTypes filetypes;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role-hint="lucene"
      */
     private RepositoryContentIndexFactory indexFactory;
 
