@@ -71,6 +71,10 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-commons</artifactId>
+    </dependency>
     <!-- TEST DEPS -->
     <dependency>
       <groupId>hsqldb</groupId>

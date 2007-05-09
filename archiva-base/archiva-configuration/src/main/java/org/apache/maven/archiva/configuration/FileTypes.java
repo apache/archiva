@@ -49,11 +49,13 @@ public class FileTypes
     implements Initializable
 {
     public static final String ARTIFACTS = "artifacts";
-    
+
     public static final String AUTO_REMOVE = "auto-remove";
-    
+
     public static final String INDEXABLE_CONTENT = "indexable-content";
-    
+
+    public static final String IGNORED = "ignored";
+
     /**
      * @plexus.requirement
      */
@@ -110,7 +112,8 @@ public class FileTypes
 
         try
         {
-            URL defaultArchivaXml = this.getClass().getResource( "" );
+            URL defaultArchivaXml = this.getClass()
+                .getResource( "/org/apache/maven/archiva/configuration/default-archiva.xml" );
 
             XMLReader reader = new XMLReader( "configuration", defaultArchivaXml );
             List resp = reader.getElementList( "//configuration/repositoryScanning/fileTypes/fileType" );

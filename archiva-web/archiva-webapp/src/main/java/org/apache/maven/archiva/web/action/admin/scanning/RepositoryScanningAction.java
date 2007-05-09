@@ -34,6 +34,7 @@ import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,10 +56,16 @@ public class RepositoryScanningAction
     private ArchivaConfiguration archivaConfiguration;
 
     private Map fileTypeMap;
+    
+    private List fileTypeIds;
 
     private List goodConsumers = new ArrayList();
 
     private List badConsumers = new ArrayList();
+    
+    private String pattern;
+    
+    private String fileTypeId;
 
     public void prepare()
         throws Exception
@@ -74,6 +81,32 @@ public class RepositoryScanningAction
 
         badConsumers.clear();
         badConsumers.addAll( config.getRepositoryScanning().getBadConsumers() );
+        
+        fileTypeIds = new ArrayList();
+        fileTypeIds.addAll( fileTypeMap.keySet() );
+        Collections.sort( fileTypeIds );
+    }
+    
+    public String removeFiletypePattern()
+    {
+        getLogger().info( "Remove File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        
+        // TODO: remove the filetype
+        // TODO: save configuration
+        
+        return INPUT;
+    }
+    
+    public String addFiletypePattern()
+    {
+        getLogger().info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
+        
+        // TODO: add the filetype.
+        // TODO: report error if filetype pattern already exists.
+        // TODO: report success (message) if added successfully.
+        // TODO: save configuration each time.
+        
+        return INPUT;
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -92,19 +125,9 @@ public class RepositoryScanningAction
         return badConsumers;
     }
 
-    public void setBadConsumers( List badConsumers )
-    {
-        this.badConsumers = badConsumers;
-    }
-
     public Map getFileTypeMap()
     {
         return fileTypeMap;
-    }
-
-    public void setFileTypeMap( Map fileTypeMap )
-    {
-        this.fileTypeMap = fileTypeMap;
     }
 
     public List getGoodConsumers()
@@ -112,8 +135,28 @@ public class RepositoryScanningAction
         return goodConsumers;
     }
 
-    public void setGoodConsumers( List goodConsumers )
+    public String getFileTypeId()
     {
-        this.goodConsumers = goodConsumers;
+        return fileTypeId;
+    }
+
+    public void setFileTypeId( String fileTypeId )
+    {
+        this.fileTypeId = fileTypeId;
+    }
+
+    public String getPattern()
+    {
+        return pattern;
+    }
+
+    public void setPattern( String pattern )
+    {
+        this.pattern = pattern;
+    }
+
+    public List getFileTypeIds()
+    {
+        return fileTypeIds;
     }
 }

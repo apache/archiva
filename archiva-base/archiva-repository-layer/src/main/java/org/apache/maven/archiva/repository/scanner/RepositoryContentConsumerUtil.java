@@ -30,6 +30,7 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ public class RepositoryContentConsumerUtil
         return new SelectedInvalidRepoConsumersPredicate();
     }
 
-    public Map getSelectedKnownConsumers()
+    public Map getSelectedKnownConsumersMap()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
 
@@ -139,7 +140,7 @@ public class RepositoryContentConsumerUtil
         return consumerMapClosure.getMap();
     }
 
-    public Map getSelectedInvalidConsumers()
+    public Map getSelectedInvalidConsumersMap()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
 
@@ -148,6 +149,26 @@ public class RepositoryContentConsumerUtil
         CollectionUtils.forAllDo( scanning.getGoodConsumers(), ifclosure );
 
         return consumerMapClosure.getMap();
+    }
+    
+    public List getSelectedKnownConsumers()
+    {
+        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
+
+        List ret = new ArrayList();
+        ret.addAll( CollectionUtils.select( scanning.getGoodConsumers(), getKnownSelectionPredicate() ));
+
+        return ret;
+    }
+
+    public List getSelectedInvalidConsumers()
+    {
+        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
+
+        List ret = new ArrayList();
+        ret.addAll( CollectionUtils.select( scanning.getBadConsumers(), getInvalidSelectionPredicate() ));
+
+        return ret;
     }
 
     public List getAvailableKnownConsumers()

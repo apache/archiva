@@ -308,3 +308,21 @@ div.admin div.controls {
 	float: right;
 	font-size: 8pt !important;
 }
+
+div.admin div.filetype table {
+	margin-left: 25px;
+	border: 1px solid gray;
+}
+
+div.filetype table td.controls {
+	width: 5%;
+}
+
+div.filetype table td.odd {
+	background-color: #dddddd;	
+}
+
+div.filetype table td.event {
+	background-color: white;	
+}
+

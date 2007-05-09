@@ -27,6 +27,7 @@ import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public class RepositoryScannerTest
 
         return repo;
     }
-    
+
     private void assertMinimumHits( String msg, int minimumHitCount, long actualCount )
     {
         if ( actualCount < minimumHitCount )
@@ -82,27 +83,54 @@ public class RepositoryScannerTest
         }
     }
 
+    private RepositoryScanner lookupRepositoryScanner()
+        throws Exception
+    {
+        return (RepositoryScanner) lookup( RepositoryScanner.class );
+    }
+
+    private List getIgnoreList()
+    {
+        List ignores = new ArrayList();
+        ignores.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
+        return ignores;
+    }
+
     public void testDefaultRepositoryScanner()
-        throws RepositoryException
+        throws Exception
     {
         ArchivaRepository repository = createDefaultRepository();
 
-        List consumers = new ArrayList();
-        ScanConsumer consumer = new ScanConsumer();
-        consumer.setIncludes( new String[] { "**/*.jar" } );
-        consumers.add( consumer );
+        List knownConsumers = new ArrayList();
+        KnownScanConsumer consumer = new KnownScanConsumer();
+        consumer.setIncludes( new String[] {
+            "**/*.jar",
+            "**/*.war",
+            "**/*.pom",
+            "**/maven-metadata.xml",
+            "**/*-site.xml",
+            "**/*.zip",
+            "**/*.tar.gz",
+            "**/*.sha1",
+            "**/*.md5" } );
+        knownConsumers.add( consumer );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-        boolean includeSnapshots = true;
-        RepositoryContentStatistics stats = scanner.scan( repository, consumers, includeSnapshots );
+        List invalidConsumers = new ArrayList();
+        InvalidScanConsumer badconsumer = new InvalidScanConsumer();
+        invalidConsumers.add( badconsumer );
+
+        RepositoryScanner scanner = lookupRepositoryScanner();
+        RepositoryContentStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers,
+                                                          getIgnoreList(), RepositoryScanner.FRESH_SCAN );
 
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", 17, stats.getTotalFileCount() );
         assertMinimumHits( "Processed Count", 17, consumer.getProcessCount() );
+        assertEquals( "Processed Count (of invalid items)", 6, badconsumer.getProcessCount() );
     }
 
     public void testDefaultRepositoryArtifactScanner()
-        throws RepositoryException
+        throws Exception
     {
         List actualArtifactPaths = new ArrayList();
 
@@ -140,14 +168,18 @@ public class RepositoryScannerTest
 
         ArchivaRepository repository = createDefaultRepository();
 
-        List consumers = new ArrayList();
-        ScanConsumer consumer = new ScanConsumer();
+        List knownConsumers = new ArrayList();
+        KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
-        consumers.add( consumer );
+        knownConsumers.add( consumer );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-        boolean includeSnapshots = true;
-        RepositoryContentStatistics stats = scanner.scan( repository, consumers, includeSnapshots );
+        List invalidConsumers = new ArrayList();
+        InvalidScanConsumer badconsumer = new InvalidScanConsumer();
+        invalidConsumers.add( badconsumer );
+
+        RepositoryScanner scanner = lookupRepositoryScanner();
+        RepositoryContentStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers,
+                                                          getIgnoreList(), RepositoryScanner.FRESH_SCAN );
 
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", actualArtifactPaths.size(), stats.getTotalFileCount() );
@@ -155,7 +187,7 @@ public class RepositoryScannerTest
     }
 
     public void testDefaultRepositoryMetadataScanner()
-        throws RepositoryException
+        throws Exception
     {
         List actualMetadataPaths = new ArrayList();
 
@@ -172,22 +204,26 @@ public class RepositoryScannerTest
 
         ArchivaRepository repository = createDefaultRepository();
 
-        List consumers = new ArrayList();
-        ScanConsumer consumer = new ScanConsumer();
-        consumer.setIncludes( new String[] { "**/maven-metadata*.xml" } );
-        consumers.add( consumer );
+        List knownConsumers = new ArrayList();
+        KnownScanConsumer knownConsumer = new KnownScanConsumer();
+        knownConsumer.setIncludes( new String[] { "**/maven-metadata*.xml" } );
+        knownConsumers.add( knownConsumer );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-        boolean includeSnapshots = true;
-        RepositoryContentStatistics stats = scanner.scan( repository, consumers, includeSnapshots );
+        List invalidConsumers = new ArrayList();
+        InvalidScanConsumer badconsumer = new InvalidScanConsumer();
+        invalidConsumers.add( badconsumer );
+
+        RepositoryScanner scanner = lookupRepositoryScanner();
+        RepositoryContentStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers,
+                                                          getIgnoreList(), RepositoryScanner.FRESH_SCAN );
 
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", actualMetadataPaths.size(), stats.getTotalFileCount() );
-        assertMinimumHits( "Processed Count", actualMetadataPaths.size(), consumer.getProcessCount() );
+        assertMinimumHits( "Processed Count", actualMetadataPaths.size(), knownConsumer.getProcessCount() );
     }
 
     public void testDefaultRepositoryProjectScanner()
-        throws RepositoryException
+        throws Exception
     {
         List actualProjectPaths = new ArrayList();
 
@@ -204,14 +240,18 @@ public class RepositoryScannerTest
 
         ArchivaRepository repository = createDefaultRepository();
 
-        List consumers = new ArrayList();
-        ScanConsumer consumer = new ScanConsumer();
+        List knownConsumers = new ArrayList();
+        KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( new String[] { "**/*.pom" } );
-        consumers.add( consumer );
+        knownConsumers.add( consumer );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-        boolean includeSnapshots = true;
-        RepositoryContentStatistics stats = scanner.scan( repository, consumers, includeSnapshots );
+        List invalidConsumers = new ArrayList();
+        InvalidScanConsumer badconsumer = new InvalidScanConsumer();
+        invalidConsumers.add( badconsumer );
+
+        RepositoryScanner scanner = lookupRepositoryScanner();
+        RepositoryContentStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers,
+                                                          getIgnoreList(), RepositoryScanner.FRESH_SCAN );
 
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", actualProjectPaths.size(), stats.getTotalFileCount() );
@@ -219,7 +259,7 @@ public class RepositoryScannerTest
     }
 
     public void testLegacyRepositoryArtifactScanner()
-        throws RepositoryException
+        throws Exception
     {
         List actualArtifactPaths = new ArrayList();
 
@@ -240,14 +280,18 @@ public class RepositoryScannerTest
 
         ArchivaRepository repository = createLegacyRepository();
 
-        List consumers = new ArrayList();
-        ScanConsumer consumer = new ScanConsumer();
+        List knownConsumers = new ArrayList();
+        KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
-        consumers.add( consumer );
+        knownConsumers.add( consumer );
 
-        RepositoryScanner scanner = new RepositoryScanner();
-        boolean includeSnapshots = true;
-        RepositoryContentStatistics stats = scanner.scan( repository, consumers, includeSnapshots );
+        List invalidConsumers = new ArrayList();
+        InvalidScanConsumer badconsumer = new InvalidScanConsumer();
+        invalidConsumers.add( badconsumer );
+
+        RepositoryScanner scanner = lookupRepositoryScanner();
+        RepositoryContentStatistics stats = scanner.scan( repository, knownConsumers, invalidConsumers,
+                                                          getIgnoreList(), RepositoryScanner.FRESH_SCAN );
 
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", actualArtifactPaths.size(), stats.getTotalFileCount() );

@@ -44,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class ArchivaCli
     public static final char CONSUMERS = 'u';
 
     public static final char LIST_CONSUMERS = 'l';
-    
+
     public static final char DUMP_CONFIGURATION = 'd';
 
     // ----------------------------------------------------------------------------
@@ -89,7 +90,7 @@ public class ArchivaCli
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-    
+
     public static void main( String[] args )
         throws Exception
     {
@@ -134,7 +135,7 @@ public class ArchivaCli
 
         Option dumpConfig = createOption( DUMP_CONFIGURATION, "dumpconfig", 0, "Dump Current Configuration." );
         options.addOption( dumpConfig );
-        
+
         return options;
     }
 
@@ -170,15 +171,21 @@ public class ArchivaCli
 
         ArchivaRepository repo = new ArchivaRepository( "cliRepo", "Archiva CLI Provided Repo", "file://" + path );
 
-        List consumerList = new ArrayList();
+        List knownConsumerList = new ArrayList();
 
-        consumerList.addAll( getConsumerList( cli, plexus ) );
+        knownConsumerList.addAll( getConsumerList( cli, plexus ) );
 
-        RepositoryScanner scanner = new RepositoryScanner();
+        List invalidConsumerList = Collections.EMPTY_LIST;
+
+        List ignoredContent = new ArrayList();
+        ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
+
+        RepositoryScanner scanner = (RepositoryScanner) plexus.lookup( RepositoryScanner.class );
 
         try
         {
-            RepositoryContentStatistics stats = scanner.scan( repo, consumerList, true );
+            RepositoryContentStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList,
+                                                              ignoredContent, RepositoryScanner.FRESH_SCAN );
 
             SimpleDateFormat df = new SimpleDateFormat();
             System.out.println( "" );
@@ -186,8 +193,8 @@ public class ArchivaCli
             System.out.println( "  Repository URL    : " + repo.getUrl() );
             System.out.println( "  Repository Name   : " + repo.getModel().getName() );
             System.out.println( "  Repository Layout : " + repo.getModel().getLayoutName() );
-            System.out.println( "  Consumers         : (" + consumerList.size() + " active)" );
-            for ( Iterator iter = consumerList.iterator(); iter.hasNext(); )
+            System.out.println( "  Consumers         : (" + knownConsumerList.size() + " active)" );
+            for ( Iterator iter = knownConsumerList.iterator(); iter.hasNext(); )
             {
                 RepositoryContentConsumer consumer = (RepositoryContentConsumer) iter.next();
                 System.out.println( "                      " + consumer.getId() + " - " + consumer.getDescription() );
@@ -296,11 +303,13 @@ public class ArchivaCli
             showFatalError( "Error converting repository.", e, true );
         }
     }
-    
-    private void dumpConfiguration( PlexusContainer plexus ) throws ComponentLookupException
-    {    
+
+    private void dumpConfiguration( PlexusContainer plexus )
+        throws ComponentLookupException
+    {
         archivaConfiguration = (ArchivaConfiguration) plexus.lookup( ArchivaConfiguration.ROLE, "cli" );
-        
-        System.out.println( "File Type Count: " + archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().size() );
+
+        System.out.println( "File Type Count: "
+            + archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().size() );
     }
 }

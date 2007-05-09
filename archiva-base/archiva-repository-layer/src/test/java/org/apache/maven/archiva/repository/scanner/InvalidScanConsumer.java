@@ -21,65 +21,63 @@ package org.apache.maven.archiva.repository.scanner;
 
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * ScanConsumer 
+ * InvalidScanConsumer 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class ScanConsumer extends AbstractMonitoredConsumer implements KnownRepositoryContentConsumer
+public class InvalidScanConsumer
+    extends AbstractMonitoredConsumer
+    implements InvalidRepositoryContentConsumer
 {
     private int processCount = 0;
 
-    private List includes = new ArrayList();
+    public void beginScan( ArchivaRepository repository )
+        throws ConsumerException
+    {
+        /* do nothing */
+    }
+
+    public void completeScan()
+    {
+        /* do nothing */
+    }
 
     public List getExcludes()
     {
         return null;
     }
 
-    public void setIncludes( String includesArray[] )
-    {
-        this.includes.clear();
-        this.includes.addAll( Arrays.asList( includesArray ) );
-    }
-
     public List getIncludes()
     {
-        return includes;
+        return null;
     }
 
-    public String getId()
+    public void processFile( String path )
+        throws ConsumerException
     {
-        return "test-scan-consumer";
+        processCount++;
     }
 
     public String getDescription()
     {
-        return "Scan Consumer (for testing)";
+        return "Bad Content Scan Consumer (for testing)";
     }
 
-    public void beginScan( ArchivaRepository repository ) throws ConsumerException
+    public String getId()
     {
-        /* do nothing */
+        return "test-invalid-consumer";
     }
 
-    public void processFile( String path ) throws ConsumerException
+    public boolean isPermanent()
     {
-        this.processCount++;
-    }
-
-    public void completeScan()
-    {
-        /* do nothing */
+        return false;
     }
 
     public int getProcessCount()
@@ -90,10 +88,5 @@ public class ScanConsumer extends AbstractMonitoredConsumer implements KnownRepo
     public void setProcessCount( int processCount )
     {
         this.processCount = processCount;
-    }
-
-    public boolean isPermanent()
-    {
-        return false;
     }
 }

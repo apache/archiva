@@ -32,15 +32,11 @@ import java.util.List;
  */
 public class ArchivaConfigurationTest extends PlexusTestCase
 {
-    private FileTypes filetypes;
-    
     public void testDefaults() throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
         
-        filetypes = (FileTypes) lookup( FileTypes.class );
-
         Configuration configuration = archivaConfiguration.getConfiguration();
 
         // check default configuration
@@ -52,6 +48,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
+
+        FileTypes filetypes = (FileTypes) lookup( FileTypes.class.getName() );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 

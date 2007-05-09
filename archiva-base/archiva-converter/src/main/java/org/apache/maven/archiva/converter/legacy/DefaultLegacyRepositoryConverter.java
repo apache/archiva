@@ -31,6 +31,8 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,10 +56,15 @@ public class DefaultLegacyRepositoryConverter
     private ArtifactRepositoryLayout defaultLayout;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.RepositoryContentConsumer" 
+     * @plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer" 
      *                     role-hint="artifact-legacy-to-default-converter"
      */
     private LegacyConverterArtifactConsumer legacyConverterConsumer;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryScanner repoScanner;
 
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          List fileExclusionPatterns )
@@ -90,11 +97,15 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List consumers = new ArrayList();
-            consumers.add( legacyConverterConsumer );
+            List knownConsumers = new ArrayList();
+            knownConsumers.add( legacyConverterConsumer );
 
-            RepositoryScanner scanner = new RepositoryScanner();
-            scanner.scan( legacyRepository, consumers, true );
+            List invalidConsumers = Collections.EMPTY_LIST;
+            List ignoredContent = new ArrayList();
+            ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
+
+            repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
+                              RepositoryScanner.FRESH_SCAN );
         }
         catch ( RepositoryException e )
         {

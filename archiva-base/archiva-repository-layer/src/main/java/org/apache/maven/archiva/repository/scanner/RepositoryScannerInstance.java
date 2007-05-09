@@ -19,20 +19,20 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
+import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
+import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryWalkListener;
-import org.codehaus.plexus.util.SelectorUtils;
-import org.codehaus.plexus.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -41,45 +41,53 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryScannerInstance implements DirectoryWalkListener
+public class RepositoryScannerInstance
+    implements DirectoryWalkListener
 {
-    private static Logger log = LoggerFactory.getLogger( RepositoryScannerInstance.class );
+    /**
+     * Consumers that process known content.
+     */
+    private List knownConsumers;
 
-    private List consumers;
+    /**
+     * Consumers that process unknown/invalid content.
+     */
+    private List invalidConsumers;
 
-    private ArchivaRepository repository;
-
-    private boolean isCaseSensitive = true;
+    ArchivaRepository repository;
 
     private RepositoryContentStatistics stats;
 
     private long onlyModifiedAfterTimestamp = 0;
 
-    public RepositoryScannerInstance( ArchivaRepository repository, List consumerList )
+    private ConsumerProcessFileClosure consumerProcessFile;
+
+    private ConsumerWantsFilePredicate consumerWantsFile;
+
+    private Logger logger;
+
+    public RepositoryScannerInstance( ArchivaRepository repository, List knownConsumerList, List invalidConsumerList,
+                                      Logger logger )
     {
         this.repository = repository;
-        this.consumers = consumerList;
+        this.knownConsumers = knownConsumerList;
+        this.invalidConsumers = invalidConsumerList;
+        this.logger = logger;
+
+        this.consumerProcessFile = new ConsumerProcessFileClosure( logger );
+        this.consumerWantsFile = new ConsumerWantsFilePredicate();
+
         stats = new RepositoryContentStatistics();
         stats.setRepositoryId( repository.getId() );
 
-        Iterator it = this.consumers.iterator();
-        while ( it.hasNext() )
-        {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) it.next();
-            try
-            {
-                consumer.beginScan( repository );
-            }
-            catch ( ConsumerException e )
-            {
-                // TODO: remove bad consumers from list
-                log.warn( "Consumer [" + consumer.getId() + "] cannot begin: " + e.getMessage(), e );
-            }
-        }
+        Closure triggerBeginScan = new TriggerBeginScanClosure( repository, logger );
+
+        CollectionUtils.forAllDo( knownConsumerList, triggerBeginScan );
+        CollectionUtils.forAllDo( invalidConsumerList, triggerBeginScan );
 
         if ( SystemUtils.IS_OS_WINDOWS )
         {
-            isCaseSensitive = false;
+            consumerWantsFile.setCaseSensitive( false );
         }
     }
 
@@ -90,13 +98,13 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
 
     public void directoryWalkStarting( File basedir )
     {
-        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getUrl() );
+        logger.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getUrl() );
         stats.triggerStart();
     }
 
     public void directoryWalkStep( int percentage, File file )
     {
-        log.debug( "Walk Step: " + percentage + ", " + file );
+        logger.debug( "Walk Step: " + percentage + ", " + file );
 
         stats.increaseFileCount();
 
@@ -104,84 +112,31 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
         if ( file.lastModified() < onlyModifiedAfterTimestamp )
         {
             // Skip file as no change has occured.
-            log.debug( "Skipping, No Change: " + file.getAbsolutePath() );
+            logger.debug( "Skipping, No Change: " + file.getAbsolutePath() );
             return;
         }
 
-        synchronized ( consumers )
+        stats.increaseNewFileCount();
+
+        BaseFile basefile = new BaseFile( repository.getUrl().getPath(), file );
+        
+        consumerProcessFile.setBasefile( basefile );
+        consumerWantsFile.setBasefile( basefile );
+        
+        Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
+        CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
+        
+        if ( consumerWantsFile.getWantedFileCount() <= 0 )
         {
-            stats.increaseNewFileCount();
-
-            BaseFile basefile = new BaseFile( repository.getUrl().getPath(), file );
-
-            Iterator itConsumers = this.consumers.iterator();
-            while ( itConsumers.hasNext() )
-            {
-                RepositoryContentConsumer consumer = (RepositoryContentConsumer) itConsumers.next();
-
-                if ( wantsFile( consumer, StringUtils.replace( basefile.getRelativePath(), "\\", "/" ) ) )
-                {
-                    try
-                    {
-                        log.debug( "Sending to consumer: " + consumer.getId() );
-                        consumer.processFile( basefile.getRelativePath() );
-                    }
-                    catch ( Exception e )
-                    {
-                        /* Intentionally Catch all exceptions.
-                         * So that the discoverer processing can continue.
-                         */
-                        log.error( "Consumer [" + consumer.getId() + "] had an error when processing file ["
-                                        + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
-                    }
-                }
-                else
-                {
-                    log.debug( "Skipping consumer " + consumer.getId() + " for file " + basefile.getRelativePath() );
-                }
-            }
+            // Nothing known processed this file.  It is invalid!
+            CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
         }
     }
 
     public void directoryWalkFinished()
     {
-        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getUrl() );
+        logger.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getUrl() );
         stats.triggerFinished();
-    }
-
-    private boolean wantsFile( RepositoryContentConsumer consumer, String relativePath )
-    {
-        Iterator it;
-
-        // Test excludes first.
-        if ( consumer.getExcludes() != null )
-        {
-            it = consumer.getExcludes().iterator();
-            while ( it.hasNext() )
-            {
-                String pattern = (String) it.next();
-                if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
-                {
-                    // Definately does NOT WANT FILE.
-                    return false;
-                }
-            }
-        }
-
-        // Now test includes.
-        it = consumer.getIncludes().iterator();
-        while ( it.hasNext() )
-        {
-            String pattern = (String) it.next();
-            if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
-            {
-                // Specifically WANTS FILE.
-                return true;
-            }
-        }
-
-        // Not included, and Not excluded?  Default to EXCLUDE.
-        return false;
     }
 
     public long getOnlyModifiedAfterTimestamp()
@@ -199,6 +154,6 @@ public class RepositoryScannerInstance implements DirectoryWalkListener
      */
     public void debug( String message )
     {
-        log.debug( "Repository Scanner: " + message );
+        logger.debug( "Repository Scanner: " + message );
     }
 }
