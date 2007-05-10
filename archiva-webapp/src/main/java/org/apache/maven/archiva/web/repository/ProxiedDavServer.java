@@ -140,7 +140,14 @@ public class ProxiedDavServer
         {
             if ( !hasResource( request.getLogicalResource() ) )
             {
-                fetchContentFromProxies( request );
+                try
+                {
+                    fetchContentFromProxies( request );
+                }
+                catch ( ResourceDoesNotExistException e )
+                {
+                    response.sendError(404);
+                }
             }
         }
 
@@ -148,18 +155,12 @@ public class ProxiedDavServer
     }
 
     private void fetchContentFromProxies( DavServerRequest request )
-        throws ServletException
+        throws ServletException, ResourceDoesNotExistException
     {
         try
         {
             proxyRequestHandler.get( request.getLogicalResource(), this.proxiedRepositories, this.managedRepository,
                                      this.wagonProxy );
-        }
-        catch ( ResourceDoesNotExistException e )
-        {
-            // TODO: getLogger().info( "Unable to fetch resource, it does not exist.", e );
-            // return an HTTP 404 instead of HTTP 500 error.
-            return;
         }
         catch ( ProxyException e )
         {
