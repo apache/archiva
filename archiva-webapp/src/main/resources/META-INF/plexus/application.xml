@@ -191,6 +191,21 @@
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
+    
+    <!--
+     | For Maven 1 plugins
+     -->
+    <component>
+      <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+      <role-hint>plugin</role-hint>
+      <implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler</implementation>
+      <configuration>
+        <type>plugin</type>
+        <extension>jar</extension>
+        <language>java</language>
+        <addedToClasspath>true</addedToClasspath>
+      </configuration>
+    </component> 
   </components>
 
   <load-on-start>
