@@ -38,7 +38,7 @@
   </blockquote>
   
   <p>
-  Are you sure you want to delete network proxy ${proxyid} ?
+  Are you sure you want to delete network proxy <code>${proxyid}</code> ?
   </p>
 
   <ww:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">

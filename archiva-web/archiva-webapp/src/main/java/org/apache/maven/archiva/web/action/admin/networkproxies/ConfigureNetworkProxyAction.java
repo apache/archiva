@@ -26,7 +26,6 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -36,8 +35,6 @@ import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
 import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-
-import java.io.IOException;
 
 /**
  * ConfigureNetworkProxyAction 
@@ -75,7 +72,27 @@ public class ConfigureNetworkProxyAction
 
     public String delete()
     {
-        return INPUT;
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        String id = getProxyid();
+        if ( StringUtils.isBlank( id ) )
+        {
+            addActionError( "Unable to delete network proxy with blank id." );
+            return SUCCESS;
+        }
+
+        NetworkProxySelectionPredicate networkProxySelection = new NetworkProxySelectionPredicate( id );
+        NetworkProxyConfiguration proxyConfig = (NetworkProxyConfiguration) CollectionUtils.find( config
+            .getNetworkProxies(), networkProxySelection );
+        if ( proxyConfig == null )
+        {
+            addActionError( "Unable to remove network proxy, proxy with id [" + id + "] not found." );
+            return SUCCESS;
+        }
+        
+        archivaConfiguration.getConfiguration().removeNetworkProxy( proxyConfig );
+        addActionMessage( "Successfully removed network proxy [" + id + "]" );
+        return saveConfiguration();
     }
 
     public String edit()
@@ -93,7 +110,7 @@ public class ConfigureNetworkProxyAction
     {
         return proxy;
     }
-    
+
     public String getProxyid()
     {
         return proxyid;
@@ -142,25 +159,8 @@ public class ConfigureNetworkProxyAction
             removeNetworkProxy( id );
         }
 
-        try
-        {
-            addNetworkProxy( getProxy() );
-            saveConfiguration();
-        }
-        catch ( IOException e )
-        {
-            addActionError( "I/O Exception: " + e.getMessage() );
-        }
-        catch ( InvalidConfigurationException e )
-        {
-            addActionError( "Invalid Configuration Exception: " + e.getMessage() );
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-        }
-
-        return SUCCESS;
+        addNetworkProxy( getProxy() );
+        return saveConfiguration();
     }
 
     public void setMode( String mode )
@@ -200,11 +200,16 @@ public class ConfigureNetworkProxyAction
     }
 
     private String saveConfiguration()
-        throws IOException, InvalidConfigurationException, RegistryException
     {
-        archivaConfiguration.save( archivaConfiguration.getConfiguration() );
-
-        addActionMessage( "Successfully saved configuration" );
+        try
+        {
+            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Unable to save configuration: " + e.getMessage() );
+        }
 
         return SUCCESS;
     }
