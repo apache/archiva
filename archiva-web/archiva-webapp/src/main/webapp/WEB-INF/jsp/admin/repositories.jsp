@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
 <html>
@@ -39,12 +39,12 @@
 
 <div class="admin">
   <div class="controls">
-    <pss:ifAuthorized permission="archiva-manage-configuration">
+    <redback:ifAuthorized permission="archiva-manage-configuration">
       <ww:url id="addRepositoryUrl" action="addRepository"/>
       <ww:a href="%{addRepositoryUrl}">
       <img src="<c:url value="/images/icons/create.png" />" />
       Add Repository</ww:a>
-    </pss:ifAuthorized>
+    </redback:ifAuthorized>
   </div>
   <h2>Local Repositories</h2>
 
@@ -70,7 +70,7 @@
 
         <div class="controls">
           <%-- TODO: make some icons --%>
-          <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
+          <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
             <ww:url id="editRepositoryUrl" action="editRepository">
               <ww:param name="repoid" value="%{'${repository.id}'}" />
             </ww:url>
@@ -83,7 +83,7 @@
             <ww:a href="%{deleteRepositoryUrl}">
             <img src="<c:url value="/images/icons/delete.gif" />" />
             Delete Repository</ww:a>
-          </pss:ifAnyAuthorized>
+          </redback:ifAnyAuthorized>
         </div>
         
         <div style="float: left">
@@ -146,12 +146,12 @@
               <th>Stats</th>
               <td>
                 <div style="float: right">
-                  <pss:ifAuthorized permission="archiva-run-indexer">
+                  <redback:ifAuthorized permission="archiva-run-indexer">
                     <ww:url id="indexRepositoryUrl" action="indexRepository">
                       <ww:param name="repoid" value="%{'${repository.id}'}" />
                     </ww:url>
                     <ww:a href="%{indexRepositoryUrl}">Index Repository</ww:a>
-                  </pss:ifAuthorized>
+                  </redback:ifAuthorized>
                 </div>
                 <c:choose>
                   <c:when test="${empty(repository.stats)}">
@@ -219,7 +219,7 @@
 
         <div class="controls">
           <%-- TODO: make some icons --%>
-          <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
+          <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
             <ww:url id="editRepositoryUrl" action="editRepository">
               <ww:param name="repoid" value="%{'${repository.id}'}" />
             </ww:url>
@@ -232,7 +232,7 @@
             <ww:a href="%{deleteRepositoryUrl}">
             <img src="<c:url value="/images/icons/delete.gif" />" />
             Delete Repository</ww:a>
-          </pss:ifAnyAuthorized>
+          </redback:ifAnyAuthorized>
         </div>
         
         <div style="float: left">

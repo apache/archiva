@@ -25,9 +25,9 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.rbac.profile.RoleProfileException;
-import org.codehaus.plexus.rbac.profile.RoleProfileManager;
-import org.codehaus.plexus.security.system.check.EnvironmentCheck;
+import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 
 import java.util.Iterator;
 import java.util.List;
@@ -54,9 +54,9 @@ public class RoleExistanceEnvironmentCheck
     private ArchivaDAO dao;
 
     /**
-     * @plexus.requirement role-hint="archiva"
+     * @plexus.requirement role-hint="default"
      */
-    private RoleProfileManager roleProfileManager;
+    private RoleManager roleManager;
 
     private boolean checked;
 
@@ -75,13 +75,19 @@ public class RoleExistanceEnvironmentCheck
                     {
                         ArchivaRepository repository = (ArchivaRepository) it.next();
 
-                        roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
+                        if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repository.getId() ) )
+                        {
+                            roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
+                        }
 
-                        roleProfileManager.getDynamicRole( "archiva-repository-observer", repository.getId() );
+                        if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repository.getId() ) )
+                        {
+                            roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
+                        }
                     }
                 }
             }
-            catch ( RoleProfileException rpe )
+            catch ( RoleManagerException rpe )
             {
                 list.add( this.getClass().getName() + "error initializing roles: " + rpe.getMessage() );
                 getLogger().info( "error initializing roles", rpe );

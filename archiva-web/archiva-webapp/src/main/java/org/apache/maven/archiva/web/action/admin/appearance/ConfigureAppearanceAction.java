@@ -29,11 +29,11 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.shared.app.company.CompanyPomHandler;
 import org.apache.maven.shared.app.configuration.Configuration;
 import org.apache.maven.shared.app.configuration.MavenAppConfiguration;
+import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.security.rbac.Resource;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 
 import java.io.IOException;
 

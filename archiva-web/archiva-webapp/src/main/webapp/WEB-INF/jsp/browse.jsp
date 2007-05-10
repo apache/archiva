@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 
 <html>
 <head>

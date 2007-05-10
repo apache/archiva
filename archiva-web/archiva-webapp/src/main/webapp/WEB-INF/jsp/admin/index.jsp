@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 
 <html>
 <head>
@@ -35,9 +35,9 @@
   <div>
     <div style="float: right">
       <%-- TODO replace with icons --%>
-      <pss:ifAuthorized permission="archiva-manage-configuration">
+      <redback:ifAuthorized permission="archiva-manage-configuration">
         <a href="<ww:url action="configure" />">Edit Configuration</a>
-      </pss:ifAuthorized>
+      </redback:ifAuthorized>
     </div>
     <h2>Configuration</h2>
   </div>
@@ -69,9 +69,9 @@
   <table class="infoTable">
     <tr>
       <td>
-        <pss:ifAuthorized permission="archiva-run-indexer">
+        <redback:ifAuthorized permission="archiva-run-indexer">
           <a href="<ww:url action="runIndexer" />">Run Now</a>
-        </pss:ifAuthorized>
+        </redback:ifAuthorized>
       </td>
     </tr>
   </table>

@@ -25,10 +25,10 @@ import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.security.rbac.Resource;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 

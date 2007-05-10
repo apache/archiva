@@ -20,7 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem"%>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva"%>
 
 <html>

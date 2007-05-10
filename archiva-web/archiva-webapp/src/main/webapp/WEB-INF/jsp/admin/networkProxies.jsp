@@ -19,7 +19,7 @@
 
 <%@ taglib prefix="ww" uri="/webwork"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem"%>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva"%>
 
 <html>
@@ -38,13 +38,13 @@
 
 <div class="admin">
 <div class="controls">
-<pss:ifAuthorized
+<redback:ifAuthorized
   permission="archiva-manage-configuration">
   <ww:url id="addNetworkProxyUrl" action="addNetworkProxy" />
   <ww:a href="%{addNetworkProxyUrl}">
     <img src="<c:url value="/images/icons/create.png" />" />
         Add Network Proxy</ww:a>
-</pss:ifAuthorized></div>
+</redback:ifAuthorized></div>
 <h2>Network Proxies</h2>
 
 <c:choose>
@@ -68,7 +68,7 @@
       <div class="netproxy ${rowColor}">
 
       <div class="controls">
-      <pss:ifAnyAuthorized
+      <redback:ifAnyAuthorized
         permissions="archiva-manage-configuration">
         <ww:url id="editNetworkProxyUrl" action="editNetworkProxy">
           <ww:param name="proxyid" value="%{'${proxy.id}'}" />
@@ -82,7 +82,7 @@
         <ww:a href="%{deleteNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/delete.gif" />" />
             Delete Network Proxy</ww:a>
-      </pss:ifAnyAuthorized></div>
+      </redback:ifAnyAuthorized></div>
 
       <table class="infoTable">
         <tr>

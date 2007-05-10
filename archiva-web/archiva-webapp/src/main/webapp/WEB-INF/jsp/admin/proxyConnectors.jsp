@@ -20,7 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
 <html>
@@ -39,13 +39,13 @@
   <ww:actionmessage />
   
   <div style="float:right">
-    <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
       <ww:url id="addProxyConnectorUrl" action="addProxyConnector" />
       <ww:a href="%{addProxyConnectorUrl}" cssClass="create">
         <img src="<c:url value="/images/icons/create.png" />" />
         Add Proxy Connector
       </ww:a>
-    </pss:ifAnyAuthorized>
+    </redback:ifAnyAuthorized>
   </div>
   
   <h2>Repository Proxy Connectors</h2>
@@ -72,7 +72,7 @@
             <td class="connector">
               <div class="wrap">
                 <div class="controls">
-                  <pss:ifAnyAuthorized permissions="archiva-manage-configuration">
+                  <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
                     <ww:url id="editProxyConnectorUrl" action="editProxyConnector">
                       <ww:param name="target" value="%{'${connector.targetRepoId}'}" />
                       <ww:param name="source" value="%{'${connector.sourceRepoId}'}" />
@@ -87,7 +87,7 @@
                     <ww:a href="%{deleteProxyConnectorUrl}" cssClass="delete" title="Delete Proxy Connector">
                       <img src="<c:url value="/images/icons/delete.gif" />" />
                     </ww:a>
-                  </pss:ifAnyAuthorized>
+                  </redback:ifAnyAuthorized>
                 </div>
                 
                 <h4>Proxy Connector</h4>

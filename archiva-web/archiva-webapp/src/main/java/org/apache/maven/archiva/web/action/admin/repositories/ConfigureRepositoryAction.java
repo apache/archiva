@@ -29,18 +29,17 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.rbac.profile.RoleProfileException;
-import org.codehaus.plexus.rbac.profile.RoleProfileManager;
+import org.codehaus.plexus.redback.authorization.AuthorizationException;
+import org.codehaus.plexus.redback.authorization.AuthorizationResult;
+import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.system.SecuritySystem;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.security.authorization.AuthorizationException;
-import org.codehaus.plexus.security.authorization.AuthorizationResult;
-import org.codehaus.plexus.security.rbac.RbacManagerException;
-import org.codehaus.plexus.security.rbac.Resource;
-import org.codehaus.plexus.security.system.SecuritySession;
-import org.codehaus.plexus.security.system.SecuritySystem;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
@@ -56,9 +55,9 @@ public class ConfigureRepositoryAction
     implements Preparable, SecureAction
 {
     /**
-     * @plexus.requirement role-hint="archiva"
+     * @plexus.requirement role-hint="default"
      */
-    private RoleProfileManager roleProfileManager;
+    private RoleManager roleManager;
 
     /**
      * @plexus.requirement
@@ -136,15 +135,11 @@ public class ConfigureRepositoryAction
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
             }
-            catch ( RoleProfileException e )
+            catch ( RoleManagerException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
             }
             catch ( InvalidConfigurationException e )
-            {
-                addActionError( "Unable to delete repository: " + e.getMessage() );
-            }
-            catch ( RbacManagerException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
             }
@@ -240,17 +235,13 @@ public class ConfigureRepositoryAction
         {
             addActionError( "I/O Exception: " + e.getMessage() );
         }
-        catch ( RoleProfileException e )
+        catch ( RoleManagerException e )
         {
-            addActionError( "Role Profile Exception: " + e.getMessage() );
+            addActionError( "Role Manager Exception: " + e.getMessage() );
         }
         catch ( InvalidConfigurationException e )
         {
             addActionError( "Invalid Configuration Exception: " + e.getMessage() );
-        }
-        catch ( RbacManagerException e )
-        {
-            addActionError( "RBAC Manager Exception: " + e.getMessage() );
         }
         catch ( RegistryException e )
         {
@@ -276,7 +267,7 @@ public class ConfigureRepositoryAction
     }
 
     private void addRepository( AdminRepositoryConfiguration repository )
-        throws IOException, RoleProfileException
+        throws IOException, RoleManagerException
     {
         getLogger().info( ".addRepository(" + repository + ")" );
 
@@ -299,9 +290,10 @@ public class ConfigureRepositoryAction
         archivaConfiguration.getConfiguration().addRepository( repository );
 
         // TODO: double check these are configured on start up
-        roleProfileManager.getDynamicRole( "archiva-repository-manager", repository.getId() );
+        roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
 
-        roleProfileManager.getDynamicRole( "archiva-repository-observer", repository.getId() );
+        roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
+
     }
 
     private boolean operationAllowed( String permission, String repoid )
@@ -347,17 +339,16 @@ public class ConfigureRepositoryAction
     }
 
     private void removeRepositoryRoles( RepositoryConfiguration existingRepository )
-        throws RoleProfileException
+        throws RoleManagerException
     {
-        roleProfileManager.deleteDynamicRole( "archiva-repository-manager", existingRepository.getId() );
-        roleProfileManager.deleteDynamicRole( "archiva-repository-observer", existingRepository.getId() );
+        roleManager.removeTemplatedRole( "archiva-repository-manager", existingRepository.getId() );
+        roleManager.removeTemplatedRole( "archiva-repository-observer", existingRepository.getId() );
 
         getLogger().info( "removed user roles associated with repository " + existingRepository.getId() );
     }
 
     private String saveConfiguration()
-        throws IOException, InvalidConfigurationException, RbacManagerException, RoleProfileException,
-        RegistryException
+        throws IOException, InvalidConfigurationException, RegistryException
     {
         getLogger().info( ".saveConfiguration()" );
 

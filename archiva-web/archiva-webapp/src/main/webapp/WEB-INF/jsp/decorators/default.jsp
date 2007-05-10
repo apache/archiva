@@ -23,7 +23,7 @@
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 <%@ page import="java.util.Calendar" %>
 <html>
 <head>
@@ -33,7 +33,7 @@
 
   <link rel="stylesheet" href="<c:url value="/css/maven-base.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/maven-theme.css"/>" type="text/css" media="all"/>
-  <link rel="stylesheet" href="<c:url value="/css/pss/table.css"/>" type="text/css" media="all"/>
+  <link rel="stylesheet" href="<c:url value="/css/redback/table.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/site.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
   <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" />
@@ -60,7 +60,7 @@
 
 <div id="breadcrumbs">
   <div class="xleft">
-    <%@ include file="/WEB-INF/jsp/pss/include/securityLinks.jsp" %>
+    <%@ include file="/WEB-INF/jsp/redback/include/securityLinks.jsp" %>
   </div>
 
   <div class="xright">
@@ -93,37 +93,37 @@
       </li>
     </ul>
 
-    <pss:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
+    <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
-        <pss:ifAuthorized permission="archiva-access-reports">
+        <redback:ifAuthorized permission="archiva-access-reports">
           <li class="none">
             <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
           </li>
-        </pss:ifAuthorized>
+        </redback:ifAuthorized>
           <%-- TODO
                 <li class="none">
                   <a href="#">Synchronisation</a>
                 </li>
           --%>
-        <pss:ifAuthorized permission="archiva-manage-users">
+        <redback:ifAuthorized permission="archiva-manage-users">
           <li class="none">
             <my:currentWWUrl action="userlist" namespace="/security">User Management</my:currentWWUrl>
           </li>
-        </pss:ifAuthorized>
-        <pss:ifAuthorized permission="archiva-manage-configuration">
+        </redback:ifAuthorized>
+        <redback:ifAuthorized permission="archiva-manage-configuration">
           <li class="none">
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
-        </pss:ifAuthorized>
+        </redback:ifAuthorized>
         <%-- TODO: future options here.
              * Repository Statistics.
              * Web Services Statistics.
           --%>
       </ul>
-    </pss:ifAnyAuthorized>
+    </redback:ifAnyAuthorized>
 
-    <pss:ifAuthorized permission="archiva-manage-configuration">
+    <redback:ifAuthorized permission="archiva-manage-configuration">
       <h5>Administration</h5>
       <ul>
           <li class="none">
@@ -146,7 +146,7 @@
                * Web Services (enable / disable), role based?
             --%>
       </ul>
-    </pss:ifAuthorized>
+    </redback:ifAuthorized>
 
   </div>
 </div>

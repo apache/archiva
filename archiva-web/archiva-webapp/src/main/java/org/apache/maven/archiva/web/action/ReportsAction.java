@@ -21,10 +21,10 @@ package org.apache.maven.archiva.web.action;
 
 import org.apache.maven.archiva.reporting.ReportingManager;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.security.rbac.Resource;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureAction;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionBundle;
-import org.codehaus.plexus.security.ui.web.interceptor.SecureActionException;
+import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
+import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.ArrayList;

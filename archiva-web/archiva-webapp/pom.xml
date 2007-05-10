@@ -16,7 +16,7 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
+  --> 
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -176,14 +176,18 @@
     </dependency>
     <!-- Plexus Security Dependencies -->
     <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-ui-web</artifactId>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-xwork-content</artifactId>
       <type>war</type>
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus.security</groupId>
-      <artifactId>plexus-security-ui-web-taglib</artifactId>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-xwork-integration</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-taglib</artifactId>
     </dependency>
     <!-- Other dependencies -->
     <dependency>
@@ -233,9 +237,9 @@
               <includes>
                 <!-- TODO: META-INF shouldn't be required, seems to be an issue with the current war plugin -->
                 <include>META-INF</include>
-                <include>images/pss</include>
+                <include>images/redback</include>
                 <!-- Images from other wars -->
-                <include>template/pss</include>
+                <include>template/redback</include>
                 <!-- Templates from other wars -->
                 <include>WEB-INF/classes</include>
                 <!-- Classes and Resources from other wars -->
@@ -245,12 +249,12 @@
                 <!-- Database location configured in application.xml -->
                 <include>WEB-INF/logs</include>
                 <!-- Log file location specified in application.xml -->
-                <include>pss</include>
+                <include>redback</include>
                 <!-- plexus-security css and javascript -->
-                <include>css/pss</include>
-                <include>WEB-INF/jsp/pss</include>
+                <include>css/redback</include>
+                <include>WEB-INF/jsp/redback</include>
                 <!-- plexus-security jsps -->
-                <include>WEB-INF/template/pss</include>
+                <include>WEB-INF/template/redback</include>
                 <!-- plexus-security xwork templates -->
                 <include>WEB-INF/logs</include>
                 <!-- Directory created by jetty:run -->

@@ -21,7 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
-<%@ taglib prefix="pss" uri="/plexusSecuritySystem" %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
 
 <html>
 <head>
@@ -116,7 +116,7 @@
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
-      <pss:ifAnyAuthorized permissions="archiva-access-reports">
+      <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
 	      <ww:url action="showArtifactReports">
 	        <ww:param name="groupId" value="%{groupId}"/>
@@ -125,7 +125,7 @@
 	      </ww:url>
 	    </c:set>
 	    <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
-      </pss:ifAnyAuthorized>
+      </redback:ifAnyAuthorized>
       
     </span>
   </div>

@@ -53,9 +53,14 @@
       <description>Upload Archiva Repository</description>
     </operation>
     <operation>
+      <id>archiva-access-repository</id>
+      <name>archiva-access-repository</name>
+      <description>Access Archiva Repository</description>
+    </operation>
+    <operation>
       <id>archiva-guest</id>
       <name>archiva-guest</name>
-      <description>Upload Archiva Repository</description>
+      <description>Active Archiva Guest</description>
     </operation>
   </operations>
   <roles>
@@ -94,9 +99,9 @@
           <permanent>true</permanent>
         </permission>
         <permission>
-          <id>archiva-access-report</id>
-          <name>archiva-access-report</name>
-          <operation>archiva-access-report</operation>
+          <id>archiva-access-reports</id>
+          <name>archiva-access-reports</name>
+          <operation>archiva-access-reports</operation>
           <resource>global</resource>
           <permanent>true</permanent>
         </permission>
