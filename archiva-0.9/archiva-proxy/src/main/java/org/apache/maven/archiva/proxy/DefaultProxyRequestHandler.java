@@ -545,7 +545,7 @@ public class DefaultProxyRequestHandler
 
                     if ( downloaded )
                     {
-                        success = checkChecksum( checksums, path, wagon, repositoryCachePath );
+                        success = checkChecksum( checksums, path, wagon, repositoryCachePath, policy );
 
                         if ( tries > 1 && !success )
                         {
@@ -671,11 +671,15 @@ public class DefaultProxyRequestHandler
         return connected;
     }
 
-    private boolean checkChecksum( Map checksumMap, String path, Wagon wagon, String repositoryCachePath )
+    private boolean checkChecksum( Map checksumMap, String path, Wagon wagon, String repositoryCachePath, ArtifactRepositoryPolicy policy )
         throws ProxyException
     {
         releaseChecksumListeners( wagon, checksumMap );
-
+        
+        // Ignore checksum errors. Returns always true.
+        if ( ArtifactRepositoryPolicy.CHECKSUM_POLICY_IGNORE.equals( policy.getChecksumPolicy() ) )
+            return true;
+        
         boolean correctChecksum = false;
 
         boolean allNotFound = true;
@@ -713,7 +717,8 @@ public class DefaultProxyRequestHandler
                 else
                 {
                     getLogger().warn(
-                        "The checksum '" + actualChecksum + "' did not match the remote value: " + remoteChecksum );
+                                      "The checksum '" + actualChecksum + "' did not match the remote value: "
+                                          + remoteChecksum );
                 }
             }
             catch ( TransferFailedException e )
@@ -759,7 +764,15 @@ public class DefaultProxyRequestHandler
                 tempChecksumFile.delete();
             }
         }
-        return correctChecksum || allNotFound;
+        if ( ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN.equals( policy.getChecksumPolicy() ) )
+        {
+            // We are only interested to the warnings. The result is always true.
+            return true;
+        }
+        else
+        {
+            return correctChecksum || allNotFound;
+        }
     }
 
     /**

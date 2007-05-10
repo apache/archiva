@@ -34,9 +34,10 @@
         'daily' : 'Enabled, updated daily',
         'hourly' : 'Enabled, updated hourly',
         'never' : 'Enabled, never updated',
-        'interval' : 'Enabled, updated on given interval'}"/>
-<ww:textfield label="Release update interval" name="releasesInterval" size="4"/>
-<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through"/>
-<ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy"/>
-<ww:checkbox name="cacheFailures" fieldValue="true" label="Cache Failures"/>
-<ww:checkbox name="hardFail" fieldValue="true" label="Fail Whole Group"/>
+        'interval' : 'Enabled, updated on given interval'}" />
+<ww:textfield label="Release update interval" name="releasesInterval" size="4" />
+<ww:select list="configuration.repositoriesMap" name="managedRepository" label="Proxied through" />
+<ww:radio list="#@java.util.LinkedHashMap@{'fail' : 'Failure', 'warn' : 'Warning', 'ignore' : 'Ignore'}" name="checksumPolicy" label="Checksum Policy"/>
+<ww:checkbox name="useNetworkProxy" fieldValue="true" label="Use HTTP Proxy" />
+<ww:checkbox name="cacheFailures" fieldValue="true" label="Cache Failures" />
+<ww:checkbox name="hardFail" fieldValue="true" label="Fail Whole Group" />

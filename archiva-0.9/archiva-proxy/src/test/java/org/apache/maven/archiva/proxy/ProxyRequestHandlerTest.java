@@ -100,7 +100,8 @@ public class ProxyRequestHandlerTest
         requestHandler = (ProxyRequestHandler) lookup( ProxyRequestHandler.ROLE );
 
         factory = (ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
-
+        factory.setGlobalChecksumPolicy( ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
+        
         File repoLocation = getTestFile( "target/test-repository/managed" );
         // faster only to delete this one before copying, the others are done case by case
         FileUtils.deleteDirectory( new File( repoLocation, "org/apache/maven/test/get-merged-metadata" ) );
