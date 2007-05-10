@@ -395,92 +395,30 @@
             <version>1.1-SNAPSHOT</version>
          </dependency>
          <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-rbac-profile</artifactId>
-            <version>${plexus-security.version}</version>
+            <groupId>org.codehaus.plexus.redback</groupId>
+            <artifactId>redback-rbac-role-manager</artifactId>
+            <version>${redback.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-system</artifactId>
-            <version>${plexus-security.version}</version>
+            <groupId>org.codehaus.plexus.redback</groupId>
+            <artifactId>redback-rbac-memory</artifactId>
+            <version>${redback.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-system</artifactId>
-            <version>${plexus-security.version}</version>
+            <groupId>org.codehaus.plexus.redback</groupId>
+            <artifactId>redback-taglib</artifactId>
+            <version>${redback.version}</version>
          </dependency>
          <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-ui-web</artifactId>
-            <version>${plexus-security.version}</version>
+            <groupId>org.codehaus.plexus.redback</groupId>
+            <artifactId>redback-xwork-integration</artifactId>
+            <version>${redback.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.codehaus.plexus.redback</groupId>
+            <artifactId>redback-xwork-content</artifactId>
+            <version>${redback.version}</version>
             <type>war</type>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-ui-web-integration</artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-ui-web-taglib</artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-authentication-provider-user-manager
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-authentication-provider-keystore
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-user-management-api</artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-user-management-provider-jdo
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-authorization-rbac-store-cached
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-authorization-rbac-store-jdo
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-authorization-api</artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>
-               plexus-security-authorization-rbac-authorizer
-            </artifactId>
-            <version>${plexus-security.version}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.codehaus.plexus.security</groupId>
-            <artifactId>plexus-security-keys-jdo</artifactId>
-            <version>${plexus-security.version}</version>
          </dependency>
          <dependency>
             <groupId>commons-lang</groupId>
@@ -655,6 +593,6 @@
       <archiva.version>1.0-alpha-1-SNAPSHOT</archiva.version>
       <maven.version>2.0.5</maven.version>
       <wagon.version>1.0-beta-2</wagon.version>
-      <plexus-security.version>1.0-alpha-11</plexus-security.version>
+      <redback.version>1.0-alpha-1-SNAPSHOT</redback.version>
    </properties>
 </project>
