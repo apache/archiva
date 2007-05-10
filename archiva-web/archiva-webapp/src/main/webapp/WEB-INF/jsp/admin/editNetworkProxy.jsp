@@ -18,25 +18,42 @@
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<c:choose>
+  <c:when test="${mode == 'edit'}">
+    <c:set var="addedit" value="Edit" />
+    <c:set var="disableId" value="true" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="addedit" value="Add" />
+    <c:set var="disableId" value="false" />
+  </c:otherwise>
+</c:choose>
 
 <html>
 <head>
-  <title>Admin: Edit Network Proxy</title>
+  <title>Admin: ${addedit} Network Proxy</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Network Proxy</h1>
+<h1>Admin: ${addedit} Network Proxy</h1>
 
 <div id="contentArea">
 
-  <h2>Edit Network Proxy</h2>
+  <h2>${addedit} Network Proxy</h2>
 
+  <ww:actionerror/> 
   <ww:actionmessage/>
-  <ww:form method="post" action="saveNetworkProxy" namespace="/admin" validate="false">
-    <ww:hidden name="mode" value="edit"/>  
-    <ww:hidden name="proxy.id"/>
+  
+  <ww:form method="post" action="saveNetworkProxy" namespace="/admin">
+    <ww:hidden name="mode"/>  
+    
+    <ww:textfield name="proxy.id" label="Identifier" size="10" required="true"
+      disabled="${disableId}"/>
+    
     <%@ include file="/WEB-INF/jsp/admin/include/networkProxyForm.jspf" %>
     <ww:submit value="Save Network Proxy"/>
   </ww:form>

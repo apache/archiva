@@ -89,7 +89,7 @@ public class ConfigureNetworkProxyAction
             addActionError( "Unable to remove network proxy, proxy with id [" + id + "] not found." );
             return SUCCESS;
         }
-        
+
         archivaConfiguration.getConfiguration().removeNetworkProxy( proxyConfig );
         addActionMessage( "Successfully removed network proxy [" + id + "]" );
         return saveConfiguration();
@@ -157,6 +157,14 @@ public class ConfigureNetworkProxyAction
         if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
         {
             removeNetworkProxy( id );
+        }
+        else
+        {
+            if ( findNetworkProxy( id ) != null )
+            {
+                addActionError( "Unable to add new repository with id [" + id + "], that id already exists." );
+                return INPUT;
+            }
         }
 
         addNetworkProxy( getProxy() );

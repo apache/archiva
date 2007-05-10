@@ -307,7 +307,7 @@
     </action>
     
     <action name="addNetworkProxy" class="configureNetworkProxyAction" method="add">
-      <result name="input">/WEB-INF/jsp/admin/addNetworkProxy.jsp</result>
+      <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
       <result name="success" type="redirect-action">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
