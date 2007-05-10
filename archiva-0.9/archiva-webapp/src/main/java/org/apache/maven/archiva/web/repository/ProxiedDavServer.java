@@ -147,6 +147,7 @@ public class ProxiedDavServer
                 catch ( ResourceDoesNotExistException e )
                 {
                     response.sendError(404);
+                    return;
                 }
             }
         }
