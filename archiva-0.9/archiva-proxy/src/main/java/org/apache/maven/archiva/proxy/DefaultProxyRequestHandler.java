@@ -104,32 +104,32 @@ public class DefaultProxyRequestHandler
 
     private static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone( "UTC" );
 
-    public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
+    public ProxiedArtifact get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException
     {
         return get( path, proxiedRepositories, managedRepository, null );
     }
 
-    public File get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
+    public ProxiedArtifact get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException
     {
         return get( managedRepository, path, proxiedRepositories, wagonProxy, false );
     }
 
-    public File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository )
+    public ProxiedArtifact getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException
     {
         return getAlways( path, proxiedRepositories, managedRepository, null );
     }
 
-    public File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository,
+    public ProxiedArtifact getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository,
                            ProxyInfo wagonProxy )
         throws ResourceDoesNotExistException, ProxyException
     {
         return get( managedRepository, path, proxiedRepositories, wagonProxy, true );
     }
 
-    private File get( ArtifactRepository managedRepository, String path, List proxiedRepositories, ProxyInfo wagonProxy,
+    private ProxiedArtifact get( ArtifactRepository managedRepository, String path, List proxiedRepositories, ProxyInfo wagonProxy,
                       boolean force )
         throws ProxyException, ResourceDoesNotExistException
     {
@@ -173,6 +173,10 @@ public class DefaultProxyRequestHandler
                 {
                     artifact = legacyArtifactBuilder.build( artifactPath );
                     getLogger().debug( "Artifact requested is: " + artifact );
+
+                    // This is a maven1 request (legacy format)
+                    // as Maven1 can't handle relocation, do it internally.
+                    applyRelocation( managedRepository, artifact, proxiedRepositories, wagonProxy, force );
                 }
                 catch ( BuilderException e )
                 {
@@ -182,12 +186,11 @@ public class DefaultProxyRequestHandler
 
             if ( artifact != null )
             {
-                applyRelocation( managedRepository, artifact, proxiedRepositories, wagonProxy, force );
-
                 if ( !checksum )
                 {
+                    path = managedRepository.pathOf( artifact );
                     // Build the target file name
-                    target = new File( managedRepository.getBasedir(), managedRepository.pathOf( artifact ) );
+                    target = new File( managedRepository.getBasedir(), path );
 
                     // Get the requested artifact from proxiedRepositories
                     getArtifactFromRepository( managedRepository, target, artifact, proxiedRepositories, wagonProxy,
@@ -195,9 +198,9 @@ public class DefaultProxyRequestHandler
                 }
                 else
                 {
+                    path = managedRepository.pathOf( artifact ) + "." + checksumExtension;
                     // Just adjust the filename for relocation, don't actualy get it
-                    target = new File( managedRepository.getBasedir(),
-                                       managedRepository.pathOf( artifact ) + "." + checksumExtension );
+                    target = new File( managedRepository.getBasedir(), path );
                 }
             }
             else if ( !checksum )
@@ -215,7 +218,7 @@ public class DefaultProxyRequestHandler
             throw new ResourceDoesNotExistException( "Could not find " + path + " in any of the repositories." );
         }
 
-        return target;
+        return new ProxiedArtifact( target, path );
     }
 
     private void getFileFromRepository( ArtifactRepository managedRepository, File target, String path,
