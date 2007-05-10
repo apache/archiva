@@ -107,6 +107,16 @@
           </td>
         </tr>
         <tr>
+          <th>Checksum policy</th>
+          <td>
+            <c:choose>
+              <c:when test="${repository.checksumPolicy == 'fail'}">Failure</c:when>
+              <c:when test="${repository.checksumPolicy == 'warn'}">Warning</c:when>
+              <c:otherwise>Ignore</c:otherwise>
+            </c:choose>
+          </td>
+        </tr>
+        <tr>
           <th>Use HTTP Proxy</th>
           <td class="${repository.useNetworkProxy ? 'donemark' : 'errormark'} booleanIcon"></td>
         </tr>

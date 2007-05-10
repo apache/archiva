@@ -62,12 +62,12 @@ public class DefaultConfiguredRepositoryFactory
         String updatePolicy =
             getUpdatePolicy( configuration.getSnapshotsPolicy(), configuration.getSnapshotsInterval() );
         ArtifactRepositoryPolicy snapshotsPolicy =
-            new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
+            new ArtifactRepositoryPolicy( enabled, updatePolicy, configuration.getChecksumPolicy() );
 
         enabled = isEnabled( configuration.getReleasesPolicy() );
         updatePolicy = getUpdatePolicy( configuration.getReleasesPolicy(), configuration.getReleasesInterval() );
         ArtifactRepositoryPolicy releasesPolicy =
-            new ArtifactRepositoryPolicy( enabled, updatePolicy, ArtifactRepositoryPolicy.CHECKSUM_POLICY_FAIL );
+            new ArtifactRepositoryPolicy( enabled, updatePolicy, configuration.getChecksumPolicy() );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) repositoryLayouts.get( configuration.getLayout() );
 

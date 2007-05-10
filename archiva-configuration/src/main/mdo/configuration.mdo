@@ -405,6 +405,15 @@
           </description>
         </field>
         <field>
+          <name>checksumPolicy</name>
+          <version>1.0.0</version>
+          <type>String</type>
+          <defaultValue>fail</defaultValue>
+          <description>
+            The policy for checksum: one of fail, warn, ignore.
+          </description>
+        </field>
+        <field>
           <name>releasesInterval</name>
           <version>1.0.0</version>
           <type>int</type>
@@ -533,5 +542,7 @@
     </class>
   </classes>
 </model>
+
+
 
 
