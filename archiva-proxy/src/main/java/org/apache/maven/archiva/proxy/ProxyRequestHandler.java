@@ -23,7 +23,6 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -50,7 +49,7 @@ public interface ProxyRequestHandler
      *                        when the requested object can't be found in any of the
      *                        configured repositories
      */
-    File get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
+    ProxiedArtifact get( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
@@ -66,7 +65,7 @@ public interface ProxyRequestHandler
      *                        when the requested object can't be found in any of the
      *                        configured repositories
      */
-    File get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
+    ProxiedArtifact get( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
@@ -82,7 +81,7 @@ public interface ProxyRequestHandler
      *                        when the requested object can't be found in any of the
      *                        configured repositories
      */
-    File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository )
+    ProxiedArtifact getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository )
         throws ProxyException, ResourceDoesNotExistException;
 
     /**
@@ -99,6 +98,6 @@ public interface ProxyRequestHandler
      *                        when the requested object can't be found in any of the
      *                        configured repositories
      */
-    File getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
+    ProxiedArtifact getAlways( String path, List proxiedRepositories, ArtifactRepository managedRepository, ProxyInfo wagonProxy )
         throws ProxyException, ResourceDoesNotExistException;
 }

@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.ConfiguredRepositoryFactory;
 import org.apache.maven.archiva.configuration.ProxiedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Proxy;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.proxy.ProxiedArtifact;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.ProxyRequestHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -160,8 +161,9 @@ public class ProxiedDavServer
     {
         try
         {
-            proxyRequestHandler.get( request.getLogicalResource(), this.proxiedRepositories, this.managedRepository,
+            ProxiedArtifact proxied = proxyRequestHandler.get( request.getLogicalResource(), this.proxiedRepositories, this.managedRepository,
                                      this.wagonProxy );
+            request.getRequest().setPathInfo( proxied.getPath() );
         }
         catch ( ProxyException e )
         {
