@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-import com.opensymphony.xwork.Validateable;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
@@ -29,7 +28,6 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
@@ -46,7 +44,6 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -64,7 +61,7 @@ import java.util.Map.Entry;
  */
 public class ConfigureProxyConnectorAction
     extends PlexusActionSupport
-    implements SecureAction, Preparable, Validateable, Initializable
+    implements SecureAction, Preparable, Initializable
 {
     private static final String DIRECT_CONNECTION = "(direct connection)";
 
@@ -408,35 +405,32 @@ public class ConfigureProxyConnectorAction
         String sourceId = getConnector().getSourceRepoId();
         String targetId = getConnector().getTargetRepoId();
 
+        if ( !validateConnector( getConnector() ) )
+        {
+            return INPUT;
+        }
+
         if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
         {
             removeConnector( sourceId, targetId );
         }
-
-        try
+        else
         {
-            if ( StringUtils.equals( DIRECT_CONNECTION, getConnector().getProxyId() ) )
+            if ( findProxyConnector( sourceId, targetId ) != null )
             {
-                getConnector().setProxyId( null );
+                addActionError( "Unable to add new proxy connector with source [" + sourceId + "] and target ["
+                    + targetId + "] as previously declared proxy connector, go edit that one instead." );
+                return INPUT;
             }
-
-            addProxyConnector( getConnector() );
-            saveConfiguration();
-        }
-        catch ( IOException e )
-        {
-            addActionError( "I/O Exception: " + e.getMessage() );
-        }
-        catch ( InvalidConfigurationException e )
-        {
-            addActionError( "Invalid Configuration Exception: " + e.getMessage() );
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
         }
 
-        return SUCCESS;
+        if ( StringUtils.equals( DIRECT_CONNECTION, getConnector().getProxyId() ) )
+        {
+            getConnector().setProxyId( null );
+        }
+
+        addProxyConnector( getConnector() );
+        return saveConfiguration();
     }
 
     public void setBlackListPattern( String blackListPattern )
@@ -490,7 +484,6 @@ public class ConfigureProxyConnectorAction
     }
 
     private void addProxyConnector( ProxyConnectorConfiguration proxyConnector )
-        throws IOException
     {
         archivaConfiguration.getConfiguration().addProxyConnector( proxyConnector );
     }
@@ -502,11 +495,9 @@ public class ConfigureProxyConnectorAction
         ProxyConnectorSelectionPredicate selectedProxy = new ProxyConnectorSelectionPredicate( sourceId, targetId );
         return (ProxyConnectorConfiguration) CollectionUtils.find( config.getProxyConnectors(), selectedProxy );
     }
-    
-    public void validate()
+
+    public boolean validateConnector( ProxyConnectorConfiguration proxyConnector )
     {
-        ProxyConnectorConfiguration proxyConnector = getConnector();
-        
         if ( proxyConnector.getPolicies() == null )
         {
             addActionError( "Policies must be set." );
@@ -544,6 +535,8 @@ public class ConfigureProxyConnectorAction
                 continue;
             }
         }
+
+        return !hasActionErrors();
     }
 
     private void removeConnector( String sourceId, String targetId )
@@ -554,11 +547,16 @@ public class ConfigureProxyConnectorAction
     }
 
     private String saveConfiguration()
-        throws IOException, InvalidConfigurationException, RegistryException
     {
-        archivaConfiguration.save( archivaConfiguration.getConfiguration() );
-
-        addActionMessage( "Successfully saved configuration" );
+        try
+        {
+            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Unable to save configuration: " + e.getMessage() );
+        }
 
         return SUCCESS;
     }

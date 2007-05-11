@@ -49,7 +49,7 @@
   <ww:actionmessage/>
   
   <ww:form method="post" action="saveNetworkProxy" namespace="/admin">
-    <ww:hidden name="mode"/>  
+    <ww:hidden name="mode"/>
     
     <ww:textfield name="proxy.id" label="Identifier" size="10" required="true"
       disabled="${disableId}"/>

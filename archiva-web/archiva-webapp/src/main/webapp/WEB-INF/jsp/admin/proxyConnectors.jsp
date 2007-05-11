@@ -33,6 +33,10 @@
 
 <h1>Administration - Proxy Connectors</h1>
 
+<c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
+<c:url var="iconEditUrl" value="/images/icons/edit.png" /> 
+<c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
+
 <div id="contentArea">
 
   <ww:actionerror />
@@ -82,10 +86,10 @@
                       <ww:param name="target" value="%{'${connector.targetRepoId}'}" />
                     </ww:url>
                     <ww:a href="%{editProxyConnectorUrl}" cssClass="edit" title="Edit Proxy Connector">
-                      <img src="<c:url value="/images/icons/edit.png" />" />
+                      <img src="${iconEditUrl}" />
                     </ww:a>
                     <ww:a href="%{deleteProxyConnectorUrl}" cssClass="delete" title="Delete Proxy Connector">
-                      <img src="<c:url value="/images/icons/delete.gif" />" />
+                      <img src="${iconDeleteUrl}" />
                     </ww:a>
                   </redback:ifAnyAuthorized>
                 </div>
@@ -100,7 +104,13 @@
                           <i>(Direct Connection)</i>
                         </c:when>
                         <c:otherwise>
-                          ${connector.proxyId}
+                          <ww:url id="editProxyIdUrl" action="editNetworkProxy">
+                            <ww:param name="proxyid" value="%{'${connector.proxyId}'}" />
+                          </ww:url>
+                          <ww:a href="%{editProxyIdUrl}" cssClass="edit" title="Edit Network Proxy">
+                            ${connector.proxyId}
+                            <img src="${iconEditUrl}" />
+                          </ww:a>
                         </c:otherwise>
                       </c:choose>
                     </td>

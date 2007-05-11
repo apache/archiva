@@ -271,7 +271,7 @@
     </action>
     
     <action name="addProxyConnector" class="configureProxyConnectorAction" method="add">
-      <result name="input">/WEB-INF/jsp/admin/addProxyConnector.jsp</result>
+      <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
