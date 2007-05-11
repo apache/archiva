@@ -22,19 +22,14 @@
   <components>
     <component>
       <role>org.codehaus.plexus.taskqueue.execution.TaskExecutor</role>
-      <role-hint>test-archiva-task-executor</role-hint>
-      <implementation>org.apache.maven.archiva.scheduled.executors.ArchivaScheduledTaskExecutor</implementation>
+      <role-hint>test-repository-scanning</role-hint>
+      <implementation>org.apache.maven.archiva.scheduled.executors.ArchivaRepositoryScanningTaskExecutor</implementation>
       <description></description>
       <requirements>
         <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <field-name>archivaConfiguration</field-name>
-          <role-hint>test-configuration</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.updater.DatabaseUpdater</role>
+          <role>org.apache.maven.archiva.database.ArchivaDAO</role>
           <role-hint>jdo</role-hint>
-          <field-name>databaseUpdater</field-name>
+          <field-name>dao</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.database.RepositoryDAO</role>
@@ -42,19 +37,14 @@
           <field-name>repositoryDAO</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.consumers.ArchivaArtifactConsumer</role>
-          <field-name>availableDBConsumers</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.consumers.RepositoryContentConsumer</role>
-          <field-name>availableRepositoryConsumers</field-name>
+          <role>org.apache.maven.archiva.repository.scanner.RepositoryScanner</role>
+          <field-name>repoScanner</field-name>
         </requirement>
       </requirements>
     </component>
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <role-hint>test-configuration</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
       <requirements>
         <requirement>

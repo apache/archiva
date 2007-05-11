@@ -20,19 +20,18 @@ package org.apache.maven.archiva.scheduled.executors;
  */
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.maven.archiva.common.utils.DateUtil;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.database.updater.DatabaseUpdater;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
@@ -40,26 +39,23 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import java.util.List;
 
 /**
+ * ArchivaRepositoryScanningTaskExecutor 
  *
- * @author <a href="mailto:jmcconnell@apache.org">Jesse McConnell</a>
- * @version $Id:$
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  * 
- * @plexus.component role="org.codehaus.plexus.taskqueue.execution.TaskExecutor" 
- *      role-hint="archiva-task-executor"
+ * @plexus.component
+ *   role="org.codehaus.plexus.taskqueue.execution.TaskExecutor"
+ *   role-hint="repository-scanning"
  */
-public class ArchivaScheduledTaskExecutor
+public class ArchivaRepositoryScanningTaskExecutor
     extends AbstractLogEnabled
-    implements TaskExecutor
+    implements TaskExecutor, Initializable
 {
     /**
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
-
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private DatabaseUpdater databaseUpdater;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -73,65 +69,21 @@ public class ArchivaScheduledTaskExecutor
      */
     private RepositoryScanner repoScanner;
 
+    public void initialize()
+        throws InitializationException
+    {
+        getLogger().info( "Initialized " + this.getClass().getName() );
+    }
+
     public void executeTask( Task task )
         throws TaskExecutionException
     {
-
-        if ( task instanceof DatabaseTask )
-        {
-            executeDatabaseTask( (DatabaseTask) task );
-        }
-        else if ( task instanceof RepositoryTask )
-        {
-            executeRepositoryTask( (RepositoryTask) task );
-        }
-        else
-        {
-            throw new TaskExecutionException( "Unknown Task: " + task.toString() );
-        }
-
-    }
-
-    private void executeDatabaseTask( DatabaseTask task )
-        throws TaskExecutionException
-    {
-        getLogger().info( "Executing task from queue with job name: " + task.getName() );
-        long time = System.currentTimeMillis();
+        RepositoryTask repoTask = (RepositoryTask) task;
+        getLogger().info( "Executing task from queue with job name: " + repoTask.getName() );
 
         try
         {
-            getLogger().info( "Task: Updating unprocessed artifacts" );
-            databaseUpdater.updateAllUnprocessed();
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            throw new TaskExecutionException( "Error running unprocessed updater", e );
-        }
-
-        try
-        {
-            getLogger().info( "Task: Updating processed artifacts" );
-            databaseUpdater.updateAllProcessed();
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            throw new TaskExecutionException( "Error running processed updater", e );
-        }
-
-        time = System.currentTimeMillis() - time;
-
-        getLogger().info( "Finished database task in " + time + "ms." );
-
-    }
-
-    private void executeRepositoryTask( RepositoryTask task )
-        throws TaskExecutionException
-    {
-        getLogger().info( "Executing task from queue with job name: " + task.getName() );
-
-        try
-        {
-            ArchivaRepository arepo = repositoryDAO.getRepository( task.getRepositoryId() );
+            ArchivaRepository arepo = repositoryDAO.getRepository( repoTask.getRepositoryId() );
 
             long sinceWhen = RepositoryScanner.FRESH_SCAN;
 
@@ -147,7 +99,7 @@ public class ArchivaScheduledTaskExecutor
 
             dao.save( stats );
 
-            getLogger().info( "Finished repository task: " + DateUtil.getDuration( stats.getDuration() ) + "." );
+            getLogger().info( "Finished repository task: " + stats.toDump( arepo ) );
         }
         catch ( ArchivaDatabaseException e )
         {

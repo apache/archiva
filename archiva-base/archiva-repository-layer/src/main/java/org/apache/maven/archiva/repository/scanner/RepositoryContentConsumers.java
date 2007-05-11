@@ -24,11 +24,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +46,8 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers"
  */
 public class RepositoryContentConsumers
+    extends AbstractLogEnabled
+    implements Initializable
 {
     /**
      * @plexus.requirement
@@ -60,6 +64,10 @@ public class RepositoryContentConsumers
      */
     private List availableInvalidConsumers;
 
+    private SelectedKnownRepoConsumersPredicate selectedKnownPredicate;
+
+    private SelectedInvalidRepoConsumersPredicate selectedInvalidPredicate;
+
     class SelectedKnownRepoConsumersPredicate
         implements Predicate
     {
@@ -70,14 +78,14 @@ public class RepositoryContentConsumers
             if ( object instanceof KnownRepositoryContentConsumer )
             {
                 KnownRepositoryContentConsumer known = (KnownRepositoryContentConsumer) object;
-                Configuration config = archivaConfiguration.getConfiguration();
+                RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration()
+                    .getRepositoryScanning();
 
-                return config.getRepositoryScanning().getKnownContentConsumers().contains( known.getId() );
+                return scanning.getKnownContentConsumers().contains( known.getId() );
             }
 
             return satisfies;
         }
-
     }
 
     class SelectedInvalidRepoConsumersPredicate
@@ -90,9 +98,10 @@ public class RepositoryContentConsumers
             if ( object instanceof InvalidRepositoryContentConsumer )
             {
                 InvalidRepositoryContentConsumer invalid = (InvalidRepositoryContentConsumer) object;
-                Configuration config = archivaConfiguration.getConfiguration();
+                RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration()
+                    .getRepositoryScanning();
 
-                return config.getRepositoryScanning().getInvalidContentConsumers().contains( invalid.getId() );
+                return scanning.getInvalidContentConsumers().contains( invalid.getId() );
             }
 
             return satisfies;
@@ -119,22 +128,19 @@ public class RepositoryContentConsumers
         }
     }
 
-    public Predicate getKnownSelectionPredicate()
+    public void initialize()
+        throws InitializationException
     {
-        return new SelectedKnownRepoConsumersPredicate();
+        this.selectedKnownPredicate = new SelectedKnownRepoConsumersPredicate();
+        this.selectedInvalidPredicate = new SelectedInvalidRepoConsumersPredicate();
     }
 
-    public Predicate getInvalidSelectionPredicate()
-    {
-        return new SelectedInvalidRepoConsumersPredicate();
-    }
-    
     public List getSelectedKnownConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
         return scanning.getKnownContentConsumers();
     }
-    
+
     public List getSelectedInvalidConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
@@ -144,7 +150,7 @@ public class RepositoryContentConsumers
     public Map getSelectedKnownConsumersMap()
     {
         RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
-        Closure ifclosure = IfClosure.getInstance( getKnownSelectionPredicate(), consumerMapClosure );
+        Closure ifclosure = IfClosure.getInstance( selectedKnownPredicate, consumerMapClosure );
         CollectionUtils.forAllDo( availableKnownConsumers, ifclosure );
 
         return consumerMapClosure.getMap();
@@ -153,28 +159,24 @@ public class RepositoryContentConsumers
     public Map getSelectedInvalidConsumersMap()
     {
         RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
-        Closure ifclosure = IfClosure.getInstance( getInvalidSelectionPredicate(), consumerMapClosure );
+        Closure ifclosure = IfClosure.getInstance( selectedInvalidPredicate, consumerMapClosure );
         CollectionUtils.forAllDo( availableInvalidConsumers, ifclosure );
 
         return consumerMapClosure.getMap();
     }
-    
+
     public List getSelectedKnownConsumers()
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( scanning.getKnownContentConsumers(), getKnownSelectionPredicate() ));
+        ret.addAll( CollectionUtils.select( availableKnownConsumers, selectedKnownPredicate ) );
 
         return ret;
     }
 
     public List getSelectedInvalidConsumers()
     {
-        RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
-
         List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( scanning.getInvalidContentConsumers(), getInvalidSelectionPredicate() ));
+        ret.addAll( CollectionUtils.select( availableInvalidConsumers, selectedInvalidPredicate ) );
 
         return ret;
     }

@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
@@ -63,27 +64,35 @@ public class IndexRepositoryAction
 
         boolean scheduleTask = false;
 
-        if ( taskScheduler.getTaskQueue().hasFilesystemTaskInQueue() )
+        try
         {
-            if ( taskScheduler.getTaskQueue().hasRepositoryTaskInQueue( repoid ) )
+            if ( taskScheduler.isProcessingAnyRepositoryTask() )
             {
-                addActionError( "Repository [" + repoid + "] task was already queued." );
+                if ( taskScheduler.isProcessingRepositoryTask( repoid ) )
+                {
+                    addActionError( "Repository [" + repoid + "] task was already queued." );
+                }
+                else
+                {
+                    scheduleTask = true;
+                }
             }
             else
             {
                 scheduleTask = true;
             }
         }
-        else
+        catch ( ArchivaException e )
         {
-            scheduleTask = true;
+            scheduleTask = false;
+            addActionError( e.getMessage() );
         }
 
         if ( scheduleTask )
         {
             try
             {
-                taskScheduler.getTaskQueue().put( task );
+                taskScheduler.queueRepositoryTask( task );
                 addActionMessage( "Your request to have repository [" + repoid + "] be indexed has been queued." );
             }
             catch ( TaskQueueException e )
@@ -95,6 +104,18 @@ public class IndexRepositoryAction
 
         // Return to the repositories screen.
         return SUCCESS;
+    }
+
+    public void addActionMessage( String aMessage )
+    {
+        super.addActionMessage( aMessage );
+        getLogger().info( "[ActionMessage] " + aMessage );
+    }
+
+    public void addActionError( String anErrorMessage )
+    {
+        super.addActionError( anErrorMessage );
+        getLogger().warn( "[ActionError] " + anErrorMessage );
     }
 
     public SecureActionBundle getSecureActionBundle()

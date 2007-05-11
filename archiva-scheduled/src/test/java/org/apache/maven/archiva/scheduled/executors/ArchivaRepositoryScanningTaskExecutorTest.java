@@ -19,6 +19,19 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.RepositoryDAO;
+import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
+import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.jpox.SchemaTool;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Iterator;
@@ -30,28 +43,13 @@ import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryDAO;
-import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-import org.jpox.SchemaTool;
-
 /**
- * IndexerTaskExecutorTest
+ * ArchivaRepositoryScanningTaskExecutorTest 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * @version $Id:$
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  */
-public class ArchivaScheduledTaskExecutorTest
+public class ArchivaRepositoryScanningTaskExecutorTest
     extends PlexusTestCase
 {
     private TaskExecutor taskExecutor;
@@ -137,7 +135,7 @@ public class ArchivaScheduledTaskExecutorTest
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
 
-        taskExecutor = (TaskExecutor) lookup( TaskExecutor.class.getName(), "test-archiva-task-executor" );
+        taskExecutor = (TaskExecutor) lookup( TaskExecutor.class, "test-repository-scanning" );
     }
 
     public void testExecutor() throws Exception
@@ -172,29 +170,11 @@ public class ArchivaScheduledTaskExecutorTest
         repoTask.setRepositoryId( "testRepo" );
         
         taskExecutor.executeTask( repoTask );
-        
+
         ArtifactDAO adao = dao.getArtifactDAO();
-        
-        ArchivaArtifact artifact = adao.getArtifact( "javax.sql", "jdbc", "2.0", null, "jar" );
-        
-        assertNotNull( artifact );
-        
         List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
         
         assertNotNull( unprocessedResultList );
         assertEquals("Incorrect number of unprocessed artifacts detected.", 8, unprocessedResultList.size() );
-        
-        DatabaseTask dataTask = new DatabaseTask();
-        
-        dataTask.setName( "testDataTask" );
-
-        taskExecutor.executeTask( dataTask );
-        
-        List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
-        
-        assertNotNull( processedResultList );
-        assertEquals("Incorrect number of processed artifacts detected.", 8, processedResultList.size() );      
-
     }
-
 }

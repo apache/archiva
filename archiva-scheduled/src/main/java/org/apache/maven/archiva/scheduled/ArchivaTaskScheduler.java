@@ -19,6 +19,10 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.ArchivaException;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
+import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
+import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 
 /**
@@ -32,15 +36,28 @@ public interface ArchivaTaskScheduler
      * The Plexus component role.
      */
     public final static String ROLE = ArchivaTaskScheduler.class.getName();
-    
-    public ArchivaTaskQueue getTaskQueue();
+
+    public boolean isProcessingAnyRepositoryTask()
+        throws ArchivaException;
+
+    public boolean isProcessingDatabaseTask()
+        throws ArchivaException;
+
+    public boolean isProcessingRepositoryTask( String repositoryId )
+        throws ArchivaException;
+
+    public void queueDatabaseTask( DatabaseTask task )
+        throws TaskQueueException;
+
+    public void queueRepositoryTask( RepositoryTask task )
+        throws TaskQueueException;
 
     public void scheduleAllRepositoryTasks()
         throws TaskExecutionException;
-
+    
     public void scheduleDatabaseTasks()
         throws TaskExecutionException;
-
+    
     public void scheduleRepositoryTask( String repositoryId )
         throws TaskExecutionException;
 }

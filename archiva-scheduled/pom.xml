@@ -42,14 +42,6 @@
       <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-core-consumers</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-database-consumers</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-taskqueue</artifactId>
       <version>1.0-alpha-6</version>
@@ -78,6 +70,22 @@
     </dependency>
     <!-- Test Dependencies -->
     <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-core-consumers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-database-consumers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
       <version>1.0-alpha-2</version>
@@ -99,22 +107,22 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.2</version>
-        <configuration>
-          <excludes>
-            <exclude>**/Abstract*</exclude>
-            <exclude>**/*TestCase.java</exclude>
-            <exclude>**/*Tests.java</exclude>
-            <exclude>**/*TestSuite.java</exclude>
-            <exclude>**/ArchivaScheduledTaskExecutorTest*</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>merge</id>
+            <goals>
+              <goal>merge-descriptors</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${basedir}/src/main/resources/META-INF/plexus/components.xml</descriptor>
+                <descriptor>${project.build.directory}/generated-resources/plexus/META-INF/plexus/components.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

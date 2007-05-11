@@ -19,8 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -123,6 +125,38 @@ public class DefaultRepositoryScanner
         // Execute scan.
         dirWalker.scan();
 
-        return scannerInstance.getStatistics();
+        RepositoryContentStatistics stats = scannerInstance.getStatistics();
+
+        ConsumerIdClosure consumerIdList;
+
+        consumerIdList = new ConsumerIdClosure();
+        CollectionUtils.forAllDo( knownContentConsumers, consumerIdList );
+        stats.setKnownConsumers( consumerIdList.getList() );
+
+        consumerIdList = new ConsumerIdClosure();
+        CollectionUtils.forAllDo( invalidContentConsumers, consumerIdList );
+        stats.setInvalidConsumers( consumerIdList.getList() );
+
+        return stats;
+    }
+
+    class ConsumerIdClosure
+        implements Closure
+    {
+        private List list = new ArrayList();
+
+        public void execute( Object input )
+        {
+            if ( input instanceof RepositoryContentConsumer )
+            {
+                RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+                list.add( consumer.getId() );
+            }
+        }
+
+        public List getList()
+        {
+            return list;
+        }
     }
 }

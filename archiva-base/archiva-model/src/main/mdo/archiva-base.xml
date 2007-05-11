@@ -2098,27 +2098,110 @@
       <codeSegments>
         <codeSegment>
           <version>1.0.0+</version>
-          <code>
-            private transient long startTimestamp;
+          <code><![CDATA[
+    private transient long startTimestamp;
+    
+    public void triggerStart()
+    {
+        startTimestamp = System.currentTimeMillis();
+    }
 
-            public void triggerStart() {
-              startTimestamp = System.currentTimeMillis();
-            }
+    public void triggerFinished()
+    {
+        long finished = System.currentTimeMillis();
+        setDuration( finished - startTimestamp );
+        setWhenGathered( new java.util.Date( finished ) );
+    }
 
-            public void triggerFinished() {
-              long finished = System.currentTimeMillis();
-              setDuration( finished - startTimestamp );
-              setWhenGathered( new java.util.Date( finished ) );
-            }
+    public void increaseFileCount()
+    {
+        this.totalFileCount++;
+    }
 
-            public void increaseFileCount() {
-              this.totalFileCount++;
-            }
+    public void increaseNewFileCount()
+    {
+        this.newFileCount++;
+    }
 
-            public void increaseNewFileCount() {
-              this.newFileCount++;
+    private transient java.util.List knownConsumers;
+    
+    private transient java.util.List invalidConsumers;
+    
+    public void setKnownConsumers( java.util.List consumers )
+    {
+        knownConsumers = consumers;
+    }
+    
+    public void setInvalidConsumers( java.util.List consumers )
+    {
+        invalidConsumers = consumers;
+    }
+
+    private static boolean isEmpty( java.util.Collection coll )
+    {
+        if ( coll == null )
+        {
+            return true;
+        }
+
+        return coll.isEmpty();
+    }
+
+    public String toDump( ArchivaRepository repo )
+    {
+        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat();
+        StringBuffer buf = new StringBuffer();
+
+        buf.append( "\n.\\ Scan of " ).append( this.getRepositoryId() );
+        buf.append( " \\.__________________________________________" );
+
+        buf.append( "\n  Repository URL    : " ).append( repo.getUrl() );
+        buf.append( "\n  Repository Name   : " ).append( repo.getModel().getName() );
+        buf.append( "\n  Repository Layout : " ).append( repo.getModel().getLayoutName() );
+
+        buf.append( "\n  Known Consumers   : " );
+        if ( !isEmpty( knownConsumers ) )
+        {
+            buf.append( "(" ).append( knownConsumers.size() ).append( " configured)" );
+            for ( java.util.Iterator iter = knownConsumers.iterator(); iter.hasNext(); )
+            {
+                String id = (String) iter.next();
+                buf.append( "\n                      " ).append( id );
             }
-          </code>
+        }
+        else
+        {
+            buf.append( "<none>" );
+        }
+
+        buf.append( "\n  Invalid Consumers : " );
+        if ( !isEmpty( invalidConsumers ) )
+        {
+            buf.append( "(" ).append( invalidConsumers.size() ).append( " configured)" );
+            for ( java.util.Iterator iter = invalidConsumers.iterator(); iter.hasNext(); )
+            {
+                String id = (String) iter.next();
+                buf.append( "\n                      " ).append( id );
+            }
+        }
+        else
+        {
+            buf.append( "<none>" );
+        }
+
+        buf.append( "\n  Duration          : " );
+        buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( this.getDuration() ) );
+        buf.append( "\n  When Gathered     : " ).append( df.format( this.getWhenGathered() ) );
+        buf.append( "\n  Total File Count  : " ).append( this.getTotalFileCount() );
+        long averageMsPerFile = ( this.getDuration() / this.getTotalFileCount() );
+        buf.append( "\n  Avg Time Per File : " );
+        buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( averageMsPerFile ) );
+        buf.append( "\n______________________________________________________________" );
+
+        return buf.toString();
+    }
+            
+          ]]></code>
         </codeSegment>
       </codeSegments>
     </class>
