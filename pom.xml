@@ -123,6 +123,23 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>2.2</version>
          </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-remote-resources-plugin</artifactId>
+            <version>1.0-alpha-5</version>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>process</goal>
+                  </goals>
+                  <configuration>
+                     <resourceBundles>
+                        <resourceBundle>org.apache:apache-jar-resource-bundle:1.2</resourceBundle>
+                     </resourceBundles>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
