@@ -85,6 +85,14 @@
       <fileMode>0755</fileMode>
       <lineEnding>dos</lineEnding>
     </fileSet>
+    <fileSet>
+      <directory>target/maven-shared-archive-resources/META-INF/</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>NOTICE</include>
+        <include>LICENSE</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>
 
