@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>0.9-alpha-2-SNAPSHOT</version>
+    <version>0.9-alpha-2</version>
   </parent>
   <artifactId>archiva-webapp</artifactId>
   <packaging>war</packaging>
@@ -357,7 +357,7 @@
             <configuration>
               <tasks>
                 <copy todir="${project.build.directory}/appserver-base">
-                  <fileset dir="src/appserver-base"/>
+                  <fileset dir="src/appserver-base" />
                 </copy>
               </tasks>
             </configuration>
