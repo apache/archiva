@@ -79,6 +79,12 @@
       <artifactId>plexus-naming</artifactId>
       <version>1.0-alpha-3</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hsqldb</artifactId>
+          <groupId>hsqldb</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.mail</groupId>
