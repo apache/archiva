@@ -138,6 +138,20 @@
           <artifactId>modello-maven-plugin</artifactId>
           <version>1.0-alpha-15</version>
         </plugin>
+        <plugin>
+          <!-- TODO:  Remove when maven-parent v6 is released -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.1</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
