@@ -44,7 +44,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-jdo2</artifactId>
-      <version>1.0-alpha-8</version>
       <exclusions>
         <exclusion>
           <groupId>xerces</groupId>
@@ -59,7 +58,6 @@
     <dependency>
       <groupId>jpox</groupId>
       <artifactId>jpox</artifactId>
-      <version>1.1.7</version>
       <scope>compile</scope>
       <exclusions>
         <!-- targeting JDK 1.4 we don't need this -->
@@ -84,7 +82,6 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
       <exclusions>
         <exclusion>
           <groupId>logkit</groupId>
@@ -95,24 +92,20 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.2.1.6</version>
     </dependency>
     <!--  TEST DEPS  -->
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <version>1.8.0.7</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbytools</artifactId>
-      <version>10.2.1.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

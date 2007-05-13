@@ -48,7 +48,6 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-expression-evaluator</artifactId>
-      <version>1.0-alpha-1</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -79,19 +78,16 @@
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
-      <version>1.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.registry</groupId>
       <artifactId>plexus-registry-commons</artifactId>
-      <version>1.0-alpha-2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
-      <version>1.2_Java1.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

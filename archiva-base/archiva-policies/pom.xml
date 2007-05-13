@@ -44,24 +44,20 @@
     <dependency>
       <groupId>org.codehaus.plexus.cache</groupId>
       <artifactId>plexus-cache-ehcache</artifactId>
-      <version>1.0-alpha-2</version>
     </dependency>
     <dependency>
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
-      <version>1.2_Java1.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-slf4j-logging</artifactId>
-      <version>1.1-alpha-1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
