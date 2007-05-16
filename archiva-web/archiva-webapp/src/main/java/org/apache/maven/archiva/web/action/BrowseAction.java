@@ -48,14 +48,12 @@ public class BrowseAction
 
     public String browse()
     {
-        getLogger().info( ".browse()" );
         this.results = repoBrowsing.getRoot();
         return SUCCESS;
     }
 
     public String browseGroup()
     {
-        getLogger().info( ".browseGroup( " + groupId + " )" );
         if ( StringUtils.isEmpty( groupId ) )
         {
             // TODO: i18n
@@ -69,7 +67,6 @@ public class BrowseAction
 
     public String browseArtifact()
     {
-        getLogger().info( ".browseArtifact( " + groupId + "," + artifactId + " )" );
         if ( StringUtils.isEmpty( groupId ) )
         {
             // TODO: i18n
