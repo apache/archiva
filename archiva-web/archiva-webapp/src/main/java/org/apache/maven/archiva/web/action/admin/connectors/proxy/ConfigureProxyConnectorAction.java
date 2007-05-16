@@ -30,6 +30,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.RemoteRepositoryPredicate;
 import org.apache.maven.archiva.configuration.functors.RepositoryIdListClosure;
@@ -137,7 +138,35 @@ public class ConfigureProxyConnectorAction
 
     public String delete()
     {
-        return INPUT;
+        Configuration config = archivaConfiguration.getConfiguration();
+
+        String source = getSource();
+        if ( StringUtils.isBlank( source ) )
+        {
+            addActionError( "Unable to delete proxy connector with blank id for its source." );
+            return SUCCESS;
+        }
+
+        String target = getTarget();
+        if ( StringUtils.isBlank( target ) )
+        {
+            addActionError( "Unable to delete proxy connector with blank id for its target." );
+            return SUCCESS;
+        }
+
+        ProxyConnectorSelectionPredicate proxyConnectorSelection = new ProxyConnectorSelectionPredicate( source, target );
+        ProxyConnectorConfiguration proxyConnectorConfiguration = (ProxyConnectorConfiguration) CollectionUtils.find( config
+            .getProxyConnectors(), proxyConnectorSelection );
+        if ( proxyConnectorConfiguration == null )
+        {
+            addActionError( "Unable to remove proxy connector, proxy connector with source [" + source + "] and target ["
+                            + target + "] not found." );
+            return SUCCESS;
+        }
+
+        archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnectorConfiguration );
+        addActionMessage( "Successfully removed proxy connector [" + source + " , " + target + " ]" );
+        return saveConfiguration();
     }
 
     public String addProperty()
