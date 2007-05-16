@@ -99,10 +99,10 @@ public class RepositoryServlet
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
         audit = (AuditLog) lookup( AuditLog.ROLE );
 
-        updateRepositoryMap();
-
         configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         configuration.addChangeListener( this );
+        
+        updateRepositoryMap();
     }
 
     public void initServers( ServletConfig servletConfig )
