@@ -182,11 +182,11 @@
     </action>
 
     <action name="browseGroup" class="browseAction" method="browseGroup">
-      <result>/WEB-INF/jsp/browseGroup.jsp</result>
+      <result>/WEB-INF/jsp/browse.jsp</result>
     </action>
 
     <action name="browseArtifact" class="browseAction" method="browseArtifact">
-      <result>/WEB-INF/jsp/browseArtifact.jsp</result>
+      <result>/WEB-INF/jsp/browse.jsp</result>
     </action>
 
     <action name="showArtifact" class="showArtifactAction" method="artifact">

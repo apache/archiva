@@ -69,7 +69,7 @@ public class DefaultRepositoryBrowsing
 
         // results.setGroupIds( groups );
         // results.setArtifacts( artifacts );
-        results.setArtifacts( versions );
+        results.setVersions( versions );
 
         return results;
     }

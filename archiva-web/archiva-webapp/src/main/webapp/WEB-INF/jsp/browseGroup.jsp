@@ -32,31 +32,46 @@
 <h1>Browse Repository</h1>
 
 <div id="contentArea">
-  <div id="nameColumn">
-    <p>
-      <archiva:groupIdLink var="${groupId}" includeTop="true" />
-    </p>
+  <p>
+    <archiva:groupIdLink var="${results.selectedGroupId}" includeTop="true" />
+  </p>
 
-    <ww:set name="groups" value="groups"/>
-    <c:if test="${!empty(groups)}">
-      <h2>Groups</h2>
+  <div id="nameColumn">
+    <h2>Groups</h2>
+    <ul>
+      <c:forEach items="${results.groupIds}" var="groupId">
+        <c:set var="url">
+          <ww:url action="browseGroup" namespace="/">
+            <ww:param name="groupId" value="%{'${groupId}'}"/>
+          </ww:url>
+        </c:set>
+        <li><a href="${url}">${groupId}/</a></li>
+      </c:forEach>
+    </ul>
+  </div>
+  
+  <c:if test="${not empty results.versions}">
+    <div id="nameColumn">
+      <h2>Versions</h2>
       <ul>
-        <c:forEach items="${groups}" var="groupId">
+        <c:forEach items="${results.versions}" var="version">
           <c:set var="url">
-            <ww:url action="browseGroup" namespace="/">
-              <ww:param name="groupId" value="%{'${groupId}'}"/>
+            <ww:url action="browseVersion" namespace="/">
+              <ww:param name="groupId" value="%{'${results.selectedGroupId}'}"/>
+              <ww:param name="version" value="%{'${version}'}"/>
             </ww:url>
           </c:set>
-          <li><a href="${url}">${groupId}/</a></li>
+          <li><a href="${url}">${version}/</a></li>
         </c:forEach>
       </ul>
-    </c:if>
+    </div>
+  </c:if>  
 
-    <ww:set name="artifactIds" value="artifactIds"/>
-    <c:if test="${!empty(artifactIds)}">
+  <c:if test="${not empty results.artifacts}">
+    <div id="nameColumn">
       <h2>Artifacts</h2>
       <ul>
-        <c:forEach items="${artifactIds}" var="artifactId">
+        <c:forEach items="${results.artifacts}" var="artifactId">
           <c:set var="url">
             <ww:url action="browseArtifact" namespace="/">
               <ww:param name="groupId" value="%{'${groupId}'}"/>
@@ -66,8 +81,10 @@
           <li><a href="${url}">${artifactId}/</a></li>
         </c:forEach>
       </ul>
-    </c:if>
-  </div>
+    </div>
+  </c:if>  
+    
+
 </div>
 
 </body>

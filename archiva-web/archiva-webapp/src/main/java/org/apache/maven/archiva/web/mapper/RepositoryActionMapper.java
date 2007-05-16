@@ -22,9 +22,12 @@ package org.apache.maven.archiva.web.mapper;
 import com.opensymphony.webwork.dispatcher.mapper.ActionMapping;
 import com.opensymphony.webwork.dispatcher.mapper.DefaultActionMapper;
 
-import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Map alternate URLs to specific actions. Used for the repository browser and the proxy.
@@ -34,53 +37,37 @@ import java.util.Map;
 public class RepositoryActionMapper
     extends DefaultActionMapper
 {
-    private static final String BROWSE_PREFIX = "/browse/";
+    private static final String ACTION_BROWSE = "browse";
 
-    private static final String PROXY_PREFIX = "/proxy/";
+    private static final String ACTION_BROWSE_ARTIFACT = "browseArtifact";
 
-    public String getUriFromActionMapping( ActionMapping actionMapping )
-    {
-        Map params = actionMapping.getParams();
-        if ( "browseGroup".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" );
-        }
-        else if ( "browseArtifact".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" );
-        }
-        else if ( "showArtifact".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" );
-        }
-        else if ( "showArtifactDependencies".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" ) + "/dependencies";
-        }
-        else if ( "showArtifactMailingLists".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" ) + "/mailingLists";
-        }
-        else if ( "showArtifactDependees".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" ) + "/usedby";
-        }
-        else if ( "showArtifactDependencyTree".equals( actionMapping.getName() ) )
-        {
-            return BROWSE_PREFIX + params.remove( "groupId" ) + "/" + params.remove( "artifactId" ) + "/" +
-                params.remove( "version" ) + "/dependencyTree";
-        }
-        else if ( "proxy".equals( actionMapping.getName() ) )
-        {
-            return PROXY_PREFIX + params.remove( "path" );
-        }
+    private static final String ACTION_BROWSE_GROUP = "browseGroup";
 
-        return super.getUriFromActionMapping( actionMapping );
-    }
+    private static final String ACTION_SHOW_ARTIFACT = "showArtifact";
+
+    private static final String ACTION_SHOW_ARTIFACT_DEPENDEES = "showArtifactDependees";
+
+    private static final String ACTION_SHOW_ARTIFACT_DEPENDENCIES = "showArtifactDependencies";
+
+    private static final String ACTION_SHOW_ARTIFACT_DEPENDENCY_TREE = "showArtifactDependencyTree";
+
+    private static final String ACTION_SHOW_ARTIFACT_MAILING_LISTS = "showArtifactMailingLists";
+
+    private static final String BROWSE_PREFIX = "/browse";
+
+    private static final String METHOD_DEPENDENCIES = "dependencies";
+
+    private static final String METHOD_DEPENDENCY_TREE = "dependencyTree";
+
+    private static final String METHOD_MAILING_LISTS = "mailingLists";
+
+    private static final String METHOD_USEDBY = "usedby";
+
+    private static final String PARAM_ARTIFACT_ID = "artifactId";
+
+    private static final String PARAM_GROUP_ID = "groupId";
+
+    private static final String PARAM_VERSION = "version";
 
     public ActionMapping getMapping( HttpServletRequest httpServletRequest )
     {
@@ -88,70 +75,134 @@ public class RepositoryActionMapper
         if ( path.startsWith( BROWSE_PREFIX ) )
         {
             path = path.substring( BROWSE_PREFIX.length() );
-            if ( path.length() == 0 )
+            if ( StringUtils.isBlank( path ) ||
+                 StringUtils.equals( path, "/" ) || 
+                 StringUtils.equals( path, ".action" ) )
             {
-                return new ActionMapping( "browse", "/", "", null );
+                // Return "root" browse.
+                return new ActionMapping( ACTION_BROWSE, "/", "", null );
             }
             else
             {
-                String[] parts = path.split( "/" );
-                if ( parts.length == 1 )
-                {
-                    Map params = new HashMap();
-                    params.put( "groupId", parts[0] );
-                    return new ActionMapping( "browseGroup", "/", "", params );
-                }
-                else if ( parts.length == 2 )
-                {
-                    Map params = new HashMap();
-                    params.put( "groupId", parts[0] );
-                    params.put( "artifactId", parts[1] );
-                    return new ActionMapping( "browseArtifact", "/", "", params );
-                }
-                else if ( parts.length == 3 )
-                {
-                    Map params = new HashMap();
-                    params.put( "groupId", parts[0] );
-                    params.put( "artifactId", parts[1] );
-                    params.put( "version", parts[2] );
-                    return new ActionMapping( "showArtifact", "/", "", params );
-                }
-                else if ( parts.length == 4 )
-                {
-                    Map params = new HashMap();
-                    params.put( "groupId", parts[0] );
-                    params.put( "artifactId", parts[1] );
-                    params.put( "version", parts[2] );
+                Map params = new HashMap();
 
-                    if ( "dependencies".equals( parts[3] ) )
-                    {
-                        return new ActionMapping( "showArtifactDependencies", "/", "", params );
-                    }
-                    else if ( "mailingLists".equals( parts[3] ) )
-                    {
-                        return new ActionMapping( "showArtifactMailingLists", "/", "", params );
-                    }
-                    else if ( "usedby".equals( parts[3] ) )
-                    {
-                        return new ActionMapping( "showArtifactDependees", "/", "", params );
-                    }
-                    else if ( "dependencyTree".equals( parts[3] ) )
-                    {
-                        return new ActionMapping( "showArtifactDependencyTree", "/", "", params );
-                    }
+                if ( path.charAt( 0 ) == '/' )
+                {
+                    path = path.substring( 1 );
+                }
+
+                String[] parts = path.split( "/" );
+                switch ( parts.length )
+                {
+                    case 1:
+                        params.put( PARAM_GROUP_ID, parts[0] );
+                        return new ActionMapping( ACTION_BROWSE_GROUP, "/", "", params );
+
+                    case 2:
+                        params.put( PARAM_GROUP_ID, parts[0] );
+                        params.put( PARAM_ARTIFACT_ID, parts[1] );
+                        return new ActionMapping( ACTION_BROWSE_ARTIFACT, "/", "", params );
+
+                    case 3:
+                        params.put( PARAM_GROUP_ID, parts[0] );
+                        params.put( PARAM_ARTIFACT_ID, parts[1] );
+                        params.put( PARAM_VERSION, parts[2] );
+                        return new ActionMapping( ACTION_SHOW_ARTIFACT, "/", "", params );
+
+                    case 4:
+                        params.put( PARAM_GROUP_ID, parts[0] );
+                        params.put( PARAM_ARTIFACT_ID, parts[1] );
+                        params.put( PARAM_VERSION, parts[2] );
+
+                        if ( METHOD_DEPENDENCIES.equals( parts[3] ) )
+                        {
+                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCIES, "/", "", params );
+                        }
+                        else if ( METHOD_MAILING_LISTS.equals( parts[3] ) )
+                        {
+                            return new ActionMapping( ACTION_SHOW_ARTIFACT_MAILING_LISTS, "/", "", params );
+                        }
+                        else if ( METHOD_USEDBY.equals( parts[3] ) )
+                        {
+                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDEES, "/", "", params );
+                        }
+                        else if ( METHOD_DEPENDENCY_TREE.equals( parts[3] ) )
+                        {
+                            return new ActionMapping( ACTION_SHOW_ARTIFACT_DEPENDENCY_TREE, "/", "", params );
+                        }
+                        break;
                 }
             }
         }
-        else if ( path.startsWith( PROXY_PREFIX ) )
-        {
-            // retain the leading /
-            path = path.substring( PROXY_PREFIX.length() - 1 );
-
-            Map params = new HashMap();
-            params.put( "path", path );
-            return new ActionMapping( "proxy", "/", "", params );
-        }
 
         return super.getMapping( httpServletRequest );
+    }
+
+    public String getUriFromActionMapping( ActionMapping actionMapping )
+    {
+        Map params = actionMapping.getParams();
+        if ( ACTION_BROWSE.equals( actionMapping.getName() ) )
+        {
+            return BROWSE_PREFIX;
+        }
+        else if ( ACTION_BROWSE_GROUP.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, false, false, null );
+        }
+        else if ( ACTION_BROWSE_ARTIFACT.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, false, null );
+        }
+        else if ( ACTION_SHOW_ARTIFACT.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, true, null );
+        }
+        else if ( ACTION_SHOW_ARTIFACT_DEPENDENCIES.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, true, METHOD_DEPENDENCIES );
+        }
+        else if ( ACTION_SHOW_ARTIFACT_MAILING_LISTS.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, true, METHOD_MAILING_LISTS );
+        }
+        else if ( ACTION_SHOW_ARTIFACT_DEPENDEES.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, true, METHOD_USEDBY );
+        }
+        else if ( ACTION_SHOW_ARTIFACT_DEPENDENCY_TREE.equals( actionMapping.getName() ) )
+        {
+            return toUri( params, true, true, METHOD_DEPENDENCY_TREE );
+        }
+
+        return super.getUriFromActionMapping( actionMapping );
+    }
+
+    private String toUri( Map params, boolean artifactId, boolean version, String method )
+    {
+        StringBuffer buf = new StringBuffer();
+
+        buf.append( BROWSE_PREFIX );
+        buf.append( '/' );
+        buf.append( params.remove( PARAM_GROUP_ID ) );
+
+        if ( artifactId )
+        {
+            buf.append( '/' );
+            buf.append( params.remove( PARAM_ARTIFACT_ID ) );
+
+            if ( version )
+            {
+                buf.append( '/' );
+                buf.append( params.remove( PARAM_VERSION ) );
+
+                if ( StringUtils.isNotBlank( method ) )
+                {
+                    buf.append( '/' );
+                    buf.append( method );
+                }
+            }
+        }
+
+        return buf.toString();
     }
 }
