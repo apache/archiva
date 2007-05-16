@@ -19,12 +19,15 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.commons.collections.Closure;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.IfClosure;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
+import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationToMapClosure;
+import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -45,8 +48,10 @@ import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -79,14 +84,11 @@ public class RepositoryServlet
     private AuditLog audit;
 
     /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
-    /**
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
+
+    private Map repositoryMap = new HashMap();
 
     public void initComponents()
         throws ServletException
@@ -97,7 +99,8 @@ public class RepositoryServlet
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
         audit = (AuditLog) lookup( AuditLog.ROLE );
 
-        dao = (ArchivaDAO) lookup( ArchivaDAO.ROLE, "jdo" );
+        updateRepositoryMap();
+
         configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         configuration.addChangeListener( this );
     }
@@ -105,70 +108,60 @@ public class RepositoryServlet
     public void initServers( ServletConfig servletConfig )
         throws DavServerException
     {
-        try
+        List repositories = configuration.getConfiguration().getRepositories();
+        Iterator itrepos = repositories.iterator();
+        while ( itrepos.hasNext() )
         {
-            List repositories = dao.getRepositoryDAO().getRepositories();
-            Iterator itrepos = repositories.iterator();
-            while ( itrepos.hasNext() )
+            RepositoryConfiguration repo = (RepositoryConfiguration) itrepos.next();
+            if ( !repo.isManaged() )
             {
-                ArchivaRepository repo = (ArchivaRepository) itrepos.next();
-                if ( !repo.isManaged() )
+                // Skip non-managed.
+                continue;
+            }
+
+            RepositoryURL url = new RepositoryURL( repo.getUrl() );
+            File repoDir = new File( url.getPath() );
+
+            if ( !repoDir.exists() )
+            {
+                if ( !repoDir.mkdirs() )
                 {
-                    // Skip non-managed.
+                    // Skip invalid directories.
+                    log( "Unable to create missing directory for " + url.getPath() );
                     continue;
                 }
-
-                File repoDir = new File( repo.getUrl().getPath() );
-
-                if ( !repoDir.exists() )
-                {
-                    if ( !repoDir.mkdirs() )
-                    {
-                        // Skip invalid directories.
-                        log( "Unable to create missing directory for " + repo.getUrl().getPath() );
-                        continue;
-                    }
-                }
-
-                DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
-
-                server.addListener( audit );
             }
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            throw new DavServerException( "Unable to initialized dav servers: " + e.getMessage(), e );
+
+            DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
+
+            server.addListener( audit );
         }
     }
 
-    public ArchivaRepository getRepository( DavServerRequest request )
+    public RepositoryConfiguration getRepository( DavServerRequest request )
     {
-        String id = request.getPrefix();
-        try
-        {
-            return dao.getRepositoryDAO().getRepository( id );
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            log( "Unable to find repository for id [" + id + "]" );
-            return null;
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            log( "Unable to find repository for id [" + id + "]: " + e.getMessage(), e );
-            return null;
-        }
+        return (RepositoryConfiguration) repositoryMap.get( request.getPrefix() );
     }
 
     public String getRepositoryName( DavServerRequest request )
     {
-        ArchivaRepository repoConfig = getRepository( request );
+        RepositoryConfiguration repoConfig = getRepository( request );
         if ( repoConfig == null )
         {
             return "Unknown";
         }
 
-        return repoConfig.getModel().getName();
+        return repoConfig.getName();
+    }
+
+    private void updateRepositoryMap()
+    {
+        RepositoryConfigurationToMapClosure repoMapClosure = new RepositoryConfigurationToMapClosure();
+        Closure localRepoMap = IfClosure.getInstance( LocalRepositoryPredicate.getInstance(), repoMapClosure );
+        CollectionUtils.forAllDo( configuration.getConfiguration().getRepositories(), localRepoMap );
+        
+        this.repositoryMap.clear();
+        this.repositoryMap.putAll( repoMapClosure.getMap() );
     }
 
     public boolean isAuthenticated( DavServerRequest davRequest, HttpServletResponse response )
@@ -260,6 +253,8 @@ public class RepositoryServlet
     {
         if ( ConfigurationNames.isRepositories( propertyName ) )
         {
+            updateRepositoryMap();
+
             getDavManager().removeAllServers();
 
             try

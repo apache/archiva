@@ -20,6 +20,7 @@ package org.apache.maven.archiva.scheduled.executors;
  */
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.RepositoryDAO;
@@ -79,8 +80,14 @@ public class ArchivaRepositoryScanningTaskExecutor
         throws TaskExecutionException
     {
         RepositoryTask repoTask = (RepositoryTask) task;
-        getLogger().info( "Executing task from queue with job name: " + repoTask.getName() );
+        
+        if ( StringUtils.isBlank( repoTask.getRepositoryId() ) )
+        {
+            throw new TaskExecutionException("Unable to execute RepositoryTask with blank repository Id.");
+        }
 
+        getLogger().info( "Executing task from queue with job name: " + repoTask.getName() );
+        
         try
         {
             ArchivaRepository arepo = repositoryDAO.getRepository( repoTask.getRepositoryId() );
@@ -97,7 +104,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             RepositoryContentStatistics stats = repoScanner.scan( arepo, sinceWhen );
 
-            dao.save( stats );
+            stats = (RepositoryContentStatistics) dao.save( stats );
 
             getLogger().info( "Finished repository task: " + stats.toDump( arepo ) );
         }

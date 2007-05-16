@@ -161,7 +161,7 @@
                     <table>
                       <tr>
                         <th>Last Indexed</th>
-                        <td>${repository.stats.whenStarted}</td>
+                        <td>${repository.stats.whenGathered}</td>
                       </tr>
                       <tr>
                         <th>Duration</th>

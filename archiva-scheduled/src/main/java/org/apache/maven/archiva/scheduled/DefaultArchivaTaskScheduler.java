@@ -33,6 +33,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
@@ -89,6 +90,8 @@ public class DefaultArchivaTaskScheduler
 
     public static final String REPOSITORY_JOB_TRIGGER = "repository-job-trigger";
 
+    public static final String CRON_HOURLY = "0 0 * * * ?";
+
     public void start()
         throws StartingException
     {
@@ -100,7 +103,10 @@ public class DefaultArchivaTaskScheduler
             {
                 RepositoryConfiguration repoConfig = (RepositoryConfiguration) i.next();
 
-                scheduleRepositoryJobs( repoConfig );
+                if ( repoConfig.isManaged() && repoConfig.isIndexed() )
+                {
+                    scheduleRepositoryJobs( repoConfig );
+                }
             }
 
             scheduleDatabaseJobs();
@@ -122,6 +128,15 @@ public class DefaultArchivaTaskScheduler
 
         // get the cron string for these database scanning jobs
         String cronString = repoConfig.getRefreshCronExpression();
+
+        CronExpressionValidator cronValidator = new CronExpressionValidator();
+        if ( !cronValidator.validate( cronString ) )
+        {
+            getLogger().warn(
+                              "Cron expression [" + cronString + "] for repository [" + repoConfig.getId()
+                                  + "] is invalid.  Defaulting to hourly." );
+            cronString = CRON_HOURLY;
+        }
 
         // setup the unprocessed artifact job
         JobDetail repositoryJob = new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
@@ -345,13 +360,13 @@ public class DefaultArchivaTaskScheduler
 
         return !queue.isEmpty();
     }
-    
+
     public void queueRepositoryTask( RepositoryTask task )
         throws TaskQueueException
     {
         repositoryScanningQueue.put( task );
     }
-    
+
     public void queueDatabaseTask( DatabaseTask task )
         throws TaskQueueException
     {

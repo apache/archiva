@@ -2191,7 +2191,16 @@
 
         buf.append( "\n  Duration          : " );
         buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( this.getDuration() ) );
-        buf.append( "\n  When Gathered     : " ).append( df.format( this.getWhenGathered() ) );
+        buf.append( "\n  When Gathered     : " );
+        if ( this.getWhenGathered() == null )
+        {
+            buf.append( "<null>" );
+        }
+        else
+        {
+            buf.append( df.format( this.getWhenGathered() ) );
+        }
+            
         buf.append( "\n  Total File Count  : " ).append( this.getTotalFileCount() );
         long averageMsPerFile = ( this.getDuration() / this.getTotalFileCount() );
         buf.append( "\n  Avg Time Per File : " );

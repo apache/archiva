@@ -39,7 +39,7 @@ public class RepositoryTaskJob
     static final String TASK_QUEUE = "TASK_QUEUE";
 
     static final String TASK_QUEUE_POLICY = "TASK_QUEUE_POLICY";
-    
+
     static final String TASK_REPOSITORY = "TASK_REPOSITORY";
 
     /**
@@ -58,8 +58,9 @@ public class RepositoryTaskJob
         TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
         String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
 
-        ArchivaTask task = new RepositoryTask();
+        RepositoryTask task = new RepositoryTask();
         task.setName( context.getJobDetail().getName() );
+        task.setRepositoryId( (String) dataMap.get( TASK_REPOSITORY ) );
 
         try
         {
