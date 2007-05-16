@@ -51,7 +51,7 @@ public abstract class AbstractAppearanceAction
     {
         String id = "archiva-local-repo";
         String layout = "default";
-        String directory = System.getProperty( "user.home" ) + ".m2/archiva";
+        String directory = System.getProperty( "user.home" ) + "/.m2/archiva";
 
         ArtifactRepositoryLayout repositoryLayout = (ArtifactRepositoryLayout) repositoryLayouts.get( layout );
         File repository = new File( directory );
