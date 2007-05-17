@@ -21,10 +21,12 @@ package org.apache.maven.archiva.database.updater;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
@@ -58,9 +60,9 @@ public class DatabaseConsumers
      */
     private List availableCleanupConsumers;
 
-    private SelectedCleanupConsumersPredicate selectedCleanupConsumers;
+    private Predicate selectedCleanupConsumers;
 
-    private SelectedUnprocessedConsumersPredicate selectedUnprocessedConsumers;
+    private Predicate selectedUnprocessedConsumers;
 
     class SelectedUnprocessedConsumersPredicate
         implements Predicate
@@ -103,8 +105,10 @@ public class DatabaseConsumers
     public void initialize()
         throws InitializationException
     {
-        selectedCleanupConsumers = new SelectedCleanupConsumersPredicate();
-        selectedUnprocessedConsumers = new SelectedUnprocessedConsumersPredicate();
+        Predicate permanentConsumers = new PermanentConsumerPredicate();
+
+        selectedCleanupConsumers = new OrPredicate( permanentConsumers, new SelectedCleanupConsumersPredicate() );
+        selectedUnprocessedConsumers = new OrPredicate( permanentConsumers, new SelectedUnprocessedConsumersPredicate() );
     }
 
     /**
@@ -132,7 +136,7 @@ public class DatabaseConsumers
         ret.addAll( CollectionUtils.select( availableCleanupConsumers, selectedCleanupConsumers ) );
         return ret;
     }
-    
+
     /**
      * Get the complete {@link List} of {@link DatabaseUnprocessedArtifactConsumer} objects
      * that are available in the system, regardless of configuration.
@@ -143,7 +147,7 @@ public class DatabaseConsumers
     {
         return Collections.unmodifiableList( this.availableUnprocessedConsumers );
     }
-    
+
     /**
      * Get the complete {@link List} of {@link DatabaseCleanupConsumer} objects
      * that are available in the system, regardless of configuration.

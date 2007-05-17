@@ -19,27 +19,17 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import com.opensymphony.xwork.Validateable;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.web.util.VersionMerger;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Browse the repository.
@@ -49,6 +39,7 @@ import java.util.Set;
  */
 public class ShowArtifactAction
     extends PlexusActionSupport
+    implements Validateable
 {
     /* .\ Not Exposed \._____________________________________________ */
     
@@ -90,12 +81,7 @@ public class ShowArtifactAction
     public String artifact()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
-        this.model = readProject();
+        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         return SUCCESS;
     }
@@ -106,12 +92,7 @@ public class ShowArtifactAction
     public String dependencies()
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
-        this.model = readProject();
+        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
         // this.dependencies = VersionMerger.wrap( project.getModel().getDependencies() );
@@ -125,12 +106,7 @@ public class ShowArtifactAction
     public String mailingLists()
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
-        this.model = readProject();
+        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         return SUCCESS;
     }
@@ -141,11 +117,6 @@ public class ShowArtifactAction
     public String reports()
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
         System.out.println("#### In reports.");
         // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId, version );
         System.out.println("#### Found " + reports.size() + " reports.");
@@ -159,12 +130,7 @@ public class ShowArtifactAction
     public String dependees()
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
-        this.model = readProject();
+        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         // TODO: create depends on collector.
         this.dependees = Collections.EMPTY_LIST;
@@ -178,47 +144,27 @@ public class ShowArtifactAction
     public String dependencyTree()
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        if ( !checkParameters() )
-        {
-            return ERROR;
-        }
-
-        this.model = readProject();
+        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         return SUCCESS;
     }
 
-    private ArchivaProjectModel readProject()
-        throws ArchivaDatabaseException
+    public void validate()
     {
-        return repoBrowsing.selectVersion( groupId, artifactId, version );
-    }
-
-    private boolean checkParameters()
-    {
-        boolean result = true;
-
-        if ( StringUtils.isEmpty( groupId ) )
+        if ( StringUtils.isBlank( groupId ) )
         {
-            // TODO: i18n
             addActionError( "You must specify a group ID to browse" );
-            result = false;
         }
 
-        else if ( StringUtils.isEmpty( artifactId ) )
+        if ( StringUtils.isBlank( artifactId ) )
         {
-            // TODO: i18n
             addActionError( "You must specify a artifact ID to browse" );
-            result = false;
         }
 
-        else if ( StringUtils.isEmpty( version ) )
+        if ( StringUtils.isBlank( version ) )
         {
-            // TODO: i18n
             addActionError( "You must specify a version to browse" );
-            result = false;
         }
-        return result;
     }
 
     public ArchivaProjectModel getModel()

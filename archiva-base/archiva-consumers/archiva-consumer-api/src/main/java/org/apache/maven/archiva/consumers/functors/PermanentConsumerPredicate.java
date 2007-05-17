@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.project.readers;
+package org.apache.maven.archiva.consumers.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,30 +19,30 @@ package org.apache.maven.archiva.repository.project.readers;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.ProjectModelReader;
-
-import java.io.File;
+import org.apache.commons.collections.Predicate;
+import org.apache.maven.archiva.consumers.BaseConsumer;
 
 /**
- * ProjectModel300Reader 
+ * Selects Consumers that are flaged as 'permanent'. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *      role="org.apache.maven.archiva.repository.project.ProjectModelReader"
- *      role-hint="model300"
  */
-public class ProjectModel300Reader implements ProjectModelReader
+public class PermanentConsumerPredicate
+    implements Predicate
 {
 
-    public ArchivaProjectModel read( File pomFile )
-    throws ProjectModelException
+    public boolean evaluate( Object object )
     {
-        // TODO Auto-generated method stub
-        return null;
+        boolean satisfies = false;
+
+        if ( object instanceof BaseConsumer )
+        {
+            BaseConsumer consumer = (BaseConsumer) object;
+            satisfies = consumer.isPermanent();
+        }
+
+        return satisfies;
     }
 
 }

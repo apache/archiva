@@ -1601,7 +1601,7 @@
           <name>classifier</name>
           <version>1.0.0+</version>
           <type>String</type>
-          <required>true</required>
+          <required>false</required>
           <description><![CDATA[
             The classifier of the dependency. This allows distinguishing two artifacts that belong to the same POM but
             were built differently, and is appended to the filename after the version. For example,

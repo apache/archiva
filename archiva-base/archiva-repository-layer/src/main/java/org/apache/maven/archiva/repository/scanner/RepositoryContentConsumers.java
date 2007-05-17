@@ -23,11 +23,13 @@ import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.IfClosure;
+import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -64,9 +66,9 @@ public class RepositoryContentConsumers
      */
     private List availableInvalidConsumers;
 
-    private SelectedKnownRepoConsumersPredicate selectedKnownPredicate;
+    private Predicate selectedKnownPredicate;
 
-    private SelectedInvalidRepoConsumersPredicate selectedInvalidPredicate;
+    private Predicate selectedInvalidPredicate;
 
     class SelectedKnownRepoConsumersPredicate
         implements Predicate
@@ -131,8 +133,11 @@ public class RepositoryContentConsumers
     public void initialize()
         throws InitializationException
     {
-        this.selectedKnownPredicate = new SelectedKnownRepoConsumersPredicate();
-        this.selectedInvalidPredicate = new SelectedInvalidRepoConsumersPredicate();
+        Predicate permanentConsumers = new PermanentConsumerPredicate();
+
+        this.selectedKnownPredicate = new OrPredicate( permanentConsumers, new SelectedKnownRepoConsumersPredicate() );
+        this.selectedInvalidPredicate = new OrPredicate( permanentConsumers,
+                                                         new SelectedInvalidRepoConsumersPredicate() );
     }
 
     public List getSelectedKnownConsumerIds()
