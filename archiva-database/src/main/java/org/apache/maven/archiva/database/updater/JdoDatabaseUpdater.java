@@ -19,26 +19,21 @@ package org.apache.maven.archiva.database.updater;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
-import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.functors.UnprocessedArtifactPredicate;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * JdoDatabaseUpdater
@@ -51,7 +46,7 @@ import java.util.Map;
  */
 public class JdoDatabaseUpdater
     extends AbstractLogEnabled
-    implements DatabaseUpdater, RegistryListener, Initializable
+    implements DatabaseUpdater
 {
     /**
      * @plexus.requirement role-hint="jdo"
@@ -61,28 +56,9 @@ public class JdoDatabaseUpdater
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration configuration;
+    private DatabaseConsumers dbConsumers;
 
-    /**
-     * The collection of available consumers.
-     * @plexus.requirement role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
-     */
-    private Map availableConsumers;
-
-    /**
-     * The list of active consumers for unprocessed content.
-     */
-    private List activeUnprocessedConsumers = new ArrayList();
-
-    /**
-     * The list of active consumers for processed content.
-     */
-    private List activeProcessedConsumers = new ArrayList();
-
-    /**
-     * The list of registry (configuration) property names that will trigger a refresh of the activeConsumers list.
-     */
-    private List propertyNameTriggers = new ArrayList();
+    private ProcessArchivaArtifactClosure processArtifactClosure = new ProcessArchivaArtifactClosure();
 
     public void update()
         throws ArchivaDatabaseException
@@ -96,56 +72,52 @@ public class JdoDatabaseUpdater
     {
         List unprocessedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( false ) );
 
-        beginConsumerLifecycle( this.activeUnprocessedConsumers );
+        beginConsumerLifecycle( dbConsumers.getSelectedUnprocessedConsumers() );
 
         try
         {
             // Process each consumer.
-            Iterator it = unprocessedArtifacts.iterator();
+            Predicate predicate = UnprocessedArtifactPredicate.getInstance();
+
+            Iterator it = IteratorUtils.filteredIterator( unprocessedArtifacts.iterator(), predicate );
             while ( it.hasNext() )
             {
                 ArchivaArtifact artifact = (ArchivaArtifact) it.next();
-
-                if ( !artifact.getModel().isProcessed() )
-                {
-                    updateUnprocessed( artifact );
-                }
+                updateUnprocessed( artifact );
             }
         }
         finally
         {
-            consumerConsumerLifecycle( this.activeUnprocessedConsumers );
+            endConsumerLifecycle( dbConsumers.getSelectedUnprocessedConsumers() );
         }
-    } 
+    }
 
     public void updateAllProcessed()
         throws ArchivaDatabaseException
     {
         List processedArtifacts = dao.getArtifactDAO().queryArtifacts( new ArtifactsProcessedConstraint( true ) );
 
-        beginConsumerLifecycle( this.activeProcessedConsumers );
+        beginConsumerLifecycle( dbConsumers.getSelectedCleanupConsumers() );
 
         try
         {
             // Process each consumer.
-            Iterator it = processedArtifacts.iterator();
+            Predicate predicate = NotPredicate.getInstance( UnprocessedArtifactPredicate.getInstance() );
+
+            Iterator it = IteratorUtils.filteredIterator( processedArtifacts.iterator(), predicate );
             while ( it.hasNext() )
             {
                 ArchivaArtifact artifact = (ArchivaArtifact) it.next();
-
-                if ( !artifact.getModel().isProcessed() )
-                {
-                    updateProcessed( artifact );
-                }
+                updateProcessed( artifact );
             }
         }
         finally
         {
-            consumerConsumerLifecycle( this.activeProcessedConsumers );
+            endConsumerLifecycle( dbConsumers.getSelectedCleanupConsumers() );
         }
     }
 
-    private void consumerConsumerLifecycle( List consumers )
+    private void endConsumerLifecycle( List consumers )
     {
         Iterator it = consumers.iterator();
         while ( it.hasNext() )
@@ -168,19 +140,16 @@ public class JdoDatabaseUpdater
     public void updateUnprocessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        Iterator it = this.activeUnprocessedConsumers.iterator();
-        while ( it.hasNext() )
+        List consumers = dbConsumers.getSelectedUnprocessedConsumers();
+
+        if ( CollectionUtils.isEmpty( consumers ) )
         {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
-            try
-            {
-                consumer.processArchivaArtifact( artifact );
-            }
-            catch ( ConsumerException e )
-            {
-                getLogger().warn( "Unable to consume (unprocessed) artifact: " + artifact );
-            }
+            getLogger().warn( "There are no selected consumers for unprocessed artifacts." );
+            return;
         }
+        
+        this.processArtifactClosure.setArtifact( artifact );
+        CollectionUtils.forAllDo( consumers, this.processArtifactClosure );
 
         artifact.getModel().setWhenProcessed( new Date() );
         dao.getArtifactDAO().saveArtifact( artifact );
@@ -189,86 +158,15 @@ public class JdoDatabaseUpdater
     public void updateProcessed( ArchivaArtifact artifact )
         throws ArchivaDatabaseException
     {
-        Iterator it = this.activeProcessedConsumers.iterator();
-        while ( it.hasNext() )
-        {
-            ArchivaArtifactConsumer consumer = (ArchivaArtifactConsumer) it.next();
-            try
-            {
-                consumer.processArchivaArtifact( artifact );
-            }
-            catch ( ConsumerException e )
-            {
-                getLogger().warn( "Unable to consume (processed)  artifact: " + artifact );
-            }
-        }
-    }
+        List consumers = dbConsumers.getSelectedCleanupConsumers();
 
-    private void updateActiveConsumers()
-    {
-        this.activeUnprocessedConsumers.clear();
-        this.activeProcessedConsumers.clear();
-
-        DatabaseScanningConfiguration dbScanning = configuration.getConfiguration().getDatabaseScanning();
-        if ( dbScanning == null )
+        if ( CollectionUtils.isEmpty( consumers ) )
         {
-            getLogger().error( "No Database Consumers found!" );
+            getLogger().warn( "There are no selected consumers for artifact cleanup." );
             return;
         }
-
-        this.activeUnprocessedConsumers.addAll( getActiveConsumerList( dbScanning.getUnprocessedConsumers() ) );
-        this.activeProcessedConsumers.addAll( getActiveConsumerList( dbScanning.getCleanupConsumers() ) );
-    }
-
-    private List getActiveConsumerList( List potentialConsumerList )
-    {
-        if ( ( potentialConsumerList == null ) || ( potentialConsumerList.isEmpty() ) )
-        {
-            return Collections.EMPTY_LIST;
-        }
-
-        List ret = new ArrayList();
-
-        Iterator it = potentialConsumerList.iterator();
-        while ( it.hasNext() )
-        {
-            String consumerName = (String) it.next();
-            if ( !availableConsumers.containsKey( consumerName ) )
-            {
-                getLogger().warn( "Requested Consumer [" + consumerName + "] does not exist.  Disabling." );
-                continue;
-            }
-
-            ret.add( consumerName );
-        }
-
-        return ret;
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        propertyNameTriggers = new ArrayList();
-        propertyNameTriggers.add( "databaseScanning" );
-        propertyNameTriggers.add( "unprocessedConsumers" );
-        propertyNameTriggers.add( "unprocessedConsumer" );
-        propertyNameTriggers.add( "processedConsumers" );
-        propertyNameTriggers.add( "processedConsumer" );
-
-        configuration.addChangeListener( this );
-        updateActiveConsumers();
-    }
-
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( propertyNameTriggers.contains( propertyName ) )
-        {
-            updateActiveConsumers();
-        }
-    }
-
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        /* nothing to do here */
+        
+        this.processArtifactClosure.setArtifact( artifact );
+        CollectionUtils.forAllDo( consumers, this.processArtifactClosure );
     }
 }

@@ -25,6 +25,7 @@ import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.web.util.VersionMerger;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -52,15 +53,10 @@ public class ShowArtifactAction
     /* .\ Not Exposed \._____________________________________________ */
     
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement role-hint="default"
      */
-    private ArchivaDAO dao;
+    private RepositoryBrowsing repoBrowsing;
 
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
-    
     /* .\ Input Parameters \.________________________________________ */
 
     private String groupId;
@@ -193,9 +189,9 @@ public class ShowArtifactAction
     }
 
     private ArchivaProjectModel readProject()
-        throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ArchivaDatabaseException
     {
-        return dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+        return repoBrowsing.selectVersion( groupId, artifactId, version );
     }
 
     private boolean checkParameters()

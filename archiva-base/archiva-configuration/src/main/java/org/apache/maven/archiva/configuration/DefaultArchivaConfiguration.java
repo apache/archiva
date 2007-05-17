@@ -21,6 +21,7 @@ package org.apache.maven.archiva.configuration;
 
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryWriter;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -36,6 +37,7 @@ import java.util.Iterator;
  * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
 public class DefaultArchivaConfiguration
+    extends AbstractLogEnabled
     implements ArchivaConfiguration, RegistryListener, Initializable
 {
     /**
@@ -56,17 +58,24 @@ public class DefaultArchivaConfiguration
     {
         if ( configuration == null )
         {
-            // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
-            configuration = new ConfigurationRegistryReader().read( registry.getSubset( KEY ) );
-
-            // TODO: for commons-configuration 1.3 only
-            for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
-            {
-                RepositoryConfiguration c = (RepositoryConfiguration) i.next();
-                c.setUrl( removeExpressions( c.getUrl() ) );
-            }
+            configuration = load();
         }
         return configuration;
+    }
+
+    private Configuration load()
+    {
+        // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
+        Configuration config = new ConfigurationRegistryReader().read( registry.getSubset( KEY ) );
+
+        // TODO: for commons-configuration 1.3 only
+        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+            c.setUrl( removeExpressions( c.getUrl() ) );
+        }
+
+        return config;
     }
 
     public void save( Configuration configuration )
@@ -101,6 +110,13 @@ public class DefaultArchivaConfiguration
         throws InitializationException
     {
         registry.addChangeListener( this );
+
+        ConfigurationUpgrade upgrade = new ConfigurationUpgrade();
+        upgrade.setLogger( getLogger() );
+        if ( upgrade.perform() )
+        {
+            this.configuration = load();
+        }
     }
 
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
@@ -115,10 +131,10 @@ public class DefaultArchivaConfiguration
 
     private String removeExpressions( String directory )
     {
-        String value = StringUtils.replace( directory, "${appserver.base}",
-                                            registry.getString( "appserver.base", "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}",
-                                     registry.getString( "appserver.home", "${appserver.home}" ) );
+        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
+                                                                                                "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
+                                                                                     "${appserver.home}" ) );
         return value;
     }
 

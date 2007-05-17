@@ -60,38 +60,9 @@
     </repository>
   </repositories>
 
-  <proxyConnectors>
-    <proxyConnector>
-      <sourceRepoId>internal</sourceRepoId>
-      <targetRepoId>central</targetRepoId>
-      <proxyId />
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>never</releasePolicy>
-      <failurePolicy>not-found</failurePolicy>
-    </proxyConnector>
-    <proxyConnector>
-      <sourceRepoId>internal</sourceRepoId>
-      <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
-      <proxyId />
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>never</releasePolicy>
-      <failurePolicy>not-found</failurePolicy>
-      <whiteListPatterns>
-        <whiteListPattern>javax/**</whiteListPattern>
-      </whiteListPatterns>
-    </proxyConnector>
-  </proxyConnectors>
+  <proxyConnectors />
 
-  <networkProxies>
-    <networkProxy>
-      <id>example</id>
-      <protocol>http</protocol>
-      <host>proxy.mycompany.com</host>
-      <port>8080</port>
-      <username>myself</username>
-      <password>mypass</password>
-    </networkProxy>
-  </networkProxies>
+  <networkProxies />
 
   <repositoryScanning>
     <fileTypes>
@@ -165,9 +136,16 @@
   <databaseScanning>
     <cronExpression>0 0 * * ?</cronExpression>
     <unprocessedConsumers>
-      <unprocessedConsumer>update-db-artifact</unprocessedConsumer>
+      <unprocessedConsumer>test-db-unprocessed</unprocessedConsumer>
+      <unprocessedConsumer>index-artifact</unprocessedConsumer>
+      <unprocessedConsumer>update-db-project</unprocessedConsumer>
+      <unprocessedConsumer>validate-repository-metadata</unprocessedConsumer>
+      <unprocessedConsumer>index-archive-toc</unprocessedConsumer>
+      <unprocessedConsumer>update-db-bytecode-stats</unprocessedConsumer>
+      <unprocessedConsumer>index-public-methods</unprocessedConsumer>
     </unprocessedConsumers>
     <cleanupConsumers>
+      <cleanupConsumer>test-db-cleanup</cleanupConsumer>
       <cleanupConsumer>not-present-remove-db-artifact</cleanupConsumer>
       <cleanupConsumer>not-present-remove-db-project</cleanupConsumer>
       <cleanupConsumer>not-present-remove-indexed</cleanupConsumer>

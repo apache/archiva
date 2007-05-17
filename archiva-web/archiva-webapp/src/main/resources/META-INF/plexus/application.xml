@@ -21,10 +21,6 @@
 <plexus>
   <load-on-start>
     <component>
-      <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-      <role-hint>default</role-hint>
-    </component>
-    <component>
       <role>org.apache.maven.archiva.web.startup.ConfigurationSynchronization</role>
       <role-hint>default</role-hint>
     </component>

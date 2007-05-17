@@ -94,7 +94,7 @@ public class RepositoryBrowsingTest
     public RepositoryBrowsing lookupBrowser()
         throws Exception
     {
-        RepositoryBrowsing browser = (RepositoryBrowsing) lookup( RepositoryBrowsing.class.getName(), "default" );
+        RepositoryBrowsing browser = (RepositoryBrowsing) lookup( RepositoryBrowsing.class.getName() );
         assertNotNull( "RepositoryBrowsing should not be null.", browser );
         return browser;
     }

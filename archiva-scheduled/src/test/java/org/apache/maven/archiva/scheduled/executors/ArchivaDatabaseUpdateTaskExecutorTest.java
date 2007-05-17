@@ -57,40 +57,40 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
     private TaskExecutor taskExecutor;
 
     protected ArchivaDAO dao;
-    
+
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        
+
         DefaultConfigurableJdoFactory jdoFactory = (DefaultConfigurableJdoFactory) lookup( JdoFactory.ROLE, "archiva" );
         assertEquals( DefaultConfigurableJdoFactory.class.getName(), jdoFactory.getClass().getName() );
 
-        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" ); 
+        jdoFactory.setPersistenceManagerFactoryClass( "org.jpox.PersistenceManagerFactoryImpl" );
 
         /* derby version
-        File derbyDbDir = new File( "target/plexus-home/testdb" );
-        if ( derbyDbDir.exists() )
-        {
-            FileUtils.deleteDirectory( derbyDbDir );
-        }
+         File derbyDbDir = new File( "target/plexus-home/testdb" );
+         if ( derbyDbDir.exists() )
+         {
+         FileUtils.deleteDirectory( derbyDbDir );
+         }
 
-        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.apache.derby.jdbc.EmbeddedDriver" ) );   
-        jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );
-         */   
+         jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.apache.derby.jdbc.EmbeddedDriver" ) );   
+         jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:derby:" + derbyDbDir.getAbsolutePath() + ";create=true" ) );
+         */
 
-        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );   
+        jdoFactory.setDriverName( System.getProperty( "jdo.test.driver", "org.hsqldb.jdbcDriver" ) );
         jdoFactory.setUrl( System.getProperty( "jdo.test.url", "jdbc:hsqldb:mem:" + getName() ) );
-        
-        jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) ); 
 
-        jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) ); 
+        jdoFactory.setUserName( System.getProperty( "jdo.test.user", "sa" ) );
 
-        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_COMMITTED" );  
+        jdoFactory.setPassword( System.getProperty( "jdo.test.pass", "" ) );
 
-        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_COMMITTED" );  
+        jdoFactory.setProperty( "org.jpox.transactionIsolation", "READ_COMMITTED" );
 
-        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" );  
+        jdoFactory.setProperty( "org.jpox.poid.transactionIsolation", "READ_COMMITTED" );
+
+        jdoFactory.setProperty( "org.jpox.autoCreateSchema", "true" );
 
         jdoFactory.setProperty( "javax.jdo.option.RetainValues", "true" );
 
@@ -113,8 +113,7 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
-        URL jdoFileUrls[] = new URL[] { getClass()
-            .getResource( "/org/apache/maven/archiva/model/package.jdo" ) }; 
+        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
 
         if ( ( jdoFileUrls == null ) || ( jdoFileUrls[0] == null ) )
         {
@@ -140,7 +139,8 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         taskExecutor = (TaskExecutor) lookup( TaskExecutor.class, "test-database-update" );
     }
 
-    public void testExecutor() throws Exception
+    public void testExecutor()
+        throws Exception
     {
         RepositoryDAO repoDao = dao.getRepositoryDAO();
 
@@ -151,8 +151,7 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
 
         // Create it
-        ArchivaRepository repo =
-            repoDao.createRepository( "testRepo", "Test Repository", repoUri );
+        ArchivaRepository repo = repoDao.createRepository( "testRepo", "Test Repository", repoUri );
         assertNotNull( repo );
 
         // Set some mandatory values
@@ -166,35 +165,44 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved.getModel() ).toString() );
 
         ArtifactDAO adao = dao.getArtifactDAO();
-        
+
         ArchivaArtifact sqlArtifact = adao.createArtifact( "javax.sql", "jdbc", "2.0", "", "jar" );
         sqlArtifact.getModel().setLastModified( new Date() );
         sqlArtifact.getModel().setSize( 1234 );
         sqlArtifact.getModel().setOrigin( "testcase" );
         sqlArtifact.getModel().setWhenProcessed( null );
-        
+
         adao.saveArtifact( sqlArtifact );
-        
+
         ArchivaArtifact artifact = adao.getArtifact( "javax.sql", "jdbc", "2.0", null, "jar" );
-        
+
         assertNotNull( artifact );
+
+        // Test for artifact existance.
+        List artifactList = adao.queryArtifacts( null );
+        assertNotNull( "Artifact list should not be null.", artifactList );
+        assertEquals( "Artifact list size", 1, artifactList.size() );
         
+        // Test for unprocessed artifacts.
         List unprocessedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( false ) );
-        
-        assertNotNull( unprocessedResultList );
-        assertEquals("Incorrect number of unprocessed artifacts detected.", 1, unprocessedResultList.size() );
-        
+        assertNotNull( "Unprocessed Results should not be null.", unprocessedResultList );
+        assertEquals( "Incorrect number of unprocessed artifacts detected.", 1, unprocessedResultList.size() );
+
+        // Execute the database task.
         DatabaseTask dataTask = new DatabaseTask();
-        
+
         dataTask.setName( "testDataTask" );
 
         taskExecutor.executeTask( dataTask );
         
-        List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+        // Test for artifact existance.
+        artifactList = adao.queryArtifacts( null );
+        assertNotNull( "Artifact list should not be null.", artifactList );
+        assertEquals( "Artifact list size", 1, artifactList.size() );
         
-        assertNotNull( processedResultList );
-        assertEquals("Incorrect number of processed artifacts detected.", 1, processedResultList.size() );      
-
+        // Test for processed artifacts.
+        List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
+        assertNotNull( "Processed Results should not be null.", processedResultList );
+        assertEquals( "Incorrect number of processed artifacts detected.", 1, processedResultList.size() );
     }
-
 }

@@ -61,7 +61,7 @@
       <configuration>
         <properties>
           <system/>
-          <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+          <xml fileName="${basedir}/src/test/resources/archiva-test.xml"
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>

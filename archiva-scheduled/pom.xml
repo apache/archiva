@@ -67,18 +67,13 @@
     </dependency>
     <!-- Test Dependencies -->
     <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-core-consumers</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-database-consumers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

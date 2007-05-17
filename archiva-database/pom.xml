@@ -99,6 +99,11 @@
     </dependency>
     <!--  TEST DEPS  -->
     <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-commons</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>

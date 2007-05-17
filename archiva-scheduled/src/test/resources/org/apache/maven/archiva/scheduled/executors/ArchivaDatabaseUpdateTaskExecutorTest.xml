@@ -36,7 +36,6 @@
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <role-hint>test-configuration</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
       <requirements>
         <requirement>
@@ -53,11 +52,24 @@
       <configuration>
         <properties>
           <system/>
-          <xml fileName="${basedir}/src/test/conf/repository-manager.xml"
+          <xml fileName="${basedir}/src/test/resources/archiva-test.xml"
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
     </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.consumers.DatabaseCleanupConsumer</role>
+      <role-hint>test-db-cleanup</role-hint>
+      <implementation>org.apache.maven.archiva.scheduled.TestDatabaseCleanupConsumer</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer</role>
+      <role-hint>test-db-unprocessed</role-hint>
+      <implementation>org.apache.maven.archiva.scheduled.TestDatabaseUnprocessedConsumer</implementation>
+    </component>
+    
     
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>

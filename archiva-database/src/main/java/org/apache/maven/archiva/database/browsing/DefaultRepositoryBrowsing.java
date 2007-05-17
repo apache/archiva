@@ -25,6 +25,8 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
+import org.apache.maven.archiva.database.updater.DatabaseUpdater;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -37,7 +39,6 @@ import java.util.List;
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.database.browsing.RepositoryBrowsing"
- *                   role-hint="default"
  */
 public class DefaultRepositoryBrowsing
     extends AbstractLogEnabled
@@ -47,6 +48,11 @@ public class DefaultRepositoryBrowsing
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private DatabaseUpdater dbUpdater;
 
     public BrowsingResults getRoot()
     {
@@ -89,10 +95,51 @@ public class DefaultRepositoryBrowsing
     public ArchivaProjectModel selectVersion( String groupId, String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+        ArchivaArtifact pomArtifact = null;
 
-        // TODO: if the model isn't found. load it from disk, insert into DB, and then return it.
+        try
+        {
+            pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, version, null, "pom" );
 
-        return model;
+            if ( pomArtifact == null )
+            {
+                throw new ObjectNotFoundException( "Unable to find artifact [" + groupId + ":" + artifactId + ":"
+                    + version + "]" );
+            }
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            throw e;
+        }
+        
+        ArchivaProjectModel model;
+
+        if ( pomArtifact.getModel().isProcessed() )
+        {
+            // It's been processed. return it.
+            model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+            return model;
+        }
+
+        // Process it.
+        dbUpdater.updateUnprocessed( pomArtifact );
+
+        // Find it.
+        try
+        {
+            model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
+    
+            if ( model == null )
+            {
+                throw new ObjectNotFoundException( "Unable to find project model for [" + groupId + ":" + artifactId + ":"
+                    + version + "]" );
+            }
+
+            return model;
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            throw e;
+        }
     }
 }

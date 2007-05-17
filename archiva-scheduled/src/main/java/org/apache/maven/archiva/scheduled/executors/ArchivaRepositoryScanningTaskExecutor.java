@@ -104,9 +104,9 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             RepositoryContentStatistics stats = repoScanner.scan( arepo, sinceWhen );
 
-            stats = (RepositoryContentStatistics) dao.save( stats );
-
             getLogger().info( "Finished repository task: " + stats.toDump( arepo ) );
+            
+            stats = (RepositoryContentStatistics) dao.save( stats );
         }
         catch ( ArchivaDatabaseException e )
         {

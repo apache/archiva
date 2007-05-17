@@ -19,6 +19,10 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
+import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
@@ -125,6 +129,25 @@ public class AbstractArchivaDatabaseTestCase
         pm.close();
 
         this.dao = (ArchivaDAO) lookup( ArchivaDAO.class.getName(), "jdo" );
+    }
+
+    protected TestDatabaseCleanupConsumer lookupTestCleanupConsumer()
+        throws Exception
+    {
+        TestDatabaseCleanupConsumer consumer = (TestDatabaseCleanupConsumer) lookup( DatabaseCleanupConsumer.class,
+                                                                                     "test-db-cleanup" );
+        assertNotNull( "Test Database Cleanup Consumer should not be null.", consumer );
+        return consumer;
+    }
+
+    protected TestDatabaseUnprocessedConsumer lookupTestUnprocessedConsumer()
+        throws Exception
+    {
+        TestDatabaseUnprocessedConsumer consumer = (TestDatabaseUnprocessedConsumer) lookup(
+                                                                                             DatabaseUnprocessedArtifactConsumer.class,
+                                                                                             "test-db-unprocessed" );
+        assertNotNull( "Test Database Unprocessed Consumer should not be null.", consumer );
+        return consumer;
     }
 
     protected Date toDate( String txt )

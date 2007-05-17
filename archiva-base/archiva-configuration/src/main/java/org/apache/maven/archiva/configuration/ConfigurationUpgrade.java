@@ -25,9 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -42,27 +41,28 @@ import java.net.URL;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.configuration.ConfigurationUpgrade"
- *                   role-hint="default"
  */
 public class ConfigurationUpgrade
-    extends AbstractLogEnabled
-    implements Initializable
 {
     public static final int CURRENT_CONFIG_VERSION = 1;
 
-    /* NOTE: This component should *NOT USE* the configuration api to do it's upgrade */
+    private Logger logger;
 
-    public void initialize()
-        throws InitializationException
+    /**
+     * Perform the upgrade (if needed).
+     * 
+     * NOTE: This component should *NOT USE* the configuration api to do it's upgrade
+     * 
+     * @return true if the upgrade modified the archiva.xml file. false otherwise.
+     */
+    public boolean perform()
     {
         File userConfigFile = new File( System.getProperty( "user.home" ), ".m2/archiva.xml" );
 
         if ( !userConfigFile.exists() )
         {
             writeDefaultConfigFile( userConfigFile );
-            return;
+            return true;
         }
 
         boolean configOk = false;
@@ -85,6 +85,7 @@ public class ConfigurationUpgrade
         catch ( XMLException e )
         {
             getLogger().warn( "Unable to read user configuration XML: " + e.getMessage(), e );
+            return false;
         }
 
         if ( !configOk )
@@ -93,14 +94,15 @@ public class ConfigurationUpgrade
             {
                 FileUtils.copyFile( userConfigFile, new File( userConfigFile.getAbsolutePath() + ".bak" ) );
                 writeDefaultConfigFile( userConfigFile );
+                return true;
             }
             catch ( IOException e )
             {
-                getLogger().warn( "Unable to create backup of your configuration file: "
-                    + e.getMessage(), e );
+                getLogger().warn( "Unable to create backup of your configuration file: " + e.getMessage(), e );
             }
         }
 
+        return false;
     }
 
     private void upgradeVersion( File userConfigFile, XMLReader xml )
@@ -126,8 +128,7 @@ public class ConfigurationUpgrade
             }
             catch ( IOException e )
             {
-                getLogger().warn( "Unable to write default (generic) configuration file: "
-                    + e.getMessage(), e );
+                getLogger().warn( "Unable to write default (generic) configuration file: " + e.getMessage(), e );
             }
         }
 
@@ -145,6 +146,20 @@ public class ConfigurationUpgrade
         {
             getLogger().warn( "Unable to write default configuration file: " + e.getMessage(), e );
         }
+    }
+
+    public Logger getLogger()
+    {
+        if ( logger == null )
+        {
+            logger = new ConsoleLogger( ConsoleLogger.LEVEL_INFO, this.getClass().getName() );
+        }
+        return logger;
+    }
+
+    public void setLogger( Logger logger )
+    {
+        this.logger = logger;
     }
 
 }

@@ -147,7 +147,6 @@ public class ArchivaRepositoryScanningTaskExecutorTest
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
         String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
         
         // Create it
         ArchivaRepository repo =
