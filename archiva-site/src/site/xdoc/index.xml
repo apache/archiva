@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<document>
+  <properties>
+    <title>Welcome to Maven Archiva</title>
+  </properties>
+  <body>
+    <section name="Welcome to Maven Archiva">
+      <div id="downloadbox">
+        <h5>Get Archiva 0.9 Alpha 2</h5>
+        <p>
+          <a href="download.html">
+            <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
+            Download
+          </a>
+          Archiva
+          <small>(20Mb)</small>
+        </p>
+        <ul>
+          <li>
+            <a href="download.html#requirements">System Requirements</a>
+          </li>
+          <li>
+            <a href="download.html#installation">Installation Instructions</a>
+          </li>
+          <li>
+            <a href="release-notes.html">Release Notes</a>
+          </li>
+          <li>
+            <a href="guides/getting-started/index.html">Getting Started</a>
+          </li>
+          <li>
+            <a href="guides/index.html">Documentation</a>
+          </li>
+        </ul>
+      </div>
+
+      <p>Archiva (the Maven repository manager) is currently under development. It provides several pieces of
+        functionality for your remote repository:</p>
+
+      <ul>
+          <li>Browsing on POM information by group and artifact ID</li>
+          <li>Search over various information in the POM and filename</li>
+          <li>Locate JAR by checksum</li>
+          <li>Repository management through reporting and maintenance</li>
+      </ul>
+
+      <p> We welcome developers to the Maven community who are interested in contributing. If you'd like to discuss
+        archiva, subscribe and post to <a href="mail-lists.html">the development mailing list</a>
+        <code>archiva-dev@maven.apache.org</code>.</p>
+
+      <p>If you'd like to obtain the code, you can get it from Subversion.
+        See <a href="source-repository.html">SCM details</a> for more information.</p>
+
+      <p>Bugs, issues and new ideas should be reported in the issue tracker -
+        see <a href="issue-tracking.html">this page</a>.</p>
+
+      <p>See the <a href="http://docs.codehaus.org/display/MAVENUSER/Archiva">the Archiva wiki</a>
+        for more information, or log onto the IRC channel #archiva:irc.codehaus.org.</p>
+
+    </section>
+    <section name="Latest News">
+      <p>
+        <ul>
+          <li>Archiva 1.1 Alpha 2 Release Available - May 18, 2007</li>
+        </ul>
+      </p>
+    </section>
+  </body>
+</document>
