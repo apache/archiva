@@ -1,0 +1,50 @@
+ ------
+ Download
+ ------
+
+Download Archiva 0.9 Alpha 2
+
+  Archiva 0.9 Alpha 2 is distributed under the {{{http://maven.apache.org/archiva/license.html} Apache License, version 2.0}}.
+
+  You will be prompted for a mirror - if the file is not found on yours, please be patient, as it may take 24
+  hours to reach all mirrors.
+
+* Archiva 0.9 Alpha 2
+
+*-------------------------------+---------+----------+-----------+
+|                               | Mirrors | Checksum | Signature |
+*-------------------------------+---------+----------+-----------+
+| Archiva 0.9-alpha-2 (tar.gz)  | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz} archiva-0.9-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.md5} archiva-0.9-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.asc} archiva-0.9-alpha-2-bin.tar.gz.asc}} |
+*-------------------------------+---------+----------+-----------+
+
+* System {Requirements}
+
+*----------------------+--------------------------------------------------------------------------------------------------------------------------------+
+|  <<JDK>>             | 1.4 or above                                                                                                                   |
+*----------------------+--------------------------------------------------------------------------------------------------------------------------------+
+| <<Memory>>           | No minimum requirement                                                                                                         |
+*----------------------+--------------------------------------------------------------------------------------------------------------------------------+
+| <<Disk>>             | The Archiva application is in itself about 20MB but will use more disk space to store repository contents |
+*----------------------+--------------------------------------------------------------------------------------------------------------------------------+
+| <<Operating System>> | Support for Linux, Mac OS X, Solaris and Windows.  Tested on Windows XP SP2, Ubuntu Linux, and Mac OS X. |
+*----------------------+--------------------------------------------------------------------------------------------------------------------------------+
+
+* {Installation} Instructions
+
+ The installation of Archiva consists solely of unpacking the archive in the desired directory. It's that simple!
+
+ For example:
+
++------+
+ tar -xzvf archiva-0.9-alpha-2-bin.tar.gz
++------+
+
+ To start the app, use the appropriate platform-specific startup script found under the "bin" directory of your
+ installation.  If your platform is not included, use the plexus.bat script found in the "bin" directory.
+
+ For example:
+
++------+
+ cd archiva-0.9-alpha-2/bin/linux-x86-32
+ ./run.sh start
++------+
