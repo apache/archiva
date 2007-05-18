@@ -41,6 +41,7 @@
           <li>
             <a href="download.html#installation">Installation Instructions</a>
           </li>
+          <!--
           <li>
             <a href="release-notes.html">Release Notes</a>
           </li>
@@ -50,6 +51,7 @@
           <li>
             <a href="guides/index.html">Documentation</a>
           </li>
+          -->
         </ul>
       </div>
 
@@ -80,7 +82,7 @@
     <section name="Latest News">
       <p>
         <ul>
-          <li>Archiva 1.1 Alpha 2 Release Available - May 18, 2007</li>
+          <li>Archiva 0.9 Alpha 2 Release Available - May 18, 2007</li>
         </ul>
       </p>
     </section>

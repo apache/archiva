@@ -2,14 +2,17 @@
  Download
  ------
 
-Download Archiva 0.9 Alpha 2
+Download Archiva
 
-  Archiva 0.9 Alpha 2 is distributed under the {{{http://maven.apache.org/archiva/license.html} Apache License, version 2.0}}.
+  Archiva is distributed under the {{{http://maven.apache.org/archiva/license.html} Apache License, version 2.0}}.
 
   You will be prompted for a mirror - if the file is not found on yours, please be patient, as it may take 24
   hours to reach all mirrors.
 
 * Archiva 0.9 Alpha 2
+
+  This version is considered a proof of concept, useful for demonstration purposes, small repositories, and low user
+  counts.  We look forward to significant scalability and stability improvements coming soon in Archiva 1.0.
 
 *-------------------------------+---------+----------+-----------+
 |                               | Mirrors | Checksum | Signature |
