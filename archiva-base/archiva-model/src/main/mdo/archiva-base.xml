@@ -998,7 +998,7 @@
           <name>whenIndexed</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
-          <required>true</required>
+          <required>false</required>
           <type>Date</type>
           <description>
             The timestamp when this model was indexed.
@@ -1080,14 +1080,15 @@
           </association>
         </field>
         <field>
-          <name>dependencyTree</name>
+          <name>dependencies</name>
           <version>1.0.0+</version>
           <description><![CDATA[
               This element describes all of the dependencies associated with a
               project.
           ]]></description>
           <association>
-            <type>DependencyTree</type>
+            <type>Dependency</type>
+            <multiplicity>*</multiplicity>
           </association>
         </field>
         <field>
@@ -1441,129 +1442,6 @@
         </field>
       </fields>
     </class>
-    
-    <class stash.storable="true"
-           jpox.table="DEPENDENCY_TREE">
-      <name>DependencyTree</name>
-      <description>The Dependency Tree</description>
-      <version>1.0.0+</version>
-      <fields>
-        <field>
-          <name>dependencyNodes</name>
-          <version>1.0.0+</version>
-          <description>The nodes for this dependency tree.</description>
-          <association>
-            <type>Dependency</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-        <field>
-          <name>dependencyEdges</name>
-          <version>1.0.0+</version>
-          <description>The edges for this dependency tree.</description>
-          <association>
-            <type>DependencyEdge</type>
-            <multiplicity>*</multiplicity>
-          </association>
-        </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    /**
-     * True if the dependency tree is empty.
-     * 
-     * @return true if the dependency tree is empty.
-     */
-    public boolean isEmpty()
-    {
-        if ( this.dependencyNodes == null )
-        {
-            return true;
-        }
-
-        return this.dependencyNodes.isEmpty();
-    }          
-    
-    public void addDependencyEdge( Dependency fromNode, Dependency toNode )
-    {
-        if ( this.dependencyNodes == null )
-        {
-            this.dependencyNodes = new java.util.ArrayList();
-        }
-
-        if ( this.dependencyEdges == null )
-        {
-            this.dependencyEdges = new java.util.ArrayList();
-        }
-
-        java.util.Iterator it;
-
-        DependencyEdge edge = new DependencyEdge();
-        edge.setFromDependency( toArtifactReference( fromNode ) );
-        edge.setToDependency( toArtifactReference( toNode ) );
-
-        String key = DependencyEdge.toKey( edge );
-
-        // Test for existance of previous edge.
-        it = this.dependencyEdges.iterator();
-        while ( it.hasNext() )
-        {
-            DependencyEdge existingEdge = (DependencyEdge) it.next();
-            String existingKey = DependencyEdge.toKey( existingEdge );
-            if ( key.equals( existingKey ) )
-            {
-                // Key already exists.
-                // Update type and return.
-                existingEdge.setType( edge.getType() );
-                return;
-            }
-        }
-
-        // Test for existance of fromNode or toNode and add if not present.
-        String fromKey = Dependency.toVersionlessKey( fromNode );
-        String toKey = Dependency.toVersionlessKey( toNode );
-        
-        // Generate list of keys
-        java.util.List existingKeys = new java.util.ArrayList();
-
-        it = this.dependencyNodes.iterator();
-        while ( it.hasNext() )
-        {
-            Dependency existingDep = (Dependency) it.next();
-            String existingKey = Dependency.toVersionlessKey( existingDep );
-            existingKeys.add( existingKey );
-        }
-
-        // Now add nodes that are not present.
-        if ( !existingKeys.contains( fromKey ) )
-        {
-            this.dependencyNodes.add( fromNode );
-        }
-
-        if ( !existingKeys.contains( toKey ) )
-        {
-            this.dependencyNodes.add( toNode );
-        }
-    }
-    
-    public static ArtifactReference toArtifactReference( Dependency dependency )
-    {
-        ArtifactReference ref = new ArtifactReference();
-        
-        ref.setGroupId( dependency.getGroupId() );
-        ref.setArtifactId( dependency.getArtifactId() );
-        ref.setVersion( dependency.getVersion() );
-        ref.setClassifier( dependency.getClassifier() );
-        ref.setType( dependency.getType() );
-        
-        return ref;
-    }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-    </class>
 
     <class stash.storable="true"
            jpox.table="DEPENDENCY">
@@ -1602,6 +1480,7 @@
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
+          <defaultValue></defaultValue>
           <description><![CDATA[
             The classifier of the dependency. This allows distinguishing two artifacts that belong to the same POM but
             were built differently, and is appended to the filename after the version. For example,
@@ -1732,85 +1611,6 @@
 
         return key.toString();
     }
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
-    </class>
-    
-    <class stash.storable="true"
-           jpox.table="DEPENDENCY_EDGE">
-      <name>DependencyEdge</name>
-      <version>1.0.0+</version>
-      <fields>
-        <field>
-          <name>fromDependency</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <description>The dependency reference for the 'from' node</description>
-          <association>
-            <type>ArtifactReference</type>
-          </association>
-        </field>
-        <field>
-          <name>toDependency</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <description>The dependency reference for the 'to' node</description>
-          <association>
-            <type>ArtifactReference</type>
-          </association>
-        </field>
-        <field jpox.column="EDGE_TYPE">
-          <name>type</name>
-          <version>1.0.0+</version>
-          <required>true</required>
-          <description><![CDATA[
-          <p>
-          The type of edge you have.
-          </p>
-          
-          <dl>
-            <dt><code>runtime</code></dt>
-            <dd>A dependency node that is required for runtime of the project</dd>
-            
-            <dt><code>test</code></dt>
-            <dd>A dependency node that is used by the project for testing purposes.</dd>
-            
-            <dt><code>build</code></dt>
-            <dd>A dependency node that is used in the build/extension capacity.</dd>
-            
-            <dt><code>plugin</code></dt>
-            <dd>A dependency node that is used as, or by a, declared plugin in this project.
-              This includes the plugin itself, and any defined plugins/plugin/dependencies/dependency references.
-            </dd>
-            
-            <dt><code>report</code></dt>
-            <dd>A dependency node that is used as, or by a, declared report in this project.
-              This includes the report itself, and any defined reporting/plugins/plugin/dependencies/dependency references.</dd>
-          </dl>
-          ]]></description>
-          <type>String</type>
-        </field>
-      </fields>
-      <codeSegments>
-        <codeSegment>
-          <version>1.0.0+</version>
-          <code><![CDATA[
-    public static String toKey( DependencyEdge edge )
-    {
-        StringBuffer key = new StringBuffer();
-
-        key.append( ArtifactReference.toVersionlessKey( edge.getFromDependency() ) );
-        key.append( "->" );
-        key.append( ArtifactReference.toVersionlessKey( edge.getToDependency() ) );
-
-        return key.toString();
-    }
-
-    public String toString()
-    {
-        return DependencyEdge.toKey( this );
-    }          
           ]]></code>
         </codeSegment>
       </codeSegments>

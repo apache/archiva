@@ -38,6 +38,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelReader;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -130,6 +131,9 @@ public class ProjectModelToDatabaseConsumer
             try
             {
                 ArchivaProjectModel model = project400Reader.read( artifactFile );
+                
+                model.setOrigin( "filesystem" );
+                
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             catch ( ProjectModelException e )

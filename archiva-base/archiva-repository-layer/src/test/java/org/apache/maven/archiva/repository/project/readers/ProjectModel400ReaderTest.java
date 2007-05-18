@@ -23,7 +23,6 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
-import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
@@ -63,9 +62,8 @@ public class ProjectModel400ReaderTest
         assertEquals( "Parent Artifact ID", "maven-shared-components", parentRef.getArtifactId() );
         assertEquals( "Parent Version", "4", parentRef.getVersion() );
 
-        assertNotNull( "DependencyTree", project.getDependencyTree() );
-        assertNotNull( "DependencyTree.dependencies", project.getDependencyTree().getDependencyNodes() );
-        assertEquals( "Dependencies.size", 3, project.getDependencyTree().getDependencyNodes().size() );
+        assertNotNull( "Dependencies", project.getDependencies() );
+        assertEquals( "Dependencies.size", 3, project.getDependencies().size() );
     }
 
     public void testLoadWithNamespace()
@@ -93,8 +91,7 @@ public class ProjectModel400ReaderTest
         assertEquals( "Parent Artifact ID", "archiva-base", parentRef.getArtifactId() );
         assertEquals( "Parent Version", "1.0-SNAPSHOT", parentRef.getVersion() );
         
-        assertNotNull( "DependencyTree", project.getDependencyTree() );
-        assertNotNull( "DependencyTree.dependencies", project.getDependencyTree().getDependencyNodes() );
-        assertEquals( "Dependencies.size", 6, project.getDependencyTree().getDependencyNodes().size() );
+        assertNotNull( "Dependencies", project.getDependencies() );
+        assertEquals( "Dependencies.size", 6, project.getDependencies().size() );
     }
 }

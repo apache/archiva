@@ -22,7 +22,6 @@ package org.apache.maven.archiva.repository.project.filters;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.model.DependencyTree;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
@@ -100,29 +99,27 @@ public class EffectiveProjectModelFilterTest
         assertEquals( "Equivalent Models", expectedModel, effectiveModel );
 
         assertContainsSameIndividuals( "Individuals", expectedModel.getIndividuals(), effectiveModel.getIndividuals() );
-        dumpDependencyList( "Expected", expectedModel.getDependencyTree() );
-        dumpDependencyList( "Effective", effectiveModel.getDependencyTree() );
-        assertContainsSameDependencies( "Dependencies", expectedModel.getDependencyTree().getDependencyNodes(),
-                                        effectiveModel.getDependencyTree().getDependencyNodes() );
-        assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
-            .getDependencyManagement() );
+        dumpDependencyList( "Expected", expectedModel.getDependencies() );
+        dumpDependencyList( "Effective", effectiveModel.getDependencies() );
+        assertContainsSameDependencies( "Dependencies", expectedModel.getDependencies(), 
+                                                        effectiveModel.getDependencies() );
+        assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), 
+                                                                effectiveModel.getDependencyManagement() );
     }
 
-    private void dumpDependencyList( String type, DependencyTree tree )
+    private void dumpDependencyList( String type, List deps )
     {
-        if ( tree == null )
+        if ( deps == null )
         {
-            System.out.println( " Tree [" + type + "] is null." );
+            System.out.println( " Dependencies [" + type + "] is null." );
             return;
         }
 
-        if ( tree.getDependencyNodes() == null )
+        if ( deps.isEmpty() )
         {
-            System.out.println( " Tree [" + type + "] dependency list (nodes) is null." );
+            System.out.println( " Dependencies [" + type + "] dependency list is empty." );
             return;
         }
-
-        List deps = tree.getDependencyNodes();
 
         System.out.println( ".\\ [" + type + "] Dependency List (size:" + deps.size() + ") \\.________________" );
         Iterator it = deps.iterator();

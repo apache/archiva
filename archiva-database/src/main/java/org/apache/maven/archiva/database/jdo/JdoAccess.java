@@ -310,11 +310,7 @@ public class JdoAccess
 
         if ( constraint.getDeclaredImports() != null )
         {
-            for ( int i = 0; i < constraint.getDeclaredImports().length; i++ )
-            {
-                String qimport = constraint.getDeclaredImports()[i];
-                query.declareImports( qimport );
-            }
+            query.declareImports( StringUtils.join( constraint.getDeclaredImports(), ", " ) );
         }
 
         if ( constraint.getDeclaredParameters() != null )
@@ -331,12 +327,8 @@ public class JdoAccess
                     + "> declared parameters, yet there are <" + constraint.getParameters().length
                     + "> parameter objects to use.  This should be equal." );
             }
-
-            for ( int i = 0; i < constraint.getDeclaredParameters().length; i++ )
-            {
-                String declaredParam = constraint.getDeclaredParameters()[i];
-                query.declareParameters( declaredParam );
-            }
+            
+            query.declareParameters( StringUtils.join( constraint.getDeclaredParameters(), ", " ) );
 
             return processParameterizedQuery( query, constraint.getParameters() );
         }

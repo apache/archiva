@@ -87,7 +87,9 @@ public class DownloadArtifact
         this.res = (HttpServletResponse) pageContext.getResponse();
         try
         {
-            dao = (ArchivaDAO) PlexusTagUtil.lookup( pageContext, ArchivaDAO.ROLE );
+            dao = (ArchivaDAO) PlexusTagUtil.lookup( pageContext, ArchivaDAO.ROLE, "jdo" );
+            layoutFactory = (BidirectionalRepositoryLayoutFactory) PlexusTagUtil
+                .lookup( pageContext, BidirectionalRepositoryLayoutFactory.class );
         }
         catch ( ComponentLookupException e )
         {

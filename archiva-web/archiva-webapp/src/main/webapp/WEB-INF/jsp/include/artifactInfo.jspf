@@ -70,16 +70,16 @@
       </td>
     </tr>
   --%>
-  <c:if test="${model.parent != null}">
+  <c:if test="${model.parentProject != null}">
     <tr>
       <th>Parent</th>
       <td>
-          ${model.parent.groupId} ${model.parent.artifactId} ${model.parent.version}
+          ${model.parentProject.groupId} ${model.parentProject.artifactId} ${model.parentProject.version}
         <c:set var="url">
           <ww:url action="showArtifact" namespace="/">
-            <ww:param name="groupId" value="%{'${model.parent.groupId}'}"/>
-            <ww:param name="artifactId" value="%{'${model.parent.artifactId}'}"/>
-            <ww:param name="version" value="%{'${model.parent.version}'}"/>
+            <ww:param name="groupId" value="%{'${model.parentProject.groupId}'}"/>
+            <ww:param name="artifactId" value="%{'${model.parentProject.artifactId}'}"/>
+            <ww:param name="version" value="%{'${model.parentProject.version}'}"/>
           </ww:url>
         </c:set>
         (<a href="${url}">View</a>)

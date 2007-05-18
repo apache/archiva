@@ -25,7 +25,6 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.CiManagement;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.DependencyScope;
-import org.apache.maven.archiva.model.DependencyTree;
 import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.model.IssueManagement;
@@ -100,7 +99,7 @@ public class ProjectModel400Reader
             model.setScm( getSCM( xml ) );
             model.setRepositories( getRepositories( xml ) );
 
-            model.setDependencyTree( getDependencyTree( xml ) );
+            model.setDependencies( getDependencies( xml ) );
             model.setDependencyManagement( getDependencyManagement( xml ) );
             model.setPlugins( getPlugins( xml ) );
             model.setReports( getReports( xml ) );
@@ -142,20 +141,10 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private DependencyTree getDependencyTree( XMLReader xml )
+    private List getDependencies( XMLReader xml )
         throws XMLException
     {
-        DependencyTree tree = new DependencyTree();
-        List dependencies = getDependencyList( xml, new String[] { "dependencies" } );
-
-        Iterator it = dependencies.iterator();
-        while ( it.hasNext() )
-        {
-            Dependency dependency = (Dependency) it.next();
-            tree.addDependencyNode( dependency );
-        }
-
-        return tree;
+        return getDependencyList( xml, new String[] { "dependencies" } );
     }
 
     private List getDependencyList( XMLReader xml, String parts[] )
@@ -187,7 +176,7 @@ public class ProjectModel400Reader
             dependency.setArtifactId( elemDependency.elementTextTrim( "artifactId" ) );
             dependency.setVersion( elemDependency.elementTextTrim( "version" ) );
 
-            dependency.setClassifier( elemDependency.elementTextTrim( "classifier" ) );
+            dependency.setClassifier( StringUtils.defaultString( elemDependency.elementTextTrim( "classifier" ) ) );
             dependency.setType( StringUtils.defaultIfEmpty( elemDependency.elementTextTrim( "type" ), "jar" ) );
             dependency.setScope( StringUtils.defaultIfEmpty( elemDependency.elementTextTrim( "scope" ), "compile" ) );
             // Not for v4.0.0 -> dependency.setUrl( elemDependency.elementTextTrim("url") );

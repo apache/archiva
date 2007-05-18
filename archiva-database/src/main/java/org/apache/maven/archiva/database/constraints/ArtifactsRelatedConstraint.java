@@ -19,7 +19,6 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
@@ -36,9 +35,9 @@ public class ArtifactsRelatedConstraint
 
     public ArtifactsRelatedConstraint( String groupId, String artifactId, String version )
     {
-        whereClause = "groupId == '" + StringEscapeUtils.escapeSql( groupId ) + "' AND artifactId == '"
-            + StringEscapeUtils.escapeSql( artifactId ) + "' AND version == '" + StringEscapeUtils.escapeSql( version )
-            + "'";
+        whereClause = "groupId.equals(selectedGroupId) && artifactId.equals(selectedArtifactId) && version.equals(selectedVersion)";
+        declParams = new String[] { "String selectedGroupId", "String selectedArtifactId", "String selectedVersion" };
+        params = new Object[] { groupId, artifactId, version };
     }
 
     public String getSortColumn()

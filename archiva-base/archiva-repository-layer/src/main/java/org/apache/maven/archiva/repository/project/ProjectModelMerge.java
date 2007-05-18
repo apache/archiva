@@ -25,8 +25,6 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.CiManagement;
 import org.apache.maven.archiva.model.Dependency;
-import org.apache.maven.archiva.model.DependencyEdge;
-import org.apache.maven.archiva.model.DependencyTree;
 import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.model.IssueManagement;
@@ -94,7 +92,7 @@ public class ProjectModelMerge
         merged.setOrganization( merge( mainProject.getOrganization(), parentProject.getOrganization() ) );
         merged.setScm( merge( mainProject.getScm(), parentProject.getScm() ) );
         merged.setRepositories( mergeRepositories( mainProject.getRepositories(), parentProject.getRepositories() ) );
-        merged.setDependencyTree( merge( mainProject.getDependencyTree(), parentProject.getDependencyTree() ) );
+        merged.setDependencies( mergeDependencies( mainProject.getDependencies(), parentProject.getDependencies() ) );
         merged.setDependencyManagement( mergeDependencyManagement( mainProject.getDependencyManagement(), parentProject
             .getDependencyManagement() ) );
         merged.setPlugins( mergePlugins( mainProject.getPlugins(), parentProject.getPlugins() ) );
@@ -181,21 +179,6 @@ public class ProjectModelMerge
         return ret;
     }
 
-    private static Map createEdgeMap( List dependencyEdges )
-    {
-        Map ret = new HashMap();
-
-        Iterator it = dependencyEdges.iterator();
-        while ( it.hasNext() )
-        {
-            DependencyEdge edge = (DependencyEdge) it.next();
-            String key = toKey( edge );
-            ret.put( key, edge );
-        }
-
-        return ret;
-    }
-
     private static boolean empty( String val )
     {
         if ( val == null )
@@ -229,28 +212,6 @@ public class ProjectModelMerge
         merged.setVersion( merge( mainArtifactReference.getVersion(), parentArtifactReference.getVersion() ) );
         merged.setClassifier( merge( mainArtifactReference.getClassifier(), parentArtifactReference.getClassifier() ) );
         merged.setType( merge( mainArtifactReference.getType(), parentArtifactReference.getType() ) );
-
-        return merged;
-    }
-
-    private static DependencyTree merge( DependencyTree mainDependencyTree, DependencyTree parentDependencyTree )
-    {
-        if ( parentDependencyTree == null )
-        {
-            return mainDependencyTree;
-        }
-
-        if ( mainDependencyTree == null )
-        {
-            return ArchivaModelCloner.clone( parentDependencyTree );
-        }
-
-        DependencyTree merged = ArchivaModelCloner.clone( mainDependencyTree );
-
-        merged.setDependencyNodes( mergeDependencies( mainDependencyTree.getDependencyNodes(), parentDependencyTree
-            .getDependencyNodes() ) );
-        merged.setDependencyEdges( mergeDependencyEdges( mainDependencyTree.getDependencyEdges(), parentDependencyTree
-            .getDependencyEdges() ) );
 
         return merged;
     }
@@ -675,45 +636,6 @@ public class ProjectModelMerge
         return merged;
     }
 
-    private static List mergeDependencyEdges( List mainDependencyEdges, List parentDependencyEdges )
-    {
-        if ( parentDependencyEdges == null )
-        {
-            return mainDependencyEdges;
-        }
-
-        if ( mainDependencyEdges == null )
-        {
-            return ArchivaModelCloner.cloneDependencyEdges( parentDependencyEdges );
-        }
-
-        List merged = new ArrayList();
-
-        Map mainEdgesMap = createEdgeMap( mainDependencyEdges );
-        Map parentEdgesMap = createEdgeMap( parentDependencyEdges );
-
-        Iterator it = mainEdgesMap.entrySet().iterator();
-        while ( it.hasNext() )
-        {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            DependencyEdge mainEdge = (DependencyEdge) entry.getValue();
-            DependencyEdge parentEdge = (DependencyEdge) parentEdgesMap.get( key );
-
-            if ( parentEdge == null )
-            {
-                merged.add( mainEdge );
-            }
-            else
-            {
-                // Not merging. Local wins.
-                merged.add( parentEdge );
-            }
-        }
-
-        return merged;
-    }
-
     private static String toVersionlessArtifactKey( ArtifactReference artifactReference )
     {
         StringBuffer key = new StringBuffer();
@@ -732,17 +654,6 @@ public class ProjectModelMerge
         key.append( dep.getGroupId() ).append( ":" ).append( dep.getArtifactId() );
         key.append( StringUtils.defaultString( dep.getClassifier() ) ).append( ":" );
         key.append( dep.getType() );
-
-        return key.toString();
-    }
-
-    private static String toKey( DependencyEdge edge )
-    {
-        StringBuffer key = new StringBuffer();
-
-        key.append( toVersionlessArtifactKey( edge.getFromDependency() ) );
-        key.append( "->" );
-        key.append( toVersionlessArtifactKey( edge.getToDependency() ) );
 
         return key.toString();
     }

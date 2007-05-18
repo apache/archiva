@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.project.filters;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
@@ -73,9 +74,9 @@ public class ProjectModelExpressionFilter
             ret.setVersion( evaluator.expand( ret.getVersion() ) );
             ret.setGroupId( evaluator.expand( ret.getGroupId() ) );
 
-            if ( ( ret.getDependencyTree() != null ) && !ret.getDependencyTree().isEmpty() )
+            if ( CollectionUtils.isNotEmpty( ret.getDependencies() ) )
             {
-                evaluateExpressionsInDependencyList( evaluator, ret.getDependencyTree().getDependencyNodes() );
+                evaluateExpressionsInDependencyList( evaluator, ret.getDependencies() );
             }
 
             evaluateExpressionsInDependencyList( evaluator, ret.getDependencyManagement() );

@@ -62,7 +62,7 @@ public class ArchivaModelCloner
         cloned.setOrganization( clone( model.getOrganization() ) );
         cloned.setScm( clone( model.getScm() ) );
         cloned.setRepositories( cloneRepositories( model.getRepositories() ) );
-        cloned.setDependencyTree( clone( model.getDependencyTree() ) );
+        cloned.setDependencies( cloneDependencies( model.getDependencies() ) );
         cloned.setPlugins( clonePlugins( model.getPlugins() ) );
         cloned.setReports( cloneReports( model.getReports() ) );
         cloned.setDependencyManagement( cloneDependencies( model.getDependencyManagement() ) );
@@ -126,37 +126,6 @@ public class ArchivaModelCloner
         cloned.setSystemPath( dependency.getSystemPath() );
         cloned.setUrl( dependency.getUrl() );
         cloned.setExclusions( cloneExclusions( dependency.getExclusions() ) );
-
-        return cloned;
-    }
-
-    public static DependencyEdge clone( DependencyEdge edge )
-    {
-        if ( edge == null )
-        {
-            return null;
-        }
-
-        DependencyEdge cloned = new DependencyEdge();
-
-        cloned.setFromDependency( clone( edge.getFromDependency() ) );
-        cloned.setToDependency( clone( edge.getToDependency() ) );
-        cloned.setType( edge.getType() );
-
-        return cloned;
-    }
-
-    public static DependencyTree clone( DependencyTree dependencyTree )
-    {
-        if ( dependencyTree == null )
-        {
-            return null;
-        }
-
-        DependencyTree cloned = new DependencyTree();
-
-        cloned.setDependencyNodes( cloneDependencies( dependencyTree.getDependencyNodes() ) );
-        cloned.setDependencyEdges( cloneDependencyEdges( dependencyTree.getDependencyEdges() ) );
 
         return cloned;
     }
@@ -318,32 +287,6 @@ public class ArchivaModelCloner
             }
 
             ret.add( clone( dep ) );
-        }
-
-        return ret;
-    }
-
-    public static List cloneDependencyEdges( List dependencyEdges )
-    {
-        if ( dependencyEdges == null )
-        {
-            return null;
-        }
-
-        List ret = new ArrayList();
-
-        Iterator it = dependencyEdges.iterator();
-        while ( it.hasNext() )
-        {
-            DependencyEdge edge = (DependencyEdge) it.next();
-
-            if ( edge == null )
-            {
-                // Skip empty edge.
-                continue;
-            }
-
-            ret.add( clone( edge ) );
         }
 
         return ret;
