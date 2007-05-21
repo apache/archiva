@@ -23,7 +23,9 @@ import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey;
+import org.apache.maven.archiva.repository.project.ProjectModelReader;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -107,5 +109,36 @@ public class JdoProjectModelDAOTest
         // Delete object.
         projectDao.deleteProjectModel( actualModel );
         assertEquals( 0, projectDao.queryProjectModels( null ).size() );
+    }
+
+    public void testSaveGetRealProjectModel()
+        throws Exception
+    {
+        String groupId = "org.apache.maven.shared";
+        String artifactId = "maven-shared-jar";
+        String version = "1.0-SNAPSHOT";
+
+        ProjectModelDAO projectDao = dao.getProjectModelDAO();
+
+        ProjectModelReader modelReader = (ProjectModelReader) lookup( ProjectModelReader.class, "model400" );
+
+        File pomFile = getTestFile( "src/test/resources/projects/maven-shared-jar-1.0-SNAPSHOT.pom" );
+
+        assertTrue( "pom file should exist: " + pomFile.getAbsolutePath(), pomFile.exists() && pomFile.isFile() );
+
+        ArchivaProjectModel model = modelReader.read( pomFile );
+        assertNotNull( "Model should not be null.", model );
+
+        // Fill in missing (mandatory) fields
+        model.setGroupId( groupId );
+        model.setOrigin( "testcase" );
+
+        projectDao.saveProjectModel( model );
+
+        ArchivaProjectModel savedModel = projectDao.getProjectModel( groupId, artifactId, version );
+        assertNotNull( "Project model should not be null.", savedModel );
+
+        // Test proper detachment of sub-objects.
+        assertNotNull( "model.parent != null", savedModel.getParentProject() );
     }
 }

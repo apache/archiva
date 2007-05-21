@@ -79,6 +79,8 @@ import java.io.Serializable;
 public class AbstractVersionedKey
     implements CompoundKey, Serializable
 {
+    private static final long serialVersionUID = -5389698374243146150L;
+
     /**
      * The Group ID. (JPOX Requires this remain public)
      */

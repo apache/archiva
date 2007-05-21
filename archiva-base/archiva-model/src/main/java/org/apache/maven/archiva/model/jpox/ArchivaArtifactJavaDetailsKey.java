@@ -33,6 +33,7 @@ public class ArchivaArtifactJavaDetailsKey
     extends AbstractArtifactKey
     implements Serializable
 {
+    private static final long serialVersionUID = -2565748477203220905L;
 
     public ArchivaArtifactJavaDetailsKey()
     {

@@ -33,6 +33,7 @@ public class VersionedReferenceKey
     extends AbstractVersionedKey
     implements Serializable
 {
+    private static final long serialVersionUID = -5040195285240958302L;
 
     public VersionedReferenceKey()
     {

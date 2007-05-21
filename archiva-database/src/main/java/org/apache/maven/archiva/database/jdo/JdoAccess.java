@@ -28,10 +28,16 @@ import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.AbstractSimpleConstraint;
 import org.apache.maven.archiva.model.CompoundKey;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.jpox.SchemaTool;
 
+import sun.security.action.GetLongAction;
+
+import java.io.File;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +65,7 @@ import javax.jdo.spi.PersistenceCapable;
  * @plexus.component role="org.apache.maven.archiva.database.jdo.JdoAccess" role-hint="archiva"
  */
 public class JdoAccess
+    extends AbstractLogEnabled
     implements Initializable, InstanceLifecycleListener, StoreLifecycleListener
 {
     /**
@@ -72,7 +79,25 @@ public class JdoAccess
         throws InitializationException
     {
         pmf = jdoFactory.getPersistenceManagerFactory();
+        
+        // Create the schema (if needed)
+        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
 
+        File propsFile = null; // intentional
+        boolean verbose = true;
+        
+        try
+        {
+            SchemaTool.createSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose, null );
+        }
+        catch ( Exception e )
+        {
+            getLogger().error( "Unable to create schema: " + e.getMessage(), e );
+        }
+        
+        pmf.getPersistenceManager();
+
+        // Add the lifecycle listener.
         pmf.addInstanceLifecycleListener( this, null );
     }
 

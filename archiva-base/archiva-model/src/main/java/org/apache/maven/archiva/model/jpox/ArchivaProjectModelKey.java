@@ -33,6 +33,7 @@ public class ArchivaProjectModelKey
     extends AbstractVersionedKey
     implements Serializable
 {
+    private static final long serialVersionUID = 7789859208617327581L;
 
     public ArchivaProjectModelKey()
     {

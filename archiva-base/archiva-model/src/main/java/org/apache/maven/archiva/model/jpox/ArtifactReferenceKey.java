@@ -33,6 +33,7 @@ public class ArtifactReferenceKey
     extends AbstractArtifactKey
     implements Serializable
 {
+    private static final long serialVersionUID = 2107985498806534183L;
 
     public ArtifactReferenceKey()
     {

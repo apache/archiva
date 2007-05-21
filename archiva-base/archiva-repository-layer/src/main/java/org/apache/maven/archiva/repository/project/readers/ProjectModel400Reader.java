@@ -113,15 +113,15 @@ public class ProjectModel400Reader
         }
     }
 
-    private ArtifactReference getArtifactReference( Element elemPlugin )
+    private ArtifactReference getArtifactReference( Element elemPlugin, String defaultType )
     {
         ArtifactReference reference = new ArtifactReference();
 
-        reference.setGroupId( elemPlugin.elementTextTrim( "groupId" ) );
+        reference.setGroupId( StringUtils.defaultString( elemPlugin.elementTextTrim( "groupId" ) ) );
         reference.setArtifactId( elemPlugin.elementTextTrim( "artifactId" ) );
-        reference.setVersion( elemPlugin.elementTextTrim( "version" ) );
-        reference.setClassifier( elemPlugin.elementTextTrim( "classifier" ) );
-        reference.setType( elemPlugin.elementTextTrim( "type" ) );
+        reference.setVersion( StringUtils.defaultString( elemPlugin.elementTextTrim( "version" ) ) );
+        reference.setClassifier( StringUtils.defaultString( elemPlugin.elementTextTrim( "classifier" ) ) );
+        reference.setType( StringUtils.defaultIfEmpty( elemPlugin.elementTextTrim( "type" ), defaultType ) );
 
         return reference;
     }
@@ -420,7 +420,7 @@ public class ProjectModel400Reader
         {
             Element elemPlugin = (Element) it.next();
 
-            plugins.add( getArtifactReference( elemPlugin ) );
+            plugins.add( getArtifactReference( elemPlugin, "maven-plugin" ) );
         }
 
         return plugins;

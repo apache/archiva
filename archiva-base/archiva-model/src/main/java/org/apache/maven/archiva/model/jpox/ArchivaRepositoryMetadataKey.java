@@ -33,6 +33,7 @@ public class ArchivaRepositoryMetadataKey
     extends AbstractVersionedKey
     implements Serializable
 {
+    private static final long serialVersionUID = -7288079965200698253L;
 
     public ArchivaRepositoryMetadataKey()
     {

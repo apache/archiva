@@ -104,6 +104,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>

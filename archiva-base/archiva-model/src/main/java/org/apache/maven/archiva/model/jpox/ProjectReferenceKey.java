@@ -33,6 +33,8 @@ public class ProjectReferenceKey
     extends AbstractProjectKey
     implements Serializable
 {
+    private static final long serialVersionUID = 7803774484166902823L;
+
     public ProjectReferenceKey()
     {
         super();
