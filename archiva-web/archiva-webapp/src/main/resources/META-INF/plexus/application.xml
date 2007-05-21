@@ -128,11 +128,11 @@
           </property>
           <property>
             <name>org.jpox.transactionIsolation</name>
-            <value>READ_UNCOMMITTED</value>
+            <value>READ_COMMITTED</value>
           </property>
           <property>
             <name>org.jpox.poid.transactionIsolation</name>
-            <value>READ_UNCOMMITTED</value>
+            <value>READ_COMMITTED</value>
           </property>
           <property>
             <name>org.jpox.rdbms.dateTimezone</name>
@@ -182,11 +182,11 @@
           </property>
           <property>
             <name>org.jpox.transactionIsolation</name>
-            <value>READ_UNCOMMITTED</value>
+            <value>READ_COMMITTED</value>
           </property>
           <property>
             <name>org.jpox.poid.transactionIsolation</name>
-            <value>READ_UNCOMMITTED</value>
+            <value>READ_COMMITTED</value>
           </property>
           <property>
             <name>org.jpox.rdbms.dateTimezone</name>
