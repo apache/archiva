@@ -20,6 +20,9 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.evaluator.EvaluatorException;
+import org.codehaus.plexus.evaluator.ExpressionEvaluator;
+import org.codehaus.plexus.evaluator.ExpressionSource;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.webdav.DavServerComponent;
@@ -48,12 +51,24 @@ public class AuditLog
     /**
      * @plexus.configuration default-value="${appserver.base}/logs/audit.log"
      */
-    private File logFile;
+    private String logFilename;
 
     /**
      * @plexus.configuration default-value="yyyy-MM-dd HH:mm:ss"
      */
     private String timestampFormat;
+
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    private ExpressionEvaluator expressionEvaluator;
+
+    /**
+     * @plexus.requirement role-hint="sysprops"
+     */
+    private ExpressionSource syspropExprSource;
+
+    private File logFile;
 
     private PrintWriter writer;
 
@@ -108,6 +123,19 @@ public class AuditLog
     public void initialize()
         throws InitializationException
     {
+        String actualFilename;
+        try
+        {
+            expressionEvaluator.addExpressionSource( syspropExprSource );
+            actualFilename = expressionEvaluator.expand( this.logFilename );
+        }
+        catch ( EvaluatorException e1 )
+        {
+            actualFilename = this.logFilename;
+        }
+
+        this.logFile = new File( actualFilename );
+
         File parentDir = logFile.getParentFile();
         if ( parentDir != null )
         {
