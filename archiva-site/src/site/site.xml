@@ -31,9 +31,9 @@
       <item name="Maven Configuration" href="/guides/getting-started/maven-configuration.html"/>
       <item name="Security Configuration" href="/guides/security-configuration.html"/>
       <item name="Other Configuration" href="/guides/configuration.html"/>
-      <item name="Developing" href="/guides/developing/index.html"/>
+      <item name="Hacking Archiva" href="/hacking/index.html"/>
     </menu>
-    
+
     <menu ref="reports" inherit="bottom"/>
   </body>
   <skin>

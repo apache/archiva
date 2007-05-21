@@ -23,68 +23,129 @@
     <title>Welcome to Maven Archiva</title>
   </properties>
   <body>
-    <section name="Welcome to Maven Archiva">
-      <div id="downloadbox">
-        <h5>Get Archiva 0.9 Alpha 2</h5>
-        <p>
-          <a href="download.html">
-            <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
-            Download
-          </a>
-          Archiva
-          <small>(20Mb)</small>
-        </p>
-        <ul>
-          <li>
-            <a href="download.html#requirements">System Requirements</a>
-          </li>
-          <li>
-            <a href="download.html#installation">Installation Instructions</a>
-          </li>
-          <!--
-          <li>
-            <a href="release-notes.html">Release Notes</a>
-          </li>
-          <li>
-            <a href="guides/getting-started/index.html">Getting Started</a>
-          </li>
-          <li>
-            <a href="guides/index.html">Documentation</a>
-          </li>
-          -->
-        </ul>
-      </div>
+    <div id="downloadbox">
+      <h5>Get Archiva 0.9 Alpha 2</h5>
+      <p>
+        <a href="download.html">
+          <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
+          Download
+        </a>
+        Archiva
+        <small>(20Mb)</small>
+      </p>
+      <ul>
+        <li>
+          <a href="download.html#requirements">System Requirements</a>
+        </li>
+        <li>
+          <a href="download.html#installation">Installation Instructions</a>
+        </li>
+        <!--
+        <li>
+          <a href="release-notes.html">Release Notes</a>
+        </li>
+        <li>
+          <a href="guides/getting-started/index.html">Getting Started</a>
+        </li>
+        <li>
+          <a href="guides/index.html">Documentation</a>
+        </li>
+        -->
+      </ul>
+    </div>
 
-      <p>Archiva (the Maven repository manager) is currently under development. It provides several pieces of
-        functionality for your remote repository:</p>
+    <section name="Welcome to Maven Archiva">
+      <div class="p">
+         Archiva is currently under development.</div>
+
+      <div class="p">
+         Archiva is a build artifact repository manager for use with
+         build tools such as <a href="http://maven.apache.org">maven</a>,
+         <a href="http://maven.apache.org/continuum/">continuum</a>,
+         and <a href="http://ant.apache.org/">ant</a>.</div>
+
+      <div class="p">
+         It provides the following benefits:</div>
 
       <ul>
-          <li>Browsing on POM information by group and artifact ID</li>
-          <li>Search over various information in the POM and filename</li>
-          <li>Locate JAR by checksum</li>
-          <li>Repository management through reporting and maintenance</li>
+        <li>A place for like-minded developers to share artifacts
+            that are private in nature, such as found in proprietary
+            development shops.</li>
+        <li>The ability to act as a nearby (proxy) cache of popular global
+            repositories for better build performance.</li>
+        <li>Secure your repositories!  by user, by role, by repository,
+            read vs write access controls.</li>
+        <li>A tool to browse the repository information, and present it
+            in a user friendly way.</li>
+        <li>Maximize code reuse via a search / research tool to help
+            find artifacts that might be of the most use for your
+            immediate problem.</li>
+        <li>Implement controls on the artifacts that the developers
+            in your organization use.</li>
+        <li>Identify unknown artifacts based on large database of
+            known checksums for known artifacts.</li>
+        <li>Reporting on artifact usage, to help identify those
+            projects that are using your code.</li>
+        <li>Reporting tools.</li>
+        <li>Maintenance tools.</li>
       </ul>
-
-      <p> We welcome developers to the Maven community who are interested in contributing. If you'd like to discuss
-        archiva, subscribe and post to <a href="mail-lists.html">the development mailing list</a>
-        <code>archiva-dev@maven.apache.org</code>.</p>
-
-      <p>If you'd like to obtain the code, you can get it from Subversion.
-        See <a href="source-repository.html">SCM details</a> for more information.</p>
-
-      <p>Bugs, issues and new ideas should be reported in the issue tracker -
-        see <a href="issue-tracking.html">this page</a>.</p>
-
-      <p>See the <a href="http://docs.codehaus.org/display/MAVENUSER/Archiva">the Archiva wiki</a>
-        for more information, or log onto the IRC channel #archiva:irc.codehaus.org.</p>
-
     </section>
+
     <section name="Latest News">
       <p>
         <ul>
           <li>Archiva 0.9 Alpha 2 Release Available - May 18, 2007</li>
         </ul>
       </p>
+    </section>
+
+    <section name="Need Help?">
+      <p>Join the conversation!</p>
+      <ul>
+        <li>Try the Documentation: (see the navigation menu on the left)</li>
+        <li><a href="http://www.nabble.com/archiva-users-f16426.html">Archiva
+             Users</a> <a href="mail-lists.html">Mailing List</a>:
+            <a href="mailto:archiva-users-subscribe@maven.apache.org">archiva-users@maven.apache.org</a></li>
+        <li>Archiva IRC Channel:
+           <a href="irc://irc.codehaus.org/#archiva">#archiva</a> on
+           <a href="http://irc.codehaus.org/">irc.codehaus.org</a></li>
+      </ul>
+    </section>
+
+    <section name="Contributing">
+      <div class="p">
+         We welcome developers to the Maven community who are interested
+         in contributing. If you'd like to discuss Archiva, subscribe and
+         post to <a href="mail-lists.html">the development mailing list</a>
+         <code>archiva-dev@maven.apache.org</code>.
+      </div>
+
+      <div class="p">
+         Read the <a href="hacking/">Hacking Archiva</a> document.
+      </div>
+
+      <div class="p">
+         If you'd like to obtain the code, you can get it from Subversion.
+         See <a href="source-repository.html">SCM details</a> for more
+         information.
+      </div>
+
+      <div class="p">
+         Bugs, issues and new ideas should be reported in the issue tracker -
+         see <a href="issue-tracking.html">this page</a>.
+      </div>
+
+      <div class="p">
+         A user managed wiki of alternative documentation is available a
+         <a href="http://docs.codehaus.org/display/MAVENUSER/Archiva">the
+         Archiva wiki</a>.
+      </div>
+
+      <div class="p">
+         Want to chat live with some of the developers?  join us in
+         the <a href="irc://irc.codehaus.org/#archiva">#archiva</a>
+         channel on <a href="http://irc.codehaus.org">irc.codehaus.org</a>.
+      </div>
     </section>
   </body>
 </document>
