@@ -105,6 +105,8 @@ public class ProjectModel400Reader
             model.setReports( getReports( xml ) );
             model.setProperties( getProperties( xml.getElement( "//project/properties" ) ) );
 
+            model.setBuildExtensions( getBuildExtensions( xml ) );
+
             return model;
         }
         catch ( XMLException e )
@@ -124,6 +126,31 @@ public class ProjectModel400Reader
         reference.setType( StringUtils.defaultIfEmpty( elemPlugin.elementTextTrim( "type" ), defaultType ) );
 
         return reference;
+    }
+
+    /**
+     * Get List of {@link ArtifactReference} objects from xpath expr.
+     */
+    private List getArtifactReferenceList( XMLReader xml, String xpathExpr, String defaultType )
+        throws XMLException
+    {
+        List plugins = new ArrayList();
+
+        Iterator it = xml.getElementList( xpathExpr ).iterator();
+        while ( it.hasNext() )
+        {
+            Element elemPlugin = (Element) it.next();
+
+            plugins.add( getArtifactReference( elemPlugin, defaultType ) );
+        }
+
+        return plugins;
+    }
+
+    private List getBuildExtensions( XMLReader xml )
+        throws XMLException
+    {
+        return getArtifactReferenceList( xml, "//project/build/extensions/extension", "jar" );
     }
 
     private CiManagement getCiManagement( XMLReader xml )
@@ -305,6 +332,34 @@ public class ProjectModel400Reader
         return null;
     }
 
+    private List getLicenses( XMLReader xml )
+        throws XMLException
+    {
+        List licenses = new ArrayList();
+
+        Element elemLicenses = xml.getElement( "//project/licenses" );
+
+        if ( elemLicenses != null )
+        {
+            Iterator itLicense = elemLicenses.elements( "license" ).iterator();
+            while ( itLicense.hasNext() )
+            {
+                Element elemLicense = (Element) itLicense.next();
+                License license = new License();
+
+                // TODO: Create LicenseIdentity class to managed license ids.
+                // license.setId( elemLicense.elementTextTrim("id") );
+                license.setName( elemLicense.elementTextTrim( "name" ) );
+                license.setUrl( elemLicense.elementTextTrim( "url" ) );
+                license.setComments( elemLicense.elementTextTrim( "comments" ) );
+
+                licenses.add( license );
+            }
+        }
+
+        return licenses;
+    }
+
     private List getMailingLists( XMLReader xml )
         throws XMLException
     {
@@ -343,34 +398,6 @@ public class ProjectModel400Reader
         return mailingLists;
     }
 
-    private List getLicenses( XMLReader xml )
-        throws XMLException
-    {
-        List licenses = new ArrayList();
-
-        Element elemLicenses = xml.getElement( "//project/licenses" );
-
-        if ( elemLicenses != null )
-        {
-            Iterator itLicense = elemLicenses.elements( "license" ).iterator();
-            while ( itLicense.hasNext() )
-            {
-                Element elemLicense = (Element) itLicense.next();
-                License license = new License();
-
-                // TODO: Create LicenseIdentity class to managed license ids.
-                // license.setId( elemLicense.elementTextTrim("id") );
-                license.setName( elemLicense.elementTextTrim( "name" ) );
-                license.setUrl( elemLicense.elementTextTrim( "url" ) );
-                license.setComments( elemLicense.elementTextTrim( "comments" ) );
-
-                licenses.add( license );
-            }
-        }
-
-        return licenses;
-    }
-
     private Organization getOrganization( XMLReader xml )
         throws XMLException
     {
@@ -404,26 +431,7 @@ public class ProjectModel400Reader
     private List getPlugins( XMLReader xml )
         throws XMLException
     {
-        return getPlugins( xml, "//project/build/plugins/plugin" );
-    }
-
-    /**
-     * Get List of {@link RepositoryContent} objects from plugin definitions.
-     */
-    private List getPlugins( XMLReader xml, String xpathExpr )
-        throws XMLException
-    {
-        List plugins = new ArrayList();
-
-        Iterator it = xml.getElementList( xpathExpr ).iterator();
-        while ( it.hasNext() )
-        {
-            Element elemPlugin = (Element) it.next();
-
-            plugins.add( getArtifactReference( elemPlugin, "maven-plugin" ) );
-        }
-
-        return plugins;
+        return getArtifactReferenceList( xml, "//project/build/plugins/plugin", "maven-plugin" );
     }
 
     private Properties getProperties( Element elemProperties )
@@ -448,7 +456,7 @@ public class ProjectModel400Reader
     private List getReports( XMLReader xml )
         throws XMLException
     {
-        return getPlugins( xml, "//project/reporting/plugins/plugin" );
+        return getArtifactReferenceList( xml, "//project/reporting/plugins/plugin", "maven-plugin" );
     }
 
     private List getRepositories( XMLReader xml )

@@ -19,6 +19,8 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -26,7 +28,9 @@ import org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
@@ -111,7 +115,7 @@ public class JdoProjectModelDAOTest
         assertEquals( 0, projectDao.queryProjectModels( null ).size() );
     }
 
-    public void disabled_testSaveGetRealProjectModel()
+    public void testSaveGetRealProjectModel()
         throws Exception
     {
         String groupId = "org.apache.maven.shared";
@@ -129,7 +133,12 @@ public class JdoProjectModelDAOTest
         ArchivaProjectModel model = modelReader.read( pomFile );
         assertNotNull( "Model should not be null.", model );
 
-        // Fill in missing (mandatory) fields
+        /* NOTE: We are intentionally using a basic project model in this unit test.
+         *       The expansion of expressions, resolving of dependencies, and merging
+         *       of parent poms is *NOT* performed to keep this unit test simple.
+         */
+
+        // Fill in mandatory/missing fields
         model.setGroupId( groupId );
         model.setOrigin( "testcase" );
 
@@ -139,6 +148,39 @@ public class JdoProjectModelDAOTest
         assertNotNull( "Project model should not be null.", savedModel );
 
         // Test proper detachment of sub-objects.
-        assertNotNull( "model.parent != null", savedModel.getParentProject() );
+        List exprs = new ArrayList();
+        exprs.add( "parentProject.groupId" );
+        exprs.add( "organization.name" );
+        exprs.add( "issueManagement.system" );
+        exprs.add( "ciManagement.system" );
+        exprs.add( "scm.url" );
+        exprs.add( "individuals[0].name" );
+        exprs.add( "dependencies[0].groupId" );
+        exprs.add( "dependencyManagement[0].artifactId" );
+        exprs.add( "repositories[0].id" );
+        exprs.add( "plugins[0].artifactId" );
+        exprs.add( "reports[0].artifactId" );
+        exprs.add( "buildExtensions[0].artifactId" );
+        exprs.add( "licenses[0].url" );
+        exprs.add( "mailingLists[0].name" );
+
+        Iterator it = exprs.iterator();
+        while ( it.hasNext() )
+        {
+            String expr = (String) it.next();
+            try
+            {
+                Object obj = PropertyUtils.getProperty( model, expr );
+                assertNotNull( "Expr \"" + expr + "\" != null", obj );
+                assertTrue( "Expr \"" + expr + "\" should be a String.", ( obj instanceof String ) );
+                String value = (String) obj;
+                assertTrue( "Expr \"" + expr + "\" value should not be blank.", StringUtils.isNotBlank( value ) );
+            }
+            catch ( IndexOutOfBoundsException e )
+            {
+                fail( "Expr \"" + expr + "\" unable to get indexed property: " + e.getClass().getName() + ": "
+                    + e.getMessage() );
+            }
+        }
     }
 }

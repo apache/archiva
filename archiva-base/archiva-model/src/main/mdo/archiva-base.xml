@@ -596,7 +596,8 @@
           <description>
             The snapshot version id.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>SnapshotVersion</type>
             <multiplicity>1</multiplicity>
           </association>
@@ -736,36 +737,29 @@
      -->
 
     <class stash.storable="true"
-           jpox.table="PROJECT_REFERENCE"
-           jpox.use-identifiers-as-primary-key="false"
-           jpox.identity-type="application"
-           jpox.identity-class="org.apache.maven.archiva.model.jpox.ProjectReferenceKey">
+           jpox.table="PROJECT_REFERENCE">
       <name>ProjectReference</name>
       <description>A reference to another (unversioned) Project</description>
       <version>1.0.0+</version>
       <fields>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>groupId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
           <description>
-            The Group ID of the repository content.
+            The Group ID of the project reference.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>artifactId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
           <description>
-            The Artifact ID of the repository content.
+            The Artifact ID of the project reference.
           </description>
         </field>
       </fields>
@@ -776,23 +770,42 @@
     private static final long serialVersionUID = 8947981859537138991L;
           ]]></code>
         </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
+    public static String toKey( ProjectReference reference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( reference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
       </codeSegments>
     </class>
     
     <class stash.storable="true"
-           jpox.table="VERSIONED_REFERENCE"
-           jpox.use-identifiers-as-primary-key="false"
-           jpox.identity-type="application"
-           jpox.identity-class="org.apache.maven.archiva.model.jpox.VersionedReferenceKey">
+           jpox.table="VERSIONED_REFERENCE">
       <name>VersionedReference</name>
       <description>A reference to another Versioned Project</description>
       <version>1.0.0+</version>
       <fields>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>groupId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -800,11 +813,9 @@
             The Group ID of the repository content.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>artifactId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -812,11 +823,9 @@
             The Artifact ID of the repository content.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>version</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -832,22 +841,42 @@
     private static final long serialVersionUID = -6990353165677563113L;
           ]]></code>
         </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
+    public static String toKey( VersionedReference reference )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( defaultString( reference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( reference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( reference.getVersion() ) ).append( ":" );
+
+        return key.toString();
+    }
+          ]]></code>
+        </codeSegment>
       </codeSegments>
     </class>
     
     <class stash.storable="true"
-           jpox.table="ARTIFACT_REFERENCE"
-           jpox.use-identifiers-as-primary-key="false"
-           jpox.identity-type="application"
-           jpox.identity-class="org.apache.maven.archiva.model.jpox.ArtifactReferenceKey">
+           jpox.table="ARTIFACT_REFERENCE">
       <name>ArtifactReference</name>
       <version>1.0.0+</version>
       <fields>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>groupId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -855,11 +884,9 @@
             The Group ID of the repository content.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>artifactId</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -867,11 +894,9 @@
             The Artifact ID of the repository content.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>version</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>false</required>
@@ -879,11 +904,9 @@
             The version of the repository content.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent">
+        <field null-value="default">
           <name>classifier</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -891,12 +914,10 @@
             The classifier for this artifact.
           </description>
         </field>
-        <field jpox.primary-key="true"
-               jpox.value-strategy="off"
-               jpox.persistence-modifier="persistent"
+        <field null-value="default"
                jpox.column="FILE_TYPE">
           <name>type</name>
-          <identifier>true</identifier>
+          <identifier>false</identifier>
           <version>1.0.0+</version>
           <type>String</type>
           <required>true</required>
@@ -915,19 +936,25 @@
         <codeSegment>
           <version>1.0.0+</version>
           <code><![CDATA[
+    private static String defaultString( String value )
+    {
+        if ( value == null )
+        {
+            return "";
+        }
+        
+        return value.trim();
+    }
+          
     public static String toKey( ArtifactReference artifactReference )
     {
         StringBuffer key = new StringBuffer();
 
-        key.append( artifactReference.getGroupId() ).append( ":" );
-        key.append( artifactReference.getArtifactId() ).append( ":" );
-        key.append( artifactReference.getVersion() ).append( ":" );
-        if ( artifactReference.getClassifier() != null )
-        {
-            key.append( artifactReference.getClassifier() );
-        }
-        key.append( ":" );
-        key.append( artifactReference.getType() );
+        key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getVersion() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getClassifier() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getType() ) );
 
         return key.toString();
     }
@@ -936,14 +963,10 @@
     {
         StringBuffer key = new StringBuffer();
 
-        key.append( artifactReference.getGroupId() ).append( ":" );
-        key.append( artifactReference.getArtifactId() ).append( ":" );
-        if ( artifactReference.getClassifier() != null )
-        {
-            key.append( artifactReference.getClassifier() );
-        }
-        key.append( ":" );
-        key.append( artifactReference.getType() );
+        key.append( defaultString( artifactReference.getGroupId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getArtifactId() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getClassifier() ) ).append( ":" );
+        key.append( defaultString( artifactReference.getType() ) );
 
         return key.toString();
     }
@@ -1010,7 +1033,8 @@
           <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>VersionedReference</type>
             <multiplicity>1</multiplicity>
           </association>
@@ -1083,7 +1107,8 @@
           <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Organization</type>
           </association>
         </field>
@@ -1092,7 +1117,8 @@
           <identifier>false</identifier>
           <version>1.0.0+</version>
           <required>false</required>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>License</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1102,7 +1128,8 @@
           <version>1.0.0+</version>
           <description>The mailing lists.</description>
           <required>false</required>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>MailingList</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1111,7 +1138,8 @@
           <name>issueManagement</name>
           <version>1.0.0+</version>
           <description><![CDATA[The project's issue management system information.]]></description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>IssueManagement</type>
           </association>
         </field>
@@ -1119,7 +1147,8 @@
           <name>ciManagement</name>
           <version>1.0.0+</version>
           <description><![CDATA[The project's continuous integration information.]]></description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>CiManagement</type>
           </association>
         </field>
@@ -1128,7 +1157,8 @@
           <version>1.0.0+</version>
           <description>
             <![CDATA[Specification for the SCM used by the project, such as CVS, Subversion, etc.]]></description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Scm</type>
           </association>
         </field>
@@ -1138,7 +1168,8 @@
           <description>
             The list of individuals around this project.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Individual</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1150,7 +1181,8 @@
               This element describes all of the dependencies associated with a
               project.
           ]]></description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Dependency</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1161,7 +1193,8 @@
           <description>
             The list of dependency management settings.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Dependency</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1172,7 +1205,8 @@
           <description>
             The list project repositories in use by this project.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>ProjectRepository</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1183,7 +1217,8 @@
           <description>
             The list of plugins that this project uses.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>ArtifactReference</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1194,7 +1229,8 @@
           <description>
             The list of reports that this project uses.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>ArtifactReference</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1205,7 +1241,8 @@
           <description>
             The list of build extensions that this project uses.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>ArtifactReference</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1673,7 +1710,8 @@
             Lists a set of artifacts that should be excluded from this dependency's artifact list when it comes to
             calculating transitive dependencies.
           </description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>Exclusion</type>
             <multiplicity>*</multiplicity>
           </association>

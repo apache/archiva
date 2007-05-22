@@ -39,7 +39,45 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/sandbox/maven-shared-jar</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/maven/sandbox/maven-shared-jar</url>
   </scm>
-
+  
+  <organization>
+    <name>Apache</name>
+  </organization>
+  
+  <issueManagement>
+    <system>jira</system>
+  </issueManagement>
+  
+  <ciManagement>
+    <system>continuum</system>
+  </ciManagement>
+  
+  <developers>
+    <developer>
+      <id>joakime</id>
+      <email>joakime@apache.org</email>
+      <name>Joakim Erdfelt</name>
+    </developer>
+  </developers>
+  
+  <contributors>
+    <contributor>
+      <name>Someone Else</name>
+    </contributor>
+  </contributors>
+  
+  <licenses>
+    <license>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  
+  <mailingLists>
+    <mailingList>
+      <name>Shared Mailing List</name>
+    </mailingList>
+  </mailingLists>
+  
   <build>
     <plugins>
       <plugin>
@@ -65,6 +103,13 @@
         </executions>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
   </build>
 
   <reporting>
@@ -134,12 +179,21 @@
       </snapshots>
     </repository>
   </repositories>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>2.0.5</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-model</artifactId>
-      <version>2.0.2</version>
       <scope>compile</scope>
     </dependency>
 
