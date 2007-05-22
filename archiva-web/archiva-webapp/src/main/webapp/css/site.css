@@ -107,6 +107,30 @@
 	text-decoration: none;
 }
 
+.download p.body {
+  font-weight: bold;
+}
+
+.download table {
+  margin-left: 5px;
+  width: 140px;
+}
+
+.download .icon {
+  width: 16px;
+}
+
+.download .type {
+  font-size: 0.9em;
+  text-align: right;
+}
+
+.download .size {
+  font-weight: normal;
+  font-size: 0.8em;
+  text-align: right;
+}
+
 #contentArea {
 	/* margin-right: 15em; */
 	padding: 1em;
