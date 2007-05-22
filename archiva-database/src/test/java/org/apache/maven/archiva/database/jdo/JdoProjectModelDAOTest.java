@@ -111,7 +111,7 @@ public class JdoProjectModelDAOTest
         assertEquals( 0, projectDao.queryProjectModels( null ).size() );
     }
 
-    public void testSaveGetRealProjectModel()
+    public void disabled_testSaveGetRealProjectModel()
         throws Exception
     {
         String groupId = "org.apache.maven.shared";
