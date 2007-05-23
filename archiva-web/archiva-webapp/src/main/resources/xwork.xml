@@ -36,10 +36,12 @@
       <interceptor name="redbackSecureActions" class="redbackSecureActionInterceptor"/>
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
+      <interceptor name="redbackEnvironmentChecker" class="redbackEnvironmentCheckInterceptor"/>
       <interceptor name="paramFilter" class="com.opensymphony.xwork.interceptor.ParameterFilterInterceptor" />
       
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
+        <interceptor-ref name="redbackEnvironmentChecker"/>
         <interceptor-ref name="redbackAutoLogin"/>
         <interceptor-ref name="defaultStack"/>
         <interceptor-ref name="paramFilter">

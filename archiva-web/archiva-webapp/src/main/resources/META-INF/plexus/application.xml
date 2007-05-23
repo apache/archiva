@@ -210,6 +210,29 @@
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
+    
+    <!-- 
+    PLXREDBACK-81 bad role hint, redefining here until redback alpha-2 is released.
+     -->
+    <component>
+      <role>org.codehaus.plexus.redback.system.check.EnvironmentCheck</role>
+      <role-hint>locked-admin-check</role-hint>
+      <implementation>org.codehaus.plexus.redback.xwork.checks.security.LockedAdminEnvironmentCheck</implementation>
+      <description>LockedAdminEnvironmentCheck: checks if accounts marked as system administrator are locked
+and unlocks them on startup.</description>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.redback.users.UserManager</role>
+          <role-hint>cached</role-hint>
+          <field-name>userManager</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.redback.rbac.RBACManager</role>
+          <role-hint>cached</role-hint>
+          <field-name>rbacManager</field-name>
+        </requirement>
+      </requirements>
+    </component>
   </components>
 
   <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
