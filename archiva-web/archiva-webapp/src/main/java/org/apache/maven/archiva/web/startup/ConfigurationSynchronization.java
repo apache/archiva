@@ -30,6 +30,8 @@ import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
@@ -54,6 +56,11 @@ public class ConfigurationSynchronization
      */
     private ArchivaDAO dao;
 
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    RoleManager roleManager;
+    
     /**
      * @plexus.requirement
      */
@@ -102,13 +109,33 @@ public class ConfigurationSynchronization
                     ArchivaRepository drepo = ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
                     drepo.getModel().setCreationSource( "configuration" );
                     dao.getRepositoryDAO().saveRepository( drepo );
-                }
+                }                                               
             }
             catch ( ArchivaDatabaseException e )
             {
                 // Log error.
                 getLogger().error( "Unable to add configured repositories to the database: " + e.getMessage(), e );
             }
+            
+            // manage roles for repositories
+            try 
+            {
+                if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repoConfig.getId() ) )
+                {
+                    roleManager.createTemplatedRole( "archiva-repository-observer", repoConfig.getId() );
+                }              
+                
+                if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repoConfig.getId() ) );
+                {
+                    roleManager.createTemplatedRole( "archiva-repository-manager", repoConfig.getId() );
+                }                                     
+            }
+            catch ( RoleManagerException e )
+            {
+                // Log error.
+                getLogger().error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
+            }
+            
         }
     }
 
