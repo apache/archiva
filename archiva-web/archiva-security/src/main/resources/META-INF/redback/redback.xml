@@ -209,9 +209,9 @@
       <assignable>true</assignable>
       <permissions>
         <permission>
-          <id>archiva-access-repository</id>
-          <name>Archiva Access Repository</name>
-          <operation>archiva-access-repository</operation>
+          <id>archiva-read-repository</id>
+          <name>Archiva Read Repository</name>
+          <operation>archiva-read-repository</operation>
           <resource>${resource}</resource>
         </permission>
       </permissions>
