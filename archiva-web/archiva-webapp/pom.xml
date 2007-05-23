@@ -419,5 +419,26 @@
         </plugins>
       </build>
     </profile>
-  </profiles>
+    <profile>
+      <id>postgres</id>
+      <dependencies>
+        <dependency>
+          <groupId>postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+          <version>8.2-504.jdbc3</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>maven-jetty-plugin</artifactId>
+            <configuration>
+              <jettyEnvXml>src/jetty-env-postgres.xml</jettyEnvXml>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+   </profiles>
 </project>
