@@ -227,7 +227,7 @@ public class RepositoryServlet
                 if ( authzResult.getException() != null )
                 {
                     log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest
-                        + ",permission=" + permission + "] : " + authzResult.getException().getMessage() );
+                        + ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : " + authzResult.getException().getMessage() );
                 }
 
                 // Issue HTTP Challenge.
