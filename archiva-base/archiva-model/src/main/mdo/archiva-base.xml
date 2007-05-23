@@ -2206,7 +2206,14 @@
         }
             
         buf.append( "\n  Total File Count  : " ).append( this.getTotalFileCount() );
-        long averageMsPerFile = ( this.getDuration() / this.getTotalFileCount() );
+        
+        long averageMsPerFile = 0;
+        
+        if ( this.totalFileCount != 0 )
+        {
+            averageMsPerFile = ( this.getDuration() / this.getTotalFileCount() );
+        }
+        
         buf.append( "\n  Avg Time Per File : " );
         buf.append( org.apache.maven.archiva.common.utils.DateUtil.getDuration( averageMsPerFile ) );
         buf.append( "\n______________________________________________________________" );
