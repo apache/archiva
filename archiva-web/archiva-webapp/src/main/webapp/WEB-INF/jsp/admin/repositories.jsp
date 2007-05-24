@@ -100,6 +100,12 @@
             </td>
           </tr>
           <tr>
+            <th>Name</th>
+            <td>
+              <code>${repository.name}</code>
+            </td>
+          </tr>
+          <tr>
             <th>Directory</th>
             <td>${repository.directory} 
             <c:if test="${not(repository.directoryExists)}">
@@ -246,6 +252,12 @@
             <th>Identifier</th>
             <td>
               <code>${repository.id}</code>
+            </td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td>
+              <code>${repository.name}</code>
             </td>
           </tr>
           <tr>
