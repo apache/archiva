@@ -83,10 +83,12 @@
       <li class="none">
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
-
-      <li class="none">
-        <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
-      </li>
+		
+      <ww:if test="${sessionScope.uiOptions.showFindArtifacts}">	  
+        <li class="none">
+          <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
+        </li>
+      </ww:if>
 
       <li class="none">
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>

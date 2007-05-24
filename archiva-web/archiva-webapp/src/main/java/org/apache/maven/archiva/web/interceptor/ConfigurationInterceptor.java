@@ -19,9 +19,11 @@ package org.apache.maven.archiva.web.interceptor;
  * under the License.
  */
 
+import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -29,8 +31,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 /**
- * An interceptor that makes the application configuration available
+ * An interceptor that makes the configuration bits available, both to the application and the webapp
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @plexus.component role="com.opensymphony.xwork.interceptor.Interceptor"
@@ -45,6 +49,11 @@ public class ConfigurationInterceptor
      */
     private ArchivaDAO dao;
 
+    /** 
+     * @plexus.requirement role-hint="default"
+     */
+    private ArchivaConfiguration configuration;
+    
     /**
      * @param actionInvocation
      * @return
@@ -53,6 +62,13 @@ public class ConfigurationInterceptor
     public String intercept( ActionInvocation actionInvocation )
         throws Exception
     {
+        // populate webapp configuration bits into the session
+        HttpSession session = ServletActionContext.getRequest().getSession();
+        if ( session != null )
+        {
+            session.setAttribute( "uiOptions", configuration.getConfiguration().getWebapp().getUi() );
+        }
+        
         List repos = dao.getRepositoryDAO().getRepositories();
 
         if ( !hasManagedRepository( repos ) )
