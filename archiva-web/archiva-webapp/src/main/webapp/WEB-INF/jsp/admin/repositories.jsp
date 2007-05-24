@@ -140,12 +140,12 @@
             <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
           </tr>
           <tr>
-            <th>Indexed</th>
+            <th>Scanned</th>
             <td class="${repository.indexed ? 'donemark' : 'errormark'} booleanIcon"> ${repository.indexed}</td>
           </tr>
           <c:if test="${repository.indexed}">
             <tr>
-              <th>Indexing Cron</th>
+              <th>Scanning Cron</th>
               <td>${repository.refreshCronExpression}</td>
             </tr>
             <tr>
@@ -172,12 +172,12 @@
               <td>
                 <c:choose>
                   <c:when test="${empty(repository.stats)}">
-                    Never indexed.
+                    No Statistics Available.
                   </c:when>
                   <c:otherwise>
                     <table>
                       <tr>
-                        <th>Last Indexed</th>
+                        <th>Last Scanned</th>
                         <td>${repository.stats.whenGathered}</td>
                       </tr>
                       <tr>
