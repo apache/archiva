@@ -56,16 +56,19 @@
 
     <ww:form method="POST" action="checksumSearch" namespace="/"
              onsubmit="this.md5.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true">
+      <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">     
       <tr>
         <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
         <td>
           <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
         </td>
       </tr>
+      </ww:if>
       <ww:textfield label="Checksum" size="50" name="md5"/>
       <ww:submit value="Go!"/>
     </ww:form>
 
+    <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">
     <p>
       Select the file you would like to locate in the remote repository.
       The entire file will
@@ -81,7 +84,7 @@
               width="400" height="20" name="ChecksumApplet">
       </applet>
     </p>
-
+    </ww:if>
   </div>
 </div>
 

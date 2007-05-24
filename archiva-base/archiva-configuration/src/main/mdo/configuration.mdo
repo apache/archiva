@@ -714,7 +714,14 @@
           <description>true if find artifacts should be enabled</description>
           <version>1.0.0+</version>       
           <type>boolean</type>  
-          <defaultValue>false</defaultValue>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>appletFindEnabled</name>
+          <description>true if applet behavior for find artifacts should be enabled</description>
+          <version>1.0.0+</version>       
+          <type>boolean</type>  
+          <defaultValue>true</defaultValue>
         </field>
       </fields>
     </class>

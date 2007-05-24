@@ -87,7 +87,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         
         UserInterfaceOptions ui = (UserInterfaceOptions) webapp.getUi();
         assertNotNull( "check webapp ui", ui  );
-        assertFalse( "check showFindArtifacts", ui.isShowFindArtifacts() );
+        assertTrue( "check showFindArtifacts", ui.isShowFindArtifacts() );
+        assertTrue( "check appletFindEnabled", ui.isAppletFindEnabled() );
     }
 
     public void testGetConfigurationSystemOverride() throws Exception

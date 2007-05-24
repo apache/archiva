@@ -181,7 +181,8 @@
 
   <webapp>
     <ui>
-      <showFindArtifacts>false</showFindArtifacts>
+      <showFindArtifacts>true</showFindArtifacts>
+      <appletFindEnabled>true</appletFindEnabled>
     </ui>
   </webapp>
 
