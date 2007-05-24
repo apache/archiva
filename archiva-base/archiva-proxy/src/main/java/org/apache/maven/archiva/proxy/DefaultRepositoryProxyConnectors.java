@@ -744,7 +744,7 @@ public class DefaultRepositoryProxyConnectors
     public void initialize()
         throws InitializationException
     {
-        archivaConfiguration.addChangeListener( this );
         initConnectorsAndNetworkProxies();
+        archivaConfiguration.addChangeListener( this );
     }
 }

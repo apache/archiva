@@ -19,9 +19,6 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Utility methods for testing the configuration property name. 
  *
@@ -30,107 +27,38 @@ import java.util.Set;
  */
 public class ConfigurationNames
 {
-    private static final Set networkProxies = new HashSet();
-
-    private static final Set repositoryScanning = new HashSet();
-
-    private static final Set repositories = new HashSet();
-
-    private static final Set proxyConnectors = new HashSet();
-
-    static
-    {
-        repositories.add( "repositories" );
-        repositories.add( "repository" );
-        repositories.add( "id" );
-        repositories.add( "name" );
-        repositories.add( "url" );
-        repositories.add( "layout" );
-        repositories.add( "releases" );
-        repositories.add( "snapshots" );
-        repositories.add( "indexed" );
-        repositories.add( "refreshCronExpression" );
-
-        networkProxies.add( "networkProxies" );
-        networkProxies.add( "networkProxy" );
-        networkProxies.add( "id" );
-        networkProxies.add( "protocol" );
-        networkProxies.add( "host" );
-        networkProxies.add( "port" );
-        networkProxies.add( "username" );
-        networkProxies.add( "password" );
-
-        repositoryScanning.add( "repositoryScanning" );
-        repositoryScanning.add( "fileTypes" );
-        repositoryScanning.add( "fileType" );
-        repositoryScanning.add( "patterns" );
-        repositoryScanning.add( "pattern" );
-        repositoryScanning.add( "goodConsumers" );
-        repositoryScanning.add( "goodConsumer" );
-        repositoryScanning.add( "badConsumers" );
-        repositoryScanning.add( "badConsumer" );
-
-        proxyConnectors.add( "proxyConnectors" );
-        proxyConnectors.add( "proxyConnector" );
-        proxyConnectors.add( "sourceRepoId" );
-        proxyConnectors.add( "targetRepoId" );
-        proxyConnectors.add( "proxyId" );
-        proxyConnectors.add( "snapshotsPolicy" );
-        proxyConnectors.add( "releasePolicy" );
-        proxyConnectors.add( "checksumPolicy" );
-        proxyConnectors.add( "whiteListPatterns" );
-        proxyConnectors.add( "whiteListPattern" );
-        proxyConnectors.add( "blackListPatterns" );
-        proxyConnectors.add( "blackListPattern" );
-    }
-
     public static boolean isNetworkProxy( String propertyName )
     {
-        if ( empty( propertyName ) )
-        {
-            return false;
-        }
-
-        return networkProxies.contains( propertyName );
+        return startsWith( "networkProxies.", propertyName );
     }
 
     public static boolean isRepositoryScanning( String propertyName )
     {
-        if ( empty( propertyName ) )
-        {
-            return false;
-        }
-
-        return repositoryScanning.contains( propertyName );
+        return startsWith( "repositoryScanning.", propertyName );
     }
 
     public static boolean isRepositories( String propertyName )
     {
-        if ( empty( propertyName ) )
-        {
-            return false;
-        }
-
-        return repositories.contains( propertyName );
+        return startsWith( "repositories.", propertyName );
     }
 
     public static boolean isProxyConnector( String propertyName )
     {
-        if ( empty( propertyName ) )
-        {
-            return false;
-        }
-
-        return proxyConnectors.contains( propertyName );
+        return startsWith( "proxyConnectors.", propertyName );
     }
 
-    private static boolean empty( String name )
+    private static boolean startsWith( String prefix, String name )
     {
         if ( name == null )
         {
             return false;
         }
 
-        return ( name.trim().length() <= 0 );
+        if ( name.length() <= 0 )
+        {
+            return false;
+        }
+
+        return name.startsWith( prefix );
     }
 }

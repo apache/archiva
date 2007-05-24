@@ -59,11 +59,11 @@ public class AbstractProxyTestCase
     protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
 
     protected static final String ID_PROXIED1 = "proxied1";
-    
+
     protected static final String ID_PROXIED1_TARGET = "proxied1-target";
 
     protected static final String ID_PROXIED2 = "proxied2";
-    
+
     protected static final String ID_PROXIED2_TARGET = "proxied2-target";
 
     protected static final String ID_DEFAULT_MANAGED = "default-managed-repository";
@@ -73,11 +73,11 @@ public class AbstractProxyTestCase
     protected static final String REPOPATH_PROXIED_LEGACY = "src/test/repositories/legacy-proxied";
 
     protected static final String REPOPATH_PROXIED1 = "src/test/repositories/proxied1";
-    
+
     protected static final String REPOPATH_PROXIED1_TARGET = "target/test-repository/proxied1";
 
     protected static final String REPOPATH_PROXIED2 = "src/test/repositories/proxied2";
-    
+
     protected static final String REPOPATH_PROXIED2_TARGET = "target/test-repository/proxied2";
 
     protected static final String REPOPATH_DEFAULT_MANAGED = "src/test/repositories/managed";
@@ -134,7 +134,7 @@ public class AbstractProxyTestCase
             assertEquals( "MD5 File contents: " + md5File.getPath(), expectedMd5Contents, actualMd5Contents );
         }
     }
-    
+
     protected void assertFileEquals( File expectedFile, File actualFile, File sourceFile )
         throws Exception
     {
@@ -343,8 +343,18 @@ public class AbstractProxyTestCase
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, cacheFailuresPolicy );
 
+        int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );
-        config.triggerChange( "proxyConnector", "" );
+
+        // Proper Triggering ...
+        String prefix = "proxyConnectors.proxyConnector(" + count + ")";
+        config.triggerChange( prefix + ".sourceRepoId", connectorConfig.getSourceRepoId() );
+        config.triggerChange( prefix + ".targetRepoId", connectorConfig.getTargetRepoId() );
+        config.triggerChange( prefix + ".proxyId", connectorConfig.getProxyId() );
+        config.triggerChange( prefix + ".policies.releases", connectorConfig.getPolicy( "releases", "" ) );
+        config.triggerChange( prefix + ".policies.checksum", connectorConfig.getPolicy( "checksum", "" ) );
+        config.triggerChange( prefix + ".policies.snapshots", connectorConfig.getPolicy( "snapshots", "" ) );
+        config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
     }
 
     protected void saveRepositoryConfig( String id, String name, String path, String layout )
@@ -368,14 +378,15 @@ public class AbstractProxyTestCase
         config.triggerChange( "repository", "" );
     }
 
-    protected File saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout ) throws IOException
+    protected File saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )
+        throws IOException
     {
         File repoLocation = getTestFile( targetPath );
         FileUtils.deleteDirectory( repoLocation );
         copyDirectoryStructure( getTestFile( originalPath ), repoLocation );
 
         saveRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
-        
+
         return repoLocation;
     }
 
