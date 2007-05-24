@@ -103,6 +103,17 @@
             The database scanning configuration.
           </description>
         </field>
+        <field>
+          <name>webapp</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>WebappConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>
+            The webapp configuration.
+          </description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -660,6 +671,50 @@
             objects that no longer exist on the filesystem, and might need to 
             undergo a cleanup.
           </description>
+        </field>
+      </fields>
+    </class>
+    
+    <!--    
+    __        _______ ____    _    ____  ____  
+    \ \      / / ____| __ )  / \  |  _ \|  _ \ 
+     \ \ /\ / /|  _| |  _ \ / _ \ | |_) | |_) |
+      \ V  V / | |___| |_) / ___ \|  __/|  __/ 
+       \_/\_/  |_____|____/_/   \_\_|   |_|    
+                                               
+    -->
+    
+    <class>
+      <name>WebappConfiguration</name>
+      <version>1.0.0+</version>
+      <description>
+        The webapp configuration settings.
+      </description>
+      <fields>
+        <field>
+          <name>ui</name>
+          <description>options for altering the ui presentation</description>
+          <version>1.0.0+</version>
+          <association>
+            <type>UserInterfaceOptions</type>
+          </association>          
+        </field>
+      </fields>
+    </class>
+    
+    <class>
+      <name>UserInterfaceOptions</name>
+      <version>1.0.0+</version>
+      <description>
+        The user interface configuration settings.
+      </description>
+      <fields>
+        <field>
+          <name>showFindArtifacts</name>
+          <description>true if find artifacts should be enabled</description>
+          <version>1.0.0+</version>       
+          <type>boolean</type>  
+          <defaultValue>false</defaultValue>
         </field>
       </fields>
     </class>

@@ -167,4 +167,10 @@
     </cleanupConsumers>
   </databaseScanning>
 
+  <webapp>
+    <ui>
+      <showFindArtifacts>false</showFindArtifacts>
+    </ui>
+  </webapp>
+
 </configuration>

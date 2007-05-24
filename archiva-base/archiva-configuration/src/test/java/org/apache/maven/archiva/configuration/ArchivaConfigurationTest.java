@@ -81,6 +81,13 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isIndexed() );
+        
+        WebappConfiguration webapp = (WebappConfiguration) configuration.getWebapp();
+        assertNotNull( "check webapp", webapp );
+        
+        UserInterfaceOptions ui = (UserInterfaceOptions) webapp.getUi();
+        assertNotNull( "check webapp ui", ui  );
+        assertFalse( "check showFindArtifacts", ui.isShowFindArtifacts() );
     }
 
     public void testGetConfigurationSystemOverride() throws Exception
