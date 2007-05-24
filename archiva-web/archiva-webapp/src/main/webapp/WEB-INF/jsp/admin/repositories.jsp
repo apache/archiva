@@ -149,16 +149,27 @@
               <td>${repository.refreshCronExpression}</td>
             </tr>
             <tr>
+              <th>
+              	Actions
+              </th>
+              <td>
+                <table>
+                  <tr>
+                    <td>
+              	      <redback:ifAuthorized permission="archiva-run-indexer">
+              	        <ww:form action="indexRepository">
+              	          <ww:hidden name="repoid" value="%{'${repository.id}'}"/>
+                          <ww:submit value="Scan Repository Now"/>
+                        </ww:form>
+                      </redback:ifAuthorized>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
               <th>Stats</th>
               <td>
-                <div style="float: right">
-                  <redback:ifAuthorized permission="archiva-run-indexer">
-                    <ww:url id="indexRepositoryUrl" action="indexRepository">
-                      <ww:param name="repoid" value="%{'${repository.id}'}" />
-                    </ww:url>
-                    <ww:a href="%{indexRepositoryUrl}">Index Repository</ww:a>
-                  </redback:ifAuthorized>
-                </div>
                 <c:choose>
                   <c:when test="${empty(repository.stats)}">
                     Never indexed.
