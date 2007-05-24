@@ -213,11 +213,11 @@ ul.dependencyTree span.artifact-link {
 	width: 100%;
 }
 
-.eXtremeTable .tableHeader {
+.eXtremeTable .tableRegion .tableHeader {
 	background-color: #F3B455;
 }
 
-.eXtremeTable .tableHeaderSort {
+.eXtremeTable .tableRegion .tableHeaderSort {
 	background-color: #FFBF5F;
 }
 
