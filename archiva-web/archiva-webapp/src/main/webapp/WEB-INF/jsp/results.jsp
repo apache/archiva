@@ -40,7 +40,7 @@
   <h1>Results</h1>
 
   <div id="resultsBox">
-    <p>Hits: ${fn:length(results.hits)}</p>
+    <p>Hits: ${fn:length(results.hits)} of ${results.totalHits}</p>
     
     <c:choose>
       <c:when test="${empty results.hits}">
@@ -48,34 +48,25 @@
       </c:when>
       <c:otherwise>
         <c:forEach items="${results.hits}" var="record" varStatus="i">
-          <p>${record.url}</p>
-          <p>${record.groupId}</p>
-          <p>${record.artifactId}</p>
+          <c:choose>
+            <c:when test="${not empty (record.groupId)}">
+              <h3 class="artifact-title">
+                <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                      version="${record.version}"/>
+              </h3>
+              <p>
+                <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                     version="${record.version}" versions="${record.versions}"/>
+              </p>
+            </c:when>
+            <c:otherwise>
+              <p>
+                <c:url var="hiturl" value="/repository/${record.url}" />
+                <a href="${hiturl}">${record.urlFilename}</a>
+              </p>
+            </c:otherwise>
+          </c:choose>
         </c:forEach>
-        <%--
-        <c:forEach items="${results.hachcodeHits}" var="record" varStatus="i">
-          <p>${record}</p>
-          <h3 class="artifact-title">
-            <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                  version="${record.version}"/>
-          </h3>
-          <p>
-            <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                 version="${record.version}" versions="${record.versions}"/>
-          </p>
-        </c:forEach>
-        <c:forEach items="${results.bytecodeHits}" var="record" varStatus="i">
-          <p>${record}</p>
-          <h3 class="artifact-title">
-            <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                  version="${record.version}"/>
-          </h3>
-          <p>
-            <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                                 version="${record.version}" versions="${record.versions}"/>
-          </p>
-        </c:forEach>
-         --%>
       </c:otherwise>
     </c:choose>
   </div>

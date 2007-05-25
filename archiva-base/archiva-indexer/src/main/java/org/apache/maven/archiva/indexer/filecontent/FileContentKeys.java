@@ -19,6 +19,8 @@ package org.apache.maven.archiva.indexer.filecontent;
  * under the License.
  */
 
+import org.apache.maven.archiva.indexer.ArtifactKeys;
+
 /**
  * Lucene Index Keys for the various fields in the FileContent index. 
  *
@@ -26,6 +28,7 @@ package org.apache.maven.archiva.indexer.filecontent;
  * @version $Id$
  */
 public class FileContentKeys
+    extends ArtifactKeys
 {
     public static final String ID = "filecontent";
 

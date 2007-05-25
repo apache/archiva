@@ -19,10 +19,13 @@ package org.apache.maven.archiva.indexer.filecontent;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
+import org.apache.maven.archiva.indexer.ArtifactKeys;
 import org.apache.maven.archiva.indexer.lucene.LuceneDocumentMaker;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.text.ParseException;
 
@@ -48,6 +51,19 @@ public class FileContentConverter
 
         LuceneDocumentMaker doc = new LuceneDocumentMaker( filecontent );
 
+        if( filecontent.getArtifact() != null )
+        {
+            // Artifact Reference
+            doc.addFieldTokenized( ArtifactKeys.GROUPID, filecontent.getArtifact().getGroupId() );
+            doc.addFieldExact( ArtifactKeys.GROUPID_EXACT, filecontent.getArtifact().getGroupId() );
+            doc.addFieldTokenized( ArtifactKeys.ARTIFACTID, filecontent.getArtifact().getArtifactId() );
+            doc.addFieldExact( ArtifactKeys.ARTIFACTID_EXACT, filecontent.getArtifact().getArtifactId() );
+            doc.addFieldTokenized( ArtifactKeys.VERSION, filecontent.getArtifact().getVersion() );
+            doc.addFieldExact( ArtifactKeys.VERSION_EXACT, filecontent.getArtifact().getVersion() );
+            doc.addFieldTokenized( ArtifactKeys.TYPE, filecontent.getArtifact().getType() );
+            doc.addFieldUntokenized( ArtifactKeys.CLASSIFIER, filecontent.getArtifact().getClassifier() );
+        }
+        
         doc.addFieldTokenized( FileContentKeys.FILENAME, filecontent.getFilename() );
         doc.addFieldTokenized( FileContentKeys.CONTENT, filecontent.getContents() );
 
@@ -60,6 +76,21 @@ public class FileContentConverter
         FileContentRecord record = new FileContentRecord();
 
         record.setRepositoryId( document.get( LuceneDocumentMaker.REPOSITORY_ID ) );
+        
+        // Artifact Reference
+        String groupId = document.get( ArtifactKeys.GROUPID );
+        String artifactId = document.get( ArtifactKeys.ARTIFACTID );
+        String version = document.get( ArtifactKeys.VERSION );
+        String classifier = document.get( ArtifactKeys.CLASSIFIER );
+        String type = document.get( ArtifactKeys.TYPE );
+        
+        if( StringUtils.isNotBlank( groupId ) && StringUtils.isNotBlank( artifactId ) )
+        {
+            ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
+            record.setArtifact( artifact );
+        }
+
+        // Filecontent Specifics
         record.setFilename( document.get( FileContentKeys.FILENAME ) );
         record.setContents( document.get( FileContentKeys.CONTENT ) );
 

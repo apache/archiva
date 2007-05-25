@@ -45,8 +45,12 @@ public class SearchResultHit
     //  Advanced hit, reference to artifactId.
     private String artifactId;
 
+    private String version = "";
+
     // Advanced hit, if artifact, all versions of artifact
     private List artifacts = new ArrayList();
+
+    private List versions = new ArrayList();
 
     public String getContext()
     {
@@ -68,6 +72,11 @@ public class SearchResultHit
         this.url = url;
     }
 
+    public String getUrlFilename()
+    {
+        return this.url.substring( this.url.lastIndexOf( '/' ) );
+    }
+
     public String getArtifactId()
     {
         return artifactId;
@@ -82,6 +91,13 @@ public class SearchResultHit
     {
         this.artifacts.add( artifact );
 
+        String ver = artifact.getBaseVersion();
+
+        if ( !this.versions.contains( ver ) )
+        {
+            this.versions.add( ver );
+        }
+
         if ( StringUtils.isBlank( this.groupId ) )
         {
             this.groupId = artifact.getGroupId();
@@ -91,16 +107,16 @@ public class SearchResultHit
         {
             this.artifactId = artifact.getArtifactId();
         }
+
+        if ( StringUtils.isBlank( this.version ) )
+        {
+            this.version = ver;
+        }
     }
 
     public List getArtifacts()
     {
         return artifacts;
-    }
-
-    public void setArtifacts( List artifacts )
-    {
-        this.artifacts = artifacts;
     }
 
     public String getGroupId()
@@ -111,5 +127,15 @@ public class SearchResultHit
     public void setGroupId( String groupId )
     {
         this.groupId = groupId;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public List getVersions()
+    {
+        return versions;
     }
 }

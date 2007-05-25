@@ -29,7 +29,6 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.indexer.MockConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;

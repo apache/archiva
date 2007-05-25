@@ -41,8 +41,6 @@ public class UserAllowedToSearchRepositoryPredicate
             satisfies = true; // Everyone is allowed! (for now)
         }
 
-        System.out.println( "AllowedToSearchRepo: " + satisfies );
-
         return satisfies;
     }
 }

@@ -128,6 +128,12 @@ public class SearchResults
 
             hit.setUrl( filecontent.getRepositoryId() + "/" + filecontent.getFilename() );
             hit.setContext( null ); // TODO: handle context + highlight later.
+            
+            // Test for possible artifact reference ...
+            if( filecontent.getArtifact() != null )
+            {
+                hit.addArtifact( filecontent.getArtifact() );
+            }
 
             this.hits.put( key, hit );
         }

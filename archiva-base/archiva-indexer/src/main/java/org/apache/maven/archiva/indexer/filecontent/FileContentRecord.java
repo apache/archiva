@@ -20,6 +20,7 @@ package org.apache.maven.archiva.indexer.filecontent;
  */
 
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.io.File;
 
@@ -35,6 +36,11 @@ public class FileContentRecord
     private String repositoryId;
 
     private String filename;
+    
+    /**
+     * Optional artifact reference for the file content.
+     */
+    private ArchivaArtifact artifact;
 
     private String contents;
 
@@ -112,5 +118,15 @@ public class FileContentRecord
     public void setFilename( String filename )
     {
         this.filename = filename;
+    }
+
+    public ArchivaArtifact getArtifact()
+    {
+        return artifact;
+    }
+
+    public void setArtifact( ArchivaArtifact artifact )
+    {
+        this.artifact = artifact;
     }
 }
