@@ -32,4 +32,11 @@ public interface LuceneRepositoryContentRecord
      * @return the primary key
      */
     public String getPrimaryKey();
+    
+    /**
+     * Get the repository that this record belongs to.
+     * 
+     * @return the repository id for this record.
+     */
+    public String getRepositoryId();
 }

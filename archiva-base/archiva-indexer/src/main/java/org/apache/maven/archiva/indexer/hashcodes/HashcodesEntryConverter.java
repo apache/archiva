@@ -48,7 +48,7 @@ public class HashcodesEntryConverter implements LuceneEntryConverter
         HashcodesRecord hashcodes = (HashcodesRecord) record;
 
         LuceneDocumentMaker doc = new LuceneDocumentMaker( hashcodes );
-
+        
         // Artifact Reference
         doc.addFieldTokenized( ArtifactKeys.GROUPID, hashcodes.getArtifact().getGroupId() );
         doc.addFieldExact( ArtifactKeys.GROUPID_EXACT, hashcodes.getArtifact().getGroupId() );
@@ -69,6 +69,8 @@ public class HashcodesEntryConverter implements LuceneEntryConverter
     public LuceneRepositoryContentRecord convert( Document document ) throws ParseException
     {
         HashcodesRecord record = new HashcodesRecord();
+        
+        record.setRepositoryId( document.get( LuceneDocumentMaker.REPOSITORY_ID ) );
 
         // Artifact Reference
         String groupId = document.get( ArtifactKeys.GROUPID );

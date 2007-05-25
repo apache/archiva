@@ -20,11 +20,16 @@ package org.apache.maven.archiva.indexer.search;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Searcher;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.indexer.MockConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
@@ -68,6 +73,7 @@ public class DefaultCrossRepositorySearchTest
         repoConfig.setName( repository.getModel().getName() );
         repoConfig.setUrl( repository.getModel().getUrl() );
         repoConfig.setIndexDir( indexLocation.getAbsolutePath() );
+        repoConfig.setIndexed( true );
 
         if ( indexLocation.exists() )
         {
@@ -84,10 +90,27 @@ public class DefaultCrossRepositorySearchTest
         // Now populate them.
         Map hashcodesMap = ( new HashcodesIndexPopulator() ).populate( new File( getBasedir() ) );
         indexHashcode.indexRecords( hashcodesMap.values() );
+        assertEquals( "Hashcode Key Count", hashcodesMap.size(), indexHashcode.getAllRecordKeys().size() );
+        assertRecordCount( indexHashcode, hashcodesMap.size() );
+
         Map bytecodeMap = ( new BytecodeIndexPopulator() ).populate( new File( getBasedir() ) );
         indexBytecode.indexRecords( bytecodeMap.values() );
+        assertEquals( "Bytecode Key Count", bytecodeMap.size(), indexBytecode.getAllRecordKeys().size() );
+        assertRecordCount( indexBytecode, bytecodeMap.size() );
+
         Map contentMap = ( new FileContentIndexPopulator() ).populate( new File( getBasedir() ) );
         indexContents.indexRecords( contentMap.values() );
+        assertEquals( "File Content Key Count", contentMap.size(), indexContents.getAllRecordKeys().size() );
+        assertRecordCount( indexContents, contentMap.size() );
+    }
+
+    private void assertRecordCount( RepositoryContentIndex index, int expectedCount )
+        throws Exception
+    {
+        Query query = new MatchAllDocsQuery();
+        Searcher searcher = (Searcher) index.getSearchable();
+        Hits hits = searcher.search( query );
+        assertEquals( "Expected Record Count for " + index.getId(), expectedCount, hits.length() );
     }
 
     private CrossRepositorySearch lookupCrossRepositorySearch()
@@ -98,34 +121,47 @@ public class DefaultCrossRepositorySearchTest
         return search;
     }
 
-    public void testSearchTerm()
+    public void testSearchTerm_Org()
         throws Exception
     {
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
-        SearchResults results = search.searchForTerm( "org" );
-        assertHitCounts( 1, 8, 8, 1, results );
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( 20 );
 
-        results = search.searchForTerm( "junit" );
-        assertHitCounts( 1, 1, 0, 1, results );
-        
-        results = search.searchForTerm( "monosodium" );
-        assertHitCounts( 1, 0, 0, 0, results );
+        SearchResults results = search.searchForTerm( "org", limits );
+        assertResults( 1, 7, results );
     }
 
-    private void assertHitCounts( int repoCount, int bytecodeCount, int hashcodeCount, int contentCount,
-                                  SearchResults results )
+    public void testSearchTerm_Junit()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( 20 );
+
+        SearchResults results = search.searchForTerm( "junit", limits );
+        assertResults( 1, 3, results );
+    }
+
+    public void testSearchInvalidTerm()
+        throws Exception
+    {
+        CrossRepositorySearch search = lookupCrossRepositorySearch();
+
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( 20 );
+
+        SearchResults results = search.searchForTerm( "monosodium", limits );
+        assertResults( 1, 0, results );
+    }
+
+    private void assertResults( int repoCount, int hitCount, SearchResults results )
     {
         assertNotNull( "Search Results should not be null.", results );
         assertEquals( "Repository Hits", repoCount, results.getRepositories().size() );
 
-        if ( ( bytecodeCount != results.getBytecodeHits().size() )
-            || ( hashcodeCount != results.getHashcodeHits().size() )
-            /* || ( contentCount != results.getContentHits().size() ) */ )
-        {
-            fail( "Failed to get expected results hit count.  Expected: (bytecode,hashcode,content) <" + bytecodeCount
-                + "," + hashcodeCount + "," + contentCount + ">, but got <" + results.getBytecodeHits().size() + ","
-                + results.getHashcodeHits().size() + "," + results.getContentHits().size() + "> instead." );
-        }
+        assertEquals( "Search Result Hits", hitCount, results.getHits().size() );
     }
 }

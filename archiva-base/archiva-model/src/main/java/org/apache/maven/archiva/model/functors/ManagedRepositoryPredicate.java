@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer;
+package org.apache.maven.archiva.model.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,28 +19,35 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.commons.collections.Predicate;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
- * AllTests - conveinence test suite for IDE users. 
+ * ManagedRepositoryPredicate 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class ManagedRepositoryPredicate
+    implements Predicate
 {
+    public static final Predicate INSTANCE = new ManagedRepositoryPredicate();
 
-    public static Test suite()
+    public static Predicate getInstance()
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer" );
-        //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.indexer.bytecode.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.hashcodes.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.query.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.search.AllTests.suite() );
-        //$JUnit-END$
-        return suite;
+        return INSTANCE;
     }
 
+    public boolean evaluate( Object object )
+    {
+        boolean satisfies = false;
+
+        if ( object instanceof ArchivaRepository )
+        {
+            ArchivaRepository repo = (ArchivaRepository) object;
+            return repo.isManaged();
+        }
+
+        return satisfies;
+    }
 }

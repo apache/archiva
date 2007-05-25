@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer.lucene;
  * under the License.
  */
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
@@ -26,17 +27,15 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.search.Searchable;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.query.Query;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -64,9 +63,12 @@ public class LuceneRepositoryContentIndex
      * The Lucene Index Handlers
      */
     private LuceneIndexHandlers indexHandlers;
+    
+    private ArchivaRepository repository;
 
-    public LuceneRepositoryContentIndex( File indexDir, LuceneIndexHandlers handlers )
+    public LuceneRepositoryContentIndex( ArchivaRepository repository, File indexDir, LuceneIndexHandlers handlers )
     {
+        this.repository = repository;
         this.indexLocation = indexDir;
         this.indexHandlers = handlers;
     }
@@ -219,12 +221,6 @@ public class LuceneRepositoryContentIndex
         }
     }
 
-    public Collection getAllRecords()
-        throws RepositoryIndexSearchException
-    {
-        return search( new LuceneQuery( new MatchAllDocsQuery() ) );
-    }
-
     public Collection getAllRecordKeys()
         throws RepositoryIndexException
     {
@@ -267,64 +263,20 @@ public class LuceneRepositoryContentIndex
         }
         return keys;
     }
-
-    //    public List getAllGroupIds() throws RepositoryIndexException
-    //    {
-    //        return getAllFieldValues( StandardIndexRecordFields.GROUPID_EXACT );
-    //    }
-    //
-    //    public List getArtifactIds( String groupId ) throws RepositoryIndexSearchException
-    //    {
-    //        return searchField( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
-    //                            StandardIndexRecordFields.ARTIFACTID );
-    //    }
-    //
-    //    public List getVersions( String groupId, String artifactId ) throws RepositoryIndexSearchException
-    //    {
-    //        BooleanQuery query = new BooleanQuery();
-    //        query.add( new TermQuery( new Term( StandardIndexRecordFields.GROUPID_EXACT, groupId ) ),
-    //                   BooleanClause.Occur.MUST );
-    //        query.add( new TermQuery( new Term( StandardIndexRecordFields.ARTIFACTID_EXACT, artifactId ) ),
-    //                   BooleanClause.Occur.MUST );
-    //
-    //        return searchField( query, StandardIndexRecordFields.VERSION );
-    //    }
-
-    //    private List searchField( org.apache.lucene.search.Query luceneQuery, String fieldName )
-    //        throws RepositoryIndexSearchException
-    //    {
-    //        Set results = new LinkedHashSet();
-    //
-    //        IndexSearcher searcher;
-    //        try
-    //        {
-    //            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
-    //        }
-    //        catch ( IOException e )
-    //        {
-    //            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
-    //        }
-    //
-    //        try
-    //        {
-    //            Hits hits = searcher.search( luceneQuery );
-    //            for ( int i = 0; i < hits.length(); i++ )
-    //            {
-    //                Document doc = hits.doc( i );
-    //
-    //                results.add( doc.get( fieldName ) );
-    //            }
-    //        }
-    //        catch ( IOException e )
-    //        {
-    //            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
-    //        }
-    //        finally
-    //        {
-    //            closeQuietly( searcher );
-    //        }
-    //        return new ArrayList( results );
-    //    }
+    
+    public Searchable getSearchable()
+        throws RepositoryIndexSearchException
+    {
+        try
+        {
+            IndexSearcher searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
+            return searcher;
+        }
+        catch ( IOException e )
+        {
+            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
+        }
+    }
 
     public boolean exists()
         throws RepositoryIndexException
@@ -354,70 +306,26 @@ public class LuceneRepositoryContentIndex
         }
     }
 
-    public List search( Query query )
-        throws RepositoryIndexSearchException
-    {
-        LuceneQuery lQuery = (LuceneQuery) query;
-
-        org.apache.lucene.search.Query luceneQuery = lQuery.getLuceneQuery();
-
-        IndexSearcher searcher;
-        try
-        {
-            searcher = new IndexSearcher( indexLocation.getAbsolutePath() );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexSearchException( "Unable to open index: " + e.getMessage(), e );
-        }
-
-        List records = new ArrayList();
-        try
-        {
-            Hits hits = searcher.search( luceneQuery );
-            for ( int i = 0; i < hits.length(); i++ )
-            {
-                Document doc = hits.doc( i );
-
-                records.add( indexHandlers.getConverter().convert( doc ) );
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
-        }
-        catch ( ParseException e )
-        {
-            throw new RepositoryIndexSearchException( "Unable to search index: " + e.getMessage(), e );
-        }
-        finally
-        {
-            closeQuietly( searcher );
-        }
-
-        return records;
-    }
-
     public QueryParser getQueryParser()
     {
         return this.indexHandlers.getQueryParser();
     }
 
-    private static void closeQuietly( IndexSearcher searcher )
+    public static void closeSearchable( Searchable searchable )
     {
-        try
+        if( searchable != null )
         {
-            if ( searcher != null )
+            try
             {
-                searcher.close();
+                searchable.close();
+            }
+            catch ( IOException e )
+            {
+                // Ignore
             }
         }
-        catch ( IOException e )
-        {
-            // ignore
-        }
     }
-
+    
     private static void closeQuietly( TermEnum terms )
         throws RepositoryIndexException
     {
@@ -489,5 +397,20 @@ public class LuceneRepositoryContentIndex
     public String getId()
     {
         return this.indexHandlers.getId();
+    }
+
+    public ArchivaRepository getRepository()
+    {
+        return repository;
+    }
+    
+    public Analyzer getAnalyzer()
+    {
+        return this.indexHandlers.getAnalyzer();
+    }
+    
+    public LuceneEntryConverter getEntryConverter()
+    {
+        return this.indexHandlers.getConverter();
     }
 }

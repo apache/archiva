@@ -34,6 +34,8 @@ import java.util.List;
 public class LuceneDocumentMaker
 {
     public static final String PRIMARY_KEY = "pk";
+    
+    public static final String REPOSITORY_ID = "repoId";
 
     private Document document;
 
@@ -52,19 +54,22 @@ public class LuceneDocumentMaker
 
         String primaryKey = record.getPrimaryKey();
 
-        if ( primaryKey == null )
+        if ( StringUtils.isBlank( primaryKey ) )
         {
-            throw new IllegalArgumentException( "Not allowed to have a null primary key." );
+            throw new IllegalArgumentException( "Not allowed to have a blank primary key." );
         }
 
-        if ( primaryKey.trim().length() <= 0 )
+        String repositoryId = record.getRepositoryId();
+        
+        if ( StringUtils.isBlank( repositoryId ) )
         {
-            throw new IllegalArgumentException( "Not allowed to have an empty primary key." );
+            throw new IllegalArgumentException( "Not allowed to have a blank repository id." );
         }
 
         document = new Document();
 
         document.add( new Field( PRIMARY_KEY, primaryKey, Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+        document.add( new Field( REPOSITORY_ID, repositoryId, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
     }
 
     public LuceneDocumentMaker addFieldTokenized( String key, String value )

@@ -36,7 +36,7 @@ public class LuceneQuery
         this.query = query;
     }
 
-    org.apache.lucene.search.Query getLuceneQuery()
+    public org.apache.lucene.search.Query getLuceneQuery()
     {
         return query;
     }

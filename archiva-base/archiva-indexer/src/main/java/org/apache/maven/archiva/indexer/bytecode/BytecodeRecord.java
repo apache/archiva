@@ -30,8 +30,11 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class BytecodeRecord implements LuceneRepositoryContentRecord
+public class BytecodeRecord
+    implements LuceneRepositoryContentRecord
 {
+    private String repositoryId;
+
     private ArchivaArtifact artifact;
 
     private String filename;
@@ -60,6 +63,11 @@ public class BytecodeRecord implements LuceneRepositoryContentRecord
     public List getMethods()
     {
         return methods;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
     }
 
     public String getPrimaryKey()
@@ -97,6 +105,11 @@ public class BytecodeRecord implements LuceneRepositoryContentRecord
     public void setMethods( List methods )
     {
         this.methods = methods;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
     }
 
     public int hashCode()
@@ -161,4 +174,5 @@ public class BytecodeRecord implements LuceneRepositoryContentRecord
         sb.append( "]" );
         return sb.toString();
     }
+
 }

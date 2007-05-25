@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer;
+package org.apache.maven.archiva.indexer.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,28 +19,30 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.commons.collections.Predicate;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
- * AllTests - conveinence test suite for IDE users. 
+ * UserAllowedToSearchRepositoryPredicate 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class UserAllowedToSearchRepositoryPredicate
+    implements Predicate
 {
-
-    public static Test suite()
+    public boolean evaluate( Object object )
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer" );
-        //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.indexer.bytecode.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.hashcodes.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.query.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.search.AllTests.suite() );
-        //$JUnit-END$
-        return suite;
-    }
+        boolean satisfies = false;
 
+        if ( object instanceof ArchivaRepository )
+        {
+            // TODO: perform check here.
+            satisfies = true; // Everyone is allowed! (for now)
+        }
+
+        System.out.println( "AllowedToSearchRepo: " + satisfies );
+
+        return satisfies;
+    }
 }

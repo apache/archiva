@@ -135,7 +135,7 @@ public class IndexContentConsumer
         try
         {
             File file = new File( repositoryDir, path );
-            record.setFile( file );
+            record.setFilename( path );
             record.setContents( FileUtils.readFileToString( file, null ) );
 
             index.modifyRecord( record );

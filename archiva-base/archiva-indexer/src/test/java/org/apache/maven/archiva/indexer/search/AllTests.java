@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer;
+package org.apache.maven.archiva.indexer.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -30,17 +30,12 @@ import junit.framework.TestSuite;
  */
 public class AllTests
 {
-
     public static Test suite()
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer" );
+        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer.search" );
         //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.indexer.bytecode.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.hashcodes.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.query.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.search.AllTests.suite() );
+        suite.addTestSuite( DefaultCrossRepositorySearchTest.class );
         //$JUnit-END$
         return suite;
     }
-
 }

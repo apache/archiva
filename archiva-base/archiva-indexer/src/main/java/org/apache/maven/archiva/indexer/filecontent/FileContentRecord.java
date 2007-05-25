@@ -29,11 +29,24 @@ import java.io.File;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class FileContentRecord implements LuceneRepositoryContentRecord
+public class FileContentRecord
+    implements LuceneRepositoryContentRecord
 {
-    private File file;
+    private String repositoryId;
+
+    private String filename;
 
     private String contents;
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
 
     public String getContents()
     {
@@ -45,26 +58,16 @@ public class FileContentRecord implements LuceneRepositoryContentRecord
         this.contents = contents;
     }
 
-    public File getFile()
-    {
-        return file;
-    }
-
-    public void setFile( File file )
-    {
-        this.file = file;
-    }
-
     public String getPrimaryKey()
     {
-        return file.getAbsolutePath();
+        return filename;
     }
 
     public int hashCode()
     {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ( ( file == null ) ? 0 : file.hashCode() );
+        result = PRIME * result + ( ( filename == null ) ? 0 : filename.hashCode() );
         return result;
     }
 
@@ -74,31 +77,40 @@ public class FileContentRecord implements LuceneRepositoryContentRecord
         {
             return true;
         }
-        
+
         if ( obj == null )
         {
             return false;
         }
-        
+
         if ( getClass() != obj.getClass() )
         {
             return false;
         }
-        
+
         final FileContentRecord other = (FileContentRecord) obj;
-        
-        if ( file == null )
+
+        if ( filename == null )
         {
-            if ( other.file != null )
+            if ( other.filename != null )
             {
                 return false;
             }
         }
-        else if ( !file.equals( other.file ) )
+        else if ( !filename.equals( other.filename ) )
         {
             return false;
         }
         return true;
     }
 
+    public String getFilename()
+    {
+        return filename;
+    }
+
+    public void setFilename( String filename )
+    {
+        this.filename = filename;
+    }
 }

@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer.lucene;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
@@ -38,7 +39,8 @@ import java.io.File;
  * 
  * @plexus.component role="org.apache.maven.archiva.indexer.RepositoryContentIndexFactory" role-hint="lucene"
  */
-public class LuceneRepositoryContentIndexFactory implements RepositoryContentIndexFactory
+public class LuceneRepositoryContentIndexFactory
+    implements RepositoryContentIndexFactory
 {
     /**
      * @plexus.requirement
@@ -48,19 +50,19 @@ public class LuceneRepositoryContentIndexFactory implements RepositoryContentInd
     public RepositoryContentIndex createBytecodeIndex( ArchivaRepository repository )
     {
         File indexDir = toIndexDir( repository, "bytecode" );
-        return new LuceneRepositoryContentIndex( indexDir, new BytecodeHandlers() );
+        return new LuceneRepositoryContentIndex( repository, indexDir, new BytecodeHandlers() );
     }
 
     public RepositoryContentIndex createFileContentIndex( ArchivaRepository repository )
     {
         File indexDir = toIndexDir( repository, "filecontent" );
-        return new LuceneRepositoryContentIndex( indexDir, new FileContentHandlers() );
+        return new LuceneRepositoryContentIndex( repository, indexDir, new FileContentHandlers() );
     }
 
     public RepositoryContentIndex createHashcodeIndex( ArchivaRepository repository )
     {
         File indexDir = toIndexDir( repository, "hashcodes" );
-        return new LuceneRepositoryContentIndex( indexDir, new HashcodesHandlers() );
+        return new LuceneRepositoryContentIndex( repository, indexDir, new HashcodesHandlers() );
     }
 
     /**
@@ -91,6 +93,15 @@ public class LuceneRepositoryContentIndexFactory implements RepositoryContentInd
         {
             // Use configured index dir.
             String repoPath = repoConfig.getIndexDir();
+            if ( StringUtils.isBlank( repoPath ) )
+            {
+                repoPath = repository.getUrl().getPath();
+                if ( !repoPath.endsWith( "/" ) )
+                {
+                    repoPath += "/";
+                }
+                repoPath += ".index";
+            }
             indexDir = new File( repoPath, "/" + indexId + "/" );
         }
 

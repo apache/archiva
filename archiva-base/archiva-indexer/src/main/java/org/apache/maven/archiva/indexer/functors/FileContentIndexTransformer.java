@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer;
+package org.apache.maven.archiva.indexer.functors;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,28 +19,33 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.commons.collections.Transformer;
+import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
- * AllTests - conveinence test suite for IDE users. 
+ * FileContentIndexTransformer 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.commons.collections.Transformer" role-hint="filecontent"
  */
-public class AllTests
+public class FileContentIndexTransformer
+    implements Transformer
 {
+    /**
+     * @plexus.requirement role-hint="lucene"
+     */
+    private RepositoryContentIndexFactory indexFactory;
 
-    public static Test suite()
+    public Object transform( Object input )
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer" );
-        //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.indexer.bytecode.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.hashcodes.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.query.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.search.AllTests.suite() );
-        //$JUnit-END$
-        return suite;
-    }
+        if ( input instanceof ArchivaRepository )
+        {
+            return indexFactory.createFileContentIndex( (ArchivaRepository) input );
+        }
 
+        return input;
+    }
 }

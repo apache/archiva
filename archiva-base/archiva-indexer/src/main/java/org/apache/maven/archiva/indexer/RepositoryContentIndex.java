@@ -19,13 +19,15 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Searchable;
+import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.indexer.query.Query;
+import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Common access methods for a Repository Content index.
@@ -62,17 +64,6 @@ public interface RepositoryContentIndex
         throws RepositoryIndexException;
 
     /**
-     * Search the index based on the search criteria specified. Returns a list of index records.
-     *
-     * @param query The query that contains the search criteria
-     * @return the index records found
-     * @throws RepositoryIndexSearchException if there is a problem searching
-     * @todo should it return "SearchResult" instances that contain the index record and other search data (like score?)
-     */
-    List search( Query query )
-        throws RepositoryIndexSearchException;
-
-    /**
      * Check if the index already exists.
      *
      * @return true if the index already exists
@@ -89,15 +80,6 @@ public interface RepositoryContentIndex
      */
     void deleteRecords( Collection records )
         throws RepositoryIndexException;
-
-    /**
-     * Retrieve all records in the index.
-     *
-     * @return the collection of {@link LuceneRepositoryContentRecord} objects.
-     * @throws RepositoryIndexSearchException if there was an error searching the index
-     */
-    Collection getAllRecords()
-        throws RepositoryIndexSearchException;
 
     /**
      * Retrieve all primary keys of records in the index.
@@ -128,4 +110,34 @@ public interface RepositoryContentIndex
      * @return the id of index.
      */
     String getId();
+
+    /**
+     * Get the repository that this index belongs to.
+     * 
+     * @return the repository that this index belongs to.
+     */
+    ArchivaRepository getRepository();
+
+    /**
+     * Get the analyzer in use for this index.
+     * 
+     * @return the analyzer in use.
+     */
+    Analyzer getAnalyzer();
+
+    /**
+     * Get the document to record (and back again) converter.
+     * 
+     * @return the converter in use.
+     */
+    LuceneEntryConverter getEntryConverter();
+
+    /**
+     * Create a Searchable for this index.
+     * 
+     * @return the Searchable.
+     * @throws RepositoryIndexSearchException if there was a problem creating the searchable.
+     */
+    Searchable getSearchable()
+        throws RepositoryIndexSearchException;
 }

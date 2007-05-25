@@ -19,19 +19,31 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections.functors.AndPredicate;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.MultiSearcher;
+import org.apache.lucene.search.Searchable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.functors.IndexedRepositoryPredicate;
+import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.indexer.bytecode.BytecodeKeys;
-import org.apache.maven.archiva.indexer.filecontent.FileContentKeys;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
+import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
+import org.apache.maven.archiva.indexer.functors.UserAllowedToSearchRepositoryPredicate;
+import org.apache.maven.archiva.indexer.hashcodes.HashcodesHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesKeys;
+import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -39,12 +51,10 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * DefaultCrossRepositorySearch 
@@ -57,121 +67,199 @@ public class DefaultCrossRepositorySearch
     extends AbstractLogEnabled
     implements CrossRepositorySearch, RegistryListener, Initializable
 {
-
-    private static final int UNKNOWN = 0;
-
-    private static final int FILE_CONTENT = 1;
-
-    private static final int BYTECODE = 2;
-
-    private static final int HASHCODE = 3;
+    /**
+     * @plexus.requirement role-hint="bytecode"
+     */
+    private Transformer bytecodeIndexTransformer;
 
     /**
-     * @plexus.requirement role-hint="lucene"
+     * @plexus.requirement role-hint="filecontent"
      */
-    private RepositoryContentIndexFactory indexFactory;
+    private Transformer filecontentIndexTransformer;
+
+    /**
+     * @plexus.requirement role-hint="hashcodes"
+     */
+    private Transformer hashcodesIndexTransformer;
+
+    /**
+     * @plexus.requirement role-hint="searchable"
+     */
+    private Transformer searchableTransformer;
+
+    /**
+     * @plexus.requirement role-hint="index-exists"
+     */
+    private Predicate indexExistsPredicate;
 
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
 
-    private Map repositoryMap = new HashMap();
+    private List localIndexedRepositories = new ArrayList();
 
-    public SearchResults searchForMd5( String md5 )
+    public SearchResults searchForChecksum( String checksum, SearchResultLimits limits )
     {
-        // TODO Auto-generated method stub
-        return null;
+        List indexes = getHashcodeIndexes();
+
+        try
+        {
+            QueryParser parser = new MultiFieldQueryParser( new String[] { HashcodesKeys.MD5, HashcodesKeys.SHA1 },
+                                                            new HashcodesHandlers().getAnalyzer() );
+            LuceneQuery query = new LuceneQuery( parser.parse( checksum ) );
+            SearchResults results = searchAll( query, limits, indexes );
+            results.getRepositories().addAll( this.localIndexedRepositories );
+
+            return results;
+        }
+        catch ( ParseException e )
+        {
+            getLogger().warn( "Unable to parse query [" + checksum + "]: " + e.getMessage(), e );
+        }
+
+        // empty results.
+        return new SearchResults();
     }
 
-    public SearchResults searchForTerm( String term )
+    public SearchResults searchForBytecode( String term, SearchResultLimits limits )
     {
-        List indexes = new ArrayList();
+        List indexes = getHashcodeIndexes();
 
-        indexes.addAll( getBytecodeIndexes() );
-        indexes.addAll( getFileContentIndexes() );
-        indexes.addAll( getHashcodeIndexes() );
+        try
+        {
+            QueryParser parser = new BytecodeHandlers().getQueryParser();
+            LuceneQuery query = new LuceneQuery( parser.parse( term ) );
+            SearchResults results = searchAll( query, limits, indexes );
+            results.getRepositories().addAll( this.localIndexedRepositories );
+
+            return results;
+        }
+        catch ( ParseException e )
+        {
+            getLogger().warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
+        }
+
+        // empty results.
+        return new SearchResults();
+    }
+
+    public SearchResults searchForTerm( String term, SearchResultLimits limits )
+    {
+        List indexes = getFileContentIndexes();
+
+        try
+        {
+            QueryParser parser = new FileContentHandlers().getQueryParser();
+            LuceneQuery query = new LuceneQuery( parser.parse( term ) );
+            SearchResults results = searchAll( query, limits, indexes );
+            results.getRepositories().addAll( this.localIndexedRepositories );
+
+            return results;
+        }
+        catch ( ParseException e )
+        {
+            getLogger().warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
+        }
+
+        // empty results.
+        return new SearchResults();
+    }
+
+    private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List indexes )
+    {
+        org.apache.lucene.search.Query specificQuery = luceneQuery.getLuceneQuery();
 
         SearchResults results = new SearchResults();
 
-        results.getRepositories().addAll( this.repositoryMap.values() );
-
-        Iterator it = indexes.iterator();
-        while ( it.hasNext() )
+        if ( indexes.isEmpty() )
         {
-            RepositoryContentIndex index = (RepositoryContentIndex) it.next();
+            // No point going any further.
+            return results;
+        }
 
-            try
+        // Setup the converter
+        LuceneEntryConverter converter = null;
+        RepositoryContentIndex index = (RepositoryContentIndex) indexes.get( 0 );
+        converter = index.getEntryConverter();
+
+        // Process indexes into an array of Searchables.
+        List searchableList = new ArrayList( indexes );
+        CollectionUtils.transform( searchableList, searchableTransformer );
+
+        Searchable searchables[] = new Searchable[searchableList.size()];
+        searchableList.toArray( searchables );
+
+        try
+        {
+            // Create a multi-searcher for looking up the information.
+            MultiSearcher searcher = new MultiSearcher( searchables );
+
+            // Perform the search.
+            Hits hits = searcher.search( specificQuery );
+
+            int hitCount = hits.length();
+
+            // Now process the limits.
+            results.setLimits( limits );
+            results.setTotalHits( hitCount );
+
+            int fetchCount = limits.getPageSize();
+            int offset = ( limits.getSelectedPage() * limits.getPageSize() );
+
+            if ( limits.getSelectedPage() == SearchResultLimits.ALL_PAGES )
             {
-                QueryParser parser = index.getQueryParser();
-                LuceneQuery query = new LuceneQuery( parser.parse( term ) );
-                List hits = index.search( query );
+                fetchCount = hitCount;
+                offset = 0;
+            }
 
-                switch ( getIndexId( index ) )
+            // Goto offset.
+            if ( offset < hitCount )
+            {
+                // only process if the offset is within the hit count.
+                for ( int i = 0; i <= fetchCount; i++ )
                 {
-                    case BYTECODE:
-                        results.getBytecodeHits().addAll( hits );
+                    // Stop fetching if we are past the total # of available hits.
+                    if ( offset + i >= hitCount )
+                    {
                         break;
-                    case FILE_CONTENT:
-                        results.getContentHits().addAll( hits );
-                        break;
-                    case HASHCODE:
-                        results.getHashcodeHits().addAll( hits );
-                        break;
+                    }
+
+                    try
+                    {
+                        Document doc = hits.doc( offset + i );
+                        LuceneRepositoryContentRecord record = converter.convert( doc );
+                        results.addHit( record );
+                    }
+                    catch ( java.text.ParseException e )
+                    {
+                        getLogger().warn( "Unable to parse document into record: " + e.getMessage(), e );
+                    }
                 }
             }
-            catch ( ParseException e )
-            {
-                getLogger().warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
-            }
-            catch ( RepositoryIndexSearchException e )
-            {
-                getLogger().warn( "Unable to search index [" + index + "] for term [" + term + "]: " + e.getMessage(),
-                                  e );
-            }
+        }
+        catch ( IOException e )
+        {
+            getLogger().error( "Unable to setup multi-search: " + e.getMessage(), e );
         }
 
         return results;
     }
 
-    private int getIndexId( RepositoryContentIndex index )
+    private Predicate getAllowedToSearchReposPredicate()
     {
-        if ( FileContentKeys.ID.equals( index.getId() ) )
-        {
-            return FILE_CONTENT;
-        }
-
-        if ( BytecodeKeys.ID.equals( index.getId() ) )
-        {
-            return BYTECODE;
-        }
-
-        if ( HashcodesKeys.ID.equals( index.getId() ) )
-        {
-            return HASHCODE;
-        }
-
-        return UNKNOWN;
+        return new UserAllowedToSearchRepositoryPredicate();
     }
 
     public List getBytecodeIndexes()
     {
         List ret = new ArrayList();
 
-        synchronized ( this.repositoryMap )
+        synchronized ( this.localIndexedRepositories )
         {
-            Iterator it = this.repositoryMap.values().iterator();
-            while ( it.hasNext() )
-            {
-                ArchivaRepository repo = (ArchivaRepository) it.next();
-
-                if ( !isSearchAllowed( repo ) )
-                {
-                    continue;
-                }
-
-                ret.add( indexFactory.createBytecodeIndex( repo ) );
-            }
+            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
+            CollectionUtils.transform( ret, bytecodeIndexTransformer );
+            CollectionUtils.filter( ret, indexExistsPredicate );
         }
 
         return ret;
@@ -181,20 +269,11 @@ public class DefaultCrossRepositorySearch
     {
         List ret = new ArrayList();
 
-        synchronized ( this.repositoryMap )
+        synchronized ( this.localIndexedRepositories )
         {
-            Iterator it = this.repositoryMap.values().iterator();
-            while ( it.hasNext() )
-            {
-                ArchivaRepository repo = (ArchivaRepository) it.next();
-
-                if ( !isSearchAllowed( repo ) )
-                {
-                    continue;
-                }
-
-                ret.add( indexFactory.createFileContentIndex( repo ) );
-            }
+            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
+            CollectionUtils.transform( ret, filecontentIndexTransformer );
+            CollectionUtils.filter( ret, indexExistsPredicate );
         }
 
         return ret;
@@ -204,37 +283,21 @@ public class DefaultCrossRepositorySearch
     {
         List ret = new ArrayList();
 
-        synchronized ( this.repositoryMap )
+        synchronized ( this.localIndexedRepositories )
         {
-            Iterator it = this.repositoryMap.values().iterator();
-            while ( it.hasNext() )
-            {
-                ArchivaRepository repo = (ArchivaRepository) it.next();
-
-                if ( !isSearchAllowed( repo ) )
-                {
-                    continue;
-                }
-
-                ret.add( indexFactory.createHashcodeIndex( repo ) );
-            }
+            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
+            CollectionUtils.transform( ret, hashcodesIndexTransformer );
+            CollectionUtils.filter( ret, indexExistsPredicate );
         }
 
         return ret;
-    }
-
-    public boolean isSearchAllowed( ArchivaRepository repo )
-    {
-        // TODO: test if user has permissions to search in this repo.
-
-        return true;
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositories( propertyName ) )
         {
-            initRepositoryMap();
+            initRepositories();
         }
     }
 
@@ -243,28 +306,41 @@ public class DefaultCrossRepositorySearch
         /* Nothing to do here */
     }
 
-    private void initRepositoryMap()
+    private void initRepositories()
     {
-        synchronized ( this.repositoryMap )
+        synchronized ( this.localIndexedRepositories )
         {
-            this.repositoryMap.clear();
+            this.localIndexedRepositories.clear();
 
-            Iterator it = configuration.getConfiguration().createRepositoryMap().entrySet().iterator();
-            while ( it.hasNext() )
+            Predicate localIndexedRepos = AndPredicate.getInstance( LocalRepositoryPredicate.getInstance(),
+                                                                    IndexedRepositoryPredicate.getInstance() );
+
+            Collection repos = CollectionUtils.select( configuration.getConfiguration().getRepositories(),
+                                                       localIndexedRepos );
+            
+            Transformer toArchivaRepository = new Transformer()
             {
-                Map.Entry entry = (Entry) it.next();
-                String key = (String) entry.getKey();
-                RepositoryConfiguration repoConfig = (RepositoryConfiguration) entry.getValue();
-                ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
-                this.repositoryMap.put( key, repository );
-            }
+
+                public Object transform( Object input )
+                {
+                    if ( input instanceof RepositoryConfiguration )
+                    {
+                        return ArchivaConfigurationAdaptor.toArchivaRepository( (RepositoryConfiguration) input );
+                    }
+                    return input;
+                }
+            };
+
+            CollectionUtils.transform( repos, toArchivaRepository );
+
+            this.localIndexedRepositories.addAll( repos );
         }
     }
 
     public void initialize()
         throws InitializationException
     {
-        initRepositoryMap();
+        initRepositories();
         configuration.addChangeListener( this );
     }
 }

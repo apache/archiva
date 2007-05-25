@@ -64,6 +64,7 @@ public class HashcodesIndexPopulator
             ArchivaArtifact artifact = (ArchivaArtifact) entry.getValue();
             File dumpFile = getDumpFile( basedir, artifact );
             HashcodesRecord record = HashcodesRecordLoader.loadRecord( dumpFile, artifact );
+            record.setRepositoryId( "test-repo" );
             records.put( entry.getKey(), record );
         }
 

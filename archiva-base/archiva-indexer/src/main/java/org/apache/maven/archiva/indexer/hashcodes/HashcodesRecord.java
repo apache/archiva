@@ -28,8 +28,11 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class HashcodesRecord implements LuceneRepositoryContentRecord
+public class HashcodesRecord
+    implements LuceneRepositoryContentRecord
 {
+    private String repositoryId;
+
     private ArchivaArtifact artifact;
 
     private String filename;
@@ -60,7 +63,7 @@ public class HashcodesRecord implements LuceneRepositoryContentRecord
 
         return id.toString();
     }
-    
+
     public int hashCode()
     {
         final int PRIME = 31;
@@ -75,19 +78,19 @@ public class HashcodesRecord implements LuceneRepositoryContentRecord
         {
             return true;
         }
-        
+
         if ( obj == null )
         {
             return false;
         }
-        
+
         if ( getClass() != obj.getClass() )
         {
             return false;
         }
-        
+
         final HashcodesRecord other = (HashcodesRecord) obj;
-        
+
         if ( artifact == null )
         {
             if ( other.artifact != null )
@@ -103,6 +106,16 @@ public class HashcodesRecord implements LuceneRepositoryContentRecord
         return true;
     }
 
+    public String getRepositoryId()
+    {
+        return this.repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
     public String getFilename()
     {
         return filename;
@@ -112,7 +125,7 @@ public class HashcodesRecord implements LuceneRepositoryContentRecord
     {
         this.filename = filename;
     }
-    
+
     public String toString()
     {
         StringBuffer sb = new StringBuffer();

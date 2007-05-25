@@ -49,8 +49,18 @@ public class FileContentIndexPopulator
 
         File repoDir = new File( basedir, "src/test/managed-repository" );
 
-        map.put( "parent-pom-1",
-                 createFileContentRecord( repoDir, "org/apache/maven/archiva/record/parent-pom/1/parent-pom-1.pom" ) );
+        String prefix = "org/apache/maven/archiva/record/";
+
+        map.put( "parent-pom-1", createFileContentRecord( repoDir, prefix + "parent-pom/1/parent-pom-1.pom" ) );
+        map.put( "child-pom-1.0-SNAPSHOT", createFileContentRecord( repoDir, prefix
+            + "test-child-pom/1.0-SNAPSHOT/test-child-pom-1.0-20060728.121314-1.pom" ) );
+        map.put( "test-archetype-1.0", createFileContentRecord( repoDir, prefix
+            + "test-archetype/1.0/test-archetype-1.0.pom" ) );
+        map.put( "test-jar-and-pom-1.0-alpha-1", createFileContentRecord( repoDir, prefix
+            + "test-jar-and-pom/1.0-alpha-1/test-jar-and-pom-1.0-alpha-1.pom" ) );
+        map.put( "test-plugin-1.0", createFileContentRecord( repoDir, prefix + "test-plugin/1.0/test-plugin-1.0.pom" ) );
+        map.put( "test-pom-1.0", createFileContentRecord( repoDir, prefix + "test-pom/1.0/test-pom-1.0.pom" ) );
+        map.put( "test-skin-1.0", createFileContentRecord( repoDir, prefix + "test-skin/1.0/test-skin-1.0.pom" ) );
 
         return map;
     }
@@ -65,7 +75,8 @@ public class FileContentIndexPopulator
         }
 
         FileContentRecord record = new FileContentRecord();
-        record.setFile( pathToFile );
+        record.setRepositoryId( "test-repo" );
+        record.setFilename( path );
 
         try
         {

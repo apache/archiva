@@ -26,9 +26,7 @@ import org.apache.maven.archiva.indexer.AbstractSearchTestCase;
 import org.apache.maven.archiva.indexer.ArtifactKeys;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
-import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
@@ -72,118 +70,119 @@ public class HashcodesSearchTest extends AbstractSearchTestCase
             ArchivaArtifact artifact = (ArchivaArtifact) entry.getValue();
             File dumpFile = getDumpFile( artifact );
             HashcodesRecord record = HashcodesRecordLoader.loadRecord( dumpFile, artifact );
+            record.setRepositoryId( "test-repo" );
             records.put( entry.getKey(), record );
         }
 
         return records;
     }
 
-    public void testExactMatchVersionSimple() throws RepositoryIndexSearchException
+    public void testExactMatchVersionSimple() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.VERSION_EXACT, new String[] { "archiva-common" }, "1.0" );
     }
 
-    public void testExactMatchVersionSnapshot() throws RepositoryIndexSearchException
+    public void testExactMatchVersionSnapshot() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.VERSION_EXACT, new String[] { "continuum-webapp" }, "1.0.3-SNAPSHOT" );
     }
 
-    public void testExactMatchVersionAlphaSnapshot() throws RepositoryIndexSearchException
+    public void testExactMatchVersionAlphaSnapshot() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.VERSION_EXACT, new String[] { "redback-authorization-open" },
                                "1.0-alpha-1-SNAPSHOT" );
     }
 
-    public void testExactMatchVersionTimestampedSnapshot() throws RepositoryIndexSearchException
+    public void testExactMatchVersionTimestampedSnapshot() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.VERSION_EXACT, new String[] { "wagon-provider-api" },
                                "1.0-beta-3-20070209.213958-2" );
     }
 
-    public void testExactMatchVersionInvalid() throws RepositoryIndexSearchException
+    public void testExactMatchVersionInvalid() throws Exception
     {
         assertQueryExactMatchNoResults( ArtifactKeys.VERSION_EXACT, "foo" );
     }
 
-    public void testExactMatchGroupIdOrgApacheMavenArchiva() throws RepositoryIndexSearchException
+    public void testExactMatchGroupIdOrgApacheMavenArchiva() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.GROUPID_EXACT, new String[] { "archiva-common" },
                                "org.apache.maven.archiva" );
     }
 
-    public void testExactMatchGroupIdOrgApacheMaven() throws RepositoryIndexSearchException
+    public void testExactMatchGroupIdOrgApacheMaven() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.GROUPID_EXACT, new String[] { "maven-archetype-simple" },
                                "org.apache.maven" );
     }
 
-    public void testExactMatchGroupIdInvalid() throws RepositoryIndexSearchException
+    public void testExactMatchGroupIdInvalid() throws Exception
     {
         assertQueryExactMatchNoResults( ArtifactKeys.GROUPID_EXACT, "foo" );
     }
 
-    public void testExactMatchArtifactIdArchivaCommon() throws RepositoryIndexSearchException
+    public void testExactMatchArtifactIdArchivaCommon() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.ARTIFACTID_EXACT, new String[] { "archiva-common" }, "archiva-common" );
     }
 
-    public void testExactMatchArtifactIdTestNg() throws RepositoryIndexSearchException
+    public void testExactMatchArtifactIdTestNg() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.ARTIFACTID_EXACT, new String[] { "testng" }, "testng" );
     }
 
-    public void testExactMatchArtifactIdInvalid() throws RepositoryIndexSearchException
+    public void testExactMatchArtifactIdInvalid() throws Exception
     {
         assertQueryExactMatchNoResults( ArtifactKeys.ARTIFACTID_EXACT, "foo" );
     }
 
-    public void testExactMatchTypeJar() throws RepositoryIndexSearchException
+    public void testExactMatchTypeJar() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.TYPE, ( new String[] { "archiva-common", "redback-authorization-open",
             "testng", "wagon-provider-api" } ), "jar" );
     }
 
-    public void testExactMatchTypeWar() throws RepositoryIndexSearchException
+    public void testExactMatchTypeWar() throws Exception
     {
         assertQueryExactMatch( ArtifactKeys.TYPE, ( new String[] { "continuum-webapp" } ), "war" );
     }
 
     /* TODO: Fix 'maven-plugin' type
-     public void testExactMatchTypePlugin() throws RepositoryIndexSearchException
+     public void testExactMatchTypePlugin() throws Exception
      {
      assertQueryExactMatch( ArtifactKeys.TYPE, ( new String[] { "maven-help-plugin" } ), "maven-plugin" );
      } */
 
     /* TODO: Fix 'maven-archetype' type
-     public void testExactMatchTypeArchetype() throws RepositoryIndexSearchException
+     public void testExactMatchTypeArchetype() throws Exception
      {
      assertQueryExactMatch( ArtifactKeys.TYPE, ( new String[] { "maven-archetype-simple" } ), "maven-archetype" );
      }
      */
 
-    public void testExactMatchTypeInvalid() throws RepositoryIndexSearchException
+    public void testExactMatchTypeInvalid() throws Exception
     {
         assertQueryExactMatchNoResults( ArtifactKeys.TYPE, "foo" );
     }
 
-    public void testExactMatchMd5() throws RepositoryIndexSearchException
+    public void testExactMatchMd5() throws Exception
     {
         assertQueryExactMatch( HashcodesKeys.MD5, ( new String[] { "redback-authorization-open" } ),
                                "f42047fe2e177ac04d0df7aa44d408be" );
     }
 
-    public void testExactMatchMd5Invalid() throws RepositoryIndexSearchException
+    public void testExactMatchMd5Invalid() throws Exception
     {
         assertQueryExactMatchNoResults( HashcodesKeys.MD5, "foo" );
     }
 
-    public void testExactMatchSha1() throws RepositoryIndexSearchException
+    public void testExactMatchSha1() throws Exception
     {
         assertQueryExactMatch( HashcodesKeys.SHA1, ( new String[] { "archiva-common" } ),
                                "c2635a1b38bd4520a6604664c04b2b3c32330864" );
     }
 
-    public void testExactMatchSha1Invalid() throws RepositoryIndexSearchException
+    public void testExactMatchSha1Invalid() throws Exception
     {
         assertQueryExactMatchNoResults( HashcodesKeys.SHA1, "foo" );
     }
@@ -272,7 +271,7 @@ public class HashcodesSearchTest extends AbstractSearchTestCase
         BooleanQuery bQuery = new BooleanQuery();
         bQuery.add( new MatchAllDocsQuery(), BooleanClause.Occur.MUST );
         bQuery.add( createMatchQuery( ArtifactKeys.CLASSIFIER, "jdk15" ), BooleanClause.Occur.MUST_NOT );
-        List results = index.search( new LuceneQuery( bQuery ) );
+        List results = search( bQuery );
 
         assertResults( new String[] { "archiva-common", "continuum-webapp", "redback-authorization-open",
             "daytrader-ear", "maven-archetype-simple", "maven-help-plugin", "wagon-provider-api" }, results );

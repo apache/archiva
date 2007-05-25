@@ -24,7 +24,6 @@ import org.apache.maven.archiva.indexer.lucene.LuceneDocumentMaker;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 
-import java.io.File;
 import java.text.ParseException;
 
 /**
@@ -33,7 +32,8 @@ import java.text.ParseException;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class FileContentConverter implements LuceneEntryConverter
+public class FileContentConverter
+    implements LuceneEntryConverter
 {
 
     public Document convert( LuceneRepositoryContentRecord record )
@@ -41,24 +41,26 @@ public class FileContentConverter implements LuceneEntryConverter
         if ( !( record instanceof FileContentRecord ) )
         {
             throw new ClassCastException( "Unable to convert type " + record.getClass().getName() + " to "
-                            + FileContentRecord.class.getName() + "." );
+                + FileContentRecord.class.getName() + "." );
         }
 
         FileContentRecord filecontent = (FileContentRecord) record;
 
         LuceneDocumentMaker doc = new LuceneDocumentMaker( filecontent );
 
-        doc.addFieldTokenized( FileContentKeys.FILENAME, filecontent.getFile().getAbsolutePath() );
+        doc.addFieldTokenized( FileContentKeys.FILENAME, filecontent.getFilename() );
         doc.addFieldTokenized( FileContentKeys.CONTENT, filecontent.getContents() );
 
         return doc.getDocument();
     }
 
-    public LuceneRepositoryContentRecord convert( Document document ) throws ParseException
+    public LuceneRepositoryContentRecord convert( Document document )
+        throws ParseException
     {
         FileContentRecord record = new FileContentRecord();
 
-        record.setFile( new File( document.get( FileContentKeys.FILENAME ) ) );
+        record.setRepositoryId( document.get( LuceneDocumentMaker.REPOSITORY_ID ) );
+        record.setFilename( document.get( FileContentKeys.FILENAME ) );
         record.setContents( document.get( FileContentKeys.CONTENT ) );
 
         return record;

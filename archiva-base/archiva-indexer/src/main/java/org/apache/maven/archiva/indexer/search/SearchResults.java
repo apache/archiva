@@ -19,8 +19,17 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
+import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
+import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
+import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * SearchResults 
@@ -32,35 +41,106 @@ public class SearchResults
 {
     private List repositories = new ArrayList();
 
-    private List contentHits = new ArrayList();
+    private Map hits = new HashMap();
 
-    private List bytecodeHits = new ArrayList();
+    private int totalHits;
 
-    private List hashcodeHits = new ArrayList();
+    private SearchResultLimits limits;
 
     public SearchResults()
     {
         /* do nothing */
     }
 
-    public boolean isEmpty()
+    public void addHit( LuceneRepositoryContentRecord record )
     {
-        return ( bytecodeHits.isEmpty() && hashcodeHits.isEmpty() && contentHits.isEmpty() );
+        if ( record instanceof FileContentRecord )
+        {
+            FileContentRecord filecontent = (FileContentRecord) record;
+            addFileContentHit( filecontent );
+        }
+        else if ( record instanceof HashcodesRecord )
+        {
+            HashcodesRecord hashcodes = (HashcodesRecord) record;
+            addHashcodeHit( hashcodes );
+        }
+        else if ( record instanceof BytecodeRecord )
+        {
+            BytecodeRecord bytecode = (BytecodeRecord) record;
+            addBytecodeHit( bytecode );
+        }
     }
 
-    public List getBytecodeHits()
+    private void addBytecodeHit( BytecodeRecord bytecode )
     {
-        return bytecodeHits;
+        String key = toKey( bytecode.getArtifact() );
+
+        SearchResultHit hit = (SearchResultHit) this.hits.get( key );
+
+        if ( hit == null )
+        {
+            hit = new SearchResultHit();
+        }
+
+        hit.addArtifact( bytecode.getArtifact() );
+        hit.setContext( null ); // TODO: provide context on why this is a valuable hit.
+
+        this.hits.put( key, hit );
     }
 
-    public List getContentHits()
+    private String toKey( ArchivaArtifact artifact )
     {
-        return contentHits;
+        StringBuffer key = new StringBuffer();
+
+        key.append( StringUtils.defaultString( artifact.getGroupId() ) ).append( ":" );
+        key.append( StringUtils.defaultString( artifact.getArtifactId() ) );
+
+        return key.toString();
     }
 
-    public List getHashcodeHits()
+    private void addHashcodeHit( HashcodesRecord hashcodes )
     {
-        return hashcodeHits;
+        String key = toKey( hashcodes.getArtifact() );
+
+        SearchResultHit hit = (SearchResultHit) this.hits.get( key );
+
+        if ( hit == null )
+        {
+            hit = new SearchResultHit();
+        }
+
+        hit.addArtifact( hashcodes.getArtifact() );
+        hit.setContext( null ); // TODO: provide context on why this is a valuable hit.
+
+        this.hits.put( key, hit );
+    }
+
+    public void addFileContentHit( FileContentRecord filecontent )
+    {
+        String key = filecontent.getPrimaryKey();
+
+        SearchResultHit hit = (SearchResultHit) this.hits.get( key );
+
+        if ( hit == null )
+        {
+            // Only need to worry about this hit if it is truely new.
+            hit = new SearchResultHit();
+
+            hit.setUrl( filecontent.getRepositoryId() + "/" + filecontent.getFilename() );
+            hit.setContext( null ); // TODO: handle context + highlight later.
+
+            this.hits.put( key, hit );
+        }
+    }
+
+    /**
+     * Get the list of {@link SearchResultHit} objects.
+     * 
+     * @return the list of {@link SearchResultHit} objects.
+     */
+    public List getHits()
+    {
+        return new ArrayList( hits.values() );
     }
 
     public List getRepositories()
@@ -68,23 +148,33 @@ public class SearchResults
         return repositories;
     }
 
-    public void setBytecodeHits( List bytecodeHits )
+    public boolean isEmpty()
     {
-        this.bytecodeHits = bytecodeHits;
-    }
-
-    public void setContentHits( List contentHits )
-    {
-        this.contentHits = contentHits;
-    }
-
-    public void setHashcodeHits( List hashcodeHits )
-    {
-        this.hashcodeHits = hashcodeHits;
+        return hits.isEmpty();
     }
 
     public void setRepositories( List repositories )
     {
         this.repositories = repositories;
+    }
+
+    public SearchResultLimits getLimits()
+    {
+        return limits;
+    }
+
+    public void setLimits( SearchResultLimits limits )
+    {
+        this.limits = limits;
+    }
+
+    public int getTotalHits()
+    {
+        return totalHits;
+    }
+
+    public void setTotalHits( int totalHits )
+    {
+        this.totalHits = totalHits;
     }
 }

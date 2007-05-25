@@ -55,6 +55,7 @@ public class HashcodesIndexTest extends AbstractIndexCreationTestCase
         ArchivaArtifact artifact = new ArchivaArtifact( "com.foo", "projfoo", "1.0", "", "jar" );
         
         HashcodesRecord record = new HashcodesRecord();
+        record.setRepositoryId( "test-repo" );
         record.setArtifact( artifact );
         
         artifact.getModel().setChecksumSHA1( "c66f18bf192cb613fc2febb4da541a34133eedc2" );

@@ -19,10 +19,12 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
+import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
@@ -42,11 +44,6 @@ public class SearchAction
     private String q;
 
     /**
-     * The MD5 to search by.
-     */
-    private String md5;
-    
-    /**
      * The Search Results.
      */
     private SearchResults results;
@@ -65,13 +62,15 @@ public class SearchAction
     {
         /* TODO: give action message if indexing is in progress.
          * This should be based off a count of 'unprocessed' artifacts.
-         * This (yet to be written) routine could tell the user that X artifacts are not yet 
+         * This (yet to be written) routine could tell the user that X (unprocessed) artifacts are not yet 
          * present in the full text search.
          */
 
         assert q != null && q.length() != 0;
 
-        results = crossRepoSearch.searchForTerm( q );
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+
+        results = crossRepoSearch.searchForTerm( q, limits );
 
         if ( results.isEmpty() )
         {
@@ -80,7 +79,7 @@ public class SearchAction
         }
 
         // TODO: filter / combine the artifacts by version? (is that even possible with non-artifact hits?)
-        
+
         /* I don't think that we should, as I expect us to utilize the 'score' system in lucene in 
          * the future to return relevant links better.
          * I expect the lucene scoring system to take multiple hits on different areas of a single document
@@ -96,18 +95,25 @@ public class SearchAction
     {
         // TODO: give action message if indexing is in progress
 
-        assert md5 != null && md5.length() != 0;
+        if ( StringUtils.isBlank( q ) )
+        {
+            addActionError( "Unable to search for a blank checksum" );
+            return INPUT;
+        }
 
-        results = crossRepoSearch.searchForMd5( q );
-        
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+
+        results = crossRepoSearch.searchForChecksum( q, limits );
+
         if ( results.isEmpty() )
         {
             addActionError( "No results found" );
             return INPUT;
         }
-        
-        if ( results.getHashcodeHits().size() == 1 )
+
+        if ( results.getHits().size() == 1 )
         {
+            // 1 hit? return it's information directly!
             return ARTIFACT;
         }
         else
@@ -131,13 +137,8 @@ public class SearchAction
         this.q = q;
     }
 
-    public String getMd5()
+    public SearchResults getResults()
     {
-        return md5;
-    }
-
-    public void setMd5( String md5 )
-    {
-        this.md5 = md5;
+        return results;
     }
 }

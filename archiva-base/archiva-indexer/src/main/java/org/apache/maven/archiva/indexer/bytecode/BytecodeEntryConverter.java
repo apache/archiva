@@ -76,6 +76,8 @@ public class BytecodeEntryConverter implements LuceneEntryConverter
     {
         BytecodeRecord record = new BytecodeRecord();
 
+        record.setRepositoryId( document.get( LuceneDocumentMaker.REPOSITORY_ID ) );
+        
         // Artifact Reference
         String groupId = document.get( ArtifactKeys.GROUPID );
         String artifactId = document.get( ArtifactKeys.ARTIFACTID );

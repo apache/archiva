@@ -19,6 +19,7 @@
 
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
 <html>
@@ -39,48 +40,44 @@
   <h1>Results</h1>
 
   <div id="resultsBox">
-    <ww:set name="searchResults" value="searchResults"/>
-    <c:forEach items="${searchResults}" var="record" varStatus="i">
-
-
-      <h3 class="artifact-title">
-        <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
-                              version="${record.version}"/>
-      </h3>
-
-      <p>
-        <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
-                             version="${record.version}" versions="${record.versions}"/>
-
-          <%-- TODO: hits
-          <table border="1px" width="100%" cellspacing="0">
-            <c:forEach items="${result.fieldMatchesEntrySet}" var="entry">
-              <tr>
-                <td valign="top" width="15%" align="right"><c:out value="${entry.key}"/></td>
-                <td valign="top">
-                  <c:forEach items="${entry.value}" var="item">
-                    <c:out value="${item}" />
-                  </c:forEach>
-                  <br/>
-                </td>
-              </tr>
-            </c:forEach>
-          </table>
-        </td>
-          <td>
-
-            <code>org.apache.maven</code>
-            (package)
-            <br/>
-            <code>org.apache.maven.model</code>
-            (package)
-          </td>
-          <td>
-            <a href="artifact.html">Details</a>
-          </td>
-          --%>
-      </p>
-    </c:forEach>
+    <p>Hits: ${fn:length(results.hits)}</p>
+    
+    <c:choose>
+      <c:when test="${empty results.hits}">
+        <p>No results</p>
+      </c:when>
+      <c:otherwise>
+        <c:forEach items="${results.hits}" var="record" varStatus="i">
+          <p>${record.url}</p>
+          <p>${record.groupId}</p>
+          <p>${record.artifactId}</p>
+        </c:forEach>
+        <%--
+        <c:forEach items="${results.hachcodeHits}" var="record" varStatus="i">
+          <p>${record}</p>
+          <h3 class="artifact-title">
+            <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                  version="${record.version}"/>
+          </h3>
+          <p>
+            <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                 version="${record.version}" versions="${record.versions}"/>
+          </p>
+        </c:forEach>
+        <c:forEach items="${results.bytecodeHits}" var="record" varStatus="i">
+          <p>${record}</p>
+          <h3 class="artifact-title">
+            <my:showArtifactTitle groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                  version="${record.version}"/>
+          </h3>
+          <p>
+            <my:showArtifactLink groupId="${record.groupId}" artifactId="${record.artifactId}"
+                                 version="${record.version}" versions="${record.versions}"/>
+          </p>
+        </c:forEach>
+         --%>
+      </c:otherwise>
+    </c:choose>
   </div>
 </div>
 </body>
