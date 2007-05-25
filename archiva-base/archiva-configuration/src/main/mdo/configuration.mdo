@@ -264,9 +264,9 @@
           <type>String</type>
           <description>
           	When to run the refresh task. 
-          	Default is every 30 minutes (translated as every 0 and 30 minute reading of every hour)
+          	Default is every hour
           </description>
-          <defaultValue>0 0,30 * * * ?</defaultValue>
+          <defaultValue>0 0 * * * ?</defaultValue>
         </field>
       </fields>
       <codeSegments>
@@ -643,8 +643,8 @@
           <name>cronExpression</name>
           <version>1.0.0+</version>
           <type>String</type>
-          <description>When to run the database scanning mechanism. Default is every hour on the hour.</description>
-          <defaultValue>0 0 * * * ?</defaultValue>
+          <description>When to run the database scanning mechanism. Default is every two hours on the hour.</description>
+          <defaultValue>0 0 0/2 * * ?</defaultValue>
         </field>
         <field>
           <name>unprocessedConsumers</name>
