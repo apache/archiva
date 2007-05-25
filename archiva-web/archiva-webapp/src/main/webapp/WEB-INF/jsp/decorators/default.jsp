@@ -98,12 +98,14 @@
     <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
       <h5>Manage</h5>
       <ul>
+         <%-- POSTPONED to 1.0-alpha-2 
         <redback:ifAuthorized permission="archiva-access-reports">
           <li class="none">
             <my:currentWWUrl action="reports" namespace="/admin">Reports</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
-          <%-- TODO
+          --%>
+          <%-- POSTPONED to 1.1 series
                 <li class="none">
                   <a href="#">Synchronisation</a>
                 </li>

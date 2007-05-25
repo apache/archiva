@@ -116,6 +116,7 @@
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Mailing Lists</my:currentWWUrl>
+      <%-- POSTPONED to 1.0-alpha-2
       <redback:ifAnyAuthorized permissions="archiva-access-reports">
         <c:set var="url">
 	      <ww:url action="showArtifactReports">
@@ -126,6 +127,7 @@
 	    </c:set>
 	    <my:currentWWUrl url="${url}">Reports</my:currentWWUrl>
       </redback:ifAnyAuthorized>
+        --%>
       
     </span>
   </div>
