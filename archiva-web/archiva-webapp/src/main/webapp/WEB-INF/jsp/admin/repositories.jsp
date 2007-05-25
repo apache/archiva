@@ -157,7 +157,7 @@
                   <tr>
                     <td>
               	      <redback:ifAuthorized permission="archiva-run-indexer">
-              	        <ww:form action="indexRepository">
+              	        <ww:form action="indexRepository" theme="simple">
               	          <ww:hidden name="repoid" value="%{'${repository.id}'}"/>
                           <ww:submit value="Scan Repository Now"/>
                         </ww:form>

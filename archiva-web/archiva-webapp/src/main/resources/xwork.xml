@@ -238,7 +238,7 @@
       <result name="confirm" type="redirect-action">deleteRepository</result>
     </action>
     
-    <action name="indexRepository" class="indexRepositoryAction" method="run">
+    <action name="indexRepository" class="schedulerAction" method="scanRepository">
       <result type="redirect-action">repositories</result>
     </action>
 
@@ -342,6 +342,10 @@
     
     <action name="database" class="databaseAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
+    </action>
+    
+    <action name="updateDatabase" class="schedulerAction" method="updateDatabase">
+      <result type="redirect-action">database</result>
     </action>
     
     <!-- .\ CONFIGURATION \.___________________________________________ -->

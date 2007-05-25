@@ -176,6 +176,15 @@ public class DefaultArchivaTaskScheduler
         dataMap.put( DatabaseTaskJob.TASK_QUEUE, databaseUpdateQueue );
         databaseJob.setJobDataMap( dataMap );
 
+        CronExpressionValidator cronValidator = new CronExpressionValidator();
+        if ( !cronValidator.validate( cronString ) )
+        {
+            getLogger().warn(
+                              "Cron expression [" + cronString
+                                  + "] for database update is invalid.  Defaulting to hourly." );
+            cronString = CRON_HOURLY;
+        }
+
         try
         {
             CronTrigger trigger = new CronTrigger( DATABASE_JOB_TRIGGER, DATABASE_SCAN_GROUP, cronString );

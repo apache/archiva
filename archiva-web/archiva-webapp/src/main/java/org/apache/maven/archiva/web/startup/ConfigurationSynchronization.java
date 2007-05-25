@@ -144,5 +144,6 @@ public class ConfigurationSynchronization
     {
         Banner.display( getLogger(), ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
         synchConfiguration();
+        archivaConfiguration.addChangeListener( this );
     }
 }

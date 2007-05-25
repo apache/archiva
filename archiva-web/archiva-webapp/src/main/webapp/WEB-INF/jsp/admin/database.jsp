@@ -56,6 +56,10 @@
       </tr>
     </table>                 
   </ww:form>
+  
+  <ww:form action="updateDatabase" theme="simple">
+    <ww:submit value="Update Database Now"/>
+  </ww:form>
 
 <h2>Database - Unprocessed Artifacts Scanning</h2>
 

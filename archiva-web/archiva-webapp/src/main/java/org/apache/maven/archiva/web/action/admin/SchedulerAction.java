@@ -24,6 +24,7 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.DefaultArchivaTaskScheduler;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
+import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -36,12 +37,16 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 /**
  * Configures the application.
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="indexRepositoryAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="schedulerAction"
  */
-public class IndexRepositoryAction
+public class SchedulerAction
     extends PlexusActionSupport
     implements SecureAction
 {
+    private static final String REPO_SUCCESS = "repoSucces";
+    
+    private static final String DB_SUCCESS = "dbSuccess";
+    
     /**
      * @plexus.requirement
      */
@@ -49,7 +54,7 @@ public class IndexRepositoryAction
 
     private String repoid;
 
-    public String run()
+    public String scanRepository()
     {
         if ( StringUtils.isBlank( repoid ) )
         {
@@ -103,6 +108,48 @@ public class IndexRepositoryAction
         }
 
         // Return to the repositories screen.
+        return SUCCESS;
+    }
+
+    public String updateDatabase()
+    {
+        DatabaseTask task = new DatabaseTask();
+        task.setName( DefaultArchivaTaskScheduler.DATABASE_JOB + ":user-requested" );
+        task.setQueuePolicy( ArchivaTask.QUEUE_POLICY_WAIT );
+
+        boolean scheduleTask = false;
+
+        try
+        {
+            if ( taskScheduler.isProcessingDatabaseTask() )
+            {
+                addActionError( "Database task was already queued." );
+            }
+            else
+            {
+                scheduleTask = true;
+            }
+        }
+        catch ( ArchivaException e )
+        {
+            scheduleTask = false;
+            addActionError( e.getMessage() );
+        }
+
+        if ( scheduleTask )
+        {
+            try
+            {
+                taskScheduler.queueDatabaseTask( task );
+                addActionMessage( "Your request to update the database has been queued." );
+            }
+            catch ( TaskQueueException e )
+            {
+                addActionError( "Unable to queue your request to update the database: " + e.getMessage() );
+            }
+        }
+
+        // Return to the database screen.
         return SUCCESS;
     }
 
