@@ -20,6 +20,9 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
+<c:url var="iconCreateUrl" value="/images/icons/create.png" /> 
+
 <c:choose>
   <c:when test="${mode == 'edit'}">
     <c:set var="addedit" value="Edit" />
