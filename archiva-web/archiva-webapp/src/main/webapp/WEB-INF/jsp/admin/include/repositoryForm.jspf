@@ -26,4 +26,4 @@
 <ww:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true" />
 <ww:checkbox name="repository.releases" fieldValue="true" label="Releases Included"/>
 <ww:checkbox name="repository.snapshots" fieldValue="false" label="Snapshots Included"/>
-<ww:checkbox name="repository.indexed" fieldValue="true" label="Indexed"/>
+<ww:checkbox name="repository.indexed" fieldValue="true" label="Scannable"/>
