@@ -90,6 +90,8 @@ public class IndexContentConsumer
     private RepositoryContentIndex index;
 
     private File repositoryDir;
+    
+    private String repositoryId;
 
     public String getId()
     {
@@ -124,6 +126,7 @@ public class IndexContentConsumer
             throw new ConsumerException( "Consumer requires managed repository." );
         }
 
+        this.repositoryId = repository.getId();
         this.repositoryDir = new File( repository.getUrl().getPath() );
         this.index = indexFactory.createFileContentIndex( repository );
     }
@@ -135,6 +138,7 @@ public class IndexContentConsumer
         try
         {
             File file = new File( repositoryDir, path );
+            record.setRepositoryId( this.repositoryId );
             record.setFilename( path );
             record.setContents( FileUtils.readFileToString( file, null ) );
 
