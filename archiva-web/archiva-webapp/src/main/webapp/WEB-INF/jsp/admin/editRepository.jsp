@@ -42,7 +42,7 @@
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("saveRepository_name").focus();
+    document.getElementById("saveRepository_repository_name").focus();
   </script>
 
 </div>
