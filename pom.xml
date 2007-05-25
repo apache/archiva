@@ -95,9 +95,7 @@
     </repository>
     <site>
       <id>apache.website</id>
-      <url>
-            scpexe://people.apache.org/www/maven.apache.org/archiva/
-         </url>
+      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/</url>
     </site>
   </distributionManagement>
   <build>
