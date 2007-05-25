@@ -296,6 +296,10 @@
               <value>${project.build.directory}/appserver-base</value>
             </systemProperty>
             <systemProperty>
+              <name>appserver.home</name>
+              <value>${project.build.directory}/appserver-home</value>
+            </systemProperty>
+            <systemProperty>
               <name>derby.system.home</name>
               <value>${project.build.directory}/appserver-base/logs</value>
             </systemProperty>
