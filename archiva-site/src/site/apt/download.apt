@@ -17,7 +17,9 @@ Download Archiva
 *-------------------------------+---------+----------+-----------+
 |                               | Mirrors | Checksum | Signature |
 *-------------------------------+---------+----------+-----------+
-| Archiva 0.9-alpha-2 (tar.gz)  | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz} archiva-0.9-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.md5} archiva-0.9-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.asc} archiva-0.9-alpha-2-bin.tar.gz.asc}} |
+| Archiva 0.9-alpha-2 (bin)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz} archiva-0.9-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.md5} archiva-0.9-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-0.9-alpha-2-bin.tar.gz.asc} archiva-0.9-alpha-2-bin.tar.gz.asc}} |
+*-------------------------------+---------+----------+-----------+
+| Archiva 0.9-alpha-2 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/archiva-0.9-alpha-2-src.tar.gz} archiva-0.9-alpha-2-src.tar.gz}} | {{{http://www.apache.org/dist/maven/source/archiva-0.9-alpha-2-src.tar.gz.md5} archiva-0.9-alpha-2-src.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/source/archiva-0.9-alpha-2-src.tar.gz.asc} archiva-0.9-alpha-2-src.tar.gz.asc}} |
 *-------------------------------+---------+----------+-----------+
 
 * System {Requirements}
@@ -29,7 +31,7 @@ Download Archiva
 *----------------------+--------------------------------------------------------------------------------------------------------------------------------+
 | <<Disk>>             | The Archiva application is in itself about 20MB but will use more disk space to store repository contents |
 *----------------------+--------------------------------------------------------------------------------------------------------------------------------+
-| <<Operating System>> | Support for Linux, Mac OS X, Solaris and Windows.  Tested on Windows XP SP2, Ubuntu Linux, and Mac OS X. |
+| <<Operating System>> | Support for Linux, Mac OS, Solaris and Windows.  Tested on Windows XP SP2, Ubuntu Linux, and Mac OS X. |
 *----------------------+--------------------------------------------------------------------------------------------------------------------------------+
 
 * {Installation} Instructions
