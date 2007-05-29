@@ -29,6 +29,7 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ProjectRepository;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Iterator;
@@ -69,6 +70,11 @@ public class ShowArtifactAction
      * The list of artifacts that depend on this versioned project.
      */
     private List dependees;
+    
+    /**
+     * The list of dependencies in tree format
+     */
+    private List dependencyTree;
 
     /**
      * The reports associated with this versioned project.
@@ -100,8 +106,6 @@ public class ShowArtifactAction
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
-        // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
-        // this.dependencies = VersionMerger.wrap( project.getModel().getDependencies() );
         this.dependencies = model.getDependencies();
         
         return SUCCESS;
@@ -154,6 +158,8 @@ public class ShowArtifactAction
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
+        this.dependencyTree = new ArrayList();
+        
         return SUCCESS;
     }
 
@@ -223,5 +229,15 @@ public class ShowArtifactAction
     public List getDependencies()
     {
         return dependencies;
+    }
+
+    public List getDependees()
+    {
+        return dependees;
+    }
+
+    public List getDependencyTree()
+    {
+        return dependencyTree;
     }
 }
