@@ -24,7 +24,7 @@
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>
 <ww:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true" />
-<ww:checkbox name="repository.releases" value="previousRepoConfig.releases" label="Releases Included"/>
-<ww:checkbox name="repository.snapshots" value="previousRepoConfig.snapshots" label="Snapshots Included"/>
-<ww:checkbox name="repository.indexed" value="previousRepoConfig.indexed" label="Scannable"/>
+<ww:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
+<ww:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
+<ww:checkbox name="repository.indexed" value="repository.indexed" label="Scannable"/>
  
