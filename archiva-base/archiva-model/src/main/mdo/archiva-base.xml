@@ -197,6 +197,7 @@
 
     <class stash.storable="true"
            jpox.table="ARTIFACT"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.use-identifiers-as-primary-key="false"
            jpox.identity-type="application"
            jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey">
@@ -399,6 +400,7 @@
     </class>
     <class stash.storable="true"
            jpox.table="JAVA_ARTIFACT"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.use-identifiers-as-primary-key="false"
            jpox.identity-type="application"
            jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaArtifactJavaDetailsKey">
@@ -526,6 +528,7 @@
     
     <class stash.storable="true"
            jpox.use-identifiers-as-primary-key="false"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.identity-type="application"
            jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaRepositoryMetadataKey"
            jpox.table="REPOSITORY_METADATA">
@@ -694,6 +697,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="REPOSITORY_METADATA_SNAPSHOTS">
       <name>SnapshotVersion</name>
       <description>The Snapshot Version</description>
@@ -737,6 +741,7 @@
      -->
 
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="PROJECT_REFERENCE">
       <name>ProjectReference</name>
       <description>A reference to another (unversioned) Project</description>
@@ -798,6 +803,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="VERSIONED_REFERENCE">
       <name>VersionedReference</name>
       <description>A reference to another Versioned Project</description>
@@ -870,6 +876,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="ARTIFACT_REFERENCE">
       <name>ArtifactReference</name>
       <version>1.0.0+</version>
@@ -986,6 +993,7 @@
 
     <class stash.storable="true"
            jpox.table="PROJECT"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.use-identifiers-as-primary-key="false"
            jpox.identity-type="application"
            jpox.identity-class="org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey">
@@ -1289,6 +1297,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="MAILING_LISTS">
       <name>MailingList</name>
       <description>A Mailing List</description>
@@ -1345,6 +1354,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="ORGANIZATION">
       <name>Organization</name>
       <description>Specifies the organization that produces this project.</description>
@@ -1387,6 +1397,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="LICENSES">
       <name>License</name>
       <description><![CDATA[
@@ -1437,6 +1448,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="ISSUE_MANAGEMENT">
       <name>IssueManagement</name>
       <description>
@@ -1468,7 +1480,7 @@
       </codeSegments>
     </class>
     
-    <class>
+    <class jpox.not-persisted-fields="modelEncoding">
       <name>CiManagement</name>
       <version>1.0.0+</version>
       <fields>
@@ -1498,7 +1510,8 @@
       </codeSegments>
     </class>
     
-    <class stash.storable="true">
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding">
       <name>Individual</name>
       <description>
         Description of a person who has contributed to the project.
@@ -1564,7 +1577,8 @@
             described by a <code>role</code> element, the body of which is a
             role name. This can also be used to describe the contribution.
           ]]></description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
@@ -1601,6 +1615,7 @@
     </class>
 
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="DEPENDENCY">
       <name>Dependency</name>
       <version>1.0.0+</version>
@@ -1781,6 +1796,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="EXCLUSIONS">
       <name>Exclusion</name>
       <version>1.0.0+</version>
@@ -1811,6 +1827,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="SCM">
       <name>Scm</name>
       <version>1.0.0+</version>
@@ -1856,6 +1873,7 @@
     </class>
     
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="PROJECT_REPOSITORIES">
       <name>ProjectRepository</name>
       <version>1.0.0+</version>
@@ -1939,6 +1957,7 @@
       -->
 
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="REPOSITORY_PROBLEMS">
       <name>RepositoryProblem</name>
       <version>1.0.0+</version>
@@ -2038,6 +2057,7 @@
       -->
 
     <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
            jpox.table="REPOSITORY_STATS">
       <name>RepositoryContentStatistics</name>
       <version>1.0.0+</version>

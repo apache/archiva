@@ -192,6 +192,13 @@ public class ProjectModelToDatabaseConsumer
             getLogger().warn( "Unable to save project model " + artifactFile + " to the database : " + e.getMessage(),
                               e );
         }
+        catch ( Throwable t )
+        {
+            // Catch the other errors in the process to allow the rest of the process to complete.
+            getLogger().error(
+                               "Unable to process model " + artifactFile + " due to : " + t.getClass().getName()
+                                   + " : " + t.getMessage(), t );
+        }
     }
 
     private boolean hasProjectModelInDatabase( String groupId, String artifactId, String version )
