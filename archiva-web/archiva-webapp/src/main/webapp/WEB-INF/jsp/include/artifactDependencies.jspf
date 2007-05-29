@@ -31,7 +31,7 @@
 
   <p>
     <my:showArtifactLink groupId="${dependency.groupId}" artifactId="${dependency.artifactId}"
-                         version="${dependency.version}" versions="${dependency.versions}" scope="${dependency.scope}"
+                         version="${dependency.version}" scope="${dependency.scope}"
                          classifier="${dependency.classifier}"/>
   </p>
 </c:forEach>

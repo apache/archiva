@@ -26,10 +26,12 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.ProjectRepository;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Browse the repository.
@@ -73,6 +75,10 @@ public class ShowArtifactAction
      */
     private List reports;
 
+    private List mailingLists;
+
+	private List dependencies;
+
     /**
      * Show the versioned project information tab.
      * 
@@ -96,7 +102,8 @@ public class ShowArtifactAction
 
         // TODO: should this be the whole set of artifacts, and be more like the maven dependencies report?
         // this.dependencies = VersionMerger.wrap( project.getModel().getDependencies() );
-
+        this.dependencies = model.getDependencies();
+        
         return SUCCESS;
     }
 
@@ -107,7 +114,8 @@ public class ShowArtifactAction
     throws ObjectNotFoundException, ArchivaDatabaseException
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
-
+        this.mailingLists = model.getMailingLists();
+        
         return SUCCESS;
     }
     
@@ -205,5 +213,15 @@ public class ShowArtifactAction
     public List getReports()
     {
         return reports;
+    }
+
+    public List getMailingLists()
+    {
+        return mailingLists;
+    }
+
+    public List getDependencies()
+    {
+        return dependencies;
     }
 }
