@@ -26,6 +26,7 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
+import org.apache.maven.archiva.consumers.database.project.WrappedDatabaseProjectModelResolver;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -286,7 +287,8 @@ public class ProjectModelToDatabaseConsumer
             while ( it.hasNext() )
             {
                 ProjectModelResolver resolver = (ProjectModelResolver) it.next();
-                effectiveModelFilter.addProjectModelResolver( resolver );
+                ProjectModelResolver wrapped = new WrappedDatabaseProjectModelResolver( dao, resolver );
+                effectiveModelFilter.addProjectModelResolver( wrapped );
             }
         }
     }
