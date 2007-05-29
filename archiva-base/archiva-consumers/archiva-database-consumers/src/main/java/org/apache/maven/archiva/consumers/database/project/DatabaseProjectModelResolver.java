@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.project.resolvers;
+package org.apache.maven.archiva.consumers.database.project;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,49 +19,48 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 
-import java.io.File;
-
 /**
- * Resolve Project from filesystem. 
+ * Resolves a project model from the database. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelResolver"
+ *                   role-hint="database"
  */
-public class RepositoryProjectResolver
+public class DatabaseProjectModelResolver
     implements ProjectModelResolver
 {
-    private ArchivaRepository repository;
-
-    private ProjectModelReader reader;
-
-    private BidirectionalRepositoryLayout layout;
-
-    public RepositoryProjectResolver( ArchivaRepository repository, ProjectModelReader reader, BidirectionalRepositoryLayout layout )
-    {
-        this.repository = repository;
-        this.reader = reader;
-        this.layout = layout;
-    }
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
 
     public ArchivaProjectModel resolveProjectModel( VersionedReference reference )
         throws ProjectModelException
     {
-        ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
-            .getVersion(), "", "pom" );
-
-        String path = layout.toPath( artifact );
-        File repoFile = new File( this.repository.getUrl().getPath(), path );
-
-        return reader.read( repoFile );
+        try
+        {
+            ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( reference.getGroupId(),
+                                                                                  reference.getArtifactId(),
+                                                                                  reference.getVersion() );
+            return model;
+        }
+        catch ( ObjectNotFoundException e )
+        {
+            return null;
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            return null;
+        }
     }
-
 }

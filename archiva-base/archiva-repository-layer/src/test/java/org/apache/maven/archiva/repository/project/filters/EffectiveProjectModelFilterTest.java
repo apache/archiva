@@ -23,6 +23,8 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Individual;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
@@ -71,7 +73,9 @@ public class EffectiveProjectModelFilterTest
         ArchivaRepository repo = new ArchivaRepository( "defaultTestRepo", "Default Test Repo", "file://"
             + defaultRepoDir.getAbsolutePath() );
 
-        RepositoryProjectResolver resolver = new RepositoryProjectResolver( repo );
+        ProjectModelReader reader = new ProjectModel400Reader();
+        BidirectionalRepositoryLayout layout = new DefaultBidirectionalRepositoryLayout();
+        RepositoryProjectResolver resolver = new RepositoryProjectResolver( repo, reader, layout );
 
         return resolver;
     }
@@ -101,10 +105,10 @@ public class EffectiveProjectModelFilterTest
         assertContainsSameIndividuals( "Individuals", expectedModel.getIndividuals(), effectiveModel.getIndividuals() );
         dumpDependencyList( "Expected", expectedModel.getDependencies() );
         dumpDependencyList( "Effective", effectiveModel.getDependencies() );
-        assertContainsSameDependencies( "Dependencies", expectedModel.getDependencies(), 
-                                                        effectiveModel.getDependencies() );
-        assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), 
-                                                                effectiveModel.getDependencyManagement() );
+        assertContainsSameDependencies( "Dependencies", expectedModel.getDependencies(), effectiveModel
+            .getDependencies() );
+        assertContainsSameDependencies( "DependencyManagement", expectedModel.getDependencyManagement(), effectiveModel
+            .getDependencyManagement() );
     }
 
     private void dumpDependencyList( String type, List deps )

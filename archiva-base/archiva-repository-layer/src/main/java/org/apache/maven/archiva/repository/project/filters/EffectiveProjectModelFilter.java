@@ -28,6 +28,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,17 +43,18 @@ import java.util.Map;
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelFilter" 
  *                   role-hint="effective" 
- *                   instantiation-strategy="per-lookup"
  */
-public class EffectiveProjectModelFilter implements ProjectModelFilter
+public class EffectiveProjectModelFilter
+    extends AbstractLogEnabled
+    implements ProjectModelFilter
 {
     /**
      * @plexus.requirement role-hint="expression"
      */
     private ProjectModelFilter expressionFilter;
-    
+
     private List projectModelResolvers;
-    
+
     public EffectiveProjectModelFilter()
     {
         projectModelResolvers = new ArrayList();
@@ -99,7 +101,7 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
         // Setup Expression Evaluation pieces.
         effectiveProject = expressionFilter.filter( effectiveProject );
 
-        debug( "Starting build of effective with: " + effectiveProject );
+        getLogger().debug( "Starting build of effective with: " + effectiveProject );
 
         // Merge in all the parent poms.
         effectiveProject = mergeParent( effectiveProject );
@@ -116,6 +118,11 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
         this.projectModelResolvers.remove( resolver );
     }
 
+    public void clearResolvers()
+    {
+        this.projectModelResolvers.clear();
+    }
+
     private void applyDependencyManagement( ArchivaProjectModel pom )
     {
         if ( ( pom.getDependencyManagement() == null ) || ( pom.getDependencies() == null ) )
@@ -123,7 +130,7 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
             // Nothing to do. All done!
             return;
         }
-        
+
         if ( pom.getDependencyManagement().isEmpty() || pom.getDependencies().isEmpty() )
         {
             // Nothing to do. All done!
@@ -149,14 +156,9 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
         }
     }
 
-    private void debug( String msg )
-    {
-        System.out.println( "## " + msg );
-    }
-
     private ArchivaProjectModel findProject( VersionedReference projectRef )
     {
-        debug( "Trying to find project: " + projectRef );
+        getLogger().debug( "Trying to find project: " + projectRef );
         Iterator it = this.projectModelResolvers.iterator();
 
         while ( it.hasNext() )
@@ -165,15 +167,15 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
 
             try
             {
-                debug( "Trying to find in " + resolver.getClass().getName() );
+                getLogger().debug( "Trying to find in " + resolver.getClass().getName() );
                 ArchivaProjectModel model = resolver.resolveProjectModel( projectRef );
 
                 if ( model != null )
                 {
-                    debug( "Found it!: " + model );
+                    getLogger().debug( "Found it!: " + model );
                     return model;
                 }
-                debug( "Not found." );
+                getLogger().debug( "Not found." );
             }
             catch ( ProjectModelException e )
             {
@@ -192,14 +194,14 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
     {
         ArchivaProjectModel mixedProject;
 
-        debug( "Parent: " + pom.getParentProject() );
+        getLogger().debug( "Parent: " + pom.getParentProject() );
 
         if ( pom.getParentProject() != null )
         {
             // Use parent reference.
             VersionedReference parentRef = pom.getParentProject();
 
-            debug( "Has parent: " + parentRef );
+            getLogger().debug( "Has parent: " + parentRef );
 
             // Find parent using resolvers.
             ArchivaProjectModel parentProject = findProject( parentRef );
@@ -219,7 +221,7 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
         }
         else
         {
-            debug( "No parent found" );
+            getLogger().debug( "No parent found" );
 
             /* Mix in the super-pom.
              * 
@@ -245,7 +247,7 @@ public class EffectiveProjectModelFilter implements ProjectModelFilter
     private ArchivaProjectModel mixinSuperPom( ArchivaProjectModel pom )
     {
         // TODO: add super pom repositories.
-        debug( "Mix in Super POM: " + pom );
+        getLogger().debug( "Mix in Super POM: " + pom );
 
         return pom;
     }

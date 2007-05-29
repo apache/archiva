@@ -22,6 +22,7 @@ package org.apache.maven.archiva.repository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -51,6 +52,11 @@ public class ActiveManagedRepositories
 
     private List allManagedRepositories = new ArrayList();
 
+    /**
+     * Get the {@link List} of {@link RepositoryConfiguration} objects representing managed repositories.
+     * 
+     * @return the {@link List} of {@link RepositoryConfiguration} objects.
+     */
     public List getAllManagedRepositories()
     {
         synchronized ( allManagedRepositories )
@@ -86,7 +92,7 @@ public class ActiveManagedRepositories
             allManagedRepositories.clear();
 
             List configRepos = archivaConfiguration.getConfiguration().getRepositories();
-            CollectionUtils.select( configRepos, LocalRepositoryPredicate.getInstance() );
+            CollectionUtils.filter( configRepos, LocalRepositoryPredicate.getInstance() );
         }
     }
 }
