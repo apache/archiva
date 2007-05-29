@@ -1,4 +1,4 @@
-package org.apache.maven.transaction;
+package org.apache.maven.archiva.converter.artifact;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,32 +20,31 @@ package org.apache.maven.transaction;
  */
 
 /**
- * TransactionException 
+ * ArtifactConversionException 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class TransactionException
+public class ArtifactConversionException
     extends Exception
 {
 
-    public TransactionException()
+    public ArtifactConversionException()
     {
     }
 
-    public TransactionException( String message )
+    public ArtifactConversionException( String message )
     {
         super( message );
     }
 
-    public TransactionException( Throwable cause )
+    public ArtifactConversionException( Throwable cause )
     {
         super( cause );
     }
 
-    public TransactionException( String message, Throwable cause )
+    public ArtifactConversionException( String message, Throwable cause )
     {
         super( message, cause );
     }
-
 }

@@ -1,4 +1,4 @@
-package org.apache.maven.artifact.converter;
+package org.apache.maven.archiva.converter.artifact;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,8 @@ package org.apache.maven.artifact.converter;
  * under the License.
  */
 
+import org.apache.maven.archiva.transaction.FileTransaction;
+import org.apache.maven.archiva.transaction.TransactionException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -37,8 +39,6 @@ import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.apache.maven.transaction.FileTransaction;
-import org.apache.maven.transaction.TransactionException;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.util.FileUtils;
@@ -65,7 +65,7 @@ import java.util.regex.Matcher;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.artifact.converter.ArtifactConverter" 
+ * @plexus.component role="org.apache.maven.archiva.converter.artifact.ArtifactConverter" 
  *      role-hint="legacy-to-default"
  */
 public class LegacyToDefaultConverter

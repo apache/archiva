@@ -1,4 +1,4 @@
-package org.apache.maven.artifact.converter;
+package org.apache.maven.archiva.converter.artifact;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
  */
 public class Messages
 {
-    private static final String BUNDLE_NAME = "org.apache.maven.artifact.converter.messages"; //$NON-NLS-1$
+    private static final String BUNDLE_NAME = "org.apache.maven.archiva.converter.artifact.messages"; //$NON-NLS-1$
 
     private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle( BUNDLE_NAME );
 

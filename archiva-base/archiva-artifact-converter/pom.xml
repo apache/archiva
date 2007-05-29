@@ -20,13 +20,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.maven.shared</groupId>
-    <artifactId>maven-shared-components</artifactId>
-    <version>6</version>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva-base</artifactId>
+    <version>1.0-alpha-1-SNAPSHOT</version>
   </parent>
-  <artifactId>maven-artifact-converter</artifactId>
-  <version>2.1-alpha-2-SNAPSHOT</version>
-  <name>Maven Artifact Converter</name>
+  <artifactId>archiva-artifact-converter</artifactId>
+  <name>Archiva Artifact Converter</name>
   <description>Converts between Legacy and Modern Layout Artifacts.</description>
   <dependencies>
     <dependency>
@@ -40,9 +39,8 @@
       <version>2.0.4</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-transaction</artifactId>
-      <version>1.0-alpha-1</version>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-transaction</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
@@ -52,12 +50,10 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-container-default</artifactId>
-      <version>1.0-alpha-9</version>
     </dependency>
   </dependencies>
   <build>

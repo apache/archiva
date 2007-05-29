@@ -1,4 +1,4 @@
-package org.apache.maven.transaction;
+package org.apache.maven.archiva.transaction;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,7 +21,7 @@ package org.apache.maven.transaction;
 
 import java.io.File;
 
-import org.apache.maven.transaction.CreateFileEvent;
+import org.apache.maven.archiva.transaction.CreateFileEvent;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 

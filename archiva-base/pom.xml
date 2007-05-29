@@ -39,6 +39,8 @@
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy</module>
+    <module>archiva-transaction</module>
+    <module>archiva-artifact-converter</module>
     <module>archiva-converter</module>
   </modules>
 </project>

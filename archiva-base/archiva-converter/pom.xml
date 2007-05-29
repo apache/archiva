@@ -38,8 +38,8 @@
       <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-artifact-converter</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-artifact-converter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>

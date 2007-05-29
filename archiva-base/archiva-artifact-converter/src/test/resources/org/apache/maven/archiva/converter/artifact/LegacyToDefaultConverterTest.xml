@@ -22,9 +22,9 @@
   <components>
     
     <component>
-      <role>org.apache.maven.artifact.converter.ArtifactConverter</role>
+      <role>org.apache.maven.archiva.converter.artifact.ArtifactConverter</role>
       <role-hint>force-repository-converter</role-hint>
-      <implementation>org.apache.maven.artifact.converter.LegacyToDefaultConverter</implementation>
+      <implementation>org.apache.maven.archiva.converter.artifact.LegacyToDefaultConverter</implementation>
       <description>LegacyToDefaultConverter</description>
       <requirements>
         <requirement>
@@ -51,9 +51,9 @@
     </component>
     
     <component>
-      <role>org.apache.maven.artifact.converter.ArtifactConverter</role>
+      <role>org.apache.maven.archiva.converter.artifact.ArtifactConverter</role>
       <role-hint>dryrun-repository-converter</role-hint>
-      <implementation>org.apache.maven.artifact.converter.LegacyToDefaultConverter</implementation>
+      <implementation>org.apache.maven.archiva.converter.artifact.LegacyToDefaultConverter</implementation>
       <description>LegacyToDefaultConverter</description>
       <requirements>
         <requirement>
