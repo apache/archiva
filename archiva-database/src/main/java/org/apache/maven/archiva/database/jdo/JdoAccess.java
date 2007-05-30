@@ -31,12 +31,8 @@ import org.codehaus.plexus.jdo.JdoFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.jpox.PMFConfiguration;
-import org.jpox.SchemaTool;
 
-import java.io.File;
 import java.io.PrintStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,35 +76,35 @@ public class JdoAccess
         pmf = jdoFactory.getPersistenceManagerFactory();
 
         /* Primitive (and failed) attempt at creating the schema on startup.
-           Just to prevent the multiple stack trace warnings on auto-gen of schema.
+         Just to prevent the multiple stack trace warnings on auto-gen of schema.
          
-        // Create the schema (if needed)
-        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
+         // Create the schema (if needed)
+         URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
 
-        File propsFile = null; // intentional
-        boolean verbose = true;
+         File propsFile = null; // intentional
+         boolean verbose = true;
 
-        try
-        {
-            String connectionFactoryName = pmf.getConnectionFactoryName();
-            if ( StringUtils.isNotBlank( connectionFactoryName ) && connectionFactoryName.startsWith( "java:comp" ) )
-            {
-                // We have a JNDI datasource!
-                String jndiDatasource = connectionFactoryName;
-                System.setProperty( PMFConfiguration.JDO_DATASTORE_URL_PROPERTY, jndiDatasource );
-            }
-            
-            // TODO: figure out how to get the jdbc driver details from JNDI to pass into SchemaTool.
+         try
+         {
+         String connectionFactoryName = pmf.getConnectionFactoryName();
+         if ( StringUtils.isNotBlank( connectionFactoryName ) && connectionFactoryName.startsWith( "java:comp" ) )
+         {
+         // We have a JNDI datasource!
+         String jndiDatasource = connectionFactoryName;
+         System.setProperty( PMFConfiguration.JDO_DATASTORE_URL_PROPERTY, jndiDatasource );
+         }
+         
+         // TODO: figure out how to get the jdbc driver details from JNDI to pass into SchemaTool.
 
-            SchemaTool.createSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose, null );
-        }
-        catch ( Exception e )
-        {
-            getLogger().error( "Unable to create schema: " + e.getMessage(), e );
-        }
+         SchemaTool.createSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose, null );
+         }
+         catch ( Exception e )
+         {
+         getLogger().error( "Unable to create schema: " + e.getMessage(), e );
+         }
 
-        pmf.getPersistenceManager();
-        */
+         pmf.getPersistenceManager();
+         */
 
         // Add the lifecycle listener.
         pmf.addInstanceLifecycleListener( this, null );
@@ -323,6 +319,16 @@ public class JdoAccess
     {
         Extent extent = pm.getExtent( clazz, true );
         Query query = pm.newQuery( extent );
+
+        if ( constraint.getFilter() != null )
+        {
+            query.setFilter( constraint.getFilter() );
+        }
+
+        if ( constraint.getVariables() != null )
+        {
+            query.declareVariables( StringUtils.join( constraint.getVariables(), ";  " ) );
+        }
 
         if ( constraint.getSortColumn() != null )
         {

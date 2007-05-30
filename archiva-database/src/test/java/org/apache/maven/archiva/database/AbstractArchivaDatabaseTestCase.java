@@ -19,10 +19,13 @@ package org.apache.maven.archiva.database;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
@@ -162,5 +165,44 @@ public class AbstractArchivaDatabaseTestCase
     {
         SimpleDateFormat sdf = new SimpleDateFormat( TIMESTAMP );
         return sdf.format( date );
+    }
+
+    protected VersionedReference toVersionedReference( String id )
+    {
+        String parts[] = StringUtils.splitPreserveAllTokens( id, ':' );
+        assertEquals( "Should have 3 parts [" + id + "]", 3, parts.length );
+    
+        VersionedReference ref = new VersionedReference();
+        ref.setGroupId( parts[0] );
+        ref.setArtifactId( parts[1] );
+        ref.setVersion( parts[2] );
+    
+        assertTrue( "Group ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getGroupId() ) );
+        assertTrue( "Artifact ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getArtifactId() ) );
+        assertTrue( "Version should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getVersion() ) );
+    
+        return ref;
+    }
+
+    protected ArtifactReference toArtifactReference( String id )
+    {
+        String parts[] = StringUtils.splitPreserveAllTokens( id, ':' );
+        assertEquals( "Should have 5 parts [" + id + "]", 5, parts.length );
+    
+        ArtifactReference ref = new ArtifactReference();
+        ref.setGroupId( parts[0] );
+        ref.setArtifactId( parts[1] );
+        ref.setVersion( parts[2] );
+        ref.setClassifier( parts[3] );
+        ref.setType( parts[4] );
+    
+        assertTrue( "Group ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getGroupId() ) );
+        assertTrue( "Artifact ID should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getArtifactId() ) );
+        assertTrue( "Version should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getVersion() ) );
+        // Blank string is ok for classifier, NULL is not.
+        assertNotNull( "Classifier should not be null [" + id + "]", ref.getClassifier() );
+        assertTrue( "Type should not be blank [" + id + "]", StringUtils.isNotBlank( ref.getType() ) );
+    
+        return ref;
     }
 }

@@ -22,6 +22,7 @@ package org.apache.maven.archiva.database.browsing;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ProjectsByArtifactUsageConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueArtifactIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.UniqueVersionConstraint;
@@ -30,6 +31,7 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -111,7 +113,7 @@ public class DefaultRepositoryBrowsing
         {
             throw e;
         }
-        
+
         ArchivaProjectModel model;
 
         if ( pomArtifact.getModel().isProcessed() )
@@ -128,11 +130,11 @@ public class DefaultRepositoryBrowsing
         try
         {
             model = dao.getProjectModelDAO().getProjectModel( groupId, artifactId, version );
-    
+
             if ( model == null )
             {
-                throw new ObjectNotFoundException( "Unable to find project model for [" + groupId + ":" + artifactId + ":"
-                    + version + "]" );
+                throw new ObjectNotFoundException( "Unable to find project model for [" + groupId + ":" + artifactId
+                    + ":" + version + "]" );
             }
 
             return model;
@@ -141,5 +143,20 @@ public class DefaultRepositoryBrowsing
         {
             throw e;
         }
+    }
+
+    public List getUsedBy( String groupId, String artifactId, String version )
+        throws ArchivaDatabaseException
+    {
+        ProjectsByArtifactUsageConstraint constraint = new ProjectsByArtifactUsageConstraint( groupId, artifactId,
+                                                                                              version );
+        List results = dao.getProjectModelDAO().queryProjectModels( constraint );
+        if ( results == null )
+        {
+            // defensive. to honor contract as specified. never null.
+            return Collections.EMPTY_LIST;
+        }
+
+        return results;
     }
 }

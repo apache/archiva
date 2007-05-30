@@ -44,6 +44,15 @@ public interface DeclarativeConstraint extends Constraint
      * @return the parameters. (can be null)
      */
     public abstract String[] getDeclaredParameters();
+    
+    /**
+     * The JDOQL filter to apply to the query. (optional)
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the filter to apply. (can be null)
+     */
+    public abstract String getFilter();
 
     /**
      * Get the parameters used for this query. (required if using {@link #getDeclaredParameters()} )
@@ -67,6 +76,15 @@ public interface DeclarativeConstraint extends Constraint
      * @return the sort column name. (can be null)
      */
     public abstract String getSortColumn();
+    
+    /**
+     * Get the variables used within the query.
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the variables used within the query.
+     */
+    public abstract String[] getVariables();
 
     /**
      * Get the SELECT WHERE (condition) value for the constraint.

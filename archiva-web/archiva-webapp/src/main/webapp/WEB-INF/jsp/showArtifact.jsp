@@ -146,6 +146,9 @@
       <c:when test="${dependencyTree != null}">
         <%@ include file="/WEB-INF/jsp/include/dependencyTree.jspf" %>
       </c:when>
+      <c:when test="${dependees != null}">
+        <%@ include file="/WEB-INF/jsp/include/projectDependees.jspf" %>
+      </c:when>
       <c:when test="${mailingLists != null}">
         <%@ include file="/WEB-INF/jsp/include/mailingLists.jspf" %>
       </c:when>

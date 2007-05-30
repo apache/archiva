@@ -23,20 +23,63 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 
+import java.util.List;
+
 /**
- * RepositoryBrowsing 
+ * Repository Browsing component 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface RepositoryBrowsing
 {
+    /**
+     * Get the {@link BrowsingResults} for the root of the repository.
+     * 
+     * @return the root browsing results.
+     */
     public BrowsingResults getRoot();
 
+    /**
+     * Get the {@link BrowsingResults} for the selected groupId.
+     * 
+     * @param groupId the groupId to select.
+     * @return the {@link BrowsingResults} for the specified groupId.
+     */
     public BrowsingResults selectGroupId( String groupId );
 
+    /**
+     * Get the {@link BrowsingResults} for the selected groupId & artifactId.
+     * 
+     * @param groupId the groupId selected
+     * @param artifactId the artifactId selected
+     * @return the {@link BrowsingResults} for the specified groupId / artifactId combo.
+     */
     public BrowsingResults selectArtifactId( String groupId, String artifactId );
 
+    /**
+     * Get the {@link ArchivaProjectModel} for the selected groupId / artifactId / version combo.
+     * 
+     * @param groupId the groupId selected
+     * @param artifactId the artifactId selected
+     * @param version the version selected
+     * @return the {@link ArchivaProjectModel} for the selected groupId / artifactId / version combo.
+     * @throws ObjectNotFoundException if the artifact object or project object isn't found in the database.
+     * @throws ArchivaDatabaseException if there is a fundamental database error.
+     */
     public ArchivaProjectModel selectVersion( String groupId, String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException;
+    
+    /**
+     * Get the {@link List} of {@link ArchivaProjectModel} that are used by the provided
+     * groupId, artifactId, and version specified.
+     * 
+     * @param groupId the groupId selected
+     * @param artifactId the artifactId selected
+     * @param version the version selected
+     * @return the {@link List} of {@link ArchivaProjectModel} objects. (never null, but can be empty)
+     * @throws ArchivaDatabaseException if there is a fundamental database error.
+     */
+    public List getUsedBy( String groupId, String artifactId, String version )
+        throws ArchivaDatabaseException;
 }

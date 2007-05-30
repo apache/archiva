@@ -26,13 +26,10 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ProjectRepository;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Iterator;
 
 /**
  * Browse the repository.
@@ -144,8 +141,7 @@ public class ShowArtifactAction
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
-        // TODO: create depends on collector.
-        this.dependees = Collections.EMPTY_LIST;
+        this.dependees = repoBrowsing.getUsedBy( groupId, artifactId, version );
 
         return SUCCESS;
     }
@@ -158,7 +154,7 @@ public class ShowArtifactAction
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
-        this.dependencyTree = new ArrayList();
+        this.dependencyTree = Collections.EMPTY_LIST;
         
         return SUCCESS;
     }
@@ -230,6 +226,7 @@ public class ShowArtifactAction
     {
         return dependencies;
     }
+
 
     public List getDependees()
     {

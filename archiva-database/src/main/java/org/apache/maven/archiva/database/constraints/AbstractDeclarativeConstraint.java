@@ -34,9 +34,16 @@ public abstract class AbstractDeclarativeConstraint
     protected String[] declImports;
 
     protected String[] declParams;
+    
+    protected String[] variables;
 
     protected Object[] params;
 
+    public String getFilter()
+    {
+        return null;
+    }
+    
     public String getFetchLimits()
     {
         return null;
@@ -60,5 +67,10 @@ public abstract class AbstractDeclarativeConstraint
     public String getSortDirection()
     {
         return Constraint.ASCENDING;
+    }
+    
+    public String[] getVariables()
+    {
+        return variables;
     }
 }

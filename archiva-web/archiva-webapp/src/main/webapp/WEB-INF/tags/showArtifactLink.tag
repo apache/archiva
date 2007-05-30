@@ -20,6 +20,7 @@
 <%@ taglib prefix="ww" uri="/webwork" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
+
 <%@ attribute name="groupId" required="true" %>
 <%@ attribute name="artifactId" %>
 <%@ attribute name="version" %>
@@ -28,7 +29,7 @@
 <%@ attribute name="versions" type="java.util.List" %>
 
 <span class="artifact-link">
-  <archiva:groupIdLink var="${model.groupId}" includeTop="true" />
+  <archiva:groupIdLink var="${groupId}" includeTop="false" />
   
   <c:if test="${!empty(artifactId)}">
     <c:set var="url">
@@ -37,7 +38,7 @@
         <ww:param name="artifactId" value="%{'${artifactId}'}"/>
       </ww:url>
     </c:set>
-    / <a href="${url}">${artifactId}</a>
+    <a href="${url}">${artifactId}</a>
   </c:if>
   | <strong>Version(s):</strong>
   <c:choose>
