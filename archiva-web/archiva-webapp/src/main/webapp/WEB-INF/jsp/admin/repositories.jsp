@@ -46,12 +46,12 @@
       Add Repository</ww:a>
     </redback:ifAuthorized>
   </div>
-  <h2>Local Repositories</h2>
+  <h2>Managed Repositories</h2>
 
 <c:choose>
   <c:when test="${empty(managedRepositories)}">
-    <%-- No Local Repositories. --%>
-    <strong>There are no local repositories configured yet.</strong>
+    <%-- No Managed Repositories. --%>
+    <strong>There are no managed repositories configured yet.</strong>
   </c:when>
   <c:otherwise>
     <%-- Display the repositories. --%>

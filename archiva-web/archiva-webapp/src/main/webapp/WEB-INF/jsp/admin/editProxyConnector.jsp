@@ -65,7 +65,7 @@
     <input type="hidden" name="pattern"/>
     <ww:select name="connector.proxyId" list="proxyIdOptions" label="Network Proxy" required="true"/>
     <ww:select name="connector.sourceRepoId" list="localRepoIdList" 
-               label="Local Repository" required="true"/>
+               label="Managed Repository" required="true"/>
     <ww:select name="connector.targetRepoId" list="remoteRepoIdList" 
                label="Remote Repository" required="true" />
   
