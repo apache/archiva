@@ -288,7 +288,7 @@ libwrapper.so  run.sh  wrapper  wrapper.conf
           </ul>
           <li>Types of Repositories</li>
           <ul>
-            <li>Local / Managed</li>
+            <li>Managed</li>
             <ul>
               <li>file://... URLs only</li>
               <li>Indexed</li>

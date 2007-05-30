@@ -93,22 +93,6 @@ Configuring Maven-2 to use an Archiva repository
   </repository>
 +-------------------------------------------------------------------------+
 
-  You can also copy this for a proxied repository, but make sure to change /repository/ to /proxy/ and to change from the "URL Name" to the "Repository Identifier". This should look much like this:
-  
-+-------------------------------------------------------------------------+
-  <repository>
-    <id>maven-release</id>
-    <url>URL-TO-ARCHIVA/proxy/REPOSITORY-ID</url>
-    <releases>
-      <enabled>true</enabled>
-    </releases>
-    <snapshots>
-      <enabled>false</enabled>
-    </snapshots>
-  </repository>
-+-------------------------------------------------------------------------+
-      
-
 * Configuring Maven-2 to deploy to an Archiva repository
   
   [[1]] Create a user in Archiva to use for deployment
@@ -165,7 +149,7 @@ Configuring Maven-2 to use an Archiva repository
         <extension>
           <groupId>org.apache.maven.wagon</groupId>
           <artifactId>wagon-webdav</artifactId>
-          <version>1.0-beta-1</version>
+          <version>1.0-beta-2</version>
         </extension>
       </extensions>
     </build>

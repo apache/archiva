@@ -26,41 +26,21 @@
 ~~ NOTE: For help with the syntax of this file, see:
 ~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
-To checkout the latest code
+To deploy Archiva on Plexus
 
-  Using Subversion, either checkout from {{http://svn.apache.org/repos/asf/maven/archiva/trunk/}} or to get all of Maven 2, checkout from {{http://svn.apache.org/repos/asf/maven/trunks/}}.
+  Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
 
-To build
+   * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
 
-  If this is the first time, and if you've not pulled this down for some other reason then it will save time to do the following first:
+   * Start with: ./bin/plexus.sh start or a platform specific version.
 
-    * Download the 1.0 connector zip from: {{http://java.sun.com/j2ee/connector/download.html}}
+   * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
 
-    * Unpack the zip to get the jar
-
-    * Run: mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar
-
-    * Download the 1.0.1B jta zip from: {{http://java.sun.com/products/jta/}}
-
-    * Install it: mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip
-
-  Otherwise:
-
-    * Build Archiva: mvn install
-
-
-To test-deploy Archiva on the embedded Jetty
-
-    * cd archiva-web/archiva-webapp
-
-    * mvn jetty:run
-
-
-To deploy Archiva to Tomcat 5.5
+To deploy Archiva on Tomcat 5.5
 
    * Create a directory in tomcat called archiva, at the same level as bin, conf, logs and the others.
 
-   * Copy the war file from archiva/archiva-webapp/target into the new directory
+   * Copy the war file from apps/archiva/lib into the new directory
 
    * Create a conf/Catalina/localhost/archiva.xml file with the following data:
 
@@ -92,9 +72,11 @@ To deploy Archiva to Tomcat 5.5
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
-   * Copy $HOME/.m2/org/apache/derby/derby/10.1.3.1/derby-10.1.3.1.jar (or from the remote repository) into the tomcat common/lib
+   * Copy $HOME/.m2/org/apache/derby/derby/10.1.3.1/derby-10.1.3.1.jar (or from the remote repository) into the Tomcat
+   common/lib
 
-   * To deal with a current bug, you'll also need to add the following to your ${catalina.home}/conf/web.xml in the relevant section (search for jspx):
+   * To deal with a current bug, you'll also need to add the following to your ${catalina.home}/conf/web.xml in the
+   relevant section (search for jspx):
 
 +-------------------------------------------------------------------------+
   <servlet-mapping>
@@ -103,38 +85,21 @@ To deploy Archiva to Tomcat 5.5
   </servlet-mapping>
 +-------------------------------------------------------------------------+
 
- When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't appear to cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but Tomcat fails to start the context and you have to shutdown and restart again.
-
-
-To deploy Archiva on Plexus
-
-  Plexus is a container developed as a part of Maven. It provides a very simple way to get started with Archiva:
-
-   * Unpack the archiva-plexus-runtime/target/archiva-bin.tar.gz archive into a directory of your choice.
-
-   * Start with: ./bin/plexus.sh start or a platform specific version.
-
-   * A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
-
+ When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't appear to
+ cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but
+ Tomcat fails to start the context and you have to shutdown and restart again.
 
 Setting up your Archiva instance
 
-   * Goto {{http://localhost:9091/}} if on the embedded Jetty, {{http://localhost:8080/archiva/}} if on Tomcat or {{http://localhost:8080/archiva/}} if on Plexus.
+   * Goto {{http://localhost:8080/archiva/}}
 
-   * On the first page - setup your administration user. The password requires a numerical character and must not be longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
+   * On the first page - setup your administration user. The password requires a numerical character and must not be
+   longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
 
    * On the second page - setup your first repository. It can be both an m1 and an m2 repository.
 
-   * On the third page - setup your indexing. Mostly this means choosing a directory to put the index in. It'll re-index every hour.
-
- A useful repository to setup when exploring is your local Maven repository. 
-
-+-------------------------------------------------------------------------+
- Identifier: LOCAL
- Name: Maven2 Local Repository
- Location: $HOME/.m2/repository
-+-------------------------------------------------------------------------+
-
+   * On the third page - setup your indexing. Mostly this means choosing a directory to put the index in. It'll
+   re-index every hour.
 
 Updating Archiva within a Tomcat
 
