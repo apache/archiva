@@ -660,6 +660,7 @@ public class DefaultRepositoryProxyConnectors
                 ProxyConnector connector = new ProxyConnector();
                 connector.setSourceRepository( getRepository( proxyConfig.getSourceRepoId() ) );
                 connector.setTargetRepository( getRepository( proxyConfig.getTargetRepoId() ) );
+                connector.setProxyId( proxyConfig.getProxyId() );
                 connector.setPolicies( proxyConfig.getPolicies() );
 
                 // Copy any blacklist patterns.
