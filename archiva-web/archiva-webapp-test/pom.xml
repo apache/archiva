@@ -194,7 +194,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>selenium-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-beta-1</version>
         <executions>
           <execution>
             <id>start-selenium</id>
