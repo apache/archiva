@@ -53,16 +53,16 @@
                config-name="org.apache.maven.shared.app.user" config-at="org.apache.maven.shared.app"
                config-forceCreate="true"/>
           <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.security"/>
+                      config-at="org.codehaus.plexus.redback"/>
           <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.security"/>
+                      config-at="org.codehaus.plexus.redback"/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true" config-name="org.apache.maven.archiva.base"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.base}/conf/shared.xml" config-optional="true"
                config-name="org.apache.maven.shared.app.base" config-at="org.apache.maven.shared.app"/>
           <xml fileName="${appserver.base}/conf/common.xml" config-optional="true"/>
           <properties fileName="${appserver.base}/conf/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.security"/>
+                      config-at="org.codehaus.plexus.redback"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
                config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.home}/conf/shared.xml" config-optional="true"
@@ -70,8 +70,8 @@
           <xml fileName="${appserver.home}/conf/common.xml" config-optional="true"/>
           <xml fileName="org/apache/maven/archiva/configuration/default-archiva.xml" config-at="org.apache.maven.archiva.base"/>
           <properties fileName="${appserver.home}/conf/security.properties" config-optional="true"
-                      config-at="org.codehaus.plexus.security"/>
-          <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.security"/>
+                      config-at="org.codehaus.plexus.redback"/>
+          <properties fileName="org/apache/maven/archiva/security.properties" config-at="org.codehaus.plexus.redback"/>
         </properties>
       </configuration>
     </component>
