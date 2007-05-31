@@ -55,7 +55,8 @@
     </noscript>
 
     <ww:form method="POST" action="checksumSearch" namespace="/"
-             onsubmit="this.md5.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true">
+             onsubmit="this.q.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true;">
+      <ww:hidden name="q"/>
       <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">     
       <tr>
         <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>

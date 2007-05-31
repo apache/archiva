@@ -22,7 +22,7 @@
     "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
 <validators>
-  <field name="md5">
+  <field name="q">
     <field-validator type="requiredstring">
       <message>
         You must select a file, or enter the checksum. If the file was given and you receive this message,

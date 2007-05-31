@@ -175,7 +175,7 @@
       <result name="results">/WEB-INF/jsp/results.jsp</result>
       <result name="error">/WEB-INF/jsp/findArtifact.jsp</result>
       <result name="artifact" type="redirect">
-        /browse/${searchResults[0].groupId}/${searchResults[0].artifactId}/${searchResults[0].version}
+        /browse/${results.getHits().get(0).groupId}/${results.getHits().get(0).artifactId}/${results.getHits().get(0).version}
       </result>
     </action>
 
