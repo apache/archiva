@@ -31,6 +31,8 @@ public class WrappedDatabaseProjectModelResolver
         throws ProjectModelException
     {
         ArchivaProjectModel model = resolver.resolveProjectModel( reference );
+        model.setOrigin( "filesystem" );
+        
         if ( model == null )
         {
             return model;
