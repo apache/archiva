@@ -173,9 +173,8 @@
         <plugin>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-            <tagBase>
-                     https://svn.apache.org/repos/asf/maven/archiva/tags
-                  </tagBase>
+            <tagBase>https://svn.apache.org/repos/asf/maven/archiva/tags</tagBase>
+            <preparationGoals>clean install</preparationGoals>
           </configuration>
         </plugin>
         <plugin>
