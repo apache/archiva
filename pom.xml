@@ -771,6 +771,18 @@
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <!-- TODO:  Remove after maven-parent v6 is released -->
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.0-alpha-3</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
   <properties>
     <maven.version>2.0.5</maven.version>
