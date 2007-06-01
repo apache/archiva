@@ -40,6 +40,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -175,9 +176,9 @@ public class RepositoryProjectModelResolverFactory
             resolverMap.clear();
 
             List configRepos = archivaConfiguration.getConfiguration().getRepositories();
-            CollectionUtils.filter( configRepos, LocalRepositoryPredicate.getInstance() );
+            Collection configLocalRepos = CollectionUtils.select( configRepos, LocalRepositoryPredicate.getInstance() );
 
-            Iterator it = configRepos.iterator();
+            Iterator it = configLocalRepos.iterator();
             while ( it.hasNext() )
             {
                 RepositoryConfiguration repoconfig = (RepositoryConfiguration) it.next();
