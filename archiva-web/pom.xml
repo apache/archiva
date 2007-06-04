@@ -34,4 +34,13 @@
     <module>archiva-webapp</module>
     <module>archiva-standalone</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>webapp-test</id>
+      <modules>
+        <module>archiva-webapp-test</module>        
+      </modules>
+    </profile>
+  </profiles>
 </project>
