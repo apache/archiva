@@ -45,5 +45,5 @@ Archiva release process.
 
 9) Deploy the site.
 
-   $ mvn clean site:deploy
+   $ mvn clean site:site site:deploy
 
