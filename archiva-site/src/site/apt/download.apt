@@ -9,6 +9,19 @@ Download Archiva
   You will be prompted for a mirror - if the file is not found on yours, please be patient, as it may take 24
   hours to reach all mirrors.
 
+* Archiva 1.0 Alpha 1
+
+  This version is considered an early alpha release of the database backed, scalable, and stability improved archiva.  This version has known problems with Maven 1 clients, Proxying, and deployment on Tomcat.  (See {{{http://jira.codehaus.org/secure/IssueNavigator.jspa?reset=true&&pid=10980&resolution=-1&sorter/field=priority&sorter/order=DESC} full list of issues}} for details)
+
+*-------------------------------+---------+----------+-----------+
+|                               | Mirrors | Checksum | Signature |
+*-------------------------------+---------+----------+-----------+
+| Archiva 1.0-alpha-1 (bin.tar.gz)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-1.0-alpha-1-bin.tar.gz} archiva-1.0-alpha-1-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-1-bin.tar.gz.md5} archiva-1.0-alpha-1-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-1-bin.tar.gz.asc} archiva-1.0-alpha-1-bin.tar.gz.asc}} |
+| Archiva 1.0-alpha-1 (bin.zip)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-1.0-alpha-1-bin.zip} archiva-1.0-alpha-1-bin.zip}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-1-bin.zip.md5} archiva-1.0-alpha-1-bin.zip.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-1-bin.zip.asc} archiva-1.0-alpha-1-bin.zip.asc}} |
+*-------------------------------+---------+----------+-----------+
+| Archiva 1.0-alpha-1 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/archiva-1.0-alpha-1-src.zip} archiva-1.0-alpha-1-src.zip}} | {{{http://www.apache.org/dist/maven/source/archiva-1.0-alpha-1-src.zip.md5} archiva-1.0-alpha-1-src.zip.md5}} | {{{http://www.apache.org/dist/maven/source/archiva-1.0-alpha-1-src.zip.asc} archiva-1.0-alpha-1-src.zip.asc}} |
+*-------------------------------+---------+----------+-----------+
+
 * Archiva 0.9 Alpha 2
 
   This version is considered a proof of concept, useful for demonstration purposes, small repositories, and low user
@@ -38,10 +51,12 @@ Download Archiva
 
  The installation of Archiva consists solely of unpacking the archive in the desired directory. It's that simple!
 
+** NOTE: If you have installed archiva-0.9, backup you $HOME/.m2/archiva.xml file.
+
  For example:
 
 +------+
- tar -xzvf archiva-0.9-alpha-2-bin.tar.gz
+ tar -xzvf archiva-1.0-alpha-1-bin.tar.gz
 +------+
 
  To start the app, use the appropriate platform-specific startup script found under the "bin" directory of your
@@ -50,6 +65,6 @@ Download Archiva
  For example:
 
 +------+
- cd archiva-0.9-alpha-2/bin/linux-x86-32
+ cd archiva-1.0-alpha-1/bin/linux-x86-32
  ./run.sh start
 +------+

@@ -24,14 +24,14 @@
   </properties>
   <body>
     <div id="downloadbox">
-      <h5>Get Archiva 0.9 Alpha 2</h5>
+      <h5>Get Archiva 1.0 Alpha 1</h5>
       <p>
         <a href="download.html">
           <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
           Download
         </a>
         Archiva
-        <small>(20Mb)</small>
+        <small>(23MB)</small>
       </p>
       <ul>
         <li>
@@ -40,10 +40,10 @@
         <li>
           <a href="download.html#installation">Installation Instructions</a>
         </li>
-        <!--
         <li>
-          <a href="release-notes.html">Release Notes</a>
+          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10980&amp;styleName=Html&amp;version=13443">Release Notes</a>
         </li>
+        <!--
         <li>
           <a href="guides/getting-started/index.html">Getting Started</a>
         </li>
