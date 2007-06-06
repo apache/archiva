@@ -273,7 +273,10 @@ public class ConfigureRepositoryAction
 
         // Fix the URL entry (could possibly be a filesystem path)
         String rawUrlEntry = repository.getUrl();
-        repository.setUrl( PathUtil.toUrl( rawUrlEntry ) );
+        if ( !rawUrlEntry.startsWith( "http://" ) )
+        {
+            repository.setUrl( PathUtil.toUrl( rawUrlEntry ) );
+        }
         
         if ( repository.isManaged() )
         {
