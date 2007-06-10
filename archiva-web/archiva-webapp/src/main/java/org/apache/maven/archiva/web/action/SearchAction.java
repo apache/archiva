@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
@@ -58,7 +57,7 @@ public class SearchAction
     private static final String ARTIFACT = "artifact";
 
     public String quickSearch()
-        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException, ParseException
+        throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
     {
         /* TODO: give action message if indexing is in progress.
          * This should be based off a count of 'unprocessed' artifacts.
