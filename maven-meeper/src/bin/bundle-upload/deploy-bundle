@@ -65,9 +65,8 @@ BUNDLE=tmp.jar
   [ ! -f ${POM} ] && echo && echo "Cannot deploy without the pom.xml or project.xml file!" && echo && exit
 
   echo "POM is: '${POM}'"
+  dos2unix ${POM}
   less $POM
-
-  $SCRIPTDIR/d2u ${POM}
 
   if [ ! -z $VERSION ]
   then
