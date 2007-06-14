@@ -41,6 +41,7 @@ public class XMLWriter
             OutputFormat outputFormat = OutputFormat.createPrettyPrint();
             org.dom4j.io.XMLWriter xmlwriter = new org.dom4j.io.XMLWriter( writer, outputFormat );
             xmlwriter.write( doc );
+            xmlwriter.flush();
         }
         catch ( IOException e )
         {
