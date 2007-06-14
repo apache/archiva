@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.project.filters;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -27,10 +28,11 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
-import org.apache.maven.archiva.repository.project.ProjectModelResolver;
+import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,26 +50,23 @@ public class EffectiveProjectModelFilter
     extends AbstractLogEnabled
     implements ProjectModelFilter
 {
-    /**
-     * @plexus.requirement role-hint="expression"
-     */
-    private ProjectModelFilter expressionFilter;
+    private ProjectModelFilter expressionFilter = new ProjectModelExpressionFilter();
 
-    private List projectModelResolvers;
+    private ProjectModelResolverStack projectModelResolverStack;
 
     public EffectiveProjectModelFilter()
     {
-        projectModelResolvers = new ArrayList();
+        projectModelResolverStack = new ProjectModelResolverStack();
     }
 
-    public void addProjectModelResolver( ProjectModelResolver resolver )
+    public void setProjectModelResolverStack( ProjectModelResolverStack resolverStack )
     {
-        if ( resolver == null )
-        {
-            return;
-        }
+        this.projectModelResolverStack = resolverStack;
+    }
 
-        this.projectModelResolvers.add( resolver );
+    public ProjectModelResolverStack getProjectModelResolverStack()
+    {
+        return this.projectModelResolverStack;
     }
 
     /**
@@ -90,7 +89,7 @@ public class EffectiveProjectModelFilter
             return null;
         }
 
-        if ( this.projectModelResolvers.isEmpty() )
+        if ( this.projectModelResolverStack.isEmpty() )
         {
             throw new IllegalStateException( "Unable to build effective pom with no project model resolvers defined." );
         }
@@ -113,25 +112,26 @@ public class EffectiveProjectModelFilter
         return effectiveProject;
     }
 
-    public void removeResolver( ProjectModelResolver resolver )
-    {
-        this.projectModelResolvers.remove( resolver );
-    }
+    private Logger logger;
 
-    public void clearResolvers()
+    protected Logger getLogger()
     {
-        this.projectModelResolvers.clear();
+        if ( logger == null )
+        {
+            logger = super.getLogger();
+            if ( logger == null )
+            {
+                logger = new ConsoleLogger( ConsoleLogger.LEVEL_INFO, this.getClass().getName() );
+            }
+        }
+
+        return logger;
     }
 
     private void applyDependencyManagement( ArchivaProjectModel pom )
     {
-        if ( ( pom.getDependencyManagement() == null ) || ( pom.getDependencies() == null ) )
-        {
-            // Nothing to do. All done!
-            return;
-        }
-
-        if ( pom.getDependencyManagement().isEmpty() || pom.getDependencies().isEmpty() )
+        if ( CollectionUtils.isEmpty( pom.getDependencyManagement() )
+            || CollectionUtils.isEmpty( pom.getDependencies() ) )
         {
             // Nothing to do. All done!
             return;
@@ -156,39 +156,6 @@ public class EffectiveProjectModelFilter
         }
     }
 
-    private ArchivaProjectModel findProject( VersionedReference projectRef )
-    {
-        getLogger().debug( "Trying to find project: " + projectRef );
-        Iterator it = this.projectModelResolvers.iterator();
-
-        while ( it.hasNext() )
-        {
-            ProjectModelResolver resolver = (ProjectModelResolver) it.next();
-
-            try
-            {
-                getLogger().debug( "Trying to find in " + resolver.getClass().getName() );
-                ArchivaProjectModel model = resolver.resolveProjectModel( projectRef );
-
-                if ( model != null )
-                {
-                    getLogger().debug( "Found it!: " + model );
-                    return model;
-                }
-                getLogger().debug( "Not found." );
-            }
-            catch ( ProjectModelException e )
-            {
-                // TODO: trigger notifier of problem?
-                e.printStackTrace();
-            }
-        }
-
-        // TODO: Document that project was not found. (Use monitor?)
-
-        return null;
-    }
-
     private ArchivaProjectModel mergeParent( ArchivaProjectModel pom )
         throws ProjectModelException
     {
@@ -204,7 +171,7 @@ public class EffectiveProjectModelFilter
             getLogger().debug( "Has parent: " + parentRef );
 
             // Find parent using resolvers.
-            ArchivaProjectModel parentProject = findProject( parentRef );
+            ArchivaProjectModel parentProject = this.projectModelResolverStack.findProject( parentRef );
 
             if ( parentProject != null )
             {

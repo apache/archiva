@@ -979,6 +979,104 @@
     }
           ]]></code>
         </codeSegment>
+        <codeSegment>
+          <version>1.0.0+</version>
+          <code><![CDATA[
+    public int hashCode()
+    {
+        final int PRIME = 31;
+        int result = 1;
+        result = PRIME * result + ( ( groupId == null ) ? 0 : groupId.hashCode() );
+        result = PRIME * result + ( ( artifactId == null ) ? 0 : artifactId.hashCode() );
+        result = PRIME * result + ( ( version == null ) ? 0 : version.hashCode() );
+        result = PRIME * result + ( ( classifier == null ) ? 0 : classifier.hashCode() );
+        result = PRIME * result + ( ( type == null ) ? 0 : type.hashCode() );
+        return result;
+    }
+
+    public boolean equals( Object obj )
+    {
+        if ( this == obj )
+        {
+            return true;
+        }
+        
+        if ( obj == null )
+        {
+            return false;
+        }
+        
+        if ( getClass() != obj.getClass() )
+        {
+            return false;
+        }
+
+        final ArtifactReference other = (ArtifactReference) obj;
+
+        if ( groupId == null )
+        {
+            if ( other.groupId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !groupId.equals( other.groupId ) )
+        {
+            return false;
+        }
+
+        if ( artifactId == null )
+        {
+            if ( other.artifactId != null )
+            {
+                return false;
+            }
+        }
+        else if ( !artifactId.equals( other.artifactId ) )
+        {
+            return false;
+        }
+
+        if ( version == null )
+        {
+            if ( other.version != null )
+            {
+                return false;
+            }
+        }
+        else if ( !version.equals( other.version ) )
+        {
+            return false;
+        }
+
+        if ( classifier == null )
+        {
+            if ( other.classifier != null )
+            {
+                return false;
+            }
+        }
+        else if ( !classifier.equals( other.classifier ) )
+        {
+            return false;
+        }
+        
+        if ( type == null )
+        {
+            if ( other.type != null )
+            {
+                return false;
+            }
+        }
+        else if ( !type.equals( other.type ) )
+        {
+            return false;
+        }
+        
+        return true;
+    }          
+          ]]></code>
+        </codeSegment>
       </codeSegments>
     </class>
 
@@ -1267,6 +1365,16 @@
           <association xml.mapStyle="inline">
             <type>String</type>
             <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>relocation</name>
+          <version>1.0.0+</version>
+          <description>If relocated, this is the new location reference</description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>VersionedReference</type>
+            <multiplicity>1</multiplicity>
           </association>
         </field>
       </fields>
@@ -1678,10 +1786,18 @@
         <field>
           <name>transitive</name>
           <version>1.0.0+</version>
-          <required>true</required>
-          <description>True if the dependency node is only here due a transitive lookup</description>
+          <required>false</required>
+          <description>True if the dependency is only here due a transitive resolution</description>
           <type>boolean</type>
-          <defaultValue>false</defaultValue>
+          <!-- <defaultValue>false</defaultValue> -->
+        </field>
+        <field>
+          <name>fromParent</name>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>True if the dependency is only here due a parent pom</description>
+          <type>boolean</type>
+          <!-- <defaultValue>false</defaultValue> -->
         </field>
         <field stash.maxsize="256">
           <name>url</name>

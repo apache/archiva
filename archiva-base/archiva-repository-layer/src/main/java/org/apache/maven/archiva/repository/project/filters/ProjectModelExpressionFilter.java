@@ -20,11 +20,13 @@ package org.apache.maven.archiva.repository.project.filters;
  */
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaModelCloner;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
+import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
 import org.codehaus.plexus.evaluator.sources.PropertiesExpressionSource;
@@ -32,6 +34,7 @@ import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * ProjectModelExpressionFilter 
@@ -45,10 +48,7 @@ import java.util.List;
 public class ProjectModelExpressionFilter
     implements ProjectModelFilter
 {
-    /**
-     * @plexus.requirement
-     */
-    private ExpressionEvaluator evaluator;
+    private ExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
 
     /**
      * Find and Evaluate the Expressions present in the model.
@@ -58,13 +58,21 @@ public class ProjectModelExpressionFilter
     public ArchivaProjectModel filter( final ArchivaProjectModel model )
         throws ProjectModelException
     {
+        Properties props = new Properties();
+
         if ( model.getProperties() != null )
         {
-            PropertiesExpressionSource propsSource = new PropertiesExpressionSource();
-            propsSource.setProperties( model.getProperties() );
-            evaluator.addExpressionSource( propsSource );
+            props.putAll( model.getProperties() );
         }
 
+        props.setProperty( "pom.artifactId", model.getArtifactId() );
+
+        props.setProperty( "pom.groupId", StringUtils.defaultString( model.getGroupId() ) );
+        props.setProperty( "pom.version", StringUtils.defaultString( model.getVersion() ) );
+
+        PropertiesExpressionSource propsSource = new PropertiesExpressionSource();
+        propsSource.setProperties( props );
+        evaluator.addExpressionSource( propsSource );
         evaluator.addExpressionSource( new SystemPropertyExpressionSource() );
 
         ArchivaProjectModel ret = ArchivaModelCloner.clone( model );

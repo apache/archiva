@@ -35,6 +35,7 @@
     <module>archiva-consumers</module>
     <module>archiva-indexer</module>
     <module>archiva-model</module>
+    <module>archiva-dependency-graph</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy</module>

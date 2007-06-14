@@ -36,14 +36,18 @@ import org.apache.maven.archiva.model.Scm;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 /**
  * ProjectModelMerge
+ *
+ * TODO: Should call this ProjectModelAncestry as it deals with the current project and its parent.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -75,6 +79,7 @@ public class ProjectModelMerge
         // Unmerged.
         merged.setArtifactId( mainProject.getArtifactId() );
         merged.setPackaging( StringUtils.defaultIfEmpty( mainProject.getPackaging(), "jar" ) );
+        merged.setRelocation( mainProject.getRelocation() );
 
         // Merged
         merged.setGroupId( merge( mainProject.getGroupId(), parentProject.getGroupId() ) );
@@ -98,7 +103,7 @@ public class ProjectModelMerge
         merged.setPlugins( mergePlugins( mainProject.getPlugins(), parentProject.getPlugins() ) );
         merged.setReports( mergeReports( mainProject.getReports(), parentProject.getReports() ) );
         merged.setProperties( merge( mainProject.getProperties(), parentProject.getProperties() ) );
-
+        
         return merged;
     }
 
@@ -245,10 +250,14 @@ public class ProjectModelMerge
 
         if ( mainDep == null )
         {
-            return ArchivaModelCloner.clone( parentDep );
+            Dependency dep = ArchivaModelCloner.clone( parentDep );
+            dep.setFromParent( true );
+            return dep;
         }
 
         Dependency merged = new Dependency();
+
+        merged.setFromParent( true );
 
         // Unmerged.
         merged.setGroupId( mainDep.getGroupId() );
@@ -415,28 +424,40 @@ public class ProjectModelMerge
 
         if ( mainDependencies == null )
         {
-            return ArchivaModelCloner.cloneDependencies( parentDependencies );
+            List merged = ArchivaModelCloner.cloneDependencies( parentDependencies );
+            Iterator it = merged.iterator();
+            while ( it.hasNext() )
+            {
+                Dependency dep = (Dependency) it.next();
+                dep.setFromParent( true );
+            }
+            return merged;
         }
 
-        List merged = ArchivaModelCloner.cloneDependencies( mainDependencies );
+        List merged = new ArrayList();
 
         Map mainDepMap = createDependencyMap( mainDependencies );
         Map parentDepMap = createDependencyMap( parentDependencies );
+        Set uniqueKeys = new HashSet();
+        uniqueKeys.addAll( mainDepMap.keySet() );
+        uniqueKeys.addAll( parentDepMap.keySet() );
 
-        Iterator it = parentDepMap.entrySet().iterator();
+        Iterator it = uniqueKeys.iterator();
         while ( it.hasNext() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            Dependency parentDep = (Dependency) entry.getValue();
+            String key = (String) it.next();
+            Dependency parentDep = (Dependency) parentDepMap.get( key );
             Dependency mainDep = (Dependency) mainDepMap.get( key );
 
             if ( parentDep == null )
             {
+                // Means there is no parent dep to override main dep.
                 merged.add( mainDep );
             }
             else
             {
+                // Parent dep exists (main doesn't have to).
+                // Merge the parent over the main dep.
                 merged.add( merge( mainDep, parentDep ) );
             }
         }
@@ -453,28 +474,40 @@ public class ProjectModelMerge
 
         if ( mainDepMgmt == null )
         {
-            return ArchivaModelCloner.cloneDependencies( parentDepMgmt );
+            List merged = ArchivaModelCloner.cloneDependencies( parentDepMgmt );
+            Iterator it = merged.iterator();
+            while ( it.hasNext() )
+            {
+                Dependency dep = (Dependency) it.next();
+                dep.setFromParent( true );
+            }
+            return merged;
         }
 
-        List merged = ArchivaModelCloner.cloneDependencies( mainDepMgmt );
+        List merged = new ArrayList();
 
         Map mainDepMap = createDependencyMap( mainDepMgmt );
         Map parentDepMap = createDependencyMap( parentDepMgmt );
+        Set uniqueKeys = new HashSet();
+        uniqueKeys.addAll( mainDepMap.keySet() );
+        uniqueKeys.addAll( parentDepMap.keySet() );
 
-        Iterator it = parentDepMap.entrySet().iterator();
+        Iterator it = uniqueKeys.iterator();
         while ( it.hasNext() )
         {
-            Map.Entry entry = (Entry) it.next();
-            String key = (String) entry.getKey();
-            Dependency parentDep = (Dependency) entry.getValue();
+            String key = (String) it.next();
+            Dependency parentDep = (Dependency) parentDepMap.get( key );
             Dependency mainDep = (Dependency) mainDepMap.get( key );
 
             if ( parentDep == null )
             {
+                // Means there is no parent depMan entry to override main depMan.
                 merged.add( mainDep );
             }
             else
             {
+                // Parent depMan entry exists (main doesn't have to).
+                // Merge the parent over the main depMan entry.
                 merged.add( merge( mainDep, parentDep ) );
             }
         }

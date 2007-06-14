@@ -85,7 +85,7 @@ public class EffectiveProjectModelFilterTest
     {
         EffectiveProjectModelFilter filter = lookupEffective();
 
-        filter.addProjectModelResolver( createDefaultRepositoryResolver() );
+        filter.getProjectModelResolverStack().addProjectModelResolver( createDefaultRepositoryResolver() );
 
         ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY
             + "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom" );

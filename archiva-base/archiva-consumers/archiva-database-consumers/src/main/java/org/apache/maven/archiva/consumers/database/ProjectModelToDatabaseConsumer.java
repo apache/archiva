@@ -300,18 +300,19 @@ public class ProjectModelToDatabaseConsumer
     {
         synchronized ( effectiveModelFilter )
         {
-            effectiveModelFilter.clearResolvers();
+            effectiveModelFilter.getProjectModelResolverStack().clearResolvers();
 
             // Add the database resolver first!
-            effectiveModelFilter.addProjectModelResolver( databaseResolver );
+            effectiveModelFilter.getProjectModelResolverStack().addProjectModelResolver( databaseResolver );
 
             List ret = this.resolverFactory.getAllResolvers();
             Iterator it = ret.iterator();
             while ( it.hasNext() )
             {
                 ProjectModelResolver resolver = (ProjectModelResolver) it.next();
+                // TODO: Use listener to perform database saving of found models, instead of wrapped resolver.
                 ProjectModelResolver wrapped = new WrappedDatabaseProjectModelResolver( dao, resolver );
-                effectiveModelFilter.addProjectModelResolver( wrapped );
+                effectiveModelFilter.getProjectModelResolverStack().addProjectModelResolver( wrapped );
             }
         }
     }

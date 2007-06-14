@@ -19,6 +19,7 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -39,8 +40,64 @@ public class DependencyScope
 
     public static final String TEST = "test";
 
+    private static final MultiValueMap scopeMap;
+
+    static
+    {
+        // Store the map of scopes to what other scopes are 'within' that scope.
+        scopeMap = new MultiValueMap();
+
+        scopeMap.put( COMPILE, COMPILE );
+        scopeMap.put( COMPILE, RUNTIME );
+        scopeMap.put( COMPILE, PROVIDED );
+        scopeMap.put( COMPILE, SYSTEM );
+
+        scopeMap.put( TEST, COMPILE );
+        scopeMap.put( TEST, RUNTIME );
+        scopeMap.put( TEST, PROVIDED );
+        scopeMap.put( TEST, SYSTEM );
+        scopeMap.put( TEST, TEST );
+        
+        scopeMap.put( RUNTIME, RUNTIME );
+        scopeMap.put( RUNTIME, PROVIDED );
+        scopeMap.put( RUNTIME, SYSTEM );
+        
+        scopeMap.put( PROVIDED, RUNTIME );
+        scopeMap.put( PROVIDED, PROVIDED );
+        scopeMap.put( PROVIDED, SYSTEM );
+        
+        scopeMap.put( SYSTEM, SYSTEM );
+    }
+
     public static boolean isSystemScoped( Dependency dep )
     {
         return StringUtils.equals( SYSTEM, dep.getScope() );
+    }
+
+    /**
+     * Test the provided scope against the desired scope to see if it is
+     * within that scope's pervue.
+     * 
+     * Examples: 
+     * actual:compile,  desired:test = true
+     * actual:compile,  desired:compile = true
+     * actual:test,     desired:compile = false
+     * actual:provided, desired:compile = false
+     * 
+     * @param actualScope
+     * @param desiredScope
+     * @return
+     */
+    public static boolean isWithinScope( String actualScope, String desiredScope )
+    {
+        if ( StringUtils.isBlank( desiredScope ) )
+        {
+            // nothing desired? everything should fail.
+            return false;
+        }
+
+        String scope = StringUtils.defaultIfEmpty( actualScope, COMPILE );
+
+        return scopeMap.containsValue( desiredScope, scope );
     }
 }

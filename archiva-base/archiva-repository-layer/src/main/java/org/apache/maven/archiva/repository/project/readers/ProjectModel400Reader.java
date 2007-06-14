@@ -107,6 +107,8 @@ public class ProjectModel400Reader
 
             model.setBuildExtensions( getBuildExtensions( xml ) );
 
+            model.setRelocation( getRelocation( xml ) );
+
             return model;
         }
         catch ( XMLException e )
@@ -451,6 +453,19 @@ public class ProjectModel400Reader
         }
 
         return ret;
+    }
+
+    private VersionedReference getRelocation( XMLReader xml )
+        throws XMLException
+    {
+        Element elemRelocation = xml.getElement( "//project/distributionManagement/relocation" );
+
+        if ( elemRelocation != null )
+        {
+            return getVersionedReference( elemRelocation );
+        }
+
+        return null;
     }
 
     private List getReports( XMLReader xml )
