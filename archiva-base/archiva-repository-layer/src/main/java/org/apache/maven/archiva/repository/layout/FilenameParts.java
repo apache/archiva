@@ -25,7 +25,7 @@ package org.apache.maven.archiva.repository.layout;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-class FilenameParts
+public class FilenameParts
 {
     public String artifactId;
 

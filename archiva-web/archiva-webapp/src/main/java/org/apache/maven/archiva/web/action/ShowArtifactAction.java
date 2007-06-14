@@ -90,7 +90,17 @@ public class ShowArtifactAction
     public String artifact()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        try
+        {
+            this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        }
+        catch ( ObjectNotFoundException oe )
+        {
+            addActionError( "Unable to find project model for [" + groupId + ":" + artifactId
+                    + ":" + version + "]." );
+
+            return ERROR;
+        }             
 
         return SUCCESS;
     }

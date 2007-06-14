@@ -33,15 +33,19 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.RepositoryURL;
+import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
 import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectModelResolverFactory;
+import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -181,11 +185,23 @@ public class ProjectModelToDatabaseConsumer
             // Resolve the project model
             model = effectiveModelFilter.filter( model );
 
+            if( isValidModel( model, artifact ) )
+            {
+                dao.getProjectModelDAO().saveProjectModel( model );
+            }
+            else
+            {
+                getLogger().warn( "Invalid or corrupt pom. Project model " + model
+                    + " was not added in the database." );
+            }
+
             dao.getProjectModelDAO().saveProjectModel( model );
         }
         catch ( ProjectModelException e )
         {
             getLogger().warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
+                        
+            addProblem( artifact, "Unable to read project model " + artifactFile + " : " + e.getMessage() );
         }
         catch ( ArchivaDatabaseException e )
         {
@@ -297,6 +313,96 @@ public class ProjectModelToDatabaseConsumer
                 ProjectModelResolver wrapped = new WrappedDatabaseProjectModelResolver( dao, resolver );
                 effectiveModelFilter.addProjectModelResolver( wrapped );
             }
+        }
+    }
+
+    private String toPath( ArchivaArtifact artifact )
+    {
+        try
+        {
+            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
+            return layout.toPath( artifact );
+        }
+        catch ( LayoutException e )
+        {
+            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
+            return null;
+        }
+    }
+
+    private boolean isValidModel( ArchivaProjectModel model, ArchivaArtifact artifact )
+        throws ConsumerException
+    {
+        File artifactFile = toFile( artifact );
+
+        try
+        {
+            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
+            if ( !parts.artifactId.equalsIgnoreCase( model.getArtifactId() ) )
+            {
+                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
+                    " does not match the pom file's artifactId: " + parts.artifactId );
+
+                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId() +
+                    " does not match the pom file's artifactId: " + parts.artifactId );
+
+                return false;
+            }
+
+            if ( !parts.version.equalsIgnoreCase( model.getVersion() ) )
+            {
+                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
+                    " does not match the pom file's artifactId: " + parts.artifactId );
+
+                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion() +
+                    " does not match the pom file's version: " + parts.version );
+
+                return false;
+            }
+
+            //check if the file name matches the values indicated in the pom
+           if( !artifactFile.getName().equalsIgnoreCase( model.getArtifactId() + "-" + model.getVersion() + "-" + parts.classifier) )
+            {
+                getLogger().warn( "Artifact " + artifact + " does not match the artifactId and/or version " +
+                    "specified in the project model " + model );
+
+                addProblem( artifact, "Artifact " + artifact + " does not match the artifactId and/or version " +
+                    "specified in the project model " + model );
+
+                return false;
+            }
+
+        }
+        catch ( LayoutException le )
+        {
+            throw new ConsumerException( le.getMessage() );
+        }
+
+        return true;
+    }
+
+    private void addProblem( ArchivaArtifact artifact, String msg )
+        throws ConsumerException
+    {
+        RepositoryProblem problem = new RepositoryProblem();
+        problem.setRepositoryId( artifact.getModel().getRepositoryId() );
+        problem.setPath( toPath( artifact ) );
+        problem.setGroupId( artifact.getGroupId() );
+        problem.setArtifactId( artifact.getArtifactId() );
+        problem.setVersion( artifact.getVersion() );
+        problem.setType( CorruptArtifactReport.PROBLEM_TYPE_CORRUPT_ARTIFACT );
+        problem.setOrigin( getId() );
+        problem.setMessage( msg );
+
+        try
+        {
+            dao.getRepositoryProblemDAO().saveRepositoryProblem( problem );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
+            String emsg = "Unable to save problem with artifact location to DB: " + e.getMessage();
+            getLogger().warn( emsg, e );
+            throw new ConsumerException( emsg, e );
         }
     }
 }

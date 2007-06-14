@@ -192,7 +192,8 @@
     </action>
 
     <action name="showArtifact" class="showArtifactAction" method="artifact">
-      <result>/WEB-INF/jsp/showArtifact.jsp</result>
+      <result name="error">/WEB-INF/jsp/generalError.jsp</result>
+      <result name="success">/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
 
     <action name="showArtifactMailingLists" class="showArtifactAction" method="mailingLists">
