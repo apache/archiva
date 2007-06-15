@@ -134,7 +134,10 @@ public class DefaultBidirectionalRepositoryLayout
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
+        if( reference.getVersion() != null ) {
+            // add the version only if it is present
+            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
+        }
         path.append( MAVEN_METADATA );
 
         return path.toString();
