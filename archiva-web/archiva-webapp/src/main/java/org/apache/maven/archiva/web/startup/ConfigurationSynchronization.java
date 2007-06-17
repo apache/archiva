@@ -127,7 +127,6 @@ public class ConfigurationSynchronization
                 }
 
                 if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repoConfig.getId() ) )
-                    ;
                 {
                     roleManager.createTemplatedRole( "archiva-repository-manager", repoConfig.getId() );
                 }
