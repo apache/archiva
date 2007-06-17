@@ -1445,7 +1445,8 @@
           <name>otherArchives</name>
           <version>1.0.0+</version>
           <description>The email address to subscribe to this mailing list.</description>
-          <association>
+          <association stash.part="true"
+                       jpox.join="false">
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>

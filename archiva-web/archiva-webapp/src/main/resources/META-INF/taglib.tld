@@ -95,5 +95,45 @@
       
    </tag>
    
+   <tag>
+   
+      <name>dependency-tree</name>
+      <tag-class>org.apache.maven.archiva.web.tags.DependencyTreeTag</tag-class>
+      <body-content>JSP</body-content>
+      <description><![CDATA[Render a dependency tree for the provided project.]]></description>
+
+      <attribute>
+        <name>groupId</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The groupId]]></description>
+      </attribute>
+      
+      <attribute>
+        <name>artifactId</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The artifactId]]></description>
+      </attribute>
+
+      <attribute>
+        <name>version</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The version]]></description>
+      </attribute>
+
+      <attribute>
+        <name>nodevar</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        
+        <description><![CDATA[The variable name for the node.]]></description>
+      </attribute>
+
+   </tag>
    
 </taglib>

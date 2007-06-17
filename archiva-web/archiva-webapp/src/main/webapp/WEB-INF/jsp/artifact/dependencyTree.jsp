@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
+<%--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
   ~ distributed with this work for additional information
@@ -16,19 +15,13 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
+  --%>
 
-<decorators defaultdir="/WEB-INF/jsp/decorators">
-  <excludes>
-    <pattern>/repository/*</pattern>
-    <pattern>/components/*</pattern>
-  </excludes>
+<%@ taglib prefix="page" uri="http://www.opensymphony.com/sitemesh/page" %>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
-  <decorator name="default" page="default.jsp">
-    <pattern>/*</pattern>
-  </decorator>
-  
-  <decorator name="artifactDetails" page="artifactDecorator.jsp">
-    <pattern>/*/dependencyTree</pattern>
-  </decorator>
-</decorators>
+<archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}">
+  <my:showArtifactLink groupId="${node.groupId}" artifactId="${node.artifactId}"
+                       version="${node.version}"/>
+</archiva:dependency-tree>

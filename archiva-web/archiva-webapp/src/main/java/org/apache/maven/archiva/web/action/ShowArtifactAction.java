@@ -28,7 +28,6 @@ import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public class ShowArtifactAction
     implements Validateable
 {
     /* .\ Not Exposed \._____________________________________________ */
-    
+
     /**
      * @plexus.requirement role-hint="default"
      */
@@ -67,11 +66,6 @@ public class ShowArtifactAction
      * The list of artifacts that depend on this versioned project.
      */
     private List dependees;
-    
-    /**
-     * The list of dependencies in tree format
-     */
-    private List dependencyTree;
 
     /**
      * The reports associated with this versioned project.
@@ -80,7 +74,7 @@ public class ShowArtifactAction
 
     private List mailingLists;
 
-	private List dependencies;
+    private List dependencies;
 
     /**
      * Show the versioned project information tab.
@@ -96,11 +90,10 @@ public class ShowArtifactAction
         }
         catch ( ObjectNotFoundException oe )
         {
-            addActionError( "Unable to find project model for [" + groupId + ":" + artifactId
-                    + ":" + version + "]." );
+            addActionError( "Unable to find project model for [" + groupId + ":" + artifactId + ":" + version + "]." );
 
             return ERROR;
-        }             
+        }
 
         return SUCCESS;
     }
@@ -109,12 +102,12 @@ public class ShowArtifactAction
      * Show the artifact information tab.
      */
     public String dependencies()
-    throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
         this.dependencies = model.getDependencies();
-        
+
         return SUCCESS;
     }
 
@@ -122,23 +115,23 @@ public class ShowArtifactAction
      * Show the mailing lists information tab.
      */
     public String mailingLists()
-    throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
         this.mailingLists = model.getMailingLists();
-        
+
         return SUCCESS;
     }
-    
+
     /**
      * Show the reports tab.
      */
     public String reports()
-    throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        System.out.println("#### In reports.");
+        System.out.println( "#### In reports." );
         // TODO: hook up reports on project - this.reports = artifactsDatabase.findArtifactResults( groupId, artifactId, version );
-        System.out.println("#### Found " + reports.size() + " reports.");
+        System.out.println( "#### Found " + reports.size() + " reports." );
 
         return SUCCESS;
     }
@@ -147,7 +140,7 @@ public class ShowArtifactAction
      * Show the dependees (other artifacts that depend on this project) tab.
      */
     public String dependees()
-    throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
@@ -160,12 +153,10 @@ public class ShowArtifactAction
      * Show the dependencies of this versioned project tab.
      */
     public String dependencyTree()
-    throws ObjectNotFoundException, ArchivaDatabaseException
+        throws ObjectNotFoundException, ArchivaDatabaseException
     {
         this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
 
-        this.dependencyTree = Collections.EMPTY_LIST;
-        
         return SUCCESS;
     }
 
@@ -237,14 +228,8 @@ public class ShowArtifactAction
         return dependencies;
     }
 
-
     public List getDependees()
     {
         return dependees;
-    }
-
-    public List getDependencyTree()
-    {
-        return dependencyTree;
     }
 }

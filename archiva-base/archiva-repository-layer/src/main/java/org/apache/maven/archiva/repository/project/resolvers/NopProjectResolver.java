@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers.database.project;
+package org.apache.maven.archiva.repository.project.resolvers;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,48 +19,41 @@ package org.apache.maven.archiva.consumers.database.project;
  * under the License.
  */
 
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 
 /**
- * Resolves a project model from the database. 
+ * A No-op Project Resolver, perform no lookup, just returns the requested
+ * information in the form of a simple ArchviaProjectModel.
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelResolver"
- *                   role-hint="database"
  */
-public class DatabaseProjectModelResolver
+public class NopProjectResolver
     implements ProjectModelResolver
 {
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
+    private static NopProjectResolver INSTANCE = new NopProjectResolver();
+
+    public static NopProjectResolver getInstance()
+    {
+        return INSTANCE;
+    }
 
     public ArchivaProjectModel resolveProjectModel( VersionedReference reference )
         throws ProjectModelException
     {
-        try
-        {
-            ArchivaProjectModel model = dao.getProjectModelDAO().getProjectModel( reference.getGroupId(),
-                                                                                  reference.getArtifactId(),
-                                                                                  reference.getVersion() );
-            return model;
-        }
-        catch ( ObjectNotFoundException e )
-        {
-            return null;
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            return null;
-        }
+        ArchivaProjectModel model = new ArchivaProjectModel();
+
+        model.setGroupId( reference.getGroupId() );
+        model.setArtifactId( reference.getArtifactId() );
+        model.setVersion( reference.getVersion() );
+        model.setPackaging( "pom" );
+
+        model.setOrigin( "nop" );
+
+        return model;
     }
+
 }

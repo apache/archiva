@@ -20,7 +20,10 @@ package org.apache.maven.archiva.web.startup;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,8 +33,14 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component 
+ *              role="org.apache.maven.archiva.web.startup.Banner"
+ *              role-hint="default"
  */
 public class Banner
+    extends AbstractLogEnabled
+    implements Initializable
 {
     public static String encode( String raw )
     {
@@ -221,5 +230,11 @@ public class Banner
     {
         String banner = getBanner( version );
         logger.info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
+    }
+    
+    public void initialize()
+        throws InitializationException
+    {
+        Banner.display( getLogger(), ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
     }
 }

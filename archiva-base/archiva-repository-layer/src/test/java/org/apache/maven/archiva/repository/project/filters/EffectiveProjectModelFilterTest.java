@@ -29,6 +29,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
+import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
 import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectResolver;
 import org.codehaus.plexus.PlexusTestCase;
@@ -83,9 +84,8 @@ public class EffectiveProjectModelFilterTest
     public void testBuildEffectiveProject()
         throws Exception
     {
+        initTestResolverFactory();
         EffectiveProjectModelFilter filter = lookupEffective();
-
-        filter.getProjectModelResolverStack().addProjectModelResolver( createDefaultRepositoryResolver() );
 
         ArchivaProjectModel startModel = createArchivaProjectModel( DEFAULT_REPOSITORY
             + "/org/apache/maven/archiva/archiva-model/1.0-SNAPSHOT/archiva-model-1.0-SNAPSHOT.pom" );
@@ -96,6 +96,17 @@ public class EffectiveProjectModelFilterTest
             + "/archiva-model-effective.pom" );
 
         assertModel( expectedModel, effectiveModel );
+    }
+
+    private ProjectModelResolverFactory initTestResolverFactory()
+        throws Exception
+    {
+        ProjectModelResolverFactory resolverFactory = (ProjectModelResolverFactory) lookup( ProjectModelResolverFactory.class );
+
+        resolverFactory.getCurrentResolverStack().clearResolvers();
+        resolverFactory.getCurrentResolverStack().addProjectModelResolver( createDefaultRepositoryResolver() );
+
+        return resolverFactory;
     }
 
     private void assertModel( ArchivaProjectModel expectedModel, ArchivaProjectModel effectiveModel )

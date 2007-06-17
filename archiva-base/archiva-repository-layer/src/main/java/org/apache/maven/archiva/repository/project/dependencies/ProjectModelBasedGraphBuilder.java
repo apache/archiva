@@ -27,20 +27,32 @@ import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
+import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
-import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
 
 /**
  * ProjectModelBasedGraphBuilder 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component 
+ *              role="org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder"
+ *              role-hint="project-model"
  */
 public class ProjectModelBasedGraphBuilder
     implements DependencyGraphBuilder
 {
-    private ProjectModelResolverStack modelResolver;
+    /**
+     * @plexus.requirement
+     */
+    private ProjectModelResolverFactory resolverFactory;
 
+    /**
+     * @plexus.requirement 
+     *          role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
+     *          role-hint="effective"
+     */
     private EffectiveProjectModelFilter effectiveFilter = new EffectiveProjectModelFilter();
 
     public DependencyGraph createGraph( VersionedReference versionedProjectReference )
@@ -57,7 +69,7 @@ public class ProjectModelBasedGraphBuilder
                              VersionedReference versionedProjectReference )
     {
         ArchivaProjectModel model = resolveModel( fromNode.getArtifact() );
-        
+
         DependencyGraphUtils.addNodeFromModel( model, graph, fromNode );
     }
 
@@ -69,7 +81,7 @@ public class ProjectModelBasedGraphBuilder
         projectRef.setArtifactId( reference.getArtifactId() );
         projectRef.setVersion( reference.getVersion() );
 
-        ArchivaProjectModel model = modelResolver.findProject( projectRef );
+        ArchivaProjectModel model = resolverFactory.getCurrentResolverStack().findProject( projectRef );
 
         if ( model == null )
         {
@@ -78,8 +90,6 @@ public class ProjectModelBasedGraphBuilder
 
         try
         {
-            effectiveFilter.setProjectModelResolverStack( modelResolver );
-
             ArchivaProjectModel processedModel = effectiveFilter.filter( model );
 
             return processedModel;
@@ -102,15 +112,5 @@ public class ProjectModelBasedGraphBuilder
         model.setVersion( reference.getVersion() );
         model.setPackaging( reference.getType() );
         return model;
-    }
-
-    public ProjectModelResolverStack getModelResolver()
-    {
-        return modelResolver;
-    }
-
-    public void setModelResolver( ProjectModelResolverStack modelResolver )
-    {
-        this.modelResolver = modelResolver;
     }
 }

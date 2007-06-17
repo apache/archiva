@@ -28,7 +28,7 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
-import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
+import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -52,22 +52,10 @@ public class EffectiveProjectModelFilter
 {
     private ProjectModelFilter expressionFilter = new ProjectModelExpressionFilter();
 
-    private ProjectModelResolverStack projectModelResolverStack;
-
-    public EffectiveProjectModelFilter()
-    {
-        projectModelResolverStack = new ProjectModelResolverStack();
-    }
-
-    public void setProjectModelResolverStack( ProjectModelResolverStack resolverStack )
-    {
-        this.projectModelResolverStack = resolverStack;
-    }
-
-    public ProjectModelResolverStack getProjectModelResolverStack()
-    {
-        return this.projectModelResolverStack;
-    }
+    /**
+     * @plexus.requirement
+     */
+    private ProjectModelResolverFactory resolverFactory;
 
     /**
      * Take the provided {@link ArchivaProjectModel} and build the effective {@link ArchivaProjectModel}.
@@ -89,7 +77,7 @@ public class EffectiveProjectModelFilter
             return null;
         }
 
-        if ( this.projectModelResolverStack.isEmpty() )
+        if ( resolverFactory.getCurrentResolverStack().isEmpty() )
         {
             throw new IllegalStateException( "Unable to build effective pom with no project model resolvers defined." );
         }
@@ -171,7 +159,7 @@ public class EffectiveProjectModelFilter
             getLogger().debug( "Has parent: " + parentRef );
 
             // Find parent using resolvers.
-            ArchivaProjectModel parentProject = this.projectModelResolverStack.findProject( parentRef );
+            ArchivaProjectModel parentProject = this.resolverFactory.getCurrentResolverStack().findProject( parentRef );
 
             if ( parentProject != null )
             {

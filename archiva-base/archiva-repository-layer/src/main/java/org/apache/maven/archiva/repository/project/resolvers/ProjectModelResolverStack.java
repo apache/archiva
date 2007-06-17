@@ -35,6 +35,8 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @plexus.component role="org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack"
  */
 public class ProjectModelResolverStack
 {
@@ -113,9 +115,24 @@ public class ProjectModelResolverStack
         return null;
     }
 
+    public boolean hasResolver( ProjectModelResolver resolver )
+    {
+        return this.resolvers.contains( resolver );
+    }
+
     public boolean isEmpty()
     {
         return this.resolvers.isEmpty();
+    }
+
+    public void prependProjectModelResolver( ProjectModelResolver resolver )
+    {
+        if ( resolver == null )
+        {
+            return;
+        }
+
+        this.resolvers.add( 0, resolver );
     }
 
     public void removeListener( ProjectModelResolutionListener listener )

@@ -21,39 +21,30 @@ package org.apache.maven.archiva.consumers.database;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
-import org.apache.maven.archiva.consumers.database.project.WrappedDatabaseProjectModelResolver;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.model.RepositoryProblem;
+import org.apache.maven.archiva.model.RepositoryURL;
+import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
-import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
-import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectModelResolverFactory;
-import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -68,7 +59,7 @@ import java.util.List;
  */
 public class ProjectModelToDatabaseConsumer
     extends AbstractMonitoredConsumer
-    implements DatabaseUnprocessedArtifactConsumer, RegistryListener, Initializable
+    implements DatabaseUnprocessedArtifactConsumer
 {
     /**
      * @plexus.configuration default-value="update-db-project"
@@ -111,20 +102,11 @@ public class ProjectModelToDatabaseConsumer
     private ProjectModelFilter expressionModelFilter;
 
     /**
-     * @plexus.requirement
-     */
-    private RepositoryProjectModelResolverFactory resolverFactory;
-
-    /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
-     *                     role-hint="effective"
+     * @plexus.requirement 
+     *          role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
+     *          role-hint="effective"
      */
     private EffectiveProjectModelFilter effectiveModelFilter;
-
-    /**
-     * @plexus.requirement role-hint="database"
-     */
-    private ProjectModelResolver databaseResolver;
 
     private List includes;
 
@@ -185,14 +167,13 @@ public class ProjectModelToDatabaseConsumer
             // Resolve the project model
             model = effectiveModelFilter.filter( model );
 
-            if( isValidModel( model, artifact ) )
+            if ( isValidModel( model, artifact ) )
             {
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
             {
-                getLogger().warn( "Invalid or corrupt pom. Project model " + model
-                    + " was not added in the database." );
+                getLogger().warn( "Invalid or corrupt pom. Project model " + model + " was not added in the database." );
             }
 
             dao.getProjectModelDAO().saveProjectModel( model );
@@ -200,7 +181,7 @@ public class ProjectModelToDatabaseConsumer
         catch ( ProjectModelException e )
         {
             getLogger().warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
-                        
+
             addProblem( artifact, "Unable to read project model " + artifactFile + " : " + e.getMessage() );
         }
         catch ( ArchivaDatabaseException e )
@@ -273,48 +254,8 @@ public class ProjectModelToDatabaseConsumer
 
     public boolean isPermanent()
     {
+        // Tells the configuration that this consumer cannot be disabled.
         return true;
-    }
-
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        /* nothing to do here */
-    }
-
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
-        {
-            update();
-        }
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        update();
-        archivaConfiguration.addChangeListener( this );
-    }
-
-    private void update()
-    {
-        synchronized ( effectiveModelFilter )
-        {
-            effectiveModelFilter.getProjectModelResolverStack().clearResolvers();
-
-            // Add the database resolver first!
-            effectiveModelFilter.getProjectModelResolverStack().addProjectModelResolver( databaseResolver );
-
-            List ret = this.resolverFactory.getAllResolvers();
-            Iterator it = ret.iterator();
-            while ( it.hasNext() )
-            {
-                ProjectModelResolver resolver = (ProjectModelResolver) it.next();
-                // TODO: Use listener to perform database saving of found models, instead of wrapped resolver.
-                ProjectModelResolver wrapped = new WrappedDatabaseProjectModelResolver( dao, resolver );
-                effectiveModelFilter.getProjectModelResolverStack().addProjectModelResolver( wrapped );
-            }
-        }
     }
 
     private String toPath( ArchivaArtifact artifact )
@@ -341,34 +282,39 @@ public class ProjectModelToDatabaseConsumer
             FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
             if ( !parts.artifactId.equalsIgnoreCase( model.getArtifactId() ) )
             {
-                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
-                    " does not match the pom file's artifactId: " + parts.artifactId );
+                getLogger().warn(
+                                  "Project Model " + model + " artifactId: " + model.getArtifactId()
+                                      + " does not match the pom file's artifactId: " + parts.artifactId );
 
-                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId() +
-                    " does not match the pom file's artifactId: " + parts.artifactId );
+                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId()
+                    + " does not match the pom file's artifactId: " + parts.artifactId );
 
                 return false;
             }
 
             if ( !parts.version.equalsIgnoreCase( model.getVersion() ) )
             {
-                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
-                    " does not match the pom file's artifactId: " + parts.artifactId );
+                getLogger().warn(
+                                  "Project Model " + model + " artifactId: " + model.getArtifactId()
+                                      + " does not match the pom file's artifactId: " + parts.artifactId );
 
-                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion() +
-                    " does not match the pom file's version: " + parts.version );
+                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion()
+                    + " does not match the pom file's version: " + parts.version );
 
                 return false;
             }
 
             //check if the file name matches the values indicated in the pom
-           if( !artifactFile.getName().equalsIgnoreCase( model.getArtifactId() + "-" + model.getVersion() + "-" + parts.classifier) )
+            if ( !artifactFile.getName().equalsIgnoreCase(
+                                                           model.getArtifactId() + "-" + model.getVersion() + "-"
+                                                               + parts.classifier ) )
             {
-                getLogger().warn( "Artifact " + artifact + " does not match the artifactId and/or version " +
-                    "specified in the project model " + model );
+                getLogger().warn(
+                                  "Artifact " + artifact + " does not match the artifactId and/or version "
+                                      + "specified in the project model " + model );
 
-                addProblem( artifact, "Artifact " + artifact + " does not match the artifactId and/or version " +
-                    "specified in the project model " + model );
+                addProblem( artifact, "Artifact " + artifact + " does not match the artifactId and/or version "
+                    + "specified in the project model " + model );
 
                 return false;
             }

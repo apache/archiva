@@ -44,8 +44,9 @@ import java.util.List;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
- *                   role-hint="default"
+ * @plexus.component 
+ *              role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
+ *              role-hint="default"
  */
 public class ConfigurationSynchronization
     extends AbstractLogEnabled
@@ -59,8 +60,8 @@ public class ConfigurationSynchronization
     /**
      * @plexus.requirement role-hint="default"
      */
-    RoleManager roleManager;
-    
+    private RoleManager roleManager;
+
     /**
      * @plexus.requirement
      */
@@ -109,40 +110,40 @@ public class ConfigurationSynchronization
                     ArchivaRepository drepo = ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
                     drepo.getModel().setCreationSource( "configuration" );
                     dao.getRepositoryDAO().saveRepository( drepo );
-                }                                               
+                }
             }
             catch ( ArchivaDatabaseException e )
             {
                 // Log error.
                 getLogger().error( "Unable to add configured repositories to the database: " + e.getMessage(), e );
             }
-            
+
             // manage roles for repositories
-            try 
+            try
             {
                 if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repoConfig.getId() ) )
                 {
                     roleManager.createTemplatedRole( "archiva-repository-observer", repoConfig.getId() );
-                }              
-                
-                if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repoConfig.getId() ) );
+                }
+
+                if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repoConfig.getId() ) )
+                    ;
                 {
                     roleManager.createTemplatedRole( "archiva-repository-manager", repoConfig.getId() );
-                }                                     
+                }
             }
             catch ( RoleManagerException e )
             {
                 // Log error.
                 getLogger().error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
             }
-            
+
         }
     }
 
     public void initialize()
         throws InitializationException
     {
-        Banner.display( getLogger(), ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
         synchConfiguration();
         archivaConfiguration.addChangeListener( this );
     }

@@ -19,50 +19,23 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
-import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 
-import java.io.File;
-
 /**
- * Resolve Project from filesystem. 
+ * FalseProjectResolver will never resolver a model. 
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryProjectResolver
-    implements ProjectModelResolver, FilesystemBasedResolver
+public class FalseProjectResolver
+    implements ProjectModelResolver
 {
-    private ArchivaRepository repository;
-
-    private ProjectModelReader reader;
-
-    private BidirectionalRepositoryLayout layout;
-
-    public RepositoryProjectResolver( ArchivaRepository repository, ProjectModelReader reader,
-                                      BidirectionalRepositoryLayout layout )
-    {
-        this.repository = repository;
-        this.reader = reader;
-        this.layout = layout;
-    }
-
     public ArchivaProjectModel resolveProjectModel( VersionedReference reference )
         throws ProjectModelException
     {
-        ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
-            .getVersion(), "", "pom" );
-
-        String path = layout.toPath( artifact );
-        File repoFile = new File( this.repository.getUrl().getPath(), path );
-
-        return reader.read( repoFile );
+        throw new ProjectModelException( "Cannot resolve model in FalseProjectResolver." );
     }
-
 }
