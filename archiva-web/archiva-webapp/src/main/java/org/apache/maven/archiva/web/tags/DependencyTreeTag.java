@@ -190,7 +190,7 @@ public class DependencyTreeTag
     {
         try
         {
-            pageContext.getOut().append( msg );
+            pageContext.getOut().print( msg );
         }
         catch ( IOException e )
         {
