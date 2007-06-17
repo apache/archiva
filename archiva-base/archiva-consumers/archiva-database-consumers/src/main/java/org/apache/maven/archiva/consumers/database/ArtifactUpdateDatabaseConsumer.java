@@ -83,7 +83,7 @@ public class ArtifactUpdateDatabaseConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -161,10 +161,15 @@ public class ArtifactUpdateDatabaseConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        ArchivaArtifact artifact = getLiveArtifact( path );
+
+        if ( artifact == null )
+        {
+            return;
+        }
+
         try
         {
-            ArchivaArtifact artifact = layout.toArtifact( path );
-
             artifact.getModel().setRepositoryId( this.repository.getId() );
 
             // Calculate the hashcodes.
@@ -194,14 +199,41 @@ public class ArtifactUpdateDatabaseConsumer
 
             dao.getArtifactDAO().saveArtifact( artifact );
         }
+        catch ( ArchivaDatabaseException e )
+        {
+            triggerConsumerError( DB_ERROR, "Unable to save artifact to database: " + e.getMessage() );
+        }
+    }
+
+    /**
+     * Get a Live Artifact from a Path.
+     * 
+     * Will resolve the artifact details from the path, and then return a database live version
+     * of that artifact.  Suitable for modification and saving (without the need to check for
+     * existance in database prior to save.)
+     * 
+     * @param path the path to work from.
+     * @return the artifact that is suitable for database saving.
+     */
+    public ArchivaArtifact getLiveArtifact( String path )
+    {
+        try
+        {
+            ArchivaArtifact artifact = layout.toArtifact( path );
+
+            ArchivaArtifact liveArtifact = dao.getArtifactDAO().createArtifact( artifact.getGroupId(),
+                                                                                artifact.getArtifactId(),
+                                                                                artifact.getVersion(),
+                                                                                artifact.getClassifier(),
+                                                                                artifact.getType() );
+
+            return liveArtifact;
+        }
         catch ( LayoutException e )
         {
             triggerConsumerError( TYPE_NOT_ARTIFACT, "Path " + path + " cannot be converted to artifact: "
                 + e.getMessage() );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            triggerConsumerError( DB_ERROR, "Unable to save artifact to database: " + e.getMessage() );
+            return null;
         }
     }
 
