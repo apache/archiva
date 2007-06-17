@@ -28,6 +28,7 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.PlexusTestCase;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Iterator;
@@ -141,7 +142,8 @@ public class GraphvizDotTool
         try
         {
             File outputFile = new File( outputFilename );
-            PrintWriter dot = new PrintWriter( outputFile );
+            FileWriter writer = new FileWriter( outputFile );
+            PrintWriter dot = new PrintWriter( writer );
 
             dot.println( "// Auto generated dot file from plexus-graph-visualizer-graphviz." );
 
