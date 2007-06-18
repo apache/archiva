@@ -46,13 +46,15 @@ public abstract class AbstractTransactionEvent
     extends AbstractLogEnabled
     implements TransactionEvent
 {
-    private Map backups = new HashMap();;
+    private Map backups = new HashMap();
 
     private List createdDirs = new ArrayList();
 
     private List createdFiles = new ArrayList();
 
-    /** {@link List}&lt;{@link Digester}> */
+    /**
+     * {@link List}&lt;{@link Digester}>
+     */
     private List digesters;
 
     protected AbstractTransactionEvent()
@@ -178,7 +180,7 @@ public abstract class AbstractTransactionEvent
 
     /**
      * Create checksums of file using all digesters defined at construction time.
-     * 
+     *
      * @param file
      * @param force whether existing checksums should be overwritten or not
      * @throws IOException
