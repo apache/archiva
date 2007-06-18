@@ -27,6 +27,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.util.Iterator;
@@ -48,6 +49,11 @@ public class DefaultArchivaConfiguration
     private Registry registry;
 
     /**
+     * @plexus.requirement
+     */
+    private ConfigurationUpgrade upgrader;
+
+    /**
      * The configuration that has been converted.
      */
     private Configuration configuration;
@@ -65,6 +71,24 @@ public class DefaultArchivaConfiguration
 
     private Configuration load()
     {
+        if ( !upgrader.hasPerformed() )
+        {
+            upgrader.performUpgrade();
+            
+            // HACK: This would be so much easier with a registry.reload() method.
+            if ( registry instanceof CommonsConfigurationRegistry )
+            {
+                try
+                {
+                    ( (CommonsConfigurationRegistry) registry ).initialize();
+                }
+                catch ( InitializationException e )
+                {
+                    getLogger().error( "Unable to reinitialize the registry: " + e.getMessage(), e );
+                }
+            }
+        }
+
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
         Configuration config = new ConfigurationRegistryReader().read( registry.getSubset( KEY ) );
 
@@ -110,13 +134,6 @@ public class DefaultArchivaConfiguration
         throws InitializationException
     {
         registry.addChangeListener( this );
-
-        ConfigurationUpgrade upgrade = new ConfigurationUpgrade();
-        upgrade.setLogger( getLogger() );
-        if ( upgrade.perform() )
-        {
-            this.configuration = load();
-        }
     }
 
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )

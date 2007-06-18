@@ -29,8 +29,13 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>empty</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
+        </requirement>
       </requirements>
     </component>
+    
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>empty</role-hint>
@@ -47,6 +52,10 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
         </requirement>
       </requirements>
     </component>
@@ -72,6 +81,10 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -94,6 +107,10 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save-user</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
         </requirement>
       </requirements>
     </component>
@@ -120,6 +137,10 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>read-saved</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -143,6 +164,10 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>read-remove-proxied-repo</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -164,6 +189,10 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>read-back-remove-proxied-repo</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
+          <field-name>upgrader</field-name>
         </requirement>
       </requirements>
     </component>

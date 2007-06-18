@@ -59,7 +59,7 @@ public class IndexArtifactConsumer
     implements DatabaseUnprocessedArtifactConsumer, RegistryListener, Initializable
 {
     private static final String INDEX_ERROR = "indexing_error";
-    
+
     /**
      * @plexus.configuration default-value="index-artifact"
      */
@@ -69,7 +69,7 @@ public class IndexArtifactConsumer
      * @plexus.configuration default-value="Index the artifact checksums for Find functionality."
      */
     private String description;
-    
+
     /**
      * @plexus.requirement
      */
@@ -79,12 +79,12 @@ public class IndexArtifactConsumer
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
     private Map bidirectionalLayoutMap;
-    
+
     /**
      * @plexus.requirement role-hint="lucene"
      */
     private RepositoryContentIndexFactory indexFactory;
-    
+
     private Map repositoryMap = new HashMap();
 
     public void beginScan()
@@ -108,11 +108,12 @@ public class IndexArtifactConsumer
         HashcodesRecord record = new HashcodesRecord();
         record.setRepositoryId( artifact.getModel().getRepositoryId() );
         record.setArtifact( artifact );
-        
+
         IndexedRepositoryDetails pnl = getIndexedRepositoryDetails( artifact );
+
         String artifactPath = pnl.layout.toPath( artifact );
         record.setFilename( artifactPath );
-        
+
         try
         {
             pnl.index.modifyRecord( record );
@@ -195,7 +196,7 @@ public class IndexArtifactConsumer
 
                 pnl.path = repository.getUrl().getPath();
                 pnl.layout = (BidirectionalRepositoryLayout) this.bidirectionalLayoutMap.get( repoconfig.getLayout() );
-                
+
                 pnl.index = indexFactory.createHashcodeIndex( repository );
 
                 this.repositoryMap.put( repoconfig.getId(), pnl );
@@ -208,7 +209,7 @@ public class IndexArtifactConsumer
         public String path;
 
         public BidirectionalRepositoryLayout layout;
-        
+
         public RepositoryContentIndex index;
     }
 }

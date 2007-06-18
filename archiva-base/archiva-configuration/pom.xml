@@ -65,15 +65,14 @@
       <artifactId>plexus-registry-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.plexus.registry</groupId>
+      <artifactId>plexus-registry-commons</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-container-default</artifactId>
     </dependency>
     <!-- Test Deps -->
-    <dependency>
-      <groupId>org.codehaus.plexus.registry</groupId>
-      <artifactId>plexus-registry-commons</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
