@@ -1,6 +1,6 @@
 -- mysql mysql --user=root --password < dev_bootstrap.sql
 
-create database archiva;
+create database archiva character set utf8 collate utf8_general_ci;
 create database redback;
 
 use mysql;
