@@ -1658,7 +1658,7 @@
       </description>
       <version>1.0.0+</version>
       <fields>
-        <field>
+        <field stash.maxSize="250">
           <name>email</name>
           <identifier>true</identifier>
           <version>1.0.0+</version>
