@@ -101,7 +101,7 @@ public class RepositoryServlet
 
         configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         configuration.addChangeListener( this );
-        
+
         updateRepositoryMap();
     }
 
@@ -140,7 +140,10 @@ public class RepositoryServlet
 
     public RepositoryConfiguration getRepository( DavServerRequest request )
     {
-        return (RepositoryConfiguration) repositoryMap.get( request.getPrefix() );
+        synchronized ( this.repositoryMap )
+        {
+            return (RepositoryConfiguration) repositoryMap.get( request.getPrefix() );
+        }
     }
 
     public String getRepositoryName( DavServerRequest request )
@@ -159,9 +162,12 @@ public class RepositoryServlet
         RepositoryConfigurationToMapClosure repoMapClosure = new RepositoryConfigurationToMapClosure();
         Closure localRepoMap = IfClosure.getInstance( LocalRepositoryPredicate.getInstance(), repoMapClosure );
         CollectionUtils.forAllDo( configuration.getConfiguration().getRepositories(), localRepoMap );
-        
-        this.repositoryMap.clear();
-        this.repositoryMap.putAll( repoMapClosure.getMap() );
+
+        synchronized ( this.repositoryMap )
+        {
+            this.repositoryMap.clear();
+            this.repositoryMap.putAll( repoMapClosure.getMap() );
+        }
     }
 
     public boolean isAuthenticated( DavServerRequest davRequest, HttpServletResponse response )
@@ -227,7 +233,8 @@ public class RepositoryServlet
                 if ( authzResult.getException() != null )
                 {
                     log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest
-                        + ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : " + authzResult.getException().getMessage() );
+                        + ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : "
+                        + authzResult.getException().getMessage() );
                 }
 
                 // Issue HTTP Challenge.
@@ -253,18 +260,25 @@ public class RepositoryServlet
     {
         if ( ConfigurationNames.isRepositories( propertyName ) )
         {
-            updateRepositoryMap();
-
-            getDavManager().removeAllServers();
-
-            try
+            // Attempt to reduce the number of times we refresh the repository map.
+            if ( propertyName.endsWith( ".id" ) || propertyName.endsWith( ".url" ) )
             {
-                initServers( getServletConfig() );
-            }
-            catch ( DavServerException e )
-            {
-                log( "Error restarting WebDAV server after configuration change - service disabled: " + e.getMessage(),
-                     e );
+                synchronized ( this.repositoryMap )
+                {
+                    updateRepositoryMap();
+
+                    getDavManager().removeAllServers();
+
+                    try
+                    {
+                        initServers( getServletConfig() );
+                    }
+                    catch ( DavServerException e )
+                    {
+                        log( "Error restarting WebDAV server after configuration change - service disabled: "
+                            + e.getMessage(), e );
+                    }
+                }
             }
         }
     }

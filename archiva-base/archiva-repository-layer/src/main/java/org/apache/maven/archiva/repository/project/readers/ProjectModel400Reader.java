@@ -71,8 +71,8 @@ public class ProjectModel400Reader
 
             if ( !"http://maven.apache.org/POM/4.0.0".equals( xml.getDefaultNamespaceURI() ) )
             {
+                // No namespace defined
                 // TODO: Output to monitor the problem with the Namespace.
-                System.out.println( "No namespace defined: " + pomFile );
             }
 
             xml.removeNamespaces();
@@ -220,16 +220,11 @@ public class ProjectModel400Reader
             if ( dependencyList.contains( dependency ) )
             {
                 // TODO: throw into monitor as issue.
-                System.err.println( "Duplicate non-unique dependency detected [" + StringUtils.join( parts, ":" )
-                    + "]: " + toDependencyKey( dependency ) );
             }
 
             dependencyList.add( dependency );
-            System.out.println( "Added (list.size:" + dependencyList.size() + ") dependency: "
-                + toDependencyKey( dependency ) );
         }
 
-        System.out.println( "## Returning dependency list: size=" + dependencyList.size() );
         return dependencyList;
     }
 
@@ -559,11 +554,4 @@ public class ProjectModel400Reader
             return defaultValue;
         }
     }
-
-    private String toDependencyKey( Dependency dep )
-    {
-        return "[" + dep.getGroupId() + ":" + dep.getArtifactId() + ":" + dep.getVersion() + ":" + dep.getClassifier()
-            + ":" + dep.getType() + "]";
-    }
-
 }

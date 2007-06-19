@@ -19,15 +19,12 @@ package org.apache.maven.archiva.web.action.admin.database;
  * under the License.
  */
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import com.opensymphony.xwork.Preparable;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
-import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
@@ -35,10 +32,10 @@ import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.xwork.Preparable;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * DatabaseAction 
@@ -94,9 +91,6 @@ public class DatabaseAction
 
         AddAdminDatabaseConsumerClosure addAdminDbConsumer;
         
-        getLogger().info( "Total Available Unprocessed Consumers: " + databaseConsumers.getAvailableUnprocessedConsumers().size() );
-        getLogger().info( "Total Available Cleanup Consumers: " + databaseConsumers.getAvailableCleanupConsumers().size() );
-
         addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getUnprocessedConsumers() );
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
@@ -110,8 +104,6 @@ public class DatabaseAction
 
     public String updateUnprocessedConsumers()
     {
-        getLogger().info( "updateUnprocesedConsumers()" );
-        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers( enabledUnprocessedConsumers );
         
         return saveConfiguration();
@@ -119,8 +111,6 @@ public class DatabaseAction
     
     public String updateCleanupConsumers()
     {
-        getLogger().info( "updateCleanupConsumers()" );
-        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
         
         return saveConfiguration();
@@ -128,8 +118,6 @@ public class DatabaseAction
     
     public String updateSchedule()
     {
-        getLogger().info( "updateSchedule()" );
-        
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCronExpression( cron );
         
         return saveConfiguration();
@@ -137,8 +125,6 @@ public class DatabaseAction
     
     private String saveConfiguration()
     {
-        getLogger().info( ".saveConfiguration()" );
-    
         try
         {
             archivaConfiguration.save( archivaConfiguration.getConfiguration() );
