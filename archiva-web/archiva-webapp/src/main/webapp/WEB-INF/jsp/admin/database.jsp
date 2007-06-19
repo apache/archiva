@@ -92,7 +92,7 @@
 
         <tr>
           <td class="${bgcolor}">
-            <ww:checkbox name="enabledUnprocessedConsumer[]" theme="simple" value="${consumer.enabled}" />
+            <input type="checkbox" name="enabledUnprocessedConsumers" theme="simple" value="${consumer.id}" <c:if test="${consumer.enabled}">checked</c:if> />
           </td>
           <td class="${bgcolor}">
             <c:if test="${consumer.enabled}">
@@ -147,7 +147,7 @@
 
         <tr>
           <td class="${bgcolor}">
-            <ww:checkbox name="enabledCleanupConsumer[]" theme="simple" value="${consumer.enabled}" />
+            <input type="checkbox" name="enabledCleanupConsumers" theme="simple" value="${consumer.id}" <c:if test="${consumer.enabled}">checked</c:if> />
           </td>
           <td class="${bgcolor}">
             <c:if test="${consumer.enabled}">

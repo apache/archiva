@@ -19,12 +19,15 @@ package org.apache.maven.archiva.web.action.admin.database;
  * under the License.
  */
 
-import com.opensymphony.xwork.Preparable;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
+import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
@@ -32,10 +35,10 @@ import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.Collections;
-import java.util.List;
+import com.opensymphony.xwork.Preparable;
 
 /**
  * DatabaseAction 
@@ -62,14 +65,24 @@ public class DatabaseAction
     private String cron;
 
     /**
-     * List of {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
+     * List of available {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
     private List unprocessedConsumers;
-
+    
+    /**
+     * List of enabled {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
+     */
+    private List enabledUnprocessedConsumers;
+    
     /**
      * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
      */
     private List cleanupConsumers;
+    
+    /**
+     * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
+     */
+    private List enabledCleanupConsumers;
 
     public void prepare()
         throws Exception
@@ -98,19 +111,46 @@ public class DatabaseAction
     public String updateUnprocessedConsumers()
     {
         getLogger().info( "updateUnprocesedConsumers()" );
-        return INPUT;
+        
+        archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers( enabledUnprocessedConsumers );
+        
+        return saveConfiguration();
     }
-
+    
     public String updateCleanupConsumers()
     {
         getLogger().info( "updateCleanupConsumers()" );
-        return INPUT;
+        
+        archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
+        
+        return saveConfiguration();
     }
     
     public String updateSchedule()
     {
         getLogger().info( "updateSchedule()" );
-        return INPUT;
+        
+        archivaConfiguration.getConfiguration().getDatabaseScanning().setCronExpression( cron );
+        
+        return saveConfiguration();
+    }
+    
+    private String saveConfiguration()
+    {
+        getLogger().info( ".saveConfiguration()" );
+    
+        try
+        {
+            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( Exception e)
+        {
+            addActionError( "Error in saving configuration" );
+            return INPUT;
+        }
+    
+        return SUCCESS;
     }
     
     public SecureActionBundle getSecureActionBundle()
@@ -142,5 +182,25 @@ public class DatabaseAction
     public List getUnprocessedConsumers()
     {
         return unprocessedConsumers;
+    }
+
+    public List getEnabledUnprocessedConsumers()
+    {
+        return enabledUnprocessedConsumers;
+    }
+
+    public void setEnabledUnprocessedConsumers( List enabledUnprocessedConsumers )
+    {
+        this.enabledUnprocessedConsumers = enabledUnprocessedConsumers;
+    }
+
+    public List getEnabledCleanupConsumers()
+    {
+        return enabledCleanupConsumers;
+    }
+
+    public void setEnabledCleanupConsumers( List enabledCleanupConsumers )
+    {
+        this.enabledCleanupConsumers = enabledCleanupConsumers;
     }
 }
