@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.AbstractArchivaDatabaseTestCase;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.jpox.ArchivaProjectModelKey;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 
 import java.io.File;
@@ -34,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.jdo.JDOHelper;
-import javax.jdo.spi.JDOImplHelper;
 
 /**
  * JdoProjectModelDAOTest 
@@ -45,19 +43,6 @@ import javax.jdo.spi.JDOImplHelper;
 public class JdoProjectModelDAOTest
     extends AbstractArchivaDatabaseTestCase
 {
-    public void testProjectModelKey()
-    {
-        Object o = JDOImplHelper.getInstance().newObjectIdInstance( ArchivaProjectModel.class, "foo:bar:1.0" );
-        assertNotNull( "Key should not be null.", o );
-        assertTrue( "Key should be an instance of " + ArchivaProjectModelKey.class.getName(),
-                    ( o instanceof ArchivaProjectModelKey ) );
-
-        ArchivaProjectModelKey key = (ArchivaProjectModelKey) o;
-        assertEquals( "foo", key.groupId );
-        assertEquals( "bar", key.artifactId );
-        assertEquals( "1.0", key.version );
-    }
-
     public void testProjectModelCRUD()
         throws Exception
     {
