@@ -604,7 +604,7 @@
       <dependency>
         <groupId>org.codehaus.plexus.webdav</groupId>
         <artifactId>plexus-webdav-simple</artifactId>
-        <version>1.0-alpha-2</version>
+        <version>1.0-alpha-3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
