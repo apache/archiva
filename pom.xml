@@ -80,6 +80,18 @@
       <url>scpexe://people.apache.org/www/maven.apache.org/archiva/</url>
     </site>
   </distributionManagement>
+  <repositories>
+    <repository>
+      <id>codehaus.org</id>
+      <url>http://snapshot.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <build>
     <plugins>
       <plugin>
