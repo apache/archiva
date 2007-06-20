@@ -83,7 +83,7 @@
   <repositories>
     <repository>
       <id>codehaus.org</id>
-      <url>http://snapshot.repository.codehaus.org/</url>
+      <url>http://snapshots.repository.codehaus.org</url>
       <releases>
         <enabled>false</enabled>
       </releases>
