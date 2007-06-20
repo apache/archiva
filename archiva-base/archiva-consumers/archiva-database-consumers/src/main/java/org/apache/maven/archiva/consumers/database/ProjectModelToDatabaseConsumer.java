@@ -176,7 +176,6 @@ public class ProjectModelToDatabaseConsumer
                 getLogger().warn( "Invalid or corrupt pom. Project model " + model + " was not added in the database." );
             }
 
-            dao.getProjectModelDAO().saveProjectModel( model );
         }
         catch ( ProjectModelException e )
         {
@@ -284,7 +283,7 @@ public class ProjectModelToDatabaseConsumer
             {
                 getLogger().warn(
                                   "Project Model " + model + " artifactId: " + model.getArtifactId()
-                                      + " does not match the pom file's artifactId: " + parts.artifactId );
+                                        + " does not match the pom file's artifactId: " + parts.artifactId );
 
                 addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId()
                     + " does not match the pom file's artifactId: " + parts.artifactId );
@@ -295,8 +294,8 @@ public class ProjectModelToDatabaseConsumer
             if ( !parts.version.equalsIgnoreCase( model.getVersion() ) )
             {
                 getLogger().warn(
-                                  "Project Model " + model + " artifactId: " + model.getArtifactId()
-                                      + " does not match the pom file's artifactId: " + parts.artifactId );
+                                  "Project Model " + model + " version: " + model.getVersion()
+                                        + " does not match the pom file's version: " + parts.version );
 
                 addProblem( artifact, "Project Model " + model + " version: " + model.getVersion()
                     + " does not match the pom file's version: " + parts.version );
@@ -304,10 +303,20 @@ public class ProjectModelToDatabaseConsumer
                 return false;
             }
 
+            String constructedFilename;
+
+            if( parts.classifier != null )
+            {
+                constructedFilename = model.getArtifactId() + "-" + model.getVersion() + "-" +
+                    parts.classifier.trim() + ".pom";
+            }
+            else
+            {
+                constructedFilename = model.getArtifactId() + "-" + model.getVersion() + ".pom";
+            }                           
+
             //check if the file name matches the values indicated in the pom
-            if ( !artifactFile.getName().equalsIgnoreCase(
-                                                           model.getArtifactId() + "-" + model.getVersion() + "-"
-                                                               + parts.classifier ) )
+            if ( !artifactFile.getName().equalsIgnoreCase( constructedFilename ) )
             {
                 getLogger().warn(
                                   "Artifact " + artifact + " does not match the artifactId and/or version "
