@@ -337,6 +337,9 @@
     
     <action name="repositoryScanning" class="repositoryScanningAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+      <result name="success" type="redirect-action">
+        <param name="actionName">repositoryScanning</param>
+      </result>
     </action>
     
     <!-- .\ DATABASE \.________________________________________________ -->

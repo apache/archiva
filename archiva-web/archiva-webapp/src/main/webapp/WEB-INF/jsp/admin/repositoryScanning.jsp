@@ -175,7 +175,7 @@
 
         <tr>
           <td class="${bgcolor}">
-            <ww:checkbox name="enabledKnownConsumer[]" theme="simple" value="${consumer.enabled}" />
+            <input type="checkbox" name="enabledKnownContentConsumers" theme="simple" value="${consumer.id}" <c:if test="${consumer.enabled}">checked</c:if> />
           </td>
           <td class="${bgcolor}">
             <c:if test="${consumer.enabled}">
@@ -231,7 +231,7 @@
 
         <tr>
           <td class="${bgcolor}">
-            <ww:checkbox name="enabledUnknownConsumer[]" theme="simple" value="${consumer.enabled}" />
+            <input type="checkbox" name="enabledInvalidContentConsumers" theme="simple" value="${consumer.id}" <c:if test="${consumer.enabled}">checked</c:if> />
           </td>
           <td class="${bgcolor}">
             <c:if test="${consumer.enabled}">

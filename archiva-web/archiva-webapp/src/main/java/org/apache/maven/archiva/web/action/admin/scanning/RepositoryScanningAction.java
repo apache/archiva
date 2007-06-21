@@ -73,12 +73,22 @@ public class RepositoryScanningAction
     /**
      * List of {@link AdminRepositoryConsumer} objects for consumers of known content.
      */
-    private List knownContentConsumers = new ArrayList();
+    private List knownContentConsumers;
+    
+    /**
+     * List of enabled {@link AdminRepositoryConsumer} objects for consumers of known content.
+     */
+    private List enabledKnownContentConsumers;
 
     /**
      * List of {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
      */
-    private List invalidContentConsumers = new ArrayList();
+    private List invalidContentConsumers;
+    
+    /**
+     * List of enabled {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
+     */
+    private List enabledInvalidContentConsumers;
 
     private String pattern;
 
@@ -183,14 +193,12 @@ public class RepositoryScanningAction
 
         addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getKnownContentConsumers() );
         CollectionUtils.forAllDo( repoconsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
-        knownContentConsumers.clear();
-        knownContentConsumers.addAll( addAdminRepoConsumer.getList() );
+        this.knownContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
 
         addAdminRepoConsumer = new AddAdminRepoConsumerClosure( reposcanning.getInvalidContentConsumers() );
         CollectionUtils.forAllDo( repoconsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
-        invalidContentConsumers.clear();
-        invalidContentConsumers.addAll( addAdminRepoConsumer.getList() );
+        this.invalidContentConsumers = addAdminRepoConsumer.getList();
         Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
 
         fileTypeIds = new ArrayList();
@@ -232,13 +240,19 @@ public class RepositoryScanningAction
     public String updateInvalidConsumers()
     {
         addActionMessage("Update Invalid Consumers");
-        return INPUT;
+        
+        archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers( enabledInvalidContentConsumers );
+        
+        return saveConfiguration();
     }
 
     public String updateKnownConsumers()
     {
         addActionMessage("Update Known Consumers");
-        return INPUT;
+        
+        archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers( enabledKnownContentConsumers );
+        
+        return saveConfiguration();
     }
 
     private FileType findFileType( String id )
@@ -272,8 +286,29 @@ public class RepositoryScanningAction
         catch ( RegistryException e )
         {
             addActionError( "Unable to save configuration: " + e.getMessage() );
+            return INPUT;
         }
 
-        return INPUT;
+        return SUCCESS;
+    }
+
+    public List getEnabledInvalidContentConsumers()
+    {
+        return enabledInvalidContentConsumers;
+    }
+
+    public void setEnabledInvalidContentConsumers( List enabledInvalidContentConsumers )
+    {
+        this.enabledInvalidContentConsumers = enabledInvalidContentConsumers;
+    }
+
+    public List getEnabledKnownContentConsumers()
+    {
+        return enabledKnownContentConsumers;
+    }
+
+    public void setEnabledKnownContentConsumers( List enabledKnownContentConsumers )
+    {
+        this.enabledKnownContentConsumers = enabledKnownContentConsumers;
     }
 }
