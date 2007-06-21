@@ -70,17 +70,6 @@
     </proxyConnector>
   </proxyConnectors>
 
-  <networkProxies>
-    <networkProxy>
-      <id>example</id>
-      <protocol>http</protocol>
-      <host>proxy.mycompany.com</host>
-      <port>8080</port>
-      <username>myself</username>
-      <password>mypass</password>
-    </networkProxy>
-  </networkProxies>
-
   <repositoryScanning>
     <fileTypes>
       <fileType>
