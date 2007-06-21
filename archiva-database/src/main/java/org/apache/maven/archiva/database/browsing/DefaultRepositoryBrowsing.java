@@ -19,6 +19,9 @@ package org.apache.maven.archiva.database.browsing;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -69,14 +72,11 @@ public class DefaultRepositoryBrowsing
 
     public BrowsingResults selectArtifactId( String groupId, String artifactId )
     {
-        // List groups = dao.query( new UniqueGroupIdConstraint( groupId ) );
-        // List artifacts = dao.query( new UniqueArtifactIdConstraint( groupId ) );
+        // NOTE: No group Id or artifact Id's should be returned here. 
         List versions = dao.query( new UniqueVersionConstraint( groupId, artifactId ) );
 
         BrowsingResults results = new BrowsingResults( groupId, artifactId );
 
-        // results.setGroupIds( groups );
-        // results.setArtifacts( artifacts );
         results.setVersions( versions );
 
         return results;
@@ -88,6 +88,11 @@ public class DefaultRepositoryBrowsing
         List artifacts = dao.query( new UniqueArtifactIdConstraint( groupId ) );
 
         BrowsingResults results = new BrowsingResults( groupId );
+
+        // Remove searched for groupId from groups list.
+        // Easier to do this here, vs doing it in the SQL query.
+        CollectionUtils.filter( groups, NotPredicate.getInstance( PredicateUtils.equalPredicate( groupId ) ) );
+
         results.setGroupIds( groups );
         results.setArtifacts( artifacts );
 

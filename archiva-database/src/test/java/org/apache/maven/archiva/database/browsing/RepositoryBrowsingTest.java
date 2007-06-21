@@ -25,6 +25,7 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * RepositoryBrowsingTest 
@@ -37,21 +38,20 @@ public class RepositoryBrowsingTest
 {
     private ArtifactDAO artifactDao;
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        ArchivaDAO dao = (ArchivaDAO) lookup( ArchivaDAO.ROLE, "jdo" );
-        artifactDao = dao.getArtifactDAO();
-    }
-
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
         artifact.getModel().setRepositoryId( "testable_repo" );
         return artifact;
+    }
+
+    public RepositoryBrowsing lookupBrowser()
+        throws Exception
+    {
+        RepositoryBrowsing browser = (RepositoryBrowsing) lookup( RepositoryBrowsing.class.getName() );
+        assertNotNull( "RepositoryBrowsing should not be null.", browser );
+        return browser;
     }
 
     public void saveTestData()
@@ -91,12 +91,17 @@ public class RepositoryBrowsingTest
         artifactDao.saveArtifact( artifact );
     }
 
-    public RepositoryBrowsing lookupBrowser()
+    public void testBrowseIntoGroupWithSubgroups()
         throws Exception
     {
-        RepositoryBrowsing browser = (RepositoryBrowsing) lookup( RepositoryBrowsing.class.getName() );
-        assertNotNull( "RepositoryBrowsing should not be null.", browser );
-        return browser;
+        saveTestData();
+
+        RepositoryBrowsing browser = lookupBrowser();
+        BrowsingResults results = browser.selectGroupId( "org.apache.maven.test" );
+        assertNotNull( "Browsing Results should not be null.", results );
+
+        String expectedSubGroupIds[] = new String[] { "org.apache.maven.test.foo" };
+        assertGroupIds( "Browsing Results (subgroup org.apache.maven.test)", results.getGroupIds(), expectedSubGroupIds );
     }
 
     public void testSimpleBrowse()
@@ -110,6 +115,27 @@ public class RepositoryBrowsingTest
 
         String expectedRootGroupIds[] = new String[] { "commons-lang", "org" };
 
-        assertEquals( "Browsing Results: groupIds on root.", expectedRootGroupIds.length, results.getGroupIds().size() );
+        assertGroupIds( "Browsing Results (root)", results.getGroupIds(), expectedRootGroupIds );
+    }
+
+    private void assertGroupIds( String msg, List actualGroupIds, String[] expectedGroupIds )
+    {
+        assertEquals( msg + ": groupIds.length", expectedGroupIds.length, actualGroupIds.size() );
+
+        for ( int i = 0; i < expectedGroupIds.length; i++ )
+        {
+            String expectedGroupId = expectedGroupIds[i];
+            assertTrue( msg + ": actual groupIds.contains(" + expectedGroupId + ")", actualGroupIds
+                .contains( expectedGroupId ) );
+        }
+    }
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        ArchivaDAO dao = (ArchivaDAO) lookup( ArchivaDAO.ROLE, "jdo" );
+        artifactDao = dao.getArtifactDAO();
     }
 }
