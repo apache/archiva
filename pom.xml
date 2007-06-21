@@ -83,13 +83,10 @@
   <repositories>
     <repository>
       <id>codehaus.org</id>
-      <url>http://snapshots.repository.codehaus.org</url>
+      <url>http://repository.codehaus.org</url>
       <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
         <enabled>true</enabled>
-      </snapshots>
+      </releases>
     </repository>
   </repositories>
   <build>
@@ -616,7 +613,7 @@
       <dependency>
         <groupId>org.codehaus.plexus.webdav</groupId>
         <artifactId>plexus-webdav-simple</artifactId>
-        <version>1.0-alpha-3-SNAPSHOT</version>
+        <version>1.0-alpha-3</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
