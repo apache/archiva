@@ -23,11 +23,10 @@
 <c:choose>
   <c:when test="${mode == 'edit'}">
     <c:set var="addedit" value="Edit" />
-    <c:set var="disableId" value="true" />
+	<c:set var="networkProxyName" value="${proxy.id}" />
   </c:when>
   <c:otherwise>
     <c:set var="addedit" value="Add" />
-    <c:set var="disableId" value="false" />
   </c:otherwise>
 </c:choose>
 
@@ -43,7 +42,7 @@
 
 <div id="contentArea">
 
-  <h2>${addedit} Network Proxy</h2>
+  <h2>${addedit} network proxy: ${networkProxyName}</h2>
 
   <ww:actionerror/> 
   <ww:actionmessage/>
@@ -51,8 +50,14 @@
   <ww:form method="post" action="saveNetworkProxy" namespace="/admin">
     <ww:hidden name="mode"/>
     
-    <ww:textfield name="proxy.id" label="Identifier" size="10" required="true"
-      disabled="${disableId}"/>
+	<c:choose>
+	  <c:when test="${mode == 'edit'}">
+	    <ww:hidden name="proxy.id"/>
+	  </c:when>
+	  <c:otherwise>
+	    <ww:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
+	  </c:otherwise>
+	</c:choose>
     
     <%@ include file="/WEB-INF/jsp/admin/include/networkProxyForm.jspf" %>
     <ww:submit value="Save Network Proxy"/>
