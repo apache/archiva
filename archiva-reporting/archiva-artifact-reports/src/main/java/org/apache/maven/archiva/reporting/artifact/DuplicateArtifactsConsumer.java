@@ -29,7 +29,7 @@ import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.database.constraints.ArtifactsBySha1ChecksumConstraint;
+import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
@@ -127,7 +127,8 @@ public class DuplicateArtifactsConsumer
         List results = null;
         try
         {
-            results = dao.getArtifactDAO().queryArtifacts( new ArtifactsBySha1ChecksumConstraint( checksumSha1 ) );
+            results = dao.getArtifactDAO().queryArtifacts( new ArtifactsByChecksumConstraint(
+                checksumSha1, ArtifactsByChecksumConstraint.SHA1_CONDITION ) );
         }
         catch ( ObjectNotFoundException e )
         {

@@ -25,9 +25,11 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.apache.maven.archiva.database.search.DatabaseSearch;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * Search all indexed fields by the given criteria.
@@ -55,6 +57,13 @@ public class SearchAction
     private static final String RESULTS = "results";
 
     private static final String ARTIFACT = "artifact";
+
+    private List databaseResults;
+
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    private DatabaseSearch databaseSearch;
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -100,19 +109,17 @@ public class SearchAction
             return INPUT;
         }
 
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        databaseResults = databaseSearch.searchArtifactsByChecksum( q );
 
-        results = crossRepoSearch.searchForChecksum( q, limits );
-
-        if ( results.isEmpty() )
+        if ( databaseResults.isEmpty() )
         {
             addActionError( "No results found" );
             return INPUT;
         }
 
-        if ( results.getHits().size() == 1 )
+        if ( databaseResults.size() == 1 )
         {
-            // 1 hit? return it's information directly!
+           // 1 hit? return it's information directly!            
             return ARTIFACT;
         }
         else
@@ -139,5 +146,10 @@ public class SearchAction
     public SearchResults getResults()
     {
         return results;
+    }
+
+    public List getDatabaseResults()
+    {
+        return databaseResults;
     }
 }

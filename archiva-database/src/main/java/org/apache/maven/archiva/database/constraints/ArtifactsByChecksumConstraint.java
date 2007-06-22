@@ -22,22 +22,34 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
- * ArtifactsBySha1ChecksumConstraint 
+ * Constraint for retrieving artifacts whose sha1 or md5 checksum matches the
+ * specified value.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- * @version $Id$
+ * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class ArtifactsBySha1ChecksumConstraint
+public class ArtifactsByChecksumConstraint
     extends AbstractDeclarativeConstraint
     implements Constraint
 {
     private String whereClause;
 
-    public ArtifactsBySha1ChecksumConstraint( String desiredChecksum )
+    public static final String SHA1_CONDITION = "SHA1";
+
+    public static final String MD5_CONDITION = "MD5";
+
+    public ArtifactsByChecksumConstraint( String desiredChecksum, String condition )
     {
-        whereClause = "this.checksumSHA1 == desiredChecksum";
-        declParams = new String[] { "String desiredChecksum" };
-        params = new Object[] { desiredChecksum };
+        if ( !condition.equals( SHA1_CONDITION ) && !condition.equals( MD5_CONDITION ) )
+        {
+            whereClause = "this.checksumSHA1 == desiredChecksum || this.checksumMD5 == desiredChecksum";
+        }
+        else if ( condition.equals( SHA1_CONDITION ) || condition.equals( MD5_CONDITION ) )
+        {
+            whereClause = "this.checksum" + condition.trim() + " == desiredChecksum";
+        }
+
+        declParams = new String[]{ "String desiredChecksum" };
+        params = new Object[]{ desiredChecksum };                
     }
 
     public String getSortColumn()

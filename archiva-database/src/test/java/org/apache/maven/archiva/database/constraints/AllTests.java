@@ -36,7 +36,7 @@ public class AllTests
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.database.constraints" );
         //$JUnit-BEGIN$
         suite.addTestSuite( ArtifactsProcessedConstraintTest.class );
-        suite.addTestSuite( ArtifactsBySha1ChecksumConstraintTest.class );
+        suite.addTestSuite( ArtifactsByChecksumConstraintTest.class );
         suite.addTestSuite( OlderArtifactsByAgeConstraintTest.class );
         suite.addTestSuite( UniqueGroupIdConstraintTest.class );
         suite.addTestSuite( OlderSnapshotArtifactsByAgeConstraintTest.class );
