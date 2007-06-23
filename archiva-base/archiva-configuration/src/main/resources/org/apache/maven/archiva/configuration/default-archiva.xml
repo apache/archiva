@@ -15,7 +15,7 @@
     <repository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.home}/repositories/internal</url>
+      <url>file://${appserver.home}/repositories/snapshots</url>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
