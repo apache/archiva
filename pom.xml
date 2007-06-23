@@ -206,7 +206,7 @@
     <module>archiva-web</module>
     <module>archiva-cli</module>
     <module>archiva-site</module>
-    <module>maven-meeper</module>
+    <!-- <module>maven-meeper</module> -->
   </modules>
   <dependencies>
     <dependency>
