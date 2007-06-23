@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>1.0-alpha-2</version>
+    <version>1.0-alpha-3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-site</artifactId>
@@ -51,9 +51,9 @@
   </reporting>
   <!-- repeated here so that maven-site is not appended -->
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-1.0-alpha-2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-1.0-alpha-2</developerConnection>
-    <url>https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-1.0-alpha-2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk/</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk/</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk/</url>
   </scm>
 
   <distributionManagement>
