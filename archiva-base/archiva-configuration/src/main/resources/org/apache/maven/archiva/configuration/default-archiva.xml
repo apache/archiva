@@ -53,6 +53,9 @@
         <checksum>fix</checksum>
         <cache-failures>cache</cache-failures>
       </policies>
+      <whiteListPatterns>
+        <whiteListPattern>*</whiteListPattern>
+      </whiteListPatterns>
     </proxyConnector>
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
