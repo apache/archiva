@@ -160,7 +160,7 @@
             <descriptor>src/main/assembly/src.xml</descriptor>
           </descriptors>
           <tarLongFileMode>gnu</tarLongFileMode>
-          <finalName>archiva</finalName>
+          <finalName>apache-archiva-${version}</finalName>
         </configuration>
         <executions>
           <execution>

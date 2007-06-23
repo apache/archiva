@@ -139,7 +139,7 @@
         </executions>
         <configuration>
           <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>archiva-${version}</finalName>
+          <finalName>apache-archiva-${version}</finalName>
         </configuration>
       </plugin>
       <plugin>
