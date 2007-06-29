@@ -26,7 +26,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-project-reports</artifactId>
-  <name>Archiva Reporting :: Report Manager</name>
+  <name>Archiva Reporting :: Project Reports</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
