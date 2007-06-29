@@ -128,7 +128,7 @@ public class DuplicateArtifactsConsumer
         try
         {
             results = dao.getArtifactDAO().queryArtifacts( new ArtifactsByChecksumConstraint(
-                checksumSha1, ArtifactsByChecksumConstraint.SHA1_CONDITION ) );
+                checksumSha1, ArtifactsByChecksumConstraint.SHA1 ) );
         }
         catch ( ObjectNotFoundException e )
         {
