@@ -105,11 +105,11 @@ public class ArtifactsByChecksumConstraintTest
         artifactDao.saveArtifact( artifact );
 
         assertConstraint( "Artifacts by SHA1 Checksum", 4,
-                          new ArtifactsByChecksumConstraint( SHA1_HASH1, ArtifactsByChecksumConstraint.SHA1_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( SHA1_HASH1, ArtifactsByChecksumConstraint.SHA1 ) );
         assertConstraint( "Artifacts by SHA1 Checksum", 2,
-                          new ArtifactsByChecksumConstraint( SHA1_HASH2, ArtifactsByChecksumConstraint.SHA1_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( SHA1_HASH2, ArtifactsByChecksumConstraint.SHA1 ) );
         assertConstraint( "Artifacts by SHA1 Checksum", 1,
-                          new ArtifactsByChecksumConstraint( SHA1_HASH3, ArtifactsByChecksumConstraint.SHA1_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( SHA1_HASH3, ArtifactsByChecksumConstraint.SHA1 ) );
     }
 
     public void testConstraintMD5()
@@ -146,11 +146,11 @@ public class ArtifactsByChecksumConstraintTest
         artifactDao.saveArtifact( artifact );
 
         assertConstraint( "Artifacts by MD5 Checksum", 4,
-                          new ArtifactsByChecksumConstraint( MD5_HASH1, ArtifactsByChecksumConstraint.MD5_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( MD5_HASH1, ArtifactsByChecksumConstraint.MD5 ) );
         assertConstraint( "Artifacts by MD5 Checksum", 2,
-                          new ArtifactsByChecksumConstraint( MD5_HASH2, ArtifactsByChecksumConstraint.MD5_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( MD5_HASH2, ArtifactsByChecksumConstraint.MD5 ) );
         assertConstraint( "Artifacts by MD5 Checksum", 1,
-                          new ArtifactsByChecksumConstraint( MD5_HASH3, ArtifactsByChecksumConstraint.MD5_CONDITION ) );
+                          new ArtifactsByChecksumConstraint( MD5_HASH3, ArtifactsByChecksumConstraint.MD5 ) );
     }
 
     public void testConstraintOR()
@@ -186,9 +186,9 @@ public class ArtifactsByChecksumConstraintTest
         artifact.getModel().setChecksumMD5( MD5_HASH2 );
         artifactDao.saveArtifact( artifact );
 
-        assertConstraint( "Artifacts by MD5 Checksum", 4, new ArtifactsByChecksumConstraint( MD5_HASH1, "" ) );
-        assertConstraint( "Artifacts by MD5 Checksum", 2, new ArtifactsByChecksumConstraint( MD5_HASH2, "" ) );
-        assertConstraint( "Artifacts by MD5 Checksum", 1, new ArtifactsByChecksumConstraint( MD5_HASH3, "" ) );
+        assertConstraint( "Artifacts by MD5 Checksum", 4, new ArtifactsByChecksumConstraint( MD5_HASH1 ) );
+        assertConstraint( "Artifacts by MD5 Checksum", 2, new ArtifactsByChecksumConstraint( MD5_HASH2 ) );
+        assertConstraint( "Artifacts by MD5 Checksum", 1, new ArtifactsByChecksumConstraint( MD5_HASH3 ) );
     }
 
 

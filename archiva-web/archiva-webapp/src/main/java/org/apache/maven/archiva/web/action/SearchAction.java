@@ -20,12 +20,14 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
-import org.apache.maven.archiva.database.search.DatabaseSearch;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.net.MalformedURLException;
@@ -45,6 +47,11 @@ public class SearchAction
     private String q;
 
     /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
+
+    /**
      * The Search Results.
      */
     private SearchResults results;
@@ -59,11 +66,6 @@ public class SearchAction
     private static final String ARTIFACT = "artifact";
 
     private List databaseResults;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private DatabaseSearch databaseSearch;
 
     public String quickSearch()
         throws MalformedURLException, RepositoryIndexException, RepositoryIndexSearchException
@@ -109,7 +111,8 @@ public class SearchAction
             return INPUT;
         }
 
-        databaseResults = databaseSearch.searchArtifactsByChecksum( q );
+        Constraint constraint = new ArtifactsByChecksumConstraint( q );
+        databaseResults = dao.getArtifactDAO().queryArtifacts( constraint );
 
         if ( databaseResults.isEmpty() )
         {
@@ -119,7 +122,7 @@ public class SearchAction
 
         if ( databaseResults.size() == 1 )
         {
-           // 1 hit? return it's information directly!            
+            // 1 hit? return it's information directly!            
             return ARTIFACT;
         }
         else

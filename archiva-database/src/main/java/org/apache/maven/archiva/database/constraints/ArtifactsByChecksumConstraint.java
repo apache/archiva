@@ -19,6 +19,7 @@ package org.apache.maven.archiva.database.constraints;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
@@ -33,19 +34,42 @@ public class ArtifactsByChecksumConstraint
 {
     private String whereClause;
 
-    public static final String SHA1_CONDITION = "SHA1";
+    public static final String SHA1 = "SHA1";
 
-    public static final String MD5_CONDITION = "MD5";
-
-    public ArtifactsByChecksumConstraint( String desiredChecksum, String condition )
+    public static final String MD5 = "MD5";
+    
+    /**
+     * Create constraint for checksum (without providing type)
+     * 
+     * @param desiredChecksum the checksum (either SHA1 or MD5)
+     */
+    public ArtifactsByChecksumConstraint( String desiredChecksum )
     {
-        if ( !condition.equals( SHA1_CONDITION ) && !condition.equals( MD5_CONDITION ) )
+        this( desiredChecksum, null );
+    }
+
+    /**
+     * Create constraint for specific checksum.
+     * 
+     * @param desiredChecksum the checksum (either SHA1 or MD5)
+     * @param type the type of checksum (either {@link #SHA1} or {@link #MD5})
+     */
+    public ArtifactsByChecksumConstraint( String desiredChecksum, String type )
+    {
+        if( StringUtils.isEmpty( type ) )
         {
+            // default for no specified type.
             whereClause = "this.checksumSHA1 == desiredChecksum || this.checksumMD5 == desiredChecksum";
         }
-        else if ( condition.equals( SHA1_CONDITION ) || condition.equals( MD5_CONDITION ) )
+        else if ( !type.equals( SHA1 ) && !type.equals( MD5 ) )
         {
-            whereClause = "this.checksum" + condition.trim() + " == desiredChecksum";
+            // default for type that isn't recognized.
+            whereClause = "this.checksumSHA1 == desiredChecksum || this.checksumMD5 == desiredChecksum";
+        }
+        else if ( type.equals( SHA1 ) || type.equals( MD5 ) )
+        {
+            // specific type.
+            whereClause = "this.checksum" + type.trim() + " == desiredChecksum";
         }
 
         declParams = new String[]{ "String desiredChecksum" };
