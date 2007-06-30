@@ -18,9 +18,9 @@ Download Archiva
 *-------------------------------+---------+----------+-----------+
 |                               | Mirrors | Checksum | Signature |
 *-------------------------------+---------+----------+-----------+
-| Archiva 1.0-alpha-2 (bin.tar.gz)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/archiva-1.0-alpha-2-bin.tar.gz} archiva-1.0-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-2-bin.tar.gz.md5} archiva-1.0-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/archiva-1.0-alpha-2-bin.tar.gz.asc} archiva-1.0-alpha-2-bin.tar.gz.asc}} |
+| Archiva 1.0-alpha-2 (bin.tar.gz)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz} apache-archiva-1.0-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz.md5} apache-archiva-1.0-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz.asc} apache-archiva-1.0-alpha-2-bin.tar.gz.asc}} |
 *-------------------------------+---------+----------+-----------+
-| Archiva 1.0-alpha-2 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/archiva-1.0-alpha-2-src.zip} archiva-1.0-alpha-2-src.zip}} | {{{http://www.apache.org/dist/maven/source/archiva-1.0-alpha-2-src.zip.md5} archiva-1.0-alpha-2-src.zip.md5}} | {{{http://www.apache.org/dist/maven/source/archiva-1.0-alpha-2-src.zip.asc} archiva-1.0-alpha-2-src.zip.asc}} |
+| Archiva 1.0-alpha-2 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/apache-archiva-1.0-alpha-2-src.zip} apache-archiva-1.0-alpha-2-src.zip}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-alpha-2-src.zip.md5} apache-archiva-1.0-alpha-2-src.zip.md5}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-alpha-2-src.zip.asc} apache-archiva-1.0-alpha-2-src.zip.asc}} |
 *-------------------------------+---------+----------+-----------+
 
 * Archiva 0.9 Alpha 2
