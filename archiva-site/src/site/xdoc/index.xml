@@ -24,7 +24,7 @@
   </properties>
   <body>
     <div id="downloadbox">
-      <h5>Get Archiva 1.0 Alpha 1</h5>
+      <h5>Get Archiva 1.0 Alpha 2</h5>
       <p>
         <a href="download.html">
           <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
@@ -41,7 +41,7 @@
           <a href="download.html#installation">Installation Instructions</a>
         </li>
         <li>
-          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?projectId=10980&amp;styleName=Html&amp;version=13443">Release Notes</a>
+          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13518&amp;styleName=Text&amp;projectId=10980">Release Notes</a>
         </li>
         <!--
         <li>
@@ -93,6 +93,9 @@
 
     <section name="Latest News">
       <p>
+        <ul>
+          <li>Archiva 1.0 Alpha 2 Release Available - June 29, 2007</li>
+        </ul>
         <ul>
           <li>Archiva 1.0 Alpha 1 Release Available - June 5, 2007</li>
         </ul>
