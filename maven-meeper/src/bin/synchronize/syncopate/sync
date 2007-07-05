@@ -168,6 +168,8 @@ sub runRsync()
     open( SYNC, "$cmd 2>&1 |" );
 
     my $rawReportText;
+
+    my $sendMail = 0;
     
     while( <SYNC> ) 
     {
@@ -187,6 +189,8 @@ sub runRsync()
             print REPORT "<td>" . $details[3] . " " . $details[4] . "</td>" . "\n";
             
             print REPORT "</tr>" . "\n";
+
+            $sendMail = 1;
         }
         else
         {
@@ -195,6 +199,14 @@ sub runRsync()
             print RAW_REPORT;
         }
     }        
+
+    close SYNC;
+    my $exitCode = $?;
+
+    if ( $exitCode != 0 )
+    {
+        $sendMail = 1;
+    }
     
     print REPORT "</table>" . "\n";    
 
@@ -210,8 +222,7 @@ sub runRsync()
     
     close( RAW_REPORT );
 
-    if ( $rawReportText )
-
+    if ( $rawReportText and $sendMail != 0 )
     {
 
         $rawReportText = $rawReportText . "\n\nYou can view the syncronization reports for today here: \n\n";
