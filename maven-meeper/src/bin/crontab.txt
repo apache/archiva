@@ -1,5 +1,4 @@
 # Cron jobs for the maven repository
 MAILTO=repository@maven.org
-0  */4 * * * cd $HOME/bin; ./synchronize.sh
+0  */4 * * * cd $HOME/bin; ./kill_long_runners.sh rsync 3 && ./synchronize.sh
 0   0  * * * cd $HOME/reports; ./run.sh
-30  */4 * * * cd $HOME/bin; ./kill_long_runners.sh rsync 3
