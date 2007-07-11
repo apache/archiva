@@ -5,7 +5,7 @@
 # 2. Convert Maven 1.x repository to Maven 2.x repository
 # 3. Manual fixes
 # 4. Sync Maven 2.x repositories to central
-# 5. Sync the Maven 2.x repository to Ibiblio
+# 5. Sync the Maven 2.x repository to Cica and Ibiblio
 # 6. Copy the mod_rewrite rules to the Maven 1.x repository @ Ibiblio
 # ------------------------------------------------------------------------
 
@@ -96,22 +96,22 @@ sha1sum $CL/maven-metadata.xml > $CL/maven-metadata.xml.sha1
 )
 
 # ------------------------------------------------------------------------
-# Ibiblio synchronization: sync the central repository to Ibiblio 
-# ------------------------------------------------------------------------
-
-[ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Ibiblio, or hit ^C to quit." && echo
-
-./synchronize-central-to-ibiblio.sh $syncProperties
-retval=$?; if [ $retval != 0 ]; then exit $retval; fi
-retval=$?; if [ $retval != 0 ]; then exit $retval; fi
-
-# ------------------------------------------------------------------------
 # Cica.es synchronization: sync the central repository to Cica.es 
 # ------------------------------------------------------------------------
 
 [ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Cica, or hit ^C to quit." && echo
 
 ./synchronize-central-to-cica.sh $syncProperties
+retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+retval=$?; if [ $retval != 0 ]; then exit $retval; fi
+
+# ------------------------------------------------------------------------
+# Ibiblio synchronization: sync the central repository to Ibiblio 
+# ------------------------------------------------------------------------
+
+[ "$MODE" = "batch" ] && echo && echo "Press any key to run the sync to Ibiblio, or hit ^C to quit." && echo
+
+./synchronize-central-to-ibiblio.sh $syncProperties
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 retval=$?; if [ $retval != 0 ]; then exit $retval; fi
 
