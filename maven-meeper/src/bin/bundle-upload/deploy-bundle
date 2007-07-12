@@ -8,10 +8,7 @@ VERSION=$3
 
 WORKDIR=bundle.tmp
 
-base=`basename $0`
-mylocation=`which $base`
-
-SCRIPTDIR=`dirname $mylocation`
+SCRIPTDIR=`dirname ${0}`
 
 [ -d $SCRIPTDIR ] || SCRIPTDIR=.
 
