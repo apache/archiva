@@ -147,10 +147,13 @@ BUNDLE=tmp.jar
 
   mkdir -p ${m2dir}
 
-  mkdir -p $REPODIR/${groupId}/poms
-  cp -i ${artifactId}-${version}.pom $REPODIR/${groupId}/poms
-  if [ ! -z "${maven2}" ]
+  if [ -z "${maven2}" ]
   then
+    # Maven 1
+    mkdir -p $REPODIR/${groupId}/poms
+    cp -i ${artifactId}-${version}.pom $REPODIR/${groupId}/poms
+  else
+    # Maven 2
     cp -i ${artifactId}-${version}.pom ${m2dir}
     md5sum  ${m2dir}/${artifactId}-${version}.pom > ${m2dir}/${artifactId}-${version}.pom.md5
     sha1sum ${m2dir}/${artifactId}-${version}.pom > ${m2dir}/${artifactId}-${version}.pom.sha1
@@ -165,8 +168,14 @@ BUNDLE=tmp.jar
     cp -i ${artifactId}-${version}.jar $REPODIR/${groupId}/plugins
   else
     echo "Deploying JAR ..."
-    mkdir -p $REPODIR/${groupId}/jars
-    cp -i ${artifactId}-${version}.jar $REPODIR/${groupId}/jars
+
+    if [ -z "${maven2}" ]
+    then
+      # Maven 1
+      mkdir -p $REPODIR/${groupId}/jars
+      cp -i ${artifactId}-${version}.jar $REPODIR/${groupId}/jars
+    fi
+
     cp -i ${artifactId}-${version}.jar ${m2dir}
     if [ -f ${m2dir}/${artifactId}-${version}.jar ]
     then
@@ -178,8 +187,8 @@ BUNDLE=tmp.jar
   if [ -f ${artifactId}-${version}-sources.jar ]
   then
     echo "Deploying Java sources ..."
-    mkdir -p $REPODIR/${groupId}/java-sources
-    cp -i ${artifactId}-${version}-sources.jar $REPODIR/${groupId}/java-sources
+    #mkdir -p $REPODIR/${groupId}/java-sources
+    #cp -i ${artifactId}-${version}-sources.jar $REPODIR/${groupId}/java-sources
     cp -i ${artifactId}-${version}-sources.jar ${m2dir}
     md5sum  ${m2dir}/${artifactId}-${version}-sources.jar > ${m2dir}/${artifactId}-${version}-sources.jar.md5
     sha1sum ${m2dir}/${artifactId}-${version}-sources.jar > ${m2dir}/${artifactId}-${version}-sources.jar.sha1
@@ -190,8 +199,8 @@ BUNDLE=tmp.jar
   if [ -f ${artifactId}-${version}-javadoc.jar ]
   then
     echo "Deploying Javadocs ..."
-    mkdir -p $REPODIR/${groupId}/javadoc
-    cp -i ${artifactId}-${version}-javadoc.jar $REPODIR/${groupId}/javadoc
+    #mkdir -p $REPODIR/${groupId}/javadoc
+    #cp -i ${artifactId}-${version}-javadoc.jar $REPODIR/${groupId}/javadoc
     cp -i ${artifactId}-${version}-javadoc.jar ${m2dir}
     md5sum  ${m2dir}/${artifactId}-${version}-javadoc.jar > ${m2dir}/${artifactId}-${version}-javadoc.jar.md5
     sha1sum ${m2dir}/${artifactId}-${version}-javadoc.jar > ${m2dir}/${artifactId}-${version}-javadoc.jar.sha1
