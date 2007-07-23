@@ -31,7 +31,7 @@
     </ww:url>
   </c:set>
   <a href="${url}">${model.artifactId}</a> /
-  <strong>${model.version}</strong>
+  <strong>${version}</strong>
 
   <%-- TODO: new versions?
     (<strong class="statusFailed">Newer version available:</strong>
@@ -109,8 +109,8 @@
 <pre class="pom">
     &lt;dependency>
       &lt;groupId>${model.groupId}&lt;/groupId>
-      &lt;artifactId>${model.artifactId}&lt;/artifactId>
-      &lt;version>${model.version}&lt;/version><c:if test="${model.packaging != 'jar'}">
+      &lt;artifactId>${model.artifactId}&lt;/artifactId>     
+      &lt;version>${version}&lt;/version><c:if test="${model.packaging != 'jar'}">
       &lt;type>${model.packaging}&lt;/type></c:if>
     &lt;/dependency>
 </pre>

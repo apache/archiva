@@ -137,7 +137,7 @@
   </div>
 
 <div class="sidebar3">
-  <archiva:downloadArtifact groupId="${groupId}" artifactId="${artifactId}" version="${Version}" />
+  <archiva:downloadArtifact groupId="${groupId}" artifactId="${artifactId}" version="${model.version}" />
 </div>
   
   <decorator:body />

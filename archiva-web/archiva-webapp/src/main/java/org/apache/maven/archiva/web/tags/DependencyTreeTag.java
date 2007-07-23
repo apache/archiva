@@ -68,6 +68,8 @@ public class DependencyTreeTag
 
     private TreeEntry currentTreeEntry;
 
+    private String modelVersion;
+
     public int doAfterBody()
         throws JspException
     {
@@ -123,7 +125,7 @@ public class DependencyTreeTag
             nodevar = "node";
         }
 
-        this.tree = deptree.gatherTreeList( groupId, artifactId, version, nodevar, pageContext );
+        this.tree = deptree.gatherTreeList( groupId, artifactId, modelVersion, nodevar, pageContext );
 
         if ( CollectionUtils.isEmpty( this.tree ) )
         {
@@ -170,6 +172,11 @@ public class DependencyTreeTag
     public void setVersion( String version )
     {
         this.version = version;
+    }
+
+    public void setModelVersion( String modelVersion )
+    {
+        this.modelVersion = modelVersion;
     }
 
     private void exposeVariables()

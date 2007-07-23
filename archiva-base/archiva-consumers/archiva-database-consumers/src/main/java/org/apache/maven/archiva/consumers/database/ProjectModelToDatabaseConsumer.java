@@ -42,20 +42,20 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ProjectModelToDatabaseConsumer 
+ * ProjectModelToDatabaseConsumer
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
- *                   role-hint="update-db-project"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="update-db-project"
+ * instantiation-strategy="per-lookup"
  */
 public class ProjectModelToDatabaseConsumer
     extends AbstractMonitoredConsumer
@@ -102,9 +102,8 @@ public class ProjectModelToDatabaseConsumer
     private ProjectModelFilter expressionModelFilter;
 
     /**
-     * @plexus.requirement 
-     *          role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
-     *          role-hint="effective"
+     * @plexus.requirement role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
+     * role-hint="effective"
      */
     private EffectiveProjectModelFilter effectiveModelFilter;
 
@@ -167,13 +166,24 @@ public class ProjectModelToDatabaseConsumer
             // Resolve the project model
             model = effectiveModelFilter.filter( model );
 
+            // The version should be updated to the filename version if it is a unique snapshot
+            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
+            if ( model.getVersion().equals( VersionUtil.getBaseVersion( parts.version ) ) &&
+                VersionUtil.isUniqueSnapshot( parts.version ) )
+            {
+                model.setVersion( parts.version );
+            }
+
             if ( isValidModel( model, artifact ) )
             {
+                getLogger().info( "Add project model " + model + " to database." );
+
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
             {
-                getLogger().warn( "Invalid or corrupt pom. Project model " + model + " was not added in the database." );
+                getLogger().warn(
+                    "Invalid or corrupt pom. Project model " + model + " was not added in the database." );
             }
 
         }
@@ -191,9 +201,8 @@ public class ProjectModelToDatabaseConsumer
         catch ( Throwable t )
         {
             // Catch the other errors in the process to allow the rest of the process to complete.
-            getLogger().error(
-                               "Unable to process model " + artifactFile + " due to : " + t.getClass().getName()
-                                   + " : " + t.getMessage(), t );
+            getLogger().error( "Unable to process model " + artifactFile + " due to : " + t.getClass().getName() +
+                " : " + t.getMessage(), t );
         }
     }
 
@@ -279,51 +288,26 @@ public class ProjectModelToDatabaseConsumer
         try
         {
             FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
+
             if ( !parts.artifactId.equalsIgnoreCase( model.getArtifactId() ) )
             {
-                getLogger().warn(
-                                  "Project Model " + model + " artifactId: " + model.getArtifactId()
-                                        + " does not match the pom file's artifactId: " + parts.artifactId );
+                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
+                    " does not match the pom file's artifactId: " + parts.artifactId );
 
-                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId()
-                    + " does not match the pom file's artifactId: " + parts.artifactId );
-
-                return false;
-            }
-
-            if ( !parts.version.equalsIgnoreCase( model.getVersion() ) )
-            {
-                getLogger().warn(
-                                  "Project Model " + model + " version: " + model.getVersion()
-                                        + " does not match the pom file's version: " + parts.version );
-
-                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion()
-                    + " does not match the pom file's version: " + parts.version );
+                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId() +
+                    " does not match the pom file's artifactId: " + parts.artifactId );
 
                 return false;
             }
 
-            String constructedFilename;
-
-            if( parts.classifier != null )
+            if ( !parts.version.equalsIgnoreCase( model.getVersion() ) &&
+                !VersionUtil.getBaseVersion( parts.version ).equalsIgnoreCase( model.getVersion() ) )
             {
-                constructedFilename = model.getArtifactId() + "-" + model.getVersion() + "-" +
-                    parts.classifier.trim() + ".pom";
-            }
-            else
-            {
-                constructedFilename = model.getArtifactId() + "-" + model.getVersion() + ".pom";
-            }                           
+                getLogger().warn( "Project Model " + model + " version: " + model.getVersion() +
+                    " does not match the pom file's version: " + parts.version );
 
-            //check if the file name matches the values indicated in the pom
-            if ( !artifactFile.getName().equalsIgnoreCase( constructedFilename ) )
-            {
-                getLogger().warn(
-                                  "Artifact " + artifact + " does not match the artifactId and/or version "
-                                      + "specified in the project model " + model );
-
-                addProblem( artifact, "Artifact " + artifact + " does not match the artifactId and/or version "
-                    + "specified in the project model " + model );
+                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion() +
+                    " does not match the pom file's version: " + parts.version );
 
                 return false;
             }
@@ -361,4 +345,5 @@ public class ProjectModelToDatabaseConsumer
             throw new ConsumerException( emsg, e );
         }
     }
+
 }

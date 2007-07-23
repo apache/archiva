@@ -21,7 +21,8 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
 
-<archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}">
+<archiva:dependency-tree groupId="${groupId}" artifactId="${artifactId}" version="${version}"
+                         modelVersion="${model.version}">
   <my:showArtifactLink groupId="${node.groupId}" artifactId="${node.artifactId}"
-                       version="${node.version}"/>
+                       version="${node.version}"/>  
 </archiva:dependency-tree>

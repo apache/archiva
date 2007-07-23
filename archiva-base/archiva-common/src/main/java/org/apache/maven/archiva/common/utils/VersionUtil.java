@@ -151,4 +151,20 @@ public class VersionUtil
             return version;
         }
     }
+
+    public static boolean isUniqueSnapshot( String version )
+    {             
+        Matcher m = UNIQUE_SNAPSHOT_PATTERN.matcher( version );
+        if( m.matches() )
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static boolean isGenericSnapshot( String version )
+    {
+        return version.endsWith( SNAPSHOT );    
+    }
 }

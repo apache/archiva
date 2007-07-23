@@ -127,6 +127,14 @@
       </attribute>
 
       <attribute>
+        <name>modelVersion</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+
+        <description><![CDATA[The version of the project model. Used to verify the dependency graph for generic snapshots not yet in the repo.]]></description>
+      </attribute>
+
+      <attribute>
         <name>nodevar</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>

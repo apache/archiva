@@ -113,7 +113,7 @@ public class DependencyTree
         }
     }
 
-    public List gatherTreeList( String groupId, String artifactId, String version, String nodevar,
+    public List gatherTreeList( String groupId, String artifactId, String modelVersion, String nodevar,
                                 PageContext pageContext )
         throws JspException
     {
@@ -124,7 +124,7 @@ public class DependencyTree
             throw new JspException( emsg );
         }
 
-        DependencyGraph graph = fetchGraph( groupId, artifactId, version );
+        DependencyGraph graph = fetchGraph( groupId, artifactId, modelVersion );
 
         if ( graph == null )
         {
@@ -213,18 +213,20 @@ public class DependencyTree
         }
     }
 
-    private DependencyGraph fetchGraph( String groupId, String artifactId, String version )
+    private DependencyGraph fetchGraph( String groupId, String artifactId, String modelVersion )
     {
         // TODO Cache the results to disk, in XML format, in the same place as the artifact is located.
 
         VersionedReference projectRef = new VersionedReference();
         projectRef.setGroupId( groupId );
         projectRef.setArtifactId( artifactId );
-        projectRef.setVersion( version );
+        projectRef.setVersion( modelVersion );
 
         try
         {
-            return graphFactory.getGraph( projectRef );
+            DependencyGraph depGraph = graphFactory.getGraph( projectRef );
+ 
+            return depGraph;
         }
         catch ( GraphTaskException e )
         {

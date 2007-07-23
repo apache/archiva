@@ -90,8 +90,8 @@ public class SearchResultHit
     public void addArtifact( ArchivaArtifact artifact )
     {
         this.artifacts.add( artifact );
-
-        String ver = artifact.getBaseVersion();
+                
+        String ver = artifact.getVersion();        
 
         if ( !this.versions.contains( ver ) )
         {
@@ -110,7 +110,7 @@ public class SearchResultHit
 
         if ( StringUtils.isBlank( this.version ) )
         {
-            this.version = ver;
+            this.version = ver;            
         }
     }
 
