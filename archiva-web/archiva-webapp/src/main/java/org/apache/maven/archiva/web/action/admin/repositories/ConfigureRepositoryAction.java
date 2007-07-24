@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -40,6 +41,7 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
@@ -212,13 +214,19 @@ public class ConfigureRepositoryAction
     {
         String mode = getMode();
         String repoId = getRepository().getId();
+        boolean containsError = false;
 
         getLogger().info( ".save(" + mode + ":" + repoId + ")" );
 
-        if ( StringUtils.isBlank( repository.getId() ) )
+        containsError = validateFields(mode);
+
+        if ( containsError && StringUtils.equalsIgnoreCase( "add", mode ) )
+        {            
+            return INPUT;
+        }
+        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", mode )) 
         {
-            addFieldError( "id", "A repository with a blank id cannot be saved." );
-            return SUCCESS;
+            return ERROR;
         }
 
         if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
@@ -249,6 +257,45 @@ public class ConfigureRepositoryAction
         }
 
         return SUCCESS;
+    }
+
+    private boolean validateFields(String mode)
+    {
+        boolean containsError = false;
+        CronExpressionValidator validator = new CronExpressionValidator();
+        Configuration config = archivaConfiguration.getConfiguration();
+        String repoId = getRepository().getId();
+
+        if ( StringUtils.isBlank( repoId ) )
+        {   
+            addFieldError( "repository.id", "You must enter a repository identifier." );
+            containsError = true;
+        }
+        //if edit mode, do not validate existence of repoId
+        else if ( config.findRepositoryById( repoId ) != null && !StringUtils.equalsIgnoreCase( mode, "edit" )  )
+        {
+            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId + "], that id already exists." );
+            containsError = true;
+        }
+
+        if ( StringUtils.isBlank( repository.getUrl() ) )
+        {   
+            
+            addFieldError( "repository.url", "You must enter a directory or url." );
+            containsError = true;
+        }
+        if ( StringUtils.isBlank( repository.getName() ) )
+        {
+            addFieldError( "repository.name", "You must enter a repository name." );
+            containsError = true;
+        }
+        if ( !validator.validate( repository.getRefreshCronExpression() ) )
+        {
+            addFieldError( "repository.refreshCronExpression", "Invalid cron expression." );
+            containsError = true;
+        }
+
+        return containsError;
     }
 
     public void setMode( String mode )
