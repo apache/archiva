@@ -32,7 +32,7 @@
             <standardWebappClassloader>true</standardWebappClassloader>
             <listeners>
               <http-listener>
-                <port>8080</port>
+                <port>${jetty.port}</port>
               </http-listener>
               <!--
               <proxy-http-listener>

@@ -87,6 +87,11 @@
       <artifactId>mail</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-contextualizer</artifactId>
+      <version>1.0-alpha-1</version>
+    </dependency>    
   </dependencies>
   <build>
     <plugins>
@@ -123,6 +128,7 @@
             <additionalCoreArtifact>directory-naming:naming-config</additionalCoreArtifact>
             <additionalCoreArtifact>javax.mail:mail</additionalCoreArtifact>
             <additionalCoreArtifact>javax.activation:activation</additionalCoreArtifact>
+            <additionalCoreArtifact>org.codehaus.plexus:plexus-contextualizer</additionalCoreArtifact>
           </additionalCoreArtifacts>
         </configuration>
       </plugin>
