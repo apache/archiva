@@ -179,18 +179,22 @@ sub runRsync()
         if ( /^artifact/ )
         {
             my @details = split;
-            
-            print REPORT "<tr>" . "\n";
-            
-            print REPORT "<td>" . $details[1] . "</td>" . "\n";
-            
-            print REPORT "<td>" . $details[2] . "</td>" . "\n";            
-            
-            print REPORT "<td>" . $details[3] . " " . $details[4] . "</td>" . "\n";
-            
-            print REPORT "</tr>" . "\n";
 
-            $sendMail = 1;
+            # TODO: fix hardcoding
+            if ( ! ( $details[1] eq "home/maven/repository-staging/to-ibiblio/maven/." ) )
+            {
+                print REPORT "<tr>" . "\n";
+            
+                print REPORT "<td>" . $details[1] . "</td>" . "\n";
+            
+                print REPORT "<td>" . $details[2] . "</td>" . "\n";            
+            
+                print REPORT "<td>" . $details[3] . " " . $details[4] . "</td>" . "\n";
+            
+                print REPORT "</tr>" . "\n";
+
+                $sendMail = 1;
+            }
         }
         else
         {
