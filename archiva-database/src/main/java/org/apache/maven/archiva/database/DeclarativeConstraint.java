@@ -92,4 +92,13 @@ public interface DeclarativeConstraint extends Constraint
      * @return the equivalent of the SELECT WHERE (condition) value for this constraint. (can be null)
      */
     public abstract String getWhereCondition();
+
+    /**
+     * Get the declared range used for this query. (optional)
+     * 
+     * NOTE: This is DAO implementation specific.
+     * 
+     * @return the range. (can be null)
+     */
+    public abstract int[] getRange();
 }

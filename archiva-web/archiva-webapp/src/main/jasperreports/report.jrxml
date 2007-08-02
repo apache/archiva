@@ -1,0 +1,238 @@
+<?xml version="1.0"?>
+<!DOCTYPE jasperReport PUBLIC "-//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport name="ArchivaReport"
+              pageWidth="1800">
+  <field name="groupId" class="java.lang.String"/>
+  <field name="artifactId" class="java.lang.String"/>
+  <field name="version" class="java.lang.String"/>
+  <field name="message" class="java.lang.String"/>
+  <field name="origin" class="java.lang.String"/>
+  <field name="path" class="java.lang.String"/>
+  <field name="type" class="java.lang.String"/>
+  <field name="groupURL" class="java.lang.String"/>
+  <field name="artifactURL" class="java.lang.String"/>
+  <field name="versionURL" class="java.lang.String"/>
+  <field name="prev" class="java.lang.String"/>
+  <field name="next" class="java.lang.String"/>
+  <field name="page" class="java.lang.Integer"/>
+  <field name="isLastPage" class="java.lang.Boolean"/>
+  <title>
+    <band height="50">
+      <staticText>
+        <reportElement x="0" y="0" width="2240" height="50"/>
+        <textElement textAlignment="Center">
+          <font size="14" isBold="true"/>
+        </textElement>
+        <text><![CDATA[All Problematic Artifacts]]></text>
+      </staticText>
+    </band>
+  </title>
+  <pageHeader>
+    <band></band>
+  </pageHeader>
+  <columnHeader>
+    <band height="20">
+      <staticText>
+        <reportElement x="0" y="0" width="300" height="20"/>
+        <box leftBorder="Thin"
+             leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Group Id]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="300" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Artifact Id]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="600" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Version]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="900" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Message]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="1200" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Origin]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="1500" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Repository Path]]></text>
+      </staticText>
+      <staticText>
+        <reportElement x="1800" y="0" width="300" height="20"/>
+        <box leftPadding="10"
+             rightBorder="Thin"
+             rightPadding="10"
+             topBorder="Thin"
+             bottomBorder="Thin"/>
+        <textElement textAlignment="Center">
+          <font size="12"/>
+        </textElement>
+        <text><![CDATA[Type]]></text>
+      </staticText>
+    </band>
+  </columnHeader>
+  <detail>
+    <band height="20">
+        <textField isBlankWhenNull="true" hyperlinkType="Reference" hyperlinkTarget="Self">
+          <reportElement x="0" y="0" width="300" height="15"/>
+          <box leftBorder="Thin"
+               leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{groupId}]]>
+          </textFieldExpression>
+          <hyperlinkReferenceExpression><![CDATA[$F{groupURL}]]></hyperlinkReferenceExpression>
+        </textField>
+        <textField isBlankWhenNull="true" hyperlinkType="Reference" hyperlinkTarget="Self">
+          <reportElement x="300" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{artifactId}]]>
+          </textFieldExpression>
+          <hyperlinkReferenceExpression><![CDATA[$F{artifactURL}]]></hyperlinkReferenceExpression>
+        </textField>
+        <textField isBlankWhenNull="true" hyperlinkType="Reference" hyperlinkTarget="Self">
+          <reportElement x="600" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{version}]]>
+          </textFieldExpression>
+          <hyperlinkReferenceExpression><![CDATA[$F{versionURL}]]></hyperlinkReferenceExpression>
+        </textField>
+        <textField isBlankWhenNull="true" isStretchWithOverflow="true">
+          <reportElement x="900" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{message}]]>
+          </textFieldExpression>
+        </textField>
+        <textField isBlankWhenNull="true">
+          <reportElement x="1200" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{origin}]]>
+          </textFieldExpression>
+        </textField>
+        <textField isBlankWhenNull="true" isStretchWithOverflow="true">
+          <reportElement x="1500" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{path}]]>
+          </textFieldExpression>
+        </textField>
+        <textField isBlankWhenNull="true">
+          <reportElement x="1800" y="0" width="300" height="15"/>
+          <box leftPadding="10"
+               rightBorder="Thin"
+               rightPadding="10"
+               bottomBorder="Thin"/>
+          <textFieldExpression>
+            <![CDATA[$F{type}]]>
+          </textFieldExpression>
+        </textField>
+    </band>
+  </detail>
+  <columnFooter>
+    <band></band>
+  </columnFooter>
+  <pageFooter>
+    <band height="15">
+      <textField>
+        <reportElement x="0" y="0" width="50" height="15"/>
+        <textFieldExpression>
+          <![CDATA["Page: " + $F{page}]]>
+        </textFieldExpression>
+      </textField>
+      <textField hyperlinkType="Reference" hyperlinkTarget="Self">
+        <reportElement x="50" y="0" width="50" height="15">
+          <printWhenExpression>
+            <![CDATA[$F{page}.intValue() != 1]]>
+          </printWhenExpression>
+        </reportElement>
+        <textFieldExpression>
+          <![CDATA["prev"]]>
+        </textFieldExpression>
+        <hyperlinkReferenceExpression><![CDATA[$F{prev}]]></hyperlinkReferenceExpression>
+      </textField>
+      <textField hyperlinkType="Reference" hyperlinkTarget="Self">
+        <reportElement x="100" y="0" width="50" height="15">
+          <printWhenExpression>
+            <![CDATA[$F{isLastPage} != true]]>
+          </printWhenExpression>
+        </reportElement>
+        <textFieldExpression>
+          <![CDATA["next"]]>
+        </textFieldExpression>
+        <hyperlinkReferenceExpression><![CDATA[$F{next}]]></hyperlinkReferenceExpression>
+      </textField>
+    </band>
+  </pageFooter>
+  <summary>
+    <band></band>
+  </summary>
+</jasperReport>

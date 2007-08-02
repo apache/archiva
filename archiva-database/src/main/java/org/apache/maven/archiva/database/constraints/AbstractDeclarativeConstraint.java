@@ -39,6 +39,8 @@ public abstract class AbstractDeclarativeConstraint
 
     protected Object[] params;
 
+    protected int[] range;
+
     public String getFilter()
     {
         return null;
@@ -72,5 +74,10 @@ public abstract class AbstractDeclarativeConstraint
     public String[] getVariables()
     {
         return variables;
+    }
+
+    public int[] getRange()
+    {
+    	return range;
     }
 }

@@ -357,6 +357,11 @@ public class JdoAccess
             query.declareImports( StringUtils.join( constraint.getDeclaredImports(), ", " ) );
         }
 
+        if ( constraint.getRange() != null )
+        {
+        	query.setRange( constraint.getRange()[0], constraint.getRange()[1] );
+        }
+
         if ( constraint.getDeclaredParameters() != null )
         {
             if ( constraint.getParameters() == null )

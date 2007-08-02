@@ -370,17 +370,6 @@
       <interceptor-ref name="unconfiguredArchivaStack"/>
     </action>
 
-    <action name="reports" class="reportsAction">
-      <result>/WEB-INF/jsp/reports/reports.jsp</result>
-    </action>
-
-    <action name="runReport" class="reportsAction" method="runReport">
-      <interceptor-ref name="configuredArchivaStack"/>
-      <interceptor-ref name="execAndWait"/>
-      <result name="wait" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
-      <result name="success" type="redirect">/admin/reports.action?reportGroup=${reportGroup}&amp;repositoryId=${repositoryId}&amp;filter=${filter}</result>
-    </action>
-    
     <!-- The following are needed by the maven-app-configuration-web artifact -->
 
     <action name="configureAppearance" class="configureAppearance" method="input">
@@ -409,6 +398,48 @@
         <param name="actionName">configureAppearance</param>
         <param name="namespace">/admin</param>
       </result>
+    </action>
+  </package>
+
+  <package name="report" namespace="/report" extends="base">
+    <action name="showReports" class="showReportsAction">
+      <result>/WEB-INF/jsp/reports/showReports.jsp</result>
+    </action>
+
+    <action name="allProblematicArtifacts" class="allProblematicArtifactsAction">
+      <result name="success" type="jasper">
+        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
+        <param name="dataSource">reports</param>
+        <param name="format">HTML</param>
+      </result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+    </action>
+
+    <action name="byGroupId" class="reportsByGroupIdAction">
+      <result name="success" type="jasper">
+        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
+        <param name="dataSource">reports</param>
+        <param name="format">HTML</param>
+      </result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+    </action>
+
+    <action name="byArtifactId" class="reportsByArtifactIdAction">
+      <result name="success" type="jasper">
+        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
+        <param name="dataSource">reports</param>
+        <param name="format">HTML</param>
+      </result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+    </action>
+
+    <action name="byRepositoryId" class="reportsByRepositoryIdAction">
+      <result name="success" type="jasper">
+        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
+        <param name="dataSource">reports</param>
+        <param name="format">HTML</param>
+      </result>
+      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
     </action>
   </package>
 </xwork>
