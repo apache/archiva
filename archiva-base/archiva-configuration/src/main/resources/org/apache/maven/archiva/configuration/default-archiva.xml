@@ -54,7 +54,7 @@
         <cache-failures>cache</cache-failures>
       </policies>
       <whiteListPatterns>
-        <whiteListPattern>*</whiteListPattern>
+        <whiteListPattern>**/*</whiteListPattern>
       </whiteListPatterns>
     </proxyConnector>
     <proxyConnector>
