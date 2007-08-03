@@ -37,10 +37,10 @@ public class ArtifactsByChecksumConstraint
     public static final String SHA1 = "SHA1";
 
     public static final String MD5 = "MD5";
-    
+
     /**
      * Create constraint for checksum (without providing type)
-     * 
+     *
      * @param desiredChecksum the checksum (either SHA1 or MD5)
      */
     public ArtifactsByChecksumConstraint( String desiredChecksum )
@@ -50,13 +50,13 @@ public class ArtifactsByChecksumConstraint
 
     /**
      * Create constraint for specific checksum.
-     * 
+     *
      * @param desiredChecksum the checksum (either SHA1 or MD5)
-     * @param type the type of checksum (either {@link #SHA1} or {@link #MD5})
+     * @param type            the type of checksum (either {@link #SHA1} or {@link #MD5})
      */
     public ArtifactsByChecksumConstraint( String desiredChecksum, String type )
     {
-        if( StringUtils.isEmpty( type ) )
+        if ( StringUtils.isEmpty( type ) )
         {
             // default for no specified type.
             whereClause = "this.checksumSHA1 == desiredChecksum || this.checksumMD5 == desiredChecksum";
@@ -72,8 +72,8 @@ public class ArtifactsByChecksumConstraint
             whereClause = "this.checksum" + type.trim() + " == desiredChecksum";
         }
 
-        declParams = new String[]{ "String desiredChecksum" };
-        params = new Object[]{ desiredChecksum };                
+        declParams = new String[]{"String desiredChecksum"};
+        params = new Object[]{desiredChecksum.toLowerCase()};
     }
 
     public String getSortColumn()
