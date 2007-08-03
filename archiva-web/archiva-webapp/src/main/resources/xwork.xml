@@ -37,8 +37,8 @@
       <interceptor name="redbackAutoLogin" class="redbackAutoLoginInterceptor"/>
       <interceptor name="redbackPolicyEnforcement" class="redbackPolicyEnforcementInterceptor"/>
       <interceptor name="redbackEnvironmentChecker" class="redbackEnvironmentCheckInterceptor"/>
-      <interceptor name="paramFilter" class="com.opensymphony.xwork.interceptor.ParameterFilterInterceptor" />
-      
+      <interceptor name="paramFilter" class="com.opensymphony.xwork.interceptor.ParameterFilterInterceptor"/>
+
       <interceptor-stack name="configuredArchivaStack">
         <interceptor-ref name="redbackForceAdminUser"/>
         <interceptor-ref name="redbackEnvironmentChecker"/>
@@ -74,7 +74,7 @@
 
       <interceptor-stack name="configuredPrepareParamsStack">
         <!-- <interceptor-ref name="prepare" /> -->
-        <interceptor-ref name="params" />
+        <interceptor-ref name="params"/>
         <interceptor-ref name="configuredArchivaStack"/>
       </interceptor-stack>
 
@@ -203,7 +203,7 @@
     <action name="showArtifactReports" class="showArtifactAction" method="reports">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
-    
+
     <action name="showArtifactDependencies" class="showArtifactAction" method="dependencies">
       <result>/WEB-INF/jsp/showArtifact.jsp</result>
     </action>
@@ -227,18 +227,18 @@
 
   <!-- Configuration for the admin package. -->
   <package name="admin" namespace="/admin" extends="base">
-  
+
     <action name="index" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
     </action>
-    
+
     <!-- .\ REPOSITORIES \.____________________________________________ -->
-    
+
     <action name="repositories" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
       <result name="confirm" type="redirect-action">deleteRepository</result>
     </action>
-    
+
     <action name="indexRepository" class="schedulerAction" method="scanRepository">
       <result type="redirect-action">repositories</result>
     </action>
@@ -255,7 +255,7 @@
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="saveRepository" class="configureRepositoryAction" method="save">
       <result name="success" type="redirect-action">repositories</result>
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
@@ -270,105 +270,94 @@
     </action>
 
     <!-- .\ PROXY CONNECTORS \.________________________________________ -->
-    
+
     <action name="proxyConnectors" class="proxyConnectorsAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/proxyConnectors.jsp</result>
     </action>
-    
+
     <action name="addProxyConnector" class="configureProxyConnectorAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="configureProxyConnector" class="configureProxyConnectorAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="editProxyConnector" class="configureProxyConnectorAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="saveProxyConnector" class="configureProxyConnectorAction" method="save">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="deleteProxyConnector" class="configureProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <!-- .\ NETWORK PROXIES \._________________________________________ -->
-    
+
     <action name="networkProxies" class="networkProxiesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/networkProxies.jsp</result>
     </action>
-    
+
     <action name="addNetworkProxy" class="configureNetworkProxyAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
       <result name="success" type="redirect-action">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="editNetworkProxy" class="configureNetworkProxyAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
       <result name="success" type="redirect-action">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="saveNetworkProxy" class="configureNetworkProxyAction" method="save">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
       <result name="success" type="redirect-action">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="deleteNetworkProxy" class="configureNetworkProxyAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteNetworkProxy.jsp</result>
       <result name="success" type="redirect-action">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <!-- .\ REPOSITORY SCANNING \._____________________________________ -->
-    
+
     <action name="repositoryScanning" class="repositoryScanningAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
       <result name="success" type="redirect-action">
         <param name="actionName">repositoryScanning</param>
       </result>
     </action>
-    
+
     <!-- .\ DATABASE \.________________________________________________ -->
-    
+
     <action name="database" class="databaseAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
       <result name="success" type="redirect-action">
         <param name="actionName">database</param>
       </result>
     </action>
-    
+
     <action name="updateDatabase" class="schedulerAction" method="updateDatabase">
       <result type="redirect-action">database</result>
     </action>
-    
-    <!-- .\ CONFIGURATION \.___________________________________________ -->
-    
-    <action name="configure" class="configureAction" method="input">
-      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
-      <interceptor-ref name="unconfiguredArchivaStack"/>
-    </action>
 
-    <action name="saveConfiguration" class="configureAction">
-      <result name="input">/WEB-INF/jsp/admin/configure.jsp</result>
-      <result>/WEB-INF/jsp/admin/index.jsp</result>
-      <interceptor-ref name="unconfiguredArchivaStack"/>
-    </action>
+    <!-- .\ CONFIGURATION \.___________________________________________ -->
 
     <!-- The following are needed by the maven-app-configuration-web artifact -->
 
