@@ -32,7 +32,6 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role-hint="default"
  */
 public class DefaultBidirectionalRepositoryLayout
@@ -134,7 +133,8 @@ public class DefaultBidirectionalRepositoryLayout
 
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        if( reference.getVersion() != null ) {
+        if ( reference.getVersion() != null )
+        {
             // add the version only if it is present
             path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
         }
@@ -148,8 +148,8 @@ public class DefaultBidirectionalRepositoryLayout
     {
         if ( !path.endsWith( "/maven-metadata.xml" ) )
         {
-            throw new LayoutException( "Only paths ending in '/maven-metadata.xml' can be "
-                + "converted to a ProjectReference." );
+            throw new LayoutException(
+                "Only paths ending in '/maven-metadata.xml' can be " + "converted to a ProjectReference." );
         }
 
         PathReferences pathrefs = toPathReferences( path, false );
@@ -165,8 +165,8 @@ public class DefaultBidirectionalRepositoryLayout
     {
         if ( !path.endsWith( "/maven-metadata.xml" ) )
         {
-            throw new LayoutException( "Only paths ending in '/maven-metadata.xml' can be "
-                + "converted to a VersionedReference." );
+            throw new LayoutException(
+                "Only paths ending in '/maven-metadata.xml' can be " + "converted to a VersionedReference." );
         }
 
         PathReferences pathrefs = toPathReferences( path, false );
@@ -211,6 +211,19 @@ public class DefaultBidirectionalRepositoryLayout
         return path.toString();
     }
 
+    public boolean isValidPath( String path )
+    {
+        try
+        {
+            toPathReferences( path, false );
+            return true;
+        }
+        catch ( LayoutException e )
+        {
+            return false;
+        }
+    }
+
     private PathReferences toPathReferences( String path, boolean parseFilename )
         throws LayoutException
     {
@@ -232,8 +245,8 @@ public class DefaultBidirectionalRepositoryLayout
         if ( pathParts.length < 4 )
         {
             // Illegal Path Parts Length.
-            throw new LayoutException( "Not enough parts to the path [" + path
-                + "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
+            throw new LayoutException( "Not enough parts to the path [" + path +
+                "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
         }
 
         // Maven 2.x path.
@@ -246,9 +259,9 @@ public class DefaultBidirectionalRepositoryLayout
         // Second to last is the baseVersion (the directory version)
         prefs.baseVersion = pathParts[baseVersionPos];
 
-        if ( "maven-metadata.xml".equals( pathParts[filenamePos] ) ) 
+        if ( "maven-metadata.xml".equals( pathParts[filenamePos] ) )
         {
-            if( !VersionUtil.isVersion( prefs.baseVersion ) )
+            if ( !VersionUtil.isVersion( prefs.baseVersion ) )
             {
                 // We have a simple path without a version identifier.
                 prefs.baseVersion = null;

@@ -31,14 +31,14 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
- * BidirectionalRepositoryLayoutFactory 
+ * BidirectionalRepositoryLayoutFactory
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory"
  */
 public class BidirectionalRepositoryLayoutFactory
@@ -49,12 +49,12 @@ public class BidirectionalRepositoryLayoutFactory
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
     private Map layouts;
-    
+
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
-    
+
     private Map repositoryMap = new HashMap();
 
     public BidirectionalRepositoryLayout getLayout( String type )
@@ -62,12 +62,27 @@ public class BidirectionalRepositoryLayoutFactory
     {
         if ( !layouts.containsKey( type ) )
         {
-            throw new LayoutException( "Layout type [" + type + "] does not exist.  " + "Available types ["
-                + layouts.keySet() + "]" );
+            throw new LayoutException(
+                "Layout type [" + type + "] does not exist.  " + "Available types [" + layouts.keySet() + "]" );
         }
 
         return (BidirectionalRepositoryLayout) layouts.get( type );
     }
+
+    public BidirectionalRepositoryLayout getLayoutForPath( String path )
+        throws LayoutException
+    {
+        for ( Iterator iter = layouts.values().iterator(); iter.hasNext(); )
+        {
+            BidirectionalRepositoryLayout layout = (BidirectionalRepositoryLayout) iter.next();
+            if ( layout.isValidPath( path ) )
+            {
+                return layout;
+            }
+        }
+        throw new LayoutException( "No valid layout was found for path [" + path + "]" );
+    }
+
 
     public BidirectionalRepositoryLayout getLayout( ArchivaArtifact artifact )
         throws LayoutException
@@ -76,13 +91,13 @@ public class BidirectionalRepositoryLayoutFactory
         {
             throw new LayoutException( "Cannot determine layout using a null artifact." );
         }
-        
+
         String repoId = artifact.getModel().getRepositoryId();
         if ( StringUtils.isBlank( repoId ) )
         {
             throw new LayoutException( "Cannot determine layout using artifact with no repository id: " + artifact );
         }
-        
+
         RepositoryConfiguration repo = (RepositoryConfiguration) this.repositoryMap.get( repoId );
         return getLayout( repo.getLayout() );
     }
@@ -99,7 +114,7 @@ public class BidirectionalRepositoryLayoutFactory
     {
         /* do nothing */
     }
-    
+
     private void initRepositoryMap()
     {
         synchronized ( this.repositoryMap )

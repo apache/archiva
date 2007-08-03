@@ -34,7 +34,6 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role-hint="legacy"
  */
 public class LegacyBidirectionalRepositoryLayout
@@ -63,8 +62,8 @@ public class LegacyBidirectionalRepositoryLayout
 
     public String toPath( ArchivaArtifact artifact )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                       artifact.getClassifier(), artifact.getType() );
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(),
+                       artifact.getType() );
     }
 
     public String toPath( ProjectReference reference )
@@ -177,8 +176,8 @@ public class LegacyBidirectionalRepositoryLayout
         if ( pathParts.length != 3 )
         {
             // Illegal Path Parts Length.
-            throw new LayoutException( "Invalid number of parts to the path [" + path
-                + "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
+            throw new LayoutException( "Invalid number of parts to the path [" + path +
+                "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
         }
 
         // The Group ID.
@@ -204,9 +203,9 @@ public class LegacyBidirectionalRepositoryLayout
 
             if ( !prefs.type.equals( prefs.fileParts.extension ) )
             {
-                throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension
-                    + "> and expected layout specified type <" + prefs.pathType + "> (mapped type: <" + prefs.type
-                    + ">) on path <" + path + ">" );
+                throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension +
+                    "> and expected layout specified type <" + prefs.pathType + "> (mapped type: <" + prefs.type +
+                    ">) on path <" + path + ">" );
             }
         }
 
@@ -217,6 +216,19 @@ public class LegacyBidirectionalRepositoryLayout
         throws LayoutException
     {
         throw new LayoutException( "Cannot parse legacy paths to a Project Reference." );
+    }
+
+    public boolean isValidPath( String path )
+    {
+        try
+        {
+            toPathReferences( path, false );
+            return true;
+        }
+        catch ( LayoutException e )
+        {
+            return false;
+        }
     }
 
     public ArchivaArtifact toArtifact( String path )

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 /**
- * BidirectionalRepositoryLayoutFactoryTest 
+ * BidirectionalRepositoryLayoutFactoryTest
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
@@ -73,5 +73,16 @@ public class BidirectionalRepositoryLayoutFactoryTest
         {
             /* expected path */
         }
+    }
+
+    public void testFindLayoutForPath()
+        throws LayoutException
+    {
+        BidirectionalRepositoryLayout layout =
+            factory.getLayoutForPath( "javax/servlet/servlet-api/2.3/servlet-api-2.3.jar" );
+        assertEquals( "default", layout.getId() );
+
+        layout = factory.getLayoutForPath( "javax.servlet/jars/servlet-api-2.3.jar" );
+        assertEquals( "legacy", layout.getId() );
     }
 }

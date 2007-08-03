@@ -38,12 +38,11 @@ import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * ProxiedDavServer
@@ -51,8 +50,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.codehaus.plexus.webdav.DavServerComponent"
- *                   role-hint="proxied"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="proxied"
+ * instantiation-strategy="per-lookup"
  */
 public class ProxiedDavServer
     extends AbstractDavServerComponent
@@ -154,13 +153,25 @@ public class ProxiedDavServer
             ProjectReference project;
             VersionedReference versioned;
             ArtifactReference artifact;
+            BidirectionalRepositoryLayout resourceLayout;
 
             try
             {
-                artifact = layout.toArtifactReference( resource );
+                resourceLayout = layoutFactory.getLayoutForPath( resource );
+            }
+            catch ( LayoutException e )
+            {
+                /* invalid request - eat it */
+                return;
+            }
+
+            try
+            {
+                artifact = resourceLayout.toArtifactReference( resource );
                 if ( artifact != null )
                 {
                     connectors.fetchFromProxies( managedRepository, artifact );
+                    request.getRequest().setPathInfo( layout.toPath( artifact ) );
                     return;
                 }
             }
@@ -171,10 +182,11 @@ public class ProxiedDavServer
 
             try
             {
-                versioned = layout.toVersionedReference( resource );
+                versioned = resourceLayout.toVersionedReference( resource );
                 if ( versioned != null )
                 {
                     connectors.fetchFromProxies( managedRepository, versioned );
+                    request.getRequest().setPathInfo( layout.toPath( versioned ) );
                     return;
                 }
             }
@@ -185,10 +197,11 @@ public class ProxiedDavServer
 
             try
             {
-                project = layout.toProjectReference( resource );
+                project = resourceLayout.toProjectReference( resource );
                 if ( project != null )
                 {
                     connectors.fetchFromProxies( managedRepository, project );
+                    request.getRequest().setPathInfo( layout.toPath( project ) );
                     return;
                 }
             }
