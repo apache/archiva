@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -28,9 +27,9 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.RemoteRepositoryPredicate;
 import org.apache.maven.archiva.configuration.functors.RepositoryIdListClosure;
@@ -53,11 +52,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ConfigureProxyConnectorAction 
+ * ConfigureProxyConnectorAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureProxyConnectorAction"
  */
 public class ConfigureProxyConnectorAction
@@ -101,7 +99,7 @@ public class ConfigureProxyConnectorAction
     private String pattern;
 
     /**
-     * The list of possible proxy ids. 
+     * The list of possible proxy ids.
      */
     private List proxyIdOptions = new ArrayList();
 
@@ -154,13 +152,15 @@ public class ConfigureProxyConnectorAction
             return SUCCESS;
         }
 
-        ProxyConnectorSelectionPredicate proxyConnectorSelection = new ProxyConnectorSelectionPredicate( source, target );
-        ProxyConnectorConfiguration proxyConnectorConfiguration = (ProxyConnectorConfiguration) CollectionUtils.find( config
-            .getProxyConnectors(), proxyConnectorSelection );
+        ProxyConnectorSelectionPredicate proxyConnectorSelection =
+            new ProxyConnectorSelectionPredicate( source, target );
+        ProxyConnectorConfiguration proxyConnectorConfiguration =
+            (ProxyConnectorConfiguration) CollectionUtils.find( config
+                .getProxyConnectors(), proxyConnectorSelection );
         if ( proxyConnectorConfiguration == null )
         {
-            addActionError( "Unable to remove proxy connector, proxy connector with source [" + source + "] and target ["
-                            + target + "] not found." );
+            addActionError( "Unable to remove proxy connector, proxy connector with source [" + source +
+                "] and target [" + target + "] not found." );
             return SUCCESS;
         }
 
@@ -418,8 +418,8 @@ public class ConfigureProxyConnectorAction
 
         RepositoryIdListClosure remoteRepoIdList = new RepositoryIdListClosure( new ArrayList() );
         RepositoryIdListClosure localRepoIdList = new RepositoryIdListClosure( new ArrayList() );
-        Closure repoIfClosure = IfClosure.getInstance( RemoteRepositoryPredicate.getInstance(), remoteRepoIdList,
-                                                       localRepoIdList );
+        Closure repoIfClosure =
+            IfClosure.getInstance( RemoteRepositoryPredicate.getInstance(), remoteRepoIdList, localRepoIdList );
 
         CollectionUtils.forAllDo( config.getRepositories(), repoIfClosure );
 
@@ -447,8 +447,8 @@ public class ConfigureProxyConnectorAction
         {
             if ( findProxyConnector( sourceId, targetId ) != null )
             {
-                addActionError( "Unable to add new proxy connector with source [" + sourceId + "] and target ["
-                    + targetId + "] as previously declared proxy connector, go edit that one instead." );
+                addActionError( "Unable to add new proxy connector with source [" + sourceId + "] and target [" +
+                    targetId + "] as previously declared proxy connector, go edit that one instead." );
                 return INPUT;
             }
         }
@@ -559,8 +559,8 @@ public class ConfigureProxyConnectorAction
 
             if ( !options.contains( value ) )
             {
-                addActionError( "Value of [" + value + "] is invalid for policy [" + policyId + "], valid values: "
-                    + options );
+                addActionError(
+                    "Value of [" + value + "] is invalid for policy [" + policyId + "], valid values: " + options );
                 continue;
             }
         }
@@ -585,6 +585,10 @@ public class ConfigureProxyConnectorAction
         catch ( RegistryException e )
         {
             addActionError( "Unable to save configuration: " + e.getMessage() );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
         }
 
         return SUCCESS;

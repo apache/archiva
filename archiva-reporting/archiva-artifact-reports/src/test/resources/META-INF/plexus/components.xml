@@ -21,15 +21,15 @@
       <role-hint>commons-configuration</role-hint>
       <configuration>
         <properties>
-          <system />
+          <system/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
-            config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva" />
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
           <xml fileName="${appserver.home}/conf/archiva.xml" config-optional="true"
-            config-at="org.apache.maven.archiva" />
+               config-at="org.apache.maven.archiva"/>
           <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true"
-            config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva" />
-          <xml fileName="org/apache/maven/archiva/configuration/default-archiva.xml" config-optional="true"
-            config-at="org.apache.maven.archiva" />
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="org/apache/maven/archiva/configuration/default-archiva.xml"
+               config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
     </component>
@@ -39,8 +39,8 @@
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
     </component>
   </components>
-  
-    <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
+
+  <lifecycle-handler-manager implementation="org.codehaus.plexus.lifecycle.DefaultLifecycleHandlerManager">
     <default-lifecycle-handler-id>plexus</default-lifecycle-handler-id>
     <lifecycle-handlers>
       <lifecycle-handler implementation="org.codehaus.plexus.personality.plexus.PlexusLifecycleHandler">
@@ -70,6 +70,6 @@
       </lifecycle-handler>
     </lifecycle-handlers>
   </lifecycle-handler-manager>
-  
+
 </component-set>
 

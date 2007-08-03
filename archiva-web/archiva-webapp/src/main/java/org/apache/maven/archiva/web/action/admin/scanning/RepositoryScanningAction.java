@@ -21,12 +21,12 @@ package org.apache.maven.archiva.web.action.admin.scanning;
 
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
 import org.apache.maven.archiva.configuration.functors.FiletypeToMapClosure;
@@ -45,11 +45,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * RepositoryScanningAction 
+ * RepositoryScanningAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="repositoryScanningAction"
  */
 public class RepositoryScanningAction
@@ -74,7 +73,7 @@ public class RepositoryScanningAction
      * List of {@link AdminRepositoryConsumer} objects for consumers of known content.
      */
     private List knownContentConsumers;
-    
+
     /**
      * List of enabled {@link AdminRepositoryConsumer} objects for consumers of known content.
      */
@@ -84,7 +83,7 @@ public class RepositoryScanningAction
      * List of {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
      */
     private List invalidContentConsumers;
-    
+
     /**
      * List of enabled {@link AdminRepositoryConsumer} objects for consumers of invalid/unknown content.
      */
@@ -99,13 +98,13 @@ public class RepositoryScanningAction
         super.addActionError( anErrorMessage );
         getLogger().warn( "[ActionError] " + anErrorMessage );
     }
-    
+
     public void addActionMessage( String aMessage )
     {
         super.addActionMessage( aMessage );
         getLogger().info( "[ActionMessage] " + aMessage );
     }
-    
+
     public String addFiletypePattern()
     {
         getLogger().info( "Add New File Type Pattern [" + getFileTypeId() + ":" + getPattern() + "]" );
@@ -239,19 +238,21 @@ public class RepositoryScanningAction
 
     public String updateInvalidConsumers()
     {
-        addActionMessage("Update Invalid Consumers");
-        
-        archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers( enabledInvalidContentConsumers );
-        
+        addActionMessage( "Update Invalid Consumers" );
+
+        archivaConfiguration.getConfiguration().getRepositoryScanning().setInvalidContentConsumers(
+            enabledInvalidContentConsumers );
+
         return saveConfiguration();
     }
 
     public String updateKnownConsumers()
     {
-        addActionMessage("Update Known Consumers");
-        
-        archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers( enabledKnownContentConsumers );
-        
+        addActionMessage( "Update Known Consumers" );
+
+        archivaConfiguration.getConfiguration().getRepositoryScanning().setKnownContentConsumers(
+            enabledKnownContentConsumers );
+
         return saveConfiguration();
     }
 
@@ -286,6 +287,11 @@ public class RepositoryScanningAction
         catch ( RegistryException e )
         {
             addActionError( "Unable to save configuration: " + e.getMessage() );
+            return INPUT;
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
             return INPUT;
         }
 

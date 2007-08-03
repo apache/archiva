@@ -27,8 +27,8 @@ import org.codehaus.plexus.registry.RegistryListener;
  */
 public interface ArchivaConfiguration
 {
-    public static final String ROLE = ArchivaConfiguration.class.getName();
-    
+    String ROLE = ArchivaConfiguration.class.getName();
+
     /**
      * Get the configuration.
      *
@@ -42,9 +42,11 @@ public interface ArchivaConfiguration
      * @param configuration the configuration to save
      * @throws org.codehaus.plexus.registry.RegistryException
      *          if there is a problem saving the registry data
+     * @throws IndeterminateConfigurationException
+     *          if the configuration cannot be saved because it was read from two sources
      */
     void save( Configuration configuration )
-        throws RegistryException;
+        throws RegistryException, IndeterminateConfigurationException;
 
     /**
      * Add a change listener so that registry changes are propogated.
@@ -52,6 +54,5 @@ public interface ArchivaConfiguration
      * @param listener the listener
      */
     void addChangeListener( RegistryListener listener );
-    
 }
 

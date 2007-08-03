@@ -21,12 +21,12 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -94,7 +94,8 @@ public class ConfigureRepositoryAction
 
         if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, getRepoid() ) )
         {
-            addActionError( "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
+            addActionError(
+                "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
             return ERROR;
         }
 
@@ -107,7 +108,8 @@ public class ConfigureRepositoryAction
 
         if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, getRepoid() ) )
         {
-            addActionError( "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
+            addActionError(
+                "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
             return ERROR;
         }
 
@@ -218,13 +220,13 @@ public class ConfigureRepositoryAction
 
         getLogger().info( ".save(" + mode + ":" + repoId + ")" );
 
-        containsError = validateFields(mode);
+        containsError = validateFields( mode );
 
         if ( containsError && StringUtils.equalsIgnoreCase( "add", mode ) )
-        {            
+        {
             return INPUT;
         }
-        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", mode )) 
+        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", mode ) )
         {
             return ERROR;
         }
@@ -259,7 +261,7 @@ public class ConfigureRepositoryAction
         return SUCCESS;
     }
 
-    private boolean validateFields(String mode)
+    private boolean validateFields( String mode )
     {
         boolean containsError = false;
         CronExpressionValidator validator = new CronExpressionValidator();
@@ -267,20 +269,21 @@ public class ConfigureRepositoryAction
         String repoId = getRepository().getId();
 
         if ( StringUtils.isBlank( repoId ) )
-        {   
+        {
             addFieldError( "repository.id", "You must enter a repository identifier." );
             containsError = true;
         }
         //if edit mode, do not validate existence of repoId
-        else if ( config.findRepositoryById( repoId ) != null && !StringUtils.equalsIgnoreCase( mode, "edit" )  )
+        else if ( config.findRepositoryById( repoId ) != null && !StringUtils.equalsIgnoreCase( mode, "edit" ) )
         {
-            addFieldError( "repository.id", "Unable to add new repository with id [" + repoId + "], that id already exists." );
+            addFieldError( "repository.id",
+                           "Unable to add new repository with id [" + repoId + "], that id already exists." );
             containsError = true;
         }
 
         if ( StringUtils.isBlank( repository.getUrl() ) )
-        {   
-            
+        {
+
             addFieldError( "repository.url", "You must enter a directory or url." );
             containsError = true;
         }
@@ -324,7 +327,7 @@ public class ConfigureRepositoryAction
         {
             repository.setUrl( PathUtil.toUrl( rawUrlEntry ) );
         }
-        
+
         if ( repository.isManaged() )
         {
             // Normalize the path
@@ -360,9 +363,8 @@ public class ConfigureRepositoryAction
         }
         catch ( AuthorizationException e )
         {
-            getLogger().info(
-                              "Unable to authorize permission: " + permission + " against repo: " + repoid
-                                  + " due to: " + e.getMessage() );
+            getLogger().info( "Unable to authorize permission: " + permission + " against repo: " + repoid +
+                " due to: " + e.getMessage() );
             return false;
         }
     }
@@ -402,9 +404,15 @@ public class ConfigureRepositoryAction
     {
         getLogger().info( ".saveConfiguration()" );
 
-        archivaConfiguration.save( archivaConfiguration.getConfiguration() );
-
-        addActionMessage( "Successfully saved configuration" );
+        try
+        {
+            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
+        }
 
         return SUCCESS;
     }

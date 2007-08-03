@@ -22,9 +22,9 @@ package org.apache.maven.archiva.web.action.admin;
 import com.opensymphony.xwork.ModelDriven;
 import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
@@ -34,7 +34,6 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class ConfigureAction
      * The configuration.
      */
     private Configuration configuration;
-    
+
     public void validate()
     {
         getLogger().info( "validate()" );
@@ -72,10 +71,17 @@ public class ConfigureAction
         // TODO: if this didn't come from the form, go to configure.action instead of going through with re-saving what was just loaded
         // TODO: if this is changed, do we move the index or recreate it?
 
-        archivaConfiguration.save( configuration );
+        try
+        {
+            archivaConfiguration.save( configuration );
 
-        // TODO: if the repository has changed, we need to check if indexing is needed!
-        addActionMessage( "Successfully saved configuration" );
+            // TODO: if the repository has changed, we need to check if indexing is needed!
+            addActionMessage( "Successfully saved configuration" );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
+        }
 
         return SUCCESS;
     }

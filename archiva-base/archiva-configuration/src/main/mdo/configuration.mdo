@@ -78,7 +78,7 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>
-          	The list of network proxies to use for outgoing requests.
+            The list of network proxies to use for outgoing requests.
           </description>
         </field>
         <field>
@@ -176,17 +176,17 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <!-- 
-       ____                      _ _
-      |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
-      | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
-      |  _ <  __/ |_) | (_) \__ \ | || (_) | |  | |_| |
-      |_| \_\___| .__/ \___/|___/_|\__\___/|_|   \__, |
-                |_|                              |___/
-    
-      -->
-    
+     ____                      _ _
+    |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
+    | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
+    |  _ <  __/ |_) | (_) \__ \ | || (_) | |  | |_| |
+    |_| \_\___| .__/ \___/|___/_|\__\___/|_|   \__, |
+              |_|                              |___/
+
+    -->
+
     <class>
       <name>RepositoryConfiguration</name>
       <version>1.0.0+</version>
@@ -263,8 +263,8 @@
           <version>1.0.0+</version>
           <type>String</type>
           <description>
-          	When to run the refresh task. 
-          	Default is every hour
+            When to run the refresh task.
+            Default is every hour
           </description>
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
@@ -310,16 +310,16 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <!-- 
-        ____                            _
-       / ___|___  _ __  _ __   ___  ___| |_ ___  _ __ ___
-      | |   / _ \| '_ \| '_ \ / _ \/ __| __/ _ \| '__/ __|
-      | |__| (_) | | | | | | |  __/ (__| || (_) | |  \__ \
-       \____\___/|_| |_|_| |_|\___|\___|\__\___/|_|  |___/
-    
-      -->
-    
+      ____                            _
+     / ___|___  _ __  _ __   ___  ___| |_ ___  _ __ ___
+    | |   / _ \| '_ \| '_ \ / _ \/ __| __/ _ \| '__/ __|
+    | |__| (_) | | | | | | |  __/ (__| || (_) | |  \__ \
+     \____\___/|_| |_|_| |_|\___|\___|\__\___/|_|  |___/
+
+    -->
+
     <class>
       <name>AbstractRepositoryConnectorConfiguration</name>
       <abstract>true</abstract>
@@ -382,7 +382,7 @@
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
-        </field>        
+        </field>
         <field>
           <name>properties</name>
           <version>1.0.0+</version>
@@ -425,7 +425,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class>
       <superClass>AbstractRepositoryConnectorConfiguration</superClass>
       <name>ProxyConnectorConfiguration</name>
@@ -467,7 +467,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class>
       <superClass>AbstractRepositoryConnectorConfiguration</superClass>
       <name>SyncConnectorConfiguration</name>
@@ -490,16 +490,16 @@
         </field>
       </fields>
     </class>
-    
+
     <!-- 
-       ____                _
-      |  _ \ _ __ _____  _(_) ___  ___
-      | |_) | '__/ _ \ \/ / |/ _ \/ __|
-      |  __/| | | (_) >  <| |  __/\__ \
-      |_|   |_|  \___/_/\_\_|\___||___/
-    
-      -->
-    
+     ____                _
+    |  _ \ _ __ _____  _(_) ___  ___
+    | |_) | '__/ _ \ \/ / |/ _ \/ __|
+    |  __/| | | (_) >  <| |  __/\__ \
+    |_|   |_|  \___/_/\_\_|\___||___/
+
+    -->
+
     <class>
       <name>NetworkProxyConfiguration</name>
       <version>1.0.0+</version>
@@ -526,7 +526,7 @@
           <name>host</name>
           <version>1.0.0+</version>
           <description>
-          	The proxy host.
+            The proxy host.
           </description>
           <type>String</type>
           <required>true</required>
@@ -535,7 +535,7 @@
           <name>port</name>
           <version>1.0.0+</version>
           <description>
-          	The proxy port.
+            The proxy port.
           </description>
           <type>int</type>
           <defaultValue>8080</defaultValue>
@@ -544,7 +544,7 @@
           <name>username</name>
           <version>1.0.0+</version>
           <description>
-          	The proxy user.
+            The proxy user.
           </description>
           <type>String</type>
         </field>
@@ -552,22 +552,22 @@
           <name>password</name>
           <version>1.0.0+</version>
           <description>
-          	The proxy password.
+            The proxy password.
           </description>
           <type>String</type>
         </field>
       </fields>
     </class>
-    
+
     <!-- 
-       ____                        _
-      / ___|  ___ __ _ _ __  _ __ (_)_ __   __ _
-      \___ \ / __/ _` | '_ \| '_ \| | '_ \ / _` |
-       ___) | (_| (_| | | | | | | | | | | | (_| |
-      |____/ \___\__,_|_| |_|_| |_|_|_| |_|\__, |
-                                           |___/
-    
-      -->
+     ____                        _
+    / ___|  ___ __ _ _ __  _ __ (_)_ __   __ _
+    \___ \ / __/ _` | '_ \| '_ \| | '_ \ / _` |
+     ___) | (_| (_| | | | | | | | | | | | (_| |
+    |____/ \___\__,_|_| |_|_| |_|_|_| |_|\__, |
+                                         |___/
+
+    -->
     <class>
       <name>RepositoryScanningConfiguration</name>
       <version>1.0.0+</version>
@@ -643,7 +643,8 @@
           <name>cronExpression</name>
           <version>1.0.0+</version>
           <type>String</type>
-          <description>When to run the database scanning mechanism. Default is every two hours on the hour.</description>
+          <description>When to run the database scanning mechanism. Default is every two hours on the hour.
+          </description>
           <defaultValue>0 0 0/2 * * ?</defaultValue>
         </field>
         <field>
@@ -667,14 +668,14 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>
-            The list of consumers for previously processed ArchivaArtifact database 
-            objects that no longer exist on the filesystem, and might need to 
+            The list of consumers for previously processed ArchivaArtifact database
+            objects that no longer exist on the filesystem, and might need to
             undergo a cleanup.
           </description>
         </field>
       </fields>
     </class>
-    
+
     <!--    
     __        _______ ____    _    ____  ____  
     \ \      / / ____| __ )  / \  |  _ \|  _ \ 
@@ -683,7 +684,7 @@
        \_/\_/  |_____|____/_/   \_\_|   |_|    
                                                
     -->
-    
+
     <class>
       <name>WebappConfiguration</name>
       <version>1.0.0+</version>
@@ -697,11 +698,11 @@
           <version>1.0.0+</version>
           <association>
             <type>UserInterfaceOptions</type>
-          </association>          
+          </association>
         </field>
       </fields>
     </class>
-    
+
     <class>
       <name>UserInterfaceOptions</name>
       <version>1.0.0+</version>
@@ -712,20 +713,20 @@
         <field>
           <name>showFindArtifacts</name>
           <description>true if find artifacts should be enabled</description>
-          <version>1.0.0+</version>       
-          <type>boolean</type>  
+          <version>1.0.0+</version>
+          <type>boolean</type>
           <defaultValue>true</defaultValue>
         </field>
         <field>
           <name>appletFindEnabled</name>
           <description>true if applet behavior for find artifacts should be enabled</description>
-          <version>1.0.0+</version>       
-          <type>boolean</type>  
+          <version>1.0.0+</version>
+          <type>boolean</type>
           <defaultValue>true</defaultValue>
         </field>
       </fields>
     </class>
-    
+
   </classes>
 </model>
 

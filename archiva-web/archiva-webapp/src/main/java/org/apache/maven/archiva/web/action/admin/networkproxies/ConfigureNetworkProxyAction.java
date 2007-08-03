@@ -20,12 +20,12 @@ package org.apache.maven.archiva.web.action.admin.networkproxies;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.functors.NetworkProxySelectionPredicate;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -37,11 +37,10 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 /**
- * ConfigureNetworkProxyAction 
+ * ConfigureNetworkProxyAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureNetworkProxyAction"
  */
 public class ConfigureNetworkProxyAction
@@ -217,6 +216,10 @@ public class ConfigureNetworkProxyAction
         catch ( RegistryException e )
         {
             addActionError( "Unable to save configuration: " + e.getMessage() );
+        }
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
         }
 
         return SUCCESS;

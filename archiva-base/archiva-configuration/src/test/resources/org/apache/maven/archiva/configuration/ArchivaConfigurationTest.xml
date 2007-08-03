@@ -29,18 +29,36 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>empty</role-hint>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
       </requirements>
     </component>
-    
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>empty</role-hint>
       <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
       <configuration>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-upgrade-09</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>upgrade-09</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>upgrade-09</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/src/test/conf/archiva-0.9.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
       </configuration>
     </component>
 
@@ -52,10 +70,6 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
         </requirement>
       </requirements>
     </component>
@@ -74,16 +88,36 @@
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-autodetect-v1</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>autodetect-v1</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>autodetect-v1</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <system/>
+          <xml fileName="${basedir}/src/test/conf/autodetect-v1.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>test-save</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
       <requirements>
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
         </requirement>
       </requirements>
     </component>
@@ -108,11 +142,10 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save-user</role-hint>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
       </requirements>
+      <configuration>
+        <userConfigFilename>${basedir}/target/test/test-file-user.xml</userConfigFilename>
+      </configuration>
     </component>
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
@@ -130,6 +163,31 @@
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-configuration-both</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>configuration-both</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>configuration-both</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/src/test/conf/conf-user.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.user" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/src/test/conf/conf-base.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>test-read-saved</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
       <requirements>
@@ -137,11 +195,10 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>read-saved</role-hint>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
       </requirements>
+      <configuration>
+        <userConfigFilename>${basedir}/target/test/test-file.xml</userConfigFilename>
+      </configuration>
     </component>
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
@@ -150,59 +207,6 @@
       <configuration>
         <properties>
           <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
-        </properties>
-      </configuration>
-    </component>
-
-    <component>
-      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <role-hint>test-remove-proxied-repo</role-hint>
-      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.registry.Registry</role>
-          <role-hint>read-remove-proxied-repo</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.registry.Registry</role>
-      <role-hint>read-remove-proxied-repo</role-hint>
-      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
-      <configuration>
-        <properties>
-          <xml fileName="${basedir}/target/test/with-proxied-repos.xml"
-               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
-        </properties>
-      </configuration>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <role-hint>test-read-back-remove-proxied-repo</role-hint>
-      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.registry.Registry</role>
-          <role-hint>read-back-remove-proxied-repo</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.registry.Registry</role>
-      <role-hint>read-back-remove-proxied-repo</role-hint>
-      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
-      <configuration>
-        <properties>
-          <xml fileName="${basedir}/target/test/with-proxied-repos.xml"
                config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>

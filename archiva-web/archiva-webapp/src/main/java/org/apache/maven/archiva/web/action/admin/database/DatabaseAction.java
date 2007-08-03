@@ -20,11 +20,11 @@ package org.apache.maven.archiva.web.action.admin.database;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.database.updater.DatabaseConsumers;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.admin.scanning.AdminRepositoryConsumerComparator;
@@ -32,17 +32,17 @@ import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * DatabaseAction 
+ * DatabaseAction
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="databaseAction"
  */
 public class DatabaseAction
@@ -65,17 +65,17 @@ public class DatabaseAction
      * List of available {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
     private List unprocessedConsumers;
-    
+
     /**
      * List of enabled {@link AdminDatabaseConsumer} objects for unprocessed artifacts.
      */
     private List enabledUnprocessedConsumers;
-    
+
     /**
      * List of {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
      */
     private List cleanupConsumers;
-    
+
     /**
      * List of enabled {@link AdminDatabaseConsumer} objects for "to cleanup" artifacts.
      */
@@ -90,7 +90,7 @@ public class DatabaseAction
         this.cron = dbscanning.getCronExpression();
 
         AddAdminDatabaseConsumerClosure addAdminDbConsumer;
-        
+
         addAdminDbConsumer = new AddAdminDatabaseConsumerClosure( dbscanning.getUnprocessedConsumers() );
         CollectionUtils.forAllDo( databaseConsumers.getAvailableUnprocessedConsumers(), addAdminDbConsumer );
         this.unprocessedConsumers = addAdminDbConsumer.getList();
@@ -104,25 +104,26 @@ public class DatabaseAction
 
     public String updateUnprocessedConsumers()
     {
-        archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers( enabledUnprocessedConsumers );
-        
+        archivaConfiguration.getConfiguration().getDatabaseScanning().setUnprocessedConsumers(
+            enabledUnprocessedConsumers );
+
         return saveConfiguration();
     }
-    
+
     public String updateCleanupConsumers()
     {
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCleanupConsumers( enabledCleanupConsumers );
-        
+
         return saveConfiguration();
     }
-    
+
     public String updateSchedule()
     {
         archivaConfiguration.getConfiguration().getDatabaseScanning().setCronExpression( cron );
-        
+
         return saveConfiguration();
     }
-    
+
     private String saveConfiguration()
     {
         try
@@ -130,15 +131,21 @@ public class DatabaseAction
             archivaConfiguration.save( archivaConfiguration.getConfiguration() );
             addActionMessage( "Successfully saved configuration" );
         }
-        catch ( Exception e)
+        catch ( RegistryException e )
         {
+            getLogger().error( e.getMessage(), e );
             addActionError( "Error in saving configuration" );
             return INPUT;
         }
-    
+        catch ( IndeterminateConfigurationException e )
+        {
+            addActionError( e.getMessage() );
+            return INPUT;
+        }
+
         return SUCCESS;
     }
-    
+
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {

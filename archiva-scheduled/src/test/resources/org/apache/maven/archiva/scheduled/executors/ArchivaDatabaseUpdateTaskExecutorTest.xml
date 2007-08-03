@@ -42,13 +42,9 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
       </requirements>
     </component>
-    
+
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>configured</role-hint>
@@ -61,20 +57,20 @@
         </properties>
       </configuration>
     </component>
-    
+
     <component>
       <role>org.apache.maven.archiva.consumers.DatabaseCleanupConsumer</role>
       <role-hint>test-db-cleanup</role-hint>
       <implementation>org.apache.maven.archiva.scheduled.TestDatabaseCleanupConsumer</implementation>
     </component>
-    
+
     <component>
       <role>org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer</role>
       <role-hint>test-db-unprocessed</role-hint>
       <implementation>org.apache.maven.archiva.scheduled.TestDatabaseUnprocessedConsumer</implementation>
     </component>
-    
-    
+
+
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
       <role-hint>archiva</role-hint>
@@ -89,6 +85,6 @@
         </otherProperties>
       </configuration>
     </component>
- 
+
   </components>
 </component-set>

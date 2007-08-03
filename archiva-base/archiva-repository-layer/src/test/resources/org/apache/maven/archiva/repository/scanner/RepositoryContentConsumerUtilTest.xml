@@ -28,10 +28,6 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
         </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ConfigurationUpgrade</role>
-          <field-name>upgrader</field-name>
-        </requirement>
       </requirements>
     </component>
     <component>
