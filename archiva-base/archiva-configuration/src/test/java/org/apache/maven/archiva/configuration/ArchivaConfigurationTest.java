@@ -30,13 +30,15 @@ import java.util.List;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public class ArchivaConfigurationTest extends PlexusTestCase
+public class ArchivaConfigurationTest
+    extends PlexusTestCase
 {
-    public void testDefaults() throws Exception
+    public void testDefaults()
+        throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-defaults" );
-        
+
         Configuration configuration = archivaConfiguration.getConfiguration();
 
         // check default configuration
@@ -44,7 +46,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         assertTrue( "check configuration has default elements", configuration.getRepositories().isEmpty() );
     }
 
-    public void testGetConfiguration() throws Exception
+    public void testGetConfiguration()
+        throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
@@ -75,23 +78,24 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         RepositoryConfiguration repository =
             (RepositoryConfiguration) configuration.getRepositories().iterator().next();
 
-        assertEquals( "check managed repositories", "file://${appserver.home}/repositories/internal",
+        assertEquals( "check managed repositories", "file://${appserver.base}/repositories/internal",
                       repository.getUrl() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isIndexed() );
-        
+
         WebappConfiguration webapp = (WebappConfiguration) configuration.getWebapp();
         assertNotNull( "check webapp", webapp );
-        
+
         UserInterfaceOptions ui = (UserInterfaceOptions) webapp.getUi();
-        assertNotNull( "check webapp ui", ui  );
+        assertNotNull( "check webapp ui", ui );
         assertTrue( "check showFindArtifacts", ui.isShowFindArtifacts() );
         assertTrue( "check appletFindEnabled", ui.isAppletFindEnabled() );
     }
 
-    public void testGetConfigurationSystemOverride() throws Exception
+    public void testGetConfigurationSystemOverride()
+        throws Exception
     {
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-configuration" );
@@ -104,7 +108,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         //        assertEquals( "check indexPath", ".index", configuration.getIndexPath() );
     }
 
-    public void testStoreConfiguration() throws Exception
+    public void testStoreConfiguration()
+        throws Exception
     {
         File file = getTestFile( "target/test/test-file.xml" );
         file.delete();
@@ -134,7 +139,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         //        assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 
-    public void testStoreConfigurationUser() throws Exception
+    public void testStoreConfigurationUser()
+        throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
         baseFile.delete();
@@ -164,7 +170,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         //        assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 
-    public void testStoreConfigurationFallback() throws Exception
+    public void testStoreConfigurationFallback()
+        throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
         baseFile.delete();
@@ -194,7 +201,8 @@ public class ArchivaConfigurationTest extends PlexusTestCase
         //        assertEquals( "check value", "index-path", configuration.getIndexPath() );
     }
 
-    public void testRemoveProxiedRepositoryAndStoreConfiguration() throws Exception
+    public void testRemoveProxiedRepositoryAndStoreConfiguration()
+        throws Exception
     {
         // MRM-300
 

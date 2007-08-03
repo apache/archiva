@@ -23,7 +23,7 @@
     <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>file://${appserver.home}/repositories/internal</url>
+      <url>file://${appserver.base}/repositories/internal</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
@@ -33,7 +33,7 @@
     <repository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.home}/repositories/internal</url>
+      <url>file://${appserver.base}/repositories/internal</url>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
@@ -64,7 +64,7 @@
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>central</targetRepoId>
-      <proxyId />
+      <proxyId/>
       <snapshotsPolicy>disabled</snapshotsPolicy>
       <releasePolicy>never</releasePolicy>
       <failurePolicy>not-found</failurePolicy>
@@ -72,7 +72,7 @@
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
-      <proxyId />
+      <proxyId/>
       <snapshotsPolicy>disabled</snapshotsPolicy>
       <releasePolicy>never</releasePolicy>
       <failurePolicy>not-found</failurePolicy>
