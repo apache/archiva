@@ -308,9 +308,9 @@ public class ArchivaConfigurationTest
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
 
-        Configuration configuration = new Configuration();
-        configuration.setWebapp( new WebappConfiguration() );
-        configuration.getWebapp().setUi( new UserInterfaceOptions() );
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         try
@@ -320,7 +320,9 @@ public class ArchivaConfigurationTest
         }
         catch ( IndeterminateConfigurationException e )
         {
-            assertTrue( true );
+            // check it was reverted
+            configuration = archivaConfiguration.getConfiguration();
+            assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
         }
     }
 

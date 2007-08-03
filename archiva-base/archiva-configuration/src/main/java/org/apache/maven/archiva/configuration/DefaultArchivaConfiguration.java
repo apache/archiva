@@ -28,7 +28,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -148,6 +147,8 @@ public class DefaultArchivaConfiguration
         }
         else if ( registry.getSection( KEY + ".base" ) != null )
         {
+            this.configuration = null;
+
             throw new IndeterminateConfigurationException(
                 "Configuration can not be saved when it is loaded from two sources" );
         }
@@ -174,7 +175,7 @@ public class DefaultArchivaConfiguration
 
         try
         {
-            ( (CommonsConfigurationRegistry) registry ).initialize();
+            ( (Initializable) registry ).initialize();
         }
         catch ( InitializationException e )
         {
