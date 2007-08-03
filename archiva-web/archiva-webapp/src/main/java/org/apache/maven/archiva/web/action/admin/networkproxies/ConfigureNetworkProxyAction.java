@@ -216,10 +216,12 @@ public class ConfigureNetworkProxyAction
         catch ( RegistryException e )
         {
             addActionError( "Unable to save configuration: " + e.getMessage() );
+            return INPUT;
         }
         catch ( IndeterminateConfigurationException e )
         {
             addActionError( e.getMessage() );
+            return INPUT;
         }
 
         return SUCCESS;

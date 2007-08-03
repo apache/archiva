@@ -29,6 +29,8 @@
 
 <h1>Admin: Delete Repository</h1>
 
+<ww:actionerror/>
+
 <div id="contentArea">
 
   <h2>Delete Repository</h2>

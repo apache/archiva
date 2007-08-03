@@ -113,6 +113,7 @@ public class ConfigureRepositoryAction
             return ERROR;
         }
 
+        String result = SUCCESS;
         if ( StringUtils.equals( mode, "delete-entry" ) || StringUtils.equals( mode, "delete-contents" ) )
         {
             AdminRepositoryConfiguration existingRepository = getRepository();
@@ -127,33 +128,40 @@ public class ConfigureRepositoryAction
             try
             {
                 removeRepository( getRepoid() );
-                removeRepositoryRoles( existingRepository );
-                saveConfiguration();
+                result = saveConfiguration();
 
-                if ( StringUtils.equals( mode, "delete-contents" ) )
+                if ( result.equals( SUCCESS ) )
                 {
-                    removeContents( existingRepository );
+                    removeRepositoryRoles( existingRepository );
+                    if ( StringUtils.equals( mode, "delete-contents" ) )
+                    {
+                        removeContents( existingRepository );
+                    }
                 }
             }
             catch ( IOException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
+                result = INPUT;
             }
             catch ( RoleManagerException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
+                result = INPUT;
             }
             catch ( InvalidConfigurationException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
+                result = INPUT;
             }
             catch ( RegistryException e )
             {
                 addActionError( "Unable to delete repository: " + e.getMessage() );
+                result = INPUT;
             }
         }
 
-        return SUCCESS;
+        return result;
     }
 
     public String edit()
@@ -236,29 +244,34 @@ public class ConfigureRepositoryAction
             removeRepository( repoId );
         }
 
+        String result;
         try
         {
             addRepository( getRepository() );
-            saveConfiguration();
+            result = saveConfiguration();
         }
         catch ( IOException e )
         {
             addActionError( "I/O Exception: " + e.getMessage() );
+            result = INPUT;
         }
         catch ( RoleManagerException e )
         {
             addActionError( "Role Manager Exception: " + e.getMessage() );
+            result = INPUT;
         }
         catch ( InvalidConfigurationException e )
         {
             addActionError( "Invalid Configuration Exception: " + e.getMessage() );
+            result = INPUT;
         }
         catch ( RegistryException e )
         {
             addActionError( "Configuration Registry Exception: " + e.getMessage() );
+            result = INPUT;
         }
 
-        return SUCCESS;
+        return result;
     }
 
     private boolean validateFields( String mode )
@@ -412,6 +425,7 @@ public class ConfigureRepositoryAction
         catch ( IndeterminateConfigurationException e )
         {
             addActionError( e.getMessage() );
+            return INPUT;
         }
 
         return SUCCESS;

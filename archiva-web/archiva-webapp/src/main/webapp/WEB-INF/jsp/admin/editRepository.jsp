@@ -29,13 +29,15 @@
 
 <h1>Admin: Edit Repository</h1>
 
+<ww:actionerror/>
+
 <div id="contentArea">
 
   <h2>Edit Repository</h2>
 
   <ww:actionmessage/>
   <ww:form method="post" action="saveRepository" namespace="/admin" validate="false">
-    <ww:hidden name="mode" value="edit"/>  
+    <ww:hidden name="mode" value="edit"/>
     <ww:hidden name="repository.id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
     <ww:submit value="Update Repository"/>

@@ -29,6 +29,8 @@
 
 <h1>Admin: Delete Network Proxy</h1>
 
+<ww:actionerror/>
+
 <div id="contentArea">
 
   <h2>Delete Network Proxy</h2>
@@ -36,9 +38,9 @@
   <blockquote>
     <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
   </blockquote>
-  
+
   <p>
-  Are you sure you want to delete network proxy <code>${proxyid}</code> ?
+    Are you sure you want to delete network proxy <code>${proxyid}</code> ?
   </p>
 
   <ww:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">

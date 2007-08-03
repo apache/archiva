@@ -29,6 +29,8 @@
 
 <h1>Admin: Delete Proxy Connector</h1>
 
+<ww:actionerror/>
+
 <div id="contentArea">
 
   <h2>Delete Proxy Connector</h2>
@@ -36,14 +38,14 @@
   <blockquote>
     <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
   </blockquote>
-  
+
   <p>
-  Are you sure you want to delete proxy connector <code>[ ${source} , ${target} ]</code> ?
+    Are you sure you want to delete proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
   <ww:form method="post" action="deleteProxyConnector!delete" namespace="/admin" validate="true">
     <ww:hidden name="target"/>
-	<ww:hidden name="source"/>
+    <ww:hidden name="source"/>
     <ww:submit value="Delete"/>
   </ww:form>
 </div>
