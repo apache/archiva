@@ -18,11 +18,6 @@
   --%>
 
 <%@ taglib prefix="ww" uri="/webwork" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
-<%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
@@ -31,28 +26,12 @@
 </head>
 
 <body>
-
 <h1>Reports</h1>
 
 <div id="contentArea">
 
-<c:forEach items="${reports}" var="report">
-  <h3>
-      ${report.groupId} : ${report.artifactId} : ${report.version} : ${report.classifier} : ${report.type}
-  </h3>
-  <ul>
-    <c:forEach items="${repor.results}" var="result">
-      <li>
-        <b>${result.reason}</b>
-      </li>
-    </c:forEach>
-  </ul>
-</c:forEach>
-<c:if test="${empty(reports)}">
-  <strong>No reports for any artifact.</strong>
-</c:if>
+  <ww:text name="The operation generated an empty report."/>
 
 </div>
-
 </body>
 </html>
