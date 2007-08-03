@@ -31,61 +31,69 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <script type="text/javascript">
-      function generateMd5( file, defVal )
-      {
-        if ( file )
-        {
-          var s = document.ChecksumApplet.generateMd5(file);
-          // If there is a space, it's an error message, not a checksum
-          if ( s.indexOf(" ") >= 0 )
-          {
-            alert(s);
-            return "";
-          }
-          else
-            return s;
-        }
-        return defVal;
-      }
-    </script>
-
-    <noscript>
-      <span class="errorMessage">JavaScript is disabled: using the file browser will not work.</span>
-    </noscript>
-
-    <ww:form method="POST" action="checksumSearch" namespace="/"
-             onsubmit="this.q.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true;">
-      <ww:hidden name="q"/>
-      <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">     
-      <tr>
-        <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
-        <td>
-          <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
-        </td>
-      </tr>
-      </ww:if>
-      <ww:textfield label="Checksum" size="50" name="md5"/>
-      <ww:submit value="Go!"/>
-    </ww:form>
-
     <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">
-    <p>
-      Select the file you would like to locate in the remote repository.
-      The entire file will
-      <b>not</b>
-      be uploaded to the server. See the progress bar below for progress of
-      locally creating a checksum that is uploaded to the server after you hit "Go!".
-      <ww:actionerror/>
-    </p>
+      <script type="text/javascript">
+        function generateMd5( file, defVal )
+        {
+          if ( file )
+          {
+            var s = document.ChecksumApplet.generateMd5(file);
+            // If there is a space, it's an error message, not a checksum
+            if ( s.indexOf(" ") >= 0 )
+            {
+              alert(s);
+              return "";
+            }
+            else
+              return s;
+          }
+          return defVal;
+        }
+      </script>
 
-    <p>
-      <applet code="org/apache/maven/archiva/applet/ChecksumApplet.class"
-              archive="archiva-applet.jar"
-              width="400" height="20" name="ChecksumApplet">
-      </applet>
-    </p>
+      <noscript>
+        <span class="errorMessage">JavaScript is disabled: using the file browser will not work.</span>
+      </noscript>
+
+      <ww:form method="POST" action="checksumSearch" namespace="/"
+               onsubmit="this.q.value = generateMd5(this.file.value,this.md5.value); this.file.disabled = true;">
+        <ww:hidden name="q"/>
+        <tr>
+          <td class="tdLabel"><label for="checksumSearch_file" class="label">Search for:</label></td>
+          <td>
+            <input type="file" name="file" size="50" value="" id="checksumSearch_file"/>
+          </td>
+        </tr>
+        <ww:textfield label="Checksum" size="50" name="md5"/>
+        <ww:submit value="Go!"/>
+      </ww:form>
+
+      <p>
+        Select the file you would like to locate in the remote repository.
+        The entire file will
+        <b>not</b>
+        be uploaded to the server. See the progress bar below for progress of
+        locally creating a checksum that is uploaded to the server after you hit "Go!".
+        <ww:actionerror/>
+      </p>
+
+      <p>
+        <applet code="org/apache/maven/archiva/applet/ChecksumApplet.class"
+                archive="archiva-applet.jar"
+                width="400" height="20" name="ChecksumApplet">
+        </applet>
+      </p>
     </ww:if>
+    <ww:else>
+      <ww:form method="POST" action="checksumSearch" namespace="/">
+        <ww:textfield label="Checksum" size="50" name="q"/>
+        <ww:submit value="Go!"/>
+      </ww:form>
+
+      <p>
+        <ww:actionerror/>
+      </p>
+    </ww:else>
   </div>
 </div>
 
