@@ -5,7 +5,7 @@
     <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>file://${appserver.base}/repositories/internal</url>
+      <url>file://${appserver.base}/data/repositories/internal</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
@@ -15,7 +15,7 @@
     <repository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.base}/repositories/snapshots</url>
+      <url>file://${appserver.base}/data/repositories/snapshots</url>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
