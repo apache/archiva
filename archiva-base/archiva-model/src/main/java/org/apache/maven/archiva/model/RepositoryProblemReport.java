@@ -21,11 +21,12 @@ package org.apache.maven.archiva.model;
 
 /**
  * RepositoryProblemReport
- * 
+ *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryProblemReport extends RepositoryProblem
+public class RepositoryProblemReport
+    extends RepositoryProblem
 {
     private static final long serialVersionUID = 4990893576717148324L;
 
@@ -53,7 +54,7 @@ public class RepositoryProblemReport extends RepositoryProblem
 
     public String getGroupURL()
     {
-        return groupURL; 
+        return groupURL;
     }
 
     public void setArtifactURL( String artifactURL )
@@ -63,7 +64,7 @@ public class RepositoryProblemReport extends RepositoryProblem
 
     public String getArtifactURL()
     {
-        return artifactURL; 
+        return artifactURL;
     }
 
     public void setVersionURL( String versionURL )
@@ -73,6 +74,6 @@ public class RepositoryProblemReport extends RepositoryProblem
 
     public String getVersionURL()
     {
-        return versionURL; 
+        return versionURL;
     }
 }

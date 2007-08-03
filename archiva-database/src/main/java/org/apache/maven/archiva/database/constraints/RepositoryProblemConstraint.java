@@ -22,23 +22,36 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
- * RepositoryProblemByArtifactIdConstraint
+ * RepositoryProblemConstraint
  */
-public class RepositoryProblemByArtifactIdConstraint extends RangeConstraint implements Constraint
+public class RepositoryProblemConstraint
+    extends RangeConstraint
+    implements Constraint
 {
     private String whereClause;
 
-    public RepositoryProblemByArtifactIdConstraint( int[] range, String desiredArtifactId )
+    private void createWhereClause( String desiredGroupId, String desiredRepositoryId )
+    {
+        whereClause = "groupId == desiredGroupId && repositoryId == desiredRepositoryId";
+        declParams = new String[]{"String desiredGroupId", "String desiredRepositoryId"};
+        params = new Object[]{desiredGroupId, desiredRepositoryId};
+    }
+
+    public RepositoryProblemConstraint( String desiredGroupId, String desiredRepositoryId )
+    {
+        super();
+        createWhereClause( desiredGroupId, desiredRepositoryId );
+    }
+
+    public RepositoryProblemConstraint( int[] range, String desiredGroupId, String desiredRepositoryId )
     {
         super( range );
-        whereClause = "artifactId == desiredArtifactId";
-        declParams = new String[] { "String desiredArtifactId" };
-        params = new Object[] { desiredArtifactId };
+        createWhereClause( desiredGroupId, desiredRepositoryId );
     }
 
     public String getSortColumn()
     {
-        return "groupId";
+        return "artifactId";
     }
 
     public String getWhereCondition()

@@ -22,40 +22,36 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
- * RepositoryProblemByGroupIdConstraint
+ * UniqueFieldConstraint
  */
-public class RepositoryProblemByGroupIdConstraint
-    extends RangeConstraint
+public class UniqueFieldConstraint
+    extends AbstractSimpleConstraint
     implements Constraint
 {
-    private String whereClause;
+    private String sql;
 
-    private void createWhereClause( String desiredGroupId )
+    public UniqueFieldConstraint( String className, String fieldName )
     {
-        whereClause = "groupId == desiredGroupId";
-        declParams = new String[]{"String desiredGroupId"};
-        params = new Object[]{desiredGroupId};
+        sql = "SELECT " + fieldName + " FROM " + className + " GROUP BY " + fieldName + " ORDER BY " + fieldName +
+            " ASCENDING";
     }
 
-    public RepositoryProblemByGroupIdConstraint( String desiredGroupId )
+    public UniqueFieldConstraint( String className, String fieldName, String fieldNamePrefix )
     {
-        super();
-        createWhereClause( desiredGroupId );
+        sql = "SELECT " + fieldName + " FROM " + className + " WHERE " + fieldName +
+            ".startsWith( fieldPrefix ) PARAMETERS String fieldPrefix GROUP BY " + fieldName + " ORDER BY " +
+            fieldName + " ASCENDING";
+
+        super.params = new Object[]{fieldNamePrefix};
     }
 
-    public RepositoryProblemByGroupIdConstraint( int[] range, String desiredGroupId )
+    public Class getResultClass()
     {
-        super( range );
-        createWhereClause( desiredGroupId );
+        return String.class;
     }
 
-    public String getSortColumn()
+    public String getSelectSql()
     {
-        return "artifactId";
-    }
-
-    public String getWhereCondition()
-    {
-        return whereClause;
+        return sql;
     }
 }

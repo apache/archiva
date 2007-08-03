@@ -395,34 +395,7 @@
       <result>/WEB-INF/jsp/reports/showReports.jsp</result>
     </action>
 
-    <action name="allProblematicArtifacts" class="allProblematicArtifactsAction">
-      <result name="success" type="jasper">
-        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
-        <param name="dataSource">reports</param>
-        <param name="format">HTML</param>
-      </result>
-      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
-    </action>
-
-    <action name="byGroupId" class="reportsByGroupIdAction">
-      <result name="success" type="jasper">
-        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
-        <param name="dataSource">reports</param>
-        <param name="format">HTML</param>
-      </result>
-      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
-    </action>
-
-    <action name="byArtifactId" class="reportsByArtifactIdAction">
-      <result name="success" type="jasper">
-        <param name="location">/WEB-INF/jasperreports/report.jasper</param>
-        <param name="dataSource">reports</param>
-        <param name="format">HTML</param>
-      </result>
-      <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
-    </action>
-
-    <action name="byRepositoryId" class="reportsByRepositoryIdAction">
+    <action name="generateReportAction" class="generateReportAction">
       <result name="success" type="jasper">
         <param name="location">/WEB-INF/jasperreports/report.jasper</param>
         <param name="dataSource">reports</param>

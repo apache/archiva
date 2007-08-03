@@ -22,15 +22,20 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 
 /**
- * RangeConstraint 
+ * RangeConstraint
  */
 public class RangeConstraint
     extends AbstractDeclarativeConstraint
     implements Constraint
 {
+    public RangeConstraint()
+    {
+        this.range = null;
+    }
+
     public RangeConstraint( int[] range )
     {
-    	this.range = range;
+        this.range = range;
     }
 
     public String getSortColumn()

@@ -19,13 +19,13 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.constraints.RangeConstraint;
+import org.apache.maven.archiva.database.constraints.RepositoryProblemByGroupIdConstraint;
+import org.apache.maven.archiva.database.constraints.RepositoryProblemByRepositoryIdConstraint;
+import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.model.RepositoryProblemReport;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -35,12 +35,16 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import com.opensymphony.webwork.interceptor.ServletRequestAware;
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Abstract reporting.
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReportAction"
  */
-public abstract class AbstractReportAction extends PlexusActionSupport implements SecureAction, ServletRequestAware
+public class GenerateReportAction
+    extends PlexusActionSupport
+    implements SecureAction, ServletRequestAware
 {
     /**
      * @plexus.requirement role-hint="jdo"
@@ -52,6 +56,10 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
     protected HttpServletRequest request;
 
     protected List reports = new ArrayList();
+
+    protected String groupId;
+
+    protected String repositoryId;
 
     protected String prev;
 
@@ -67,13 +75,10 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
 
     public static final String BLANK = "blank";
 
-    public String execute() throws Exception
+    public String execute()
+        throws Exception
     {
-        range[0] = ( page - 1 ) * rowCount;
-        range[1] = ( page * rowCount ) + 1; // Add 1 to check if it's the last page or not.
-
-        configureConstraint();
-        List problemArtifacts = dao.getRepositoryProblemDAO().queryRepositoryProblems( constraint );
+        List problemArtifacts = dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
 
         String contextPath =
             request.getRequestURL().substring( 0, request.getRequestURL().indexOf( request.getRequestURI() ) );
@@ -85,10 +90,8 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
             problemArtifactReport = new RepositoryProblemReport( problemArtifact );
 
             problemArtifactReport.setGroupURL( contextPath + "/browse/" + problemArtifact.getGroupId() );
-            problemArtifactReport.setArtifactURL( contextPath + "/browse/" + problemArtifact.getGroupId() + "/"
-                            + problemArtifact.getArtifactId() );
-            problemArtifactReport.setVersionURL( contextPath + "/browse/" + problemArtifact.getGroupId() + "/"
-                            + problemArtifact.getArtifactId() + "/" + problemArtifact.getVersion() );
+            problemArtifactReport.setArtifactURL(
+                contextPath + "/browse/" + problemArtifact.getGroupId() + "/" + problemArtifact.getArtifactId() );
 
             reports.add( problemArtifactReport );
         }
@@ -102,8 +105,10 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
             reports.remove( rowCount );
         }
 
-        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount;
-        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount;
+        prev = request.getRequestURL() + "?page=" + ( page - 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
+            "&repositoryId=" + repositoryId;
+        next = request.getRequestURL() + "?page=" + ( page + 1 ) + "&rowCount=" + rowCount + "&groupId=" + groupId +
+            "&repositoryId=" + repositoryId;
 
         if ( reports.size() == 0 && page == 1 )
         {
@@ -115,10 +120,35 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
         }
     }
 
-    /**
-     * To be implemented by sub-reports to configure specific constraints.
-     */
-    abstract protected void configureConstraint();
+    private Constraint configureConstraint()
+    {
+        Constraint constraint;
+
+        range[0] = ( page - 1 ) * rowCount;
+        range[1] = ( page * rowCount ) + 1; // Add 1 to check if it's the last page or not.
+
+        if ( groupId != null && ( !groupId.equals( "" ) ) )
+        {
+            if ( repositoryId != null && ( !repositoryId.equals( "" ) ) )
+            {
+                constraint = new RepositoryProblemConstraint( range, groupId, repositoryId );
+            }
+            else
+            {
+                constraint = new RepositoryProblemByGroupIdConstraint( range, groupId );
+            }
+        }
+        else if ( repositoryId != null && ( !repositoryId.equals( "" ) ) )
+        {
+            constraint = new RepositoryProblemByRepositoryIdConstraint( range, repositoryId );
+        }
+        else
+        {
+            constraint = new RangeConstraint( range );
+        }
+
+        return constraint;
+    }
 
     public void setServletRequest( HttpServletRequest request )
     {
@@ -128,6 +158,26 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
     public List getReports()
     {
         return reports;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    public void setRepositoryId( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
     }
 
     public String getPrev()
@@ -165,7 +215,8 @@ public abstract class AbstractReportAction extends PlexusActionSupport implement
         return isLastPage;
     }
 
-    public SecureActionBundle getSecureActionBundle() throws SecureActionException
+    public SecureActionBundle getSecureActionBundle()
+        throws SecureActionException
     {
         SecureActionBundle bundle = new SecureActionBundle();
 

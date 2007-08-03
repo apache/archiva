@@ -24,16 +24,29 @@ import org.apache.maven.archiva.database.Constraint;
 /**
  * RepositoryProblemByRepositoryIdConstraint
  */
-public class RepositoryProblemByRepositoryIdConstraint extends RangeConstraint implements Constraint
+public class RepositoryProblemByRepositoryIdConstraint
+    extends RangeConstraint
+    implements Constraint
 {
     private String whereClause;
+
+    private void createWhereClause( String desiredRepositoryId )
+    {
+        whereClause = "repositoryId == desiredRepositoryId";
+        declParams = new String[]{"String desiredRepositoryId"};
+        params = new Object[]{desiredRepositoryId};
+    }
+
+    public RepositoryProblemByRepositoryIdConstraint( String desiredRepositoryId )
+    {
+        super();
+        createWhereClause( desiredRepositoryId );
+    }
 
     public RepositoryProblemByRepositoryIdConstraint( int[] range, String desiredRepositoryId )
     {
         super( range );
-        whereClause = "repositoryId == desiredRepositoryId";
-        declParams = new String[] { "String desiredRepositoryId" };
-        params = new Object[] { desiredRepositoryId };
+        createWhereClause( desiredRepositoryId );
     }
 
     public String getSortColumn()
