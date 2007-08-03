@@ -726,7 +726,7 @@ public class DefaultRepositoryProxyConnectors
             return true;
         }
 
-        return collection.isEmpty();
+        return collection.size() == 0;
     }
 
     private ArchivaRepository getRepository( String repoId )
