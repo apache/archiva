@@ -26,7 +26,7 @@ import org.apache.maven.archiva.model.ArchivaRepository;
 /**
  * ArchivaConfigurationAdaptor 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @todo the whole need for 2 objects is a consequence of using jpox. hopefully JPA will address some of this mess.
  */

@@ -22,14 +22,14 @@ package org.apache.maven.archiva.model;
 /**
  * RepositoryProblemReport
  * 
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryProblemReport extends RepositoryProblem
 {
-	private static final long serialVersionUID = 4990893576717148324L;
+    private static final long serialVersionUID = 4990893576717148324L;
 
-	protected String groupURL;
+    protected String groupURL;
 
     protected String artifactURL;
 

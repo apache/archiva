@@ -32,7 +32,7 @@ import java.util.Date;
 /**
  * RepositoryMetadataReader - read maven-metadata.xml files.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryMetadataReader

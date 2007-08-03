@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * JdoArtifactDAO 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role-hint="jdo"

@@ -25,7 +25,7 @@ import junit.framework.TestSuite;
 /**
  * AllTests - conveinence test suite for IDE users. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AllTests

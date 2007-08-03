@@ -27,7 +27,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 /**
  * Test the {@link RepositoryContentIndex} object for the existance of an index. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

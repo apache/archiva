@@ -24,7 +24,7 @@ import org.apache.maven.archiva.indexer.ArtifactKeys;
 /**
  * Lucene Index Keys for the various fields in the Hashcodes Index. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class HashcodesKeys extends ArtifactKeys

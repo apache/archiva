@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

@@ -40,7 +40,7 @@ import java.util.Map;
  * Takes a stack of DependencyManagement objects and applies them to the node in question.
  * This merely sets the version / scope / and exclusions on the nodes, as defined by DependencyManagement.
  * 
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyManagementApplier

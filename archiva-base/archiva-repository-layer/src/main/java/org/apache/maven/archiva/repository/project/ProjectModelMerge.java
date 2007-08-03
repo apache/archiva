@@ -49,7 +49,7 @@ import java.util.Map.Entry;
  *
  * TODO: Should call this ProjectModelAncestry as it deals with the current project and its parent.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ProjectModelMerge

@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * DefaultArtifactExtensionMapping - extension mapping for Maven 2.x projects. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DefaultArtifactExtensionMapping extends AbstractArtifactExtensionMapping

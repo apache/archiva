@@ -26,7 +26,7 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
  * Predicate for {@link RepositoryConfiguration} objects that are local (aka managed) 
  * {@link RepositoryConfiguration#isManaged()} 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class LocalRepositoryPredicate

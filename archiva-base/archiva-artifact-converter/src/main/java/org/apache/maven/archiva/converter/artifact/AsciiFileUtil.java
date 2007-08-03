@@ -29,7 +29,7 @@ import java.io.IOException;
 /**
  * AsciiFileUtil - conveinence utility for reading / writing ascii files.
  * 
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @todo switch to commons-lang and use their high-performance versions of these utility methods.
  */

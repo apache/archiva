@@ -22,7 +22,7 @@ package org.apache.maven.archiva.indexer.search;
 /**
  * Search across repositories in lucene indexes. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @todo add security to not perform search in repositories you don't have access to.
  */

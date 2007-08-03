@@ -24,7 +24,7 @@ import org.apache.maven.archiva.common.ArchivaException;
 /**
  * ConsumerException - details about the failure of a consumer.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ConsumerException

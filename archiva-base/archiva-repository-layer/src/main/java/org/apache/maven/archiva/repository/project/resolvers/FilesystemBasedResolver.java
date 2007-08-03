@@ -23,7 +23,7 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * Tag for RepositoryProjectResolver's to indicate that it is basing
  * it's resolution from the Filesystem.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface FilesystemBasedResolver

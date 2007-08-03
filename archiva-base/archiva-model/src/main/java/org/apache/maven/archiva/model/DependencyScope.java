@@ -25,7 +25,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * DependencyScope - utility methods and constants for working with scopes.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DependencyScope

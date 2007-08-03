@@ -28,7 +28,7 @@ import org.apache.maven.archiva.model.VersionedReference;
  * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
  * the both the Path to Artifact, and Artifact to Path conversions.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface BidirectionalRepositoryLayout

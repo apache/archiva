@@ -60,7 +60,7 @@ import java.util.jar.JarFile;
  * in its pom (both the pom packaged with the artifact & the pom in the
  * file system).
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"

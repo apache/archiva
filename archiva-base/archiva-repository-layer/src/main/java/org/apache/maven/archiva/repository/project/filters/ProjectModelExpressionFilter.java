@@ -39,7 +39,7 @@ import java.util.Properties;
 /**
  * ProjectModelExpressionFilter 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelFilter"
  *                   role-hint="expression" 

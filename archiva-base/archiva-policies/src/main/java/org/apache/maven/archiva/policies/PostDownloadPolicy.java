@@ -27,7 +27,7 @@ import java.util.Properties;
  * Policy to apply after the download has completed, but before the
  * resource is made available to the calling client. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface PostDownloadPolicy extends DownloadPolicy

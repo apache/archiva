@@ -37,7 +37,7 @@ import java.io.File;
 /**
  * CreateArchivaDependencyResolutionTestCaseMojo 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @goal generate-dependency-tests

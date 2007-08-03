@@ -30,7 +30,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
  * ResolverFactoryInit - Initialize the Resolver Factory, and hook it up to
  * the database.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

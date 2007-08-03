@@ -23,7 +23,7 @@ package org.apache.maven.archiva.policies.urlcache;
 /**
  * Cache for requested URLs that cannot be fetched. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface UrlFailureCache

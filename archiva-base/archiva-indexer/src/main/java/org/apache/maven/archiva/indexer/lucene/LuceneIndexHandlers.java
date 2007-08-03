@@ -25,7 +25,7 @@ import org.apache.lucene.queryParser.QueryParser;
 /**
  * The important bits and pieces for handling a specific lucene index    
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface LuceneIndexHandlers

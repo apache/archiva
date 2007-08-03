@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.layout;
 /**
  * FilenameParts - data object for {@link RepositoryLayoutUtils#splitFilename(String, String)} method. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class FilenameParts

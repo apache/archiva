@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * ArchivaArtifactConsumer - consumer for ArchivaArtifact objects. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ArchivaArtifactConsumer extends BaseConsumer

@@ -39,7 +39,7 @@ import java.util.List;
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
  * into the destination repository. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

@@ -47,7 +47,7 @@ import java.util.List;
 /**
  * ArtifactUpdateDatabaseConsumer - Take an artifact off of disk and put it into the repository.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"

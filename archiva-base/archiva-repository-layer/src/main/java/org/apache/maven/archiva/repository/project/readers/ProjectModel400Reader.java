@@ -49,7 +49,7 @@ import java.util.Properties;
 /**
  * ProjectModel400Reader - read in modelVersion 4.0.0 pom files into archiva-model structures.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

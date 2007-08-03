@@ -3,7 +3,7 @@ package org.apache.maven.archiva.reporting;
 /**
  * Limits on how much data should be returned by the report sources.
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DataLimits

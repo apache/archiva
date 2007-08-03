@@ -25,7 +25,7 @@ import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 /**
  * Predicate for unresolved {@link DependencyGraphNode} objects. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class UnresolvedGraphNodePredicate
