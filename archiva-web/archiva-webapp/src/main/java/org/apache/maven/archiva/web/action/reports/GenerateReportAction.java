@@ -75,6 +75,10 @@ public class GenerateReportAction
 
     public static final String BLANK = "blank";
 
+    public static final String BASIC = "basic";
+
+    private static Boolean jasperPresent;
+
     public String execute()
         throws Exception
     {
@@ -114,10 +118,31 @@ public class GenerateReportAction
         {
             return BLANK;
         }
+        else if ( !isJasperPresent() )
+        {
+            return BASIC;
+        }
         else
         {
             return SUCCESS;
         }
+    }
+
+    private static boolean isJasperPresent()
+    {
+        if ( jasperPresent == null )
+        {
+            try
+            {
+                Class.forName( "net.sf.jasperreports.engine.JRExporterParameter" );
+                jasperPresent = Boolean.TRUE;
+            }
+            catch ( ClassNotFoundException e )
+            {
+                jasperPresent = Boolean.FALSE;
+            }
+        }
+        return jasperPresent.booleanValue();
     }
 
     private Constraint configureConstraint()

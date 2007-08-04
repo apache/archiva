@@ -401,6 +401,7 @@
         <param name="dataSource">reports</param>
         <param name="format">HTML</param>
       </result>
+      <result name="basic">/WEB-INF/jsp/reports/basicReport.jsp</result>
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
     </action>
   </package>
