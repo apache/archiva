@@ -83,7 +83,7 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * </p>
      * 
      * <p>
-     * NOTE: If the consumer opted to batch up processing requests in the {@link #processFile(BaseFile)} event
+     * NOTE: If the consumer opted to batch up processing requests in the {@link #processFile(String)} event
      * this would be the last opportunity to drain any processing queue's.
      * </p>
      */

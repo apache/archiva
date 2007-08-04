@@ -1,28 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
 <configuration>
   <version>1</version>
   <repositories>
     <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>file://${appserver.base}/data/repositories/internal</url>
+      <url>file://${appserver.base}/repositories/internal</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0 0 * * ?</refreshCronExpression>
-      <daysOlder>30</daysOlder>
+      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
     </repository>
     <repository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.base}/data/repositories/snapshots</url>
+      <url>file://${appserver.base}/repositories/internal</url>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0,30 0 * * ?</refreshCronExpression>
-      <daysOlder>30</daysOlder>
+      <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
     </repository>
     <repository>
       <id>central</id>
@@ -36,11 +53,22 @@
     <repository>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven 2</name>
-      <url>http://download.java.net/maven/2/</url>
+      <url>https://maven2-repository.dev.java.net/nonav/repository</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>false</indexed>
+    </repository>
+    <repository>
+      <id>test-repo</id>
+      <name>Test Repository</name>
+      <url>file://${appserver.base}/repositories/test-repo</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>true</snapshots>
+      <indexed>true</indexed>
+      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+      <retentionCount>2</retentionCount>
     </repository>
   </repositories>
 
@@ -49,31 +77,33 @@
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>central</targetRepoId>
       <proxyId/>
-      <policies>
-        <snapshots>disabled</snapshots>
-        <releases>once</releases>
-        <checksum>fix</checksum>
-        <cache-failures>cache</cache-failures>
-      </policies>
-      <whiteListPatterns>
-        <whiteListPattern>**/*</whiteListPattern>
-      </whiteListPatterns>
+      <snapshotsPolicy>disabled</snapshotsPolicy>
+      <releasePolicy>never</releasePolicy>
+      <failurePolicy>not-found</failurePolicy>
     </proxyConnector>
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
       <proxyId/>
-      <policies>
-        <snapshots>disabled</snapshots>
-        <releases>once</releases>
-        <checksum>fix</checksum>
-        <cache-failures>cache</cache-failures>
-      </policies>
+      <snapshotsPolicy>disabled</snapshotsPolicy>
+      <releasePolicy>never</releasePolicy>
+      <failurePolicy>not-found</failurePolicy>
       <whiteListPatterns>
         <whiteListPattern>javax/**</whiteListPattern>
       </whiteListPatterns>
     </proxyConnector>
   </proxyConnectors>
+
+  <networkProxies>
+    <networkProxy>
+      <id>example</id>
+      <protocol>http</protocol>
+      <host>proxy.mycompany.com</host>
+      <port>8080</port>
+      <username>myself</username>
+      <password>mypass</password>
+    </networkProxy>
+  </networkProxies>
 
   <repositoryScanning>
     <fileTypes>
@@ -138,7 +168,7 @@
       <knownContentConsumer>index-content</knownContentConsumer>
       <knownContentConsumer>auto-remove</knownContentConsumer>
       <knownContentConsumer>auto-rename</knownContentConsumer>
-      <!--knownContentConsumer>repository-purge</knownContentConsumer-->
+      <knownContentConsumer>repository-purge</knownContentConsumer>
     </knownContentConsumers>
     <invalidContentConsumers>
       <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>
@@ -146,7 +176,7 @@
   </repositoryScanning>
 
   <databaseScanning>
-    <cronExpression>0 0 0 * * ?</cronExpression>
+    <cronExpression>0 0 * * ?</cronExpression>
     <unprocessedConsumers>
       <unprocessedConsumer>index-artifact</unprocessedConsumer>
       <unprocessedConsumer>update-db-project</unprocessedConsumer>

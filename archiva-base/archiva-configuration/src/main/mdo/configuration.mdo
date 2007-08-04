@@ -268,6 +268,24 @@
           </description>
           <defaultValue>0 0 * * * ?</defaultValue>
         </field>
+        <field>
+          <name>retentionCount</name>
+          <version>1.0.0+</version>
+          <type>int</type>
+          <description>
+          	The total count of the artifact to be retained for each snapshot.
+          </description>
+          <defaultValue>2</defaultValue>
+        </field>
+        <field>
+          <name>daysOlder</name>
+          <version>1.0.0+</version>
+          <type>int</type>
+          <description>
+          	The number of days old which will be the basis for removing a snapshot.
+          </description>
+          <defaultValue>100</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
