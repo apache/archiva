@@ -20,7 +20,11 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.FileUtils;
+import org.easymock.AbstractMatcher;
+import org.easymock.MockControl;
 
 import java.io.File;
 import java.util.List;
@@ -33,6 +37,16 @@ import java.util.List;
 public class ArchivaConfigurationTest
     extends PlexusTestCase
 {
+    private Registry registry;
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        registry = (Registry) lookup( Registry.ROLE, "commons-configuration" );
+    }
+
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
     {
@@ -162,8 +176,8 @@ public class ArchivaConfigurationTest
         file.getParentFile().mkdirs();
         FileUtils.fileWrite( file.getAbsolutePath(), "<configuration/>" );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save" );
+        DefaultArchivaConfiguration archivaConfiguration =
+            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save" );
 
         Configuration configuration = new Configuration();
         configuration.setVersion( "1" );
@@ -171,7 +185,22 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().setUi( new UserInterfaceOptions() );
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
+        // add a change listener
+        MockControl control = createRegistryListenerMockControl();
+        RegistryListener listener = (RegistryListener) control.getMock();
+        archivaConfiguration.addChangeListener( listener );
+
+        listener.beforeConfigurationChange( registry, "version", "1" );
+        listener.beforeConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+
+        listener.afterConfigurationChange( registry, "version", "1" );
+        listener.afterConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+
+        control.replay();
+
         archivaConfiguration.save( configuration );
+
+        control.verify();
 
         assertTrue( "Check file exists", file.exists() );
 
@@ -180,9 +209,28 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
 
         // read it back
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
+        archivaConfiguration =
+            (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
         configuration = archivaConfiguration.getConfiguration();
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+    }
+
+    private static MockControl createRegistryListenerMockControl()
+    {
+        MockControl control = MockControl.createControl( RegistryListener.class );
+        control.setDefaultMatcher( new AbstractMatcher()
+        {
+            protected boolean argumentMatches( Object object, Object object1 )
+            {
+                return object instanceof Registry || super.argumentMatches( object, object1 );
+            }
+
+            protected String argumentToString( Object object )
+            {
+                return object instanceof Registry ? "<any>" : super.argumentToString( object );
+            }
+        } );
+        return control;
     }
 
     public void testStoreConfigurationUser()
@@ -236,7 +284,19 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().setUi( new UserInterfaceOptions() );
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
+        // add a change listener
+        MockControl control = createRegistryListenerMockControl();
+        RegistryListener listener = (RegistryListener) control.getMock();
+        archivaConfiguration.addChangeListener( listener );
+
+        listener.beforeConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+        listener.afterConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+
+        control.replay();
+
         archivaConfiguration.save( configuration );
+
+        control.verify();
 
         assertTrue( "Check file exists", userFile.exists() );
         assertFalse( "Check file not created", baseFile.exists() );

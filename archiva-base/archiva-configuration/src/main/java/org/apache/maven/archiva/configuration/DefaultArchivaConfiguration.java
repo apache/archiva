@@ -33,6 +33,8 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Implementation of configuration holder that retrieves it from the registry.
@@ -77,9 +79,14 @@ public class DefaultArchivaConfiguration
      */
     private String userConfigFilename;
 
+    /**
+     * Listeners we've registered.
+     */
+    private List listeners = new LinkedList();
+
     public String getFilteredUserConfigFilename()
     {
-        return StringUtils.replace( userConfigFilename, "${user.home}", System.getProperty( "user.home" + "" ) );
+        return StringUtils.replace( userConfigFilename, "${user.home}", System.getProperty( "user.home" ) );
     }
 
     public synchronized Configuration getConfiguration()
@@ -176,6 +183,13 @@ public class DefaultArchivaConfiguration
         try
         {
             ( (Initializable) registry ).initialize();
+
+            for ( Iterator i = listeners.iterator(); i.hasNext(); )
+            {
+                RegistryListener l = (RegistryListener) i.next();
+
+                addRegistryChangeListener( l );
+            }
         }
         catch ( InitializationException e )
         {
@@ -186,6 +200,14 @@ public class DefaultArchivaConfiguration
     }
 
     public void addChangeListener( RegistryListener listener )
+    {
+        addRegistryChangeListener( listener );
+
+        // keep track for later
+        listeners.add( listener );
+    }
+
+    private void addRegistryChangeListener( RegistryListener listener )
     {
         Registry section = registry.getSection( KEY + ".user" );
         if ( section != null )
