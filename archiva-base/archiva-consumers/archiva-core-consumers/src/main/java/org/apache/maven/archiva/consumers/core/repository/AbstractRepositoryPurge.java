@@ -66,7 +66,7 @@ public abstract class AbstractRepositoryPurge
 
         if ( !dir.isDirectory() )
         {
-            throw new RepositoryPurgeException( "Parent file " + dir.getPath() + " is not a directory." );
+            System.out.println( "File is not a directory." );
         }
 
         File[] files = dir.listFiles( filter );
@@ -87,7 +87,7 @@ public abstract class AbstractRepositoryPurge
         throws RepositoryIndexException
     {
         List records = new ArrayList();
-
+                
         for ( int i = 0; i < artifactFiles.length; i++ )
         {
             artifactFiles[i].delete();
@@ -116,7 +116,7 @@ public abstract class AbstractRepositoryPurge
             ArchivaArtifact queriedArtifact = artifactDao.getArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                                                        artifact.getVersion(), artifact.getClassifier(),
                                                                        artifact.getType() );
-
+                        
             artifactDao.deleteArtifact( queriedArtifact );
         }
         catch ( ArchivaDatabaseException ae )
@@ -127,11 +127,6 @@ public abstract class AbstractRepositoryPurge
         {
 
         }
-    }
-
-    protected void updateMetadata()
-    {
-
     }
 
     /**

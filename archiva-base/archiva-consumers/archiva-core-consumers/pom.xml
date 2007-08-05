@@ -55,10 +55,10 @@
     </dependency>
 
     <!-- test dependencies -->
-    <!--dependency>
+    <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>test</scope>
-    </dependency-->
+    </dependency>
   </dependencies>
 </project>

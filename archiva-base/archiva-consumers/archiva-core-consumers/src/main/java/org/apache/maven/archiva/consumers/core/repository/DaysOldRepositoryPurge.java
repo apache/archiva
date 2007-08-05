@@ -45,6 +45,13 @@ public class DaysOldRepositoryPurge
     {
         try
         {
+            File artifactFile = new File( getRepository().getUrl().getPath(), path );
+
+            if( !artifactFile.exists() )
+            {
+                return;
+            }
+
             FilenameParts parts = getFilenameParts( path );
 
             if ( VersionUtil.isSnapshot( parts.version ) )
@@ -53,8 +60,6 @@ public class DaysOldRepositoryPurge
 
                 Calendar olderThanThisDate = new GregorianCalendar();
                 olderThanThisDate.add( Calendar.DATE, ( -1 * repoConfig.getDaysOlder() ) );
-
-                File artifactFile = new File( getRepository().getUrl().getPath(), path );
 
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                 {
@@ -75,5 +80,5 @@ public class DaysOldRepositoryPurge
             throw new RepositoryPurgeException( re.getMessage() );
         }
     }
-
+    
 }

@@ -45,13 +45,19 @@ public class RetentionCountRepositoryPurge
         throws RepositoryPurgeException
     {
         try
-        {
+        {               
+            File artifactFile = new File( getRepository().getUrl().getPath(), path );
+
+            if( !artifactFile.exists() )
+            {
+                return;
+            }
+
             FilenameParts parts = getFilenameParts( path );
 
             if ( VersionUtil.isSnapshot( parts.version ) )
             {
-                RepositoryConfiguration repoConfig = configuration.findRepositoryById( getRepository().getId() );
-                File artifactFile = new File( getRepository().getUrl().getPath(), path );
+                RepositoryConfiguration repoConfig = configuration.findRepositoryById( getRepository().getId() );                
                 File parentDir = artifactFile.getParentFile();
 
                 if ( parentDir.isDirectory() )

@@ -26,7 +26,7 @@
       <role>org.apache.maven.archiva.consumers.core.repository.RepositoryPurge</role>
       <role-hint>days-old</role-hint>
       <implementation>org.apache.maven.archiva.consumers.core.repository.DaysOldRepositoryPurge</implementation>
-      <requirements>
+      <!--requirements>
         <requirement>
           <role>org.apache.maven.archiva.database.ArchivaDAO</role>
           <role-hint>jdo</role-hint>
@@ -35,7 +35,7 @@
           <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
           <role-hint>lucene</role-hint>
         </requirement>
-      </requirements>
+      </requirements-->
     </component>
 
     <!-- LuceneRepositoryContentIndexFactory -->

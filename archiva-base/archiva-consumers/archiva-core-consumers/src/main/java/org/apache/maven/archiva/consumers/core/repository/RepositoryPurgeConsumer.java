@@ -28,6 +28,7 @@ import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
@@ -72,18 +73,6 @@ public class RepositoryPurgeConsumer
      */
     private BidirectionalRepositoryLayoutFactory layoutFactory;
 
-    private ArchivaRepository repository;
-
-    private BidirectionalRepositoryLayout repositoryLayout;
-
-    private List includes = new ArrayList();
-
-    private List propertyNameTriggers = new ArrayList();
-
-    private RepositoryPurge repoPurge;
-
-    private RepositoryContentIndex index;
-
     /**
      * @plexus.requirement role-hint="lucene"
      */
@@ -98,6 +87,20 @@ public class RepositoryPurgeConsumer
      * @plexus.requirement
      */
     private FileTypes filetypes;
+
+    private ArchivaRepository repository;
+
+    private BidirectionalRepositoryLayout repositoryLayout;
+
+    private List includes = new ArrayList();
+
+    private List propertyNameTriggers = new ArrayList();
+
+    private RepositoryPurge repoPurge;
+
+    private RepositoryContentIndex index;    
+
+    private RepositoryPurge cleanUp;
 
     public String getId()
     {
@@ -145,13 +148,27 @@ public class RepositoryPurgeConsumer
                 "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
         }
 
-        // @todo check the repo configuration first which purge was set by the user
-        // temporarily default to DaysOldRepositoryPurge
-        repoPurge = new DaysOldRepositoryPurge();
+        // @todo handle better injection of RepositoryPurge
+        RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
+        if ( repoConfig.getDaysOlder() != 0 )
+        {
+            repoPurge = new DaysOldRepositoryPurge();
+        }
+        else
+        {
+            repoPurge = new RetentionCountRepositoryPurge();
+        }
+        
         repoPurge.setLayout( repositoryLayout );
         repoPurge.setRepository( repository );
         repoPurge.setIndex( index );
         repoPurge.setArtifactDao( dao.getArtifactDAO() );
+
+        cleanUp = new DefaultCleanupReleasedSnapshots();
+        cleanUp.setRepository( repository );
+        cleanUp.setLayout( repositoryLayout );
+        cleanUp.setArtifactDao( dao.getArtifactDAO() );
+        cleanUp.setIndex( index );
     }
 
     public void processFile( String path )
@@ -159,8 +176,9 @@ public class RepositoryPurgeConsumer
     {
         try
         {
-            repoPurge.process( path, configuration.getConfiguration() );
+            cleanUp.process( path, configuration.getConfiguration() );
 
+            repoPurge.process( path, configuration.getConfiguration() );
         }
         catch ( RepositoryPurgeException rpe )
         {
