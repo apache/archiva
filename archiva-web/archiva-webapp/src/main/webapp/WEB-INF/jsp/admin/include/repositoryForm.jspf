@@ -24,7 +24,12 @@
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>
 <ww:textfield name="repository.refreshCronExpression" label="Cron" size="40" required="true" />
+<ww:textfield name="repository.daysOlder" label="Repository Purge By Days Older Than" size="5"/>
+<ww:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
 <ww:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
 <ww:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
 <ww:checkbox name="repository.indexed" value="repository.indexed" label="Scannable"/>
+<ww:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
+           label="Delete Released Snapshots"/>
+
  

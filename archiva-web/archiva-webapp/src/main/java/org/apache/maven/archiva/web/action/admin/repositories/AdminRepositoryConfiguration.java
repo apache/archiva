@@ -59,6 +59,10 @@ public class AdminRepositoryConfiguration
         this.setIndexDir( repoconfig.getIndexDir() );
         this.setRefreshCronExpression( repoconfig.getRefreshCronExpression() );
 
+        this.setDaysOlder( repoconfig.getDaysOlder() );
+        this.setRetentionCount( repoconfig.getRetentionCount() );
+        this.setDeleteReleasedSnapshots( repoconfig.isDeleteReleasedSnapshots() );
+
         if ( repoconfig.isManaged() )
         {
             RepositoryURL url = new RepositoryURL( repoconfig.getUrl() );

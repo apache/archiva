@@ -81,7 +81,7 @@ public class RepositoryPurgeConsumer
     /**
      * @plexus.requirement role-hint="jdo"
      */
-    private ArchivaDAO dao;
+    private ArchivaDAO dao;   
 
     /**
      * @plexus.requirement
@@ -176,7 +176,11 @@ public class RepositoryPurgeConsumer
     {
         try
         {
-            cleanUp.process( path, configuration.getConfiguration() );
+            RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
+            if( repoConfig.isDeleteReleasedSnapshots() )
+            {
+                cleanUp.process( path, configuration.getConfiguration() );
+            }
 
             repoPurge.process( path, configuration.getConfiguration() );
         }

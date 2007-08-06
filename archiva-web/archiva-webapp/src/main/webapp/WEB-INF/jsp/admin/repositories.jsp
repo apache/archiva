@@ -130,6 +130,14 @@
                 </c:otherwise>
               </c:choose>
             </td>
+          </tr>          
+          <tr>
+            <th>Repository Purge By Days Older Than</th>
+            <td>${repository.daysOlder}</td>
+          </tr>
+          <tr>
+            <th>Repository Purge By Retention Count</th>
+            <td>${repository.retentionCount}</td>
           </tr>
           <tr>
             <th>Releases Included</th>
@@ -142,6 +150,10 @@
           <tr>
             <th>Scanned</th>
             <td class="${repository.indexed ? 'donemark' : 'errormark'} booleanIcon"> ${repository.indexed}</td>
+          </tr>
+          <tr>
+            <th>Delete Released Snapshots</th>
+            <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.deleteReleasedSnapshots}</td>
           </tr>
           <c:if test="${repository.indexed}">
             <tr>

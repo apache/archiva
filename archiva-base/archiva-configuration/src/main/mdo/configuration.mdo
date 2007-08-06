@@ -286,6 +286,15 @@
           </description>
           <defaultValue>100</defaultValue>
         </field>
+        <field>
+          <name>deleteReleasedSnapshots</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <description>
+          	True if the released snapshots are to be removed from the repo during repository purge.
+          </description>
+          <defaultValue>false</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -323,7 +332,8 @@
         }
 
         return this.url.startsWith( "file" );
-    }          
+    }
+
           ]]></code>
         </codeSegment>
       </codeSegments>
