@@ -35,7 +35,7 @@ public class DaysOldRepositoryPurgeTest
     {
         super.setUp();
 
-        lookupRepositoryPurge( "days-old" );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration() );
     }
 
     private void setLastModified()
@@ -52,21 +52,11 @@ public class DaysOldRepositoryPurgeTest
     public void testIfAJarIsFound()
         throws Exception
     {
-        // Create it
-        ArchivaArtifact artifact =
-            dao.createArtifact( "org.apache.maven.plugins", "maven-install-plugin", "2.2-SNAPSHOT", "", "jar" );
-        assertNotNull( artifact );
-
-        artifact.getModel().setLastModified( new Date() );
-        artifact.getModel().setOrigin( "test" );
-
-        // Save it.
-        ArchivaArtifact savedArtifact = dao.saveArtifact( artifact );
-        assertNotNull( savedArtifact );
-
+        populateDb();
+        
         setLastModified();
 
-        repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT, getRepoConfiguration() );
+        repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
         assertTrue( true );
 
@@ -89,5 +79,30 @@ public class DaysOldRepositoryPurgeTest
     {
         super.tearDown();
         repoPurge = null;
+    }
+
+    private void populateDb()
+        throws Exception
+    {
+        // Create it
+        ArchivaArtifact artifact =
+            dao.createArtifact( "org.apache.maven.plugins", "maven-install-plugin", "2.2-SNAPSHOT", "", "jar" );
+        assertNotNull( artifact );
+
+        artifact.getModel().setLastModified( new Date() );
+        artifact.getModel().setOrigin( "test" );
+
+        // Save it.
+        ArchivaArtifact savedArtifact = dao.saveArtifact( artifact );
+        assertNotNull( savedArtifact );
+
+        //POM
+        artifact =
+            dao.createArtifact( "org.apache.maven.plugins", "maven-install-plugin", "2.2-SNAPSHOT", "", "pom" );
+        assertNotNull( artifact );
+        artifact.getModel().setLastModified( new Date() );
+        artifact.getModel().setOrigin( "test" );
+        savedArtifact = dao.saveArtifact( artifact );
+        assertNotNull( savedArtifact );
     }
 }

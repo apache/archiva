@@ -21,31 +21,43 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.database.ArtifactDAO;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.io.File;
 
 /**
+ * Purge repository for snapshots older than the specified days in the repository configuration.
+ *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @plexus.component role="org.apache.maven.archiva.consumers.core.repository.RepositoryPurge"
- * role-hint="days-old"
- * instantiation-strategy="per-lookup"
+ * @version
  */
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge
-{
+{       
+    private RepositoryConfiguration repoConfig;
 
-    public void process( String path, Configuration configuration )
+    public DaysOldRepositoryPurge( ArchivaRepository repository,
+                                   BidirectionalRepositoryLayout layout, ArtifactDAO artifactDao,
+                                   RepositoryConfiguration repoConfig)
+    {
+        super( repository, layout, artifactDao );
+        this.repoConfig = repoConfig;
+    }
+
+    public void process( String path )
         throws RepositoryPurgeException
     {
         try
         {
-            File artifactFile = new File( getRepository().getUrl().getPath(), path );
+            File artifactFile = new File( repository.getUrl().getPath(), path );
 
             if( !artifactFile.exists() )
             {
@@ -56,9 +68,7 @@ public class DaysOldRepositoryPurge
 
             if ( VersionUtil.isSnapshot( parts.version ) )
             {
-                RepositoryConfiguration repoConfig = configuration.findRepositoryById( getRepository().getId() );
-
-                Calendar olderThanThisDate = new GregorianCalendar();
+                Calendar olderThanThisDate = Calendar.getInstance();
                 olderThanThisDate.add( Calendar.DATE, ( -1 * repoConfig.getDaysOlder() ) );
 
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
@@ -74,10 +84,6 @@ public class DaysOldRepositoryPurge
         catch ( LayoutException le )
         {
             throw new RepositoryPurgeException( le.getMessage() );
-        }
-        catch ( RepositoryIndexException re )
-        {
-            throw new RepositoryPurgeException( re.getMessage() );
         }
     }
     

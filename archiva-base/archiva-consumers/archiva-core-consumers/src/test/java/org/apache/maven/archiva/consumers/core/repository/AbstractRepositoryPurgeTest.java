@@ -58,7 +58,7 @@ public class AbstractRepositoryPurgeTest
 
     public static final int TEST_DAYS_OLDER = 30;
 
-    private Configuration config;
+    private RepositoryConfiguration config;
 
     private ArchivaRepository repo;
 
@@ -136,38 +136,20 @@ public class AbstractRepositoryPurgeTest
         dao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
     }
 
-    public void lookupRepositoryPurge( String role )
-        throws Exception
-    {
-        repoPurge = (RepositoryPurge) lookup( RepositoryPurge.class.getName(), role );
-
-        repoPurge.setArtifactDao( dao );
-
-        repoPurge.setRepository( getRepository() );
-
-        repoPurge.setLayout( getLayout() );
-    }
-
-    public Configuration getRepoConfiguration()
+    public RepositoryConfiguration getRepoConfiguration()
     {
         if ( config == null )
         {
-            config = new Configuration();
+            config = new RepositoryConfiguration();
         }
 
-        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setName( TEST_REPO_NAME );
-        repoConfig.setDaysOlder( TEST_DAYS_OLDER );
-        repoConfig.setUrl( TEST_REPO_URL );
-        repoConfig.setReleases( true );
-        repoConfig.setSnapshots( true );
-        repoConfig.setRetentionCount( TEST_RETENTION_COUNT );
-
-        List repos = new ArrayList();
-        repos.add( repoConfig );
-
-        config.setRepositories( repos );
+        config.setId( TEST_REPO_ID );
+        config.setName( TEST_REPO_NAME );
+        config.setDaysOlder( TEST_DAYS_OLDER );
+        config.setUrl( TEST_REPO_URL );
+        config.setReleases( true );
+        config.setSnapshots( true );
+        config.setRetentionCount( TEST_RETENTION_COUNT );
 
         return config;
     }

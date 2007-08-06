@@ -37,37 +37,8 @@ public interface RepositoryPurge
      * Perform checking on artifact for repository purge
      *
      * @param path          path to the scanned artifact
-     * @param configuration the configuration for the repository currently being scanned
      */
-    public void process( String path, Configuration configuration )
+    public void process( String path )
         throws RepositoryPurgeException;
-
-    /**
-     * Set the repository to be purged
-     *
-     * @param repository
-     */
-    public void setRepository( ArchivaRepository repository );
-
-    /**
-     * Set the layout of the repository to be purged
-     *
-     * @param layout
-     */
-    public void setLayout( BidirectionalRepositoryLayout layout );
-
-    /**
-     * Set the index of the repository 
-     *
-     * @param index
-     */
-    public void setIndex( RepositoryContentIndex index );
-
-    /**
-     * Set the artifact dao used for updating the database of the changes in the repo
-     *
-     * @param artifactDao
-     */
-    public void setArtifactDao( ArtifactDAO artifactDao );
-
+    
 }

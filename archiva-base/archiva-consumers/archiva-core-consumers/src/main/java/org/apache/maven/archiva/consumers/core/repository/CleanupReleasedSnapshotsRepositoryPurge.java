@@ -19,49 +19,56 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * M2 implementation for cleaning up the released snapshots.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * @version
  */
-public class DefaultCleanupReleasedSnapshots
+public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge
 {
     public static final String SNAPSHOT = "-SNAPSHOT";
 
     private RepositoryMetadataReader metadataReader;
 
-    public DefaultCleanupReleasedSnapshots()
+    public CleanupReleasedSnapshotsRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+                                                    ArtifactDAO artifactDao )
     {
-        metadataReader = new RepositoryMetadataReader();
+        super( repository, layout, artifactDao );
+        metadataReader = new RepositoryMetadataReader();        
     }
 
-    public void process( String path, Configuration configuration )
+    public void process( String path )
         throws RepositoryPurgeException
     {
         try
         {
-            File artifactFile = new File( getRepository().getUrl().getPath(), path );
+            File artifactFile = new File( repository.getUrl().getPath(), path );
 
             if ( !artifactFile.exists() )
             {
@@ -93,7 +100,7 @@ public class DefaultCleanupReleasedSnapshots
                         FileUtils.deleteDirectory( versionDir );
 
                         updated = true;
-                        
+
                         break;
                     }
                 }
@@ -111,10 +118,6 @@ public class DefaultCleanupReleasedSnapshots
         catch ( IOException ie )
         {
             throw new RepositoryPurgeException( ie.getMessage() );
-        }
-        catch ( RepositoryIndexException re )
-        {
-            throw new RepositoryPurgeException( re.getMessage() );
         }
     }
 
@@ -147,7 +150,8 @@ public class DefaultCleanupReleasedSnapshots
                 }
                 catch ( RepositoryMetadataException rme )
                 {
-                    System.out.println( "Error updating metadata " + metadataFiles[i].getAbsoluteFile() );
+                    // continue updating other metadata files even if there is an exception
+                    // @todo log to console
                 }
             }
         }
@@ -186,5 +190,4 @@ public class DefaultCleanupReleasedSnapshots
 
         return versions;
     }
-
 }

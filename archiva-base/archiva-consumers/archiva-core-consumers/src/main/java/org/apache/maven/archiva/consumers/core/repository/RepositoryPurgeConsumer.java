@@ -74,14 +74,9 @@ public class RepositoryPurgeConsumer
     private BidirectionalRepositoryLayoutFactory layoutFactory;
 
     /**
-     * @plexus.requirement role-hint="lucene"
-     */
-    private RepositoryContentIndexFactory indexFactory;
-
-    /**
      * @plexus.requirement role-hint="jdo"
      */
-    private ArchivaDAO dao;   
+    private ArchivaDAO dao;
 
     /**
      * @plexus.requirement
@@ -90,15 +85,11 @@ public class RepositoryPurgeConsumer
 
     private ArchivaRepository repository;
 
-    private BidirectionalRepositoryLayout repositoryLayout;
-
     private List includes = new ArrayList();
 
     private List propertyNameTriggers = new ArrayList();
 
     private RepositoryPurge repoPurge;
-
-    private RepositoryContentIndex index;    
 
     private RepositoryPurge cleanUp;
 
@@ -130,17 +121,18 @@ public class RepositoryPurgeConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
+        BidirectionalRepositoryLayout repositoryLayout = null;
+
         if ( !repository.isManaged() )
         {
             throw new ConsumerException( "Consumer requires managed repository." );
         }
 
         this.repository = repository;
-        this.index = indexFactory.createFileContentIndex( repository );
 
         try
         {
-            this.repositoryLayout = layoutFactory.getLayout( this.repository.getLayoutType() );
+            repositoryLayout = layoutFactory.getLayout( repository.getLayoutType() );
         }
         catch ( LayoutException e )
         {
@@ -148,27 +140,18 @@ public class RepositoryPurgeConsumer
                 "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
         }
 
-        // @todo handle better injection of RepositoryPurge
         RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
         if ( repoConfig.getDaysOlder() != 0 )
         {
-            repoPurge = new DaysOldRepositoryPurge();
+            repoPurge = new DaysOldRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(), repoConfig );
         }
         else
         {
-            repoPurge = new RetentionCountRepositoryPurge();
+            repoPurge =
+                new RetentionCountRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(), repoConfig );
         }
-        
-        repoPurge.setLayout( repositoryLayout );
-        repoPurge.setRepository( repository );
-        repoPurge.setIndex( index );
-        repoPurge.setArtifactDao( dao.getArtifactDAO() );
 
-        cleanUp = new DefaultCleanupReleasedSnapshots();
-        cleanUp.setRepository( repository );
-        cleanUp.setLayout( repositoryLayout );
-        cleanUp.setArtifactDao( dao.getArtifactDAO() );
-        cleanUp.setIndex( index );
+        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO() );
     }
 
     public void processFile( String path )
@@ -176,13 +159,14 @@ public class RepositoryPurgeConsumer
     {
         try
         {
-            RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
-            if( repoConfig.isDeleteReleasedSnapshots() )
+            RepositoryConfiguration repoConfig =
+                configuration.getConfiguration().findRepositoryById( repository.getId() );
+            if ( repoConfig.isDeleteReleasedSnapshots() )
             {
-                cleanUp.process( path, configuration.getConfiguration() );
+                cleanUp.process( path );
             }
 
-            repoPurge.process( path, configuration.getConfiguration() );
+            repoPurge.process( path );
         }
         catch ( RepositoryPurgeException rpe )
         {

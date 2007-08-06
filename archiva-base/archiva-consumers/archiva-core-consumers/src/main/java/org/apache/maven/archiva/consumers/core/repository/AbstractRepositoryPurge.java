@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
@@ -28,29 +27,33 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * @version
  */
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
-    private ArchivaRepository repository;
+    protected ArchivaRepository repository;
 
-    private BidirectionalRepositoryLayout layout;
+    protected BidirectionalRepositoryLayout layout;
 
-    private RepositoryContentIndex index;
+    protected ArtifactDAO artifactDao;
 
-    private ArtifactDAO artifactDao;
+    public AbstractRepositoryPurge( ArchivaRepository repository,
+                                   BidirectionalRepositoryLayout layout, ArtifactDAO artifactDao )
+    {
+        this.repository = repository;
+        this.layout = layout;
+        this.artifactDao = artifactDao;    
+    }
 
     /**
      * Get all files from the directory that matches the specified filename.
@@ -60,22 +63,13 @@ public abstract class AbstractRepositoryPurge
      * @return
      */
     protected File[] getFiles( File dir, String filename )
-        throws RepositoryPurgeException
     {
         FilenameFilter filter = new ArtifactFilenameFilter( filename );
-
-        if ( !dir.isDirectory() )
-        {
-            System.out.println( "File is not a directory." );
-        }
 
         File[] files = dir.listFiles( filter );
 
         return files;
     }
-
-    public abstract void process( String path, Configuration configuration )
-        throws RepositoryPurgeException;
 
     /**
      * Purge the repo. Update db and index of removed artifacts.
@@ -84,49 +78,43 @@ public abstract class AbstractRepositoryPurge
      * @throws RepositoryIndexException
      */
     protected void purge( File[] artifactFiles )
-        throws RepositoryIndexException
     {
-        List records = new ArrayList();
-                
         for ( int i = 0; i < artifactFiles.length; i++ )
         {
             artifactFiles[i].delete();
 
-            String[] artifactPathParts = artifactFiles[i].getAbsolutePath().split( getRepository().getUrl().getPath() );
+            String[] artifactPathParts = artifactFiles[i].getAbsolutePath().split( repository.getUrl().getPath() );
             String artifactPath = artifactPathParts[artifactPathParts.length - 1];
             if ( !artifactPath.toUpperCase().endsWith( "SHA1" ) && !artifactPath.toUpperCase().endsWith( "MD5" ) )
             {
-                updateDatabase( artifactPath );
+                // intended to be swallowed
+                // continue updating the database for all artifacts
+                try
+                {
+                    updateDatabase( artifactPath );
+                }
+                catch ( ArchivaDatabaseException ae )
+                {
+                    //@todo determine logging to be used
+                }
+                catch ( LayoutException le )
+                {
+
+                }
             }
-
-            FileContentRecord record = new FileContentRecord();
-            record.setRepositoryId( this.repository.getId() );
-            record.setFilename( artifactPath );
-            records.add( record );
         }
-
-        //index.deleteRecords( records );
     }
 
     private void updateDatabase( String path )
+        throws ArchivaDatabaseException, LayoutException
     {
-        try
-        {
-            ArchivaArtifact artifact = layout.toArtifact( path );
-            ArchivaArtifact queriedArtifact = artifactDao.getArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                                       artifact.getVersion(), artifact.getClassifier(),
-                                                                       artifact.getType() );
-                        
-            artifactDao.deleteArtifact( queriedArtifact );
-        }
-        catch ( ArchivaDatabaseException ae )
-        {
 
-        }
-        catch ( LayoutException le )
-        {
+        ArchivaArtifact artifact = layout.toArtifact( path );
+        ArchivaArtifact queriedArtifact = artifactDao.getArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                                                                   artifact.getVersion(), artifact.getClassifier(),
+                                                                   artifact.getType() );
 
-        }
+        artifactDao.deleteArtifact( queriedArtifact );
     }
 
     /**
@@ -145,36 +133,6 @@ public abstract class AbstractRepositoryPurge
         FilenameParts parts = RepositoryLayoutUtils.splitFilename( pathParts[pathParts.length - 1], null );
 
         return parts;
-    }
-
-    public void setRepository( ArchivaRepository repository )
-    {
-        this.repository = repository;
-    }
-
-    public void setLayout( BidirectionalRepositoryLayout layout )
-    {
-        this.layout = layout;
-    }
-
-    public void setIndex( RepositoryContentIndex index )
-    {
-        this.index = index;
-    }
-
-    public void setArtifactDao( ArtifactDAO artifactDao )
-    {
-        this.artifactDao = artifactDao;
-    }
-
-    protected ArchivaRepository getRepository()
-    {
-        return repository;
-    }
-
-    protected BidirectionalRepositoryLayout getLayout()
-    {
-        return layout;
     }
 
 }
