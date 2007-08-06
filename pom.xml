@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva</name>
-  <version>1.0-alpha-3-SNAPSHOT</version>
+  <version>1.0-beta-1</version>
   <description>
       Archiva is an application for managing one or more remote
       repositories, including administration, artifact handling,
@@ -66,9 +66,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/1.0-beta-1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/1.0-beta-1</developerConnection>
+    <url>https://svn.apache.org/repos/asf/maven/archiva/tags/1.0-beta-1</url>
   </scm>
   <distributionManagement>
     <repository>
