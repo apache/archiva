@@ -348,7 +348,7 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
-    public void testStoreConfigurationFailsWhenReadFromBothLocations()
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsNoLists()
         throws Exception
     {
         File baseFile = getTestFile( "target/test/test-file.xml" );
@@ -361,6 +361,84 @@ public class ArchivaConfigurationTest
 
         baseFile.getParentFile().mkdirs();
         FileUtils.fileWrite( baseFile.getAbsolutePath(), "<configuration/>" );
+
+        userFile.getParentFile().mkdirs();
+        FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+
+        configuration.getWebapp().getUi().setAppletFindEnabled( false );
+
+        archivaConfiguration.save( configuration );
+
+        assertTrue( "Check file exists", baseFile.exists() );
+        assertEquals( "Check base file is unchanged", "<configuration/>",
+                      FileUtils.fileRead( baseFile.getAbsolutePath() ) );
+        assertTrue( "Check file exists", userFile.exists() );
+        assertFalse( "Check base file is changed",
+                     "<configuration/>".equals( FileUtils.fileRead( userFile.getAbsolutePath() ) ) );
+
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
+        assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
+    }
+
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsUserHasLists()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        userFile.getParentFile().mkdirs();
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-user.xml" ), userFile );
+
+        baseFile.getParentFile().mkdirs();
+        FileUtils.fileWrite( baseFile.getAbsolutePath(), "<configuration/>" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-save-user" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertTrue( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
+
+        configuration.getWebapp().getUi().setShowFindArtifacts( false );
+
+        archivaConfiguration.save( configuration );
+
+        assertTrue( "Check file exists", baseFile.exists() );
+        assertEquals( "Check base file is unchanged", "<configuration/>",
+                      FileUtils.fileRead( baseFile.getAbsolutePath() ) );
+        assertTrue( "Check file exists", userFile.exists() );
+        assertFalse( "Check base file is changed",
+                     "<configuration/>".equals( FileUtils.fileRead( userFile.getAbsolutePath() ) ) );
+
+        // check it
+        configuration = archivaConfiguration.getConfiguration();
+        assertFalse( "check value", configuration.getWebapp().getUi().isShowFindArtifacts() );
+    }
+
+    public void testStoreConfigurationFailsWhenReadFromBothLocationsAppserverHasLists()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        baseFile.getParentFile().mkdirs();
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-base.xml" ), baseFile );
 
         userFile.getParentFile().mkdirs();
         FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );

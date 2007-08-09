@@ -32,6 +32,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -144,20 +145,40 @@ public class DefaultArchivaConfiguration
         throws RegistryException, IndeterminateConfigurationException
     {
         Registry section = registry.getSection( KEY + ".user" );
+        Registry baseSection = registry.getSection( KEY + ".base" );
         if ( section == null )
         {
-            section = registry.getSection( KEY + ".base" );
+            section = baseSection;
             if ( section == null )
             {
                 section = createDefaultConfigurationFile();
             }
         }
-        else if ( registry.getSection( KEY + ".base" ) != null )
+        else if ( baseSection != null )
         {
-            this.configuration = null;
+            Collection keys = baseSection.getKeys();
+            boolean foundList = false;
+            for ( Iterator i = keys.iterator(); i.hasNext() && !foundList; )
+            {
+                String key = (String) i.next();
 
-            throw new IndeterminateConfigurationException(
-                "Configuration can not be saved when it is loaded from two sources" );
+                // a little aggressive with the repositoryScanning and databaseScanning - should be no need to split
+                // that configuration
+                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" ) ||
+                    key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" ) ||
+                    key.startsWith( "databaseScanning" ) )
+                {
+                    foundList = true;
+                }
+            }
+
+            if ( foundList )
+            {
+                this.configuration = null;
+
+                throw new IndeterminateConfigurationException(
+                    "Configuration can not be saved when it is loaded from two sources" );
+            }
         }
 
         new ConfigurationRegistryWriter().write( configuration, section );
