@@ -8,7 +8,7 @@
   ~ "License"); you may not use this file except in compliance
   ~ with the License.  You may obtain a copy of the License at
   ~
-  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~  http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing,
   ~ software distributed under the License is distributed on an
@@ -25,72 +25,19 @@
      -->
     <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
-      <implementation>org.codehaus.plexus.logging.log4j.Log4JLoggerManager</implementation>
+      <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
-
-      <configuration>
-        <threshold>DEBUG</threshold>
-        <default-appender>console</default-appender>
-        <appenders>
-          <appender>
-            <id>console</id>
-            <threshold>DEBUG</threshold>
-            <type>org.apache.log4j.ConsoleAppender</type>
-            <!--  <conversion-pattern>%d [%t] %-5p %-30c{1} - %m%n</conversion-pattern> -->
-            <conversion-pattern>%r [%t] %-5p %c %x - %m%n</conversion-pattern>
-          </appender>
-        </appenders>
-        <levels>
-          <!-- Help identify bugs during testing -->
-          <level>
-            <hierarchy>org.apache.maven</hierarchy>
-            <level>DEBUG</level>
-          </level>
-          <level>
-            <hierarchy>org.codehaus.plexus.security</hierarchy>
-            <level>DEBUG</level>
-          </level>
-          <!-- squelch noisy objects (for now) -->
-          <level>
-            <hierarchy>org.codehaus.plexus.mailsender.MailSender</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.quartz</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>org.apache.jasper</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.xwork</hierarchy>
-            <level>DEBUG</level>
-          </level>
-          <level>
-            <hierarchy>com.opensymphony.webwork</hierarchy>
-            <level>DEBUG</level>
-          </level>
-          <level>
-            <hierarchy>org.codehaus.plexus.PlexusContainer</hierarchy>
-            <level>INFO</level>
-          </level>
-          <level>
-            <hierarchy>JPOX</hierarchy>
-            <level>WARN</level>
-          </level>
-          <level>
-            <hierarchy>freemarker</hierarchy>
-            <level>WARN</level>
-          </level>
-          <level>
-            <hierarchy>freemarker</hierarchy>
-            <level>WARN</level>
-          </level>
-        </levels>
-      </configuration>
     </component>
 
+    <component>
+      <role>org.codehaus.plexus.webdav.DavServerManager</role>
+      <role-hint>default</role-hint>
+      <implementation>org.codehaus.plexus.webdav.DefaultDavServerManager</implementation>
+      <description>DefaultDavServerManager</description>
+      <configuration>
+        <provider-hint>proxied</provider-hint>
+      </configuration>
+    </component>
 
     <component>
       <role>org.codehaus.plexus.jdo.JdoFactory</role>
@@ -116,7 +63,7 @@
 
         <!-- Apache Derby Configuration -->
         <driverName>org.apache.derby.jdbc.EmbeddedDriver</driverName>
-        <url>jdbc:derby:${basedir}/target/repoaccess/database;create=true</url>
+        <url>jdbc:derby:${basedir}/target/appserver-base/database;create=true</url>
         <userName>sa</userName>
         <password></password>
 

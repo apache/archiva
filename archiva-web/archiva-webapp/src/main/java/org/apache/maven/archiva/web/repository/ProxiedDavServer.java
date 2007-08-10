@@ -133,6 +133,14 @@ public class ProxiedDavServer
                 fetchContentFromProxies( request );
             }
         }
+        else
+        {
+            File rootDirectory = getRootDirectory();
+            if ( rootDirectory != null )
+            {
+                new File( rootDirectory, request.getLogicalResource() ).getParentFile().mkdirs();
+            }
+        }
 
         davServer.process( request, response );
     }
