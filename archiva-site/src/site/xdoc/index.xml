@@ -24,7 +24,7 @@
   </properties>
   <body>
     <div id="downloadbox">
-      <h5>Get Archiva 1.0 Alpha 2</h5>
+      <h5>Get Archiva 1.0 Beta 1</h5>
       <p>
         <a href="download.html">
           <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
@@ -93,6 +93,9 @@
 
     <section name="Latest News">
       <p>
+        <ul>
+          <li>Archiva 1.0 Beta 1 Release Available - August 10, 2007</li>
+        </ul>
         <ul>
           <li>Archiva 1.0 Alpha 2 Release Available - June 29, 2007</li>
         </ul>

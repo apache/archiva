@@ -9,18 +9,18 @@ Download Archiva
   You will be prompted for a mirror - if the file is not found on yours, please be patient, as it may take 24
   hours to reach all mirrors.
 
-* Archiva 1.0 Alpha 2
+* Archiva 1.0 Beta 1
 
-  This version is considered an early alpha release of the database backed, scalable, and stability improved archiva.  
+  This version is considered an early beta release of the database backed, scalable, and stability improved archiva.
   This version has known problems with Maven 1 clients and deployment on Tomcat.  
   (See {{{http://jira.codehaus.org/secure/IssueNavigator.jspa?reset=true&&pid=10980&resolution=-1&sorter/field=priority&sorter/order=DESC} full list of issues}} for details)
 
 *-------------------------------+---------+----------+-----------+
 |                               | Mirrors | Checksum | Signature |
 *-------------------------------+---------+----------+-----------+
-| Archiva 1.0-alpha-2 (bin.tar.gz)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz} apache-archiva-1.0-alpha-2-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz.md5} apache-archiva-1.0-alpha-2-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-alpha-2-bin.tar.gz.asc} apache-archiva-1.0-alpha-2-bin.tar.gz.asc}} |
+| Archiva 1.0-beta-1 (bin.tar.gz)     | {{{http://www.apache.org/dyn/closer.cgi/maven/binaries/apache-archiva-1.0-beta-1-bin.tar.gz} apache-archiva-1.0-beta-1-bin.tar.gz}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-beta-1-bin.tar.gz.md5} apache-archiva-1.0-beta-1-bin.tar.gz.md5}} | {{{http://www.apache.org/dist/maven/binaries/apache-archiva-1.0-beta-1-bin.tar.gz.asc} apache-archiva-1.0-beta-1-bin.tar.gz.asc}} |
 *-------------------------------+---------+----------+-----------+
-| Archiva 1.0-alpha-2 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/apache-archiva-1.0-alpha-2-src.zip} apache-archiva-1.0-alpha-2-src.zip}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-alpha-2-src.zip.md5} apache-archiva-1.0-alpha-2-src.zip.md5}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-alpha-2-src.zip.asc} apache-archiva-1.0-alpha-2-src.zip.asc}} |
+| Archiva 1.0-beta-1 (src)     | {{{http://www.apache.org/dyn/closer.cgi/maven/source/apache-archiva-1.0-beta-1-src.zip} apache-archiva-1.0-beta-1-src.zip}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-beta-1-src.zip.md5} apache-archiva-1.0-beta-1-src.zip.md5}} | {{{http://www.apache.org/dist/maven/source/apache-archiva-1.0-beta-1-src.zip.asc} apache-archiva-1.0-beta-1-src.zip.asc}} |
 *-------------------------------+---------+----------+-----------+
 
 * Archiva 0.9 Alpha 2
@@ -57,7 +57,7 @@ Download Archiva
  For example:
 
 +------+
- tar -xzvf archiva-1.0-alpha-2-bin.tar.gz
+ tar -xzvf archiva-1.0-beta-1-bin.tar.gz
 +------+
 
  To start the app, use the appropriate platform-specific startup script found under the "bin" directory of your
@@ -66,6 +66,6 @@ Download Archiva
  For example:
 
 +------+
- cd archiva-1.0-alpha-2/bin/linux-x86-32
+ cd archiva-1.0-beta-1/bin/linux-x86-32
  ./run.sh start
 +------+

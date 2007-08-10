@@ -40,8 +40,10 @@ Archiva release process.
 
 8) Update the archiva-site documents to point to the new downloads.
 
-   Change the download box in the archiva-site/src/site/xdoc/index.xml
+   Update the released binaries to the latest in archiva-site/src/site/apt/download.apt
    To point to the new binaries and source files.
+
+   Also add the latest release in the Latest News in archiva-site/src/site/xdoc/index.xml
 
 9) Deploy the site.
 
