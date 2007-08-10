@@ -135,6 +135,10 @@ public class ProxiedDavServer
         }
         else
         {
+            // Create parent directories that don't exist when writing a file
+            // This actually makes this implementation not compliant to the WebDAV RFC - but we have enough knowledge
+            // about how the collection is being used to do this reasonably and some versions of Maven's WebDAV don't
+            // correctly create the collections themselves.
             File rootDirectory = getRootDirectory();
             if ( rootDirectory != null )
             {
