@@ -29,6 +29,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
+import org.codehaus.plexus.cache.Cache;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
@@ -56,6 +57,11 @@ public class EffectiveProjectModelFilter
      * @plexus.requirement
      */
     private ProjectModelResolverFactory resolverFactory;
+    
+    /**
+     * @plexus.requirement role-hint="effective-project-cache"
+     */
+    private Cache effectiveProjectCache;
 
     /**
      * Take the provided {@link ArchivaProjectModel} and build the effective {@link ArchivaProjectModel}.
@@ -81,9 +87,21 @@ public class EffectiveProjectModelFilter
         {
             throw new IllegalStateException( "Unable to build effective pom with no project model resolvers defined." );
         }
+        
+        ArchivaProjectModel effectiveProject;
+        String projectKey = toProjectKey( project );
+        
+        synchronized( effectiveProjectCache )
+        {
+            if( effectiveProjectCache.hasKey( projectKey ) )
+            {
+                effectiveProject = (ArchivaProjectModel) effectiveProjectCache.get( projectKey );
+                return effectiveProject;
+            }
+        }
 
         // Clone submitted project (so that we don't mess with it) 
-        ArchivaProjectModel effectiveProject = ArchivaModelCloner.clone( project );
+        effectiveProject = ArchivaModelCloner.clone( project );
 
         // Setup Expression Evaluation pieces.
         effectiveProject = expressionFilter.filter( effectiveProject );
@@ -95,6 +113,11 @@ public class EffectiveProjectModelFilter
 
         // Resolve dependency versions from dependency management.
         applyDependencyManagement( effectiveProject );
+        
+        synchronized( effectiveProjectCache )
+        {
+            effectiveProjectCache.put( projectKey, effectiveProject );
+        }
 
         // Return what we got.
         return effectiveProject;
@@ -157,6 +180,16 @@ public class EffectiveProjectModelFilter
             VersionedReference parentRef = pom.getParentProject();
 
             getLogger().debug( "Has parent: " + parentRef );
+            
+            String pomKey = VersionedReference.toKey( parentRef );
+            
+            synchronized( effectiveProjectCache )
+            {
+                if( effectiveProjectCache.hasKey( pomKey ) )
+                {
+                    return (ArchivaProjectModel) effectiveProjectCache.get( pomKey );
+                }
+            }
 
             // Find parent using resolvers.
             ArchivaProjectModel parentProject = this.resolverFactory.getCurrentResolverStack().findProject( parentRef );
@@ -173,6 +206,11 @@ public class EffectiveProjectModelFilter
                 // TODO: Document this via monitor.
                 mixedProject = mixinSuperPom( pom );
             }
+            
+            synchronized( effectiveProjectCache )
+            {
+                effectiveProjectCache.put( pomKey, mixedProject );
+            }
         }
         else
         {
@@ -187,7 +225,7 @@ public class EffectiveProjectModelFilter
 
             mixedProject = mixinSuperPom( pom );
         }
-
+        
         return mixedProject;
     }
 
@@ -229,6 +267,17 @@ public class EffectiveProjectModelFilter
         key.append( dep.getGroupId() ).append( ":" ).append( dep.getArtifactId() );
         key.append( StringUtils.defaultString( dep.getClassifier() ) ).append( ":" );
         key.append( dep.getType() );
+
+        return key.toString();
+    }
+    
+    private String toProjectKey( ArchivaProjectModel project )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( project.getGroupId() ).append( ":" );
+        key.append( project.getArtifactId() ).append( ":" );
+        key.append( project.getVersion() );
 
         return key.toString();
     }
