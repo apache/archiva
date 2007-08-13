@@ -54,7 +54,7 @@ public class DatabaseTaskJob
         setJobDataMap( dataMap );
 
         TaskQueue taskQueue = (TaskQueue) dataMap.get( TASK_QUEUE );
-        String queuePolicy = dataMap.get( TASK_QUEUE_POLICY ).toString();
+        String queuePolicy = (String) dataMap.get( TASK_QUEUE_POLICY );
 
         ArchivaTask task = new DatabaseTask();
         task.setName( context.getJobDetail().getName() );
