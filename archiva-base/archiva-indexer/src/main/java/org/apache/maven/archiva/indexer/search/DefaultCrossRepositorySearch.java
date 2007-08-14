@@ -237,6 +237,8 @@ public class DefaultCrossRepositorySearch
                     }
                 }
             }
+
+            searcher.close();
         }
         catch ( IOException e )
         {
