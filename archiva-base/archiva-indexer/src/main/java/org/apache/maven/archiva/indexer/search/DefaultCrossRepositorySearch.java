@@ -190,10 +190,12 @@ public class DefaultCrossRepositorySearch
         Searchable searchables[] = new Searchable[searchableList.size()];
         searchableList.toArray( searchables );
 
+        MultiSearcher searcher = null;
+
         try
         {
             // Create a multi-searcher for looking up the information.
-            MultiSearcher searcher = new MultiSearcher( searchables );
+            searcher = new MultiSearcher( searchables );
 
             // Perform the search.
             Hits hits = searcher.search( specificQuery );
@@ -238,11 +240,21 @@ public class DefaultCrossRepositorySearch
                 }
             }
 
-            searcher.close();
         }
         catch ( IOException e )
         {
             getLogger().error( "Unable to setup multi-search: " + e.getMessage(), e );
+        }
+        finally
+        {
+            try
+            {
+                searcher.close();
+            }
+            catch ( IOException ie )
+            {
+                getLogger().error( "Unable to close index searcher: " + ie.getMessage(), ie );    
+            }
         }
 
         return results;
