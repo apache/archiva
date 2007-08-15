@@ -85,6 +85,9 @@ public class ConfigureRepositoryAction
         getLogger().info( ".add()" );
         this.mode = "add";
 
+        this.repository.setReleases( true );
+        this.repository.setIndexed( true );
+
         return INPUT;
     }
 
@@ -211,6 +214,8 @@ public class ConfigureRepositoryAction
         if ( id == null )
         {
             this.repository = new AdminRepositoryConfiguration();
+            this.repository.setReleases( false );
+            this.repository.setIndexed( false );
         }
 
         RepositoryConfiguration repoconfig = archivaConfiguration.getConfiguration().findRepositoryById( id );
