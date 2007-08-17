@@ -96,6 +96,9 @@ public class DefaultArchivaConfiguration
         {
             configuration = load();
         }
+
+        configuration = processExpressions( configuration );
+
         return configuration;
     }
 
@@ -115,12 +118,6 @@ public class DefaultArchivaConfiguration
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
 
-        // TODO: for commons-configuration 1.3 only
-        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
-            c.setUrl( removeExpressions( c.getUrl() ) );
-        }
         return config;
     }
 
@@ -180,6 +177,8 @@ public class DefaultArchivaConfiguration
                     "Configuration can not be saved when it is loaded from two sources" );
             }
         }
+
+        configuration = escapeCronExpressions( configuration );
 
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
@@ -265,6 +264,48 @@ public class DefaultArchivaConfiguration
         value = StringUtils.replace( value, "${appserver.home}",
                                      registry.getString( "appserver.home", "${appserver.home}" ) );
         return value;
+    }
+
+    private String unescapeCronExpression( String cronExpression )
+    {
+        return StringUtils.replace( cronExpression, "\\," , ","  );
+    }
+
+    private String escapeCronExpression( String cronExpression )
+    {
+        return StringUtils.replace( cronExpression, "," , "\\,"  );
+    }
+
+     private Configuration processExpressions( Configuration config )
+    {
+         // TODO: for commons-configuration 1.3 only
+        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+            c.setUrl( removeExpressions( c.getUrl() ) );
+            c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
+        }
+
+        String cron = config.getDatabaseScanning().getCronExpression();
+        config.getDatabaseScanning().setCronExpression( unescapeCronExpression( cron ) );
+
+        return config;
+    }
+
+    private Configuration escapeCronExpressions( Configuration config )
+    {
+        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+
+            c.setRefreshCronExpression(
+                    escapeCronExpression( c.getRefreshCronExpression() ) );
+        }
+
+        String cron = config.getDatabaseScanning().getCronExpression();
+        config.getDatabaseScanning().setCronExpression( escapeCronExpression( cron ) );
+
+        return config;
     }
 
 }

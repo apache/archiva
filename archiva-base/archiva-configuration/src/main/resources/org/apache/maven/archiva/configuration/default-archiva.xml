@@ -21,7 +21,7 @@
       <releases>false</releases>
       <snapshots>true</snapshots>
       <indexed>true</indexed>
-      <refreshCronExpression>0 0,30 0 * * ?</refreshCronExpression>
+      <refreshCronExpression>0 0\,30 0 * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
     </repository>
     <repository>
