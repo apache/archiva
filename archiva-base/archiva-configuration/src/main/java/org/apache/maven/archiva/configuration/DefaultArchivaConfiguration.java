@@ -268,17 +268,17 @@ public class DefaultArchivaConfiguration
 
     private String unescapeCronExpression( String cronExpression )
     {
-        return StringUtils.replace( cronExpression, "\\," , ","  );
+        return StringUtils.replace( cronExpression, "\\,", "," );
     }
 
     private String escapeCronExpression( String cronExpression )
     {
-        return StringUtils.replace( cronExpression, "," , "\\,"  );
+        return StringUtils.replace( cronExpression, ",", "\\," );
     }
 
-     private Configuration processExpressions( Configuration config )
+    private Configuration processExpressions( Configuration config )
     {
-         // TODO: for commons-configuration 1.3 only
+        // TODO: for commons-configuration 1.3 only
         for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
         {
             RepositoryConfiguration c = (RepositoryConfiguration) i.next();
@@ -286,8 +286,12 @@ public class DefaultArchivaConfiguration
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
-        String cron = config.getDatabaseScanning().getCronExpression();
-        config.getDatabaseScanning().setCronExpression( unescapeCronExpression( cron ) );
+        DatabaseScanningConfiguration databaseScanning = config.getDatabaseScanning();
+        if ( databaseScanning != null )
+        {
+            String cron = databaseScanning.getCronExpression();
+            databaseScanning.setCronExpression( unescapeCronExpression( cron ) );
+        }
 
         return config;
     }
@@ -298,12 +302,15 @@ public class DefaultArchivaConfiguration
         {
             RepositoryConfiguration c = (RepositoryConfiguration) i.next();
 
-            c.setRefreshCronExpression(
-                    escapeCronExpression( c.getRefreshCronExpression() ) );
+            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
-        String cron = config.getDatabaseScanning().getCronExpression();
-        config.getDatabaseScanning().setCronExpression( escapeCronExpression( cron ) );
+        DatabaseScanningConfiguration databaseScanning = config.getDatabaseScanning();
+        if ( databaseScanning != null )
+        {
+            String cron = databaseScanning.getCronExpression();
+            databaseScanning.setCronExpression( escapeCronExpression( cron ) );
+        }
 
         return config;
     }
