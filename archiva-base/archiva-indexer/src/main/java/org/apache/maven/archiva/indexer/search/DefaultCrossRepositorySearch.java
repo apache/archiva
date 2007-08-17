@@ -249,7 +249,10 @@ public class DefaultCrossRepositorySearch
         {
             try
             {
-                searcher.close();
+                if ( searcher != null )
+                {
+                    searcher.close();
+                }
             }
             catch ( IOException ie )
             {
