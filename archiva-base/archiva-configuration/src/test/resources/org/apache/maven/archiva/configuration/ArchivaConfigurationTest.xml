@@ -211,5 +211,31 @@
         </properties>
       </configuration>
     </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-cron-expressions</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>cron-expressions</role-hint>
+        </requirement>
+      </requirements>
+      <configuration>
+        <userConfigFilename>${basedir}/target/test/test-file.xml</userConfigFilename>
+      </configuration>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>cron-expressions</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <xml fileName="${basedir}/target/test/test-file.xml" config-optional="true" config-forceCreate="true"
+               config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>    
   </components>
 </component-set>

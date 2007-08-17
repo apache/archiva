@@ -506,4 +506,42 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isIndexed() );
     }
+
+    public void testCronExpressionsWithComma()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        baseFile.getParentFile().mkdirs();
+        FileUtils.copyFile( getTestFile( "src/test/conf/escape-cron-expressions.xml" ), baseFile );
+
+        userFile.getParentFile().mkdirs();
+        FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-cron-expressions" );
+
+        Configuration configuration =  archivaConfiguration.getConfiguration();
+        
+        RepositoryConfiguration repository =
+            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+
+        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression().trim() );
+
+        configuration.getDatabaseScanning().setCronExpression( "0 0,15 0 * * ?" );
+
+        archivaConfiguration.save( configuration );
+
+        configuration = archivaConfiguration.getConfiguration();
+        
+        assertEquals( "check cron expression", "0 0,15 0 * * ?",
+              configuration.getDatabaseScanning().getCronExpression() );
+    }
+    
 }
