@@ -23,15 +23,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -58,15 +60,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
- * DefaultRepositoryProxyConnectors 
+ * DefaultRepositoryProxyConnectors
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role-hint="default"
  */
 public class DefaultRepositoryProxyConnectors
@@ -110,11 +111,6 @@ public class DefaultRepositoryProxyConnectors
     public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
         throws ProxyException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ProxyException( "Can only proxy managed repositories." );
-        }
-
         File localFile;
         try
         {
@@ -124,8 +120,8 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( LayoutException e )
         {
-            throw new ProxyException( "Unable to proxy due to bad source repository layout definition: "
-                + e.getMessage(), e );
+            throw new ProxyException(
+                "Unable to proxy due to bad source repository layout definition: " + e.getMessage(), e );
         }
 
         Properties requestProperties = new Properties();
@@ -140,15 +136,15 @@ public class DefaultRepositoryProxyConnectors
             ArchivaRepository targetRepository = connector.getTargetRepository();
             try
             {
-                BidirectionalRepositoryLayout targetLayout = layoutFactory.getLayout( targetRepository.getLayoutType() );
+                BidirectionalRepositoryLayout targetLayout =
+                    layoutFactory.getLayout( targetRepository.getLayoutType() );
                 String targetPath = targetLayout.toPath( artifact );
 
-                getLogger().debug(
-                                   "Using target repository: " + targetRepository.getId() + " - layout: "
-                                       + targetRepository.getLayoutType() + " - targetPath: " + targetPath );
+                getLogger().debug( "Using target repository: " + targetRepository.getId() + " - layout: " +
+                    targetRepository.getLayoutType() + " - targetPath: " + targetPath );
 
-                File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
-                                                    requestProperties );
+                File downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -169,11 +165,6 @@ public class DefaultRepositoryProxyConnectors
     public File fetchFromProxies( ArchivaRepository repository, VersionedReference metadata )
         throws ProxyException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ProxyException( "Can only proxy managed repositories." );
-        }
-
         File localFile;
         try
         {
@@ -183,8 +174,8 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( LayoutException e )
         {
-            throw new ProxyException( "Unable to proxy due to bad source repository layout definition: "
-                + e.getMessage(), e );
+            throw new ProxyException(
+                "Unable to proxy due to bad source repository layout definition: " + e.getMessage(), e );
         }
 
         Properties requestProperties = new Properties();
@@ -197,11 +188,12 @@ public class DefaultRepositoryProxyConnectors
             ArchivaRepository targetRepository = connector.getTargetRepository();
             try
             {
-                BidirectionalRepositoryLayout targetLayout = layoutFactory.getLayout( targetRepository.getLayoutType() );
+                BidirectionalRepositoryLayout targetLayout =
+                    layoutFactory.getLayout( targetRepository.getLayoutType() );
                 String targetPath = targetLayout.toPath( metadata );
 
-                File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
-                                                    requestProperties );
+                File downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -222,11 +214,6 @@ public class DefaultRepositoryProxyConnectors
     public File fetchFromProxies( ArchivaRepository repository, ProjectReference metadata )
         throws ProxyException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ProxyException( "Can only proxy managed repositories." );
-        }
-
         File localFile;
         try
         {
@@ -236,8 +223,8 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( LayoutException e )
         {
-            throw new ProxyException( "Unable to proxy due to bad source repository layout definition: "
-                + e.getMessage(), e );
+            throw new ProxyException(
+                "Unable to proxy due to bad source repository layout definition: " + e.getMessage(), e );
         }
 
         Properties requestProperties = new Properties();
@@ -250,11 +237,12 @@ public class DefaultRepositoryProxyConnectors
             ArchivaRepository targetRepository = connector.getTargetRepository();
             try
             {
-                BidirectionalRepositoryLayout targetLayout = layoutFactory.getLayout( targetRepository.getLayoutType() );
+                BidirectionalRepositoryLayout targetLayout =
+                    layoutFactory.getLayout( targetRepository.getLayoutType() );
                 String targetPath = targetLayout.toPath( metadata );
 
-                File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
-                                                    requestProperties );
+                File downloadedFile =
+                    transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
 
                 if ( fileExists( downloadedFile ) )
                 {
@@ -294,14 +282,14 @@ public class DefaultRepositoryProxyConnectors
 
     /**
      * Perform the transfer of the file.
-     * 
+     *
      * @param connector
      * @param targetRepository
      * @param targetPath
      * @param localFile
      * @param requestProperties
      * @return
-     * @throws ProxyException 
+     * @throws ProxyException
      */
     private File transferFile( ProxyConnector connector, ArchivaRepository targetRepository, String targetPath,
                                File localFile, Properties requestProperties )
@@ -431,7 +419,8 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private File transferSimpleFile( Wagon wagon, ArchivaRepository targetRepository, String targetPath, File localFile )
+    private File transferSimpleFile( Wagon wagon, ArchivaRepository targetRepository, String targetPath,
+                                     File localFile )
         throws ProxyException, WagonException
     {
         // Transfer the file.
@@ -464,8 +453,7 @@ public class DefaultRepositoryProxyConnectors
                 if ( !success )
                 {
                     getLogger().debug(
-                                       "Not downloaded, as local file is newer than remote side: "
-                                           + localFile.getAbsolutePath() );
+                        "Not downloaded, as local file is newer than remote side: " + localFile.getAbsolutePath() );
                 }
                 else if ( temp.exists() )
                 {
@@ -563,7 +551,8 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
-            Repository wagonRepository = new Repository( targetRepository.getId(), targetRepository.getUrl().toString() );
+            Repository wagonRepository =
+                new Repository( targetRepository.getId(), targetRepository.getUrl().toString() );
             if ( networkProxy != null )
             {
                 wagon.connect( wagonRepository, networkProxy );
@@ -629,8 +618,10 @@ public class DefaultRepositoryProxyConnectors
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isRepositories( propertyName )
-            || ConfigurationNames.isProxyConnector( propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) ||
+            ConfigurationNames.isManagedRepositories( propertyName ) ||
+            ConfigurationNames.isRemoteRepositories( propertyName ) ||
+            ConfigurationNames.isProxyConnector( propertyName ) )
         {
             initConnectorsAndNetworkProxies();
         }
@@ -658,8 +649,8 @@ public class DefaultRepositoryProxyConnectors
 
                 // Create connector object.
                 ProxyConnector connector = new ProxyConnector();
-                connector.setSourceRepository( getRepository( proxyConfig.getSourceRepoId() ) );
-                connector.setTargetRepository( getRepository( proxyConfig.getTargetRepoId() ) );
+                connector.setSourceRepository( getManagedRepository( proxyConfig.getSourceRepoId() ) );
+                connector.setTargetRepository( getRemoteRepository( proxyConfig.getTargetRepoId() ) );
                 connector.setProxyId( proxyConfig.getProxyId() );
                 connector.setPolicies( proxyConfig.getPolicies() );
 
@@ -729,17 +720,22 @@ public class DefaultRepositoryProxyConnectors
         return collection.size() == 0;
     }
 
-    private ArchivaRepository getRepository( String repoId )
+    private ArchivaRepository getRemoteRepository( String repoId )
     {
-        RepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration().findRepositoryById( repoId );
-        if ( repoConfig == null )
-        {
-            return null;
-        }
+        RemoteRepositoryConfiguration repoConfig =
+            archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
 
         ArchivaRepository repo = new ArchivaRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl() );
         repo.getModel().setLayoutName( repoConfig.getLayout() );
         return repo;
+    }
+
+    private ArchivaRepository getManagedRepository( String repoId )
+    {
+        ManagedRepositoryConfiguration repoConfig =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+
+        return ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
     }
 
     public void initialize()

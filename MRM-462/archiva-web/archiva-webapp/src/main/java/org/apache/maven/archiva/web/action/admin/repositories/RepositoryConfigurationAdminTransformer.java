@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import org.apache.commons.collections.Transformer;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
@@ -28,13 +28,13 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import java.util.List;
 
 /**
- * RepositoryConfigurationAdminTransformer 
+ * RepositoryConfigurationAdminTransformer
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
+ * @todo check usages!
  * @plexus.component role="org.apache.commons.collections.Transformer"
- *                   role-hint="adminrepoconfig"
+ * role-hint="adminrepoconfig"
  */
 public class RepositoryConfigurationAdminTransformer
     implements Transformer
@@ -46,15 +46,12 @@ public class RepositoryConfigurationAdminTransformer
 
     public Object transform( Object input )
     {
-        if ( input instanceof RepositoryConfiguration )
+        if ( input instanceof ManagedRepositoryConfiguration )
         {
-            RepositoryConfiguration repoconfig = (RepositoryConfiguration) input;
+            ManagedRepositoryConfiguration repoconfig = (ManagedRepositoryConfiguration) input;
             AdminRepositoryConfiguration arepo = new AdminRepositoryConfiguration( repoconfig );
 
-            if ( arepo.isManaged() )
-            {
-                arepo.setStats( getLatestStats( arepo.getId() ) );
-            }
+            arepo.setStats( getLatestStats( arepo.getId() ) );
 
             return arepo;
         }

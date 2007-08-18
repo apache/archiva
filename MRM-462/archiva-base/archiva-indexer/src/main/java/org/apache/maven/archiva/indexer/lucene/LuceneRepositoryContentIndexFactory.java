@@ -21,7 +21,7 @@ package org.apache.maven.archiva.indexer.lucene;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
@@ -36,7 +36,6 @@ import java.io.File;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * 
  * @plexus.component role="org.apache.maven.archiva.indexer.RepositoryContentIndexFactory" role-hint="lucene"
  */
 public class LuceneRepositoryContentIndexFactory
@@ -66,21 +65,17 @@ public class LuceneRepositoryContentIndexFactory
     }
 
     /**
-     * Obtain the index directory for the provided repository. 
-     * 
+     * Obtain the index directory for the provided repository.
+     *
      * @param repository the repository to obtain the index directory from.
-     * @param indexId the id of the index
+     * @param indexId    the id of the index
      * @return the directory to put the index into.
      */
     private File toIndexDir( ArchivaRepository repository, String indexId )
     {
-        if ( !repository.isManaged() )
-        {
-            throw new IllegalArgumentException( "Only supports managed repositories." );
-        }
-
         // Attempt to get the specified indexDir in the configuration first.
-        RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
+        ManagedRepositoryConfiguration repoConfig =
+            configuration.getConfiguration().findManagedRepositoryById( repository.getId() );
         File indexDir;
 
         if ( repoConfig == null )

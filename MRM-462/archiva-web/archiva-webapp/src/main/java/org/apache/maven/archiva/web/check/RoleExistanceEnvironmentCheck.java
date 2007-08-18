@@ -19,7 +19,6 @@ package org.apache.maven.archiva.web.check;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -68,22 +67,20 @@ public class RoleExistanceEnvironmentCheck
             {
                 List repos = dao.getRepositoryDAO().getRepositories();
 
-                if ( hasManagedRepository( repos ) )
+                // TODO! this be skipping non-managed repos
+                Iterator it = repos.iterator();
+                while ( it.hasNext() )
                 {
-                    Iterator it = repos.iterator();
-                    while ( it.hasNext() )
+                    ArchivaRepository repository = (ArchivaRepository) it.next();
+
+                    if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repository.getId() ) )
                     {
-                        ArchivaRepository repository = (ArchivaRepository) it.next();
+                        roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
+                    }
 
-                        if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repository.getId() ) )
-                        {
-                            roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
-                        }
-
-                        if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repository.getId() ) )
-                        {
-                            roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
-                        }
+                    if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repository.getId() ) )
+                    {
+                        roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
                     }
                 }
             }
@@ -94,7 +91,8 @@ public class RoleExistanceEnvironmentCheck
             }
             catch ( ObjectNotFoundException e )
             {
-                list.add( this.getClass().getName() + "error initializing roles (repository not found): " + e.getMessage() );
+                list.add(
+                    this.getClass().getName() + "error initializing roles (repository not found): " + e.getMessage() );
                 getLogger().info( "error initializing roles", e );
             }
             catch ( ArchivaDatabaseException e )
@@ -107,18 +105,4 @@ public class RoleExistanceEnvironmentCheck
         }
     }
 
-    public boolean hasManagedRepository( List repos )
-    {
-        Iterator it = repos.iterator();
-        while ( it.hasNext() )
-        {
-            ArchivaRepository repo = (ArchivaRepository) it.next();
-            if ( repo.isManaged() )
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

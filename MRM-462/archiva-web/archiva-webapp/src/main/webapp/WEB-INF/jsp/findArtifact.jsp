@@ -31,7 +31,7 @@
 
 <div id="contentArea">
   <div id="searchBox">
-    <ww:if test="${sessionScope.uiOptions.appletFindEnabled}">
+    <ww:if test="${applicationScope.uiOptions.appletFindEnabled}">
       <script type="text/javascript">
         function generateMd5( file, defVal )
         {

@@ -19,45 +19,36 @@ package org.apache.maven.archiva.configuration.functors;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 
 import java.util.Comparator;
 
 /**
- * RepositoryConfigurationComparator 
+ * RepositoryConfigurationComparator
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class RepositoryConfigurationComparator
-    implements Comparator
+    implements Comparator<AbstractRepositoryConfiguration>
 {
-
-    public int compare( Object o1, Object o2 )
+    public int compare( AbstractRepositoryConfiguration o1, AbstractRepositoryConfiguration o2 )
     {
         if ( o1 == null && o2 == null )
         {
             return 0;
         }
 
-        if ( o1 == null && o2 != null )
-        {
-            return 1;
-        }
-
-        if ( o1 != null && o2 == null )
+        if ( o1 == null )
         {
             return -1;
         }
 
-        if ( ( o1 instanceof RepositoryConfiguration ) && ( o2 instanceof RepositoryConfiguration ) )
+        if ( o2 == null )
         {
-            String id1 = ( (RepositoryConfiguration) o1 ).getId();
-            String id2 = ( (RepositoryConfiguration) o2 ).getId();
-            return id1.compareToIgnoreCase( id2 );
+            return 1;
         }
 
-        return 0;
+        return o1.getId().compareToIgnoreCase( o2.getId() );
     }
-
 }

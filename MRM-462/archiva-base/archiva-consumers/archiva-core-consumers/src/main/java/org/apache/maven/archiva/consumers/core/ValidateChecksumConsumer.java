@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers.core;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
@@ -38,16 +37,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * ValidateChecksumConsumer - validate the provided checksum against the file it represents. 
+ * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="validate-checksum"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="validate-checksum"
+ * instantiation-strategy="per-lookup"
  */
-public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
+public class ValidateChecksumConsumer
+    extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, Initializable
 {
     private static final String NOT_VALID_CHECKSUM = "checksum-not-valid";
@@ -99,13 +98,9 @@ public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
         return false;
     }
 
-    public void beginScan( ArchivaRepository repository ) throws ConsumerException
+    public void beginScan( ArchivaRepository repository )
+        throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
     }
@@ -125,7 +120,8 @@ public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
         return this.includes;
     }
 
-    public void processFile( String path ) throws ConsumerException
+    public void processFile( String path )
+        throws ConsumerException
     {
         File checksumFile = new File( this.repositoryDir, path );
         try
@@ -141,7 +137,8 @@ public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
         }
         catch ( DigesterException e )
         {
-            triggerConsumerError( CHECKSUM_DIGESTER_FAILURE, "Digester failure during checksum validation on " + checksumFile );
+            triggerConsumerError( CHECKSUM_DIGESTER_FAILURE,
+                                  "Digester failure during checksum validation on " + checksumFile );
         }
         catch ( IOException e )
         {
@@ -149,7 +146,8 @@ public class ValidateChecksumConsumer extends AbstractMonitoredConsumer
         }
     }
 
-    public void initialize() throws InitializationException
+    public void initialize()
+        throws InitializationException
     {
         for ( Iterator itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
         {

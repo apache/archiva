@@ -1,48 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <version>1</version>
-  <repositories>
-    <repository>
+  <version>2</version>
+  <managedRepositories>
+    <managedRepository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <url>file://${appserver.base}/data/repositories/internal</url>
+      <location>${appserver.base}/data/repositories/internal</location>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 0 * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
-    </repository>
-    <repository>
+    </managedRepository>
+    <managedRepository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.base}/data/repositories/snapshots</url>
+      <location>${appserver.base}/data/repositories/snapshots</location>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0\,30 0 * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
-    </repository>
-    <repository>
+    </managedRepository>
+  </managedRepositories>
+  <remoteRepositories>
+    <remoteRepository>
       <id>central</id>
       <name>Central Repository</name>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
-      <releases>true</releases>
-      <snapshots>false</snapshots>
-      <indexed>false</indexed>
-    </repository>
-    <repository>
+    </remoteRepository>
+    <remoteRepository>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven 2</name>
       <url>http://download.java.net/maven/2/</url>
       <layout>default</layout>
-      <releases>true</releases>
-      <snapshots>false</snapshots>
-      <indexed>false</indexed>
-    </repository>
-  </repositories>
+    </remoteRepository>
+  </remoteRepositories>
 
   <proxyConnectors>
     <proxyConnector>

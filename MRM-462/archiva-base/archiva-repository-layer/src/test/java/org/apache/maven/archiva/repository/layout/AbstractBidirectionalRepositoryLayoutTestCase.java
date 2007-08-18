@@ -30,12 +30,12 @@ import org.codehaus.plexus.PlexusTestCase;
 import java.io.File;
 
 /**
- * AbstractBidirectionalRepositoryLayoutTestCase 
+ * AbstractBidirectionalRepositoryLayoutTestCase
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractBidirectionalRepositoryLayoutTestCase
+public abstract class AbstractBidirectionalRepositoryLayoutTestCase
     extends PlexusTestCase
 {
     protected ArchivaRepository repository;
@@ -60,9 +60,7 @@ public class AbstractBidirectionalRepositoryLayoutTestCase
 
         String repoUri = "file://" + StringUtils.replace( testRepo.getAbsolutePath(), "\\", "/" );
 
-        ArchivaRepository repo = new ArchivaRepository( "testRepo", "Test Repository", repoUri );
-
-        return repo;
+        return new ArchivaRepository( "testRepo", "Test Repository", repoUri );
     }
 
     protected ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
@@ -99,8 +97,8 @@ public class AbstractBidirectionalRepositoryLayoutTestCase
     protected void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                             String version, String classifier, String type )
     {
-        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier
-            + ":" + type;
+        String expectedId =
+            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 

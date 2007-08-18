@@ -43,12 +43,29 @@
         </field>
         <field>
           <name>repositories</name>
+          <version>1.0.0</version>
+          <association>
+            <type>V1RepositoryConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
+          <name>managedRepositories</name>
           <version>1.0.0+</version>
           <association>
-            <type>RepositoryConfiguration</type>
+            <type>ManagedRepositoryConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>
           <description>The list of repositories that this archiva instance uses.</description>
+        </field>
+        <field>
+          <name>remoteRepositories</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>RemoteRepositoryConfiguration</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>The list of repositories that this archiva can retrieve from or publish to.</description>
         </field>
         <field>
           <name>proxyConnectors</name>
@@ -119,58 +136,78 @@
         <codeSegment>
           <version>1.0.0+</version>
           <code><![CDATA[
-    /**
-     * Find {@link RepositoryConfiguration} with specified Id.
-     *  
-     * @param id the id of the repository to find.
-     * @return the repository configuration.
-     */
-    public RepositoryConfiguration findRepositoryById( String id )
+    public java.util.Map<String, NetworkProxyConfiguration> getNetworkProxiesAsMap()
     {
-        // null id = null repo config.
-        if ( id == null )
+        java.util.Map<String, NetworkProxyConfiguration> map = new java.util.HashMap<String, NetworkProxyConfiguration>();
+        if ( networkProxies != null )
         {
-            return null;
+            for ( java.util.Iterator i = networkProxies.iterator(); i.hasNext(); )
+            {
+                NetworkProxyConfiguration proxy = (NetworkProxyConfiguration) i.next();
+                map.put( proxy.getId(), proxy );
+            }
         }
-
-        // empty id = null repo config.
-        if ( id.trim().length() <= 0 )
-        {
-            return null;
-        }
-        
-        return (RepositoryConfiguration) createRepositoryMap().get( id );
+        return map;
     }
 
-    /**
-     * Create a RepositoryMap of the current repositories.
-     * 
-     * @return the map of repository id's, to repository configurations.
-     */
-    public java.util.Map createRepositoryMap()
+    public java.util.Map<String, RemoteRepositoryConfiguration> getRemoteRepositoriesAsMap()
     {
-        java.util.Map ret = new java.util.HashMap();
-        
-        // null repository list = null repo config.
-        if ( getRepositories() == null )
+        java.util.Map<String, RemoteRepositoryConfiguration> map = new java.util.HashMap<String, RemoteRepositoryConfiguration>();
+        if ( remoteRepositories != null )
         {
-            return ret;
+            for ( java.util.Iterator i = remoteRepositories.iterator(); i.hasNext(); )
+            {
+                RemoteRepositoryConfiguration repo = (RemoteRepositoryConfiguration) i.next();
+                map.put( repo.getId(), repo );
+            }
         }
+        return map;
+    }
 
-        // empty repository list == null repo config.
-        if ( getRepositories().isEmpty() )
+    public RemoteRepositoryConfiguration findRemoteRepositoryById( String id )
+    {
+        if ( remoteRepositories != null )
         {
-            return ret;
+            for ( java.util.Iterator i = remoteRepositories.iterator(); i.hasNext(); )
+            {
+                RemoteRepositoryConfiguration repo = (RemoteRepositoryConfiguration) i.next();
+                if ( repo.getId().equals( id ) )
+                {
+                    return repo;
+                }
+            }
         }
-        
-        java.util.Iterator it = getRepositories().iterator();
-        while ( it.hasNext() )
+        return null;
+    }
+
+    public java.util.Map<String, ManagedRepositoryConfiguration> getManagedRepositoriesAsMap()
+    {
+        java.util.Map<String, ManagedRepositoryConfiguration> map = new java.util.HashMap<String, ManagedRepositoryConfiguration>();
+        if ( managedRepositories != null )
         {
-            RepositoryConfiguration repoConfig = (RepositoryConfiguration) it.next();
-            ret.put( repoConfig.getId(), repoConfig );
+            for ( java.util.Iterator i = managedRepositories.iterator(); i.hasNext(); )
+            {
+                ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) i.next();
+                map.put( repo.getId(), repo );
+            }
         }
-        
-        return ret;
+        return map;
+    }
+
+    public ManagedRepositoryConfiguration findManagedRepositoryById( String id )
+    {
+        if ( managedRepositories != null )
+        {
+            for ( java.util.Iterator i = managedRepositories.iterator(); i.hasNext(); )
+            {
+                ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) i.next();
+                if ( repo.getId().equals( id ) )
+                {
+                    return repo;
+                }
+            }
+        }
+        return null;
     }
           ]]></code>
         </codeSegment>
@@ -188,8 +225,9 @@
     -->
 
     <class>
-      <name>RepositoryConfiguration</name>
+      <name>AbstractRepositoryConfiguration</name>
       <version>1.0.0+</version>
+      <abstract>true</abstract>
       <fields>
         <field>
           <name>id</name>
@@ -210,15 +248,6 @@
           </description>
         </field>
         <field>
-          <name>url</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The URL for this repository.
-          </description>
-        </field>
-        <field>
           <name>layout</name>
           <version>1.0.0+</version>
           <type>String</type>
@@ -228,6 +257,38 @@
           </description>
           <!-- TODO: should be able to detect this from the repository (perhaps by metadata at the root) -->
           <defaultValue>default</defaultValue>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>RemoteRepositoryConfiguration</name>
+      <version>1.0.0+</version>
+      <superClass>AbstractRepositoryConfiguration</superClass>
+      <fields>
+        <field>
+          <name>url</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL for this repository.
+          </description>
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>ManagedRepositoryConfiguration</name>
+      <version>1.0.0+</version>
+      <superClass>AbstractRepositoryConfiguration</superClass>
+      <fields>
+        <field>
+          <name>location</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The file system location for this repository.
+          </description>
         </field>
         <field>
           <name>releases</name>
@@ -243,6 +304,7 @@
           <description>True if this repository contains snapshot versioned artifacts.</description>
           <defaultValue>false</defaultValue>
         </field>
+        <!-- TODO! is indexed better named as scanned? check it's usages (or lack of usages) when iterating repos -->
         <field>
           <name>indexed</name>
           <version>1.0.0+</version>
@@ -273,7 +335,7 @@
           <version>1.0.0+</version>
           <type>int</type>
           <description>
-          	The total count of the artifact to be retained for each snapshot.
+            The total count of the artifact to be retained for each snapshot.
           </description>
           <defaultValue>2</defaultValue>
         </field>
@@ -282,7 +344,7 @@
           <version>1.0.0+</version>
           <type>int</type>
           <description>
-          	The number of days old which will be the basis for removing a snapshot.
+            The number of days old which will be the basis for removing a snapshot.
           </description>
           <defaultValue>100</defaultValue>
         </field>
@@ -291,52 +353,27 @@
           <version>1.0.0+</version>
           <type>boolean</type>
           <description>
-          	True if the released snapshots are to be removed from the repo during repository purge.
+            True if the released snapshots are to be removed from the repo during repository purge.
           </description>
           <defaultValue>false</defaultValue>
         </field>
       </fields>
-      <codeSegments>
-        <codeSegment>
+    </class>
+    <class>
+      <name>V1RepositoryConfiguration</name>
+      <version>1.0.0</version>
+      <superClass>ManagedRepositoryConfiguration</superClass>
+      <fields>
+        <field>
+          <name>url</name>
           <version>1.0.0+</version>
-          <code><![CDATA[
-    /**
-     * Utility method to help determine if configuration refers to a remote repository.
-     * 
-     * @return true if configuration belongs to a remote repository. 
-     *      (note: false does not automatically mean this is a managed repository,
-     *      you must use {@link #isManaged()} to test for that.)
-     */
-    public boolean isRemote()
-    {
-        if ( this.url == null )
-        {
-            return false;
-        }
-
-        return !this.url.startsWith( "file" );
-    }
-
-    /**
-     * Utility method to help determine if configuration refers to a managed repository.
-     * 
-     * @return true if configuration belongs to a managed repository. 
-     *      (note: false does not automatically mean this is a remote repository,
-     *      you must use {@link #isRemote()} to test for that.)
-     */
-    public boolean isManaged()
-    {
-        if ( this.url == null )
-        {
-            return false;
-        }
-
-        return this.url.startsWith( "file" );
-    }
-
-          ]]></code>
-        </codeSegment>
-      </codeSegments>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL for this repository.
+          </description>
+        </field>
+      </fields>
     </class>
 
     <!-- 

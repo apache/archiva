@@ -20,7 +20,6 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 
@@ -48,11 +47,14 @@ public class MavenProxyPropertyLoader
         // set up the managed repository
         String localCachePath = getMandatoryProperty( props, REPO_LOCAL_STORE );
 
-        RepositoryConfiguration config = new RepositoryConfiguration();
-        config.setUrl( PathUtil.toUrl( localCachePath ) );
+        ManagedRepositoryConfiguration config = new ManagedRepositoryConfiguration();
+        config.setLocation( localCachePath );
         config.setName( "Imported Maven-Proxy Cache" );
         config.setId( "maven-proxy" );
-        configuration.addRepository( config );
+        config.setIndexed( false );
+        config.setReleases( true );
+        config.setSnapshots( false );
+        configuration.addManagedRepository( config );
 
         // Add the network proxies.
         String propertyList = props.getProperty( PROXY_LIST );
@@ -91,26 +93,21 @@ public class MavenProxyPropertyLoader
 
             int cachePeriod = Integer.parseInt( repoProps.getProperty( "cache.period", "60" ) );
 
-            RepositoryConfiguration repository = new RepositoryConfiguration();
+            RemoteRepositoryConfiguration repository = new RemoteRepositoryConfiguration();
             repository.setId( key );
             repository.setName( "Imported Maven-Proxy Remote Proxy" );
             repository.setUrl( url );
             repository.setLayout( "legacy" );
-            repository.setIndexed( false );
-            repository.setReleases( true );
-            repository.setSnapshots( false );
 
-            configuration.addRepository( repository );
+            configuration.addRemoteRepository( repository );
 
             ProxyConnectorConfiguration proxyConnector = new ProxyConnectorConfiguration();
             proxyConnector.setSourceRepoId( "maven-proxy" );
             proxyConnector.setTargetRepoId( key );
             proxyConnector.setProxyId( proxyKey );
             // TODO: convert cachePeriod to closest "daily" or "hourly"
-            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, 
-                                      SnapshotsPolicy.DAILY );
-            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, 
-                                      ReleasesPolicy.IGNORED );
+            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.DAILY );
+            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.IGNORED );
 
             configuration.addProxyConnector( proxyConnector );
         }

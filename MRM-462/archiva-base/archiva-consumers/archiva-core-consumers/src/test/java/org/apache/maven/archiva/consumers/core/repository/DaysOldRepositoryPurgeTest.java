@@ -1,24 +1,9 @@
 package org.apache.maven.archiva.consumers.core.repository;
 
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
-import org.codehaus.plexus.jdo.JdoFactory;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.jdo.JdoAccess;
 
-import javax.jdo.JDOFatalUserException;
-import javax.jdo.JDOHelper;
-import javax.jdo.spi.JDOImplHelper;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
 import java.io.File;
+import java.util.Date;
 
 
 /**
@@ -35,7 +20,8 @@ public class DaysOldRepositoryPurgeTest
     {
         super.setUp();
 
-        repoPurge = new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration() );
+        repoPurge =
+            new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration().getDaysOlder() );
     }
 
     private void setLastModified()
@@ -53,7 +39,7 @@ public class DaysOldRepositoryPurgeTest
         throws Exception
     {
         populateDb();
-        
+
         setLastModified();
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
@@ -97,8 +83,7 @@ public class DaysOldRepositoryPurgeTest
         assertNotNull( savedArtifact );
 
         //POM
-        artifact =
-            dao.createArtifact( "org.apache.maven.plugins", "maven-install-plugin", "2.2-SNAPSHOT", "", "pom" );
+        artifact = dao.createArtifact( "org.apache.maven.plugins", "maven-install-plugin", "2.2-SNAPSHOT", "", "pom" );
         assertNotNull( artifact );
         artifact.getModel().setLastModified( new Date() );
         artifact.getModel().setOrigin( "test" );

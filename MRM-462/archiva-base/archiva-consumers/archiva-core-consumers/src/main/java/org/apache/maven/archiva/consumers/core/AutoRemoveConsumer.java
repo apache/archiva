@@ -35,14 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AutoRemoveConsumer 
+ * AutoRemoveConsumer
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="auto-remove"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="auto-remove"
+ * instantiation-strategy="per-lookup"
  */
 public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
@@ -62,7 +61,7 @@ public class AutoRemoveConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -92,11 +91,6 @@ public class AutoRemoveConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repositoryDir = new File( repository.getUrl().getPath() );
     }
 
@@ -142,7 +136,7 @@ public class AutoRemoveConsumer
     private void initIncludes()
     {
         includes.clear();
-        
+
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 

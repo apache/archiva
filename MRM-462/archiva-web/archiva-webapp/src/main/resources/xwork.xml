@@ -30,6 +30,7 @@
 
   <package name="base" extends="webwork-default">
     <interceptors>
+      <!-- TODO! eh? -->
       <interceptor name="strange" class="webwork-is-doing-strange-things"/>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
@@ -89,13 +90,6 @@
       <result name="config-needed" type="redirect-action">
         <param name="namespace">/admin</param>
         <param name="actionName">repositories</param>
-      </result>
-
-      <!-- This redirect is triggered by the configuration interceptor -->
-      <result name="config-repository-needed" type="redirect-action">
-        <param name="namespace">/admin</param>
-        <param name="actionName">addRepository</param>
-        <param name="method">input</param>
       </result>
 
       <!-- The following security-* result names arrive from the plexus-security package -->

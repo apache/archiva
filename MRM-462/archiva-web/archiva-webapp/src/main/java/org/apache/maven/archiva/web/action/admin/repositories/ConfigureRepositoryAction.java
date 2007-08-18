@@ -23,12 +23,11 @@ import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.Preparable;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.authorization.AuthorizationResult;
@@ -218,7 +217,9 @@ public class ConfigureRepositoryAction
             this.repository.setIndexed( false );
         }
 
-        RepositoryConfiguration repoconfig = archivaConfiguration.getConfiguration().findRepositoryById( id );
+        // TODO! others?
+        ManagedRepositoryConfiguration repoconfig =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( id );
         if ( repoconfig != null )
         {
             this.repository = new AdminRepositoryConfiguration( repoconfig );
@@ -292,16 +293,18 @@ public class ConfigureRepositoryAction
             containsError = true;
         }
         //if edit mode, do not validate existence of repoId
-        else if ( config.findRepositoryById( repoId ) != null && !StringUtils.equalsIgnoreCase( mode, "edit" ) )
+        else if ( ( config.getManagedRepositoriesAsMap().containsKey( repoId ) ||
+            config.getRemoteRepositoriesAsMap().containsKey( repoId ) ) &&
+            !StringUtils.equalsIgnoreCase( mode, "edit" ) )
         {
             addFieldError( "repository.id",
                            "Unable to add new repository with id [" + repoId + "], that id already exists." );
             containsError = true;
         }
 
-        if ( StringUtils.isBlank( repository.getUrl() ) )
+        // TODO! split
+        if ( StringUtils.isBlank( repository.getLocation() ) )
         {
-
             addFieldError( "repository.url", "You must enter a directory or url." );
             containsError = true;
         }
@@ -340,6 +343,7 @@ public class ConfigureRepositoryAction
         getLogger().info( ".addRepository(" + repository + ")" );
 
         // Fix the URL entry (could possibly be a filesystem path)
+/* TODO! reinstate
         String rawUrlEntry = repository.getUrl();
         if ( !rawUrlEntry.startsWith( "http://" ) )
         {
@@ -357,8 +361,10 @@ public class ConfigureRepositoryAction
                 // TODO: error handling when this fails, or is not a directory!
             }
         }
+*/
 
-        archivaConfiguration.getConfiguration().addRepository( repository );
+        // TODO! others
+        archivaConfiguration.getConfiguration().addManagedRepository( repository );
 
         // TODO: double check these are configured on start up
         roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
@@ -390,25 +396,24 @@ public class ConfigureRepositoryAction
     private void removeContents( AdminRepositoryConfiguration existingRepository )
         throws IOException
     {
-        if ( existingRepository.isManaged() )
-        {
-            getLogger().info( "Removing " + existingRepository.getDirectory() );
-            FileUtils.deleteDirectory( new File( existingRepository.getDirectory() ) );
-        }
+        getLogger().info( "Removing " + existingRepository.getLocation() );
+        FileUtils.deleteDirectory( new File( existingRepository.getLocation() ) );
     }
 
     private void removeRepository( String repoId )
     {
         getLogger().info( ".removeRepository()" );
 
-        RepositoryConfiguration toremove = archivaConfiguration.getConfiguration().findRepositoryById( repoId );
+        // TODO! what about others?
+        ManagedRepositoryConfiguration toremove =
+            archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
         if ( toremove != null )
         {
-            archivaConfiguration.getConfiguration().removeRepository( toremove );
+            archivaConfiguration.getConfiguration().removeManagedRepository( toremove );
         }
     }
 
-    private void removeRepositoryRoles( RepositoryConfiguration existingRepository )
+    private void removeRepositoryRoles( ManagedRepositoryConfiguration existingRepository )
         throws RoleManagerException
     {
         roleManager.removeTemplatedRole( "archiva-repository-manager", existingRepository.getId() );

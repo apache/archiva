@@ -20,37 +20,35 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.model.RepositoryURL;
 
 import java.io.File;
 
 /**
- * AdminRepositoryConfiguration 
+ * AdminRepositoryConfiguration
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * @todo! split from remote repo (which shouldn't need stats, use native class)
  */
 public class AdminRepositoryConfiguration
-    extends RepositoryConfiguration
+    extends ManagedRepositoryConfiguration
 {
     private RepositoryContentStatistics stats;
 
     public AdminRepositoryConfiguration()
     {
-        super();
     }
 
     /**
      * Copy Constructor.
      */
-    public AdminRepositoryConfiguration( RepositoryConfiguration repoconfig )
+    public AdminRepositoryConfiguration( ManagedRepositoryConfiguration repoconfig )
     {
         this.setId( repoconfig.getId() );
         this.setName( repoconfig.getName() );
-        this.setUrl( repoconfig.getUrl() );
+        this.setLocation( repoconfig.getLocation() );
         this.setLayout( repoconfig.getLayout() );
         this.setIndexed( repoconfig.isIndexed() );
         this.setReleases( repoconfig.isReleases() );
@@ -62,44 +60,19 @@ public class AdminRepositoryConfiguration
         this.setDaysOlder( repoconfig.getDaysOlder() );
         this.setRetentionCount( repoconfig.getRetentionCount() );
         this.setDeleteReleasedSnapshots( repoconfig.isDeleteReleasedSnapshots() );
-
-        if ( repoconfig.isManaged() )
-        {
-            RepositoryURL url = new RepositoryURL( repoconfig.getUrl() );
-            this.setDirectory( url.getPath() );
-        }
     }
 
+    // TODO: needed? used by repositories.jsp only
     public boolean isDirectoryExists()
     {
-        if ( StringUtils.isBlank( getDirectory() ) )
+        String directory = getLocation();
+        if ( StringUtils.isBlank( directory ) )
         {
             return false;
         }
 
-        File dir = new File( getDirectory() );
-        return ( dir.exists() && dir.isDirectory() );
-    }
-
-    public String getDirectory()
-    {
-        if ( this.isManaged() )
-        {
-            if ( StringUtils.isBlank( this.getUrl() ) )
-            {
-                return null;
-            }
-
-            RepositoryURL url = new RepositoryURL( this.getUrl() );
-            return url.getPath();
-        }
-
-        return null;
-    }
-
-    public void setDirectory( String directory )
-    {
-        this.setUrl( PathUtil.toUrl( directory ) );
+        File dir = new File( directory );
+        return dir.exists() && dir.isDirectory();
     }
 
     public RepositoryContentStatistics getStats()

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.consumers.lucene;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
@@ -45,14 +45,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * IndexArtifactConsumer 
+ * IndexArtifactConsumer
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer"
- *                   role-hint="index-artifact"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="index-artifact"
+ * instantiation-strategy="per-lookup"
  */
 public class IndexArtifactConsumer
     extends AbstractMonitoredConsumer
@@ -129,8 +128,8 @@ public class IndexArtifactConsumer
         String repoId = artifact.getModel().getRepositoryId();
         if ( StringUtils.isBlank( repoId ) )
         {
-            throw new IllegalStateException( "Unable to process artifact [" + artifact
-                + "] as it has no repository id associated with it." );
+            throw new IllegalStateException(
+                "Unable to process artifact [" + artifact + "] as it has no repository id associated with it." );
         }
 
         return getIndexedRepositoryDetails( repoId );
@@ -158,7 +157,7 @@ public class IndexArtifactConsumer
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             initRepositoryMap();
         }
@@ -182,14 +181,10 @@ public class IndexArtifactConsumer
         {
             this.repositoryMap.clear();
 
-            Iterator it = configuration.getConfiguration().getRepositories().iterator();
+            Iterator it = configuration.getConfiguration().getManagedRepositories().iterator();
             while ( it.hasNext() )
             {
-                RepositoryConfiguration repoconfig = (RepositoryConfiguration) it.next();
-                if ( !repoconfig.isManaged() )
-                {
-                    continue;
-                }
+                ManagedRepositoryConfiguration repoconfig = (ManagedRepositoryConfiguration) it.next();
 
                 ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( repoconfig );
                 IndexedRepositoryDetails pnl = new IndexedRepositoryDetails();

@@ -20,9 +20,9 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -98,13 +98,13 @@ public class BidirectionalRepositoryLayoutFactory
             throw new LayoutException( "Cannot determine layout using artifact with no repository id: " + artifact );
         }
 
-        RepositoryConfiguration repo = (RepositoryConfiguration) this.repositoryMap.get( repoId );
+        AbstractRepositoryConfiguration repo = (AbstractRepositoryConfiguration) this.repositoryMap.get( repoId );
         return getLayout( repo.getLayout() );
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             initRepositoryMap();
         }
@@ -120,7 +120,7 @@ public class BidirectionalRepositoryLayoutFactory
         synchronized ( this.repositoryMap )
         {
             this.repositoryMap.clear();
-            this.repositoryMap.putAll( configuration.getConfiguration().createRepositoryMap() );
+            this.repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
         }
     }
 

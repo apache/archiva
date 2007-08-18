@@ -15,7 +15,7 @@
   </defaults>
 
   <classes>
-    <class stash.storable="false" 
+    <class stash.storable="false"
            rootElement="true"
            jpox.enabled="false">
       <name>ArchivaAll</name>
@@ -25,6 +25,7 @@
         This object is not serialized to the Database.
       </description>
       <fields>
+        <!-- TODO! check it -->
         <field>
           <name>repositories</name>
           <version>1.0.0+</version>
@@ -121,6 +122,7 @@
             The Name of the repository.
           </description>
         </field>
+        <!-- TODO! check it -->
         <field stash.maxSize="250">
           <name>url</name>
           <identifier>false</identifier>
@@ -527,16 +529,16 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <!-- _______________________________________________________________
-         __  __      _            _       _
-        |  \/  | ___| |_ __ _  __| | __ _| |_ __ _
-        | |\/| |/ _ \ __/ _` |/ _` |/ _` | __/ _` |
-        | |  | |  __/ || (_| | (_| | (_| | || (_| |
-        |_|  |_|\___|\__\__,_|\__,_|\__,_|\__\__,_|
-        
-      -->
-    
+       __  __      _            _       _
+      |  \/  | ___| |_ __ _  __| | __ _| |_ __ _
+      | |\/| |/ _ \ __/ _` |/ _` |/ _` | __/ _` |
+      | |  | |  __/ || (_| | (_| | (_| | || (_| |
+      |_|  |_|\___|\__\__,_|\__,_|\__,_|\__\__,_|
+
+    -->
+
     <class stash.storable="true"
            jpox.use-identifiers-as-primary-key="false"
            jpox.not-persisted-fields="modelEncoding"
@@ -695,21 +697,21 @@
           <code>
             public void updateTimestamp()
             {
-                setLastUpdatedTimestamp( new java.util.Date() );
+            setLastUpdatedTimestamp( new java.util.Date() );
             }
 
             public void setLastUpdatedTimestamp( java.util.Date date )
             {
-                java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
-                java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
-                fmt.setTimeZone( timezone );
-                setLastUpdated( fmt.format( date ) );
+            java.util.TimeZone timezone = java.util.TimeZone.getTimeZone( "UTC" );
+            java.text.DateFormat fmt = new java.text.SimpleDateFormat( "yyyyMMddHHmmss" );
+            fmt.setTimeZone( timezone );
+            setLastUpdated( fmt.format( date ) );
             }
           </code>
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="REPOSITORY_METADATA_SNAPSHOTS">
@@ -724,7 +726,7 @@
           <identifier>false</identifier>
           <required>true</required>
           <description>
-          The unique timestamp for the snapshot version.
+            The unique timestamp for the snapshot version.
           </description>
         </field>
         <field>
@@ -744,16 +746,15 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
-    
-    
+
+
     <!-- _______________________________________________________________
-         ____       __
-        |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___  ___
-        | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \/ __|
-        |  _ (  __/  _|  __/ | |  __/ | | | (_|  __/\__ \
-        |_| \_\___|_|  \___|_|  \___|_| |_|\___\___||___/
-     -->
+        ____       __
+       |  _ \ ___ / _| ___ _ __ ___ _ __   ___ ___  ___
+       | |_) / _ \ |_ / _ \ '__/ _ \ '_ \ / __/ _ \/ __|
+       |  _ (  __/  _|  __/ | |  __/ | | | (_|  __/\__ \
+       |_| \_\___|_|  \___|_|  \___|_| |_|\___\___||___/
+    -->
 
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
@@ -818,7 +819,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="VERSIONED_REFERENCE">
@@ -894,7 +895,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="ARTIFACT_REFERENCE">
@@ -1431,7 +1432,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="MAILING_LISTS">
@@ -1489,7 +1490,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="ORGANIZATION">
@@ -1533,7 +1534,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="LICENSES">
@@ -1584,7 +1585,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="ISSUE_MANAGEMENT">
@@ -1617,7 +1618,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class jpox.not-persisted-fields="modelEncoding">
       <name>CiManagement</name>
       <version>1.0.0+</version>
@@ -1648,7 +1649,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding">
       <name>Individual</name>
@@ -1942,7 +1943,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="EXCLUSIONS">
@@ -1973,7 +1974,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="SCM">
@@ -2019,7 +2020,7 @@
         </codeSegment>
       </codeSegments>
     </class>
-    
+
     <class stash.storable="true"
            jpox.not-persisted-fields="modelEncoding"
            jpox.table="PROJECT_REPOSITORIES">
@@ -2119,7 +2120,7 @@
             The repository associated with this path and problem.
           </description>
         </field>
-        <field stash.maxSize="250" 
+        <field stash.maxSize="250"
                jpox.column="REPO_PATH">
           <name>path</name>
           <version>1.0.0+</version>

@@ -20,7 +20,7 @@ package org.apache.maven.archiva.configuration;
  */
 
 /**
- * Utility methods for testing the configuration property name. 
+ * Utility methods for testing the configuration property name.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -37,9 +37,14 @@ public class ConfigurationNames
         return startsWith( "repositoryScanning.", propertyName );
     }
 
-    public static boolean isRepositories( String propertyName )
+    public static boolean isManagedRepositories( String propertyName )
     {
-        return startsWith( "repositories.", propertyName );
+        return startsWith( "managedRepositories.", propertyName );
+    }
+
+    public static boolean isRemoteRepositories( String propertyName )
+    {
+        return startsWith( "remoteRepositories.", propertyName );
     }
 
     public static boolean isProxyConnector( String propertyName )

@@ -45,14 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * IndexContentConsumer - generic full file content indexing consumer. 
+ * IndexContentConsumer - generic full file content indexing consumer.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="index-content"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="index-content"
+ * instantiation-strategy="per-lookup"
  */
 public class IndexContentConsumer
     extends AbstractMonitoredConsumer
@@ -132,11 +131,6 @@ public class IndexContentConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
         this.index = indexFactory.createFileContentIndex( repository );
@@ -147,8 +141,8 @@ public class IndexContentConsumer
         }
         catch ( LayoutException e )
         {
-            throw new ConsumerException( "Unable to initialize consumer due to unknown repository layout: "
-                + e.getMessage(), e );
+            throw new ConsumerException(
+                "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
         }
     }
 

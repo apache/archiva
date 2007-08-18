@@ -19,37 +19,31 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.database.ArtifactDAO;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.io.File;
+import java.util.Calendar;
 
 /**
  * Purge repository for snapshots older than the specified days in the repository configuration.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
  */
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge
-{       
-    private RepositoryConfiguration repoConfig;
+{
+    private int daysOlder;
 
-    public DaysOldRepositoryPurge( ArchivaRepository repository,
-                                   BidirectionalRepositoryLayout layout, ArtifactDAO artifactDao,
-                                   RepositoryConfiguration repoConfig)
+    public DaysOldRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+                                   ArtifactDAO artifactDao, int daysOlder )
     {
         super( repository, layout, artifactDao );
-        this.repoConfig = repoConfig;
+        this.daysOlder = daysOlder;
     }
 
     public void process( String path )
@@ -59,7 +53,7 @@ public class DaysOldRepositoryPurge
         {
             File artifactFile = new File( repository.getUrl().getPath(), path );
 
-            if( !artifactFile.exists() )
+            if ( !artifactFile.exists() )
             {
                 return;
             }
@@ -69,7 +63,7 @@ public class DaysOldRepositoryPurge
             if ( VersionUtil.isSnapshot( parts.version ) )
             {
                 Calendar olderThanThisDate = Calendar.getInstance();
-                olderThanThisDate.add( Calendar.DATE, ( -1 * repoConfig.getDaysOlder() ) );
+                olderThanThisDate.add( Calendar.DATE, ( -1 * daysOlder ) );
 
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                 {
@@ -86,5 +80,5 @@ public class DaysOldRepositoryPurge
             throw new RepositoryPurgeException( le.getMessage() );
         }
     }
-    
+
 }

@@ -19,26 +19,24 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.ConsumerException;
-import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.maven.archiva.consumers.ConsumerException;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.registry.Registry;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
@@ -83,8 +81,6 @@ public class RepositoryPurgeConsumer
      */
     private FileTypes filetypes;
 
-    private ArchivaRepository repository;
-
     private List includes = new ArrayList();
 
     private List propertyNameTriggers = new ArrayList();
@@ -92,6 +88,8 @@ public class RepositoryPurgeConsumer
     private RepositoryPurge repoPurge;
 
     private RepositoryPurge cleanUp;
+
+    private boolean deleteReleasedSnapshots;
 
     public String getId()
     {
@@ -121,15 +119,7 @@ public class RepositoryPurgeConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        BidirectionalRepositoryLayout repositoryLayout = null;
-
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
-        this.repository = repository;
-
+        BidirectionalRepositoryLayout repositoryLayout;
         try
         {
             repositoryLayout = layoutFactory.getLayout( repository.getLayoutType() );
@@ -140,18 +130,23 @@ public class RepositoryPurgeConsumer
                 "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
         }
 
-        RepositoryConfiguration repoConfig = configuration.getConfiguration().findRepositoryById( repository.getId() );
+        ManagedRepositoryConfiguration repoConfig =
+            configuration.getConfiguration().findManagedRepositoryById( repository.getId() );
+
         if ( repoConfig.getDaysOlder() != 0 )
         {
-            repoPurge = new DaysOldRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(), repoConfig );
+            repoPurge = new DaysOldRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(),
+                                                    repoConfig.getDaysOlder() );
         }
         else
         {
-            repoPurge =
-                new RetentionCountRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(), repoConfig );
+            repoPurge = new RetentionCountRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(),
+                                                           repoConfig.getRetentionCount() );
         }
 
         cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO() );
+
+        deleteReleasedSnapshots = repoConfig.isDeleteReleasedSnapshots();
     }
 
     public void processFile( String path )
@@ -159,9 +154,7 @@ public class RepositoryPurgeConsumer
     {
         try
         {
-            RepositoryConfiguration repoConfig =
-                configuration.getConfiguration().findRepositoryById( repository.getId() );
-            if ( repoConfig.isDeleteReleasedSnapshots() )
+            if ( deleteReleasedSnapshots )
             {
                 cleanUp.process( path );
             }

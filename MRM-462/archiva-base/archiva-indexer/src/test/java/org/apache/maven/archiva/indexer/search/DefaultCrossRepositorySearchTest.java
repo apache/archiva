@@ -25,7 +25,7 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Searcher;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.MockConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
@@ -37,7 +37,7 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * DefaultCrossRepositorySearchTest 
+ * DefaultCrossRepositorySearchTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -45,15 +45,18 @@ import java.util.Map;
 public class DefaultCrossRepositorySearchTest
     extends PlexusTestCase
 {
+    private static final String TEST_DEFAULT_REPOSITORY_NAME = "Test Default Repository";
+
+    private static final String TEST_DEFAULT_REPO_ID = "testDefaultRepo";
 
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        RepositoryContentIndexFactory indexFactory = (RepositoryContentIndexFactory) lookup(
-                                                                                             RepositoryContentIndexFactory.class
-                                                                                                 .getName(), "lucene" );
+        RepositoryContentIndexFactory indexFactory =
+            (RepositoryContentIndexFactory) lookup( RepositoryContentIndexFactory.class
+                .getName(), "lucene" );
 
         File repoDir = new File( getBasedir(), "src/test/managed-repository" );
 
@@ -61,16 +64,17 @@ public class DefaultCrossRepositorySearchTest
 
         String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
 
-        ArchivaRepository repository = new ArchivaRepository( "testDefaultRepo", "Test Default Repository", repoUri );
+        ArchivaRepository repository =
+            new ArchivaRepository( TEST_DEFAULT_REPO_ID, TEST_DEFAULT_REPOSITORY_NAME, repoUri );
 
         File indexLocation = new File( "target/index-crossrepo-" + getName() + "/" );
 
         MockConfiguration config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 
-        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.setId( repository.getId() );
-        repoConfig.setName( repository.getModel().getName() );
-        repoConfig.setUrl( repository.getModel().getUrl() );
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig.setId( TEST_DEFAULT_REPO_ID );
+        repoConfig.setName( TEST_DEFAULT_REPOSITORY_NAME );
+        repoConfig.setLocation( repoDir.getAbsolutePath() );
         repoConfig.setIndexDir( indexLocation.getAbsolutePath() );
         repoConfig.setIndexed( true );
 
@@ -79,7 +83,7 @@ public class DefaultCrossRepositorySearchTest
             FileUtils.deleteDirectory( indexLocation );
         }
 
-        config.getConfiguration().addRepository( repoConfig );
+        config.getConfiguration().addManagedRepository( repoConfig );
 
         // Create the (empty) indexes.
         RepositoryContentIndex indexHashcode = indexFactory.createHashcodeIndex( repository );
@@ -115,7 +119,8 @@ public class DefaultCrossRepositorySearchTest
     private CrossRepositorySearch lookupCrossRepositorySearch()
         throws Exception
     {
-        CrossRepositorySearch search = (CrossRepositorySearch) lookup( CrossRepositorySearch.class.getName(), "default" );
+        CrossRepositorySearch search =
+            (CrossRepositorySearch) lookup( CrossRepositorySearch.class.getName(), "default" );
         assertNotNull( "CrossRepositorySearch:default should not be null.", search );
         return search;
     }

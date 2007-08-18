@@ -30,7 +30,7 @@ import org.apache.maven.wagon.TransferFailedException;
 import java.io.File;
 
 /**
- * ChecksumTransferTest 
+ * ChecksumTransferTest
  *
  * @author Brett Porter
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
@@ -81,7 +81,8 @@ public class ChecksumTransferTest
         File proxied1File = new File( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
         assertNoTempFiles( expectedFile );
-        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar", null );
+        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
+                         null );
     }
 
     public void testGetChecksumNoSha1CorrectMd5()
@@ -359,7 +360,7 @@ public class ChecksumTransferTest
         assertFalse( expectedFile.getParentFile().exists() );
         assertFalse( expectedFile.exists() );
 
-        saveRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
@@ -387,7 +388,8 @@ public class ChecksumTransferTest
         File proxied1File = new File( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
         assertNoTempFiles( expectedFile );
-        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar", null );
+        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
+                         null );
     }
 
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingIgnoredSetting()

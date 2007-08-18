@@ -21,14 +21,10 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import com.opensymphony.xwork.Preparable;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.list.TransformedList;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
-import org.apache.maven.archiva.configuration.functors.RemoteRepositoryPredicate;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.util.ContextUtils;
@@ -38,18 +34,15 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * Shows the Repositories Tab for the administrator. 
+ * Shows the Repositories Tab for the administrator.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="repositoriesAction"
  */
 public class RepositoriesAction
@@ -93,11 +86,8 @@ public class RepositoriesAction
     {
         Configuration config = archivaConfiguration.getConfiguration();
 
-        remoteRepositories = TransformedList.decorate( new ArrayList(), repoConfigToAdmin );
-        managedRepositories = TransformedList.decorate( new ArrayList(), repoConfigToAdmin );
-
-        remoteRepositories.addAll( CollectionUtils.select( config.getRepositories(), RemoteRepositoryPredicate.getInstance() ) );
-        managedRepositories.addAll( CollectionUtils.select( config.getRepositories(), LocalRepositoryPredicate.getInstance() ) );
+        remoteRepositories = TransformedList.decorate( config.getRemoteRepositories(), repoConfigToAdmin );
+        managedRepositories = TransformedList.decorate( config.getManagedRepositories(), repoConfigToAdmin );
 
         Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
         Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );

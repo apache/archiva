@@ -118,6 +118,29 @@ public class DefaultArchivaConfiguration
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
 
+        if ( !config.getRepositories().isEmpty() )
+        {
+            for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+            {
+                V1RepositoryConfiguration r = (V1RepositoryConfiguration) i.next();
+
+                if ( r.getUrl().startsWith( "file://" ) )
+                {
+                    r.setLocation( r.getUrl().substring( 7 ) );
+                    config.addManagedRepository( r );
+                }
+                else
+                {
+                    RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+                    repo.setId( r.getId() );
+                    repo.setLayout( r.getLayout() );
+                    repo.setName( r.getName() );
+                    repo.setUrl( r.getUrl() );
+                    config.addRemoteRepository( repo );
+                }
+            }
+        }
+
         return config;
     }
 
@@ -163,7 +186,8 @@ public class DefaultArchivaConfiguration
                 // that configuration
                 if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" ) ||
                     key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" ) ||
-                    key.startsWith( "databaseScanning" ) )
+                    key.startsWith( "databaseScanning" ) || key.startsWith( "remoteRepositories" ) ||
+                    key.startsWith( "managedRepositories" ) )
                 {
                     foundList = true;
                 }
@@ -279,10 +303,10 @@ public class DefaultArchivaConfiguration
     private Configuration processExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
-        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+        for ( Iterator i = config.getManagedRepositories().iterator(); i.hasNext(); )
         {
-            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
-            c.setUrl( removeExpressions( c.getUrl() ) );
+            ManagedRepositoryConfiguration c = (ManagedRepositoryConfiguration) i.next();
+            c.setLocation( removeExpressions( c.getLocation() ) );
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
@@ -298,9 +322,9 @@ public class DefaultArchivaConfiguration
 
     private Configuration escapeCronExpressions( Configuration config )
     {
-        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+        for ( Iterator i = config.getManagedRepositories().iterator(); i.hasNext(); )
         {
-            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+            ManagedRepositoryConfiguration c = (ManagedRepositoryConfiguration) i.next();
 
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }

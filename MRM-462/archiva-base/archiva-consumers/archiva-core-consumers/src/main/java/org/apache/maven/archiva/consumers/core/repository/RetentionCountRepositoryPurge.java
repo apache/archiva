@@ -19,49 +19,44 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.database.ArtifactDAO;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Purge the repository by retention count. Retain only the specified number of snapshots.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
  */
 public class RetentionCountRepositoryPurge
     extends AbstractRepositoryPurge
 {
-    private RepositoryConfiguration repoConfig;
+    private int retentionCount;
 
-    public RetentionCountRepositoryPurge( ArchivaRepository repository,
-                                          BidirectionalRepositoryLayout layout, ArtifactDAO artifactDao,
-                                          RepositoryConfiguration repoConfig )
+    public RetentionCountRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+                                          ArtifactDAO artifactDao, int retentionCount )
     {
         super( repository, layout, artifactDao );
-        this.repoConfig = repoConfig;
+        this.retentionCount = retentionCount;
     }
 
     public void process( String path )
         throws RepositoryPurgeException
     {
         try
-        {               
+        {
             File artifactFile = new File( repository.getUrl().getPath(), path );
 
-            if( !artifactFile.exists() )
+            if ( !artifactFile.exists() )
             {
                 return;
             }
@@ -69,7 +64,7 @@ public class RetentionCountRepositoryPurge
             FilenameParts parts = getFilenameParts( path );
 
             if ( VersionUtil.isSnapshot( parts.version ) )
-            {                                 
+            {
                 File parentDir = artifactFile.getParentFile();
 
                 if ( parentDir.isDirectory() )
@@ -78,13 +73,13 @@ public class RetentionCountRepositoryPurge
                     List uniqueVersionFilenames = getUniqueVersions( files );
                     Collections.sort( uniqueVersionFilenames );
 
-                    if ( uniqueVersionFilenames.size() > repoConfig.getRetentionCount() )
+                    if ( uniqueVersionFilenames.size() > retentionCount )
                     {
                         int count = uniqueVersionFilenames.size();
                         for ( Iterator iter = uniqueVersionFilenames.iterator(); iter.hasNext(); )
                         {
                             String filename = (String) iter.next();
-                            if ( count > repoConfig.getRetentionCount() )
+                            if ( count > retentionCount )
                             {
                                 File[] artifactFiles = getFiles( parentDir, filename );
                                 purge( artifactFiles );

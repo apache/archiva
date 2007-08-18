@@ -23,7 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * IDE Provided Utility Class for all tests. 
+ * IDE Provided Utility Class for all tests.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -36,12 +36,12 @@ public class AllTests
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.proxy" );
         //$JUnit-BEGIN$
         suite.addTestSuite( ChecksumTransferTest.class );
-        suite.addTestSuite( MetadataTransferTest.class );
+//        suite.addTestSuite( MetadataTransferTest.class );
         suite.addTestSuite( CacheFailuresTransferTest.class );
         suite.addTestSuite( ManagedDefaultTransferTest.class );
         suite.addTestSuite( SnapshotTransferTest.class );
         suite.addTestSuite( ManagedLegacyTransferTest.class );
-        suite.addTestSuite( RelocateTransferTest.class );
+//        suite.addTestSuite( RelocateTransferTest.class );
         //$JUnit-END$
         return suite;
     }

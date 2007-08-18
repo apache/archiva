@@ -20,14 +20,12 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.action.admin.repositories.AdminRepositoryConfiguration;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -42,11 +40,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ProxyConnectorsAction 
+ * ProxyConnectorsAction
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="proxyConnectorsAction"
  */
 public class ProxyConnectorsAction
@@ -81,16 +78,14 @@ public class ProxyConnectorsAction
         {
             public void execute( Object input )
             {
-                if ( input instanceof RepositoryConfiguration )
-                {
-                    AdminRepositoryConfiguration arepo = (AdminRepositoryConfiguration) repoConfigToAdmin
-                        .transform( input );
-                    repoMap.put( arepo.getId(), arepo );
-                }
+                AdminRepositoryConfiguration arepo =
+                    (AdminRepositoryConfiguration) repoConfigToAdmin.transform( input );
+                repoMap.put( arepo.getId(), arepo );
             }
         };
 
-        CollectionUtils.forAllDo( config.getRepositories(), addToRepoMap );
+        CollectionUtils.forAllDo( config.getManagedRepositories(), addToRepoMap );
+        CollectionUtils.forAllDo( config.getRemoteRepositories(), addToRepoMap );
 
         proxyConnectorMap = new HashMap();
 
@@ -109,7 +104,7 @@ public class ProxyConnectorsAction
                         connectors = new ArrayList();
                         proxyConnectorMap.put( key, connectors );
                     }
-                    
+
                     connectors.add( proxyConfig );
                 }
             }

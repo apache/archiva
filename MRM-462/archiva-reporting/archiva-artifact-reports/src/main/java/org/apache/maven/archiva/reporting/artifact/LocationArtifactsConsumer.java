@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -48,10 +48,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -62,9 +60,8 @@ import java.util.jar.JarFile;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.ArchivaArtifactConsumer"
- *                   role-hint="validate-artifacts-location"
+ * role-hint="validate-artifacts-location"
  */
 public class LocationArtifactsConsumer
     extends AbstractMonitoredConsumer
@@ -84,7 +81,7 @@ public class LocationArtifactsConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -146,11 +143,6 @@ public class LocationArtifactsConsumer
         throws ConsumerException
     {
         ArchivaRepository repository = findRepository( artifact );
-        if ( !repository.isManaged() )
-        {
-            getLogger().warn( "Artifact Location Validation Cannot operate against a non-managed Repository." );
-            return;
-        }
 
         File artifactFile = new File( repository.getUrl().toString(), toPath( artifact ) );
         ArchivaProjectModel fsModel = readFilesystemModel( artifactFile );
@@ -167,23 +159,23 @@ public class LocationArtifactsConsumer
         {
             if ( !StringUtils.equals( model.getGroupId(), artifact.getGroupId() ) )
             {
-                addProblem( artifact, "The groupId of the " + location
-                    + " project model doesn't match with the artifact, expected <" + artifact.getGroupId()
-                    + ">, but was actually <" + model.getGroupId() + ">" );
+                addProblem( artifact, "The groupId of the " + location +
+                    " project model doesn't match with the artifact, expected <" + artifact.getGroupId() +
+                    ">, but was actually <" + model.getGroupId() + ">" );
             }
-            
+
             if ( !StringUtils.equals( model.getArtifactId(), artifact.getArtifactId() ) )
             {
-                addProblem( artifact, "The artifactId of the " + location
-                    + " project model doesn't match with the artifact, expected <" + artifact.getArtifactId()
-                    + ">, but was actually <" + model.getArtifactId() + ">" );
+                addProblem( artifact, "The artifactId of the " + location +
+                    " project model doesn't match with the artifact, expected <" + artifact.getArtifactId() +
+                    ">, but was actually <" + model.getArtifactId() + ">" );
             }
-            
+
             if ( !StringUtils.equals( model.getVersion(), artifact.getVersion() ) )
             {
-                addProblem( artifact, "The version of the " + location
-                    + " project model doesn't match with the artifact, expected <" + artifact.getVersion()
-                    + ">, but was actually <" + model.getVersion() + ">" );
+                addProblem( artifact, "The version of the " + location +
+                    " project model doesn't match with the artifact, expected <" + artifact.getVersion() +
+                    ">, but was actually <" + model.getVersion() + ">" );
             }
         }
     }
@@ -196,18 +188,18 @@ public class LocationArtifactsConsumer
             JarFile jar = new JarFile( artifactFile );
 
             // Get the entry and its input stream.
-            JarEntry expectedEntry = jar.getJarEntry( "META-INF/maven/" + artifact.getGroupId() + "/"
-                + artifact.getArtifactId() + "/pom.xml" );
+            JarEntry expectedEntry = jar.getJarEntry(
+                "META-INF/maven/" + artifact.getGroupId() + "/" + artifact.getArtifactId() + "/pom.xml" );
 
             if ( expectedEntry != null )
             {
                 // TODO: read and resolve model here.
                 return null;
             }
-            
+
             /* Expected Entry not found, look for alternate that might
-             * indicate that the artifact is, indeed located in the wrong place.
-             */
+            * indicate that the artifact is, indeed located in the wrong place.
+            */
 
             List actualPomXmls = findJarEntryPattern( jar, "META-INF/maven/**/pom.xml" );
             if ( actualPomXmls.isEmpty() )
@@ -215,7 +207,7 @@ public class LocationArtifactsConsumer
                 // No check needed.
 
             }
-            
+
             // TODO: test for invalid actual pom.xml
             // TODO: test
         }
@@ -276,7 +268,7 @@ public class LocationArtifactsConsumer
         File pomFile = createPomFileReference( artifactFile );
 
         // TODO: read and resolve model here.
-        
+
         return null;
     }
 
@@ -316,7 +308,7 @@ public class LocationArtifactsConsumer
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             initRepositoryMap();
         }
@@ -345,14 +337,12 @@ public class LocationArtifactsConsumer
         {
             this.repositoryMap.clear();
 
-            Iterator it = configuration.getConfiguration().createRepositoryMap().entrySet().iterator();
-            while ( it.hasNext() )
+            Map<String, ManagedRepositoryConfiguration> map =
+                configuration.getConfiguration().getManagedRepositoriesAsMap();
+            for ( Map.Entry<String, ManagedRepositoryConfiguration> entry : map.entrySet() )
             {
-                Map.Entry entry = (Entry) it.next();
-                String key = (String) entry.getKey();
-                RepositoryConfiguration repoConfig = (RepositoryConfiguration) entry.getValue();
-                ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
-                this.repositoryMap.put( key, repository );
+                ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( entry.getValue() );
+                this.repositoryMap.put( entry.getKey(), repository );
             }
         }
     }

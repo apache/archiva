@@ -19,46 +19,43 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
+import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
 import org.jpox.SchemaTool;
 
-import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.PersistenceManager;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Properties;
+import javax.jdo.PersistenceManagerFactory;
+import java.io.File;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
-import java.net.URL;
-import java.io.File;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class AbstractRepositoryPurgeTest
+public abstract class AbstractRepositoryPurgeTest
     extends PlexusTestCase
 {
     public static final String TEST_REPO_ID = "test-repo";
 
     public static final String TEST_REPO_NAME = "Test Repository";
 
-    public static final String TEST_REPO_URL = "file://" + getBasedir() + "/target/test-classes/test-repo/";
+    public static final String TEST_REPO_URL = getBasedir() + "/target/test-classes/test-repo/";
 
     public static final int TEST_RETENTION_COUNT = 2;
 
     public static final int TEST_DAYS_OLDER = 30;
 
-    private RepositoryConfiguration config;
+    private ManagedRepositoryConfiguration config;
 
     private ArchivaRepository repo;
 
@@ -136,17 +133,17 @@ public class AbstractRepositoryPurgeTest
         dao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
     }
 
-    public RepositoryConfiguration getRepoConfiguration()
+    public ManagedRepositoryConfiguration getRepoConfiguration()
     {
         if ( config == null )
         {
-            config = new RepositoryConfiguration();
+            config = new ManagedRepositoryConfiguration();
         }
 
         config.setId( TEST_REPO_ID );
         config.setName( TEST_REPO_NAME );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setUrl( TEST_REPO_URL );
+        config.setLocation( TEST_REPO_URL );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setRetentionCount( TEST_RETENTION_COUNT );
@@ -158,7 +155,7 @@ public class AbstractRepositoryPurgeTest
     {
         if ( repo == null )
         {
-            repo = new ArchivaRepository( TEST_REPO_ID, TEST_REPO_NAME, TEST_REPO_URL );
+            repo = new ArchivaRepository( TEST_REPO_ID, TEST_REPO_NAME, PathUtil.toUrl( TEST_REPO_URL ) );
         }
 
         return repo;

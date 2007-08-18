@@ -19,15 +19,9 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.IfClosure;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
-import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationToMapClosure;
-import org.apache.maven.archiva.model.RepositoryURL;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
@@ -46,17 +40,16 @@ import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * RepositoryServlet
@@ -88,7 +81,8 @@ public class RepositoryServlet
      */
     private ArchivaConfiguration configuration;
 
-    private Map repositoryMap = new HashMap();
+    private Map<String, ManagedRepositoryConfiguration> repositoryMap =
+        new HashMap<String, ManagedRepositoryConfiguration>();
 
     public void initComponents()
         throws ServletException
@@ -108,26 +102,20 @@ public class RepositoryServlet
     public void initServers( ServletConfig servletConfig )
         throws DavServerException
     {
-        List repositories = configuration.getConfiguration().getRepositories();
+        List repositories = configuration.getConfiguration().getManagedRepositories();
         Iterator itrepos = repositories.iterator();
         while ( itrepos.hasNext() )
         {
-            RepositoryConfiguration repo = (RepositoryConfiguration) itrepos.next();
-            if ( !repo.isManaged() )
-            {
-                // Skip non-managed.
-                continue;
-            }
+            ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) itrepos.next();
 
-            RepositoryURL url = new RepositoryURL( repo.getUrl() );
-            File repoDir = new File( url.getPath() );
+            File repoDir = new File( repo.getLocation() );
 
             if ( !repoDir.exists() )
             {
                 if ( !repoDir.mkdirs() )
                 {
                     // Skip invalid directories.
-                    log( "Unable to create missing directory for " + url.getPath() );
+                    log( "Unable to create missing directory for " + repo.getLocation() );
                     continue;
                 }
             }
@@ -138,17 +126,18 @@ public class RepositoryServlet
         }
     }
 
-    public RepositoryConfiguration getRepository( DavServerRequest request )
+    public ManagedRepositoryConfiguration getRepository( DavServerRequest request )
     {
+        // TODO: use sync wrapper instead?
         synchronized ( this.repositoryMap )
         {
-            return (RepositoryConfiguration) repositoryMap.get( request.getPrefix() );
+            return repositoryMap.get( request.getPrefix() );
         }
     }
 
     public String getRepositoryName( DavServerRequest request )
     {
-        RepositoryConfiguration repoConfig = getRepository( request );
+        ManagedRepositoryConfiguration repoConfig = getRepository( request );
         if ( repoConfig == null )
         {
             return "Unknown";
@@ -159,14 +148,10 @@ public class RepositoryServlet
 
     private void updateRepositoryMap()
     {
-        RepositoryConfigurationToMapClosure repoMapClosure = new RepositoryConfigurationToMapClosure();
-        Closure localRepoMap = IfClosure.getInstance( LocalRepositoryPredicate.getInstance(), repoMapClosure );
-        CollectionUtils.forAllDo( configuration.getConfiguration().getRepositories(), localRepoMap );
-
         synchronized ( this.repositoryMap )
         {
             this.repositoryMap.clear();
-            this.repositoryMap.putAll( repoMapClosure.getMap() );
+            this.repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
         }
     }
 
@@ -180,7 +165,7 @@ public class RepositoryServlet
         {
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, response );
 
-            if ( ( result != null ) && !result.isAuthenticated() )
+            if ( result != null && !result.isAuthenticated() )
             {
                 // Must Authenticate.
                 httpAuth.challenge( request, response, "Repository " + getRepositoryName( davRequest ),
@@ -232,9 +217,9 @@ public class RepositoryServlet
             {
                 if ( authzResult.getException() != null )
                 {
-                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest
-                        + ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : "
-                        + authzResult.getException().getMessage() );
+                    log( "Authorization Denied [ip=" + request.getRemoteAddr() + ",isWriteRequest=" + isWriteRequest +
+                        ",permission=" + permission + ",repo=" + davRequest.getPrefix() + "] : " +
+                        authzResult.getException().getMessage() );
                 }
 
                 // Issue HTTP Challenge.
@@ -258,7 +243,7 @@ public class RepositoryServlet
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             // Attempt to reduce the number of times we refresh the repository map.
             if ( propertyName.endsWith( ".id" ) || propertyName.endsWith( ".url" ) )
@@ -275,8 +260,8 @@ public class RepositoryServlet
                     }
                     catch ( DavServerException e )
                     {
-                        log( "Error restarting WebDAV server after configuration change - service disabled: "
-                            + e.getMessage(), e );
+                        log( "Error restarting WebDAV server after configuration change - service disabled: " +
+                            e.getMessage(), e );
                     }
                 }
             }

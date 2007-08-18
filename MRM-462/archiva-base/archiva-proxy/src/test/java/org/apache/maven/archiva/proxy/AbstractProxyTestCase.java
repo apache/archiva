@@ -22,8 +22,9 @@ package org.apache.maven.archiva.proxy;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
@@ -48,12 +49,12 @@ import java.util.Iterator;
 import java.util.Locale;
 
 /**
- * AbstractProxyTestCase 
+ * AbstractProxyTestCase
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractProxyTestCase
+public abstract class AbstractProxyTestCase
     extends PlexusTestCase
 {
     protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
@@ -162,7 +163,7 @@ public class AbstractProxyTestCase
             return;
         }
 
-        Collection tmpFiles = FileUtils.listFiles( workingDir, new String[] { "tmp" }, false );
+        Collection tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
@@ -221,8 +222,8 @@ public class AbstractProxyTestCase
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {
-                        throw new IOException( "Could not create destination directory '"
-                            + destination.getAbsolutePath() + "'." );
+                        throw new IOException(
+                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
                     }
 
                     copyDirectoryStructure( file, destination );
@@ -269,19 +270,19 @@ public class AbstractProxyTestCase
                                  "Test Proxied (Legacy) Repository", "legacy" );
     }
 
-    protected RepositoryConfiguration createRepoConfig( ArchivaRepository repo )
+    protected ManagedRepositoryConfiguration createRepoConfig( ArchivaRepository repo )
     {
         return createRepoConfig( repo.getId(), repo.getName(), repo.getUrl().toString(), repo.getLayoutType() );
     }
 
-    protected RepositoryConfiguration createRepoConfig( String id, String name, String path, String layout )
+    protected ManagedRepositoryConfiguration createRepoConfig( String id, String name, String path, String layout )
     {
-        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
 
         repoConfig.setId( id );
         repoConfig.setName( name );
 
-        repoConfig.setUrl( PathUtil.toUrl( path ) );
+        repoConfig.setLocation( path );
         repoConfig.setLayout( layout );
 
         return repoConfig;
@@ -332,8 +333,8 @@ public class AbstractProxyTestCase
         }
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy,
-                                  String releasePolicy, String snapshotPolicy, String cacheFailuresPolicy )
+    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
+                                  String snapshotPolicy, String cacheFailuresPolicy )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
@@ -357,24 +358,33 @@ public class AbstractProxyTestCase
         config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
     }
 
-    protected void saveRepositoryConfig( String id, String name, String path, String layout )
+    protected void saveManagedRepositoryConfig( String id, String name, String path, String layout )
     {
-        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
 
         repoConfig.setId( id );
         repoConfig.setName( name );
-
-        if ( path.startsWith( "test://" ) )
-        {
-            repoConfig.setUrl( path );
-        }
-        else
-        {
-            repoConfig.setUrl( PathUtil.toUrl( path ) );
-        }
         repoConfig.setLayout( layout );
 
-        config.getConfiguration().addRepository( repoConfig );
+        repoConfig.setLocation( path );
+
+        config.getConfiguration().addManagedRepository( repoConfig );
+
+        config.triggerChange( "repository", "" );
+    }
+
+    protected void saveRemoteRepositoryConfig( String id, String name, String path, String layout )
+    {
+        RemoteRepositoryConfiguration repoConfig = new RemoteRepositoryConfiguration();
+
+        repoConfig.setId( id );
+        repoConfig.setName( name );
+        repoConfig.setLayout( layout );
+
+        repoConfig.setUrl( path );
+
+        config.getConfiguration().addRemoteRepository( repoConfig );
+
         config.triggerChange( "repository", "" );
     }
 
@@ -385,7 +395,7 @@ public class AbstractProxyTestCase
         FileUtils.deleteDirectory( repoLocation );
         copyDirectoryStructure( getTestFile( originalPath ), repoLocation );
 
-        saveRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
+        saveRemoteRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
 
         return repoLocation;
     }
@@ -399,7 +409,6 @@ public class AbstractProxyTestCase
             .getName() );
 
         config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
-        RepositoryConfiguration repoConfig;
 
         // Setup source repository (using default layout)
         File repoLocation = getTestFile( REPOPATH_DEFAULT_MANAGED_TARGET );
@@ -412,9 +421,9 @@ public class AbstractProxyTestCase
 
         managedDefaultDir = new File( managedDefaultRepository.getUrl().getPath() );
 
-        repoConfig = createRepoConfig( managedDefaultRepository );
+        ManagedRepositoryConfiguration repoConfig = createRepoConfig( managedDefaultRepository );
 
-        config.getConfiguration().addRepository( repoConfig );
+        config.getConfiguration().addManagedRepository( repoConfig );
 
         // Setup source repository (using legacy layout)
         repoLocation = getTestFile( REPOPATH_LEGACY_MANAGED_TARGET );
@@ -428,16 +437,19 @@ public class AbstractProxyTestCase
 
         repoConfig = createRepoConfig( managedLegacyRepository );
 
-        config.getConfiguration().addRepository( repoConfig );
+        config.getConfiguration().addManagedRepository( repoConfig );
 
         // Setup target (proxied to) repository.
-        saveRepositoryConfig( ID_PROXIED1, "Proxied Repository 1", REPOPATH_PROXIED1, "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
+                                    new File( REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository.
-        saveRepositoryConfig( ID_PROXIED2, "Proxied Repository 2", REPOPATH_PROXIED2, "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
+                                    new File( REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository using legacy layout.
-        saveRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository", REPOPATH_PROXIED_LEGACY, "legacy" );
+        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository",
+                                    new File( REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
 
         // Setup the proxy handler.
         proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );

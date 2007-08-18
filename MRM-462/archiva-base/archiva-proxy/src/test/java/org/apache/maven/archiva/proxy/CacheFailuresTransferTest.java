@@ -31,7 +31,7 @@ import org.apache.maven.wagon.TransferFailedException;
 import java.io.File;
 
 /**
- * CacheFailuresTransferTest 
+ * CacheFailuresTransferTest
  *
  * @author Brett Porter
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
@@ -51,8 +51,8 @@ public class CacheFailuresTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
@@ -85,8 +85,8 @@ public class CacheFailuresTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
