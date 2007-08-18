@@ -1,0 +1,31 @@
+ ----
+ Maven Repository Syncing Kit
+ -----
+ Jason van Zyl
+ -----
+ 17 October 2006
+ -----
+
+Maven Repository Syncing Kit
+
+Requirements
+
+ * SSH
+ 
+ * Rsync
+ 
+ * Maven's public SSH key
+
+ * Sample Maven sync configuration (sample.conf)
+
+ * Project PGP key
+
+Preparations
+
+ * Create a user account with an id of <<<maven>>>
+ 
+ * Setup SSH for the <<<maven>>> user
+
+ * Create a valid Maven sync configuration
+ 
+ * Submit configuration

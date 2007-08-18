@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<document>
+  <properties>
+    <title>Archiva</title>
+  </properties>
+  <body>
+    <h1>User Management</h1>
+
+    <div id="sidebar">
+      <p>reserved sidebar</p>
+    </div>
+
+    <div id="contentArea">
+      <div id="searchBox">
+        <div style="float: right">
+          <a href="edit-details.html">Edit details</a>
+        </div>
+
+        <h2>Brett Porter</h2>
+
+        <table>
+          <tr>
+            <th>Username</th>
+            <td>brett</td>
+          </tr>
+          <tr>
+            <th>Email</th>
+            <td>brett@apache.org</td>
+          </tr>
+        </table>
+
+        <h2>Permissions</h2>
+
+        <table>
+          <tr>
+            <td>
+              <em>Manager</em>
+              of repository
+              <em>central</em>
+            </td>
+            <td>
+              <a href="user-details.html">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <em>Observer</em>
+              of repository
+              <em>central-plugins</em>
+            </td>
+            <td>
+              <a href="user-details.html">Delete</a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <em>Manager</em>
+              of project
+              <em>org.apache.maven</em>
+            </td>
+            <td>
+              <a href="user-details.html">Delete</a>
+            </td>
+          </tr>
+        </table>
+
+        <h3>Grant Permissions</h3>
+        <form action="user-details.html">
+          <table>
+            <tr>
+              <td>
+                <input type="radio" checked="checked"/>
+              </td>
+              <td>Administrator</td>
+              <td>
+                <select>
+                  <option>(Please Select)</option>
+                  <option>System Administrator</option>
+                  <option>User Administrator</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio"/>
+              </td>
+              <td>Repository</td>
+              <td>
+                <select>
+                  <option>(Please Select)</option>
+                  <option>manager</option>
+                  <option>obverser</option>
+                </select>
+                of
+                <select>
+                  <option>(Please Select)</option>
+                  <option>central</option>
+                  <option>central-plugins</option>
+                  <option>All repositories</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <input type="radio"/>
+              </td>
+              <td>Project</td>
+              <td>
+                <select>
+                  <option>(Please Select)</option>
+                  <option>manager</option>
+                  <option>obverser</option>
+                </select>
+                of
+                <select>
+                  <option>(Please Select)</option>
+                  <option>central</option>
+                  <option>central-plugins</option>
+                  <option>All repositories</option>
+                </select>
+                for project group
+                <input type="text" name="projectExpression"/>
+                <br/>
+                <span style="font-size: x-small">
+                  (eg org.apache.maven gives permissions on that group, and any sugroups)
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <input type="submit" value="Add Role"/>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+  </body>
+</document>
+
