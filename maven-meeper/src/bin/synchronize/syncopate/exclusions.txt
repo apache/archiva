@@ -8,3 +8,4 @@
 **/dist
 **-200*
 README.txt
+**/CVS
