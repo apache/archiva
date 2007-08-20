@@ -219,7 +219,7 @@ public class ConfigureProxyConnectorAction
 
         if ( StringUtils.isBlank( pattern ) )
         {
-            addActionError( "Cannot add an blank white list pattern." );
+            addActionError( "Cannot add a blank white list pattern." );
         }
 
         if ( !hasActionErrors() )
@@ -237,7 +237,7 @@ public class ConfigureProxyConnectorAction
 
         if ( StringUtils.isBlank( pattern ) )
         {
-            addActionError( "Cannot remove an blank white list pattern." );
+            addActionError( "Cannot remove a blank white list pattern." );
         }
 
         if ( !hasActionErrors() )
@@ -255,7 +255,7 @@ public class ConfigureProxyConnectorAction
 
         if ( StringUtils.isBlank( pattern ) )
         {
-            addActionError( "Cannot add an blank black list pattern." );
+            addActionError( "Cannot add a blank black list pattern." );
         }
 
         if ( !hasActionErrors() )
@@ -269,11 +269,11 @@ public class ConfigureProxyConnectorAction
 
     public String removeBlackListPattern()
     {
-        String pattern = getBlackListPattern();
+        String pattern = getPattern();
 
         if ( StringUtils.isBlank( pattern ) )
         {
-            addActionError( "Cannot remove an blank black list pattern." );
+            addActionError( "Cannot remove a blank black list pattern." );
         }
 
         if ( !hasActionErrors() )

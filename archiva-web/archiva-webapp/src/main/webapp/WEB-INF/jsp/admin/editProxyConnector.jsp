@@ -36,18 +36,6 @@
 <head>
   <title>Admin : ${addedit} Proxy Connector</title>
   <ww:head/>
-  <script type="text/javascript">
-  <!--
-    function setAndSubmit(id, value, action)
-    {
-       var f = document.forms.saveProxyConnector;
-       
-       f.action = action;
-       f[id].value = value;
-       f.submit();
-    }
-  //-->
-  </script>
 </head>
 
 <body>
@@ -59,7 +47,7 @@
   <ww:actionerror/>
   <ww:actionmessage/>
   
-  <ww:form method="post" action="saveProxyConnector" namespace="/admin">
+  <ww:form name="saveProxyConnector" method="post" action="saveProxyConnector" namespace="/admin">
     <ww:hidden name="mode"/>  
     
     <input type="hidden" name="pattern"/>
@@ -234,7 +222,18 @@
   </ww:form>
 
   <script type="text/javascript">
+    <!--
     document.getElementById("saveProxyConnector_proxyId").focus();
+
+    function setAndSubmit(id, value, action)
+    {
+      var f = document.forms['saveProxyConnector'];
+
+      f.action = action;
+      f.elements[id].value = value;
+      f.submit();
+    }
+    //-->
   </script>
 
 </div>
