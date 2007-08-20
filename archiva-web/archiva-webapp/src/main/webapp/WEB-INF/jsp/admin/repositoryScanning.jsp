@@ -57,11 +57,11 @@
   
   function addFiletypePattern(filetypeId, newPatternId)
   {
-     var f = document.getElementById('filetypeForm');
-     
-     f.action = "${addFiletypePatternUrl}";
-     f['pattern'].value = document.getElementById(newPatternId).value;
-     f['fileTypeId'].value = filetypeId;
+     var f = document.forms['filetypeForm'];
+          
+     f.action = "${addFiletypePatternUrl}";     
+     f.elements['pattern'].value = document.getElementById(newPatternId).value;
+     f.elements['fileTypeId'].value = filetypeId;
      f.submit();
   }
 //-->
@@ -87,7 +87,7 @@
 
     <ww:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern" />
 
-    <c:forEach items="${fileTypeIds}" var="filetypeId">
+    <c:forEach items="${fileTypeIds}" var="filetypeId" varStatus="j">
 
       <div class="filetype">
 
@@ -105,7 +105,7 @@
               <c:set var="bgcolor" value="odd" scope="page" />
             </c:otherwise>
           </c:choose>
-          
+
           <c:set var="escapedPattern" value="${fn:escapeXml(pattern)}" scope="page" />
           
           <tr>
@@ -124,13 +124,13 @@
         <tr>
           <td>
             <ww:textfield size="40" 
-                          id="newpattern_${i.index}"
+                          id="newpattern_${j.index}"
                           theme="simple" />
           </td>
           <td>
             <ww:a href="#" 
                   title="Add Pattern to [${filetypeId}]"
-                  onclick="addFiletypePattern( '${filetypeId}', 'newpattern_${i.index}' )"
+                  onclick="addFiletypePattern( '${filetypeId}', 'newpattern_${j.index}' )"
                   theme="simple">
               <img src="${iconCreateUrl}" />
             </ww:a>
