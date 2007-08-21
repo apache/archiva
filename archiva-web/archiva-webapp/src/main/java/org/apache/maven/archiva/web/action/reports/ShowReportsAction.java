@@ -42,10 +42,12 @@ public class ShowReportsAction
 
     private Collection repositoryIds = new ArrayList();
 
+    public static final String ALL_REPOSITORIES = "All Repositories";
+
     public String execute()
         throws Exception
     {
-        repositoryIds.add( "" );
+        repositoryIds.add( ALL_REPOSITORIES );
         repositoryIds.addAll(
             dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
 

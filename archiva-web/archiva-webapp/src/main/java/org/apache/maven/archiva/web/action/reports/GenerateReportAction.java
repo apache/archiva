@@ -154,7 +154,7 @@ public class GenerateReportAction
 
         if ( groupId != null && ( !groupId.equals( "" ) ) )
         {
-            if ( repositoryId != null && ( !repositoryId.equals( "" ) ) )
+            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ShowReportsAction.ALL_REPOSITORIES ) ) )
             {
                 constraint = new RepositoryProblemConstraint( range, groupId, repositoryId );
             }
@@ -163,7 +163,7 @@ public class GenerateReportAction
                 constraint = new RepositoryProblemByGroupIdConstraint( range, groupId );
             }
         }
-        else if ( repositoryId != null && ( !repositoryId.equals( "" ) ) )
+        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ShowReportsAction.ALL_REPOSITORIES ) ) )
         {
             constraint = new RepositoryProblemByRepositoryIdConstraint( range, repositoryId );
         }

@@ -39,6 +39,8 @@ public class RepositoryProblemByGroupIdConstraintTest
 
     private static final String GROUP_ID_3 = "org.apache.maven.archiva.test.3";
 
+    private static final String GROUP_ID_PARTIAL = "org.apache.maven.archiva";
+
     private RepositoryProblemDAO repoProblemDao;
 
     protected void setUp()
@@ -81,6 +83,7 @@ public class RepositoryProblemByGroupIdConstraintTest
         assertConstraint( 1, new RepositoryProblemByGroupIdConstraint( GROUP_ID_1 ) );
         assertConstraint( 2, new RepositoryProblemByGroupIdConstraint( GROUP_ID_2 ) );
         assertConstraint( 3, new RepositoryProblemByGroupIdConstraint( GROUP_ID_3 ) );
+        assertConstraint( 6, new RepositoryProblemByGroupIdConstraint( GROUP_ID_PARTIAL ) );
     }
 
     private void assertConstraint( int expectedHits, Constraint constraint )

@@ -32,9 +32,9 @@ public class RepositoryProblemByGroupIdConstraint
 
     private void createWhereClause( String desiredGroupId )
     {
-        whereClause = "groupId == desiredGroupId";
+        whereClause = "groupId.like(desiredGroupId)";
         declParams = new String[]{"String desiredGroupId"};
-        params = new Object[]{desiredGroupId};
+        params = new Object[]{desiredGroupId + "%"};
     }
 
     public RepositoryProblemByGroupIdConstraint( String desiredGroupId )

@@ -41,6 +41,8 @@ public class RepositoryProblemConstraintTest
 
     private static final String GROUP_ID_4 = "org.apache.maven.archiva.test.4";
 
+    private static final String GROUP_ID_PARTIAL = "org.apache.maven.archiva";
+
     private static final String REPO_ID_1 = "test-repo-1";
 
     private static final String REPO_ID_2 = "test-repo-2";
@@ -92,6 +94,7 @@ public class RepositoryProblemConstraintTest
         assertConstraint( 2, new RepositoryProblemConstraint( GROUP_ID_2, REPO_ID_1 ) );
         assertConstraint( 3, new RepositoryProblemConstraint( GROUP_ID_3, REPO_ID_1 ) );
         assertConstraint( 0, new RepositoryProblemConstraint( GROUP_ID_4, REPO_ID_1 ) );
+        assertConstraint( 6, new RepositoryProblemConstraint( GROUP_ID_PARTIAL, REPO_ID_1 ) );
     }
 
     public void testRepoIdConstraint()
@@ -110,6 +113,10 @@ public class RepositoryProblemConstraintTest
         assertConstraint( 2, new RepositoryProblemConstraint( GROUP_ID_1, REPO_ID_2 ) );
         assertConstraint( 3, new RepositoryProblemConstraint( GROUP_ID_1, REPO_ID_3 ) );
         assertConstraint( 0, new RepositoryProblemConstraint( GROUP_ID_1, REPO_ID_4 ) );
+        assertConstraint( 1, new RepositoryProblemConstraint( GROUP_ID_PARTIAL, REPO_ID_1 ) );
+        assertConstraint( 2, new RepositoryProblemConstraint( GROUP_ID_PARTIAL, REPO_ID_2 ) );
+        assertConstraint( 3, new RepositoryProblemConstraint( GROUP_ID_PARTIAL, REPO_ID_3 ) );
+        assertConstraint( 0, new RepositoryProblemConstraint( GROUP_ID_PARTIAL, REPO_ID_4 ) );
     }
 
     private void assertConstraint( int expectedHits, Constraint constraint )
