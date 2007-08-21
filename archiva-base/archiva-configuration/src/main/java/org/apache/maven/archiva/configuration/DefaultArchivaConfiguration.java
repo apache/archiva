@@ -95,9 +95,8 @@ public class DefaultArchivaConfiguration
         if ( configuration == null )
         {
             configuration = load();
+            configuration = processExpressions( configuration );
         }
-
-        configuration = processExpressions( configuration );
 
         return configuration;
     }
@@ -178,12 +177,23 @@ public class DefaultArchivaConfiguration
             }
         }
 
-        configuration = escapeCronExpressions( configuration );
+        // escape all cron expressions to handle ','
+        for ( Iterator i = configuration.getRepositories().iterator(); i.hasNext(); )
+        {
+            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
+            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
+        }
+
+        if ( configuration.getDatabaseScanning() != null )
+        {
+            configuration.getDatabaseScanning().setCronExpression( escapeCronExpression(
+                configuration.getDatabaseScanning().getCronExpression() ) );
+        }
 
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
 
-        this.configuration = configuration;
+        this.configuration = processExpressions( configuration );
     }
 
     private Registry createDefaultConfigurationFile()
@@ -295,24 +305,4 @@ public class DefaultArchivaConfiguration
 
         return config;
     }
-
-    private Configuration escapeCronExpressions( Configuration config )
-    {
-        for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
-        {
-            RepositoryConfiguration c = (RepositoryConfiguration) i.next();
-
-            c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
-        }
-
-        DatabaseScanningConfiguration databaseScanning = config.getDatabaseScanning();
-        if ( databaseScanning != null )
-        {
-            String cron = databaseScanning.getCronExpression();
-            databaseScanning.setCronExpression( escapeCronExpression( cron ) );
-        }
-
-        return config;
-    }
-
 }
