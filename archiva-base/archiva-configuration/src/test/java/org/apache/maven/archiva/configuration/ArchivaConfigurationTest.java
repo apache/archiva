@@ -532,16 +532,26 @@ public class ArchivaConfigurationTest
         RepositoryConfiguration repository =
             (RepositoryConfiguration) configuration.getRepositories().iterator().next();
 
-        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression().trim() );
+        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression() );
 
         configuration.getDatabaseScanning().setCronExpression( "0 0,15 0 * * ?" );
 
         archivaConfiguration.save( configuration );
 
         configuration = archivaConfiguration.getConfiguration();
-        
+
         assertEquals( "check cron expression", "0 0,15 0 * * ?",
               configuration.getDatabaseScanning().getCronExpression() );
+
+        // test for the escape character '\' showing up on repositories.jsp
+        repository.setRefreshCronExpression( "0 0,20 0 * * ?" );
+
+        archivaConfiguration.save( configuration );
+
+        repository = archivaConfiguration.getConfiguration().findRepositoryById( "snapshots" );
+
+        assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
+
     }
     
 }
