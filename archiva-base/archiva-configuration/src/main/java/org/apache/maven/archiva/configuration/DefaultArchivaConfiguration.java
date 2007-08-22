@@ -137,7 +137,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
-    public void save( Configuration configuration )
+    public synchronized void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException
     {
         Registry section = registry.getSection( KEY + ".user" );
@@ -264,7 +264,10 @@ public class DefaultArchivaConfiguration
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        configuration = null;
+        synchronized( configuration )
+        {
+            configuration = null;
+        }
     }
 
     private String removeExpressions( String directory )
