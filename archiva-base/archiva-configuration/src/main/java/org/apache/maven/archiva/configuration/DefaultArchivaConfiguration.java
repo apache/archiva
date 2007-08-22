@@ -186,8 +186,8 @@ public class DefaultArchivaConfiguration
 
         if ( configuration.getDatabaseScanning() != null )
         {
-            configuration.getDatabaseScanning().setCronExpression( escapeCronExpression(
-                configuration.getDatabaseScanning().getCronExpression() ) );
+            configuration.getDatabaseScanning().setCronExpression(
+                escapeCronExpression( configuration.getDatabaseScanning().getCronExpression() ) );
         }
 
         new ConfigurationRegistryWriter().write( configuration, section );
@@ -262,12 +262,9 @@ public class DefaultArchivaConfiguration
         // nothing to do here
     }
 
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    public synchronized void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        synchronized( configuration )
-        {
-            configuration = null;
-        }
+        configuration = null;
     }
 
     private String removeExpressions( String directory )
