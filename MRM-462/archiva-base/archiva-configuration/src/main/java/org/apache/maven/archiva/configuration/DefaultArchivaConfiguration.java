@@ -129,6 +129,11 @@ public class DefaultArchivaConfiguration
                     r.setLocation( r.getUrl().substring( 7 ) );
                     config.addManagedRepository( r );
                 }
+                else if ( r.getUrl().startsWith( "file:" ) )
+                {
+                    r.setLocation( r.getUrl().substring( 5 ) );
+                    config.addManagedRepository( r );
+                }
                 else
                 {
                     RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
