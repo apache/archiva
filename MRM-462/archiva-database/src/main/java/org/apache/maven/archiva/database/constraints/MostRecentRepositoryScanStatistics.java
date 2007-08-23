@@ -22,7 +22,7 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
 /**
- * MostRecentRepositoryScanStatistics 
+ * MostRecentRepositoryScanStatistics
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -34,12 +34,11 @@ public class MostRecentRepositoryScanStatistics
 
     public MostRecentRepositoryScanStatistics( String repoId )
     {
-        sql = "SELECT FROM " + RepositoryContentStatistics.class.getName()
-            + " WHERE repositoryId == repoId PARAMETERS String repoId"
-            + " ORDER BY whenGathered DESCENDING"
-            + " RANGE 1,1";
+        sql = "SELECT FROM " + RepositoryContentStatistics.class.getName() +
+            " WHERE repositoryId == repoId PARAMETERS String repoId" + " ORDER BY whenGathered DESCENDING" +
+            " RANGE 0,1";
 
-        super.params = new Object[] { repoId };
+        super.params = new Object[]{repoId};
     }
 
     public Class getResultClass()
