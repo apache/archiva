@@ -19,11 +19,8 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-
-import java.io.File;
 
 /**
  * AdminRepositoryConfiguration
@@ -60,19 +57,6 @@ public class AdminRepositoryConfiguration
         this.setDaysOlder( repoconfig.getDaysOlder() );
         this.setRetentionCount( repoconfig.getRetentionCount() );
         this.setDeleteReleasedSnapshots( repoconfig.isDeleteReleasedSnapshots() );
-    }
-
-    // TODO: needed? used by repositories.jsp only
-    public boolean isDirectoryExists()
-    {
-        String directory = getLocation();
-        if ( StringUtils.isBlank( directory ) )
-        {
-            return false;
-        }
-
-        File dir = new File( directory );
-        return dir.exists() && dir.isDirectory();
     }
 
     public RepositoryContentStatistics getStats()

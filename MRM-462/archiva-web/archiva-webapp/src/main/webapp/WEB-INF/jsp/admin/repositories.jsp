@@ -110,11 +110,7 @@
 </tr>
 <tr>
   <th>Directory</th>
-  <td>${repository.location}
-    <c:if test="${not(repository.directoryExists)}">
-      <span class="missing">Directory Does Not Exist</span>
-    </c:if>
-  </td>
+  <td>${repository.location}</td>
 </tr>
 <tr>
   <th>WebDAV URL</th>
@@ -185,27 +181,28 @@
   <tr>
     <th>Stats</th>
     <td>
+      <c:set var="stats" value="${repositoryStatistics[repository.id]}"/>
       <c:choose>
-        <c:when test="${empty(repository.stats)}">
+        <c:when test="${empty(stats)}">
           No Statistics Available.
         </c:when>
         <c:otherwise>
           <table>
             <tr>
               <th>Last Scanned</th>
-              <td>${repository.stats.whenGathered}</td>
+              <td>${stats.whenGathered}</td>
             </tr>
             <tr>
               <th>Duration</th>
-              <td>${repository.stats.duration} ms</td>
+              <td>${stats.duration} ms</td>
             </tr>
             <tr>
               <th>Total File Count</th>
-              <td>${repository.stats.totalFileCount}
+              <td>${stats.totalFileCount}
             </tr>
             <tr>
               <th>New Files Found</th>
-              <td>${repository.stats.newFileCount}
+              <td>${stats.newFileCount}
             </tr>
           </table>
         </c:otherwise>
@@ -308,14 +305,16 @@
               </c:choose>
             </td>
           </tr>
-          <tr>
-            <th>Releases Included</th>
-            <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
-          </tr>
-          <tr>
-            <th>Snapshots Included</th>
-            <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
-          </tr>
+            <%-- TODO! remove
+                      <tr>
+                        <th>Releases Included</th>
+                        <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
+                      </tr>
+                      <tr>
+                        <th>Snapshots Included</th>
+                        <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
+                      </tr>
+            --%>
         </table>
 
       </div>

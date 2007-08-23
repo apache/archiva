@@ -22,10 +22,14 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import com.opensymphony.xwork.Preparable;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.list.TransformedList;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.functors.RepositoryConfigurationComparator;
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.web.util.ContextUtils;
 import org.codehaus.plexus.redback.rbac.Resource;
@@ -35,8 +39,11 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shows the Repositories Tab for the administrator.
@@ -59,14 +66,22 @@ public class RepositoriesAction
      */
     private ArchivaConfiguration archivaConfiguration;
 
-    private List managedRepositories;
+    private List<ManagedRepositoryConfiguration> managedRepositories;
 
-    private List remoteRepositories;
+    private List<RemoteRepositoryConfiguration> remoteRepositories;
+
+    private Map<String, RepositoryContentStatistics> repositoryStatistics;
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO dao;
 
     private String baseUrl;
 
     public void setServletRequest( HttpServletRequest request )
     {
+        // TODO! what is this?
         this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
     }
 
@@ -82,25 +97,40 @@ public class RepositoriesAction
     }
 
     public void prepare()
-        throws Exception
     {
         Configuration config = archivaConfiguration.getConfiguration();
 
-        remoteRepositories = TransformedList.decorate( config.getRemoteRepositories(), repoConfigToAdmin );
-        managedRepositories = TransformedList.decorate( config.getManagedRepositories(), repoConfigToAdmin );
+        remoteRepositories = new ArrayList<RemoteRepositoryConfiguration>( config.getRemoteRepositories() );
+        managedRepositories = new ArrayList<ManagedRepositoryConfiguration>( config.getManagedRepositories() );
 
         Collections.sort( managedRepositories, new RepositoryConfigurationComparator() );
         Collections.sort( remoteRepositories, new RepositoryConfigurationComparator() );
+
+        repositoryStatistics = new HashMap<String, RepositoryContentStatistics>();
+        for ( ManagedRepositoryConfiguration repo : managedRepositories )
+        {
+            List<RepositoryContentStatistics> results =
+                dao.query( new MostRecentRepositoryScanStatistics( repo.getId() ) );
+            if ( !results.isEmpty() )
+            {
+                repositoryStatistics.put( repo.getId(), results.get( 0 ) );
+            }
+        }
     }
 
-    public List getManagedRepositories()
+    public List<ManagedRepositoryConfiguration> getManagedRepositories()
     {
         return managedRepositories;
     }
 
-    public List getRemoteRepositories()
+    public List<RemoteRepositoryConfiguration> getRemoteRepositories()
     {
         return remoteRepositories;
+    }
+
+    public Map<String, RepositoryContentStatistics> getRepositoryStatistics()
+    {
+        return repositoryStatistics;
     }
 
     public String getBaseUrl()
