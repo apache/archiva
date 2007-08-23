@@ -28,6 +28,7 @@ import org.easymock.MockControl;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test the configuration store.
@@ -519,15 +520,27 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
-        ManagedRepositoryConfiguration repository =
-            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+        assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
 
+        Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();
+
+        ManagedRepositoryConfiguration repository = map.get( "internal" );
         assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
                       repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isIndexed() );
+        assertFalse( "check managed repositories", repository.isSnapshots() );
+
+        repository = map.get( "snapshots" );
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/snapshots",
+                      repository.getLocation() );
+        assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName() );
+        assertEquals( "check managed repositories", "snapshots", repository.getId() );
+        assertEquals( "check managed repositories", "default", repository.getLayout() );
+        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isSnapshots() );
     }
 
     public void testCronExpressionsWithComma()
