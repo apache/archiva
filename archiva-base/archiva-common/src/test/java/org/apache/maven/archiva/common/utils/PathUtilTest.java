@@ -34,9 +34,15 @@ import junit.framework.TestCase;
 public class PathUtilTest
     extends TestCase
 {
-    public void testToRelative()
+    public void testToRelativeWithoutSlash()
     {
         assertEquals( "path/to/resource.xml", PathUtil.getRelative( "/home/user/foo/repository",
+                                                                    "/home/user/foo/repository/path/to/resource.xml" ) );
+    }
+    
+    public void testToRelativeWithSlash()
+    {
+        assertEquals( "path/to/resource.xml", PathUtil.getRelative( "/home/user/foo/repository/",
                                                                     "/home/user/foo/repository/path/to/resource.xml" ) );
     }
 

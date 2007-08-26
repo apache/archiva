@@ -39,7 +39,7 @@ public class PathUtil
         {
             return path;
         }
-        
+
         return toUrl( new File( path ) );
     }
 
@@ -61,13 +61,32 @@ public class PathUtil
         }
     }
 
+    /**
+     * Given a basedir and a child file, return the relative path to the child.
+     * 
+     * @param basedir the basedir.
+     * @param file the file to get the relative path for.
+     * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
+     */
     public static String getRelative( String basedir, File file )
     {
         return getRelative( basedir, file.getAbsolutePath() );
     }
 
+    /**
+     * Given a basedir and a child file, return the relative path to the child.
+     * 
+     * @param basedir the basedir.
+     * @param child the child path (can be a full path)
+     * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
+     */
     public static String getRelative( String basedir, String child )
     {
+        if ( basedir.endsWith( File.separator ) )
+        {
+            basedir = basedir.substring( 0, basedir.length() - 1 );
+        }
+
         if ( child.startsWith( basedir ) )
         {
             // simple solution.
