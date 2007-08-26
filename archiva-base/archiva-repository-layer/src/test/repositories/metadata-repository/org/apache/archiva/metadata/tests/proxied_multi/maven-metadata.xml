@@ -1,0 +1,12 @@
+<metadata>
+  <groupId>org.apache.archiva.metadata.tests</groupId>
+  <artifactId>proxied_multi</artifactId>
+  <version>1.0</version>
+  <versioning>
+    <versions>
+      <version>1.0</version>
+      <version>1.1</version>
+      <version>2.1</version>
+    </versions>
+  </versioning>
+</metadata>

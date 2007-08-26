@@ -44,7 +44,7 @@ public class RepositoryMetadataReader
      * @return the archiva repository metadata object that represents the provided file contents.
      * @throws RepositoryMetadataException
      */
-    public ArchivaRepositoryMetadata read( File metadataFile )
+    public static ArchivaRepositoryMetadata read( File metadataFile )
         throws RepositoryMetadataException
     {
         try

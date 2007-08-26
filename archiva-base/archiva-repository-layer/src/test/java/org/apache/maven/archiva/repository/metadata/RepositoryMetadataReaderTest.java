@@ -37,9 +37,7 @@ public class RepositoryMetadataReaderTest extends PlexusTestCase
         File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        RepositoryMetadataReader reader = new RepositoryMetadataReader();
-
-        ArchivaRepositoryMetadata metadata = reader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven.shared", metadata.getGroupId() );
@@ -55,9 +53,7 @@ public class RepositoryMetadataReaderTest extends PlexusTestCase
         File defaultRepoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/samplejar/maven-metadata.xml" );
 
-        RepositoryMetadataReader reader = new RepositoryMetadataReader();
-
-        ArchivaRepositoryMetadata metadata = reader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven", metadata.getGroupId() );
