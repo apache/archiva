@@ -68,8 +68,8 @@
       <snapshots>true</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * ?</refreshCronExpression>
-      <daysOlder>0</daysOlder>
-      <retentionCount>2</retentionCount>
+      <daysOlder>100</daysOlder>
+      <deleteReleasedSnapshots>true</deleteReleasedSnapshots>
     </repository>
   </repositories>
 

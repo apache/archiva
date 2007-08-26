@@ -22,23 +22,23 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
-import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
-import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.jpox.SchemaTool;
 
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.PersistenceManager;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.Date;
 import java.net.URL;
 import java.io.File;
 
@@ -52,11 +52,26 @@ public class AbstractRepositoryPurgeTest
 
     public static final String TEST_REPO_NAME = "Test Repository";
 
-    public static final String TEST_REPO_URL = "file://" + getBasedir() + "/target/test-classes/test-repo/";
+    public static final String TEST_REPO_URL = "file://" + getBasedir() + "/target/test/test-repo/";
 
     public static final int TEST_RETENTION_COUNT = 2;
 
     public static final int TEST_DAYS_OLDER = 30;
+
+    public static final String PATH_TO_BY_DAYS_OLD_ARTIFACT =
+           "org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar";
+
+    public static final String PATH_TO_BY_RETENTION_COUNT_ARTIFACT =
+        "org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar";
+
+    public static final String PATH_TO_BY_RETENTION_COUNT_POM =
+        "org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom";
+
+    public static final String PATH_TO_RELEASED_SNAPSHOT =
+        "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
+
+    public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS =
+        "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
 
     private RepositoryConfiguration config;
 
@@ -173,5 +188,31 @@ public class AbstractRepositoryPurgeTest
         }
 
         return layout;
+    }
+
+    protected void populateDb( String groupId, String artifactId, List versions )
+        throws ArchivaDatabaseException
+    {
+        for( Iterator iter = versions.iterator(); iter.hasNext(); )
+        {
+            String version = (String) iter.next();
+            
+            ArchivaArtifact artifact =
+            dao.createArtifact( groupId, artifactId, version, "", "jar" );
+            assertNotNull( artifact );
+            artifact.getModel().setLastModified( new Date() );
+            artifact.getModel().setOrigin( "test" );
+            ArchivaArtifact savedArtifact = dao.saveArtifact( artifact );
+            assertNotNull( savedArtifact );
+
+            //POM
+            artifact =
+                dao.createArtifact( groupId, artifactId, version, "", "pom" );
+            assertNotNull( artifact );
+            artifact.getModel().setLastModified( new Date() );
+            artifact.getModel().setOrigin( "test" );
+            savedArtifact = dao.saveArtifact( artifact );
+            assertNotNull( savedArtifact );
+        }
     }
 }
