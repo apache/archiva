@@ -63,6 +63,8 @@ public class VersionUtil
 
     public static final Pattern UNIQUE_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}\\.[0-9]{6})-([0-9]+)$" );
 
+    public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
+
     /**
      * <p>
      * Tests if the unknown string contains elements that identify it as a version string (or not).
