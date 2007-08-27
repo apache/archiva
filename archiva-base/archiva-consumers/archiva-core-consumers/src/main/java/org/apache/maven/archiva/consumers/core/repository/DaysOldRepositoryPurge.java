@@ -24,13 +24,11 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.io.File;
 
 /**
@@ -66,25 +64,57 @@ public class DaysOldRepositoryPurge
 
             FilenameParts parts = getFilenameParts( path );
 
-            if ( VersionUtil.isSnapshot( parts.version ) )
-            {
-                Calendar olderThanThisDate = Calendar.getInstance();
-                olderThanThisDate.add( Calendar.DATE, ( -1 * repoConfig.getDaysOlder() ) );
+            Calendar olderThanThisDate = Calendar.getInstance();
+            olderThanThisDate.add( Calendar.DATE, ( -1 * repoConfig.getDaysOlder() ) );
 
+            if ( VersionUtil.isGenericSnapshot( parts.version ) )
+            {
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                 {
-                    String[] fileParts = artifactFile.getName().split( "." + parts.extension );
-
-                    File[] artifactFiles = getFiles( artifactFile.getParentFile(), fileParts[0] );
-
-                    purge( artifactFiles );
+                    doPurge( artifactFile, parts.extension );
                 }
             }
+            else if ( VersionUtil.isUniqueSnapshot( parts.version ) )
+            {
+                String[] versionParts = StringUtils.split( parts.version, '-' );
+                String timestamp = StringUtils.remove( versionParts[1], '.' );
+                int year = Integer.parseInt( StringUtils.substring( timestamp, 0, 4 ) );
+                int month = Integer.parseInt( StringUtils.substring( timestamp, 4, 6 ) ) - 1;
+                int day = Integer.parseInt( StringUtils.substring( timestamp, 6, 8 ) );
+                int hour = Integer.parseInt( StringUtils.substring( timestamp, 8, 10 ) );
+                int min = Integer.parseInt( StringUtils.substring( timestamp, 10, 12 ) );
+                int sec = Integer.parseInt( StringUtils.substring( timestamp, 12 ) );
+
+                Calendar timestampDate = Calendar.getInstance();
+                timestampDate.set( year, month, day, hour, min, sec );
+
+                if( timestampDate.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
+                {
+                    doPurge( artifactFile, parts.extension );
+                }
+                else
+                {
+                    if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
+                    {
+                        doPurge( artifactFile, parts.extension );
+                    }                       
+                }
+            }
+
         }
         catch ( LayoutException le )
         {
             throw new RepositoryPurgeException( le.getMessage() );
         }
     }
-    
+
+    private void doPurge( File artifactFile, String extension )
+    {
+        String[] fileParts = artifactFile.getName().split( "." + extension );
+
+        File[] artifactFiles = getFiles( artifactFile.getParentFile(), fileParts[0] );
+
+        purge( artifactFiles );
+    }
 }
+
