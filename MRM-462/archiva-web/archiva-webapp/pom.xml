@@ -218,6 +218,27 @@
       <version>1.6.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-keys-memory</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-rbac-memory</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-users-memory</artifactId>
+      <!-- TODO! when online next
+            <version>${redback.version}</version>
+      -->
+      <version>1.0-alpha-2-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
