@@ -85,13 +85,6 @@
     <default-interceptor-ref name="configuredArchivaStack"/>
 
     <global-results>
-      <!-- TODO: want an extra message on the configure page when this first happens! -->
-      <!-- TODO: can we send them back to the original location afterwards? -->
-      <result name="config-needed" type="redirect-action">
-        <param name="namespace">/admin</param>
-        <param name="actionName">repositories</param>
-      </result>
-
       <!-- The following security-* result names arrive from the plexus-security package -->
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
