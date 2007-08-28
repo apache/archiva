@@ -304,16 +304,6 @@
               </c:choose>
             </td>
           </tr>
-            <%-- TODO! remove
-                      <tr>
-                        <th>Releases Included</th>
-                        <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
-                      </tr>
-                      <tr>
-                        <th>Snapshots Included</th>
-                        <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
-                      </tr>
-            --%>
         </table>
 
       </div>
