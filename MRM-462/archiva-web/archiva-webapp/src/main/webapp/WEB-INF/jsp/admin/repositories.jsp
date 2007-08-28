@@ -42,7 +42,7 @@
   <redback:ifAuthorized permission="archiva-manage-configuration">
     <ww:url id="addRepositoryUrl" action="addRepository"/>
     <ww:a href="%{addRepositoryUrl}">
-      <img src="<c:url value="/images/icons/create.png" />"/>
+      <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add Repository
     </ww:a>
   </redback:ifAuthorized>
@@ -79,18 +79,18 @@
       <ww:param name="repoid" value="%{'${repository.id}'}"/>
     </ww:url>
     <ww:a href="%{editRepositoryUrl}">
-      <img src="<c:url value="/images/icons/edit.png" />"/>
+      <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
       Edit Repository
     </ww:a>
     <ww:a href="%{deleteRepositoryUrl}">
-      <img src="<c:url value="/images/icons/delete.gif" />"/>
+      <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
       Delete Repository
     </ww:a>
   </redback:ifAnyAuthorized>
 </div>
 
 <div style="float: left">
-  <img src="<c:url value="/images/archiva-splat-32.gif"/>"/>
+  <img src="<c:url value="/images/archiva-splat-32.gif"/>" alt="" width="32" height="32"/>
 </div>
 
 <h3 class="repository">${repository.name}</h3>
@@ -249,7 +249,6 @@
       <div class="repository ${rowColor}">
 
         <div class="controls">
-            <%-- TODO: make some icons --%>
           <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
             <ww:url id="editRepositoryUrl" action="editRepository">
               <ww:param name="repoid" value="%{'${repository.id}'}"/>
@@ -258,18 +257,18 @@
               <ww:param name="repoid" value="%{'${repository.id}'}"/>
             </ww:url>
             <ww:a href="%{editRepositoryUrl}">
-              <img src="<c:url value="/images/icons/edit.png" />"/>
+              <img src="<c:url value="/images/icons/edit.png" />" alt="" width="16" height="16"/>
               Edit Repository
             </ww:a>
             <ww:a href="%{deleteRepositoryUrl}">
-              <img src="<c:url value="/images/icons/delete.gif" />"/>
+              <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>
               Delete Repository
             </ww:a>
           </redback:ifAnyAuthorized>
         </div>
 
         <div style="float: left">
-          <img src="<c:url value="/images/archiva-world.png"/>"/>
+          <img src="<c:url value="/images/archiva-world.png"/>" alt="" width="32" height="32"/>
         </div>
 
         <h3 class="repository">${repository.name}</h3>
