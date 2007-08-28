@@ -21,7 +21,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
 import com.opensymphony.xwork.Preparable;
-import org.apache.commons.collections.Transformer;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -57,11 +56,6 @@ public class RepositoriesAction
     implements SecureAction, ServletRequestAware, Preparable
 {
     /**
-     * @plexus.requirement role-hint="adminrepoconfig"
-     */
-    private Transformer repoConfigToAdmin;
-
-    /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
@@ -77,11 +71,14 @@ public class RepositoriesAction
      */
     private ArchivaDAO dao;
 
+    /**
+     * Used to construct the repository WebDAV URL in the repository action.
+     */
     private String baseUrl;
 
     public void setServletRequest( HttpServletRequest request )
     {
-        // TODO! what is this?
+        // TODO: is there a better way to do this?
         this.baseUrl = ContextUtils.getBaseURL( request, "repository" );
     }
 
