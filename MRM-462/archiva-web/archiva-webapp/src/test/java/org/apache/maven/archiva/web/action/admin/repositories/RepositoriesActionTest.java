@@ -53,7 +53,8 @@ public class RepositoriesActionTest
 
         action.setServletRequest( sc.newInvocation( "http://localhost/admin/repositories.action" ).getRequest() );
         action.prepare();
-        action.execute();
+        String result = action.execute();
+        assertEquals( Action.SUCCESS, result );
 
         // TODO: for some reason servletunit is not populating the port of the servlet request
         assertEquals( "http://localhost:0/repository", action.getBaseUrl() );
