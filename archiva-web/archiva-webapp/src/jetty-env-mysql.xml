@@ -37,7 +37,7 @@
     </Arg>
   </New>
 
-  <!--
+<!-- START SNIPPET: setting-up-mysql
  In order to use this jetty-env, you need to setup your mysql locally.
 
  1) Connect to mysql
@@ -103,6 +103,7 @@
 
     $ mvn -Pmysql clean jetty:run
 
+END SNIPPET: setting-up-mysql
     -->
 
   <!-- Archiva database -->
