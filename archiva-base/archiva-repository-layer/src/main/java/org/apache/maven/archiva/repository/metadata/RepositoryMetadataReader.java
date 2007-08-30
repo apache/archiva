@@ -55,6 +55,7 @@ public class RepositoryMetadataReader
 
             metadata.setGroupId( xml.getElementText( "//metadata/groupId" ) );
             metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
+            metadata.setVersion( xml.getElementText( "//metadata/version" ) );
             metadata.setFileLastModified( new Date( metadataFile.lastModified() ) );
             metadata.setFileSize( metadataFile.length() );
             metadata.setWhenIndexed( null );

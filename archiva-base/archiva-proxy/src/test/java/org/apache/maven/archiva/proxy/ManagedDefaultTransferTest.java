@@ -44,6 +44,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -74,6 +76,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
 
         ArtifactReference artifact = createArtifactReference( "default", path );
@@ -102,6 +106,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
 
         long originalModificationTime = expectedFile.lastModified();
@@ -154,6 +160,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -176,6 +184,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -207,6 +217,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -231,6 +243,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/does-not-exist/1.0/does-not-exist-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -255,6 +269,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -288,6 +304,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -327,6 +345,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -352,6 +372,8 @@ public class ManagedDefaultTransferTest
 
         String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -373,6 +395,8 @@ public class ManagedDefaultTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 

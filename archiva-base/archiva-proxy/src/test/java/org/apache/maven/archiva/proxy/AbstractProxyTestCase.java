@@ -28,6 +28,7 @@ import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
@@ -82,7 +83,7 @@ public class AbstractProxyTestCase
 
     protected static final String REPOPATH_DEFAULT_MANAGED = "src/test/repositories/managed";
 
-    protected static final String REPOPATH_DEFAULT_MANAGED_TARGET = "target/test-repository/managed";
+    // protected static final String REPOPATH_DEFAULT_MANAGED_TARGET = "target/test-repository/managed";
 
     protected static final String REPOPATH_LEGACY_MANAGED = "src/test/repositories/legacy-managed";
 
@@ -255,11 +256,19 @@ public class AbstractProxyTestCase
                                  "Test Managed (Legacy) Repository", "legacy" );
     }
 
-    protected ProjectReference createMetadataReference( String layoutType, String path )
+    protected ProjectReference createProjectReference( String layoutType, String path )
         throws Exception
     {
         BidirectionalRepositoryLayout layout = layoutFactory.getLayout( layoutType );
         ProjectReference metadata = layout.toProjectReference( path );
+        return metadata;
+    }
+
+    protected VersionedReference createVersionedReference( String layoutType, String path )
+        throws Exception
+    {
+        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( layoutType );
+        VersionedReference metadata = layout.toVersionedReference( path );
         return metadata;
     }
 
@@ -402,13 +411,11 @@ public class AbstractProxyTestCase
         RepositoryConfiguration repoConfig;
 
         // Setup source repository (using default layout)
-        File repoLocation = getTestFile( REPOPATH_DEFAULT_MANAGED_TARGET );
-        // faster only to delete this one before copying, the others are done case by case
-        FileUtils.deleteDirectory( new File( repoLocation, "org/apache/maven/test/get-merged-metadata" ) );
-        copyDirectoryStructure( getTestFile( REPOPATH_DEFAULT_MANAGED ), repoLocation );
+        String repoPath = "target/test-repository/managed/" + getName();
+        File repoLocation = getTestFile( repoPath );
 
-        managedDefaultRepository = createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository",
-                                                     REPOPATH_DEFAULT_MANAGED_TARGET, "default" );
+        managedDefaultRepository = createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
+                                                     "default" );
 
         managedDefaultDir = new File( managedDefaultRepository.getUrl().getPath() );
 
@@ -449,6 +456,58 @@ public class AbstractProxyTestCase
         delegate.setDelegate( wagonMock );
 
         System.out.println( "\n.\\ " + getName() + "() \\._________________________________________\n" );
+    }
+
+    /**
+     * Copy the specified resource directory from the src/test/repository/managed/ to
+     * the testable directory under target/test-repository/managed/${testName}/
+     * 
+     * @param resourceDir
+     * @throws IOException 
+     */
+    protected void setupTestableManagedRepository( String resourcePath )
+        throws IOException
+    {
+        String resourceDir = resourcePath;
+        
+        if( !resourcePath.endsWith( "/" ) )
+        {
+            int idx = resourcePath.lastIndexOf( '/' );
+            resourceDir = resourcePath.substring( 0, idx );
+        }
+        
+        File sourceRepoDir = new File( REPOPATH_DEFAULT_MANAGED );
+        File sourceDir = new File( sourceRepoDir, resourceDir );
+
+        File destRepoDir = managedDefaultDir;
+        File destDir = new File( destRepoDir, resourceDir );
+
+        // Cleanout destination dirs.
+        if ( destDir.exists() )
+        {
+            FileUtils.deleteDirectory( destDir );
+        }
+
+        // Test the source dir.
+        if ( !sourceDir.exists() )
+        {
+            // This is just a warning.
+            System.err.println( "Skipping setup of testable managed repsoitory, source dir does not exist: "
+                + sourceDir );
+            return;
+        }
+
+        // Test that the source is a dir.
+        if ( !sourceDir.isDirectory() )
+        {
+            fail( "Unable to setup testable managed repository, source is not a directory: " + sourceDir );
+        }
+
+        // Make the destination dir.
+        destDir.mkdirs();
+
+        // Copy directory structure.
+        copyDirectoryStructure( sourceDir, destDir );
     }
 
     protected static Date getFutureDate()

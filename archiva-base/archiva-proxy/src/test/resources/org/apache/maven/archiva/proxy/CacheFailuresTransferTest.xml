@@ -76,7 +76,7 @@
         <eternal>false</eternal>
         <max-elements-in-memory>1000</max-elements-in-memory>
         <memory-eviction-policy>LRU</memory-eviction-policy>
-        <name>cache</name>
+        <name>url-failures-cache</name>
         <overflow-to-disk>false</overflow-to-disk>
         <!-- 45 minutes = 2700 seconds -->
         <time-to-idle-seconds>2700</time-to-idle-seconds>

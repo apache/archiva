@@ -19,17 +19,13 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
 
 /**
  * SnapshotTransferTest 
@@ -45,6 +41,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/does-not-exist/1.0-SNAPSHOT/does-not-exist-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -64,6 +62,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -85,6 +85,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -106,6 +108,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -131,6 +135,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -161,6 +167,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -190,6 +198,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -212,6 +222,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -234,6 +246,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -257,6 +271,8 @@ public class SnapshotTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -277,10 +293,12 @@ public class SnapshotTransferTest
     public void testGetMetadataDrivenSnapshotRemoteUpdate()
         throws Exception
     {
-         // Metadata driven snapshots (using a full timestamp) are treated like a release. It is the timing of the
+        // Metadata driven snapshots (using a full timestamp) are treated like a release. It is the timing of the
         // updates to the metadata files that triggers which will be downloaded
 
         String path = "org/apache/maven/test/get-present-metadata-snapshot/1.0-SNAPSHOT/get-present-metadata-snapshot-1.0-20050831.101112-1.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 

@@ -43,6 +43,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -66,6 +68,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -88,6 +92,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -110,6 +116,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -132,6 +140,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -154,6 +164,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -174,6 +186,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -197,6 +211,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -217,6 +233,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -240,6 +258,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -260,6 +280,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -283,6 +305,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -306,6 +330,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -329,6 +355,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -352,6 +380,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -394,6 +424,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -416,6 +448,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -438,6 +472,8 @@ public class ChecksumTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
+        setupTestableManagedRepository( path );
+        
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -455,5 +491,4 @@ public class ChecksumTransferTest
         assertChecksums( expectedFile, "96a08dc80a108cba8efd3b20aec91b32a0b2cbd4  get-bad-local-checksum-1.0.jar",
                          "46fdd6ca55bf1d7a7eb0c858f41e0ccd  get-bad-local-checksum-1.0.jar" );
     }
-
 }

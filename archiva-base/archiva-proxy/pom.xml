@@ -72,6 +72,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
@@ -100,7 +105,6 @@
             <exclude>**/*TestCase.java</exclude>
             <exclude>**/*Tests.java</exclude>
             <exclude>**/*TestSuite.java</exclude>
-            <exclude>**/MetadataTransfer*</exclude>
             <exclude>**/RelocateTransfer*</exclude>
           </excludes>
         </configuration>

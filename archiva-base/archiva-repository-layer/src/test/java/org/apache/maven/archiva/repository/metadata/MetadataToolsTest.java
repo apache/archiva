@@ -71,7 +71,12 @@ public class MetadataToolsTest
     public void testGatherAvailableVersionsMissingMultipleVersions()
         throws Exception
     {
-        assertAvailableVersions( "missing_metadata_b", new String[] { "1.0", "1.0.1", "2.0", "2.0-20070821-dev" } );
+        assertAvailableVersions( "missing_metadata_b", new String[] {
+            "1.0",
+            "1.0.1",
+            "2.0",
+            "2.0.1",
+            "2.0-20070821-dev" } );
     }
 
     public void testGatherAvailableVersionsSimpleYetIncomplete()
@@ -97,6 +102,27 @@ public class MetadataToolsTest
             "1.0-alpha-11-20070305.215149-5",
             "1.0-alpha-11-20070307.170909-6",
             "1.0-alpha-11-20070314.211405-9",
+            "1.0-alpha-11-20070316.175232-11" } );
+    }
+
+    public void testGatherSnapshotVersionsAWithProxies()
+        throws Exception
+    {
+        // These proxied repositories do not need to exist for the purposes of this unit test,
+        // just the repository ids are important.
+        createProxyConnector( "test-repo", "apache-snapshots" );
+        createProxyConnector( "test-repo", "internal-snapshots" );
+        createProxyConnector( "test-repo", "snapshots.codehaus.org" );
+
+        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
+            "1.0-alpha-11-SNAPSHOT",
+            "1.0-alpha-11-20070221.194724-2",
+            "1.0-alpha-11-20070302.212723-3",
+            "1.0-alpha-11-20070303.152828-4",
+            "1.0-alpha-11-20070305.215149-5",
+            "1.0-alpha-11-20070307.170909-6",
+            "1.0-alpha-11-20070314.211405-9",
+            "1.0-alpha-11-20070315.033030-10" /* Arrives in via snapshots.codehaus.org proxy */,
             "1.0-alpha-11-20070316.175232-11" } );
     }
 
@@ -135,7 +161,12 @@ public class MetadataToolsTest
     public void testUpdateProjectMissingMultipleVersions()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "missing_metadata_b", new String[] { "1.0", "1.0.1", "2.0", "2.0-20070821-dev" } );
+        assertUpdatedProjectMetadata( "missing_metadata_b", new String[] {
+            "1.0",
+            "1.0.1",
+            "2.0",
+            "2.0.1",
+            "2.0-20070821-dev" } );
     }
 
     public void testUpdateProjectMissingMultipleVersionsWithProxies()
@@ -274,7 +305,7 @@ public class MetadataToolsTest
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
-        if( !detailedDiff.similar() )
+        if ( !detailedDiff.similar() )
         {
             assertEquals( expectedMetadata, actualMetadata );
         }
