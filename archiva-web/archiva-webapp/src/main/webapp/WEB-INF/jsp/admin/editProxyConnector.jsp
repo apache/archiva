@@ -86,9 +86,11 @@
         <label for="propertiesEntry">Properties:</label>
       </td>
       <td>
-        <ww:textfield name="propertyKey" size="15" id="propertiesEntry" theme="simple" /> :
-        <ww:textfield name="propertyValue" size="15" id="propertiesValue" theme="simple" />
-        <ww:submit name="action:editProxyConnector!addProperty" value="Add Property" theme="simple" />
+          <ww:textfield name="propertyKey" size="15" id="propertiesEntry" theme="simple"
+              onkeypress="submitenter(event, 'editProxyConnector!addProperty.action')" /> :
+          <ww:textfield name="propertyValue" size="15" id="propertiesValue" theme="simple"
+              onkeypress="submitenter(event, 'editProxyConnector!addProperty.action')"/>
+          <ww:submit name="action:editProxyConnector!addProperty" value="Add Property" theme="simple" />          
       </td>
     </tr>
     
@@ -137,7 +139,8 @@
         <label for="blackListEntry">Black List:</label>
       </td>
       <td>
-        <ww:textfield name="blackListPattern" size="30" id="blackListEntry" theme="simple" />
+        <ww:textfield name="blackListPattern" size="30" id="blackListEntry" theme="simple"
+            onkeypress="submitenter(event, 'editProxyConnector!addBlackListPattern.action')"/>
         <ww:submit name="action:editProxyConnector!addBlackListPattern" value="Add Pattern" theme="simple" />
       </td>
     </tr>
@@ -180,7 +183,8 @@
         <label for="whiteListEntry">White List:</label>
       </td>
       <td>
-        <ww:textfield name="whiteListPattern" size="30" id="whiteListEntry" theme="simple" />
+        <ww:textfield name="whiteListPattern" size="30" id="whiteListEntry" theme="simple"
+                      onkeypress="submitenter(event, 'editProxyConnector!addWhiteListPattern.action')"/>
         <ww:submit name="action:editProxyConnector!addWhiteListPattern" value="Add Pattern" theme="simple" />
       </td>
     </tr>
@@ -233,6 +237,43 @@
       f.elements[id].value = value;
       f.submit();
     }
+
+    function submitForm( action )
+    {
+      var f = document.forms['saveProxyConnector'];
+
+      f.action = action;
+      f.submit();
+    }
+
+    function submitenter( e, action )
+    {
+      var keycode;
+
+      if (window.event)
+      {
+        keycode = window.event.keyCode;
+      }
+      else if (e)
+      {
+          keycode = e.which;
+      }
+      else
+      {
+        return true;
+      }
+
+      if (keycode == 13)
+      {
+         submitForm( action );
+         return false;
+      }
+      else
+      {
+         return true;
+      }
+    }
+
     //-->
   </script>
 
