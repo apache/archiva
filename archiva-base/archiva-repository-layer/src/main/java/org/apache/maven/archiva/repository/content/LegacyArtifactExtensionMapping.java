@@ -54,11 +54,11 @@ public class LegacyArtifactExtensionMapping
         }
         else if ( normalizedName.endsWith( "-sources.jar" ) )
         {
-            return "jar";
+            return "java-source";
         }
         else if ( normalizedName.endsWith( "-javadoc.jar" ) )
         {
-            return "jar";
+            return "javadoc.jar";
         }
         else
         {

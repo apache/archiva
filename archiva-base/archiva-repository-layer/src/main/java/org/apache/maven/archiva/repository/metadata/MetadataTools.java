@@ -71,6 +71,12 @@ public class MetadataTools
      */
     private static Logger log = LoggerFactory.getLogger( MetadataTools.class );
 
+    public static final String MAVEN_METADATA = "maven-metadata.xml";
+
+    private static final char PATH_SEPARATOR = '/';
+
+    private static final char GROUP_SEPARATOR = '.';
+
     /**
      * @plexus.requirement
      */
@@ -89,6 +95,8 @@ public class MetadataTools
     private List<String> artifactPatterns;
 
     private Map<String, Set<String>> proxies;
+
+    private static final char NUMS[] = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -113,8 +121,7 @@ public class MetadataTools
     public Set<String> gatherAvailableVersions( ArchivaRepository managedRepository, ProjectReference reference )
         throws LayoutException, IOException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        String path = layout.toPath( reference );
+        String path = toPath( reference );
 
         int idx = path.lastIndexOf( '/' );
         if ( idx > 0 )
@@ -191,7 +198,7 @@ public class MetadataTools
         throws LayoutException, IOException
     {
         BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        String path = layout.toPath( reference );
+        String path = toPath( reference );
 
         int idx = path.lastIndexOf( '/' );
         if ( idx > 0 )
@@ -246,7 +253,7 @@ public class MetadataTools
         throws LayoutException, IOException
     {
         BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        String path = layout.toPath( reference );
+        String path = toPath( reference );
 
         int idx = path.lastIndexOf( '/' );
         if ( idx > 0 )
@@ -336,6 +343,127 @@ public class MetadataTools
         return foundVersions;
     }
 
+    /**
+     * Take a path to a maven-metadata.xml, and attempt to translate it to a VersionedReference. 
+     * 
+     * @param path
+     * @return
+     */
+    public VersionedReference toVersionedReference( String path )
+        throws RepositoryMetadataException
+    {
+        if ( !path.endsWith( "/" + MAVEN_METADATA ) )
+        {
+            throw new RepositoryMetadataException( "Cannot convert to versioned reference, not a metadata file. " );
+        }
+
+        VersionedReference reference = new VersionedReference();
+
+        String normalizedPath = StringUtils.replace( path, "\\", "/" );
+        String pathParts[] = StringUtils.split( normalizedPath, '/' );
+
+        int versionOffset = pathParts.length - 2;
+        int artifactIdOffset = versionOffset - 1;
+        int groupIdEnd = artifactIdOffset - 1;
+
+        reference.setVersion( pathParts[versionOffset] );
+
+        if ( !hasNumberAnywhere( reference.getVersion() ) )
+        {
+            // Scary check, but without it, all paths are version references;
+            throw new RepositoryMetadataException(
+                                                   "Not a versioned reference, as version id on path has no number in it." );
+        }
+
+        reference.setArtifactId( pathParts[artifactIdOffset] );
+
+        StringBuffer gid = new StringBuffer();
+        for ( int i = 0; i <= groupIdEnd; i++ )
+        {
+            if ( i > 0 )
+            {
+                gid.append( "." );
+            }
+            gid.append( pathParts[i] );
+        }
+
+        reference.setGroupId( gid.toString() );
+
+        return reference;
+    }
+
+    private boolean hasNumberAnywhere( String version )
+    {
+        return StringUtils.indexOfAny( version, NUMS ) != ( -1 );
+    }
+
+    public ProjectReference toProjectReference( String path )
+        throws RepositoryMetadataException
+    {
+        if ( !path.endsWith( "/" + MAVEN_METADATA ) )
+        {
+            throw new RepositoryMetadataException( "Cannot convert to versioned reference, not a metadata file. " );
+        }
+
+        ProjectReference reference = new ProjectReference();
+
+        String normalizedPath = StringUtils.replace( path, "\\", "/" );
+        String pathParts[] = StringUtils.split( normalizedPath, '/' );
+
+        // Assume last part of the path is the version.
+
+        int artifactIdOffset = pathParts.length - 2;
+        int groupIdEnd = artifactIdOffset - 1;
+
+        reference.setArtifactId( pathParts[artifactIdOffset] );
+
+        StringBuffer gid = new StringBuffer();
+        for ( int i = 0; i <= groupIdEnd; i++ )
+        {
+            if ( i > 0 )
+            {
+                gid.append( "." );
+            }
+            gid.append( pathParts[i] );
+        }
+
+        reference.setGroupId( gid.toString() );
+
+        return reference;
+    }
+
+    public String toPath( ProjectReference reference )
+    {
+        StringBuffer path = new StringBuffer();
+
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
+    }
+
+    public String toPath( VersionedReference reference )
+    {
+        StringBuffer path = new StringBuffer();
+
+        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
+        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
+        if ( reference.getVersion() != null )
+        {
+            // add the version only if it is present
+            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
+        }
+        path.append( MAVEN_METADATA );
+
+        return path.toString();
+    }
+
+    private String formatAsDirectory( String directory )
+    {
+        return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
+    }
+
     private boolean matchesArtifactPattern( String relativePath )
     {
         Iterator<String> it = this.artifactPatterns.iterator();
@@ -402,10 +530,8 @@ public class MetadataTools
 
     public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository,
                                                         ProjectReference reference, String proxyId )
-        throws LayoutException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        String metadataPath = getRepositorySpecificName( proxyId, layout.toPath( reference ) );
+        String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getUrl().getPath(), metadataPath );
 
         try
@@ -423,10 +549,8 @@ public class MetadataTools
 
     public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository,
                                                         VersionedReference reference, String proxyId )
-        throws LayoutException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        String metadataPath = getRepositorySpecificName( proxyId, layout.toPath( reference ) );
+        String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getUrl().getPath(), metadataPath );
 
         try
@@ -458,8 +582,7 @@ public class MetadataTools
     public void updateMetadata( ArchivaRepository managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        File metadataFile = new File( managedRepository.getUrl().getPath(), layout.toPath( reference ) );
+        File metadataFile = new File( managedRepository.getUrl().getPath(), toPath( reference ) );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
@@ -525,7 +648,7 @@ public class MetadataTools
         throws LayoutException, RepositoryMetadataException, IOException
     {
         BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        File metadataFile = new File( managedRepository.getUrl().getPath(), layout.toPath( reference ) );
+        File metadataFile = new File( managedRepository.getUrl().getPath(), toPath( reference ) );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );

@@ -23,8 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
 
 /**
@@ -37,8 +35,6 @@ import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMappi
 public class DefaultBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout
 {
-    private static final String MAVEN_METADATA = "maven-metadata.xml";
-
     class PathReferences
     {
         public String groupId;
@@ -79,7 +75,7 @@ public class DefaultBidirectionalRepositoryLayout
     public ArchivaArtifact toArtifact( String path )
         throws LayoutException
     {
-        PathReferences pathrefs = toPathReferences( path, true );
+        PathReferences pathrefs = toPathReferences( path );
 
         ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.artifactId,
                                                         pathrefs.fileParts.version, pathrefs.fileParts.classifier,
@@ -91,7 +87,7 @@ public class DefaultBidirectionalRepositoryLayout
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        PathReferences pathrefs = toPathReferences( path, true );
+        PathReferences pathrefs = toPathReferences( path );
 
         ArtifactReference reference = new ArtifactReference();
         reference.setGroupId( pathrefs.groupId );
@@ -105,78 +101,25 @@ public class DefaultBidirectionalRepositoryLayout
 
     public String toPath( ArchivaArtifact artifact )
     {
+        if ( artifact == null )
+        {
+            throw new IllegalArgumentException( "Artifact cannot be null" );
+        }
+
         return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getBaseVersion(), artifact
             .getVersion(), artifact.getClassifier(), artifact.getType() );
     }
 
     public String toPath( ArtifactReference reference )
     {
+        if ( reference == null )
+        {
+            throw new IllegalArgumentException( "Artifact reference cannot be null" );
+        }
+
         String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
         return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
                        reference.getClassifier(), reference.getType() );
-    }
-
-    public String toPath( ProjectReference reference )
-    {
-        StringBuffer path = new StringBuffer();
-
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
-    public String toPath( VersionedReference reference )
-    {
-        StringBuffer path = new StringBuffer();
-
-        path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
-        path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
-        if ( reference.getVersion() != null )
-        {
-            // add the version only if it is present
-            path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
-        }
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
-    public ProjectReference toProjectReference( String path )
-        throws LayoutException
-    {
-        if ( !path.endsWith( "/maven-metadata.xml" ) )
-        {
-            throw new LayoutException(
-                "Only paths ending in '/maven-metadata.xml' can be " + "converted to a ProjectReference." );
-        }
-
-        PathReferences pathrefs = toPathReferences( path, false );
-        ProjectReference reference = new ProjectReference();
-        reference.setGroupId( pathrefs.groupId );
-        reference.setArtifactId( pathrefs.artifactId );
-
-        return reference;
-    }
-
-    public VersionedReference toVersionedReference( String path )
-        throws LayoutException
-    {
-        if ( !path.endsWith( "/maven-metadata.xml" ) )
-        {
-            throw new LayoutException(
-                "Only paths ending in '/maven-metadata.xml' can be " + "converted to a VersionedReference." );
-        }
-
-        PathReferences pathrefs = toPathReferences( path, false );
-
-        VersionedReference reference = new VersionedReference();
-        reference.setGroupId( pathrefs.groupId );
-        reference.setArtifactId( pathrefs.artifactId );
-        reference.setVersion( pathrefs.baseVersion );
-
-        return reference;
     }
 
     private String formatAsDirectory( String directory )
@@ -215,7 +158,7 @@ public class DefaultBidirectionalRepositoryLayout
     {
         try
         {
-            toPathReferences( path, false );
+            toPathReferences( path );
             return true;
         }
         catch ( LayoutException e )
@@ -224,13 +167,17 @@ public class DefaultBidirectionalRepositoryLayout
         }
     }
 
-    private PathReferences toPathReferences( String path, boolean parseFilename )
+    private PathReferences toPathReferences( String path )
         throws LayoutException
     {
+        if ( StringUtils.isBlank( path ) )
+        {
+            throw new LayoutException( "Unable to convert blank path." );
+        }
+
         PathReferences prefs = new PathReferences();
 
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
-
         String pathParts[] = StringUtils.split( normalizedPath, '/' );
 
         /* Minimum parts.
@@ -245,8 +192,8 @@ public class DefaultBidirectionalRepositoryLayout
         if ( pathParts.length < 4 )
         {
             // Illegal Path Parts Length.
-            throw new LayoutException( "Not enough parts to the path [" + path +
-                "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
+            throw new LayoutException( "Not enough parts to the path [" + path
+                + "] to construct an ArchivaArtifact from. (Requires at least 4 parts)" );
         }
 
         // Maven 2.x path.
@@ -258,17 +205,6 @@ public class DefaultBidirectionalRepositoryLayout
 
         // Second to last is the baseVersion (the directory version)
         prefs.baseVersion = pathParts[baseVersionPos];
-
-        if ( "maven-metadata.xml".equals( pathParts[filenamePos] ) )
-        {
-            if ( !VersionUtil.isVersion( prefs.baseVersion ) )
-            {
-                // We have a simple path without a version identifier.
-                prefs.baseVersion = null;
-                artifactIdPos++;
-                groupIdPos++;
-            }
-        }
 
         // Third to last is the artifact Id.
         prefs.artifactId = pathParts[artifactIdPos];
@@ -287,25 +223,84 @@ public class DefaultBidirectionalRepositoryLayout
             // Now we need to parse the filename to get the artifact version Id. 
             prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, prefs.artifactId );
 
+            /* If classifier is discovered, see if it deserves to be.
+             * 
+             * Filenames like "comm-3.0-u1.jar" might be identified as having a version of "3.0"
+             * and a classifier of "u1".
+             * 
+             * This routine will take the version + classifier and compare it to the prefs.baseVersion and 
+             * move the classifierensure that
+             * 
+             * javax/comm/3.0-u1/comm-3.0-u1.jar
+             */
+            if ( StringUtils.isNotBlank( prefs.fileParts.classifier ) )
+            {
+                String conjoinedVersion = prefs.fileParts.version + "-" + prefs.fileParts.classifier; 
+                
+                if( StringUtils.equals( prefs.baseVersion, conjoinedVersion ) )
+                {
+                    prefs.fileParts.version = conjoinedVersion;
+                    prefs.fileParts.classifier = null;
+                }
+            }
+
             prefs.type = extensionMapper.getType( filename );
         }
         catch ( LayoutException e )
         {
-            if ( parseFilename )
-            {
-                throw e;
-            }
+            throw e;
         }
 
         // Sanity Checks.
         if ( prefs.fileParts != null )
         {
-            String artifactBaseVersion = VersionUtil.getBaseVersion( prefs.fileParts.version );
-            if ( !artifactBaseVersion.equals( prefs.baseVersion ) )
+            /* Compare artifact version to path baseversion.
+             * 
+             * Version naming in the wild can be strange at times.
+             * Sometimes what is seen as a classifier is actually part of the version id.
+             * 
+             * To compensate for this, the path is checked against the artifact.version and
+             *  the concatenation of the artifact.version + "-" + artifact.classifier
+             */
+            String pathVersion = prefs.baseVersion;
+            String artifactVersion = prefs.fileParts.version;
+
+            // Do we have a snapshot version?
+            if ( VersionUtil.isSnapshot( artifactVersion ) )
             {
-                throw new LayoutException( "Invalid artifact location, version directory and filename mismatch." );
+                // Rules are different for SNAPSHOTS
+                if ( !VersionUtil.isGenericSnapshot( pathVersion ) )
+                {
+                    String baseVersion = VersionUtil.getBaseVersion( prefs.fileParts.version );
+                    throw new LayoutException( "Invalid snapshot artifact location, version directory should be "
+                        + baseVersion );
+                }
+            }
+            else
+            {
+                // Non SNAPSHOT rules.
+                // Do we pass the simple test?
+                if ( !StringUtils.equals( pathVersion, artifactVersion ) )
+                {
+                    // Do we have a classifier?  If so, test the conjoined case.
+                    if ( StringUtils.isNotBlank( prefs.fileParts.classifier ) )
+                    {
+                        String artifactLongVersion = artifactVersion + "-" + prefs.fileParts.classifier;
+                        if ( !StringUtils.equals( pathVersion, artifactLongVersion ) )
+                        {
+                            throw new LayoutException( "Invalid artifact: version declared in directory path does"
+                                + " not match what was found in the artifact filename." );
+                        }
+                    }
+                    else
+                    {
+                        throw new LayoutException( "Invalid artifact: version declared in directory path does"
+                            + " not match what was found in the artifact filename." );
+                    }
+                }
             }
 
+            // Test if the artifactId present on the directory path is the same as the artifactId filename.
             if ( !prefs.artifactId.equals( prefs.fileParts.artifactId ) )
             {
                 throw new LayoutException( "Invalid artifact Id" );

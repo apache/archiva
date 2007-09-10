@@ -22,8 +22,6 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
 
 import java.util.HashMap;
@@ -39,7 +37,9 @@ import java.util.Map;
 public class LegacyBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout
 {
-    private static final String MAVEN_METADATA = "maven-metadata.xml";
+    private static final String DIR_JAVADOC = "javadoc.jars";
+
+    private static final String DIR_JAVA_SOURCE = "java-sources";
 
     private static final String PATH_SEPARATOR = "/";
 
@@ -62,31 +62,8 @@ public class LegacyBidirectionalRepositoryLayout
 
     public String toPath( ArchivaArtifact artifact )
     {
-        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), artifact.getClassifier(),
-                       artifact.getType() );
-    }
-
-    public String toPath( ProjectReference reference )
-    {
-        StringBuffer path = new StringBuffer();
-
-        path.append( reference.getGroupId() ).append( PATH_SEPARATOR );
-        path.append( getDirectory( null, "jar" ) ).append( PATH_SEPARATOR );
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
-    }
-
-    public String toPath( VersionedReference reference )
-    {
-        // NOTE: A legacy repository cannot contain a versioned reference to the metadata.
-        StringBuffer path = new StringBuffer();
-
-        path.append( reference.getGroupId() ).append( PATH_SEPARATOR );
-        path.append( getDirectory( null, "jar" ) ).append( PATH_SEPARATOR );
-        path.append( MAVEN_METADATA );
-
-        return path.toString();
+        return toPath( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
+                       artifact.getClassifier(), artifact.getType() );
     }
 
     public String toPath( ArtifactReference reference )
@@ -124,12 +101,12 @@ public class LegacyBidirectionalRepositoryLayout
         {
             if ( "sources".equals( classifier ) )
             {
-                return "source.jars";
+                return DIR_JAVA_SOURCE;
             }
 
             if ( "javadoc".equals( classifier ) )
             {
-                return "javadoc.jars";
+                return DIR_JAVADOC;
             }
         }
 
@@ -156,7 +133,7 @@ public class LegacyBidirectionalRepositoryLayout
         public FilenameParts fileParts;
     }
 
-    private PathReferences toPathReferences( String path, boolean parseFilename )
+    private PathReferences toPathReferences( String path )
         throws LayoutException
     {
         PathReferences prefs = new PathReferences();
@@ -176,8 +153,8 @@ public class LegacyBidirectionalRepositoryLayout
         if ( pathParts.length != 3 )
         {
             // Illegal Path Parts Length.
-            throw new LayoutException( "Invalid number of parts to the path [" + path +
-                "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
+            throw new LayoutException( "Invalid number of parts to the path [" + path
+                + "] to construct an ArchivaArtifact from. (Required to be 3 parts)" );
         }
 
         // The Group ID.
@@ -186,43 +163,46 @@ public class LegacyBidirectionalRepositoryLayout
         // The Expected Type.
         prefs.pathType = pathParts[1];
 
-        if ( parseFilename )
+        // The Filename.
+        String filename = pathParts[2];
+
+        prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
+
+        String trimPathType = prefs.pathType.substring( 0, prefs.pathType.length() - 1 );
+        prefs.type = extensionMapper.getType( trimPathType, filename );
+
+        // Sanity Check: does it have an extension?
+        if ( StringUtils.isEmpty( prefs.fileParts.extension ) )
         {
-            // The Filename.
-            String filename = pathParts[2];
+            throw new LayoutException( "Invalid artifact, no extension." );
+        }
 
-            prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
+        // Sanity Check: pathType should end in "s".
+        if ( !prefs.pathType.toLowerCase().endsWith( "s" ) )
+        {
+            throw new LayoutException( "Invalid path, the type specified in the path <" + prefs.pathType
+                + "> does not end in the letter <s>." );
+        }
 
-            prefs.type = extensionMapper.getType( prefs.pathType, filename );
+        // Sanity Check: does extension match pathType on path?
+        String expectedExtension = extensionMapper.getExtension( trimPathType );
+        String actualExtension = prefs.fileParts.extension;
 
-            // Sanity Checks.
-            if ( StringUtils.isEmpty( prefs.fileParts.extension ) )
-            {
-                throw new LayoutException( "Invalid artifact, no extension." );
-            }
-
-            if ( !prefs.type.equals( prefs.fileParts.extension ) )
-            {
-                throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension +
-                    "> and expected layout specified type <" + prefs.pathType + "> (mapped type: <" + prefs.type +
-                    ">) on path <" + path + ">" );
-            }
+        if ( !expectedExtension.equals( actualExtension ) )
+        {
+            throw new LayoutException( "Invalid artifact, mismatch on extension <" + prefs.fileParts.extension
+                + "> and layout specified type <" + prefs.pathType + "> (which maps to extension: <"
+                + expectedExtension + ">) on path <" + path + ">" );
         }
 
         return prefs;
-    }
-
-    public ProjectReference toProjectReference( String path )
-        throws LayoutException
-    {
-        throw new LayoutException( "Cannot parse legacy paths to a Project Reference." );
     }
 
     public boolean isValidPath( String path )
     {
         try
         {
-            toPathReferences( path, false );
+            toPathReferences( path );
             return true;
         }
         catch ( LayoutException e )
@@ -234,7 +214,7 @@ public class LegacyBidirectionalRepositoryLayout
     public ArchivaArtifact toArtifact( String path )
         throws LayoutException
     {
-        PathReferences pathrefs = toPathReferences( path, true );
+        PathReferences pathrefs = toPathReferences( path );
 
         ArchivaArtifact artifact = new ArchivaArtifact( pathrefs.groupId, pathrefs.fileParts.artifactId,
                                                         pathrefs.fileParts.version, pathrefs.fileParts.classifier,
@@ -246,7 +226,7 @@ public class LegacyBidirectionalRepositoryLayout
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        PathReferences pathrefs = toPathReferences( path, true );
+        PathReferences pathrefs = toPathReferences( path );
 
         ArtifactReference reference = new ArtifactReference();
 
@@ -258,11 +238,4 @@ public class LegacyBidirectionalRepositoryLayout
 
         return reference;
     }
-
-    public VersionedReference toVersionedReference( String path )
-        throws LayoutException
-    {
-        return null;
-    }
-
 }

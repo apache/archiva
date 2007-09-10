@@ -29,8 +29,6 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.PlexusTestCase;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -56,8 +54,6 @@ import javax.xml.parsers.ParserConfigurationException;
 public class MetadataToolsTest
     extends PlexusTestCase
 {
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
-
     private MetadataTools tools;
 
     protected MockConfiguration config;
@@ -228,6 +224,116 @@ public class MetadataToolsTest
         assertUpdatedSnapshotVersionMetadata( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", "20070316", "175232", "11" );
     }
 
+    public void testToPathFromVersionReference()
+    {
+        VersionedReference reference = new VersionedReference();
+        reference.setGroupId( "com.foo" );
+        reference.setArtifactId( "foo-tool" );
+        reference.setVersion( "1.0" );
+
+        assertEquals( "com/foo/foo-tool/1.0/maven-metadata.xml", tools.toPath( reference ) );
+    }
+
+    public void testToPathFromProjectReference()
+    {
+        ProjectReference reference = new ProjectReference();
+        reference.setGroupId( "com.foo" );
+        reference.setArtifactId( "foo-tool" );
+
+        assertEquals( "com/foo/foo-tool/maven-metadata.xml", tools.toPath( reference ) );
+    }
+
+    public void testToProjectReferenceFooTools()
+        throws RepositoryMetadataException
+    {
+        assertProjectReference( "com.foo", "foo-tools", "com/foo/foo-tools/maven-metadata.xml" );
+    }
+
+    public void testToProjectReferenceAReallyLongPath()
+        throws RepositoryMetadataException
+    {
+        String groupId = "net.i.have.a.really.long.path.just.for.the.hell.of.it";
+        String artifactId = "a";
+        String path = "net/i/have/a/really/long/path/just/for/the/hell/of/it/a/maven-metadata.xml";
+
+        assertProjectReference( groupId, artifactId, path );
+    }
+
+    public void testToProjectReferenceCommonsLang()
+        throws RepositoryMetadataException
+    {
+        String groupId = "commons-lang";
+        String artifactId = "commons-lang";
+        String path = "commons-lang/commons-lang/maven-metadata.xml";
+
+        assertProjectReference( groupId, artifactId, path );
+    }
+
+    private void assertProjectReference( String groupId, String artifactId, String path )
+        throws RepositoryMetadataException
+    {
+        ProjectReference reference = tools.toProjectReference( path );
+
+        assertNotNull( "Reference should not be null.", reference );
+        assertEquals( "ProjectReference.groupId", groupId, reference.getGroupId() );
+        assertEquals( "ProjectReference.artifactId", artifactId, reference.getArtifactId() );
+    }
+
+    public void testToVersionedReferenceFooTool()
+        throws RepositoryMetadataException
+    {
+        String groupId = "com.foo";
+        String artifactId = "foo-tool";
+        String version = "1.0";
+        String path = "com/foo/foo-tool/1.0/maven-metadata.xml";
+
+        assertVersionedReference( groupId, artifactId, version, path );
+    }
+
+    public void testToVersionedReferenceAReallyLongPath()
+        throws RepositoryMetadataException
+    {
+        String groupId = "net.i.have.a.really.long.path.just.for.the.hell.of.it";
+        String artifactId = "a";
+        String version = "1.1-alpha-1";
+        String path = "net/i/have/a/really/long/path/just/for/the/hell/of/it/a/1.1-alpha-1/maven-metadata.xml";
+
+        assertVersionedReference( groupId, artifactId, version, path );
+    }
+
+    public void testToVersionedReferenceCommonsLang()
+        throws RepositoryMetadataException
+    {
+        String groupId = "commons-lang";
+        String artifactId = "commons-lang";
+        String version = "2.1";
+        String path = "commons-lang/commons-lang/2.1/maven-metadata.xml";
+
+        assertVersionedReference( groupId, artifactId, version, path );
+    }
+
+    public void testToVersionedReferenceSnapshot()
+        throws RepositoryMetadataException
+    {
+        String groupId = "com.foo";
+        String artifactId = "foo-connector";
+        String version = "2.1-SNAPSHOT";
+        String path = "com/foo/foo-connector/2.1-SNAPSHOT/maven-metadata.xml";
+
+        assertVersionedReference( groupId, artifactId, version, path );
+    }
+
+    private void assertVersionedReference( String groupId, String artifactId, String version, String path )
+        throws RepositoryMetadataException
+    {
+        VersionedReference reference = tools.toVersionedReference( path );
+        assertNotNull( "Reference should not be null.", reference );
+
+        assertEquals( "VersionedReference.groupId", groupId, reference.getGroupId() );
+        assertEquals( "VersionedReference.artifactId", artifactId, reference.getArtifactId() );
+        assertEquals( "VersionedReference.version", version, reference.getVersion() );
+    }
+
     private void assertAvailableVersions( String artifactId, String[] expectedVersions )
         throws Exception
     {
@@ -290,8 +396,7 @@ public class MetadataToolsTest
     private void assertMetadata( String expectedMetadata, ArchivaRepository repository, ProjectReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repository.getLayoutType() );
-        File metadataFile = new File( repository.getUrl().getPath(), layout.toPath( reference ) );
+        File metadataFile = new File( repository.getUrl().getPath(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         XMLAssert.assertXMLEqual( expectedMetadata, actualMetadata );
@@ -300,17 +405,15 @@ public class MetadataToolsTest
     private void assertMetadata( String expectedMetadata, ArchivaRepository repository, VersionedReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repository.getLayoutType() );
-        File metadataFile = new File( repository.getUrl().getPath(), layout.toPath( reference ) );
+        File metadataFile = new File( repository.getUrl().getPath(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )
         {
+            // If it isn't similar, dump the difference.
             assertEquals( expectedMetadata, actualMetadata );
         }
-        // assertTrue( "Metadata is similar: " + detailedDiff, detailedDiff.similar() );
-        // XMLAssert.assertXMLEqual( expectedMetadata, actualMetadata );
     }
 
     private void assertMetadataPath( String expected, String actual )
@@ -485,7 +588,6 @@ public class MetadataToolsTest
     {
         super.setUp();
 
-        layoutFactory = (BidirectionalRepositoryLayoutFactory) lookup( BidirectionalRepositoryLayoutFactory.class );
         config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
         tools = (MetadataTools) lookup( MetadataTools.class );
     }

@@ -21,7 +21,6 @@ package org.apache.maven.archiva.repository.layout;
 
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 
 /**
@@ -63,22 +62,6 @@ public interface BidirectionalRepositoryLayout
     public String toPath( ArtifactReference reference );
 
     /**
-     * Given an {@link VersionedReference}, return the relative path to that reference.
-     *
-     * @param reference the versioned project reference to use.
-     * @return the relative path to the project reference.
-     */
-    public String toPath( VersionedReference reference );
-
-    /**
-     * Given an ProjectReference, return the relative path to that reference.
-     *
-     * @param reference the project reference to use.
-     * @return the relative path to the project reference.
-     */
-    public String toPath( ProjectReference reference );
-
-    /**
      * Given a repository relative path to a filename, return the {@link ArchivaArtifact} object suitable for the path.
      *
      * @param path the path relative to the repository base dir for the artifact.
@@ -87,28 +70,6 @@ public interface BidirectionalRepositoryLayout
      * @throws LayoutException if there was a problem converting the path to an artifact.
      */
     public ArchivaArtifact toArtifact( String path )
-        throws LayoutException;
-
-    /**
-     * Given a repository relative path to a filename, return the {@link ProjectReference} object suitable for the path.
-     *
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the {@link ProjectReference} representing the path.  (or null if path cannot be converted to
-     *         a {@link ProjectReference})
-     * @throws LayoutException if there was a problem converting the path to an artifact.
-     */
-    public ProjectReference toProjectReference( String path )
-        throws LayoutException;
-
-    /**
-     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
-     *
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the {@link VersionedReference} representing the path.  (or null if path cannot be converted to
-     *         a {@link VersionedReference})
-     * @throws LayoutException if there was a problem converting the path to an artifact.
-     */
-    public VersionedReference toVersionedReference( String path )
         throws LayoutException;
 
     /**

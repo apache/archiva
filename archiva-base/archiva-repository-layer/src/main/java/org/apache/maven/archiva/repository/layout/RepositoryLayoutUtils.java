@@ -141,7 +141,17 @@ public class RepositoryLayoutUtils
 
         if ( versionStart < 0 )
         {
-            throw new LayoutException( "Unable to determine version from filename " + filename );
+            // Assume rest of string is the version Id.
+            
+            if ( fileParts.length > 0 )
+            {
+                versionStart = 0;
+                versionEnd = fileParts.length;
+            }
+            else
+            {
+                throw new LayoutException( "Unable to determine version from filename " + filename );
+            }
         }
 
         // Gather up the ArtifactID - Version - Classifier pieces found. 

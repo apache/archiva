@@ -19,15 +19,8 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * DefaultBidirectionalRepositoryLayoutTest 
@@ -38,479 +31,306 @@ import java.util.List;
 public class DefaultBidirectionalRepositoryLayoutTest
     extends AbstractBidirectionalRepositoryLayoutTestCase
 {
-    class LayoutExample
-    {
-        public String groupId;
-
-        public String artifactId;
-
-        public String version;
-
-        public String classifier;
-
-        public String type;
-
-        public String pathArtifact;
-
-        public String pathVersiond;
-
-        public String pathProjectd;
-
-        public LayoutExample( String groupId, String artifactId, String version, String classifier, String type )
-        {
-            super();
-            this.groupId = groupId;
-            this.artifactId = artifactId;
-            this.version = version;
-            this.classifier = classifier;
-            this.type = type;
-        }
-
-        public void setDelimitedPath( String delimPath )
-        {
-            // Silly Test Writer! Don't end the path with a slash!
-            if ( delimPath.endsWith( "/" ) )
-            {
-                delimPath = delimPath.substring( 0, delimPath.length() - 1 );
-            }
-
-            String parts[] = StringUtils.split( delimPath, '|' );
-            switch ( parts.length )
-            {
-                case 3:
-                    this.pathArtifact = parts[0] + "/" + parts[1] + "/" + parts[2];
-                case 2:
-                    this.pathVersiond = parts[0] + "/" + parts[1] + "/maven-metadata.xml";
-                case 1:
-                    this.pathProjectd = parts[0] + "/maven-metadata.xml";
-                    break;
-                default:
-                    fail( "Unknown number of path pieces, expected between 1 and 3, got <" + parts.length + "> on <"
-                        + delimPath + ">" );
-            }
-        }
-
-        public boolean isSuitableForArtifactTest()
-        {
-            return ( this.type != null ) && ( this.classifier != null ) && ( this.version != null );
-        }
-
-        public boolean isSuitableForVersionedTest()
-        {
-            return ( this.type == null ) && ( this.classifier == null ) && ( this.version != null );
-        }
-
-        public boolean isSuitableForProjectTest()
-        {
-            return ( this.type == null ) && ( this.classifier == null ) && ( this.version == null );
-        }
-    }
-
-    class InvalidExample
-    {
-        public String path;
-
-        public String reason;
-
-        public boolean hasFilename;
-
-        public InvalidExample( String path, boolean hasFilename, String reason )
-        {
-            super();
-            this.path = path;
-            this.hasFilename = hasFilename;
-            this.reason = reason;
-        }
-    }
-
     private BidirectionalRepositoryLayout layout;
 
-    public List /*<LayoutExample>*/getGoodExamples()
+    public void testBadPathMissingType()
     {
-        List ret = new ArrayList();
-
-        LayoutExample example;
-
-        // Artifact References
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, "jar" );
-        example.setDelimitedPath( "com/foo/foo-tool|1.0|foo-tool-1.0.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-client", "1.0", null, "ejb-client" );
-        example.setDelimitedPath( "com/foo/foo-client|1.0|foo-client-1.0.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo.lib", "foo-lib", "2.1-alpha-1", "sources", "java-source" );
-        example.setDelimitedPath( "com/foo/lib/foo-lib|2.1-alpha-1|foo-lib-2.1-alpha-1-sources.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, "jar" );
-        example.setDelimitedPath( "com/foo/foo-connector/2.1-SNAPSHOT/foo-connector-2.1-20060822.123456-35.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "org.apache.maven.test", "get-metadata-snapshot", "1.0-20050831.101112-1", null,
-                                     "jar" );
-        example
-            .setDelimitedPath( "org/apache/maven/test/get-metadata-snapshot|1.0-SNAPSHOT|get-metadata-snapshot-1.0-20050831.101112-1.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "commons-lang", "commons-lang", "2.1", null, "jar" );
-        example.setDelimitedPath( "commons-lang/commons-lang|2.1|commons-lang-2.1.jar" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, "jar" );
-        example.setDelimitedPath( "com/foo/foo-tool|1.0|foo-tool-1.0.jar" );
-        ret.add( example );
-
-        // Versioned References (done here by setting classifier and type to null)
-        example = new LayoutExample( "com.foo", "foo-tool", "1.0", null, null );
-        example.setDelimitedPath( "com/foo/foo-tool|1.0" );
-        ret.add( example );
-
-        example = new LayoutExample( "net.i.have.a.really.long.path.just.for.the.hell.of.it", "a", "1.1-alpha-1", null,
-                                     null );
-        example.setDelimitedPath( "net/i/have/a/really/long/path/just/for/the/hell/of/it/a|1.1-alpha-1" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-20060822.123456-35", null, null );
-        example.setDelimitedPath( "com/foo/foo-connector|2.1-SNAPSHOT" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-connector", "2.1-SNAPSHOT", null, null );
-        example.setDelimitedPath( "com/foo/foo-connector|2.1-SNAPSHOT" );
-        ret.add( example );
-
-        // Project References (done here by setting version, classifier, and type to null)
-        example = new LayoutExample( "com.foo", "foo-tool", null, null, null );
-        example.setDelimitedPath( "com/foo/foo-tool/" );
-        ret.add( example );
-
-        example = new LayoutExample( "net.i.have.a.really.long.path.just.for.the.hell.of.it", "a", null, null, null );
-        example.setDelimitedPath( "net/i/have/a/really/long/path/just/for/the/hell/of/it/a/" );
-        ret.add( example );
-
-        example = new LayoutExample( "com.foo", "foo-connector", null, null, null );
-        example.setDelimitedPath( "com/foo/foo-connector" );
-        ret.add( example );
-
-        return ret;
+        assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
     }
 
-    public List /*<InvalidExample>*/getInvalidPaths()
+    public void testBadPathReleaseInSnapshotDir()
     {
-        List ret = new ArrayList();
-
-        InvalidExample example;
-
-        example = new InvalidExample( "invalid/invalid/1/invalid-1", false, "missing type" );
-        ret.add( example );
-
-        example = new InvalidExample( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar", true,
-                                      "non snapshot artifact inside of a snapshot dir" );
-        ret.add( example );
-
-        example = new InvalidExample( "invalid/invalid-1.0.jar", true, "path is too short" );
-        ret.add( example );
-
-        example = new InvalidExample( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar", true,
-                                      "Timestamped Snapshot artifact not inside of an Snapshot dir" );
-        ret.add( example );
-
-        example = new InvalidExample( "invalid/invalid/1.0/invalid-2.0.jar", true,
-                                      "version mismatch between path and artifact" );
-        ret.add( example );
-
-        example = new InvalidExample( "invalid/invalid/1.0/invalid-1.0b.jar", true,
-                                      "version mismatch between path and artifact" );
-        ret.add( example );
-
-        example = new InvalidExample( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
-                                      true, "wrong artifact id" );
-
-        return ret;
+        assertBadPath( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar", "non snapshot artifact inside of a snapshot dir" );
     }
 
-    public void testArtifactToPath()
+    public void testBadPathTimestampedSnapshotNotInSnapshotDir()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
-        {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArchivaArtifact artifact = createArtifact( example.groupId, example.artifactId, example.version,
-                                                           example.classifier, example.type );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, layout.toPath( artifact ) );
-            }
-        }
+        assertBadPath( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar",
+                       "Timestamped Snapshot artifact not inside of an Snapshot dir" );
     }
 
-    public void testArtifactReferenceToPath()
+    public void testBadPathTooShort()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
-        {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArtifactReference reference = new ArtifactReference();
-                reference.setGroupId( example.groupId );
-                reference.setArtifactId( example.artifactId );
-                reference.setVersion( example.version );
-                reference.setClassifier( example.classifier );
-                reference.setType( example.type );
-
-                assertEquals( "ArtifactReference <" + reference + "> to path:", example.pathArtifact, layout
-                    .toPath( reference ) );
-            }
-        }
+        assertBadPath( "invalid/invalid-1.0.jar", "path is too short" );
     }
 
-    public void testVersionedReferenceToPath()
+    public void testBadPathVersionMismatchA()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
-        {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForVersionedTest() || example.isSuitableForArtifactTest() )
-            {
-                VersionedReference reference = new VersionedReference();
-                reference.setGroupId( example.groupId );
-                reference.setArtifactId( example.artifactId );
-                reference.setVersion( example.version );
-
-                assertEquals( "VersionedReference <" + reference + "> to path:", example.pathVersiond, layout
-                    .toPath( reference ) );
-            }
-        }
+        assertBadPath( "invalid/invalid/1.0/invalid-2.0.jar", "version mismatch between path and artifact" );
     }
 
-    public void testProjectReferenceToPath()
+    public void testBadPathVersionMismatchB()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
-        {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForProjectTest() || example.isSuitableForVersionedTest()
-                || example.isSuitableForArtifactTest() )
-            {
-                ProjectReference reference = new ProjectReference();
-                reference.setGroupId( example.groupId );
-                reference.setArtifactId( example.artifactId );
-
-                assertEquals( "ProjectReference <" + reference + "> to path:", example.pathProjectd, layout
-                    .toPath( reference ) );
-            }
-        }
+        assertBadPath( "invalid/invalid/1.0/invalid-1.0b.jar", "version mismatch between path and artifact" );
     }
 
-    public void testInvalidPathToArtifact()
+    public void testBadPathWrongArtifactId()
     {
-        Iterator it = getInvalidPaths().iterator();
-        while ( it.hasNext() )
-        {
-            InvalidExample example = (InvalidExample) it.next();
-
-            try
-            {
-                layout.toArtifact( example.path );
-                fail( "Should have thrown a LayoutException on the invalid path [" + example.path + "] because of ["
-                    + example.reason + "]" );
-            }
-            catch ( LayoutException e )
-            {
-                /* expected path */
-            }
-        }
+        assertBadPath( "org/apache/maven/test/1.0-SNAPSHOT/wrong-artifactId-1.0-20050611.112233-1.jar",
+                       "wrong artifact id" );
     }
 
-    public void testInvalidPathToArtifactReference()
-    {
-        Iterator it = getInvalidPaths().iterator();
-        while ( it.hasNext() )
-        {
-            InvalidExample example = (InvalidExample) it.next();
-
-            try
-            {
-                layout.toArtifactReference( example.path );
-                fail( "Should have thrown a LayoutException on the invalid path [" + example.path + "] because of ["
-                    + example.reason + "]" );
-            }
-            catch ( LayoutException e )
-            {
-                /* expected path */
-            }
-        }
-    }
-
-    public void testInvalidPathToVersionedReference()
-    {
-        Iterator it = getInvalidPaths().iterator();
-        while ( it.hasNext() )
-        {
-            InvalidExample example = (InvalidExample) it.next();
-
-            try
-            {
-                layout.toVersionedReference( example.path );
-                if ( example.hasFilename )
-                {
-                    fail( "Should have thrown a LayoutException on the invalid path [" + example.path
-                        + "] because of [" + example.reason + "]" );
-                }
-            }
-            catch ( LayoutException e )
-            {
-                /* expected path */
-            }
-        }
-    }
-
-    public void testInvalidPathToProjectReference()
-    {
-        Iterator it = getInvalidPaths().iterator();
-        while ( it.hasNext() )
-        {
-            InvalidExample example = (InvalidExample) it.next();
-
-            try
-            {
-                layout.toProjectReference( example.path );
-                if ( example.hasFilename )
-                {
-                    fail( "Should have thrown a LayoutException on the invalid path [" + example.path
-                        + "] because of [" + example.reason + "]" );
-                }
-            }
-            catch ( LayoutException e )
-            {
-                /* expected path */
-            }
-        }
-    }
-
-    public void testPathToArtifact()
+    /** 
+     * [MRM-432] Oddball version spec.
+     * Example of an oddball / unusual version spec.
+     * @throws LayoutException 
+     */
+    public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        String groupId = "ch.ethz.ganymed";
+        String artifactId = "ganymed-ssh2";
+        String version = "build210";
+        String classifier = null;
+        String type = "jar";
+        String path = "ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /** 
+     * [MRM-432] Oddball version spec.
+     * Example of an oddball / unusual version spec.
+     * @throws LayoutException 
+     */
+    public void testGoodButOddVersionSpecJavaxComm()
+        throws LayoutException
+    {
+        String groupId = "javax";
+        String artifactId = "comm";
+        String version = "3.0-u1";
+        String classifier = null;
+        String type = "jar";
+        String path = "javax/comm/3.0-u1/comm-3.0-u1.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /** 
+     * [MRM-432] Oddball version spec.
+     * Example of an oddball / unusual version spec.
+     * @throws LayoutException 
+     */
+    public void testGoodButOddVersionSpecJavaxPersistence()
+        throws LayoutException
+    {
+        String groupId = "javax.persistence";
+        String artifactId = "ejb";
+        String version = "3.0-public_review";
+        String classifier = null;
+        String type = "jar";
+        String path = "javax/persistence/ejb/3.0-public_review/ejb-3.0-public_review.jar";
+
+        /* 
+         * The version id of "public_review" can cause problems. is it part of
+         * the version spec? or the classifier?
+         * Since the path spec below shows it in the path, then it is really
+         * part of the version spec. 
+         */
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    public void testGoodComFooTool()
+        throws LayoutException
+    {
+        String groupId = "com.foo";
+        String artifactId = "foo-tool";
+        String version = "1.0";
+        String classifier = null;
+        String type = "jar";
+        String path = "com/foo/foo-tool/1.0/foo-tool-1.0.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    public void testGoodCommonsLang()
+        throws LayoutException
+    {
+        String groupId = "commons-lang";
+        String artifactId = "commons-lang";
+        String version = "2.1";
+        String classifier = null;
+        String type = "jar";
+        String path = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * Test the ejb-client type spec.
+     * Type specs are not a 1 to 1 map to the extension. 
+     * This tests that effect.
+     * @throws LayoutException 
+     */
+    public void testGoodFooEjbClient()
+        throws LayoutException
+    {
+        String groupId = "com.foo";
+        String artifactId = "foo-client";
+        String version = "1.0";
+        String classifier = null;
+        String type = "ejb-client"; // oddball type-spec (should result in jar extension)
+        String path = "com/foo/foo-client/1.0/foo-client-1.0.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * Test the classifier, and java-source type spec.
+     * @throws LayoutException 
+     */
+    public void testGoodFooLibSources()
+        throws LayoutException
+    {
+        String groupId = "com.foo.lib";
+        String artifactId = "foo-lib";
+        String version = "2.1-alpha-1";
+        String classifier = "sources";
+        String type = "java-source"; // oddball type-spec (should result in jar extension)
+        String path = "com/foo/lib/foo-lib/2.1-alpha-1/foo-lib-2.1-alpha-1-sources.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     * @throws LayoutException 
+     */
+    public void testGoodSnapshotMavenTest()
+        throws LayoutException
+    {
+        String groupId = "org.apache.archiva.test";
+        String artifactId = "redonkulous";
+        String version = "3.1-beta-1-20050831.101112-42";
+        String classifier = null;
+        String type = "jar";
+        String path = "org/apache/archiva/test/redonkulous/3.1-beta-1-SNAPSHOT/redonkulous-3.1-beta-1-20050831.101112-42.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    public void testToArtifactOnEmptyPath()
+    {
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArchivaArtifact artifact = layout.toArtifact( example.pathArtifact );
-                assertArtifact( artifact, example.groupId, example.artifactId, example.version, example.classifier,
-                                example.type );
-            }
+            layout.toArtifact( "" );
+            fail( "Should have failed due to empty path." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testPathToArtifactReference()
-        throws LayoutException
+    public void testToArtifactOnNullPath()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArtifactReference reference = layout.toArtifactReference( example.pathArtifact );
-                assertArtifactReference( reference, example.groupId, example.artifactId, example.version,
-                                         example.classifier, example.type );
-            }
+            layout.toArtifact( null );
+            fail( "Should have failed due to null path." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testPathToVersionedReference()
-        throws LayoutException
+    public void testToArtifactReferenceOnEmptyPath()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForVersionedTest() )
-            {
-                VersionedReference reference = layout.toVersionedReference( example.pathVersiond );
-                
-                String baseVersion = reference.getVersion();
-
-                assertVersionedReference( reference, example.groupId, example.artifactId, baseVersion );
-            }
+            layout.toArtifactReference( "" );
+            fail( "Should have failed due to empty path." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testPathToProjectReference()
-        throws LayoutException
+    public void testToArtifactReferenceOnNullPath()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForProjectTest() )
-            {
-                ProjectReference reference = layout.toProjectReference( example.pathProjectd );
-
-                assertProjectReference( reference, example.groupId, example.artifactId );
-            }
+            layout.toArtifactReference( null );
+            fail( "Should have failed due to null path." );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testRoundtripArtifactToPathToArtifact()
-        throws LayoutException
+    public void testToPathOnNullArtifactReference()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArchivaArtifact artifact = createArtifact( example.groupId, example.artifactId, example.version,
-                                                           example.classifier, example.type );
-                String testPath = layout.toPath( artifact );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, testPath );
-                ArchivaArtifact testArtifact = layout.toArtifact( testPath );
-                assertArtifact( testArtifact, artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
-                                artifact.getClassifier(), artifact.getType() );
-            }
+            ArtifactReference reference = null;
+            layout.toPath( reference );
+            fail( "Should have failed due to null artifact reference." );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testRoundtripPathToArtifactToPath()
-        throws LayoutException
+    public void testToPathOnNullArtifact()
     {
-        Iterator it = getGoodExamples().iterator();
-        while ( it.hasNext() )
+        try
         {
-            LayoutExample example = (LayoutExample) it.next();
-            if ( example.isSuitableForArtifactTest() )
-            {
-                ArchivaArtifact artifact = layout.toArtifact( example.pathArtifact );
-                assertArtifact( artifact, example.groupId, example.artifactId, example.version, example.classifier,
-                                example.type );
-                String testPath = layout.toPath( artifact );
-                assertEquals( "Artifact <" + artifact + "> to path:", example.pathArtifact, testPath );
-            }
+            ArchivaArtifact artifact = null;
+            layout.toPath( artifact );
+            fail( "Should have failed due to null artifact." );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            /* expected path */
         }
     }
 
-    public void testTimestampedSnapshotRoundtrip()
+    protected void assertBadPath( String path, String reason )
+    {
+        try
+        {
+            layout.toArtifact( path );
+            fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
+        }
+        catch ( LayoutException e )
+        {
+            /* expected path */
+        }
+    }
+
+    /**
+     * Perform a roundtrip through the layout routines to determine success.
+     */
+    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier,
+                               String type )
         throws LayoutException
     {
-        String originalPath = "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
-        ArchivaArtifact artifact = layout.toArtifact( originalPath );
-        assertArtifact( artifact, "org.apache.maven.test", "get-metadata-snapshot", "1.0-20050831.101112-1", "", "jar" );
+        ArchivaArtifact expectedArtifact = createArtifact( groupId, artifactId, version, classifier, type );
 
-        assertEquals( originalPath, layout.toPath( artifact ) );
+        // --- Artifact Tests.
+        // Artifact to Path 
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, layout.toPath( expectedArtifact ) );
 
-        ArtifactReference aref = new ArtifactReference();
-        aref.setGroupId( artifact.getGroupId() );
-        aref.setArtifactId( artifact.getArtifactId() );
-        aref.setVersion( artifact.getVersion() );
-        aref.setClassifier( artifact.getClassifier() );
-        aref.setType( artifact.getType() );
+        // Path to Artifact.
+        ArchivaArtifact testArtifact = layout.toArtifact( path );
+        assertArtifact( testArtifact, groupId, artifactId, version, classifier, type );
 
-        assertEquals( originalPath, layout.toPath( aref ) );
+        // And back again, using test Artifact from previous step.
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, layout.toPath( testArtifact ) );
+
+        // --- Artifact Reference Tests
+
+        // Path to Artifact Reference.
+        ArtifactReference testReference = layout.toArtifactReference( path );
+        assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
+
+        // And back again, using test Reference from previous step.
+        assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, layout.toPath( testReference ) );
     }
 
     protected void setUp()

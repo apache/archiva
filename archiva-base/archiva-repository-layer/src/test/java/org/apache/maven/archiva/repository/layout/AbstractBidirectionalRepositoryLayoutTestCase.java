@@ -81,19 +81,14 @@ public class AbstractBidirectionalRepositoryLayoutTestCase
 
         assertNotNull( expectedId + " - Should not be null.", actualArtifact );
 
-        String expectedType = type;
-
-        // Special Case.
-        if ( "ejb-client".equals( type ) )
-        {
-            expectedType = "jar";
-        }
-
         assertEquals( expectedId + " - Group ID", groupId, actualArtifact.getGroupId() );
         assertEquals( expectedId + " - Artifact ID", artifactId, actualArtifact.getArtifactId() );
+        if ( StringUtils.isNotBlank( classifier ) )
+        {
+            assertEquals( expectedId + " - Classifier", classifier, actualArtifact.getClassifier() );
+        }
         assertEquals( expectedId + " - Version ID", version, actualArtifact.getVersion() );
-        assertEquals( expectedId + " - Classifier", classifier, actualArtifact.getClassifier() );
-        assertEquals( expectedId + " - Type", expectedType, actualArtifact.getType() );
+        assertEquals( expectedId + " - Type", type, actualArtifact.getType() );
     }
 
     protected void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
@@ -104,19 +99,14 @@ public class AbstractBidirectionalRepositoryLayoutTestCase
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
-        String expectedType = type;
-
-        // Special Case.
-        if ( "ejb-client".equals( type ) )
-        {
-            expectedType = "jar";
-        }
-
         assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
         assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
+        if ( StringUtils.isNotBlank( classifier ) )
+        {
+            assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
+        }
         assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
-        assertEquals( expectedId + " - Classifier", classifier, actualReference.getClassifier() );
-        assertEquals( expectedId + " - Type", expectedType, actualReference.getType() );
+        assertEquals( expectedId + " - Type", type, actualReference.getType() );
     }
 
     protected void assertVersionedReference( VersionedReference actualReference, String groupId, String artifactId,
