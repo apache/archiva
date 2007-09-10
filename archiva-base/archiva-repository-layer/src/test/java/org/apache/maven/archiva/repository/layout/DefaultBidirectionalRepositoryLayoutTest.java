@@ -163,6 +163,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
      * This tests that effect.
      * @throws LayoutException 
      */
+    /* TODO: Re-enabled in the future. 
     public void testGoodFooEjbClient()
         throws LayoutException
     {
@@ -175,6 +176,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
+    */
 
     /**
      * Test the classifier, and java-source type spec.
