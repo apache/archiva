@@ -30,8 +30,6 @@
 
   <package name="base" extends="webwork-default">
     <interceptors>
-      <!-- TODO! eh? -->
-      <interceptor name="strange" class="webwork-is-doing-strange-things"/>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
       <interceptor name="redbackSecureActions" class="redbackSecureActionInterceptor"/>
