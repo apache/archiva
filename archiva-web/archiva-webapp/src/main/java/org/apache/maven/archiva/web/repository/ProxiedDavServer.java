@@ -32,6 +32,8 @@ import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
@@ -70,6 +72,11 @@ public class ProxiedDavServer
      * @plexus.requirement role-hint="default"
      */
     private RepositoryProxyConnectors connectors;
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataTools metadataTools;
 
     /**
      * @plexus.requirement
@@ -160,71 +167,83 @@ public class ProxiedDavServer
             return;
         }
 
-        try
+        // Is it a Metadata resource?
+        if ( resource.endsWith( "/" + MetadataTools.MAVEN_METADATA ) )
         {
             ProjectReference project;
             VersionedReference versioned;
-            ArtifactReference artifact;
-            BidirectionalRepositoryLayout resourceLayout;
 
             try
             {
-                resourceLayout = layoutFactory.getLayoutForPath( resource );
-            }
-            catch ( LayoutException e )
-            {
-                /* invalid request - eat it */
-                return;
-            }
 
-            try
-            {
-                artifact = resourceLayout.toArtifactReference( resource );
-                if ( artifact != null )
-                {
-                    connectors.fetchFromProxies( managedRepository, artifact );
-                    request.getRequest().setPathInfo( layout.toPath( artifact ) );
-                    return;
-                }
-            }
-            catch ( LayoutException e )
-            {
-                /* eat it */
-            }
-
-            try
-            {
-                versioned = resourceLayout.toVersionedReference( resource );
+                versioned = metadataTools.toVersionedReference( resource );
                 if ( versioned != null )
                 {
                     connectors.fetchFromProxies( managedRepository, versioned );
-                    request.getRequest().setPathInfo( layout.toPath( versioned ) );
+                    request.getRequest().setPathInfo( metadataTools.toPath( versioned ) );
                     return;
                 }
             }
-            catch ( LayoutException e )
+            catch ( RepositoryMetadataException e )
             {
                 /* eat it */
+            }
+            catch ( ProxyException e )
+            {
+                throw new ServletException( "Unable to fetch versioned metadata resource.", e );
             }
 
             try
             {
-                project = resourceLayout.toProjectReference( resource );
+                project = metadataTools.toProjectReference( resource );
                 if ( project != null )
                 {
                     connectors.fetchFromProxies( managedRepository, project );
-                    request.getRequest().setPathInfo( layout.toPath( project ) );
+                    request.getRequest().setPathInfo( metadataTools.toPath( project ) );
                     return;
                 }
             }
-            catch ( LayoutException e )
+            catch ( RepositoryMetadataException e )
             {
                 /* eat it */
             }
+            catch ( ProxyException e )
+            {
+                throw new ServletException( "Unable to fetch project metadata resource.", e );
+            }
+        }
+
+        // Not any of the above? Then it's gotta be an artifact reference.
+        ArtifactReference artifact;
+        BidirectionalRepositoryLayout resourceLayout;
+
+        try
+        {
+            resourceLayout = layoutFactory.getLayoutForPath( resource );
+        }
+        catch ( LayoutException e )
+        {
+            /* invalid request - eat it */
+            return;
+        }
+
+        try
+        {
+            artifact = resourceLayout.toArtifactReference( resource );
+            if ( artifact != null )
+            {
+                connectors.fetchFromProxies( managedRepository, artifact );
+                request.getRequest().setPathInfo( layout.toPath( artifact ) );
+                return;
+            }
+        }
+        catch ( LayoutException e )
+        {
+            /* eat it */
         }
         catch ( ProxyException e )
         {
-            throw new ServletException( "Unable to fetch resource.", e );
+            throw new ServletException( "Unable to fetch artifact resource.", e );
         }
     }
 
