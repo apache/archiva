@@ -75,7 +75,7 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
     /**
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
-    private Map bidirectionalLayoutMap;
+    private Map bidirectionalLayoutMap; // TODO: replace with new bidir-repo-layout-factory
 
     /**
      * @plexus.requirement role-hint="sha1"
@@ -137,7 +137,7 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
         if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
         {
             throw new ConsumerException( "Unable to process repository with layout [" + layoutName
-                            + "] as there is no coresponding " + BidirectionalRepositoryLayout.class.getName()
+                            + "] as there is no corresponding " + BidirectionalRepositoryLayout.class.getName()
                             + " implementation available." );
         }
 

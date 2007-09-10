@@ -27,8 +27,6 @@ import org.apache.maven.archiva.configuration.RepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
@@ -254,22 +252,6 @@ public class AbstractProxyTestCase
     {
         return createRepository( "src/test/repositories/legacy-managed", "testManagedLegacyRepo",
                                  "Test Managed (Legacy) Repository", "legacy" );
-    }
-
-    protected ProjectReference createProjectReference( String layoutType, String path )
-        throws Exception
-    {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( layoutType );
-        ProjectReference metadata = layout.toProjectReference( path );
-        return metadata;
-    }
-
-    protected VersionedReference createVersionedReference( String layoutType, String path )
-        throws Exception
-    {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( layoutType );
-        VersionedReference metadata = layout.toVersionedReference( path );
-        return metadata;
     }
 
     protected ArchivaRepository createProxiedLegacyRepository()

@@ -157,6 +157,7 @@
       <knownContentConsumer>index-content</knownContentConsumer>
       <knownContentConsumer>auto-remove</knownContentConsumer>
       <knownContentConsumer>auto-rename</knownContentConsumer>
+      <knownContentConsumer>metadata-updater</knownContentConsumer>
     </knownContentConsumers>
     <invalidContentConsumers>
       <invalidContentConsumer>update-db-bad-content</invalidContentConsumer>

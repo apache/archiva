@@ -174,7 +174,7 @@ public class DefaultRepositoryProxyConnectors
         {
             ProxyConnector connector = (ProxyConnector) it.next();
             ArchivaRepository targetRepository = connector.getTargetRepository();
-            String targetPath = getLayout( targetRepository ).toPath( metadata );
+            String targetPath = metadataTools.toPath( metadata );
             
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
             File downloadedFile = transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
@@ -240,7 +240,7 @@ public class DefaultRepositoryProxyConnectors
         {
             ProxyConnector connector = (ProxyConnector) it.next();
             ArchivaRepository targetRepository = connector.getTargetRepository();
-            String targetPath = getLayout( targetRepository ).toPath( metadata );
+            String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
             File downloadedFile = transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
@@ -328,16 +328,14 @@ public class DefaultRepositoryProxyConnectors
     private File toLocalFile( ArchivaRepository repository, ProjectReference metadata )
         throws ProxyException
     {
-        BidirectionalRepositoryLayout sourceLayout = getLayout( repository );
-        String sourcePath = sourceLayout.toPath( metadata );
+        String sourcePath = metadataTools.toPath( metadata );
         return new File( repository.getUrl().getPath(), sourcePath );
     }
 
     private File toLocalFile( ArchivaRepository repository, VersionedReference metadata )
         throws ProxyException
     {
-        BidirectionalRepositoryLayout sourceLayout = getLayout( repository );
-        String sourcePath = sourceLayout.toPath( metadata );
+        String sourcePath = metadataTools.toPath( metadata );
         return new File( repository.getUrl().getPath(), sourcePath );
     }
 

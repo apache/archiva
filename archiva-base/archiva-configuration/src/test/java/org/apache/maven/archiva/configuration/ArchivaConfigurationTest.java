@@ -89,6 +89,9 @@ public class ArchivaConfigurationTest
         assertTrue( "check managed repositories", repository.isIndexed() );
     }
 
+    /**
+     * Ensures that the provided configuration matches the details present in the archiva-default.xml file.
+     */
     private void assertConfiguration( Configuration configuration )
         throws Exception
     {
@@ -100,7 +103,7 @@ public class ArchivaConfigurationTest
         RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
         assertNotNull( "check repository scanning", repoScanning );
         assertEquals( "check file types", 4, repoScanning.getFileTypes().size() );
-        assertEquals( "check known consumers", 8, repoScanning.getKnownContentConsumers().size() );
+        assertEquals( "check known consumers", 9, repoScanning.getKnownContentConsumers().size() );
         assertEquals( "check invalid consumers", 1, repoScanning.getInvalidContentConsumers().size() );
 
         List patterns = filetypes.getFileTypePatterns( "artifacts" );

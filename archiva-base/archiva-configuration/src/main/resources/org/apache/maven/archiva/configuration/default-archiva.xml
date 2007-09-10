@@ -138,6 +138,7 @@
       <knownContentConsumer>index-content</knownContentConsumer>
       <knownContentConsumer>auto-remove</knownContentConsumer>
       <knownContentConsumer>auto-rename</knownContentConsumer>
+      <knownContentConsumer>metadata-updater</knownContentConsumer>
       <!--knownContentConsumer>repository-purge</knownContentConsumer-->
     </knownContentConsumers>
     <invalidContentConsumers>

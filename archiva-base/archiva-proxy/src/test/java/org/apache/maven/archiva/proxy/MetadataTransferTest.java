@@ -677,12 +677,18 @@ public class MetadataTransferTest
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
 
-        ProjectReference metadata = createProjectReference( "default", requestedResource );
+        ProjectReference metadata = createProjectReference( requestedResource );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
+    }
+
+    private ProjectReference createProjectReference( String path )
+        throws RepositoryMetadataException
+    {
+        return metadataTools.toProjectReference( path );
     }
 
     /**
@@ -695,7 +701,7 @@ public class MetadataTransferTest
         throws Exception
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
-        ProjectReference metadata = createProjectReference( "default", requestedResource );
+        ProjectReference metadata = createProjectReference( requestedResource );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
 
@@ -714,12 +720,18 @@ public class MetadataTransferTest
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
 
-        VersionedReference metadata = createVersionedReference( "default", requestedResource );
+        VersionedReference metadata = createVersionedReference( requestedResource );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
+    }
+
+    private VersionedReference createVersionedReference( String path )
+        throws RepositoryMetadataException
+    {
+        return metadataTools.toVersionedReference( path );
     }
 
     /**
@@ -732,7 +744,7 @@ public class MetadataTransferTest
         throws Exception
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
-        VersionedReference metadata = createVersionedReference( "default", requestedResource );
+        VersionedReference metadata = createVersionedReference( requestedResource );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, metadata );
 
@@ -813,7 +825,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, requestedResource );
         assertTrue( actualFile.exists() );
 
-        ProjectReference metadata = createProjectReference( "default", requestedResource );
+        ProjectReference metadata = createProjectReference( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
@@ -846,7 +858,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, requestedResource );
         assertTrue( "Release Metadata should exist: " + requestedResource, actualFile.exists() );
 
-        VersionedReference metadata = createVersionedReference( "default", requestedResource );
+        VersionedReference metadata = createVersionedReference( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
@@ -879,7 +891,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, requestedResource );
         assertTrue( "Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
 
-        VersionedReference actualMetadata = createVersionedReference( "default", requestedResource );
+        VersionedReference actualMetadata = createVersionedReference( requestedResource );
 
         assertSnapshotMetadata( actualFile, actualMetadata, expectedDate, expectedTime, expectedBuildnumber );
     }
@@ -905,7 +917,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, proxiedFile );
         assertTrue( "Repo Specific Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
 
-        VersionedReference actualMetadata = createVersionedReference( "default", requestedResource );
+        VersionedReference actualMetadata = createVersionedReference( requestedResource );
 
         assertSnapshotMetadata( actualFile, actualMetadata, expectedDate, expectedTime, expectedBuildnumber );
     }
@@ -955,7 +967,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, proxiedFile );
         assertTrue( actualFile.exists() );
 
-        ProjectReference metadata = createProjectReference( "default", requestedResource );
+        ProjectReference metadata = createProjectReference( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
@@ -990,7 +1002,7 @@ public class MetadataTransferTest
         File actualFile = new File( managedDefaultDir, proxiedFile );
         assertTrue( "Release metadata for repo should exist: " + actualFile, actualFile.exists() );
 
-        VersionedReference metadata = createVersionedReference( "default", requestedResource );
+        VersionedReference metadata = createVersionedReference( requestedResource );
 
         // Build expected metadata XML
         StringWriter expectedMetadataXml = new StringWriter();
