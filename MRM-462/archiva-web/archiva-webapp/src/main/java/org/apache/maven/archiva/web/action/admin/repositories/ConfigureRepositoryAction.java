@@ -72,6 +72,7 @@ public class ConfigureRepositoryAction
 
     private String repoid;
 
+    // TODO! consider removing? was just meant to be for delete...
     private String mode;
 
     /**
@@ -94,10 +95,9 @@ public class ConfigureRepositoryAction
     {
         getLogger().info( ".confirm()" );
 
-        if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, getRepoid() ) )
+        if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, repoid ) )
         {
-            addActionError(
-                "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
+            addActionError( "You do not have the appropriate permissions to delete the " + repoid + " repository." );
             return ERROR;
         }
 
@@ -108,17 +108,16 @@ public class ConfigureRepositoryAction
     {
         getLogger().info( ".delete()" );
 
-        if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, getRepoid() ) )
+        if ( operationAllowed( ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY, repoid ) )
         {
-            addActionError(
-                "You do not have the appropriate permissions to delete the " + getRepoid() + " repository." );
+            addActionError( "You do not have the appropriate permissions to delete the " + repoid + " repository." );
             return ERROR;
         }
 
         String result = SUCCESS;
         if ( StringUtils.equals( mode, "delete-entry" ) || StringUtils.equals( mode, "delete-contents" ) )
         {
-            AdminRepositoryConfiguration existingRepository = getRepository();
+            AdminRepositoryConfiguration existingRepository = repository;
             if ( existingRepository == null )
             {
                 addActionError( "A repository with that id does not exist" );
@@ -129,8 +128,8 @@ public class ConfigureRepositoryAction
 
             try
             {
-                removeRepository( getRepoid() );
-                result = saveConfiguration();
+                removeRepository( repoid );
+                result = saveConfiguration( archivaConfiguration.getConfiguration() );
 
                 if ( result.equals( SUCCESS ) )
                 {
@@ -171,9 +170,9 @@ public class ConfigureRepositoryAction
         getLogger().info( ".edit()" );
         this.mode = "edit";
 
-        if ( operationAllowed( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY, getRepoid() ) )
+        if ( operationAllowed( ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY, repoid ) )
         {
-            addActionError( "You do not have the appropriate permissions to edit the " + getRepoid() + " repository." );
+            addActionError( "You do not have the appropriate permissions to edit the " + repoid + " repository." );
             return ERROR;
         }
 
@@ -207,9 +206,8 @@ public class ConfigureRepositoryAction
     }
 
     public void prepare()
-        throws Exception
     {
-        String id = getRepoid();
+        String id = repoid;
         if ( id == null )
         {
             this.repository = new AdminRepositoryConfiguration();
@@ -228,24 +226,23 @@ public class ConfigureRepositoryAction
 
     public String save()
     {
-        String mode = getMode();
-        String repoId = getRepository().getId();
-        boolean containsError = false;
+        String repoId = repository.getId();
 
         getLogger().info( ".save(" + mode + ":" + repoId + ")" );
 
-        containsError = validateFields( mode );
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        boolean containsError = validateFields( configuration );
 
         if ( containsError && StringUtils.equalsIgnoreCase( "add", mode ) )
         {
             return INPUT;
         }
-        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", mode ) )
+        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", this.mode ) )
         {
             return ERROR;
         }
 
-        if ( StringUtils.equalsIgnoreCase( "edit", mode ) )
+        if ( StringUtils.equalsIgnoreCase( "edit", this.mode ) )
         {
             removeRepository( repoId );
         }
@@ -253,8 +250,8 @@ public class ConfigureRepositoryAction
         String result;
         try
         {
-            addRepository( getRepository() );
-            result = saveConfiguration();
+            addRepository( repository, configuration );
+            result = saveConfiguration( configuration );
         }
         catch ( IOException e )
         {
@@ -280,12 +277,11 @@ public class ConfigureRepositoryAction
         return result;
     }
 
-    private boolean validateFields( String mode )
+    private boolean validateFields( Configuration config )
     {
         boolean containsError = false;
         CronExpressionValidator validator = new CronExpressionValidator();
-        Configuration config = archivaConfiguration.getConfiguration();
-        String repoId = getRepository().getId();
+        String repoId = repository.getId();
 
         if ( StringUtils.isBlank( repoId ) )
         {
@@ -305,7 +301,7 @@ public class ConfigureRepositoryAction
         // TODO! split
         if ( StringUtils.isBlank( repository.getLocation() ) )
         {
-            addFieldError( "repository.url", "You must enter a directory or url." );
+            addFieldError( "repository.url", "You must enter a directory." );
             containsError = true;
         }
         if ( StringUtils.isBlank( repository.getName() ) )
@@ -337,7 +333,7 @@ public class ConfigureRepositoryAction
         this.repository = repository;
     }
 
-    private void addRepository( AdminRepositoryConfiguration repository )
+    private void addRepository( AdminRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
         getLogger().info( ".addRepository(" + repository + ")" );
@@ -364,13 +360,13 @@ public class ConfigureRepositoryAction
 */
 
         // TODO! others
-        archivaConfiguration.getConfiguration().addManagedRepository( repository );
+        configuration.addManagedRepository( repository );
 
         // TODO: double check these are configured on start up
+        // TODO: belongs in the business logic
         roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
 
         roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
-
     }
 
     private boolean operationAllowed( String permission, String repoid )
@@ -378,10 +374,9 @@ public class ConfigureRepositoryAction
         ActionContext context = ActionContext.getContext();
         SecuritySession securitySession = (SecuritySession) context.get( SecuritySession.ROLE );
 
-        AuthorizationResult authzResult;
         try
         {
-            authzResult = securitySystem.authorize( securitySession, permission, repoid );
+            AuthorizationResult authzResult = securitySystem.authorize( securitySession, permission, repoid );
 
             return authzResult.isAuthorized();
         }
@@ -422,14 +417,14 @@ public class ConfigureRepositoryAction
         getLogger().info( "removed user roles associated with repository " + existingRepository.getId() );
     }
 
-    private String saveConfiguration()
+    private String saveConfiguration( Configuration configuration )
         throws IOException, InvalidConfigurationException, RegistryException
     {
         getLogger().info( ".saveConfiguration()" );
 
         try
         {
-            archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+            archivaConfiguration.save( configuration );
             addActionMessage( "Successfully saved configuration" );
         }
         catch ( IndeterminateConfigurationException e )
@@ -439,5 +434,15 @@ public class ConfigureRepositoryAction
         }
 
         return SUCCESS;
+    }
+
+    public void setRoleManager( RoleManager roleManager )
+    {
+        this.roleManager = roleManager;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

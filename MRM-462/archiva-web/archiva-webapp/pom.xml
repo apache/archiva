@@ -236,6 +236,12 @@
       <version>${redback.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- Test Deps -->
+    <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
