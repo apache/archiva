@@ -796,6 +796,6 @@
   <properties>
     <maven.version>2.0.5</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
-    <redback.version>1.0-alpha-2</redback.version>
+    <redback.version>1.0-alpha-3</redback.version>
   </properties>
 </project>
