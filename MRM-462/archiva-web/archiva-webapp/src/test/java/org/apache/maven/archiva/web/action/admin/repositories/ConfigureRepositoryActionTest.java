@@ -23,11 +23,13 @@ import com.opensymphony.xwork.Action;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.registry.RegistryException;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -133,7 +135,7 @@ public class ConfigureRepositoryActionTest
         assertEquals( Action.SUCCESS, status );
         assertTrue( location.exists() );
 
-        assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
+        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
@@ -142,7 +144,7 @@ public class ConfigureRepositoryActionTest
     public void testEditRepositoryInitialPage()
         throws Exception
     {
-        Configuration configuration = createConfigurationForEditing();
+        Configuration configuration = createConfigurationForEditing( createRepository() );
 
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
@@ -180,11 +182,10 @@ public class ConfigureRepositoryActionTest
         assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
     }
 
-    private Configuration createConfigurationForEditing()
+    private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
     {
         Configuration configuration = new Configuration();
-        ManagedRepositoryConfiguration r = createRepository();
-        configuration.addManagedRepository( r );
+        configuration.addManagedRepository( repositoryConfiguration );
         return configuration;
     }
 
@@ -205,7 +206,7 @@ public class ConfigureRepositoryActionTest
 
         roleManagerControl.replay();
 
-        Configuration configuration = createConfigurationForEditing();
+        Configuration configuration = createConfigurationForEditing( createRepository() );
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
         archivaConfiguration.getConfiguration();
@@ -227,10 +228,99 @@ public class ConfigureRepositoryActionTest
         ManagedRepositoryConfiguration newRepository = createRepository();
         newRepository.setName( "new repo name" );
         assertRepositoryEquals( repository, newRepository );
-        assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
+        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
 
         roleManagerControl.verify();
         archivaConfigurationControl.verify();
+    }
+
+    public void testDeleteRepositoryConfirmation()
+    {
+        ManagedRepositoryConfiguration originalRepository = createRepository();
+        Configuration configuration = createConfigurationForEditing( originalRepository );
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.replay();
+
+        action.setRepoid( REPO_ID );
+
+        action.prepare();
+        assertEquals( REPO_ID, action.getRepoid() );
+        assertNull( action.getMode() );
+        AdminRepositoryConfiguration repository = action.getRepository();
+        assertNotNull( repository );
+        assertRepositoryEquals( repository, createRepository() );
+
+        String status = action.confirm();
+        assertEquals( Action.INPUT, status );
+        repository = action.getRepository();
+        assertRepositoryEquals( repository, createRepository() );
+        assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
+    }
+
+    public void testDeleteRepositoryKeepContent()
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        Configuration configuration = executeDeletionTest( "delete-entry", createRepository() );
+
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+
+        assertTrue( location.exists() );
+    }
+
+    public void testDeleteRepositoryDeleteContent()
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        Configuration configuration = executeDeletionTest( "delete-contents", createRepository() );
+
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+
+        assertFalse( location.exists() );
+    }
+
+    public void testDeleteRepositoryCancelled()
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        ManagedRepositoryConfiguration originalRepository = createRepository();
+        Configuration configuration = executeDeletionTest( "unmodified", originalRepository );
+
+        AdminRepositoryConfiguration repository = action.getRepository();
+        assertRepositoryEquals( repository, createRepository() );
+        assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
+
+        assertTrue( location.exists() );
+    }
+
+    private Configuration executeDeletionTest( String mode, ManagedRepositoryConfiguration originalRepository )
+        throws RegistryException, IndeterminateConfigurationException
+    {
+        location.mkdirs();
+
+        Configuration configuration = createConfigurationForEditing( originalRepository );
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
+        archivaConfiguration.save( configuration );
+        archivaConfigurationControl.replay();
+
+        action.setRepoid( REPO_ID );
+        action.setMode( mode );
+
+        action.prepare();
+        assertEquals( REPO_ID, action.getRepoid() );
+        assertEquals( mode, action.getMode() );
+        AdminRepositoryConfiguration repository = action.getRepository();
+        assertNotNull( repository );
+        assertRepositoryEquals( repository, createRepository() );
+
+        assertTrue( location.exists() );
+        String status = action.delete();
+        assertEquals( Action.SUCCESS, status );
+        return configuration;
     }
 
     private void populateRepository( ManagedRepositoryConfiguration repository )

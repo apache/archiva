@@ -80,6 +80,7 @@ public class ConfigureRepositoryAction
         return INPUT;
     }
 
+    // TODO: rename to confirmDelete
     public String confirm()
     {
         return INPUT;
@@ -101,8 +102,9 @@ public class ConfigureRepositoryAction
 
             try
             {
-                removeRepository( repoid, archivaConfiguration.getConfiguration() );
-                result = saveConfiguration( archivaConfiguration.getConfiguration() );
+                Configuration configuration = archivaConfiguration.getConfiguration();
+                removeRepository( repoid, configuration );
+                result = saveConfiguration( configuration );
 
                 if ( result.equals( SUCCESS ) )
                 {
