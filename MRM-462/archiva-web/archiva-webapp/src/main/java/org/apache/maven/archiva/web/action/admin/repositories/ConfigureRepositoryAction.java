@@ -292,11 +292,6 @@ public class ConfigureRepositoryAction
         this.repoid = repoid;
     }
 
-    public void setRepository( AdminRepositoryConfiguration repository )
-    {
-        this.repository = repository;
-    }
-
     private void addRepository( AdminRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
