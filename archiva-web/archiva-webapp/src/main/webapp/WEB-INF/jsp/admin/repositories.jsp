@@ -131,14 +131,6 @@
   </td>
 </tr>
 <tr>
-  <th>Repository Purge By Days Older Than</th>
-  <td>${repository.daysOlder}</td>
-</tr>
-<tr>
-  <th>Repository Purge By Retention Count</th>
-  <td>${repository.retentionCount}</td>
-</tr>
-<tr>
   <th>Releases Included</th>
   <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
 </tr>
@@ -146,13 +138,23 @@
   <th>Snapshots Included</th>
   <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
 </tr>
+<c:if test="${repository.snapshots}">
+  <tr>
+    <th>Delete Released Snapshots</th>
+    <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.deleteReleasedSnapshots}</td>
+  </tr>
+  <tr>
+    <th>Repository Purge By Days Older Than</th>
+    <td>${repository.daysOlder}</td>
+  </tr>
+  <tr>
+    <th>Repository Purge By Retention Count</th>
+    <td>${repository.retentionCount}</td>
+  </tr>
+</c:if>
 <tr>
   <th>Scanned</th>
   <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"> ${repository.scanned}</td>
-</tr>
-<tr>
-  <th>Delete Released Snapshots</th>
-  <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.deleteReleasedSnapshots}</td>
 </tr>
 <c:if test="${repository.scanned}">
   <tr>
