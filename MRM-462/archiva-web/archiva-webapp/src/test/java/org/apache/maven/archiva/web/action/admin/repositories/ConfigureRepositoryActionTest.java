@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Action;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -29,6 +30,7 @@ import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.easymock.MockControl;
 
+import java.io.File;
 import java.util.Collections;
 
 /**
@@ -49,6 +51,8 @@ public class ConfigureRepositoryActionTest
 
     private static final String REPO_ID = "repo-ident";
 
+    private File location;
+
     protected void setUp()
         throws Exception
     {
@@ -66,6 +70,7 @@ public class ConfigureRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
+        location = getTestFile( "location" );
     }
 
     public void testAddRepositoryInitialPage()
@@ -100,6 +105,8 @@ public class ConfigureRepositoryActionTest
     public void testAddRepository()
         throws Exception
     {
+        FileUtils.deleteDirectory( location );
+
         // TODO: should be in the business model
         roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
         roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
@@ -121,8 +128,10 @@ public class ConfigureRepositoryActionTest
         AdminRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
+        assertFalse( location.exists() );
         String status = action.save();
         assertEquals( Action.SUCCESS, status );
+        assertTrue( location.exists() );
 
         assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
 
@@ -171,7 +180,7 @@ public class ConfigureRepositoryActionTest
         assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
     }
 
-    private static Configuration createConfigurationForEditing()
+    private Configuration createConfigurationForEditing()
     {
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration r = createRepository();
@@ -179,7 +188,7 @@ public class ConfigureRepositoryActionTest
         return configuration;
     }
 
-    private static ManagedRepositoryConfiguration createRepository()
+    private ManagedRepositoryConfiguration createRepository()
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
         r.setId( REPO_ID );
@@ -224,11 +233,11 @@ public class ConfigureRepositoryActionTest
         archivaConfigurationControl.verify();
     }
 
-    private static void populateRepository( ManagedRepositoryConfiguration repository )
+    private void populateRepository( ManagedRepositoryConfiguration repository )
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setLocation( getTestFile( "location" ).getAbsolutePath() );
+        repository.setLocation( location.getAbsolutePath() );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );
