@@ -19,16 +19,15 @@ package org.apache.maven.archiva.web.check;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -57,6 +56,11 @@ public class RoleExistanceEnvironmentCheck
      */
     private RoleManager roleManager;
 
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration configuration;
+
     private boolean checked;
 
     public void validateEnvironment( List list )
@@ -65,14 +69,9 @@ public class RoleExistanceEnvironmentCheck
         {
             try
             {
-                List repos = dao.getRepositoryDAO().getRepositories();
-
-                // TODO! this be skipping non-managed repos
-                Iterator it = repos.iterator();
-                while ( it.hasNext() )
+                Configuration config = configuration.getConfiguration();
+                for ( ManagedRepositoryConfiguration repository : config.getManagedRepositoriesAsMap().values() )
                 {
-                    ArchivaRepository repository = (ArchivaRepository) it.next();
-
                     if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repository.getId() ) )
                     {
                         roleManager.createTemplatedRole( "archiva-repository-manager", repository.getId() );
@@ -88,17 +87,6 @@ public class RoleExistanceEnvironmentCheck
             {
                 list.add( this.getClass().getName() + "error initializing roles: " + rpe.getMessage() );
                 getLogger().info( "error initializing roles", rpe );
-            }
-            catch ( ObjectNotFoundException e )
-            {
-                list.add(
-                    this.getClass().getName() + "error initializing roles (repository not found): " + e.getMessage() );
-                getLogger().info( "error initializing roles", e );
-            }
-            catch ( ArchivaDatabaseException e )
-            {
-                list.add( this.getClass().getName() + "error initializing roles (database error): " + e.getMessage() );
-                getLogger().info( "error initializing roles", e );
             }
 
             checked = true;

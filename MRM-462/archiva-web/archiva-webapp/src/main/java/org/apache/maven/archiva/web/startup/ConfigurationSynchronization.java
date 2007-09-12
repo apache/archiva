@@ -46,6 +46,7 @@ import java.util.List;
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
  * role-hint="default"
+ * @todo consider whether we really need these in the database or not
  */
 public class ConfigurationSynchronization
     extends AbstractLogEnabled
@@ -68,7 +69,6 @@ public class ConfigurationSynchronization
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        // TODO! this used to store both types, but do we even need it?
         if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
