@@ -52,12 +52,7 @@ public interface ArchivaTaskScheduler
     public void queueRepositoryTask( RepositoryTask task )
         throws TaskQueueException;
 
-    public void scheduleAllRepositoryTasks()
-        throws TaskExecutionException;
-    
     public void scheduleDatabaseTasks()
         throws TaskExecutionException;
-    
-    public void scheduleRepositoryTask( String repositoryId )
-        throws TaskExecutionException;
+
 }

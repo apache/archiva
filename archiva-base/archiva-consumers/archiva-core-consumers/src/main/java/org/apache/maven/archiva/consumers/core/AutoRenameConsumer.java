@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers.core;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -35,14 +34,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * AutoRenameConsumer 
+ * AutoRenameConsumer
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="auto-rename"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="auto-rename"
+ * instantiation-strategy="per-lookup"
  */
 public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
@@ -95,11 +93,6 @@ public class AutoRenameConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repositoryDir = new File( repository.getUrl().getPath() );
     }
 
@@ -139,8 +132,8 @@ public class AutoRenameConsumer
                     }
                     catch ( IOException e )
                     {
-                        triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath
-                            + ": " + e.getMessage() );
+                        triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath +
+                            ": " + e.getMessage() );
                     }
                 }
             }

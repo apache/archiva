@@ -218,6 +218,30 @@
       <version>1.6.2</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-keys-memory</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-rbac-memory</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus.redback</groupId>
+      <artifactId>redback-users-memory</artifactId>
+      <version>${redback.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- Test Deps -->
+    <dependency>
+      <groupId>easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -374,18 +398,6 @@
               <instantiation-strategy>per-lookup</instantiation-strategy>
             </roleDefault>
           </roleDefaults>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <!-- TODO! add unit tests -->
-        <configuration>
-          <instrumentation>
-            <excludes>
-              <exclude>**/**</exclude>
-            </excludes>
-          </instrumentation>
         </configuration>
       </plugin>
       <plugin>

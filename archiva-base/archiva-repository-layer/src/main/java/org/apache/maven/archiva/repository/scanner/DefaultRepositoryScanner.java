@@ -34,11 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DefaultRepositoryScanner 
+ * DefaultRepositoryScanner
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryScanner"
  */
 public class DefaultRepositoryScanner
@@ -75,7 +74,7 @@ public class DefaultRepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        if ( !repository.isManaged() )
+        if ( !"file".equals( repository.getUrl().getProtocol() ) )
         {
             throw new UnsupportedOperationException( "Only filesystem repositories are supported." );
         }
@@ -84,14 +83,14 @@ public class DefaultRepositoryScanner
 
         if ( !repositoryBase.exists() )
         {
-            throw new UnsupportedOperationException( "Unable to scan a repository, directory "
-                + repositoryBase.getAbsolutePath() + " does not exist." );
+            throw new UnsupportedOperationException(
+                "Unable to scan a repository, directory " + repositoryBase.getAbsolutePath() + " does not exist." );
         }
 
         if ( !repositoryBase.isDirectory() )
         {
-            throw new UnsupportedOperationException( "Unable to scan a repository, path "
-                + repositoryBase.getAbsolutePath() + " is not a directory." );
+            throw new UnsupportedOperationException(
+                "Unable to scan a repository, path " + repositoryBase.getAbsolutePath() + " is not a directory." );
         }
 
         // Setup Includes / Excludes.
@@ -116,8 +115,8 @@ public class DefaultRepositoryScanner
         dirWalker.setExcludes( allExcludes );
 
         // Setup the Scan Instance
-        RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
-                                                                                   invalidContentConsumers, getLogger() );
+        RepositoryScannerInstance scannerInstance =
+            new RepositoryScannerInstance( repository, knownContentConsumers, invalidContentConsumers, getLogger() );
         scannerInstance.setOnlyModifiedAfterTimestamp( changesSince );
 
         dirWalker.addDirectoryWalkListener( scannerInstance );

@@ -112,6 +112,30 @@
 
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <role-hint>test-archiva-v1</role-hint>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>archiva-v1</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.registry.Registry</role>
+      <role-hint>archiva-v1</role-hint>
+      <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
+      <configuration>
+        <properties>
+          <system/>
+          <xml fileName="${basedir}/src/test/conf/archiva-v1.xml"
+               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+        </properties>
+      </configuration>
+    </component>
+
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>test-save</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
       <requirements>
@@ -236,6 +260,6 @@
                config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
-    </component>    
+    </component>
   </components>
 </component-set>

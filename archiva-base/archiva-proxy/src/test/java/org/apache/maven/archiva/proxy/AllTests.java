@@ -23,7 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * IDE Provided Utility Class for all tests. 
+ * IDE Provided Utility Class for all tests.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$

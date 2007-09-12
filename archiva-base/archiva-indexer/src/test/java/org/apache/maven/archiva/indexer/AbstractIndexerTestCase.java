@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * AbstractIndexerTestCase 
+ * AbstractIndexerTestCase
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -52,6 +52,10 @@ public abstract class AbstractIndexerTestCase
     protected RepositoryContentIndex index;
 
     protected LuceneIndexHandlers indexHandlers;
+
+    private static final String TEST_DEFAULT_REPOSITORY_NAME = "Test Default Repository";
+
+    private static final String TEST_DEFAULT_REPO_ID = "testDefaultRepo";
 
     public abstract String getIndexName();
 
@@ -78,9 +82,9 @@ public abstract class AbstractIndexerTestCase
     {
         super.setUp();
 
-        RepositoryContentIndexFactory indexFactory = (RepositoryContentIndexFactory) lookup(
-                                                                                             RepositoryContentIndexFactory.class
-                                                                                                 .getName(), "lucene" );
+        RepositoryContentIndexFactory indexFactory =
+            (RepositoryContentIndexFactory) lookup( RepositoryContentIndexFactory.class
+                .getName(), "lucene" );
 
         ArchivaRepository repository = createTestIndex( getIndexName() );
 
@@ -90,7 +94,7 @@ public abstract class AbstractIndexerTestCase
     }
 
     private ArchivaRepository createTestIndex( String indexName )
-        throws Exception, IOException
+        throws Exception
     {
         File repoDir = new File( getBasedir(), "src/test/managed-repository" );
         File testIndexesDir = new File( getBasedir(), "target/test-indexes" );
@@ -104,16 +108,17 @@ public abstract class AbstractIndexerTestCase
 
         String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
 
-        ArchivaRepository repository = new ArchivaRepository( "testDefaultRepo", "Test Default Repository", repoUri );
+        ArchivaRepository repository =
+            new ArchivaRepository( TEST_DEFAULT_REPO_ID, TEST_DEFAULT_REPOSITORY_NAME, repoUri );
 
         File indexLocation = new File( testIndexesDir, "/index-" + indexName + "-" + getName() + "/" );
 
         MockConfiguration config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 
-        RepositoryConfiguration repoConfig = new RepositoryConfiguration();
-        repoConfig.setId( repository.getId() );
-        repoConfig.setName( repository.getModel().getName() );
-        repoConfig.setUrl( repository.getModel().getUrl() );
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig.setId( TEST_DEFAULT_REPO_ID );
+        repoConfig.setName( TEST_DEFAULT_REPOSITORY_NAME );
+        repoConfig.setLocation( repoDir.getAbsolutePath() );
         repoConfig.setIndexDir( indexLocation.getAbsolutePath() );
 
         if ( indexLocation.exists() )
@@ -121,7 +126,7 @@ public abstract class AbstractIndexerTestCase
             FileUtils.deleteDirectory( indexLocation );
         }
 
-        config.getConfiguration().addRepository( repoConfig );
+        config.getConfiguration().addManagedRepository( repoConfig );
         return repository;
     }
 
@@ -130,8 +135,8 @@ public abstract class AbstractIndexerTestCase
         Map dumps = new HashMap();
 
         // archiva-common-1.0.jar.txt
-        dumps.put( "archiva-common", createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "",
-                                                            "jar" ) );
+        dumps.put( "archiva-common",
+                   createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "", "jar" ) );
 
         // continuum-webapp-1.0.3-SNAPSHOT.war.txt
         dumps.put( "continuum-webapp", createArchivaArtifact( "org.apache.maven.continuum", "continuum-webapp",
@@ -198,8 +203,8 @@ public abstract class AbstractIndexerTestCase
         return dumpFile;
     }
 
-    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version,
-                                                   String classifier, String type )
+    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version, String classifier,
+                                                   String type )
     {
         ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         return artifact;

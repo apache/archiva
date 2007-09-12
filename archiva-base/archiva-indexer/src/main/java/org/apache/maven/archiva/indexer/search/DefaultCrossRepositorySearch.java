@@ -22,7 +22,6 @@ package org.apache.maven.archiva.indexer.search;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.Transformer;
-import org.apache.commons.collections.functors.AndPredicate;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
@@ -32,9 +31,7 @@ import org.apache.lucene.search.MultiSearcher;
 import org.apache.lucene.search.Searchable;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.IndexedRepositoryPredicate;
-import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
@@ -53,11 +50,10 @@ import org.codehaus.plexus.registry.RegistryListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
- * DefaultCrossRepositorySearch 
+ * DefaultCrossRepositorySearch
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -105,7 +101,7 @@ public class DefaultCrossRepositorySearch
 
         try
         {
-            QueryParser parser = new MultiFieldQueryParser( new String[] { HashcodesKeys.MD5, HashcodesKeys.SHA1 },
+            QueryParser parser = new MultiFieldQueryParser( new String[]{HashcodesKeys.MD5, HashcodesKeys.SHA1},
                                                             new HashcodesHandlers().getAnalyzer() );
             LuceneQuery query = new LuceneQuery( parser.parse( checksum ) );
             SearchResults results = searchAll( query, limits, indexes );
@@ -256,7 +252,7 @@ public class DefaultCrossRepositorySearch
             }
             catch ( IOException ie )
             {
-                getLogger().error( "Unable to close index searcher: " + ie.getMessage(), ie );    
+                getLogger().error( "Unable to close index searcher: " + ie.getMessage(), ie );
             }
         }
 
@@ -312,7 +308,7 @@ public class DefaultCrossRepositorySearch
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             initRepositories();
         }
@@ -329,28 +325,14 @@ public class DefaultCrossRepositorySearch
         {
             this.localIndexedRepositories.clear();
 
-            Predicate localIndexedRepos = AndPredicate.getInstance( LocalRepositoryPredicate.getInstance(),
-                                                                    IndexedRepositoryPredicate.getInstance() );
-
-            Collection repos = CollectionUtils.select( configuration.getConfiguration().getRepositories(),
-                                                       localIndexedRepos );
-            
-            Transformer toArchivaRepository = new Transformer()
+            List<ManagedRepositoryConfiguration> repos = configuration.getConfiguration().getManagedRepositories();
+            for ( ManagedRepositoryConfiguration repo : repos )
             {
-
-                public Object transform( Object input )
+                if ( repo.isIndexed() )
                 {
-                    if ( input instanceof RepositoryConfiguration )
-                    {
-                        return ArchivaConfigurationAdaptor.toArchivaRepository( (RepositoryConfiguration) input );
-                    }
-                    return input;
+                    localIndexedRepositories.add( ArchivaConfigurationAdaptor.toArchivaRepository( repo ) );
                 }
-            };
-
-            CollectionUtils.transform( repos, toArchivaRepository );
-
-            this.localIndexedRepositories.addAll( repos );
+            }
         }
     }
 

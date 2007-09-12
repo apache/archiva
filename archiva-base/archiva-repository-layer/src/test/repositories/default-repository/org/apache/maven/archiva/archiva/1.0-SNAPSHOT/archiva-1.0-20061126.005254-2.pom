@@ -74,13 +74,13 @@
     </site>
   </distributionManagement>
   <build>
-  <extensions>
-    <extension>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-ssh-external</artifactId>
-      <version>1.0-alpha-5</version>
-    </extension>
-  </extensions>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-alpha-5</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
@@ -431,7 +431,6 @@
             <artifactId>cobertura-maven-plugin</artifactId>
             <configuration>
               <check>
-                <!-- TODO! raise to 85/100 -->
                 <totalLineRate>77</totalLineRate>
                 <totalBranchRate>95</totalBranchRate>
               </check>

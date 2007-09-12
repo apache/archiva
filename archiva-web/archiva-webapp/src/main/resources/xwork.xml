@@ -30,7 +30,6 @@
 
   <package name="base" extends="webwork-default">
     <interceptors>
-      <interceptor name="strange" class="webwork-is-doing-strange-things"/>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
       <interceptor name="redbackSecureActions" class="redbackSecureActionInterceptor"/>
@@ -84,20 +83,6 @@
     <default-interceptor-ref name="configuredArchivaStack"/>
 
     <global-results>
-      <!-- TODO: want an extra message on the configure page when this first happens! -->
-      <!-- TODO: can we send them back to the original location afterwards? -->
-      <result name="config-needed" type="redirect-action">
-        <param name="namespace">/admin</param>
-        <param name="actionName">repositories</param>
-      </result>
-
-      <!-- This redirect is triggered by the configuration interceptor -->
-      <result name="config-repository-needed" type="redirect-action">
-        <param name="namespace">/admin</param>
-        <param name="actionName">addRepository</param>
-        <param name="method">input</param>
-      </result>
-
       <!-- The following security-* result names arrive from the plexus-security package -->
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
@@ -265,6 +250,32 @@
 
     <action name="deleteRepository" class="configureRepositoryAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="addRemoteRepository" class="configureRemoteRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="editRemoteRepository" class="configureRemoteRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <result name="error" type="redirect-action">repositories</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="saveRemoteRepository" class="configureRemoteRepositoryAction" method="save">
+      <result name="success" type="redirect-action">repositories</result>
+      <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteRemoteRepository" class="configureRemoteRepositoryAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>

@@ -31,7 +31,7 @@ import org.apache.maven.wagon.TransferFailedException;
 import java.io.File;
 
 /**
- * ManagedDefaultTransferTest 
+ * ManagedDefaultTransferTest
  *
  * @author Brett Porter
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
@@ -45,7 +45,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -67,9 +67,9 @@ public class ManagedDefaultTransferTest
 
     /**
      * The attempt here should result in no file being transferred.
-     * 
+     * <p/>
      * The file exists locally, and the policy is ONCE.
-     * 
+     *
      * @throws Exception
      */
     public void testGetDefaultLayoutAlreadyPresentPolicyOnce()
@@ -77,7 +77,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
 
         ArtifactReference artifact = createArtifactReference( "default", path );
@@ -97,9 +97,9 @@ public class ManagedDefaultTransferTest
 
     /**
      * The attempt here should result in file being transferred.
-     * 
+     * <p/>
      * The file exists locally, and the policy is IGNORE.
-     * 
+     *
      * @throws Exception
      */
     public void testGetDefaultLayoutAlreadyPresentPolicyIgnored()
@@ -107,7 +107,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
 
         long originalModificationTime = expectedFile.lastModified();
@@ -135,15 +135,15 @@ public class ManagedDefaultTransferTest
              * This delta is the amount of milliseconds of 'fudge factor' we allow for
              * the unit test to still be considered 'passed'.
              */
-            int delta = 1100;
+            int delta = 20000;
 
             long hirange = originalModificationTime + ( delta / 2 );
             long lorange = originalModificationTime - ( delta / 2 );
 
             if ( ( downloadedLastModified < lorange ) || ( downloadedLastModified > hirange ) )
             {
-                fail( "Check file timestamp is that of original managed file: expected within range lo:<" + lorange
-                    + "> hi:<" + hirange + "> but was:<" + downloadedLastModified + ">" );
+                fail( "Check file timestamp is that of original managed file: expected within range lo:<" + lorange +
+                    "> hi:<" + hirange + "> but was:<" + downloadedLastModified + ">" );
             }
         }
         assertNoTempFiles( expectedFile );
@@ -151,9 +151,9 @@ public class ManagedDefaultTransferTest
 
     /**
      * The attempt here should result in file being transferred.
-     * 
+     * <p/>
      * The file exists locally, is over 6 years old, and the policy is DAILY.
-     * 
+     *
      * @throws Exception
      */
     public void testGetDefaultLayoutRemoteUpdate()
@@ -161,7 +161,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -169,8 +169,8 @@ public class ManagedDefaultTransferTest
         expectedFile.setLastModified( getPastDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.DAILY,
-                       SnapshotsPolicy.DAILY, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.DAILY, SnapshotsPolicy.DAILY,
+                       CachedFailuresPolicy.IGNORED );
 
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -185,7 +185,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -209,8 +209,8 @@ public class ManagedDefaultTransferTest
         // TODO: is this check even needed if it passes above? 
         String actualContents = FileUtils.readFileToString( downloadedFile, null );
         String badContents = FileUtils.readFileToString( proxied2File, null );
-        assertFalse( "Downloaded file contents should not be that of proxy 2", StringUtils.equals( actualContents,
-                                                                                                   badContents ) );
+        assertFalse( "Downloaded file contents should not be that of proxy 2",
+                     StringUtils.equals( actualContents, badContents ) );
     }
 
     public void testGetInSecondProxiedRepo()
@@ -218,7 +218,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -244,7 +244,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/does-not-exist/1.0/does-not-exist-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -261,7 +261,8 @@ public class ManagedDefaultTransferTest
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNull( "File returned was: " + downloadedFile + "; should have got a not found exception", downloadedFile );
+        assertNull( "File returned was: " + downloadedFile + "; should have got a not found exception",
+                    downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -270,7 +271,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -278,7 +279,7 @@ public class ManagedDefaultTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
         wagonMock.getIfNewer( path, new File( expectedFile.getAbsolutePath() + ".tmp" ), 0 );
         wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
@@ -305,7 +306,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -313,8 +314,8 @@ public class ManagedDefaultTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Repository (usually done within archiva.xml configuration)
-        saveRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://dead.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://dead.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
@@ -346,7 +347,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -358,8 +359,8 @@ public class ManagedDefaultTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY,
-                                     "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
+        File proxiedFile =
+            new File( REPOPATH_PROXIED_LEGACY, "org.apache.maven.test/jars/get-default-layout-present-1.0.jar" );
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -373,7 +374,7 @@ public class ManagedDefaultTransferTest
         String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -396,7 +397,7 @@ public class ManagedDefaultTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 

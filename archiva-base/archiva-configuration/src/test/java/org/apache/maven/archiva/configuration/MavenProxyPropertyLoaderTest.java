@@ -24,20 +24,19 @@ import org.codehaus.plexus.PlexusTestCase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 /**
  * @author Edwin Punzalan
  */
-public class MavenProxyPropertyLoaderTest extends PlexusTestCase
+public class MavenProxyPropertyLoaderTest
+    extends PlexusTestCase
 {
     private MavenProxyPropertyLoader loader;
 
-    public void testLoadValidMavenProxyConfiguration() throws IOException, InvalidConfigurationException
+    public void testLoadValidMavenProxyConfiguration()
+        throws IOException, InvalidConfigurationException
     {
         File confFile = getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
@@ -48,27 +47,30 @@ public class MavenProxyPropertyLoaderTest extends PlexusTestCase
 
         loader.load( new FileInputStream( confFile ), configuration );
 
-        List repos = configuration.getRepositories();
-        assertEquals( "Count repositories", 5, repos.size() );
+        Map<String, ManagedRepositoryConfiguration> repositoryIdMap = configuration.getManagedRepositoriesAsMap();
+        assertEquals( "Count repositories", 1, repositoryIdMap.size() );
+        assertRepositoryExists( "maven-proxy", "target", repositoryIdMap.get( "maven-proxy" ) );
 
-        Map repositoryIdMap = new HashMap();
-
-        for ( Iterator itRepo = repos.iterator(); itRepo.hasNext(); )
-        {
-            RepositoryConfiguration repo = (RepositoryConfiguration) itRepo.next();
-            repositoryIdMap.put( repo.getId(), repo );
-        }
-
-        assertRepositoryExists( repositoryIdMap, "local-repo", "file://target" );
-
-        assertRepositoryExists( repositoryIdMap, "www-ibiblio-org", "http://www.ibiblio.org/maven2" );
-        assertRepositoryExists( repositoryIdMap, "dist-codehaus-org", "http://dist.codehaus.org" );
-        assertRepositoryExists( repositoryIdMap, "private-example-com", "http://private.example.com/internal" );
+        Map<String, RemoteRepositoryConfiguration> remoteRepositoryMap = configuration.getRemoteRepositoriesAsMap();
+        assertEquals( "Count repositories", 4, remoteRepositoryMap.size() );
+        assertRepositoryExists( "local-repo", "file://target", remoteRepositoryMap.get( "local-repo" ) );
+        assertRepositoryExists( "www-ibiblio-org", "http://www.ibiblio.org/maven2",
+                                remoteRepositoryMap.get( "www-ibiblio-org" ) );
+        assertRepositoryExists( "dist-codehaus-org", "http://dist.codehaus.org",
+                                remoteRepositoryMap.get( "dist-codehaus-org" ) );
+        assertRepositoryExists( "private-example-com", "http://private.example.com/internal",
+                                remoteRepositoryMap.get( "private-example-com" ) );
     }
 
-    private void assertRepositoryExists( Map repoMap, String id, String expectedUrl )
+    private void assertRepositoryExists( String id, String expectedLocation, ManagedRepositoryConfiguration repo )
     {
-        RepositoryConfiguration repo = (RepositoryConfiguration) repoMap.get( id );
+        assertNotNull( "Repository id [" + id + "] should not be null", repo );
+        assertEquals( "Repository id", id, repo.getId() );
+        assertEquals( "Repository url", expectedLocation, repo.getLocation() );
+    }
+
+    private void assertRepositoryExists( String id, String expectedUrl, RemoteRepositoryConfiguration repo )
+    {
         assertNotNull( "Repository id [" + id + "] should not be null", repo );
         assertEquals( "Repository id", id, repo.getId() );
         assertEquals( "Repository url", expectedUrl, repo.getUrl() );
@@ -88,7 +90,8 @@ public class MavenProxyPropertyLoaderTest extends PlexusTestCase
         }
     }
 
-    protected void setUp() throws Exception
+    protected void setUp()
+        throws Exception
     {
         super.setUp();
         loader = new MavenProxyPropertyLoader();

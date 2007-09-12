@@ -20,11 +20,12 @@ package org.apache.maven.archiva.repository;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
- * ArchivaConfigurationAdaptor 
+ * ArchivaConfigurationAdaptor
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -32,7 +33,11 @@ import org.apache.maven.archiva.model.ArchivaRepository;
  */
 public class ArchivaConfigurationAdaptor
 {
-    public static ArchivaRepository toArchivaRepository( RepositoryConfiguration config )
+    private ArchivaConfigurationAdaptor()
+    {
+    }
+
+    public static ArchivaRepository toArchivaRepository( ManagedRepositoryConfiguration config )
     {
         if ( config == null )
         {
@@ -44,13 +49,14 @@ public class ArchivaConfigurationAdaptor
             throw new IllegalArgumentException( "Unable to repository config with blank ID to archiva repository." );
         }
 
-        if ( StringUtils.isBlank( config.getUrl() ) )
+        if ( StringUtils.isBlank( config.getLocation() ) )
         {
             throw new IllegalArgumentException(
-                                                "Unable to convert repository config with blank URL to archiva repository." );
+                "Unable to convert repository config with blank location to archiva repository." );
         }
 
-        ArchivaRepository repository = new ArchivaRepository( config.getId(), config.getName(), config.getUrl() );
+        ArchivaRepository repository =
+            new ArchivaRepository( config.getId(), config.getName(), PathUtil.toUrl( config.getLocation() ) );
 
         repository.getModel().setLayoutName( config.getLayout() );
         repository.getModel().setReleasePolicy( config.isReleases() );

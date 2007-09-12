@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.tags;
 import com.opensymphony.webwork.WebWorkException;
 import com.opensymphony.webwork.components.Component;
 import com.opensymphony.xwork.util.OgnlValueStack;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
@@ -37,24 +36,22 @@ import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutF
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.PageContext;
-
 /**
- * DownloadArtifact 
+ * DownloadArtifact
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="com.opensymphony.webwork.components.Component" role-hint="download-artifact" 
- *  instantiation-strategy="per-lookup"
+ * @plexus.component role="com.opensymphony.webwork.components.Component" role-hint="download-artifact"
+ * instantiation-strategy="per-lookup"
  */
 public class DownloadArtifact
     extends Component
@@ -207,21 +204,21 @@ public class DownloadArtifact
         while ( it.hasNext() )
         {
             ArchivaArtifact artifact = (ArchivaArtifact) it.next();
-            sb.append("\n<tr>");
-            
+            sb.append( "\n<tr>" );
+
             sb.append( "<td class=\"icon\">" );
             appendImageLink( sb, prefix, layout, artifact );
             sb.append( "</td>" );
-            
+
             sb.append( "<td class=\"type\">" );
             appendLink( sb, prefix, layout, artifact );
             sb.append( "</td>" );
-            
+
             sb.append( "<td class=\"size\">" );
             appendFilesize( sb, artifact );
             sb.append( "</td>" );
-            
-            sb.append("</tr>");
+
+            sb.append( "</tr>" );
         }
         sb.append( "</table>" );
         sb.append( "</p>" );
@@ -232,48 +229,44 @@ public class DownloadArtifact
         sb.append( "<div class=\"ft\"><div class=\"c\"></div></div>" );
         sb.append( "</div>" ); // close "download"
     }
-    
-    private void appendImageLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout, ArchivaArtifact artifact )
+
+    private void appendImageLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
+                                  ArchivaArtifact artifact )
+    {
+        String type = artifact.getType();
+        String linkText = "<img src=\"" + req.getContextPath() + "/images/download-type-" + type + ".png\" />";
+        appendLink( sb, prefix, layout, artifact, linkText );
+    }
+
+    private static void appendLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
+                                    ArchivaArtifact artifact, String linkText )
     {
         StringBuffer url = new StringBuffer();
         String path = layout.toPath( artifact );
-        String type = artifact.getType();
-        
+
         url.append( prefix );
         url.append( "/" ).append( path );
-        
+
         String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
-        
+
         sb.append( "<a href=\"" ).append( StringEscapeUtils.escapeXml( url.toString() ) ).append( "\"" );
         sb.append( " title=\"" ).append( "Download " ).append( StringEscapeUtils.escapeXml( filename ) ).append( "\"" );
         sb.append( ">" );
-        
-        sb.append( "<img src=\"" ).append( req.getContextPath() );
-        sb.append( "/images/download-type-" ).append( type ).append( ".png\" />" );
-        
+
+        sb.append( linkText );
+
         sb.append( "</a>" );
     }
 
     private void appendLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
                              ArchivaArtifact artifact )
     {
-        StringBuffer url = new StringBuffer();
-        String path = layout.toPath( artifact );
         String type = artifact.getType();
+        String linkText = StringUtils.capitalize( type );
 
-        url.append( prefix );
-        url.append( "/" ).append( path );
-
-        String filename = path.substring( path.lastIndexOf( "/" ) + 1 );
-
-        sb.append( "<a href=\"" ).append( StringEscapeUtils.escapeXml( url.toString() ) ).append( "\"" );
-        sb.append( " title=\"" ).append( "Download " ).append( StringEscapeUtils.escapeXml( filename ) ).append( "\"" );
-        sb.append( ">" );
-
-        sb.append( StringUtils.capitalize( type ) );
-        sb.append( "</a>" );
+        appendLink( sb, prefix, layout, artifact, linkText );
     }
-    
+
     private void appendFilesize( StringBuffer sb, ArchivaArtifact artifact )
     {
         sb.append( decimalFormat.format( artifact.getModel().getSize() ) );

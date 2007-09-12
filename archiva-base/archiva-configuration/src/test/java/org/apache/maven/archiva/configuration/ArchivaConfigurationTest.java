@@ -28,6 +28,7 @@ import org.easymock.MockControl;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Test the configuration store.
@@ -57,11 +58,11 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
-        RepositoryConfiguration repository =
-            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "file://${appserver.base}/repositories/internal",
-                      repository.getUrl() );
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
+                      repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
@@ -78,11 +79,11 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
-        RepositoryConfiguration repository =
-            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "file://${appserver.base}/data/repositories/internal",
-                      repository.getUrl() );
+        assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
+                      repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
@@ -97,7 +98,8 @@ public class ArchivaConfigurationTest
     {
         FileTypes filetypes = (FileTypes) lookup( FileTypes.class.getName() );
 
-        assertEquals( "check repositories", 4, configuration.getRepositories().size() );
+        assertEquals( "check repositories", 2, configuration.getManagedRepositories().size() );
+        assertEquals( "check repositories", 2, configuration.getRemoteRepositories().size() );
         assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors().size() );
 
         RepositoryScanningConfiguration repoScanning = configuration.getRepositoryScanning();
@@ -133,7 +135,8 @@ public class ArchivaConfigurationTest
         Configuration configuration = archivaConfiguration.getConfiguration();
 
         // from base
-        assertEquals( "check repositories", 4, configuration.getRepositories().size() );
+        assertEquals( "check repositories", 2, configuration.getManagedRepositories().size() );
+        assertEquals( "check repositories", 2, configuration.getRemoteRepositories().size() );
         // from user
         assertEquals( "check proxy connectors", 2, configuration.getProxyConnectors().size() );
 
@@ -478,11 +481,11 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
-        RepositoryConfiguration repository =
-            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "file://${appserver.base}/data/repositories/internal",
-                      repository.getUrl() );
+        assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
+                      repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
@@ -499,15 +502,48 @@ public class ArchivaConfigurationTest
         assertConfiguration( configuration );
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
-        RepositoryConfiguration repository =
-            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "file://${appserver.base}/repositories/internal",
-                      repository.getUrl() );
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
+                      repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isIndexed() );
+    }
+
+    public void testArchivaV1()
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-archiva-v1" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertConfiguration( configuration );
+        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
+
+        assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
+
+        Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();
+
+        ManagedRepositoryConfiguration repository = map.get( "internal" );
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
+                      repository.getLocation() );
+        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
+        assertEquals( "check managed repositories", "internal", repository.getId() );
+        assertEquals( "check managed repositories", "default", repository.getLayout() );
+        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertFalse( "check managed repositories", repository.isSnapshots() );
+
+        repository = map.get( "snapshots" );
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/snapshots",
+                      repository.getLocation() );
+        assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName() );
+        assertEquals( "check managed repositories", "snapshots", repository.getId() );
+        assertEquals( "check managed repositories", "default", repository.getLayout() );
+        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isSnapshots() );
     }
 
     public void testCronExpressionsWithComma()
@@ -530,12 +566,12 @@ public class ArchivaConfigurationTest
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-cron-expressions" );
 
-        Configuration configuration =  archivaConfiguration.getConfiguration();
-        
-        RepositoryConfiguration repository =
-            (RepositoryConfiguration) configuration.getRepositories().iterator().next();
+        Configuration configuration = archivaConfiguration.getConfiguration();
 
-        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression() );
+        ManagedRepositoryConfiguration repository =
+            (ManagedRepositoryConfiguration) configuration.getManagedRepositories().get( 0 );
+
+        assertEquals( "check cron expression", "0 0,30 * * ?", repository.getRefreshCronExpression().trim() );
 
         configuration.getDatabaseScanning().setCronExpression( "0 0,15 0 * * ?" );
 
@@ -544,17 +580,15 @@ public class ArchivaConfigurationTest
         configuration = archivaConfiguration.getConfiguration();
 
         assertEquals( "check cron expression", "0 0,15 0 * * ?",
-              configuration.getDatabaseScanning().getCronExpression() );
+                      configuration.getDatabaseScanning().getCronExpression() );
 
         // test for the escape character '\' showing up on repositories.jsp
         repository.setRefreshCronExpression( "0 0,20 0 * * ?" );
 
         archivaConfiguration.save( configuration );
 
-        repository = archivaConfiguration.getConfiguration().findRepositoryById( "snapshots" );
+        repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( "snapshots" );
 
         assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
-
     }
-    
 }

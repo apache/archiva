@@ -19,31 +19,8 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.ProjectReference;
-import org.apache.maven.archiva.policies.CachedFailuresPolicy;
-import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.wagon.TransferFailedException;
-import org.apache.maven.wagon.Wagon;
-import org.easymock.MockControl;
-
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Arrays;
-
 /**
- * RelocateTransferTest 
+ * RelocateTransferTest
  *
  * @author Brett Porter
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>

@@ -19,20 +19,20 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.xpath.XPath;
 import org.jdom.input.SAXBuilder;
-import org.codehaus.plexus.util.IOUtil;
+import org.jdom.xpath.XPath;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -40,16 +40,9 @@ import java.util.Iterator;
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-    }
-
     private void setLastModified()
     {
-        File dir =
-            new File( "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/" );
+        File dir = new File( "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/" );
         File[] contents = dir.listFiles();
         for ( int i = 0; i < contents.length; i++ )
         {
@@ -60,8 +53,8 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByRetentionCount()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = ( KnownRepositoryContentConsumer )
-            lookup( KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
 
         populateDbForRetentionCountTest();
 
@@ -69,7 +62,7 @@ public class RepositoryPurgeConsumerTest
 
         File testDir = new File( "target/test" );
         FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
-                
+
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
         // assert if removed from repo
@@ -134,8 +127,8 @@ public class RepositoryPurgeConsumerTest
     {
         populateDbForDaysOldTest();
 
-        KnownRepositoryContentConsumer repoPurgeConsumer = ( KnownRepositoryContentConsumer )
-                    lookup( KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
 
         repoPurgeConsumer.beginScan( getRepository() );
 
@@ -143,7 +136,7 @@ public class RepositoryPurgeConsumerTest
         FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
 
         setLastModified();
-        
+
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
         assertFalse( new File(
@@ -158,15 +151,15 @@ public class RepositoryPurgeConsumerTest
             "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" ).exists() );
         assertFalse( new File(
             "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" ).exists() );
-      
+
         FileUtils.deleteDirectory( testDir );
     }
 
     public void testReleasedSnapshotsWereNotCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = ( KnownRepositoryContentConsumer )
-            lookup( KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
 
         populateDbForReleasedSnapshotsTest();
 
@@ -178,8 +171,8 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
 
         // check if the snapshot wasn't removed
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
+        assertTrue(
+            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
         assertTrue( new File(
             "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" ).exists() );
         assertTrue( new File(
@@ -221,14 +214,13 @@ public class RepositoryPurgeConsumerTest
         el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
         assertTrue( el.getValue().equals( "20070315032817" ) );
 
-        List nodes = xPath.newInstance( "./versions" ).selectNodes(
-            versioning );
+        List nodes = xPath.newInstance( "./versions" ).selectNodes( versioning );
 
         boolean found = false;
         for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
         {
-            el = ( Element ) iter.next();
-            if( el.getValue().trim().equals( "2.3-SNAPSHOT" ) )
+            el = (Element) iter.next();
+            if ( el.getValue().trim().equals( "2.3-SNAPSHOT" ) )
             {
                 found = true;
             }
@@ -241,8 +233,8 @@ public class RepositoryPurgeConsumerTest
     public void testReleasedSnapshotsWereCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = ( KnownRepositoryContentConsumer )
-                    lookup( KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
+            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
 
         populateDbForReleasedSnapshotsTest();
 
@@ -254,8 +246,8 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
 
         // check if the snapshot was removed
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
+        assertFalse(
+            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
         assertFalse( new File(
             "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" ).exists() );
         assertFalse( new File(
@@ -297,14 +289,13 @@ public class RepositoryPurgeConsumerTest
         el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
         assertFalse( el.getValue().equals( "20070315032817" ) );
 
-        List nodes = xPath.newInstance( "./versions" ).selectNodes(
-            rootElement );
+        List nodes = xPath.newInstance( "./versions" ).selectNodes( rootElement );
 
         boolean found = false;
         for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
         {
-            el = ( Element ) iter.next();
-            if( el.getValue().equals( "2.3-SNAPSHOT" ) )
+            el = (Element) iter.next();
+            if ( el.getValue().equals( "2.3-SNAPSHOT" ) )
             {
                 found = true;
             }
@@ -315,7 +306,7 @@ public class RepositoryPurgeConsumerTest
     }
 
     public void populateDbForRetentionCountTest()
-            throws ArchivaDatabaseException
+        throws ArchivaDatabaseException
     {
         List versions = new ArrayList();
         versions.add( "1.0RC1-20070504.153317-1" );
@@ -323,7 +314,7 @@ public class RepositoryPurgeConsumerTest
         versions.add( "1.0RC1-20070505.090015-3" );
         versions.add( "1.0RC1-20070506.090132-4" );
 
-        populateDb( "org.jruby.plugins", "jruby-rake-plugin", versions);
+        populateDb( "org.jruby.plugins", "jruby-rake-plugin", versions );
     }
 
     private void populateDbForDaysOldTest()
@@ -341,7 +332,7 @@ public class RepositoryPurgeConsumerTest
         List versions = new ArrayList();
         versions.add( "2.3-SNAPSHOT" );
 
-        populateDb( "org.apache.maven.plugins", "maven-plugin-plugin", versions );          
+        populateDb( "org.apache.maven.plugins", "maven-plugin-plugin", versions );
     }
 
 }

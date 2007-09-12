@@ -21,7 +21,7 @@ package org.apache.maven.archiva.web.repository;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -85,7 +85,7 @@ public class ProxiedDavServer
 
     private BidirectionalRepositoryLayout layout;
 
-    private RepositoryConfiguration repositoryConfiguration;
+    private ManagedRepositoryConfiguration repositoryConfiguration;
 
     private ArchivaRepository managedRepository;
 
@@ -116,7 +116,7 @@ public class ProxiedDavServer
 
         Configuration config = archivaConfiguration.getConfiguration();
 
-        repositoryConfiguration = config.findRepositoryById( getPrefix() );
+        repositoryConfiguration = config.findManagedRepositoryById( getPrefix() );
 
         managedRepository = ArchivaConfigurationAdaptor.toArchivaRepository( repositoryConfiguration );
 
@@ -200,7 +200,6 @@ public class ProxiedDavServer
                 {
                     connectors.fetchFromProxies( managedRepository, project );
                     request.getRequest().setPathInfo( metadataTools.toPath( project ) );
-                    return;
                 }
             }
             catch ( RepositoryMetadataException e )
@@ -247,7 +246,7 @@ public class ProxiedDavServer
         }
     }
 
-    public RepositoryConfiguration getRepositoryConfiguration()
+    public ManagedRepositoryConfiguration getRepositoryConfiguration()
     {
         return repositoryConfiguration;
     }

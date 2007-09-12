@@ -22,7 +22,7 @@ package org.apache.maven.archiva.scheduled;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Default implementation of a scheduling component for archiva..
+ * Default implementation of a scheduling component for archiva.
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  * @author <a href="mailto:jmcconnell@apache.org">Jesse McConnell</a>
@@ -97,13 +97,13 @@ public class DefaultArchivaTaskScheduler
     {
         try
         {
-            List repositories = archivaConfiguration.getConfiguration().getRepositories();
+            List repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
 
             for ( Iterator i = repositories.iterator(); i.hasNext(); )
             {
-                RepositoryConfiguration repoConfig = (RepositoryConfiguration) i.next();
+                ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) i.next();
 
-                if ( repoConfig.isManaged() && repoConfig.isIndexed() )
+                if ( repoConfig.isIndexed() )
                 {
                     scheduleRepositoryJobs( repoConfig );
                 }
@@ -117,7 +117,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    private void scheduleRepositoryJobs( RepositoryConfiguration repoConfig )
+    private void scheduleRepositoryJobs( ManagedRepositoryConfiguration repoConfig )
         throws SchedulerException
     {
         if ( repoConfig.getRefreshCronExpression() == null )
@@ -132,15 +132,14 @@ public class DefaultArchivaTaskScheduler
         CronExpressionValidator cronValidator = new CronExpressionValidator();
         if ( !cronValidator.validate( cronString ) )
         {
-            getLogger().warn(
-                              "Cron expression [" + cronString + "] for repository [" + repoConfig.getId()
-                                  + "] is invalid.  Defaulting to hourly." );
+            getLogger().warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId() +
+                "] is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
 
         // setup the unprocessed artifact job
-        JobDetail repositoryJob = new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                                                 RepositoryTaskJob.class );
+        JobDetail repositoryJob =
+            new JobDetail( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, RepositoryTaskJob.class );
 
         JobDataMap dataMap = new JobDataMap();
         dataMap.put( RepositoryTaskJob.TASK_QUEUE, repositoryScanningQueue );
@@ -150,16 +149,16 @@ public class DefaultArchivaTaskScheduler
 
         try
         {
-            CronTrigger trigger = new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(),
-                                                   REPOSITORY_SCAN_GROUP, cronString );
+            CronTrigger trigger =
+                new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, cronString );
 
             scheduler.scheduleJob( repositoryJob, trigger );
         }
         catch ( ParseException e )
         {
             getLogger().error(
-                               "ParseException in repository scanning cron expression, disabling repository scanning for '"
-                                   + repoConfig.getId() + "': " + e.getMessage() );
+                "ParseException in repository scanning cron expression, disabling repository scanning for '" +
+                    repoConfig.getId() + "': " + e.getMessage() );
         }
 
     }
@@ -180,8 +179,7 @@ public class DefaultArchivaTaskScheduler
         if ( !cronValidator.validate( cronString ) )
         {
             getLogger().warn(
-                              "Cron expression [" + cronString
-                                  + "] for database update is invalid.  Defaulting to hourly." );
+                "Cron expression [" + cronString + "] for database update is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
 
@@ -194,8 +192,7 @@ public class DefaultArchivaTaskScheduler
         catch ( ParseException e )
         {
             getLogger().error(
-                               "ParseException in database scanning cron expression, disabling database scanning: "
-                                   + e.getMessage() );
+                "ParseException in database scanning cron expression, disabling database scanning: " + e.getMessage() );
         }
 
     }
@@ -219,7 +216,7 @@ public class DefaultArchivaTaskScheduler
     }
 
     /**
-     * 
+     *
      */
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -245,11 +242,11 @@ public class DefaultArchivaTaskScheduler
         // currently we have to reschedule all repo jobs because we don't know where the changed one came from
         if ( "refreshCronExpression".equals( propertyName ) )
         {
-            List repositories = archivaConfiguration.getConfiguration().getRepositories();
+            List repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
 
             for ( Iterator i = repositories.iterator(); i.hasNext(); )
             {
-                RepositoryConfiguration repoConfig = (RepositoryConfiguration) i.next();
+                ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) i.next();
 
                 if ( repoConfig.getRefreshCronExpression() != null )
                 {
@@ -268,27 +265,6 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    public void scheduleAllRepositoryTasks()
-        throws TaskExecutionException
-    {
-        try
-        {
-            List repositories = archivaConfiguration.getConfiguration().getRepositories();
-
-            for ( Iterator i = repositories.iterator(); i.hasNext(); )
-            {
-                RepositoryConfiguration repoConfig = (RepositoryConfiguration) i.next();
-
-                scheduleRepositoryJobs( repoConfig );
-            }
-
-        }
-        catch ( SchedulerException e )
-        {
-            throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
-        }
-    }
-
     public void scheduleDatabaseTasks()
         throws TaskExecutionException
     {
@@ -300,22 +276,6 @@ public class DefaultArchivaTaskScheduler
         {
             throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
 
-        }
-    }
-
-    public void scheduleRepositoryTask( String repositoryId )
-        throws TaskExecutionException
-    {
-        try
-        {
-            RepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-                .findRepositoryById( repositoryId );
-
-            scheduleRepositoryJobs( repoConfig );
-        }
-        catch ( SchedulerException e )
-        {
-            throw new TaskExecutionException( "Unable to schedule repository jobs: " + e.getMessage(), e );
         }
     }
 

@@ -46,10 +46,11 @@ import java.util.Map;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="create-missing-checksums"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="create-missing-checksums"
+ * instantiation-strategy="per-lookup"
  */
-public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
+public class ArtifactMissingChecksumsConsumer
+    extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
     /**
@@ -66,7 +67,7 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
-    
+
     /**
      * @plexus.requirement
      */
@@ -123,22 +124,18 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
         return false;
     }
 
-    public void beginScan( ArchivaRepository repository ) throws ConsumerException
+    public void beginScan( ArchivaRepository repository )
+        throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
 
         String layoutName = repository.getModel().getLayoutName();
         if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
         {
-            throw new ConsumerException( "Unable to process repository with layout [" + layoutName
-                            + "] as there is no corresponding " + BidirectionalRepositoryLayout.class.getName()
-                            + " implementation available." );
+            throw new ConsumerException( "Unable to process repository with layout [" + layoutName +
+                "] as there is no corresponding " + BidirectionalRepositoryLayout.class.getName() +
+                " implementation available." );
         }
 
         this.layout = (BidirectionalRepositoryLayout) bidirectionalLayoutMap.get( layoutName );
@@ -159,7 +156,8 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
         return includes;
     }
 
-    public void processFile( String path ) throws ConsumerException
+    public void processFile( String path )
+        throws ConsumerException
     {
         createIfMissing( path, digestSha1 );
         createIfMissing( path, digestMd5 );
@@ -177,19 +175,19 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
             }
             catch ( DigesterException e )
             {
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile
-                                + ": " + e.getMessage() );
+                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC,
+                                      "Cannot calculate checksum for file " + checksumFile + ": " + e.getMessage() );
             }
             catch ( IOException e )
             {
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile
-                                + ": " + e.getMessage() );
+                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE,
+                                      "Cannot create checksum for file " + checksumFile + ": " + e.getMessage() );
             }
         }
         else if ( !checksumFile.isFile() )
         {
-            triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE, "Checksum file " + checksumFile.getAbsolutePath()
-                            + " is not a file." );
+            triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
+                                    "Checksum file " + checksumFile.getAbsolutePath() + " is not a file." );
         }
 
     }
@@ -210,11 +208,12 @@ public class ArtifactMissingChecksumsConsumer extends AbstractMonitoredConsumer
     private void initIncludes()
     {
         includes.clear();
-        
+
         includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
-    public void initialize() throws InitializationException
+    public void initialize()
+        throws InitializationException
     {
         propertyNameTriggers = new ArrayList();
         propertyNameTriggers.add( "repositoryScanning" );

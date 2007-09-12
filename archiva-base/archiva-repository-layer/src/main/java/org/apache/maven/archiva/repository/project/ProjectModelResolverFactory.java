@@ -19,12 +19,10 @@ package org.apache.maven.archiva.repository.project;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.configuration.functors.LocalRepositoryPredicate;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -40,16 +38,13 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * Factory for ProjectModelResolver objects 
+ * Factory for ProjectModelResolver objects
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelResolverFactory"
  */
 public class ProjectModelResolverFactory
@@ -80,7 +75,7 @@ public class ProjectModelResolverFactory
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
             update();
         }
@@ -106,12 +101,6 @@ public class ProjectModelResolverFactory
     private RepositoryProjectResolver toResolver( ArchivaRepository repo )
         throws RepositoryException
     {
-        if ( !repo.isManaged() )
-        {
-            throw new RepositoryException( "Unable to create RepositoryProjectResolver from non-managed repository: "
-                + repo );
-        }
-
         try
         {
             BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayoutType() );
@@ -127,8 +116,8 @@ public class ProjectModelResolverFactory
         }
         catch ( LayoutException e )
         {
-            throw new RepositoryException( "Unable to create RepositoryProjectResolver due to invalid layout spec: "
-                + repo );
+            throw new RepositoryException(
+                "Unable to create RepositoryProjectResolver due to invalid layout spec: " + repo );
         }
     }
 
@@ -138,15 +127,11 @@ public class ProjectModelResolverFactory
         {
             this.currentResolverStack.clearResolvers();
 
-            List configLocalRepos = new ArrayList();
-            CollectionUtils.select( archivaConfiguration.getConfiguration().getRepositories(), LocalRepositoryPredicate
-                .getInstance(), configLocalRepos );
-
-            Iterator it = configLocalRepos.iterator();
-            while ( it.hasNext() )
+            List<ManagedRepositoryConfiguration> list =
+                archivaConfiguration.getConfiguration().getManagedRepositories();
+            for ( ManagedRepositoryConfiguration repositoryConfiguration : list )
             {
-                RepositoryConfiguration repoconfig = (RepositoryConfiguration) it.next();
-                ArchivaRepository repo = ArchivaConfigurationAdaptor.toArchivaRepository( repoconfig );
+                ArchivaRepository repo = ArchivaConfigurationAdaptor.toArchivaRepository( repositoryConfiguration );
                 try
                 {
                     RepositoryProjectResolver resolver = toResolver( repo );

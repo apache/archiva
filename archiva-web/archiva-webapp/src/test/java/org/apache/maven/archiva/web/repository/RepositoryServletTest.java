@@ -24,11 +24,17 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.util.FileUtils;
 import org.xml.sax.SAXException;
 
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 
@@ -37,16 +43,30 @@ public class RepositoryServletTest
 {
     private ServletUnitClient sc;
 
-    private String appserverBase;
+    private static final String REQUEST_PATH = "http://localhost/repository/internal/path/to/artifact.jar";
+
+    private File repositoryLocation;
+
+    private ArchivaConfiguration configuration;
+
+    private static final String REPOSITORY_ID = "internal";
+
+    private static final String NEW_REPOSITORY_ID = "new-id";
+
+    private static final String NEW_REPOSITORY_NAME = "New Repository";
 
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
+        // TODO: purely to quiet logging - shouldn't be needed
+        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
-        System.setProperty( "derby.system.home", appserverBase );
+
+        configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );
+
+        repositoryLocation = new File( appserverBase, "data/repositories/internal" );
 
         ServletRunner sr = new ServletRunner();
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
@@ -57,15 +77,69 @@ public class RepositoryServletTest
     public void testPutWithMissingParentCollection()
         throws IOException, SAXException
     {
-        File repository = new File( appserverBase, "data/repositories/internal" );
-        FileUtils.deleteDirectory( repository );
+        FileUtils.deleteDirectory( repositoryLocation );
 
-        WebRequest request = new PutMethodWebRequest( "http://localhost/repository/internal/path/to/artifact.jar",
-                                                      getClass().getResourceAsStream( "/artifact.jar" ),
+        WebRequest request = new PutMethodWebRequest( REQUEST_PATH, getClass().getResourceAsStream( "/artifact.jar" ),
                                                       "application/octet-stream" );
         WebResponse response = sc.getResponse( request );
         assertNotNull( "No response received", response );
         assertEquals( "file contents", "artifact.jar\n",
-                      FileUtils.fileRead( new File( repository, "path/to/artifact.jar" ) ) );
+                      FileUtils.fileRead( new File( repositoryLocation, "path/to/artifact.jar" ) ) );
+    }
+
+    public void testGetRepository()
+        throws IOException, ServletException
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+
+        ManagedRepositoryConfiguration repository = servlet.getRepository( REPOSITORY_ID );
+        assertNotNull( repository );
+        assertEquals( "Archiva Managed Internal Repository", repository.getName() );
+    }
+
+    public void testGetRepositoryAfterDelete()
+        throws IOException, ServletException, RegistryException, IndeterminateConfigurationException
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+
+        Configuration c = configuration.getConfiguration();
+        c.removeManagedRepository( c.findManagedRepositoryById( REPOSITORY_ID ) );
+        // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
+        triggerConfigurationChange( servlet, "managedRepositories.managedRepository(0).id", REPOSITORY_ID );
+
+        ManagedRepositoryConfiguration repository = servlet.getRepository( REPOSITORY_ID );
+        assertNull( repository );
+    }
+
+    public void testGetRepositoryAfterAdd()
+        throws IOException, ServletException, RegistryException, IndeterminateConfigurationException
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+
+        Configuration c = configuration.getConfiguration();
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( NEW_REPOSITORY_ID );
+        repo.setName( NEW_REPOSITORY_NAME );
+        c.addManagedRepository( repo );
+        // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
+        triggerConfigurationChange( servlet, "managedRepositories.managedRepository(2).id", NEW_REPOSITORY_ID );
+
+        ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );
+        assertNotNull( repository );
+        assertEquals( NEW_REPOSITORY_NAME, repository.getName() );
+
+        // check other is still intact
+        repository = servlet.getRepository( REPOSITORY_ID );
+        assertNotNull( repository );
+        assertEquals( "Archiva Managed Internal Repository", repository.getName() );
+    }
+
+    private void triggerConfigurationChange( RepositoryServlet servlet, String name, String value )
+    {
+        servlet.beforeConfigurationChange( null, name, value );
+        servlet.afterConfigurationChange( null, name, value );
     }
 }

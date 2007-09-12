@@ -18,17 +18,17 @@
   ~ under the License.
   -->
 <configuration>
-  <version>1</version>
-  <repositories>
-    <repository>
+  <version>2</version>
+  <managedRepositories>
+    <managedRepository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <url>file://${appserver.base}/repositories/internal</url>
+      <location>file://${appserver.base}/repositories/internal</location>
       <releases>false</releases>
       <snapshots>true</snapshots>
       <refreshCronExpression>0 0\,30 * * ?</refreshCronExpression>
-    </repository>
-  </repositories>
+    </managedRepository>
+  </managedRepositories>
   <databaseScanning>
     <cronExpression>0 0 0 * * ?</cronExpression>
     <unprocessedConsumers>

@@ -23,19 +23,17 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * AllTests - Useful for developers using IDEs. 
+ * AllTests - Useful for developers using IDEs.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class AllTests
 {
-
     public static Test suite()
     {
         TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.layout" );
         //$JUnit-BEGIN$
-        suite.addTestSuite( AbstractBidirectionalRepositoryLayoutTestCase.class );
         suite.addTestSuite( BidirectionalRepositoryLayoutFactoryTest.class );
         suite.addTestSuite( LegacyBidirectionalRepositoryLayoutTest.class );
         suite.addTestSuite( DefaultBidirectionalRepositoryLayoutTest.class );

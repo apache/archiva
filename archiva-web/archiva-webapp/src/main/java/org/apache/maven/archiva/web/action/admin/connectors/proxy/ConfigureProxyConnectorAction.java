@@ -20,19 +20,14 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
-import org.apache.maven.archiva.configuration.functors.RemoteRepositoryPredicate;
-import org.apache.maven.archiva.configuration.functors.RepositoryIdListClosure;
 import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -106,7 +101,7 @@ public class ConfigureProxyConnectorAction
     /**
      * The list of local repository ids.
      */
-    private List localRepoIdList = new ArrayList();
+    private List managedRepoIdList = new ArrayList();
 
     /**
      * The list of remote repository ids.
@@ -301,9 +296,9 @@ public class ConfigureProxyConnectorAction
         return connector;
     }
 
-    public List getLocalRepoIdList()
+    public List getManagedRepoIdList()
     {
-        return localRepoIdList;
+        return managedRepoIdList;
     }
 
     public String getMode()
@@ -396,35 +391,13 @@ public class ConfigureProxyConnectorAction
         Configuration config = archivaConfiguration.getConfiguration();
 
         // Gather Network Proxy Ids.
-
         this.proxyIdOptions = new ArrayList();
         this.proxyIdOptions.add( DIRECT_CONNECTION );
-
-        Closure addProxyIds = new Closure()
-        {
-            public void execute( Object input )
-            {
-                if ( input instanceof NetworkProxyConfiguration )
-                {
-                    NetworkProxyConfiguration netproxy = (NetworkProxyConfiguration) input;
-                    proxyIdOptions.add( netproxy.getId() );
-                }
-            }
-        };
-
-        CollectionUtils.forAllDo( config.getNetworkProxies(), addProxyIds );
+        this.proxyIdOptions.addAll( config.getNetworkProxiesAsMap().keySet() );
 
         // Gather Local & Remote Repo Ids.
-
-        RepositoryIdListClosure remoteRepoIdList = new RepositoryIdListClosure( new ArrayList() );
-        RepositoryIdListClosure localRepoIdList = new RepositoryIdListClosure( new ArrayList() );
-        Closure repoIfClosure =
-            IfClosure.getInstance( RemoteRepositoryPredicate.getInstance(), remoteRepoIdList, localRepoIdList );
-
-        CollectionUtils.forAllDo( config.getRepositories(), repoIfClosure );
-
-        this.remoteRepoIdList = remoteRepoIdList.getList();
-        this.localRepoIdList = localRepoIdList.getList();
+        this.remoteRepoIdList = new ArrayList( config.getRemoteRepositoriesAsMap().keySet() );
+        this.managedRepoIdList = new ArrayList( config.getManagedRepositoriesAsMap().keySet() );
     }
 
     public String save()
@@ -472,9 +445,9 @@ public class ConfigureProxyConnectorAction
         this.connector = connector;
     }
 
-    public void setLocalRepoIdList( List localRepoIdList )
+    public void setManagedRepoIdList( List managedRepoIdList )
     {
-        this.localRepoIdList = localRepoIdList;
+        this.managedRepoIdList = managedRepoIdList;
     }
 
     public void setMode( String mode )

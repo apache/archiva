@@ -19,24 +19,22 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
-import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
  */
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
@@ -47,12 +45,12 @@ public abstract class AbstractRepositoryPurge
 
     protected ArtifactDAO artifactDao;
 
-    public AbstractRepositoryPurge( ArchivaRepository repository,
-                                   BidirectionalRepositoryLayout layout, ArtifactDAO artifactDao )
+    public AbstractRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+                                    ArtifactDAO artifactDao )
     {
         this.repository = repository;
         this.layout = layout;
-        this.artifactDao = artifactDao;    
+        this.artifactDao = artifactDao;
     }
 
     /**

@@ -49,10 +49,9 @@ import java.util.List;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
-
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="metadata-updater"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="metadata-updater"
+ * instantiation-strategy="per-lookup"
  */
 public class MetadataUpdaterConsumer
     extends AbstractMonitoredConsumer
@@ -122,11 +121,6 @@ public class MetadataUpdaterConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
         try
@@ -135,8 +129,9 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            throw new ConsumerException( "Cannot operate with bad layout definition on repo [" + repository.getId()
-                + "]: " + e.getMessage(), e );
+            throw new ConsumerException(
+                "Cannot operate with bad layout definition on repo [" + repository.getId() + "]: " + e.getMessage(),
+                e );
         }
         this.scanStartTimestamp = System.currentTimeMillis();
     }
@@ -195,18 +190,18 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
-                + "] to an internal project reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path +
+                "] to an internal project reference: " + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write project metadata for artifact [" + path
-                + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
+                                  "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_IO, "Project metadata not written due to IO warning: "
-                + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_IO,
+                                    "Project metadata not written due to IO warning: " + e.getMessage() );
         }
     }
 
@@ -235,18 +230,18 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
-                + "] to an internal version reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path +
+                "] to an internal version reference: " + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write version metadata for artifact [" + path
-                + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
+                                  "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_IO, "Version metadata not written due to IO warning: "
-                + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_IO,
+                                    "Version metadata not written due to IO warning: " + e.getMessage() );
         }
     }
 

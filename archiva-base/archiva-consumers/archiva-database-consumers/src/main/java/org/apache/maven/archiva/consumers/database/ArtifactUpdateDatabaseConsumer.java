@@ -49,10 +49,9 @@ import java.util.List;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- *                   role-hint="update-db-artifact"
- *                   instantiation-strategy="per-lookup"
+ * role-hint="update-db-artifact"
+ * instantiation-strategy="per-lookup"
  */
 public class ArtifactUpdateDatabaseConsumer
     extends AbstractMonitoredConsumer
@@ -140,11 +139,6 @@ public class ArtifactUpdateDatabaseConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        if ( !repository.isManaged() )
-        {
-            throw new ConsumerException( "Consumer requires managed repository." );
-        }
-
         this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
 
@@ -180,7 +174,8 @@ public class ArtifactUpdateDatabaseConsumer
             }
             catch ( DigesterException e )
             {
-                triggerConsumerWarning( CHECKSUM_CALCULATION, "Unable to calculate the MD5 checksum: " + e.getMessage() );
+                triggerConsumerWarning( CHECKSUM_CALCULATION,
+                                        "Unable to calculate the MD5 checksum: " + e.getMessage() );
             }
 
             try
@@ -189,8 +184,8 @@ public class ArtifactUpdateDatabaseConsumer
             }
             catch ( DigesterException e )
             {
-                triggerConsumerWarning( CHECKSUM_CALCULATION, "Unable to calculate the SHA1 checksum: "
-                    + e.getMessage() );
+                triggerConsumerWarning( CHECKSUM_CALCULATION,
+                                        "Unable to calculate the SHA1 checksum: " + e.getMessage() );
             }
 
             artifact.getModel().setLastModified( new Date( artifactFile.lastModified() ) );
@@ -207,11 +202,11 @@ public class ArtifactUpdateDatabaseConsumer
 
     /**
      * Get a Live Artifact from a Path.
-     * 
+     * <p/>
      * Will resolve the artifact details from the path, and then return a database live version
      * of that artifact.  Suitable for modification and saving (without the need to check for
      * existance in database prior to save.)
-     * 
+     *
      * @param path the path to work from.
      * @return the artifact that is suitable for database saving.
      */
@@ -231,8 +226,8 @@ public class ArtifactUpdateDatabaseConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerError( TYPE_NOT_ARTIFACT, "Path " + path + " cannot be converted to artifact: "
-                + e.getMessage() );
+            triggerConsumerError( TYPE_NOT_ARTIFACT,
+                                  "Path " + path + " cannot be converted to artifact: " + e.getMessage() );
             return null;
         }
     }

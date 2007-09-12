@@ -30,7 +30,7 @@ import org.apache.maven.wagon.TransferFailedException;
 import java.io.File;
 
 /**
- * ChecksumTransferTest 
+ * ChecksumTransferTest
  *
  * @author Brett Porter
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
@@ -44,7 +44,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-both-right/1.0/get-checksum-both-right-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -69,7 +69,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -85,7 +85,8 @@ public class ChecksumTransferTest
         File proxied1File = new File( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
         assertNoTempFiles( expectedFile );
-        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar", null );
+        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
+                         null );
     }
 
     public void testGetChecksumNoSha1CorrectMd5()
@@ -93,7 +94,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -117,7 +118,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -141,7 +142,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -165,7 +166,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -187,7 +188,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-both-bad/1.0/get-checksum-both-bad-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -212,7 +213,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -234,7 +235,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -259,7 +260,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -281,7 +282,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -306,7 +307,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-sha1-bad-md5/1.0/get-checksum-sha1-bad-md5-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -331,7 +332,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-md5-only/1.0/get-checksum-md5-only-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -356,7 +357,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -381,7 +382,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -389,7 +390,7 @@ public class ChecksumTransferTest
         assertFalse( expectedFile.getParentFile().exists() );
         assertFalse( expectedFile.exists() );
 
-        saveRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
@@ -417,7 +418,8 @@ public class ChecksumTransferTest
         File proxied1File = new File( REPOPATH_PROXIED1, path );
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
         assertNoTempFiles( expectedFile );
-        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar", null );
+        assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
+                         null );
     }
 
     public void testGetAlwaysBadChecksumPresentLocallyAbsentRemoteUsingIgnoredSetting()
@@ -425,7 +427,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -449,7 +451,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
@@ -473,7 +475,7 @@ public class ChecksumTransferTest
     {
         String path = "org/apache/maven/test/get-bad-local-checksum/1.0/get-bad-local-checksum-1.0.jar";
         setupTestableManagedRepository( path );
-        
+
         File expectedFile = new File( managedDefaultDir, path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 

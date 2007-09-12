@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-base</artifactId>
@@ -89,7 +90,7 @@
         </executions>
       </plugin>
       <plugin>
-       <groupId>org.codehaus.mojo</groupId>
+        <groupId>org.codehaus.mojo</groupId>
         <artifactId>jpox-maven-plugin</artifactId>
         <version>1.1.6</version>
         <dependencies>
@@ -100,44 +101,44 @@
           </dependency>
         </dependencies>
         <executions>
-        <!-- TODO: put this into a profile!
-          <execution>
-            <id>create-ddl</id>
-            <phase>generate-test-resources</phase>
-            <goals>
-              <goal>schema-create</goal>
-            </goals>
-            <configuration>
-              <outputFile>${basedir}/target/classes/org/apache/maven/archiva/model/schema.ddl</outputFile>
-              <toolProperties>
-                <property>
-                  <name>javax.jdo.option.ConnectionDriverName</name>
-                  <value>org.apache.derby.jdbc.EmbeddedDriver</value>
-                </property>
-                <property>
-                  <name>javax.jdo.option.ConnectionURL</name>
-                  <value>jdbc:derby:target/jdo-schema-create;create=true</value>
-                </property>
-                <property>
-                  <name>javax.jdo.option.ConnectionUserName</name>
-                  <value>sa</value>
-                </property>
-                <property>
-                  <name>javax.jdo.option.ConnectionPassword</name>
-                  <value></value>
-                </property>
-                <property>
-                  <name>log4j.configuration</name>
-                  <value>${basedir}/src/test/resources/log4j.xml</value>
-                </property>
-                <property>
-                  <name>org.jpox.autoCreateTables</name>
-                  <value>true</value>
-                </property>
-              </toolProperties>
-            </configuration>
-          </execution>
-             -->
+          <!-- TODO: put this into a profile
+       <execution>
+         <id>create-ddl</id>
+         <phase>generate-test-resources</phase>
+         <goals>
+           <goal>schema-create</goal>
+         </goals>
+         <configuration>
+           <outputFile>${basedir}/target/classes/org/apache/maven/archiva/model/schema.ddl</outputFile>
+           <toolProperties>
+             <property>
+               <name>javax.jdo.option.ConnectionDriverName</name>
+               <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+             </property>
+             <property>
+               <name>javax.jdo.option.ConnectionURL</name>
+               <value>jdbc:derby:target/jdo-schema-create;create=true</value>
+             </property>
+             <property>
+               <name>javax.jdo.option.ConnectionUserName</name>
+               <value>sa</value>
+             </property>
+             <property>
+               <name>javax.jdo.option.ConnectionPassword</name>
+               <value></value>
+             </property>
+             <property>
+               <name>log4j.configuration</name>
+               <value>${basedir}/src/test/resources/log4j.xml</value>
+             </property>
+             <property>
+               <name>org.jpox.autoCreateTables</name>
+               <value>true</value>
+             </property>
+           </toolProperties>
+         </configuration>
+       </execution>
+          -->
           <execution>
             <id>enhance</id>
             <goals>

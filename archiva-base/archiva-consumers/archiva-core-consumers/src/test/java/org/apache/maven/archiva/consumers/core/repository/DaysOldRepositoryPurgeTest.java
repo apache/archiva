@@ -21,9 +21,9 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.commons.io.FileUtils;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -37,7 +37,8 @@ public class DaysOldRepositoryPurgeTest
     {
         super.setUp();
 
-        repoPurge = new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration() );
+        repoPurge =
+            new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration().getDaysOlder() );
     }
 
     private void setLastModified( String dirPath )

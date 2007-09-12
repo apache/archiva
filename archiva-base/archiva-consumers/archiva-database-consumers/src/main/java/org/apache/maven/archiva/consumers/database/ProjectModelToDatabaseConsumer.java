@@ -20,8 +20,10 @@ package org.apache.maven.archiva.consumers.database;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
@@ -31,7 +33,6 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
@@ -42,7 +43,6 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
-import org.apache.maven.archiva.common.utils.VersionUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -146,7 +146,7 @@ public class ProjectModelToDatabaseConsumer
         }
 
         File artifactFile = toFile( artifact );
-        RepositoryConfiguration repo = getRepository( artifact );
+        AbstractRepositoryConfiguration repo = getRepository( artifact );
         ProjectModelReader reader = project400Reader;
 
         if ( StringUtils.equals( "legacy", repo.getLayout() ) )
@@ -223,15 +223,15 @@ public class ProjectModelToDatabaseConsumer
         }
     }
 
-    private RepositoryConfiguration getRepository( ArchivaArtifact artifact )
+    private ManagedRepositoryConfiguration getRepository( ArchivaArtifact artifact )
     {
         String repoId = artifact.getModel().getRepositoryId();
-        return archivaConfiguration.getConfiguration().findRepositoryById( repoId );
+        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
     }
 
     private File toFile( ArchivaArtifact artifact )
     {
-        RepositoryConfiguration repoConfig = getRepository( artifact );
+        ManagedRepositoryConfiguration repoConfig = getRepository( artifact );
 
         BidirectionalRepositoryLayout layout = null;
 
@@ -245,9 +245,7 @@ public class ProjectModelToDatabaseConsumer
             return null;
         }
 
-        String path = layout.toPath( artifact );
-        RepositoryURL url = new RepositoryURL( repoConfig.getUrl() );
-        return new File( url.getPath(), path );
+        return new File( repoConfig.getLocation(), layout.toPath( artifact ) );
     }
 
     public String getDescription()

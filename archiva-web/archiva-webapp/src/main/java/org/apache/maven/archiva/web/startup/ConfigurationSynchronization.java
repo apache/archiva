@@ -19,9 +19,10 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -39,14 +40,13 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * ConfigurationSynchronization 
+ * ConfigurationSynchronization
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *              role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
- *              role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
+ * role-hint="default"
+ * @todo consider whether we really need these in the database or not
  */
 public class ConfigurationSynchronization
     extends AbstractLogEnabled
@@ -69,9 +69,9 @@ public class ConfigurationSynchronization
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isRepositories( propertyName ) )
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
-            synchConfiguration();
+            synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
         }
     }
 
@@ -80,13 +80,12 @@ public class ConfigurationSynchronization
         /* do nothing */
     }
 
-    private void synchConfiguration()
+    private void synchConfiguration( List repos )
     {
-        List repos = archivaConfiguration.getConfiguration().getRepositories();
         Iterator it = repos.iterator();
         while ( it.hasNext() )
         {
-            RepositoryConfiguration repoConfig = (RepositoryConfiguration) it.next();
+            ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) it.next();
             try
             {
                 try
@@ -95,7 +94,7 @@ public class ConfigurationSynchronization
                     // Found repository.  Update it.
 
                     repository.getModel().setName( repoConfig.getName() );
-                    repository.getModel().setUrl( repoConfig.getUrl() );
+                    repository.getModel().setUrl( PathUtil.toUrl( repoConfig.getLocation() ) );
                     repository.getModel().setLayoutName( repoConfig.getLayout() );
                     repository.getModel().setCreationSource( "configuration" );
                     repository.getModel().setReleasePolicy( repoConfig.isReleases() );
@@ -143,7 +142,7 @@ public class ConfigurationSynchronization
     public void initialize()
         throws InitializationException
     {
-        synchConfiguration();
+        synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
         archivaConfiguration.addChangeListener( this );
     }
 }

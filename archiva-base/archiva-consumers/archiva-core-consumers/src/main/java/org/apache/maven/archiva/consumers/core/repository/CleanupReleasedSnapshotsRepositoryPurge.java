@@ -19,35 +19,31 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.common.utils.VersionComparator;
-import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * M2 implementation for cleaning up the released snapshots.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
  */
 public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge
@@ -60,7 +56,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                                                     ArtifactDAO artifactDao )
     {
         super( repository, layout, artifactDao );
-        metadataReader = new RepositoryMetadataReader();        
+        metadataReader = new RepositoryMetadataReader();
     }
 
     public void process( String path )

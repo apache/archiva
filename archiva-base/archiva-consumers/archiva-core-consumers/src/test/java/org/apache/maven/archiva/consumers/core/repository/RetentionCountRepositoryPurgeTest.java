@@ -22,8 +22,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test RetentionsCountRepositoryPurgeTest
@@ -39,7 +39,8 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
-        repoPurge = new RetentionCountRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration() );
+        repoPurge = new RetentionCountRepositoryPurge( getRepository(), getLayout(), dao,
+                                                       getRepoConfiguration().getRetentionCount() );
     }
 
     /**

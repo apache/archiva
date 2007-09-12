@@ -20,7 +20,7 @@ package org.apache.maven.archiva.model;
  */
 
 /**
- * ArchivaRepository 
+ * ArchivaRepository
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -35,10 +35,10 @@ public class ArchivaRepository
 
     /**
      * Construct a Repository.
-     * 
-     * @param id the unique identifier for this repository.
-     * @param name the name for this repository.
-     * @param url the base URL for this repository (this should point to the top level URL for the entire repository)
+     *
+     * @param id     the unique identifier for this repository.
+     * @param name   the name for this repository.
+     * @param url    the base URL for this repository (this should point to the top level URL for the entire repository)
      * @param layout the layout technique for this repository.
      */
     public ArchivaRepository( String id, String name, String url )
@@ -52,7 +52,7 @@ public class ArchivaRepository
 
     /**
      * Construct a Repository.
-     * 
+     *
      * @param model the model to use
      */
     public ArchivaRepository( ArchivaRepositoryModel model )
@@ -91,16 +91,6 @@ public class ArchivaRepository
     public void setBlacklisted( boolean blacklisted )
     {
         this.blacklisted = blacklisted;
-    }
-
-    public boolean isRemote()
-    {
-        return this.url.getProtocol().equals( "file" );
-    }
-
-    public boolean isManaged()
-    {
-        return this.url.getProtocol().equals( "file" );
     }
 
     public String getLayoutType()

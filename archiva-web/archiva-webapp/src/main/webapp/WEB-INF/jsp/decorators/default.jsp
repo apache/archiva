@@ -23,7 +23,7 @@
 <%@ taglib uri="/webwork" prefix="ww" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ page import="java.util.Calendar" %>
 <html>
 <head>
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="<c:url value="/css/redback/table.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/site.css"/>" type="text/css" media="all"/>
   <link rel="stylesheet" href="<c:url value="/css/print.css"/>" type="text/css" media="print"/>
-  <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" />
+  <link rel="shortcut icon" href="<c:url value="/favicon.ico" />"/>
   <script type="text/javascript" src="<c:url value="/js/scriptaculous/prototype.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/js/scriptaculous/scriptaculous.js"/>"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
@@ -83,8 +83,8 @@
       <li class="none">
         <my:currentWWUrl action="index" namespace="/">Search</my:currentWWUrl>
       </li>
-		
-      <ww:if test="${sessionScope.uiOptions.showFindArtifacts}">	  
+
+      <ww:if test="${applicationScope.uiOptions.showFindArtifacts}">
         <li class="none">
           <my:currentWWUrl action="findArtifact" namespace="/">Find Artifact</my:currentWWUrl>
         </li>
@@ -118,7 +118,7 @@
             <my:currentWWUrl action="configureAppearance" namespace="/admin">Appearance</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
-        <%-- TODO: future options here.
+          <%-- TODO: future options here.
              * Repository Statistics.
              * Web Services Statistics.
           --%>
@@ -128,21 +128,21 @@
     <redback:ifAuthorized permission="archiva-manage-configuration">
       <h5>Administration</h5>
       <ul>
-          <li class="none">
-            <my:currentWWUrl action="repositories" namespace="/admin">Repositories</my:currentWWUrl>
-          </li>
-          <li class="none">
-            <my:currentWWUrl action="proxyConnectors" namespace="/admin">Proxy Connectors</my:currentWWUrl>
-          </li>
-          <li class="none">
-            <my:currentWWUrl action="networkProxies" namespace="/admin">Network Proxies</my:currentWWUrl>
-          </li>
-          <li class="none">
-            <my:currentWWUrl action="repositoryScanning" namespace="/admin">Repository Scanning</my:currentWWUrl>
-          </li>
-          <li class="none">
-            <my:currentWWUrl action="database" namespace="/admin">Database</my:currentWWUrl>
-          </li>
+        <li class="none">
+          <my:currentWWUrl action="repositories" namespace="/admin">Repositories</my:currentWWUrl>
+        </li>
+        <li class="none">
+          <my:currentWWUrl action="proxyConnectors" namespace="/admin">Proxy Connectors</my:currentWWUrl>
+        </li>
+        <li class="none">
+          <my:currentWWUrl action="networkProxies" namespace="/admin">Network Proxies</my:currentWWUrl>
+        </li>
+        <li class="none">
+          <my:currentWWUrl action="repositoryScanning" namespace="/admin">Repository Scanning</my:currentWWUrl>
+        </li>
+        <li class="none">
+          <my:currentWWUrl action="database" namespace="/admin">Database</my:currentWWUrl>
+        </li>
           <%-- TODO: future options here.
                * Repository Syncing Connectors. (rsync, ftp, scp, etc...)
                * Web Services (enable / disable), role based?
