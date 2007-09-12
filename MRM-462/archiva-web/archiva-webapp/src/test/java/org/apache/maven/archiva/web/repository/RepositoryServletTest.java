@@ -106,7 +106,7 @@ public class RepositoryServletTest
 
         Configuration c = configuration.getConfiguration();
         c.removeManagedRepository( c.findManagedRepositoryById( REPOSITORY_ID ) );
-        // TODO! it would be better to use a mock configuration and "save" to more accurately reflect the calls made
+        // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
         triggerConfigurationChange( servlet, "managedRepositories.managedRepository(0).id", REPOSITORY_ID );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( REPOSITORY_ID );
@@ -124,7 +124,7 @@ public class RepositoryServletTest
         repo.setId( NEW_REPOSITORY_ID );
         repo.setName( NEW_REPOSITORY_NAME );
         c.addManagedRepository( repo );
-        // TODO! it would be better to use a mock configuration and "save" to more accurately reflect the calls made
+        // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
         triggerConfigurationChange( servlet, "managedRepositories.managedRepository(2).id", NEW_REPOSITORY_ID );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );

@@ -196,7 +196,7 @@ public class ConfigureRemoteRepositoryActionTest
     public void testDeleteRemoteRepositoryKeepContent()
         throws RegistryException, IndeterminateConfigurationException
     {
-        Configuration configuration = executeDeletionTest( "delete-entry", createRepository() );
+        Configuration configuration = executeDeletionTest( createRepository() );
 
         assertTrue( configuration.getRemoteRepositories().isEmpty() );
     }
@@ -216,11 +216,9 @@ public class ConfigureRemoteRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
-        action.setMode( "unmodified" ); // TODO! remove
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertEquals( "unmodified", action.getMode() );
         RemoteRepositoryConfiguration repositoryConfiguration = action.getRepository();
         assertNotNull( repositoryConfiguration );
         assertRepositoryEquals( repositoryConfiguration, createRepository() );
@@ -233,7 +231,7 @@ public class ConfigureRemoteRepositoryActionTest
         assertEquals( Collections.singletonList( originalRepository ), configuration.getRemoteRepositories() );
     }
 
-    private Configuration executeDeletionTest( String mode, RemoteRepositoryConfiguration originalRepository )
+    private Configuration executeDeletionTest( RemoteRepositoryConfiguration originalRepository )
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration configuration = createConfigurationForEditing( originalRepository );
@@ -247,11 +245,9 @@ public class ConfigureRemoteRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
-        action.setMode( mode ); // TODO! remove
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertEquals( mode, action.getMode() );
         RemoteRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );

@@ -47,7 +47,7 @@ public class AbstractConfigureRepositoryAction
 
     protected String repoid;
 
-    // TODO! consider removing? was just meant to be for delete...
+    // TODO: consider removing? was just meant to be for delete...
     protected String mode;
 
     // TODO: rename to confirmDelete

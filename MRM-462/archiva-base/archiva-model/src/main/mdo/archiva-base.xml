@@ -25,7 +25,7 @@
         This object is not serialized to the Database.
       </description>
       <fields>
-        <!-- TODO! check it -->
+        <!-- Note: these are only managed repositories. This should be reviewed as to whether they are still needed -->
         <field>
           <name>repositories</name>
           <version>1.0.0+</version>
@@ -122,7 +122,6 @@
             The Name of the repository.
           </description>
         </field>
-        <!-- TODO! check it -->
         <field stash.maxSize="250">
           <name>url</name>
           <identifier>false</identifier>

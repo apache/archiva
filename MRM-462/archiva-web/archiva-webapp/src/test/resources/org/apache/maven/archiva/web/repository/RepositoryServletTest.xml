@@ -38,7 +38,7 @@
       </configuration>
     </component>
 
-    <!-- TODO! shouldn't need so many components just to use in-memory - is flaky since these are auto-generated -->
+    <!-- TODO: shouldn't need so many components just to use in-memory - is flaky since these are auto-generated -->
     <component>
       <role>org.codehaus.plexus.redback.system.SecuritySystem</role>
       <role-hint>default</role-hint>
