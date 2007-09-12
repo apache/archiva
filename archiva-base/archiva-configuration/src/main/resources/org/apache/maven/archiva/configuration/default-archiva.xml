@@ -9,7 +9,7 @@
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
-      <indexed>true</indexed>
+      <scanned>true</scanned>
       <refreshCronExpression>0 0 0 * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
     </managedRepository>
@@ -20,7 +20,7 @@
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
-      <indexed>true</indexed>
+      <scanned>true</scanned>
       <refreshCronExpression>0 0\,30 0 * * ?</refreshCronExpression>
       <daysOlder>30</daysOlder>
     </managedRepository>

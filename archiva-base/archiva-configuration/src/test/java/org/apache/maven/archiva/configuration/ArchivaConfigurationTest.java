@@ -66,7 +66,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isScanned() );
     }
 
     public void testGetConfigurationFromDefaults()
@@ -87,7 +87,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isScanned() );
     }
 
     /**
@@ -489,7 +489,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isScanned() );
     }
 
     public void testAutoDetectV1()
@@ -510,7 +510,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isScanned() );
     }
 
     public void testArchivaV1()
@@ -533,7 +533,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertTrue( "check managed repositories", repository.isScanned() );
         assertFalse( "check managed repositories", repository.isSnapshots() );
 
         repository = map.get( "snapshots" );
@@ -542,7 +542,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName() );
         assertEquals( "check managed repositories", "snapshots", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isIndexed() );
+        assertFalse( "check managed repositories", repository.isScanned() );
         assertTrue( "check managed repositories", repository.isSnapshots() );
     }
 

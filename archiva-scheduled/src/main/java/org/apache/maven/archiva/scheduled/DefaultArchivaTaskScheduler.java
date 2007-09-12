@@ -103,7 +103,7 @@ public class DefaultArchivaTaskScheduler
             {
                 ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) i.next();
 
-                if ( repoConfig.isIndexed() )
+                if ( repoConfig.isScanned() )
                 {
                     scheduleRepositoryJobs( repoConfig );
                 }

@@ -122,6 +122,7 @@ public class DefaultArchivaConfiguration
             for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
             {
                 V1RepositoryConfiguration r = (V1RepositoryConfiguration) i.next();
+                r.setScanned( r.isIndexed() );
 
                 if ( r.getUrl().startsWith( "file://" ) )
                 {

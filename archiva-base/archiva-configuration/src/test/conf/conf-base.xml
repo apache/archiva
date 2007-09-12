@@ -28,6 +28,7 @@
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
+      <!-- TODO! -->
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * ?</refreshCronExpression>
     </managedRepository>

@@ -28,7 +28,7 @@
 <ww:textfield name="repository.retentionCount" label="Repository Purge By Retention Count" size="5"/>
 <ww:checkbox name="repository.releases" value="repository.releases" label="Releases Included"/>
 <ww:checkbox name="repository.snapshots" value="repository.snapshots" label="Snapshots Included"/>
-<ww:checkbox name="repository.indexed" value="repository.indexed" label="Scannable"/>
+<ww:checkbox name="repository.scanned" value="repository.scanned" label="Scannable"/>
 <ww:checkbox name="repository.deleteReleasedSnapshots" value="repository.deleteReleasedSnapshots"
              label="Delete Released Snapshots"/>
 

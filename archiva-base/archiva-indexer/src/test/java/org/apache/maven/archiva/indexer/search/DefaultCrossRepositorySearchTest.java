@@ -76,7 +76,7 @@ public class DefaultCrossRepositorySearchTest
         repoConfig.setName( TEST_DEFAULT_REPOSITORY_NAME );
         repoConfig.setLocation( repoDir.getAbsolutePath() );
         repoConfig.setIndexDir( indexLocation.getAbsolutePath() );
-        repoConfig.setIndexed( true );
+        repoConfig.setScanned( true );
 
         if ( indexLocation.exists() )
         {

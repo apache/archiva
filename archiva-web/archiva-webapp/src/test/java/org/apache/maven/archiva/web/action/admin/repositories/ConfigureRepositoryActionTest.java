@@ -103,7 +103,7 @@ public class ConfigureRepositoryActionTest
         assertNull( configuration.getId() );
         // check all booleans are false
         assertFalse( configuration.isDeleteReleasedSnapshots() );
-        assertFalse( configuration.isIndexed() );
+        assertFalse( configuration.isScanned() );
         assertFalse( configuration.isReleases() );
         assertFalse( configuration.isSnapshots() );
 
@@ -112,7 +112,7 @@ public class ConfigureRepositoryActionTest
 
         // check defaults
         assertFalse( configuration.isDeleteReleasedSnapshots() );
-        assertTrue( configuration.isIndexed() );
+        assertTrue( configuration.isScanned() );
         assertTrue( configuration.isReleases() );
         assertFalse( configuration.isSnapshots() );
     }
@@ -312,7 +312,7 @@ public class ConfigureRepositoryActionTest
         assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
         assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
         assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
-        assertEquals( expectedRepository.isIndexed(), actualRepository.isIndexed() );
+        assertEquals( expectedRepository.isScanned(), actualRepository.isScanned() );
         assertEquals( expectedRepository.isReleases(), actualRepository.isReleases() );
         assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
     }
@@ -343,7 +343,7 @@ public class ConfigureRepositoryActionTest
         repository.setRetentionCount( 20 );
         repository.setReleases( true );
         repository.setSnapshots( true );
-        repository.setIndexed( true );
+        repository.setScanned( true );
         repository.setDeleteReleasedSnapshots( true );
     }
 

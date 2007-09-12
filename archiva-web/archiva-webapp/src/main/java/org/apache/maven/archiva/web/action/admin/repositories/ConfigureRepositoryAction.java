@@ -57,7 +57,7 @@ public class ConfigureRepositoryAction
         this.mode = "add";
 
         this.repository.setReleases( true );
-        this.repository.setIndexed( true );
+        this.repository.setScanned( true );
 
         return INPUT;
     }
@@ -128,7 +128,7 @@ public class ConfigureRepositoryAction
         {
             this.repository = new ManagedRepositoryConfiguration();
             this.repository.setReleases( false );
-            this.repository.setIndexed( false );
+            this.repository.setScanned( false );
         }
         else
         {

@@ -304,12 +304,11 @@
           <description>True if this repository contains snapshot versioned artifacts.</description>
           <defaultValue>false</defaultValue>
         </field>
-        <!-- TODO! is indexed better named as scanned? check it's usages (or lack of usages) when iterating repos -->
         <field>
-          <name>indexed</name>
+          <name>scanned</name>
           <version>1.0.0+</version>
           <type>boolean</type>
-          <description>True if this repository should be indexed.</description>
+          <description>True if this repository should be scanned and processed.</description>
           <defaultValue>true</defaultValue>
         </field>
         <field>
@@ -372,6 +371,12 @@
           <description>
             The URL for this repository.
           </description>
+        </field>
+        <field>
+          <name>indexed</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
         </field>
       </fields>
     </class>

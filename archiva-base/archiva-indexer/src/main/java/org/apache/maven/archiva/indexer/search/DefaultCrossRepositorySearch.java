@@ -328,7 +328,7 @@ public class DefaultCrossRepositorySearch
             List<ManagedRepositoryConfiguration> repos = configuration.getConfiguration().getManagedRepositories();
             for ( ManagedRepositoryConfiguration repo : repos )
             {
-                if ( repo.isIndexed() )
+                if ( repo.isScanned() )
                 {
                     localIndexedRepositories.add( ArchivaConfigurationAdaptor.toArchivaRepository( repo ) );
                 }

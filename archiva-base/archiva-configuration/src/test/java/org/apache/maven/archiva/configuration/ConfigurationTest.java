@@ -107,13 +107,13 @@ public class ConfigurationTest
     }
 
     private ManagedRepositoryConfiguration createManagedRepository( String id, String name, String location,
-                                                                    boolean indexed )
+                                                                    boolean scanned )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
         repo.setName( name );
         repo.setLocation( location );
-        repo.setIndexed( indexed );
+        repo.setScanned( scanned );
         return repo;
     }
 

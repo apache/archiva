@@ -51,7 +51,7 @@ public class MavenProxyPropertyLoader
         config.setLocation( localCachePath );
         config.setName( "Imported Maven-Proxy Cache" );
         config.setId( "maven-proxy" );
-        config.setIndexed( false );
+        config.setScanned( false );
         config.setReleases( true );
         config.setSnapshots( false );
         configuration.addManagedRepository( config );

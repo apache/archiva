@@ -37,7 +37,7 @@
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
-      <indexed>true</indexed>
+      <indexed>false</indexed>
       <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
     </repository>
     <repository>

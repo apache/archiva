@@ -148,13 +148,13 @@
 </tr>
 <tr>
   <th>Scanned</th>
-  <td class="${repository.indexed ? 'donemark' : 'errormark'} booleanIcon"> ${repository.indexed}</td>
+  <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"> ${repository.scanned}</td>
 </tr>
 <tr>
   <th>Delete Released Snapshots</th>
   <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.deleteReleasedSnapshots}</td>
 </tr>
-<c:if test="${repository.indexed}">
+<c:if test="${repository.scanned}">
   <tr>
     <th>Scanning Cron</th>
     <td>${repository.refreshCronExpression}</td>
