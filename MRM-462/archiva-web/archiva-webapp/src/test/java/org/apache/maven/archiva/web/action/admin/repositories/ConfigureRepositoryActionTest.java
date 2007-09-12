@@ -75,6 +75,19 @@ public class ConfigureRepositoryActionTest
         location = getTestFile( "location" );
     }
 
+    public void testSecureActionBundle()
+        throws SecureActionException
+    {
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( new Configuration() );
+        archivaConfigurationControl.replay();
+
+        action.prepare();
+        SecureActionBundle bundle = action.getSecureActionBundle();
+        assertTrue( bundle.requiresAuthentication() );
+        assertEquals( 1, bundle.getAuthorizationTuples().size() );
+    }
+
     public void testAddRepositoryInitialPage()
         throws Exception
     {
@@ -163,38 +176,6 @@ public class ConfigureRepositoryActionTest
         assertEquals( Action.INPUT, status );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
-    }
-
-    private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
-                                         ManagedRepositoryConfiguration actualRepository )
-    {
-        assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
-        assertEquals( expectedRepository.getId(), actualRepository.getId() );
-        assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
-        assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
-        assertEquals( expectedRepository.getLocation(), actualRepository.getLocation() );
-        assertEquals( expectedRepository.getName(), actualRepository.getName() );
-        assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
-        assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
-        assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
-        assertEquals( expectedRepository.isIndexed(), actualRepository.isIndexed() );
-        assertEquals( expectedRepository.isReleases(), actualRepository.isReleases() );
-        assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
-    }
-
-    private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
-    {
-        Configuration configuration = new Configuration();
-        configuration.addManagedRepository( repositoryConfiguration );
-        return configuration;
-    }
-
-    private ManagedRepositoryConfiguration createRepository()
-    {
-        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
-        r.setId( REPO_ID );
-        populateRepository( r );
-        return r;
     }
 
     public void testEditRepository()
@@ -323,6 +304,38 @@ public class ConfigureRepositoryActionTest
         return configuration;
     }
 
+    private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
+                                         ManagedRepositoryConfiguration actualRepository )
+    {
+        assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
+        assertEquals( expectedRepository.getId(), actualRepository.getId() );
+        assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
+        assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
+        assertEquals( expectedRepository.getLocation(), actualRepository.getLocation() );
+        assertEquals( expectedRepository.getName(), actualRepository.getName() );
+        assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
+        assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
+        assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
+        assertEquals( expectedRepository.isIndexed(), actualRepository.isIndexed() );
+        assertEquals( expectedRepository.isReleases(), actualRepository.isReleases() );
+        assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
+    }
+
+    private Configuration createConfigurationForEditing( ManagedRepositoryConfiguration repositoryConfiguration )
+    {
+        Configuration configuration = new Configuration();
+        configuration.addManagedRepository( repositoryConfiguration );
+        return configuration;
+    }
+
+    private ManagedRepositoryConfiguration createRepository()
+    {
+        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        r.setId( REPO_ID );
+        populateRepository( r );
+        return r;
+    }
+
     private void populateRepository( ManagedRepositoryConfiguration repository )
     {
         repository.setId( REPO_ID );
@@ -339,17 +352,6 @@ public class ConfigureRepositoryActionTest
     }
 
     // TODO: test errors during add, other actions
-
-    public void testSecureActionBundle()
-        throws SecureActionException
-    {
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( new Configuration() );
-        archivaConfigurationControl.replay();
-
-        action.prepare();
-        SecureActionBundle bundle = action.getSecureActionBundle();
-        assertTrue( bundle.requiresAuthentication() );
-        assertEquals( 1, bundle.getAuthorizationTuples().size() );
-    }
+    // TODO: what if there are proxy connectors attached to a deleted repository?
+    // TODO: what about removing proxied content if a proxy is removed?
 }
