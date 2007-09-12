@@ -22,6 +22,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
@@ -45,6 +46,8 @@ public class ConfigureRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
+
+    private static final String REPO_ID = "repo-ident";
 
     protected void setUp()
         throws Exception
@@ -97,10 +100,9 @@ public class ConfigureRepositoryActionTest
     public void testAddRepository()
         throws Exception
     {
-        String repoId = "repo-ident";
         // TODO: should be in the business model
-        roleManager.createTemplatedRole( "archiva-repository-manager", repoId );
-        roleManager.createTemplatedRole( "archiva-repository-observer", repoId );
+        roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
+        roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
 
         roleManagerControl.replay();
 
@@ -117,7 +119,114 @@ public class ConfigureRepositoryActionTest
         action.prepare();
         action.setMode( "add" );
         AdminRepositoryConfiguration repository = action.getRepository();
-        repository.setId( repoId );
+        populateRepository( repository );
+
+        String status = action.save();
+        assertEquals( Action.SUCCESS, status );
+
+        assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
+
+        roleManagerControl.verify();
+        archivaConfigurationControl.verify();
+    }
+
+    public void testEditRepositoryInitialPage()
+        throws Exception
+    {
+        Configuration configuration = createConfigurationForEditing();
+
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.replay();
+
+        action.setRepoid( REPO_ID );
+
+        action.prepare();
+        assertEquals( REPO_ID, action.getRepoid() );
+        assertNull( action.getMode() );
+        AdminRepositoryConfiguration repository = action.getRepository();
+        assertNotNull( repository );
+        assertRepositoryEquals( repository, createRepository() );
+
+        String status = action.edit();
+        assertEquals( Action.INPUT, status );
+        repository = action.getRepository();
+        assertRepositoryEquals( repository, createRepository() );
+    }
+
+    private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
+                                         ManagedRepositoryConfiguration actualRepository )
+    {
+        assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
+        assertEquals( expectedRepository.getId(), actualRepository.getId() );
+        assertEquals( expectedRepository.getIndexDir(), actualRepository.getIndexDir() );
+        assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
+        assertEquals( expectedRepository.getLocation(), actualRepository.getLocation() );
+        assertEquals( expectedRepository.getName(), actualRepository.getName() );
+        assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
+        assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
+        assertEquals( expectedRepository.isDeleteReleasedSnapshots(), actualRepository.isDeleteReleasedSnapshots() );
+        assertEquals( expectedRepository.isIndexed(), actualRepository.isIndexed() );
+        assertEquals( expectedRepository.isReleases(), actualRepository.isReleases() );
+        assertEquals( expectedRepository.isSnapshots(), actualRepository.isSnapshots() );
+    }
+
+    private static Configuration createConfigurationForEditing()
+    {
+        Configuration configuration = new Configuration();
+        ManagedRepositoryConfiguration r = createRepository();
+        configuration.addManagedRepository( r );
+        return configuration;
+    }
+
+    private static ManagedRepositoryConfiguration createRepository()
+    {
+        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        r.setId( REPO_ID );
+        populateRepository( r );
+        return r;
+    }
+
+    public void testEditRepository()
+        throws Exception
+    {
+        // TODO: should be in the business model
+        roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
+        roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
+
+        roleManagerControl.replay();
+
+        Configuration configuration = createConfigurationForEditing();
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfiguration.getConfiguration();
+        archivaConfigurationControl.setReturnValue( configuration );
+
+        archivaConfiguration.save( configuration );
+
+        archivaConfigurationControl.replay();
+
+        action.prepare();
+        action.setMode( "edit" );
+        AdminRepositoryConfiguration repository = action.getRepository();
+        populateRepository( repository );
+        repository.setName( "new repo name" );
+
+        String status = action.save();
+        assertEquals( Action.SUCCESS, status );
+
+        ManagedRepositoryConfiguration newRepository = createRepository();
+        newRepository.setName( "new repo name" );
+        assertRepositoryEquals( repository, newRepository );
+        assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
+
+        roleManagerControl.verify();
+        archivaConfigurationControl.verify();
+    }
+
+    private static void populateRepository( ManagedRepositoryConfiguration repository )
+    {
+        repository.setId( REPO_ID );
         repository.setName( "repo name" );
         repository.setLocation( "location" );
         repository.setLayout( "default" );
@@ -128,14 +237,6 @@ public class ConfigureRepositoryActionTest
         repository.setSnapshots( true );
         repository.setIndexed( true );
         repository.setDeleteReleasedSnapshots( true );
-
-        String status = action.save();
-        assertEquals( Action.SUCCESS, status );
-
-        assertEquals( configuration.getManagedRepositories(), Collections.singletonList( repository ) );
-
-        roleManagerControl.verify();
-        archivaConfigurationControl.verify();
     }
 
     // TODO: test errors during add, other actions
