@@ -131,8 +131,6 @@ public class ConfigureRepositoryActionTest
         Configuration configuration = new Configuration();
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
 
         archivaConfiguration.save( configuration );
 
@@ -188,8 +186,6 @@ public class ConfigureRepositoryActionTest
         roleManagerControl.replay();
 
         Configuration configuration = createConfigurationForEditing( createRepository() );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
         archivaConfiguration.getConfiguration();
         archivaConfigurationControl.setReturnValue( configuration );
 
