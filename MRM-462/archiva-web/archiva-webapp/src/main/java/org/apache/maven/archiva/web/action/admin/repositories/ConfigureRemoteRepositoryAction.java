@@ -105,7 +105,6 @@ public class ConfigureRemoteRepositoryAction
 
     public String save()
     {
-        // TODO! share
         String repoId = repository.getId();
 
         Configuration configuration = archivaConfiguration.getConfiguration();
@@ -157,7 +156,7 @@ public class ConfigureRemoteRepositoryAction
 
     private boolean validateFields( Configuration config )
     {
-        // TODO! share
+        // TODO: push this into the webwork validation instead
         boolean containsError = false;
         String repoId = repository.getId();
 
