@@ -74,8 +74,6 @@ public class ConfigureRepositoryAction
                 return ERROR;
             }
 
-            // TODO: remove from index too!
-
             try
             {
                 Configuration configuration = archivaConfiguration.getConfiguration();
