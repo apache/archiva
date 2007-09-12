@@ -45,7 +45,7 @@ public class ConfigureRepositoryAction
     /**
      * The model for this action.
      */
-    private AdminRepositoryConfiguration repository;
+    private ManagedRepositoryConfiguration repository;
 
     /**
      * @plexus.requirement role-hint="default"
@@ -67,7 +67,7 @@ public class ConfigureRepositoryAction
         String result = SUCCESS;
         if ( StringUtils.equals( mode, "delete-entry" ) || StringUtils.equals( mode, "delete-contents" ) )
         {
-            AdminRepositoryConfiguration existingRepository = repository;
+            ManagedRepositoryConfiguration existingRepository = repository;
             if ( existingRepository == null )
             {
                 addActionError( "A repository with that id does not exist" );
@@ -116,7 +116,7 @@ public class ConfigureRepositoryAction
         return result;
     }
 
-    public AdminRepositoryConfiguration getRepository()
+    public ManagedRepositoryConfiguration getRepository()
     {
         return repository;
     }
@@ -126,16 +126,13 @@ public class ConfigureRepositoryAction
         String id = repoid;
         if ( id == null )
         {
-            this.repository = new AdminRepositoryConfiguration();
+            this.repository = new ManagedRepositoryConfiguration();
             this.repository.setReleases( false );
             this.repository.setIndexed( false );
         }
-
-        ManagedRepositoryConfiguration repoconfig =
-            archivaConfiguration.getConfiguration().findManagedRepositoryById( id );
-        if ( repoconfig != null )
+        else
         {
-            this.repository = new AdminRepositoryConfiguration( repoconfig );
+            repository = archivaConfiguration.getConfiguration().findManagedRepositoryById( id );
         }
     }
 
@@ -230,7 +227,7 @@ public class ConfigureRepositoryAction
         return containsError;
     }
 
-    private void addRepository( AdminRepositoryConfiguration repository, Configuration configuration )
+    private void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
         // Normalize the path
@@ -251,7 +248,7 @@ public class ConfigureRepositoryAction
         roleManager.createTemplatedRole( "archiva-repository-observer", repository.getId() );
     }
 
-    private void removeContents( AdminRepositoryConfiguration existingRepository )
+    private void removeContents( ManagedRepositoryConfiguration existingRepository )
         throws IOException
     {
         FileUtils.deleteDirectory( new File( existingRepository.getLocation() ) );

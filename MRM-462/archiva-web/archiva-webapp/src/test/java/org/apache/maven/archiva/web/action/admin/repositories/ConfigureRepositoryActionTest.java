@@ -98,7 +98,7 @@ public class ConfigureRepositoryActionTest
         action.prepare();
         assertNull( action.getRepoid() );
         assertNull( action.getMode() );
-        AdminRepositoryConfiguration configuration = action.getRepository();
+        ManagedRepositoryConfiguration configuration = action.getRepository();
         assertNotNull( configuration );
         assertNull( configuration.getId() );
         // check all booleans are false
@@ -140,7 +140,7 @@ public class ConfigureRepositoryActionTest
 
         action.prepare();
         action.setMode( "add" );
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
         assertFalse( location.exists() );
@@ -168,7 +168,7 @@ public class ConfigureRepositoryActionTest
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
         assertNull( action.getMode() );
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -199,7 +199,7 @@ public class ConfigureRepositoryActionTest
 
         action.prepare();
         action.setMode( "edit" );
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
 
@@ -229,7 +229,7 @@ public class ConfigureRepositoryActionTest
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
         assertNull( action.getMode() );
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
@@ -266,7 +266,7 @@ public class ConfigureRepositoryActionTest
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = executeDeletionTest( "unmodified", originalRepository );
 
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
 
@@ -294,7 +294,7 @@ public class ConfigureRepositoryActionTest
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
         assertEquals( mode, action.getMode() );
-        AdminRepositoryConfiguration repository = action.getRepository();
+        ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
