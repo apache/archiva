@@ -300,26 +300,14 @@ public class ConfigureRepositoryAction
     private void addRepository( AdminRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
-        // Fix the URL entry (could possibly be a filesystem path)
-/* TODO! reinstate
-        String rawUrlEntry = repository.getUrl();
-        if ( !rawUrlEntry.startsWith( "http://" ) )
+        // Normalize the path
+        File file = new File( repository.getLocation() );
+        repository.setLocation( file.getCanonicalPath() );
+        if ( !file.exists() )
         {
-            repository.setUrl( PathUtil.toUrl( rawUrlEntry ) );
+            file.mkdirs();
+            // TODO: error handling when this fails, or is not a directory!
         }
-
-        if ( repository.isManaged() )
-        {
-            // Normalize the path
-            File file = new File( repository.getDirectory() );
-            repository.setDirectory( file.getCanonicalPath() );
-            if ( !file.exists() )
-            {
-                file.mkdirs();
-                // TODO: error handling when this fails, or is not a directory!
-            }
-        }
-*/
 
         // TODO! others
         configuration.addManagedRepository( repository );

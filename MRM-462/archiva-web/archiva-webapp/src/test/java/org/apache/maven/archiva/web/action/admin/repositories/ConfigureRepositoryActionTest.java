@@ -228,7 +228,7 @@ public class ConfigureRepositoryActionTest
     {
         repository.setId( REPO_ID );
         repository.setName( "repo name" );
-        repository.setLocation( "location" );
+        repository.setLocation( getTestFile( "location" ).getAbsolutePath() );
         repository.setLayout( "default" );
         repository.setRefreshCronExpression( "* 0/5 * * * ?" );
         repository.setDaysOlder( 31 );
