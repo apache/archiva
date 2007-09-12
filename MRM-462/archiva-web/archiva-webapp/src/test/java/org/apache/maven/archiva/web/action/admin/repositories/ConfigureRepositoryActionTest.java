@@ -72,7 +72,7 @@ public class ConfigureRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
-        location = getTestFile( "location" );
+        location = getTestFile( "target/test/location" );
     }
 
     public void testSecureActionBundle()
