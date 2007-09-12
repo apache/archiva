@@ -28,8 +28,7 @@
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
-      <!-- TODO! -->
-      <indexed>true</indexed>
+      <scanned>true</scanned>
       <refreshCronExpression>0 0 * * ?</refreshCronExpression>
     </managedRepository>
     <managedRepository>
@@ -39,7 +38,7 @@
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
-      <indexed>true</indexed>
+      <scanned>true</scanned>
       <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
     </managedRepository>
   </managedRepositories>
