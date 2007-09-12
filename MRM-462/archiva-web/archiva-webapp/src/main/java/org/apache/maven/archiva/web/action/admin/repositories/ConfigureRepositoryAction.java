@@ -22,21 +22,13 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.opensymphony.xwork.Preparable;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.rbac.Resource;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,28 +39,18 @@ import java.io.IOException;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureRepositoryAction"
  */
 public class ConfigureRepositoryAction
-    extends PlexusActionSupport
-    implements Preparable, SecureAction
+    extends AbstractConfigureRepositoryAction
+    implements Preparable
 {
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private RoleManager roleManager;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
-
-    private String repoid;
-
-    // TODO! consider removing? was just meant to be for delete...
-    private String mode;
-
     /**
      * The model for this action.
      */
     private AdminRepositoryConfiguration repository;
+
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    protected RoleManager roleManager;
 
     public String add()
     {
@@ -77,12 +59,6 @@ public class ConfigureRepositoryAction
         this.repository.setReleases( true );
         this.repository.setIndexed( true );
 
-        return INPUT;
-    }
-
-    // TODO: rename to confirmDelete
-    public String confirm()
-    {
         return INPUT;
     }
 
@@ -140,37 +116,9 @@ public class ConfigureRepositoryAction
         return result;
     }
 
-    public String edit()
-    {
-        this.mode = "edit";
-
-        return INPUT;
-    }
-
-    public String getMode()
-    {
-        return this.mode;
-    }
-
-    public String getRepoid()
-    {
-        return repoid;
-    }
-
     public AdminRepositoryConfiguration getRepository()
     {
         return repository;
-    }
-
-    public SecureActionBundle getSecureActionBundle()
-        throws SecureActionException
-    {
-        SecureActionBundle bundle = new SecureActionBundle();
-
-        bundle.setRequiresAuthentication( true );
-        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
-
-        return bundle;
     }
 
     public void prepare()
@@ -183,7 +131,6 @@ public class ConfigureRepositoryAction
             this.repository.setIndexed( false );
         }
 
-        // TODO! others?
         ManagedRepositoryConfiguration repoconfig =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( id );
         if ( repoconfig != null )
@@ -264,7 +211,6 @@ public class ConfigureRepositoryAction
             containsError = true;
         }
 
-        // TODO! split
         if ( StringUtils.isBlank( repository.getLocation() ) )
         {
             addFieldError( "repository.location", "You must enter a directory." );
@@ -284,16 +230,6 @@ public class ConfigureRepositoryAction
         return containsError;
     }
 
-    public void setMode( String mode )
-    {
-        this.mode = mode;
-    }
-
-    public void setRepoid( String repoid )
-    {
-        this.repoid = repoid;
-    }
-
     private void addRepository( AdminRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
@@ -306,7 +242,6 @@ public class ConfigureRepositoryAction
             // TODO: error handling when this fails, or is not a directory!
         }
 
-        // TODO! others
         configuration.addManagedRepository( repository );
 
         // TODO: double check these are configured on start up
@@ -324,7 +259,6 @@ public class ConfigureRepositoryAction
 
     private void removeRepository( String repoId, Configuration configuration )
     {
-        // TODO! what about others?
         ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( repoId );
         if ( toremove != null )
         {
@@ -341,31 +275,8 @@ public class ConfigureRepositoryAction
         getLogger().debug( "removed user roles associated with repository " + existingRepository.getId() );
     }
 
-    private String saveConfiguration( Configuration configuration )
-        throws IOException, InvalidConfigurationException, RegistryException
-    {
-        try
-        {
-            archivaConfiguration.save( configuration );
-            addActionMessage( "Successfully saved configuration" );
-        }
-        catch ( IndeterminateConfigurationException e )
-        {
-            addActionError( e.getMessage() );
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
-
     public void setRoleManager( RoleManager roleManager )
     {
         this.roleManager = roleManager;
     }
-
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
-        this.archivaConfiguration = archivaConfiguration;
-    }
-
 }

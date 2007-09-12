@@ -254,6 +254,32 @@
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
+    <action name="addRemoteRepository" class="configureRemoteRepositoryAction" method="add">
+      <result name="input">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="editRemoteRepository" class="configureRemoteRepositoryAction" method="edit">
+      <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <result name="error" type="redirect-action">repositories</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="saveRemoteRepository" class="configureRemoteRepositoryAction" method="save">
+      <result name="success" type="redirect-action">repositories</result>
+      <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteRemoteRepository" class="configureRemoteRepositoryAction" method="confirm">
+      <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
+      <result name="success" type="redirect-action">repositories</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
     <!-- .\ PROXY CONNECTORS \.________________________________________ -->
 
     <action name="proxyConnectors" class="proxyConnectorsAction" method="input">
