@@ -234,7 +234,10 @@ public class ConfigureRepositoryAction
         if ( !file.exists() )
         {
             file.mkdirs();
-            // TODO: error handling when this fails, or is not a directory!
+        }
+        if ( !file.exists() || !file.isDirectory() )
+        {
+            throw new IOException( "unable to add repository - can not create the root directory: " + file );
         }
 
         configuration.addManagedRepository( repository );

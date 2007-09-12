@@ -338,7 +338,7 @@ public class ManagedDefaultTransferTest
         wagonMockControl.verify();
         assertNoTempFiles( expectedFile );
 
-        // TODO: do not want failures to present as a not found!
+        // TODO: do not want failures to present as a not found [MRM-492]
         // TODO: How much information on each failure should we pass back to the user vs. logging in the proxy? 
     }
 
