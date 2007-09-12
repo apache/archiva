@@ -265,7 +265,7 @@ public class ConfigureRepositoryAction
         // TODO! split
         if ( StringUtils.isBlank( repository.getLocation() ) )
         {
-            addFieldError( "repository.url", "You must enter a directory." );
+            addFieldError( "repository.location", "You must enter a directory." );
             containsError = true;
         }
         if ( StringUtils.isBlank( repository.getName() ) )
