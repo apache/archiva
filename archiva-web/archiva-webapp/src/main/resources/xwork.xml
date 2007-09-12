@@ -22,7 +22,7 @@
     "http://www.opensymphony.com/xwork/xwork-1.1.dtd">
 
 <xwork>
-  <!-- TODO: better error handling for exceptions needed! -->
+  <!-- TODO: better error handling for exceptions needed [MRM-490] -->
   <include file="webwork-default.xml"/>
 
   <!-- Include plexus-security xwork configurations. -->

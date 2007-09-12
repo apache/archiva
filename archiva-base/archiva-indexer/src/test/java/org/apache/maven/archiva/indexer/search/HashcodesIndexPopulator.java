@@ -1,5 +1,6 @@
 package org.apache.maven.archiva.indexer.search;
 
+import junit.framework.AssertionFailedError;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecordLoader;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -8,8 +9,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import junit.framework.AssertionFailedError;
 
 public class HashcodesIndexPopulator
     implements IndexPopulator
@@ -20,8 +19,8 @@ public class HashcodesIndexPopulator
         Map dumps = new HashMap();
 
         // archiva-common-1.0.jar.txt
-        dumps.put( "archiva-common", createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "",
-                                                            "jar" ) );
+        dumps.put( "archiva-common",
+                   createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "", "jar" ) );
 
         // continuum-webapp-1.0.3-SNAPSHOT.war.txt
         dumps.put( "continuum-webapp", createArchivaArtifact( "org.apache.maven.continuum", "continuum-webapp",
@@ -85,7 +84,7 @@ public class HashcodesIndexPopulator
 
         filename.append( "." );
 
-        // TODO: use the ArtifactExtensionMapping object!
+        // TODO: use the ArtifactExtensionMapping object
         if ( "maven-plugin".equals( artifact.getType() ) || "maven-archetype".equals( artifact.getType() ) )
         {
             filename.append( "jar" );
@@ -100,14 +99,15 @@ public class HashcodesIndexPopulator
 
         if ( !dumpFile.exists() )
         {
-            throw new AssertionFailedError( "Dump file " + dumpFile.getAbsolutePath() + " does not exist (should it?)." );
+            throw new AssertionFailedError(
+                "Dump file " + dumpFile.getAbsolutePath() + " does not exist (should it?)." );
         }
 
         return dumpFile;
     }
 
-    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version,
-                                                   String classifier, String type )
+    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version, String classifier,
+                                                   String type )
     {
         ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         return artifact;

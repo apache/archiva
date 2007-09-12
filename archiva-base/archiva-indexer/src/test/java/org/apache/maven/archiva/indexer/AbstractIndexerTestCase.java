@@ -182,7 +182,7 @@ public abstract class AbstractIndexerTestCase
 
         filename.append( "." );
 
-        // TODO: use the ArtifactExtensionMapping object!
+        // TODO: use the ArtifactExtensionMapping object
         if ( "maven-plugin".equals( artifact.getType() ) || "maven-archetype".equals( artifact.getType() ) )
         {
             filename.append( "jar" );

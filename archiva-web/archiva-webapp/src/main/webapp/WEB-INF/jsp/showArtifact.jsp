@@ -21,7 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="archiva" uri="http://maven.apache.org/archiva" %>
-<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0"  %>
+<%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 
 <html>
 <head>
@@ -96,7 +96,7 @@
         <ww:url action="showArtifactDependencyTree">
           <ww:param name="groupId" value="%{groupId}"/>
           <ww:param name="artifactId" value="%{artifactId}"/>
-          <ww:param name="version" value="%{version}"/>          
+          <ww:param name="version" value="%{version}"/>
         </ww:url>
       </c:set>
       <my:currentWWUrl url="${url}">Dependency Tree</my:currentWWUrl>
@@ -132,12 +132,12 @@
     </span>
   </div>
 
-<div class="sidebar3">  
-  <archiva:downloadArtifact groupId="${model.groupId}" artifactId="${model.artifactId}" version="${model.version}" />
-</div>
+  <div class="sidebar3">
+    <archiva:downloadArtifact groupId="${model.groupId}" artifactId="${model.artifactId}" version="${model.version}"/>
+  </div>
 
   <%-- TODO: perhaps using ajax? --%>
-  <%-- TODO: panels? this is ugly as is! --%>
+  <%-- TODO: panels? this is ugly as is --%>
   <div id="tabArea">
     <c:choose>
       <c:when test="${dependencies != null}">

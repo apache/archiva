@@ -21,7 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 
-<%-- TODO: paginate! --%>
+<%-- TODO: paginate [MRM-491] --%>
 <c:forEach items="${dependees}" var="project">
   <h3 class="artifact-title">
     <my:showArtifactTitle groupId="${project.groupId}" artifactId="${project.artifactId}"

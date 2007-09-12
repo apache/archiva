@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
+import junit.framework.AssertionFailedError;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeRecordLoader;
 import org.apache.maven.archiva.model.ArchivaArtifact;
@@ -28,10 +29,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.AssertionFailedError;
-
 /**
- * BytecodeIndexPopulator 
+ * BytecodeIndexPopulator
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -46,8 +45,8 @@ public class BytecodeIndexPopulator
         Map dumps = new HashMap();
 
         // archiva-common-1.0.jar.txt
-        dumps.put( "archiva-common", createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "",
-                                                            "jar" ) );
+        dumps.put( "archiva-common",
+                   createArchivaArtifact( "org.apache.maven.archiva", "archiva-common", "1.0", "", "jar" ) );
 
         // continuum-webapp-1.0.3-SNAPSHOT.war.txt
         dumps.put( "continuum-webapp", createArchivaArtifact( "org.apache.maven.continuum", "continuum-webapp",
@@ -80,8 +79,8 @@ public class BytecodeIndexPopulator
 
     }
 
-    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version,
-                                                   String classifier, String type )
+    private ArchivaArtifact createArchivaArtifact( String groupId, String artifactId, String version, String classifier,
+                                                   String type )
     {
         ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, type );
         return artifact;
@@ -119,7 +118,7 @@ public class BytecodeIndexPopulator
 
         filename.append( "." );
 
-        // TODO: use the ArtifactExtensionMapping object!
+        // TODO: use the ArtifactExtensionMapping object
         if ( "maven-plugin".equals( artifact.getType() ) || "maven-archetype".equals( artifact.getType() ) )
         {
             filename.append( "jar" );
@@ -134,7 +133,8 @@ public class BytecodeIndexPopulator
 
         if ( !dumpFile.exists() )
         {
-            throw new AssertionFailedError( "Dump file " + dumpFile.getAbsolutePath() + " does not exist (should it?)." );
+            throw new AssertionFailedError(
+                "Dump file " + dumpFile.getAbsolutePath() + " does not exist (should it?)." );
         }
 
         return dumpFile;
