@@ -3,6 +3,8 @@
   <artifactId>proxied_multi</artifactId>
   <version>1.0</version>
   <versioning>
+    <latest>2.1</latest>
+    <release>2.1</release>
     <versions>
       <version>1.0</version>
       <version>1.1</version>

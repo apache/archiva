@@ -155,7 +155,7 @@ public class MetadataToolsTest
         assertUpdatedProjectMetadata( "proxied_multi", new String[]{"1.0-spec" /* in java.net */, "1.0"
             /* in managed, and central */, "1.0.1" /* in central */, "1.1" /* in managed */, "2.0-proposal-beta"
             /* in java.net */, "2.0-spec" /* in java.net */, "2.0" /* in central, and java.net */, "2.0.1"
-            /* in java.net */, "2.1" /* in managed */, "3.0" /* in central */, "3.1" /* in central */} );
+            /* in java.net */, "2.1" /* in managed */, "3.0" /* in central */, "3.1" /* in central */}, "3.1", "3.1" );
     }
 
     public void testUpdateProjectSimpleYetIncomplete()
@@ -388,6 +388,13 @@ public class MetadataToolsTest
     private void assertUpdatedProjectMetadata( String artifactId, String[] expectedVersions )
         throws IOException, LayoutException, RepositoryMetadataException, SAXException, ParserConfigurationException
     {
+        assertUpdatedProjectMetadata( artifactId, expectedVersions, null, null );
+    }
+
+    private void assertUpdatedProjectMetadata( String artifactId, String[] expectedVersions, String latestVersion,
+                                               String releaseVersion )
+        throws IOException, LayoutException, RepositoryMetadataException, SAXException, ParserConfigurationException
+    {
         ArchivaRepository testRepo = createTestRepo();
         ProjectReference reference = new ProjectReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
@@ -406,6 +413,15 @@ public class MetadataToolsTest
         if ( expectedVersions != null )
         {
             buf.append( "  <versioning>\n" );
+            if ( latestVersion != null )
+            {
+                buf.append( "    <latest>" ).append( latestVersion ).append( "</latest>\n" );
+            }
+            if ( releaseVersion != null )
+            {
+                buf.append( "    <release>" ).append( releaseVersion ).append( "</release>\n" );
+            }
+
             buf.append( "    <versions>\n" );
             for ( int i = 0; i < expectedVersions.length; i++ )
             {

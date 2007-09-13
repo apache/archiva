@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -577,6 +578,8 @@ public class MetadataTools
     public void updateMetadata( ArchivaRepository managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
     {
+        Comparator<String> comparator = VersionComparator.getInstance();
+
         File metadataFile = new File( managedRepository.getUrl().getPath(), toPath( reference ) );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
@@ -589,6 +592,8 @@ public class MetadataTools
         // Does this repository have a set of remote proxied repositories?
         Set proxiedRepoIds = this.proxies.get( managedRepository.getId() );
 
+        String latestVersion = null;
+        String releaseVersion = null;
         if ( proxiedRepoIds != null )
         {
             // Add in the proxied repo version ids too.
@@ -598,13 +603,22 @@ public class MetadataTools
                 String proxyId = it.next();
 
                 ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, reference, proxyId );
-                if ( proxyMetadata == null )
+                if ( proxyMetadata != null )
                 {
-                    // There is no proxy metadata, skip it.
-                    continue;
-                }
+                    availableVersions.addAll( proxyMetadata.getAvailableVersions() );
 
-                availableVersions.addAll( proxyMetadata.getAvailableVersions() );
+                    if ( latestVersion == null ||
+                        comparator.compare( proxyMetadata.getLatestVersion(), latestVersion ) > 0 )
+                    {
+                        latestVersion = proxyMetadata.getLatestVersion();
+                    }
+
+                    if ( releaseVersion == null ||
+                        comparator.compare( proxyMetadata.getReleasedVersion(), releaseVersion ) > 0 )
+                    {
+                        releaseVersion = proxyMetadata.getReleasedVersion();
+                    }
+                }
             }
         }
 
@@ -620,6 +634,9 @@ public class MetadataTools
 
         // Add the versions to the metadata model.
         metadata.setAvailableVersions( sortedVersions );
+
+        metadata.setLatestVersion( latestVersion );
+        metadata.setReleasedVersion( releaseVersion );
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );

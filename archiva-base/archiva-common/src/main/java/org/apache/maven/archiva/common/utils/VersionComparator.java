@@ -29,20 +29,20 @@ import java.util.List;
 
 /**
  * VersionComparator - compare the parts of two version strings.
- * 
+ * <p/>
  * Technique.
- * 
- *  * Split the version strings into parts by splitting on <code>"-._"</code> first, then breaking apart words from numbers.
- * 
+ * <p/>
+ * * Split the version strings into parts by splitting on <code>"-._"</code> first, then breaking apart words from numbers.
+ * <p/>
  * <code>
- *   "1.0"         = "1", "0"
- *   "1.0-alpha-1" = "1", "0", "alpha", "1"
- *   "2.0-rc2"     = "2", "0", "rc", "2"
- *   "1.3-m2"      = "1", "3", "m", "3"
+ * "1.0"         = "1", "0"
+ * "1.0-alpha-1" = "1", "0", "alpha", "1"
+ * "2.0-rc2"     = "2", "0", "rc", "2"
+ * "1.3-m2"      = "1", "3", "m", "3"
  * </code>
- * 
+ * <p/>
  * compare each part individually, and when they do not match, perform the following test.
- * 
+ * <p/>
  * Numbers are calculated per normal comparison rules.
  * Words that are part of the "special word list" will be treated as their index within that heirarchy.
  * Words that cannot be identified as special, are treated using normal case-insensitive comparison rules.
@@ -51,15 +51,15 @@ import java.util.List;
  * @version $Id$
  */
 public class VersionComparator
-    implements Comparator
+    implements Comparator<String>
 {
-    private static Comparator INSTANCE = new VersionComparator();
+    private static Comparator<String> INSTANCE = new VersionComparator();
 
-    private List specialWords;
+    private List<String> specialWords;
 
     public VersionComparator()
     {
-        specialWords = new ArrayList();
+        specialWords = new ArrayList<String>();
 
         // ids that refer to LATEST
         specialWords.add( "final" );
@@ -91,61 +91,53 @@ public class VersionComparator
         specialWords.add( "snapshot" );
     }
 
-    public static Comparator getInstance()
+    public static Comparator<String> getInstance()
     {
         return INSTANCE;
     }
 
-    public int compare( Object o1, Object o2 )
+    public int compare( String o1, String o2 )
     {
         if ( o1 == null && o2 == null )
         {
             return 0;
         }
 
-        if ( o1 == null && o2 != null )
+        if ( o1 == null )
         {
             return 1;
         }
 
-        if ( o1 != null && o2 == null )
+        if ( o2 == null )
         {
             return -1;
         }
 
-        if ( ( o1 instanceof String ) && ( o2 instanceof String ) )
+        String[] parts1 = toParts( o1 );
+        String[] parts2 = toParts( o2 );
+
+        int diff;
+        int partLen = Math.max( parts1.length, parts2.length );
+        for ( int i = 0; i < partLen; i++ )
         {
-            String s1 = ( (String) o1 );
-            String s2 = ( (String) o2 );
-
-            String parts1[] = toParts( s1 );
-            String parts2[] = toParts( s2 );
-
-            int diff;
-            int partLen = Math.max( parts1.length, parts2.length );
-            for ( int i = 0; i < partLen; i++ )
-            {
-                diff = comparePart( safePart( parts1, i ), safePart( parts2, i ) );
-                if ( diff != 0 )
-                {
-                    return diff;
-                }
-            }
-
-            diff = parts2.length - parts1.length;
-
+            diff = comparePart( safePart( parts1, i ), safePart( parts2, i ) );
             if ( diff != 0 )
             {
                 return diff;
             }
-
-            return s1.compareToIgnoreCase( s2 );
         }
 
-        return 0;
+        diff = parts2.length - parts1.length;
+
+        if ( diff != 0 )
+        {
+            return diff;
+        }
+
+        return o1.compareToIgnoreCase( o2 );
     }
 
-    private String safePart( String parts[], int idx )
+    private String safePart( String[] parts, int idx )
     {
         if ( idx < parts.length )
         {
@@ -177,7 +169,7 @@ public class VersionComparator
 
             // Only operate perform index based operation, if both strings
             // are found in the specialWords index.
-            if ( ( idx1 >= 0 ) && ( idx2 >= 0 ) )
+            if ( idx1 >= 0 && idx2 >= 0 )
             {
                 return idx1 - idx2;
             }
@@ -206,11 +198,11 @@ public class VersionComparator
             return ArrayUtils.EMPTY_STRING_ARRAY;
         }
 
-        final int modeOther = 0;
-        final int modeDigit = 1;
-        final int modeText = 2;
+        int modeOther = 0;
+        int modeDigit = 1;
+        int modeText = 2;
 
-        List parts = new ArrayList();
+        List<String> parts = new ArrayList<String>();
         int len = version.length();
         int i = 0;
         int start = 0;
@@ -249,10 +241,7 @@ public class VersionComparator
                 // Other.
                 if ( mode != modeOther )
                 {
-                    if ( mode != modeOther )
-                    {
-                        parts.add( version.substring( start, i ) );
-                    }
+                    parts.add( version.substring( start, i ) );
                     mode = modeOther;
                 }
             }
@@ -266,6 +255,6 @@ public class VersionComparator
             parts.add( version.substring( start, i ) );
         }
 
-        return (String[]) parts.toArray( new String[parts.size()] );
+        return parts.toArray( new String[parts.size()] );
     }
 }
