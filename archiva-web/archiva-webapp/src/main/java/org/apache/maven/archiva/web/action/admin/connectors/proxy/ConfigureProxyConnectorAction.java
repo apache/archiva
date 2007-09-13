@@ -445,11 +445,6 @@ public class ConfigureProxyConnectorAction
         this.connector = connector;
     }
 
-    public void setManagedRepoIdList( List managedRepoIdList )
-    {
-        this.managedRepoIdList = managedRepoIdList;
-    }
-
     public void setMode( String mode )
     {
         this.mode = mode;
@@ -463,11 +458,6 @@ public class ConfigureProxyConnectorAction
     public void setPropertyValue( String propertyValue )
     {
         this.propertyValue = propertyValue;
-    }
-
-    public void setRemoteRepoIdList( List remoteRepoIdList )
-    {
-        this.remoteRepoIdList = remoteRepoIdList;
     }
 
     public void setSource( String source )
@@ -577,5 +567,10 @@ public class ConfigureProxyConnectorAction
     public void setPattern( String pattern )
     {
         this.pattern = pattern;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }
