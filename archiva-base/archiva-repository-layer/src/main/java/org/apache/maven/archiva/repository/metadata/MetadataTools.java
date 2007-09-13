@@ -56,19 +56,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 
 /**
- * MetadataTools 
+ * MetadataTools
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.repository.metadata.MetadataTools"
+ * @todo use the maven-repository-metadata classes instead for merging
  */
 public class MetadataTools
     implements RegistryListener, Initializable
 {
-    /**
-     * Static Logger. So what? Try and prove to me that IoC monitors are better.
-     */
     private static Logger log = LoggerFactory.getLogger( MetadataTools.class );
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
@@ -96,7 +93,7 @@ public class MetadataTools
 
     private Map<String, Set<String>> proxies;
 
-    private static final char NUMS[] = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private static final char NUMS[] = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -114,9 +111,9 @@ public class MetadataTools
     /**
      * Gather the Available Versions (on disk) for a specific Project Reference, based on filesystem
      * information.
-     * 
+     *
      * @return the Set of available versions, based on the project reference.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public Set<String> gatherAvailableVersions( ArchivaRepository managedRepository, ProjectReference reference )
         throws LayoutException, IOException
@@ -133,14 +130,14 @@ public class MetadataTools
 
         if ( !repoDir.exists() )
         {
-            throw new IOException( "Unable to calculate Available Local Versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException( "Unable to calculate Available Local Versions on a non-existant directory: " +
+                repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new IOException( "Unable to calculate Available Local Versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException(
+                "Unable to calculate Available Local Versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -185,14 +182,14 @@ public class MetadataTools
     }
 
     /**
-     * Get the first Artifact found in the provided VersionedReference location. 
-     * 
+     * Get the first Artifact found in the provided VersionedReference location.
+     *
      * @param managedRepository the repository to search within.
-     * @param reference the reference to the versioned reference to search within
+     * @param reference         the reference to the versioned reference to search within
      * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
      *         no artifact was found within the versioned reference.
-     * @throws IOException if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
-     * @throws LayoutException 
+     * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
+     * @throws LayoutException
      */
     public ArtifactReference getFirstArtifact( ArchivaRepository managedRepository, VersionedReference reference )
         throws LayoutException, IOException
@@ -210,14 +207,14 @@ public class MetadataTools
 
         if ( !repoDir.exists() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: " +
+                repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException(
+                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         File repoFiles[] = repoDir.listFiles();
@@ -245,9 +242,9 @@ public class MetadataTools
 
     /**
      * Gather the set of snapshot versions found in a particular versioned reference.
-     * 
+     *
      * @return the Set of snapshot artifact versions found.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public Set<String> gatherSnapshotVersions( ArchivaRepository managedRepository, VersionedReference reference )
         throws LayoutException, IOException
@@ -265,14 +262,14 @@ public class MetadataTools
 
         if ( !repoDir.exists() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: " +
+                repoDir.getAbsolutePath() );
         }
 
         if ( !repoDir.isDirectory() )
         {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-directory: "
-                + repoDir.getAbsolutePath() );
+            throw new IOException(
+                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
         Set<String> foundVersions = new HashSet<String>();
@@ -344,8 +341,8 @@ public class MetadataTools
     }
 
     /**
-     * Take a path to a maven-metadata.xml, and attempt to translate it to a VersionedReference. 
-     * 
+     * Take a path to a maven-metadata.xml, and attempt to translate it to a VersionedReference.
+     *
      * @param path
      * @return
      */
@@ -372,7 +369,7 @@ public class MetadataTools
         {
             // Scary check, but without it, all paths are version references;
             throw new RepositoryMetadataException(
-                                                   "Not a versioned reference, as version id on path has no number in it." );
+                "Not a versioned reference, as version id on path has no number in it." );
         }
 
         reference.setArtifactId( pathParts[artifactIdOffset] );
@@ -482,11 +479,10 @@ public class MetadataTools
     }
 
     /**
-     * Adjusts a path for a metadata.xml file to its repository specific path. 
-     * 
+     * Adjusts a path for a metadata.xml file to its repository specific path.
+     *
      * @param repository the repository to base new path off of.
-     * @param path the path to the metadata.xml file to adjust the name of.
-     * 
+     * @param path       the path to the metadata.xml file to adjust the name of.
      * @return the newly adjusted path reference to the repository specific metadata path.
      */
     public String getRepositorySpecificName( ArchivaRepository repository, String path )
@@ -495,11 +491,10 @@ public class MetadataTools
     }
 
     /**
-     * Adjusts a path for a metadata.xml file to its repository specific path. 
-     * 
+     * Adjusts a path for a metadata.xml file to its repository specific path.
+     *
      * @param proxyId the repository id to base new path off of.
-     * @param path the path to the metadata.xml file to adjust the name of.
-     * 
+     * @param path    the path to the metadata.xml file to adjust the name of.
      * @return the newly adjusted path reference to the repository specific metadata path.
      */
     public String getRepositorySpecificName( String proxyId, String path )
@@ -528,8 +523,8 @@ public class MetadataTools
         configuration.addChangeListener( this );
     }
 
-    public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository,
-                                                        ProjectReference reference, String proxyId )
+    public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository, ProjectReference reference,
+                                                        String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getUrl().getPath(), metadataPath );
@@ -567,17 +562,17 @@ public class MetadataTools
     }
 
     /**
-     * Update the metadata to represent the all versions of 
+     * Update the metadata to represent the all versions of
      * the provided groupId:artifactId project reference,
      * based off of information present in the repository,
      * the maven-metadata.xml files, and the proxy/repository specific
-     * metadata file contents. 
-     * 
+     * metadata file contents.
+     *
      * @param managedRepository the managed repository where the metadata is kept.
-     * @param reference the versioned referencfe to update.
-     * @throws LayoutException 
-     * @throws RepositoryMetadataException 
-     * @throws IOException 
+     * @param reference         the versioned referencfe to update.
+     * @throws LayoutException
+     * @throws RepositoryMetadataException
+     * @throws IOException
      */
     public void updateMetadata( ArchivaRepository managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
@@ -632,17 +627,17 @@ public class MetadataTools
 
     /**
      * Update the metadata based on the following rules.
-     * 
-     * 1) If this is a SNAPSHOT reference, then utilize the proxy/repository specific 
-     *    metadata files to represent the current / latest SNAPSHOT available.
-     * 2) If this is a RELEASE reference, and the metadata file does not exist, then 
-     *    create the metadata file with contents required of the VersionedReference
-     * 
+     * <p/>
+     * 1) If this is a SNAPSHOT reference, then utilize the proxy/repository specific
+     * metadata files to represent the current / latest SNAPSHOT available.
+     * 2) If this is a RELEASE reference, and the metadata file does not exist, then
+     * create the metadata file with contents required of the VersionedReference
+     *
      * @param managedRepository the managed repository where the metadata is kept.
-     * @param reference the versioned reference to update
-     * @throws LayoutException 
-     * @throws RepositoryMetadataException 
-     * @throws IOException 
+     * @param reference         the versioned reference to update
+     * @throws LayoutException
+     * @throws RepositoryMetadataException
+     * @throws IOException
      */
     public void updateMetadata( ArchivaRepository managedRepository, VersionedReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
@@ -724,8 +719,8 @@ public class MetadataTools
             }
             else
             {
-                throw new RepositoryMetadataException( "Unable to process snapshot version <" + latestVersion
-                    + "> reference <" + reference + ">" );
+                throw new RepositoryMetadataException(
+                    "Unable to process snapshot version <" + latestVersion + "> reference <" + reference + ">" );
             }
         }
         else
