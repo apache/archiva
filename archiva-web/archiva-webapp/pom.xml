@@ -140,7 +140,7 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>opensymphony</groupId>
+      <groupId>com.opensymphony</groupId>
       <artifactId>webwork</artifactId>
     </dependency>
     <dependency>

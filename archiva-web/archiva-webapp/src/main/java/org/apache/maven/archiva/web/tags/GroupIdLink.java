@@ -114,7 +114,7 @@ public class GroupIdLink
     private String determineBrowseActionUrl()
     {
         return determineActionURL( "browse", NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext,
-                                   encode );
+                                   encode, true );
     }
 
     private String determineBrowseGroupActionUrl( String gid )
@@ -122,7 +122,7 @@ public class GroupIdLink
         parameters.put( "groupId", gid );
 
         return determineActionURL( ACTION, NAMESPACE, method, req, res, parameters, req.getScheme(), includeContext,
-                                   encode );
+                                   encode, true );
     }
 
     public String getGroupId()

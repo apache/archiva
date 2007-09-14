@@ -545,7 +545,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-xwork-integration</artifactId>
-        <version>1.0-alpha-6</version>
+        <version>1.0-alpha-7</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.cache</groupId>
@@ -639,9 +639,9 @@
         <version>${wagon.version}</version>
       </dependency>
       <dependency>
-        <groupId>opensymphony</groupId>
+        <groupId>com.opensymphony</groupId>
         <artifactId>webwork</artifactId>
-        <version>2.2.4</version>
+        <version>2.2.6</version>
       </dependency>
       <dependency>
         <groupId>xmlunit</groupId>
