@@ -71,4 +71,23 @@
     <url-pattern>/repository/*</url-pattern>
   </servlet-mapping>
 
+  <resource-ref>
+     <res-ref-name>jdbc/users</res-ref-name>
+     <res-type>javax.sql.DataSource</res-type>
+     <res-auth>Container</res-auth>
+     <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <resource-ref>
+     <res-ref-name>jdbc/archiva</res-ref-name>
+     <res-type>javax.sql.DataSource</res-type>
+     <res-auth>Container</res-auth>
+     <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <resource-ref>
+     <res-ref-name>mail/Session</res-ref-name>
+     <res-type>javax.mail.Session</res-type>
+     <res-auth>Container</res-auth>
+     <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+
 </web-app>
