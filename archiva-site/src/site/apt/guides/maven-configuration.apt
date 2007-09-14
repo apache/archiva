@@ -33,13 +33,12 @@ Configuring Maven-2 to use an Archiva repository
 
   <URL-TO-ARCHIVA> => where to find Archiva eg. http://localhost:8080/archiva
   
-  <REPOSITORY-ID> => Identifer for the proxied repository inside Archiva
+  <REPOSITORY-ID> => Identifer for the proxied repository inside Archiva eg. internal, releases
 
-  <URL-NAME> => Another identifier, this time for normal repositories [one of the these will go away]
+  ~~ <URL-NAME> => Another identifier, this time for normal repositories [one of the these will go away]
   
-
 * Configuring a Repository
-  
+
   [[1]] create a new profile to setup your repositories
 
 +-------------------------------------------------------------------------+
@@ -83,7 +82,7 @@ Configuring Maven-2 to use an Archiva repository
 +-------------------------------------------------------------------------+
   <repository>
     <id>repository-1</id>
-    <url>URL-TO-ARCHIVA/repository/URL-NAME</url>
+    <url>URL-TO-ARCHIVA/repository/REPOSITORY-ID</url>
     <releases>
       <enabled>true</enabled>
     </releases>
@@ -199,3 +198,70 @@ mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
     -DrepositoryId=deployment.webdav
     -Durl=dav:URL-TO-ARCHIVA/repository/REPOSITORY-ID
 +------+
+
+Archiva as a Proxy
+
+* Creating a New Proxy Repository
+  
+  Archiva has pre-configured proxy connectors for the 'internal' managed repo and the 'central' and 'maven2-repository.dev.java.net' remote repositories.
+  
+  To create a new proxy repository, just do the following:
+  
+  [[1]] Add a new managed repository
+  
+  Go to Repositories --> Add (Managed Repository) 
+  
+  Create the managed repository (let's say 'releases') which would serve as the proxy repo.
+  
+  Do not forget to set the necessary permissions or user roles in Users Management if you want this repository to be secured.
+  
+  [[2]] Add a remote repository
+  
+  Go to Repositories --> Add (Remote Repository)
+   
+  Add the remote repository you want to proxy.
+  
+  [[3]] Create a proxy connector
+  
+  Go to Proxy Connectors --> Add
+  
+  Fill up the following fields:
+  
+  * Network Proxy* - if your network connection has a network proxy, then this should be configured via the Network Proxies in Archiva. Select the network proxy, if you're using one, that will be used for this proxy connector. 
+  
+  * Managed Repository* - the managed repository you want to connect to the remote repository.
+  
+  * Remote Repository* - the repository you want to proxy
+  
+  * Policies - the download policies that will be used by Archiva when proxying
+  
+  * Properties
+  
+  * Black List Patterns - the patterns that will be blacklisted during proxying
+  
+  * White List Patterns - the patterns that will be included during proxying
+  
+* Using the Proxy Repository with Maven
+  
+  Set-up your settings.xml file as shown above in sections 1 and 2 of Configuring a Repository. In this case, use the repository configuration of the managed repository you've created. 
+  
+  Then, configure the <server> settings in the settings.xml file as shown below:
+  
++-------------------------------------------------------------------------+
+  <settings>
+    ...
+    <servers>
+      <server>
+        <id>releases</id>
+        <username>{archiva-user}</username>
+        <password>{archiva-pwd}</password>
+      </server>
+      ...
+    </servers>
+    ...
+  </settings>
++-------------------------------------------------------------------------+
+  
+  Execute a Maven 2 build. Artifacts should be downloaded from the proxy repository/repositories you've set in your settings.xml
+  
+  
