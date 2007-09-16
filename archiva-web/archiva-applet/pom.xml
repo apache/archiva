@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.0-beta-2-SNAPSHOT</version>
+    <version>1.0-beta-2</version>
   </parent>
   <artifactId>archiva-applet</artifactId>
   <name>Archiva Web :: Applet</name>
