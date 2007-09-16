@@ -49,7 +49,7 @@
         <snapshots>disabled</snapshots>
         <releases>once</releases>
         <checksum>fix</checksum>
-        <cache-failures>cache</cache-failures>
+        <cache-failures>cached</cache-failures>
       </policies>
       <whiteListPatterns>
         <whiteListPattern>**/*</whiteListPattern>
@@ -63,7 +63,7 @@
         <snapshots>disabled</snapshots>
         <releases>once</releases>
         <checksum>fix</checksum>
-        <cache-failures>cache</cache-failures>
+        <cache-failures>cached</cache-failures>
       </policies>
       <whiteListPatterns>
         <whiteListPattern>javax/**</whiteListPattern>

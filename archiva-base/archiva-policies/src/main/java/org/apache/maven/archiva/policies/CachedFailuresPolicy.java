@@ -29,13 +29,12 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * {@link PreDownloadPolicy} to check if the requested url has failed before. 
+ * {@link PreDownloadPolicy} to check if the requested url has failed before.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.policies.PreDownloadPolicy"
- *                   role-hint="cache-failures"
+ * role-hint="cache-failures"
  */
 public class CachedFailuresPolicy
     extends AbstractLogEnabled
@@ -43,7 +42,7 @@ public class CachedFailuresPolicy
 {
     /**
      * The CACHED policy indicates that if the URL provided exists in the
-     * cached failures pool, then the policy fails, and the download isn't even 
+     * cached failures pool, then the policy fails, and the download isn't even
      * attempted.
      */
     public static final String CACHED = "cached";
@@ -66,7 +65,7 @@ public class CachedFailuresPolicy
         if ( !options.contains( policySetting ) )
         {
             // No valid code? false it is then.
-            getLogger().error( "Unknown checksum policyCode [" + policySetting + "]" );
+            getLogger().error( "Unknown check-failures policyCode [" + policySetting + "]" );
             return false;
         }
 
@@ -87,7 +86,7 @@ public class CachedFailuresPolicy
                 return false;
             }
         }
-        
+
         getLogger().debug( "OK to fetch, check-failures detected no issues." );
 
         return true;
