@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AbstractArtifactExtensionMapping 
+ * AbstractArtifactExtensionMapping
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -44,6 +44,7 @@ public abstract class AbstractArtifactExtensionMapping
         typeToExtensionMap.put( "javadoc", "jar" );
         typeToExtensionMap.put( "aspect", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
+        typeToExtensionMap.put( "plugin", "jar" );
         typeToExtensionMap.put( "maven-plugin", "jar" );
         typeToExtensionMap.put( "maven-archetype", "jar" );
     }

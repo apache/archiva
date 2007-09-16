@@ -376,7 +376,34 @@ public class ManagedDefaultTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = createArtifactReference( "legacy", legacyPath );
+
+        expectedFile.delete();
+        assertFalse( expectedFile.exists() );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+
+        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
+        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    public void testLegacyRequestPluginConvertedToDefaultPathInManagedRepo()
+        throws Exception
+    {
+        // Check that a Maven1 legacy request is translated to a maven2 path in
+        // the managed repository.
+
+        String legacyPath = "org.apache.maven.test/plugins/get-legacy-plugin-1.0.jar";
+        String path = "org/apache/maven/test/get-legacy-plugin/1.0/get-legacy-plugin-1.0.jar";
+        setupTestableManagedRepository( path );
+
+        File expectedFile = new File( managedDefaultDir, path );
+        ArtifactReference artifact = createArtifactReference( "legacy", legacyPath );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
