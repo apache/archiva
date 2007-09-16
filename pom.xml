@@ -683,7 +683,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <source>1.4</source>
+          <source>1.5</source>
           <aggregate>true</aggregate>
         </configuration>
       </plugin>
