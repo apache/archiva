@@ -464,10 +464,14 @@ public class MetadataTools
 
     private boolean matchesArtifactPattern( String relativePath )
     {
+        // Correct the slash pattern.
+        relativePath = relativePath.replace( '\\', '/' );
+        
         Iterator<String> it = this.artifactPatterns.iterator();
         while ( it.hasNext() )
         {
             String pattern = it.next();
+            
             if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
             {
                 // Found match
