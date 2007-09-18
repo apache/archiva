@@ -82,7 +82,7 @@ public class PathUtil
      */
     public static String getRelative( String basedir, String child )
     {
-        if ( basedir.endsWith( File.separator ) )
+        if ( basedir.endsWith( "/" ) || basedir.endsWith( "\\" ) )
         {
             basedir = basedir.substring( 0, basedir.length() - 1 );
         }
