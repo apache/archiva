@@ -27,7 +27,7 @@
     <component>
       <role>org.codehaus.plexus.contextualizer.Contextualizer</role>
       <role-hint>jettyConfiguration</role-hint>
-    </component>s    
+    </component>
   </load-on-start>
   <components>
     <component>
