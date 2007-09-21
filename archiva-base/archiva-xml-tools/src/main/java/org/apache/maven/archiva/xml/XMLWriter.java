@@ -36,16 +36,32 @@ public class XMLWriter
     public static void write( Document doc, Writer writer )
         throws XMLException
     {
+        org.dom4j.io.XMLWriter xmlwriter = null;
+        
         try
         {
             OutputFormat outputFormat = OutputFormat.createPrettyPrint();
-            org.dom4j.io.XMLWriter xmlwriter = new org.dom4j.io.XMLWriter( writer, outputFormat );
+            xmlwriter = new org.dom4j.io.XMLWriter( writer, outputFormat );
             xmlwriter.write( doc );
             xmlwriter.flush();
         }
         catch ( IOException e )
         {
             throw new XMLException( "Unable to write xml contents to writer: " + e.getMessage(), e );
+        }
+        finally
+        {
+            if( xmlwriter != null )
+            {
+                try
+                {
+                    xmlwriter.close();
+                }
+                catch ( IOException e )
+                {
+                    /* quietly ignore */
+                }
+            }
         }
     }
 }

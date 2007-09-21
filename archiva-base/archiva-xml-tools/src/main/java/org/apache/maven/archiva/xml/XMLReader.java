@@ -19,6 +19,7 @@ package org.apache.maven.archiva.xml;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -56,7 +57,7 @@ public class XMLReader
 
     private Document document;
 
-    private Map namespaceMap = new HashMap();
+    private Map<String, String> namespaceMap = new HashMap<String, String>();
 
     public XMLReader( String type, File file )
         throws XMLException
@@ -98,10 +99,12 @@ public class XMLReader
         this.documentType = type;
         this.xmlUrl = url;
 
+        InputStream in = null;
         SAXReader reader = new SAXReader();
+        
         try
         {
-            InputStream in = url.openStream();
+            in = url.openStream();
             InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
             LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
             this.document = reader.read( latinReader );
@@ -113,6 +116,10 @@ public class XMLReader
         catch ( IOException e )
         {
             throw new XMLException( "Unable to open stream to " + url + ": " + e.getMessage(), e );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( in );
         }
 
         Element root = this.document.getRootElement();
@@ -204,10 +211,10 @@ public class XMLReader
 
         Node n;
 
-        Iterator it = elem.elementIterator();
+        Iterator<Node> it = elem.elementIterator();
         while ( it.hasNext() )
         {
-            n = (Node) it.next();
+            n = it.next();
 
             switch ( n.getNodeType() )
             {
@@ -269,7 +276,7 @@ public class XMLReader
         }
     }
 
-    public List getElementList( String xpathExpr )
+    public List<Element> getElementList( String xpathExpr )
         throws XMLException
     {
         XPath xpath = createXPath( xpathExpr );
@@ -287,12 +294,12 @@ public class XMLReader
 
         if ( evaluated instanceof List )
         {
-            return (List) evaluated;
+            return (List<Element>) evaluated;
         }
         else if ( evaluated instanceof Node )
         {
-            List ret = new ArrayList();
-            ret.add( evaluated );
+            List<Element> ret = new ArrayList<Element>();
+            ret.add( (Element) evaluated );
             return ret;
         }
         else
@@ -303,19 +310,19 @@ public class XMLReader
         }
     }
 
-    public List getElementListText( String xpathExpr )
+    public List<String> getElementListText( String xpathExpr )
         throws XMLException
     {
-        List elemList = getElementList( xpathExpr );
+        List<Element> elemList = getElementList( xpathExpr );
         if ( elemList == null )
         {
             return null;
         }
 
-        List ret = new ArrayList();
-        for ( Iterator iter = elemList.iterator(); iter.hasNext(); )
+        List<String> ret = new ArrayList<String>();
+        for ( Iterator<Element> iter = elemList.iterator(); iter.hasNext(); )
         {
-            Element listelem = (Element) iter.next();
+            Element listelem = iter.next();
             ret.add( listelem.getTextTrim() );
         }
         return ret;
