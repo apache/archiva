@@ -557,6 +557,11 @@
         <version>1.0-alpha-2</version>
       </dependency>
       <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>1.3.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${redback.version}</version>
