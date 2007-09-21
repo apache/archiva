@@ -142,10 +142,7 @@ public class ProxiedDavServer
     {
         if ( WebdavMethodUtil.isReadMethod( request.getRequest().getMethod() ) )
         {
-            // if ( !hasResource( request.getLogicalResource() ) )
-            // {
             fetchContentFromProxies( request );
-            // }
         }
         else
         {
