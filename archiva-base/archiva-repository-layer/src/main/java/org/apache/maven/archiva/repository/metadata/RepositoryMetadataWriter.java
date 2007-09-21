@@ -97,7 +97,7 @@ public class RepositoryMetadataWriter
             if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) )
             {
                 Element versions = versioning.addElement( "versions" );
-                Iterator it = metadata.getAvailableVersions().iterator();
+                Iterator<String> it = metadata.getAvailableVersions().iterator();
                 while ( it.hasNext() )
                 {
                     String version = (String) it.next();
