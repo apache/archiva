@@ -252,8 +252,6 @@ public class MetadataUpdaterConsumer
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        getLogger().info( "After Configuration Change: propertyName [" + propertyName + "]" );
-
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
             initIncludes();
