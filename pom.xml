@@ -811,4 +811,11 @@
     <wagon.version>1.0-beta-2</wagon.version>
     <redback.version>1.0-alpha-3</redback.version>
   </properties>
+  <!-- for plexus webdav snapshot -->
+  <repositories>
+    <repository>
+      <id>codehaus.snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </repository>
+  </repositories>
 </project>
