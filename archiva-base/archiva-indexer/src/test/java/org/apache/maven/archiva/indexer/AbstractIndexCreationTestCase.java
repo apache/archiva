@@ -71,7 +71,6 @@ public abstract class AbstractIndexCreationTestCase extends AbstractIndexerTestC
         }
     }
 
-    /*
     public void testAddRecordNoIndex() throws IOException, RepositoryIndexException, ParseException
     {
         LuceneRepositoryContentRecord record = createSimpleRecord();
@@ -158,7 +157,6 @@ public abstract class AbstractIndexCreationTestCase extends AbstractIndexerTestC
             reader.close();
         }
     }
-    */
 
     public void testDeleteRecordNotInIndex() throws IOException, RepositoryIndexException
     {
