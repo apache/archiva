@@ -130,6 +130,22 @@ public class DefaultBidirectionalRepositoryLayoutTest
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
+    
+    /**
+     * [MRM-486] Can not deploy artifact test.maven-arch:test-arch due to "No ArtifactID Detected"
+     */
+    public void testGoodDashedArtifactId()
+        throws LayoutException
+    {
+        String groupId = "test.maven-arch";
+        String artifactId = "test-arch";
+        String version = "2.0.3-SNAPSHOT";
+        String classifier = null;
+        String type = "pom";
+        String path = "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.pom";
+        
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
 
     public void testGoodComFooTool()
         throws LayoutException
