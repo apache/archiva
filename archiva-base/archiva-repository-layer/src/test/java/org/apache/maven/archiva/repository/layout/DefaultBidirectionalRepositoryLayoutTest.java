@@ -146,7 +146,39 @@ public class DefaultBidirectionalRepositoryLayoutTest
         
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
+    
+    /**
+     * It may seem odd, but this is a valid artifact.
+     */
+    public void testGoodDotNotationArtifactId()
+        throws LayoutException
+    {
+        String groupId = "com.company.department";
+        String artifactId = "com.company.department";
+        String version = "0.2";
+        String classifier = null;
+        String type = "pom";
+        String path = "com/company/department/com.company.department/0.2/com.company.department-0.2.pom";
+        
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
 
+    /**
+     * It may seem odd, but this is a valid artifact.
+     */
+    public void testGoodDotNotationSameGroupIdAndArtifactId()
+        throws LayoutException
+    {
+        String groupId = "com.company.department";
+        String artifactId = "com.company.department.project";
+        String version = "0.3";
+        String classifier = null;
+        String type = "pom";
+        String path = "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
+        
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+    
     public void testGoodComFooTool()
         throws LayoutException
     {
