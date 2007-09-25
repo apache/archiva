@@ -289,11 +289,14 @@ public class ProjectModelToDatabaseConsumer
 
             if ( !parts.artifactId.equalsIgnoreCase( model.getArtifactId() ) )
             {
-                getLogger().warn( "Project Model " + model + " artifactId: " + model.getArtifactId() +
-                    " does not match the pom file's artifactId: " + parts.artifactId );
-
-                addProblem( artifact, "Project Model " + model + " artifactId: " + model.getArtifactId() +
-                    " does not match the pom file's artifactId: " + parts.artifactId );
+                StringBuffer emsg = new StringBuffer();
+                emsg.append( "File " ).append( artifactFile.getName() );
+                emsg.append( " has an invalid project model <" ).append( model.toString() ).append( ">: " );
+                emsg.append( "The model artifactId <" ).append( model.getArtifactId() );
+                emsg.append( "> does not match the artifactId portion of the filename: " ).append( parts.artifactId );
+                
+                getLogger().warn(emsg.toString() );
+                addProblem( artifact, emsg.toString() );
 
                 return false;
             }
@@ -301,11 +304,14 @@ public class ProjectModelToDatabaseConsumer
             if ( !parts.version.equalsIgnoreCase( model.getVersion() ) &&
                 !VersionUtil.getBaseVersion( parts.version ).equalsIgnoreCase( model.getVersion() ) )
             {
-                getLogger().warn( "Project Model " + model + " version: " + model.getVersion() +
-                    " does not match the pom file's version: " + parts.version );
-
-                addProblem( artifact, "Project Model " + model + " version: " + model.getVersion() +
-                    " does not match the pom file's version: " + parts.version );
+                StringBuffer emsg = new StringBuffer();
+                emsg.append( "File " ).append( artifactFile.getName() );
+                emsg.append( " has an invalid project model <" ).append( model.toString() ).append( ">: " );
+                emsg.append( "The model version <" ).append( model.getVersion() );
+                emsg.append( "> does not match the version portion of the filename: " ).append( parts.version );
+                
+                getLogger().warn(emsg.toString() );
+                addProblem( artifact, emsg.toString() );
 
                 return false;
             }
