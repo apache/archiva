@@ -24,7 +24,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.RegistryException;
 
 import java.io.IOException;
@@ -35,25 +34,12 @@ import java.io.IOException;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureRemoteRepositoryAction"
  */
 public class ConfigureRemoteRepositoryAction
-    extends AbstractConfigureRepositoryAction
+    extends AbstractConfigureRepositoryAction<RemoteRepositoryConfiguration>
     implements Preparable
 {
-    /**
-     * The model for this action.
-     */
-    private RemoteRepositoryConfiguration repository;
-
-    public String add()
-    {
-        this.mode = "add";
-
-        return INPUT;
-    }
-
     public String delete()
     {
-        RemoteRepositoryConfiguration existingRepository = repository;
-        if ( existingRepository == null )
+        if ( repository == null )
         {
             addActionError( "A repository with that id does not exist" );
             return ERROR;
@@ -69,25 +55,20 @@ public class ConfigureRemoteRepositoryAction
         catch ( IOException e )
         {
             addActionError( "Unable to delete repository: " + e.getMessage() );
-            result = INPUT;
+            result = ERROR;
         }
         catch ( InvalidConfigurationException e )
         {
             addActionError( "Unable to delete repository: " + e.getMessage() );
-            result = INPUT;
+            result = ERROR;
         }
         catch ( RegistryException e )
         {
             addActionError( "Unable to delete repository: " + e.getMessage() );
-            result = INPUT;
+            result = ERROR;
         }
 
         return result;
-    }
-
-    public RemoteRepositoryConfiguration getRepository()
-    {
-        return repository;
     }
 
     public void prepare()
@@ -103,58 +84,7 @@ public class ConfigureRemoteRepositoryAction
         }
     }
 
-    public String save()
-    {
-        String repoId = repository.getId();
-
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        boolean containsError = validateFields( configuration );
-
-        if ( containsError && StringUtils.equalsIgnoreCase( "add", mode ) )
-        {
-            return INPUT;
-        }
-        else if ( containsError && StringUtils.equalsIgnoreCase( "edit", this.mode ) )
-        {
-            return ERROR;
-        }
-
-        if ( StringUtils.equalsIgnoreCase( "edit", this.mode ) )
-        {
-            removeRepository( repoId, configuration );
-        }
-
-        String result;
-        try
-        {
-            addRepository( repository, configuration );
-            result = saveConfiguration( configuration );
-        }
-        catch ( IOException e )
-        {
-            addActionError( "I/O Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( RoleManagerException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( InvalidConfigurationException e )
-        {
-            addActionError( "Invalid Configuration Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-            result = INPUT;
-        }
-
-        return result;
-    }
-
-    private boolean validateFields( Configuration config )
+    protected boolean validateFields( Configuration config )
     {
         // TODO: push this into the webwork validation instead
         boolean containsError = false;
@@ -163,15 +93,6 @@ public class ConfigureRemoteRepositoryAction
         if ( StringUtils.isBlank( repoId ) )
         {
             addFieldError( "repository.id", "You must enter a repository identifier." );
-            containsError = true;
-        }
-        //if edit mode, do not validate existence of repoId
-        else if ( ( config.getManagedRepositoriesAsMap().containsKey( repoId ) ||
-            config.getRemoteRepositoriesAsMap().containsKey( repoId ) ) &&
-            !StringUtils.equalsIgnoreCase( mode, "edit" ) )
-        {
-            addFieldError( "repository.id",
-                           "Unable to add new repository with id [" + repoId + "], that id already exists." );
             containsError = true;
         }
 
@@ -189,18 +110,22 @@ public class ConfigureRemoteRepositoryAction
         return containsError;
     }
 
-    private void addRepository( RemoteRepositoryConfiguration repository, Configuration configuration )
-        throws IOException, RoleManagerException
+    protected void addRepository( RemoteRepositoryConfiguration repository, Configuration configuration )
     {
         configuration.addRemoteRepository( repository );
     }
 
-    private void removeRepository( String repoId, Configuration configuration )
+    protected void removeRepository( String repoId, Configuration configuration )
     {
         RemoteRepositoryConfiguration toremove = configuration.findRemoteRepositoryById( repoId );
         if ( toremove != null )
         {
             configuration.removeRemoteRepository( toremove );
         }
+    }
+
+    public String input()
+    {
+        return INPUT;
     }
 }

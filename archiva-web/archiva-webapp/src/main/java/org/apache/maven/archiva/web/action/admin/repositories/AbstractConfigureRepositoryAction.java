@@ -19,12 +19,14 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.InvalidConfigurationException;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.rbac.Resource;
+import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
@@ -36,10 +38,15 @@ import java.io.IOException;
 /**
  * Base class for repository configuration actions.
  */
-public class AbstractConfigureRepositoryAction
+public abstract class AbstractConfigureRepositoryAction<T extends AbstractRepositoryConfiguration>
     extends PlexusActionSupport
     implements SecureAction
 {
+    /**
+     * The model for this action.
+     */
+    protected T repository;
+
     /**
      * @plexus.requirement
      */
@@ -47,23 +54,14 @@ public class AbstractConfigureRepositoryAction
 
     protected String repoid;
 
-    // TODO: consider removing? was just meant to be for delete...
-    protected String mode;
-
-    // TODO: rename to confirmDelete
-    public String confirm()
-    {
-        return INPUT;
-    }
-
-    public String getMode()
-    {
-        return this.mode;
-    }
-
     public String getRepoid()
     {
         return repoid;
+    }
+
+    public T getRepository()
+    {
+        return repository;
     }
 
     public SecureActionBundle getSecureActionBundle()
@@ -77,11 +75,6 @@ public class AbstractConfigureRepositoryAction
         return bundle;
     }
 
-    public void setMode( String mode )
-    {
-        this.mode = mode;
-    }
-
     public void setRepoid( String repoid )
     {
         this.repoid = repoid;
@@ -90,13 +83,6 @@ public class AbstractConfigureRepositoryAction
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
-    }
-
-    public String edit()
-    {
-        this.mode = "edit";
-
-        return INPUT;
     }
 
     protected String saveConfiguration( Configuration configuration )
@@ -110,9 +96,85 @@ public class AbstractConfigureRepositoryAction
         catch ( IndeterminateConfigurationException e )
         {
             addActionError( e.getMessage() );
-            return INPUT;
+            return ERROR;
         }
 
         return SUCCESS;
     }
+
+    public String add()
+    {
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        String repoId = repository.getId();
+        if ( configuration.getManagedRepositoriesAsMap().containsKey( repoId ) ||
+            configuration.getRemoteRepositoriesAsMap().containsKey( repoId ) )
+        {
+            addFieldError( "repository.id",
+                           "Unable to add new repository with id [" + repoId + "], that id already exists." );
+            return INPUT;
+        }
+
+        boolean containsError = validateFields( configuration );
+        if ( containsError )
+        {
+            return INPUT;
+        }
+
+        return saveRepositoryConfiguration( configuration );
+    }
+
+    public String edit()
+    {
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        boolean containsError = validateFields( configuration );
+        if ( containsError )
+        {
+            return INPUT;
+        }
+
+        removeRepository( repository.getId(), configuration );
+
+        return saveRepositoryConfiguration( configuration );
+    }
+
+    protected String saveRepositoryConfiguration( Configuration configuration )
+    {
+        String result;
+        try
+        {
+            addRepository( repository, configuration );
+            result = saveConfiguration( configuration );
+        }
+        catch ( IOException e )
+        {
+            addActionError( "I/O Exception: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( InvalidConfigurationException e )
+        {
+            addActionError( "Invalid Configuration Exception: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Configuration Registry Exception: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( RoleManagerException e )
+        {
+            addActionError( "Security role creation Exception: " + e.getMessage() );
+            result = ERROR;
+        }
+
+        return result;
+    }
+
+    protected abstract boolean validateFields( Configuration config );
+
+    protected abstract void addRepository( T repository, Configuration configuration )
+        throws IOException, RoleManagerException;
+
+    protected abstract void removeRepository( String repoId, Configuration configuration );
 }

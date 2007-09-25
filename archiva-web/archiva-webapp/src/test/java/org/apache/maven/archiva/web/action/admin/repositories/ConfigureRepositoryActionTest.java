@@ -97,7 +97,6 @@ public class ConfigureRepositoryActionTest
 
         action.prepare();
         assertNull( action.getRepoid() );
-        assertNull( action.getMode() );
         ManagedRepositoryConfiguration configuration = action.getRepository();
         assertNotNull( configuration );
         assertNull( configuration.getId() );
@@ -107,7 +106,7 @@ public class ConfigureRepositoryActionTest
         assertFalse( configuration.isReleases() );
         assertFalse( configuration.isSnapshots() );
 
-        String status = action.add();
+        String status = action.addInput();
         assertEquals( Action.INPUT, status );
 
         // check defaults
@@ -137,12 +136,11 @@ public class ConfigureRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        action.setMode( "add" );
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
         assertFalse( location.exists() );
-        String status = action.save();
+        String status = action.add();
         assertEquals( Action.SUCCESS, status );
         assertTrue( location.exists() );
 
@@ -165,12 +163,11 @@ public class ConfigureRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertNull( action.getMode() );
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
-        String status = action.edit();
+        String status = action.editInput();
         assertEquals( Action.INPUT, status );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
@@ -194,12 +191,11 @@ public class ConfigureRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        action.setMode( "edit" );
         ManagedRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
 
-        String status = action.save();
+        String status = action.edit();
         assertEquals( Action.SUCCESS, status );
 
         ManagedRepositoryConfiguration newRepository = createRepository();
@@ -212,6 +208,7 @@ public class ConfigureRepositoryActionTest
     }
 
     public void testDeleteRepositoryConfirmation()
+        throws Exception
     {
         ManagedRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = createConfigurationForEditing( originalRepository );
@@ -224,13 +221,13 @@ public class ConfigureRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertNull( action.getMode() );
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
-        String status = action.confirm();
-        assertEquals( Action.INPUT, status );
+        String status = action.execute();
+        assertEquals( Action.SUCCESS, status );
+        assertEquals( "delete-entry", action.getDeleteMode() );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
@@ -239,7 +236,9 @@ public class ConfigureRepositoryActionTest
     public void testDeleteRepositoryKeepContent()
         throws RegistryException, IndeterminateConfigurationException
     {
-        Configuration configuration = executeDeletionTest( "delete-entry", createRepository() );
+        Configuration configuration = prepDeletionTest( createRepository(), "delete-entry" );
+        String status = action.delete();
+        assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
@@ -249,7 +248,9 @@ public class ConfigureRepositoryActionTest
     public void testDeleteRepositoryDeleteContent()
         throws RegistryException, IndeterminateConfigurationException
     {
-        Configuration configuration = executeDeletionTest( "delete-contents", createRepository() );
+        Configuration configuration = prepDeletionTest( createRepository(), "delete-contents" );
+        String status = action.delete();
+        assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
 
@@ -257,10 +258,12 @@ public class ConfigureRepositoryActionTest
     }
 
     public void testDeleteRepositoryCancelled()
-        throws RegistryException, IndeterminateConfigurationException
+        throws Exception
     {
         ManagedRepositoryConfiguration originalRepository = createRepository();
-        Configuration configuration = executeDeletionTest( "unmodified", originalRepository );
+        Configuration configuration = prepDeletionTest( originalRepository, null );
+        String status = action.execute();
+        assertEquals( Action.SUCCESS, status );
 
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
@@ -269,7 +272,7 @@ public class ConfigureRepositoryActionTest
         assertTrue( location.exists() );
     }
 
-    private Configuration executeDeletionTest( String mode, ManagedRepositoryConfiguration originalRepository )
+    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, String mode )
         throws RegistryException, IndeterminateConfigurationException
     {
         location.mkdirs();
@@ -285,18 +288,16 @@ public class ConfigureRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
-        action.setMode( mode );
+        action.setDeleteMode( mode );
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertEquals( mode, action.getMode() );
+        assertEquals( mode, action.getDeleteMode() );
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
         assertTrue( location.exists() );
-        String status = action.delete();
-        assertEquals( Action.SUCCESS, status );
         return configuration;
     }
 
@@ -343,7 +344,7 @@ public class ConfigureRepositoryActionTest
         repository.setRetentionCount( 20 );
         repository.setReleases( true );
         repository.setSnapshots( true );
-        repository.setScanned( true );
+        repository.setScanned( false );
         repository.setDeleteReleasedSnapshots( true );
     }
 

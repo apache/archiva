@@ -34,15 +34,14 @@
   <h2>Add Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="saveRemoteRepository" namespace="/admin" validate="true">
-    <ww:hidden name="mode" value="add"/>
+  <ww:form method="post" action="addRemoteRepository" namespace="/admin" validate="true">
     <ww:textfield name="repository.id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <ww:submit value="Add Repository"/>
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("saveRemoteRepository_id").focus();
+    document.getElementById("addRemoteRepository_id").focus();
   </script>
 
 </div>

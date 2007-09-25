@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
@@ -33,8 +32,6 @@ import org.codehaus.plexus.scheduler.CronExpressionValidator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Configures the managed repositories.
@@ -42,93 +39,86 @@ import java.util.List;
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="configureRepositoryAction"
  */
 public class ConfigureRepositoryAction
-    extends AbstractConfigureRepositoryAction
+    extends AbstractConfigureRepositoryAction<ManagedRepositoryConfiguration>
     implements Preparable
 {
-    /**
-     * The model for this action.
-     */
-    private ManagedRepositoryConfiguration repository;
-
     /**
      * @plexus.requirement role-hint="default"
      */
     protected RoleManager roleManager;
 
-    private static final List<String> VALID_MODES;
+    private String deleteMode = "delete-entry";
 
-    static
+    public String getDeleteMode()
     {
-        VALID_MODES = new ArrayList<String>();
-        VALID_MODES.add( "add" );
-        VALID_MODES.add( "edit" );
+        return deleteMode;
     }
 
-    public String add()
+    public void setDeleteMode( String deleteMode )
     {
-        this.mode = "add";
+        this.deleteMode = deleteMode;
+    }
 
+    public String addInput()
+    {
+        // set defaults
         this.repository.setReleases( true );
         this.repository.setScanned( true );
 
-        return this.mode;
+        return INPUT;
+    }
+
+    public String editInput()
+    {
+        return INPUT;
     }
 
     public String delete()
     {
-        String result = SUCCESS;
-        if ( StringUtils.equals( mode, "delete-entry" ) || StringUtils.equals( mode, "delete-contents" ) )
+        if ( repository == null )
         {
-            ManagedRepositoryConfiguration existingRepository = repository;
-            if ( existingRepository == null )
-            {
-                addActionError( "A repository with that id does not exist" );
-                return ERROR;
-            }
+            addActionError( "A repository with that id does not exist" );
+            return ERROR;
+        }
 
-            try
-            {
-                Configuration configuration = archivaConfiguration.getConfiguration();
-                removeRepository( repoid, configuration );
-                result = saveConfiguration( configuration );
+        String result;
+        try
+        {
+            Configuration configuration = archivaConfiguration.getConfiguration();
+            removeRepository( repoid, configuration );
+            result = saveConfiguration( configuration );
 
-                if ( result.equals( SUCCESS ) )
+            if ( result.equals( SUCCESS ) )
+            {
+                removeRepositoryRoles( repository );
+                if ( StringUtils.equals( deleteMode, "delete-contents" ) )
                 {
-                    removeRepositoryRoles( existingRepository );
-                    if ( StringUtils.equals( mode, "delete-contents" ) )
-                    {
-                        removeContents( existingRepository );
-                    }
+                    removeContents( repository );
                 }
             }
-            catch ( IOException e )
-            {
-                addActionError( "Unable to delete repository: " + e.getMessage() );
-                result = ERROR;
-            }
-            catch ( RoleManagerException e )
-            {
-                addActionError( "Unable to delete repository: " + e.getMessage() );
-                result = ERROR;
-            }
-            catch ( InvalidConfigurationException e )
-            {
-                addActionError( "Unable to delete repository: " + e.getMessage() );
-                result = ERROR;
-            }
-            catch ( RegistryException e )
-            {
-                addActionError( "Unable to delete repository: " + e.getMessage() );
-                result = ERROR;
-            }
+        }
+        catch ( IOException e )
+        {
+            addActionError( "Unable to delete repository: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( RoleManagerException e )
+        {
+            addActionError( "Unable to delete repository: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( InvalidConfigurationException e )
+        {
+            addActionError( "Unable to delete repository: " + e.getMessage() );
+            result = ERROR;
+        }
+        catch ( RegistryException e )
+        {
+            addActionError( "Unable to delete repository: " + e.getMessage() );
+            result = ERROR;
         }
 
         return result;
-    }
-
-    public ManagedRepositoryConfiguration getRepository()
-    {
-        return repository;
     }
 
     public void prepare()
@@ -146,68 +136,7 @@ public class ConfigureRepositoryAction
         }
     }
 
-    public String save()
-    {
-        // Ensure a proper mode is set.
-        if ( StringUtils.isBlank( this.mode ) )
-        {
-            addActionError( "Unable to process save request. edit mode undefined. " );
-            return ERROR;
-        }
-
-        if ( !VALID_MODES.contains( this.mode.toLowerCase() ) )
-        {
-            addActionError( "Unable to process save request. edit mode is invalid." );
-            return ERROR;
-        }
-
-        // Ensure that the fields are valid.
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        boolean containsError = validateFields( configuration );
-
-        if ( containsError )
-        {
-            return this.mode.toLowerCase();
-        }
-
-        // If we are in edit mode, then remove the old repository configuration.
-        if ( StringUtils.equalsIgnoreCase( "edit", this.mode ) )
-        {
-            removeRepository( repository.getId(), configuration );
-        }
-
-        // Save the repository configuration.
-        String result;
-        try
-        {
-            addRepository( repository, configuration );
-            result = saveConfiguration( configuration );
-        }
-        catch ( IOException e )
-        {
-            addActionError( "I/O Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-        catch ( RoleManagerException e )
-        {
-            addActionError( "Role Manager Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-        catch ( InvalidConfigurationException e )
-        {
-            addActionError( "Invalid Configuration Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-        catch ( RegistryException e )
-        {
-            addActionError( "Configuration Registry Exception: " + e.getMessage() );
-            result = ERROR;
-        }
-
-        return result;
-    }
-
-    private boolean validateFields( Configuration config )
+    protected boolean validateFields( Configuration config )
     {
         boolean containsError = false;
         CronExpressionValidator validator = new CronExpressionValidator();
@@ -217,23 +146,6 @@ public class ConfigureRepositoryAction
         {
             addFieldError( "repository.id", "You must enter a repository identifier." );
             containsError = true;
-        }
-        // Validate the existance of the repository id, but not in edit mode.
-        else if ( !StringUtils.equalsIgnoreCase( mode, "edit" ) )
-        {
-            if ( config.getManagedRepositoriesAsMap().containsKey( repoId ) )
-            {
-                addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                    + "], that id already exists as a managed repository." );
-                containsError = true;
-            }
-
-            if ( config.getRemoteRepositoriesAsMap().containsKey( repoId ) )
-            {
-                addFieldError( "repository.id", "Unable to add new repository with id [" + repoId
-                    + "], that id already exists as a remote repository." );
-                containsError = true;
-            }
         }
 
         if ( StringUtils.isBlank( repository.getLocation() ) )
@@ -255,7 +167,7 @@ public class ConfigureRepositoryAction
         return containsError;
     }
 
-    private void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
+    protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
         throws IOException, RoleManagerException
     {
         // Normalize the path
@@ -285,7 +197,7 @@ public class ConfigureRepositoryAction
         FileUtils.deleteDirectory( new File( existingRepository.getLocation() ) );
     }
 
-    private void removeRepository( String repoId, Configuration configuration )
+    protected void removeRepository( String repoId, Configuration configuration )
     {
         ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( repoId );
         if ( toremove != null )

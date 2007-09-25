@@ -83,12 +83,11 @@ public class ConfigureRemoteRepositoryActionTest
 
         action.prepare();
         assertNull( action.getRepoid() );
-        assertNull( action.getMode() );
         RemoteRepositoryConfiguration configuration = action.getRepository();
         assertNotNull( configuration );
         assertNull( configuration.getId() );
 
-        String status = action.add();
+        String status = action.input();
         assertEquals( Action.INPUT, status );
     }
 
@@ -104,11 +103,10 @@ public class ConfigureRemoteRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        action.setMode( "add" );
         RemoteRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
 
-        String status = action.save();
+        String status = action.add();
         assertEquals( Action.SUCCESS, status );
 
         assertEquals( Collections.singletonList( repository ), configuration.getRemoteRepositories() );
@@ -129,12 +127,11 @@ public class ConfigureRemoteRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertNull( action.getMode() );
         RemoteRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
-        String status = action.edit();
+        String status = action.input();
         assertEquals( Action.INPUT, status );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
@@ -152,12 +149,11 @@ public class ConfigureRemoteRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.prepare();
-        action.setMode( "edit" );
         RemoteRepositoryConfiguration repository = action.getRepository();
         populateRepository( repository );
         repository.setName( "new repo name" );
 
-        String status = action.save();
+        String status = action.edit();
         assertEquals( Action.SUCCESS, status );
 
         RemoteRepositoryConfiguration newRepository = createRepository();
@@ -169,6 +165,7 @@ public class ConfigureRemoteRepositoryActionTest
     }
 
     public void testDeleteRemoteRepositoryConfirmation()
+        throws Exception
     {
         RemoteRepositoryConfiguration originalRepository = createRepository();
         Configuration configuration = createConfigurationForEditing( originalRepository );
@@ -181,13 +178,12 @@ public class ConfigureRemoteRepositoryActionTest
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertNull( action.getMode() );
         RemoteRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
 
-        String status = action.confirm();
-        assertEquals( Action.INPUT, status );
+        String status = action.execute();
+        assertEquals( Action.SUCCESS, status );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getRemoteRepositories() );

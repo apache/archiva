@@ -36,15 +36,14 @@
   <h2>Edit Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="saveRepository" namespace="/admin" validate="false">
-    <ww:hidden name="mode" value="edit"/>
+  <ww:form method="post" action="editRepository" namespace="/admin" validate="false">
     <ww:hidden name="repository.id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
     <ww:submit value="Update Repository"/>
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("saveRepository_repository_name").focus();
+    document.getElementById("editRepository_repository_name").focus();
   </script>
 
 </div>
