@@ -291,9 +291,9 @@ public class ProjectModelToDatabaseConsumer
             {
                 StringBuffer emsg = new StringBuffer();
                 emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model <" ).append( model.toString() ).append( ">: " );
-                emsg.append( "The model artifactId <" ).append( model.getArtifactId() );
-                emsg.append( "> does not match the artifactId portion of the filename: " ).append( parts.artifactId );
+                emsg.append( " has an invalid project model [" ).append( model.toString() ).append( "]: " );
+                emsg.append( "The model artifactId [" ).append( model.getArtifactId() );
+                emsg.append( "] does not match the artifactId portion of the filename: " ).append( parts.artifactId );
                 
                 getLogger().warn(emsg.toString() );
                 addProblem( artifact, emsg.toString() );
@@ -306,9 +306,9 @@ public class ProjectModelToDatabaseConsumer
             {
                 StringBuffer emsg = new StringBuffer();
                 emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model <" ).append( model.toString() ).append( ">: " );
-                emsg.append( "The model version <" ).append( model.getVersion() );
-                emsg.append( "> does not match the version portion of the filename: " ).append( parts.version );
+                emsg.append( " has an invalid project model [" ).append( model.toString() ).append( "]: " );
+                emsg.append( "The model version [" ).append( model.getVersion() );
+                emsg.append( "] does not match the version portion of the filename: " ).append( parts.version );
                 
                 getLogger().warn(emsg.toString() );
                 addProblem( artifact, emsg.toString() );
