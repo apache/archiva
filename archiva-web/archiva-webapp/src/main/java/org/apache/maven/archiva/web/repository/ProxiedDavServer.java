@@ -146,12 +146,14 @@ public class ProxiedDavServer
         }
         else
         {
-            // Create parent directories that don't exist when writing a file
-            // This actually makes this implementation not compliant to the
-            // WebDAV RFC - but we have enough knowledge
-            // about how the collection is being used to do this reasonably and
-            // some versions of Maven's WebDAV don't
-            // correctly create the collections themselves.
+            /* Create parent directories that don't exist when writing a file
+             * This actually makes this implementation not compliant to the
+             * WebDAV RFC - but we have enough knowledge
+             * about how the collection is being used to do this reasonably and
+             * some versions of Maven's WebDAV don't
+             * correctly create the collections themselves.
+             */
+            
             File rootDirectory = getRootDirectory();
             if ( rootDirectory != null )
             {
@@ -159,6 +161,15 @@ public class ProxiedDavServer
             }
         }
 
+        // MRM-503 - Metadata file need Pragma:no-cache response header.
+        if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
+        {
+            response.addHeader( "Pragma", "no-cache" );
+            response.addHeader( "Cache-Control", "no-cache" );
+        }
+        
+        // TODO: determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
+        
         davServer.process( request, response );
     }
 
