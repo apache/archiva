@@ -34,6 +34,20 @@ public class RepositoryLayoutUtilsTest extends TestCase
         assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1.jar", "commons-lang" ),
                              "commons-lang", "2.1", null, "jar" );
     }
+    
+    public void testSplitFilenameMavenTestPlugin() throws LayoutException
+    {
+        // Using maven 2 logic (artifactId is present in full path)
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "maven-test-plugin-1.8.2.jar", "maven-test-plugin" ),
+                             "maven-test-plugin", "1.8.2", null, "jar" );
+
+        // Using maven 1 logic (artifactId is unknown)
+        // [MRM-519] fail to resolve artifactId for libs that contain versionKeyword in artifactId, like "maven-test-plugin"
+        /*
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "maven-test-plugin-1.8.2.jar", null ),
+                             "maven-test-plugin", "1.8.2", null, "jar" );
+         */
+    }
 
     public void testSplitFilenameAlphaVersion() throws LayoutException
     {
