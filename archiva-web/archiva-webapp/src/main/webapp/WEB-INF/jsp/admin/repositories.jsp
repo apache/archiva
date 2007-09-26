@@ -40,7 +40,7 @@
 <div class="admin">
 <div class="controls">
   <redback:ifAuthorized permission="archiva-manage-configuration">
-    <ww:url id="addRepositoryUrl" action="addRepository" method="addInput"/>
+    <ww:url id="addRepositoryUrl" action="addRepository"/>
     <ww:a href="%{addRepositoryUrl}">
       <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add
@@ -72,7 +72,7 @@
 <div class="controls">
     <%-- TODO: make some icons --%>
   <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-    <ww:url id="editRepositoryUrl" action="editRepository" method="editInput">
+    <ww:url id="editRepositoryUrl" action="editRepository">
       <ww:param name="repoid" value="%{'${repository.id}'}"/>
     </ww:url>
     <ww:url id="deleteRepositoryUrl" action="confirmDeleteRepository">
@@ -230,7 +230,7 @@
 
 <div class="controls">
   <redback:ifAuthorized permission="archiva-manage-configuration">
-    <ww:url id="addRepositoryUrl" action="addRemoteRepository" method="input"/>
+    <ww:url id="addRepositoryUrl" action="addRemoteRepository"/>
     <ww:a href="%{addRepositoryUrl}">
       <img src="<c:url value="/images/icons/create.png" />" alt="" width="16" height="16"/>
       Add
@@ -260,7 +260,7 @@
 
         <div class="controls">
           <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
-            <ww:url id="editRepositoryUrl" action="editRemoteRepository" method="input">
+            <ww:url id="editRepositoryUrl" action="editRemoteRepository">
               <ww:param name="repoid" value="%{'${repository.id}'}"/>
             </ww:url>
             <ww:a href="%{editRepositoryUrl}">

@@ -34,7 +34,7 @@
   <h2>Add Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="addRepository" namespace="/admin" validate="true">
+  <ww:form method="post" action="addRepository!commit" namespace="/admin" validate="true">
     <ww:textfield name="repository.id" label="Identifier" size="10" required="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
     <ww:submit value="Add Repository"/>

@@ -36,7 +36,7 @@
   <h2>Edit Repository</h2>
 
   <ww:actionmessage/>
-  <ww:form method="post" action="editRemoteRepository" namespace="/admin" validate="false">
+  <ww:form method="post" action="editRemoteRepository!commit" namespace="/admin" validate="false">
     <ww:hidden name="repository.id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <ww:submit value="Update Repository"/>

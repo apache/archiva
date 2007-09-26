@@ -21,32 +21,51 @@
 
 <html>
 <head>
-  <title>Admin: Delete Repository</title>
+  <title>Admin: Delete Remote Repository</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Delete Repository</h1>
+<h1>Admin: Delete Remote Repository</h1>
 
 <ww:actionerror/>
 
 <div id="contentArea">
 
-  <h2>Delete Repository</h2>
-
-  <blockquote>
-    <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
-  </blockquote>
+  <div class="warningbox">
+    <p>
+      <strong>WARNING: This operation can not be undone.</strong>
+    </p>
+  </div>
 
   <p>
-    Are you sure you want to delete the repository <code>[ ${repoid} ]</code> ?
+    Are you sure you want to delete the following remote repository?
   </p>
 
-  <ww:form method="post" action="deleteRemoteRepository" namespace="/admin" validate="true">
+  <div class="infobox">
+    <table class="infotable">
+      <tr>
+        <td>ID:</td>
+        <td><code>${repository.id}</code></td>
+      </tr>
+      <tr>
+        <td>Name:</td>
+        <td>${repository.name}</td>
+      </tr>
+      <tr>
+        <td>URL:</td>
+        <td><a href="${repository.url}">${repository.url}</a></td>
+      </tr>
+    </table>
+  </div>
+
+  <ww:form method="post" action="deleteRemoteRepository" namespace="/admin" validate="true" theme="simple">
     <ww:hidden name="repoid"/>
-    <ww:submit value="Confirm" method="delete"/>
-    <ww:submit value="Cancel" method="execute"/>
+    <div class="buttons">
+      <ww:submit value="Confirm" method="delete"/>
+      <ww:submit value="Cancel" method="execute"/>
+    </div>
   </ww:form>
 </div>
 

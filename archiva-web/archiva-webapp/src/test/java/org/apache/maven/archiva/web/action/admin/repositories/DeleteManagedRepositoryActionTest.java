@@ -20,7 +20,7 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Action;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -36,12 +36,15 @@ import java.io.File;
 import java.util.Collections;
 
 /**
- * Test the repositories action returns the correct data.
+ * DeleteManagedRepositoryActionTest 
+ *
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
  */
-public class ConfigureRepositoryActionTest
+public class DeleteManagedRepositoryActionTest
     extends PlexusTestCase
 {
-    private ConfigureRepositoryAction action;
+    private DeleteManagedRepositoryAction action;
 
     private RoleManager roleManager;
 
@@ -60,10 +63,7 @@ public class ConfigureRepositoryActionTest
     {
         super.setUp();
 
-        // TODO: purely to quiet logging - shouldn't be needed
-        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
-        System.setProperty( "appserver.base", appserverBase );
-        action = (ConfigureRepositoryAction) lookup( Action.class.getName(), "configureRepositoryAction" );
+        action = (DeleteManagedRepositoryAction) lookup( Action.class.getName(), "deleteManagedRepositoryAction" );
 
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
@@ -88,125 +88,6 @@ public class ConfigureRepositoryActionTest
         assertEquals( 1, bundle.getAuthorizationTuples().size() );
     }
 
-    public void testAddRepositoryInitialPage()
-        throws Exception
-    {
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( new Configuration() );
-        archivaConfigurationControl.replay();
-
-        action.prepare();
-        assertNull( action.getRepoid() );
-        ManagedRepositoryConfiguration configuration = action.getRepository();
-        assertNotNull( configuration );
-        assertNull( configuration.getId() );
-        // check all booleans are false
-        assertFalse( configuration.isDeleteReleasedSnapshots() );
-        assertFalse( configuration.isScanned() );
-        assertFalse( configuration.isReleases() );
-        assertFalse( configuration.isSnapshots() );
-
-        String status = action.addInput();
-        assertEquals( Action.INPUT, status );
-
-        // check defaults
-        assertFalse( configuration.isDeleteReleasedSnapshots() );
-        assertTrue( configuration.isScanned() );
-        assertTrue( configuration.isReleases() );
-        assertFalse( configuration.isSnapshots() );
-    }
-
-    public void testAddRepository()
-        throws Exception
-    {
-        FileUtils.deleteDirectory( location );
-
-        // TODO: should be in the business model
-        roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
-        roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
-
-        roleManagerControl.replay();
-
-        Configuration configuration = new Configuration();
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-
-        archivaConfiguration.save( configuration );
-
-        archivaConfigurationControl.replay();
-
-        action.prepare();
-        ManagedRepositoryConfiguration repository = action.getRepository();
-        populateRepository( repository );
-
-        assertFalse( location.exists() );
-        String status = action.add();
-        assertEquals( Action.SUCCESS, status );
-        assertTrue( location.exists() );
-
-        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
-
-        roleManagerControl.verify();
-        archivaConfigurationControl.verify();
-    }
-
-    public void testEditRepositoryInitialPage()
-        throws Exception
-    {
-        Configuration configuration = createConfigurationForEditing( createRepository() );
-
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfigurationControl.replay();
-
-        action.setRepoid( REPO_ID );
-
-        action.prepare();
-        assertEquals( REPO_ID, action.getRepoid() );
-        ManagedRepositoryConfiguration repository = action.getRepository();
-        assertNotNull( repository );
-        assertRepositoryEquals( repository, createRepository() );
-
-        String status = action.editInput();
-        assertEquals( Action.INPUT, status );
-        repository = action.getRepository();
-        assertRepositoryEquals( repository, createRepository() );
-    }
-
-    public void testEditRepository()
-        throws Exception
-    {
-        // TODO: should be in the business model
-        roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
-        roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
-
-        roleManagerControl.replay();
-
-        Configuration configuration = createConfigurationForEditing( createRepository() );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-
-        archivaConfiguration.save( configuration );
-
-        archivaConfigurationControl.replay();
-
-        action.prepare();
-        ManagedRepositoryConfiguration repository = action.getRepository();
-        populateRepository( repository );
-        repository.setName( "new repo name" );
-
-        String status = action.edit();
-        assertEquals( Action.SUCCESS, status );
-
-        ManagedRepositoryConfiguration newRepository = createRepository();
-        newRepository.setName( "new repo name" );
-        assertRepositoryEquals( repository, newRepository );
-        assertEquals( Collections.singletonList( repository ), configuration.getManagedRepositories() );
-
-        roleManagerControl.verify();
-        archivaConfigurationControl.verify();
-    }
-
     public void testDeleteRepositoryConfirmation()
         throws Exception
     {
@@ -227,7 +108,6 @@ public class ConfigureRepositoryActionTest
 
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
-        assertEquals( "delete-entry", action.getDeleteMode() );
         repository = action.getRepository();
         assertRepositoryEquals( repository, createRepository() );
         assertEquals( Collections.singletonList( originalRepository ), configuration.getManagedRepositories() );
@@ -237,7 +117,7 @@ public class ConfigureRepositoryActionTest
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration configuration = prepDeletionTest( createRepository(), "delete-entry" );
-        String status = action.delete();
+        String status = action.deleteEntry();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -249,7 +129,7 @@ public class ConfigureRepositoryActionTest
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration configuration = prepDeletionTest( createRepository(), "delete-contents" );
-        String status = action.delete();
+        String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -288,11 +168,9 @@ public class ConfigureRepositoryActionTest
         archivaConfigurationControl.replay();
 
         action.setRepoid( REPO_ID );
-        action.setDeleteMode( mode );
 
         action.prepare();
         assertEquals( REPO_ID, action.getRepoid() );
-        assertEquals( mode, action.getDeleteMode() );
         ManagedRepositoryConfiguration repository = action.getRepository();
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
@@ -348,7 +226,4 @@ public class ConfigureRepositoryActionTest
         repository.setDeleteReleasedSnapshots( true );
     }
 
-    // TODO: test errors during add, other actions
-    // TODO: what if there are proxy connectors attached to a deleted repository?
-    // TODO: what about removing proxied content if a proxy is removed?
 }

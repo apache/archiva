@@ -367,3 +367,24 @@ div.admin table.consumers th {
 div.admin table.consumers td strong {
 	font-size: 0.8em;
 }
+
+div.warningbox {
+	margin: 20px 40px 20px 40px;
+	border: 1px solid #CC0000;
+	background-color: #FFCCCC;
+	color: #000000;
+	font-size: 15pt;
+	padding: 20px;
+}
+
+div.infobox {
+	margin: 20px 40px 20px 40px;
+	border: 1px solid #0000CC;
+	background-color: #EEEEFF;
+	font-size: 9pt;
+	padding: 20px;
+}
+
+div.buttons {
+	text-align: center;
+}

@@ -1,4 +1,5 @@
-<%--
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
   ~ distributed with this work for additional information
@@ -15,38 +16,25 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  --%>
+  -->
 
-<%@ taglib prefix="ww" uri="/webwork" %>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
+    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
 
-<html>
-<head>
-  <title>Admin: Edit Repository</title>
-  <ww:head/>
-</head>
-
-<body>
-
-<h1>Admin: Edit Repository</h1>
-
-<ww:actionerror/>
-
-<div id="contentArea">
-
-  <h2>Edit Repository</h2>
-
-  <ww:actionmessage/>
-  <ww:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
-    <ww:hidden name="repository.id"/>
-    <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
-    <ww:submit value="Update Repository"/>
-  </ww:form>
-
-  <script type="text/javascript">
-    document.getElementById("editRepository_repository_name").focus();
-  </script>
-
-</div>
-
-</body>
-</html>
+<validators>
+  <field name="repository.id">
+    <field-validator type="requiredstring">
+      <message>You must enter a repository identifier.</message>
+    </field-validator>
+  </field>
+  <field name="repository.location">
+    <field-validator type="requiredstring">
+      <message>You must enter a directory.</message>
+    </field-validator>
+  </field>
+  <field name="repository.name">
+    <field-validator type="requiredstring">
+      <message>You must enter a repository name.</message>
+    </field-validator>
+  </field>
+</validators>

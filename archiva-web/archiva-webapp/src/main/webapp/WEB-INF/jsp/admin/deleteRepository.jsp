@@ -21,31 +21,52 @@
 
 <html>
 <head>
-  <title>Admin: Delete Repository</title>
+  <title>Admin: Delete Managed Repository</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Delete Repository</h1>
+<h1>Admin: Delete Managed Repository</h1>
 
 <ww:actionerror/>
 
 <div id="contentArea">
 
-  <h2>Delete Repository</h2>
+  <div class="warningbox">
+    <p>
+      <strong>WARNING: This operation can not be undone.</strong>
+    </p>
+  </div>
+  
+  <p>
+    Are you sure you want to delete the following managed repository?
+  </p>
 
-  <blockquote>
-    <strong><span class="statusFailed">WARNING:</span> This operation can not be undone.</strong>
-  </blockquote>
+  <div class="infobox">
+    <table class="infotable">
+      <tr>
+        <td>ID:</td>
+        <td><code>${repository.id}</code></td>
+      </tr>
+      <tr>
+        <td>Name:</td>
+        <td>${repository.name}</td>
+      </tr>
+      <tr>
+        <td>Directory:</td>
+        <td>${repository.location}</td>
+      </tr>
+    </table>
+  </div>
 
-  <ww:form method="post" action="deleteRepository" namespace="/admin" validate="true">
+  <ww:form method="post" action="deleteRepository" namespace="/admin" validate="true" theme="simple">
     <ww:hidden name="repoid"/>
-    <ww:radio list="#@java.util.LinkedHashMap@{'delete-contents' : 'Remove the repository and delete its contents from disk',
-    'delete-entry' : 'Remove the repository from the management list, but leave the contents unmodified'}"
-              name="deleteMode" theme="archiva"/>
-    <ww:submit value="Confirm" method="delete"/>
-    <ww:submit value="Cancel" method="execute"/>
+    <div class="buttons">
+      <ww:submit value="Delete Configuration Only" method="deleteEntry" />
+      <ww:submit value="Delete Configuration and Contents" method="deleteContents" />
+      <ww:submit value="Cancel" method="execute"/>
+    </div>
   </ww:form>
 </div>
 

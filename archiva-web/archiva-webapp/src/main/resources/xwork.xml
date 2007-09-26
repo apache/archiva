@@ -228,52 +228,52 @@
       <result type="redirect-action">repositories</result>
     </action>
 
-    <action name="addRepository" class="configureRepositoryAction" method="add">
+    <action name="addRepository" class="addManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="editRepository" class="configureRepositoryAction" method="edit">
+    <action name="editRepository" class="editManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="confirmDeleteRepository" class="configureRepositoryAction">
-      <result>/WEB-INF/jsp/admin/deleteRepository.jsp</result>
+    <action name="confirmDeleteRepository" class="deleteManagedRepositoryAction" method="confirmDelete">
+      <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="deleteRepository" class="configureRepositoryAction" method="delete">
+    <action name="deleteRepository" class="deleteManagedRepositoryAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="addRemoteRepository" class="configureRemoteRepositoryAction" method="add">
+    <action name="addRemoteRepository" class="addRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="editRemoteRepository" class="configureRemoteRepositoryAction" method="edit">
+    <action name="editRemoteRepository" class="editRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="confirmDeleteRemoteRepository" class="configureRemoteRepositoryAction">
-      <result>/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
+    <action name="confirmDeleteRemoteRepository" class="deleteRemoteRepositoryAction" method="confirmDelete">
+      <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="deleteRemoteRepository" class="configureRemoteRepositoryAction" method="delete">
+    <action name="deleteRemoteRepository" class="deleteRemoteRepositoryAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="success" type="redirect-action">repositories</result>
