@@ -38,7 +38,7 @@ public class VersionComparatorTest
     public void testComparator()
     {
         /* Sort order is oldest to newest */
-        
+
         assertSort( new String[] { "1.0", "3.0", "2.0" }, new String[] { "1.0", "2.0", "3.0" } );
         assertSort( new String[] { "1.5", "1.2", "1.0" }, new String[] { "1.0", "1.2", "1.5" } );
 
@@ -49,6 +49,7 @@ public class VersionComparatorTest
             "1.1-rc1",
             "1.1-m6",
             "1.1" } );
+
         assertSort( new String[] { "1.1-m6", "1.0-SNAPSHOT", "1.1-rc1", "1.1" }, new String[] {
             "1.0-SNAPSHOT",
             "1.1-rc1",
@@ -61,12 +62,43 @@ public class VersionComparatorTest
             "2.0.4-SNAPSHOT",
             "2.0.5" } );
 
+        assertSort( new String[] { "1.0-alpha-1", "1.0-alpha-22", "1.0-alpha-10", "1.0-alpha-9" }, new String[] {
+            "1.0-alpha-1",
+            "1.0-alpha-9",
+            "1.0-alpha-10",
+            "1.0-alpha-22" } );
+
+        assertSort( new String[] { "1.0-alpha1", "1.0-alpha22", "1.0-alpha10", "1.0-alpha9" }, new String[] {
+            "1.0-alpha1",
+            "1.0-alpha9",
+            "1.0-alpha10",
+            "1.0-alpha22" } );
+        
+        assertSort( new String[] { "1.0-1", "1.0-22", "1.0-10", "1.0-9" }, new String[] {
+            "1.0-1",
+            "1.0-9",
+            "1.0-10",
+            "1.0-22" } );
+        
+        assertSort( new String[] { "alpha-1", "alpha-22", "alpha-10", "alpha-9" }, new String[] {
+            "alpha-1",
+            "alpha-9",
+            "alpha-10",
+            "alpha-22" } );
+        
+        assertSort( new String[] { "1.0.1", "1.0.22", "1.0.10", "1.0.9" }, new String[] {
+            "1.0.1",
+            "1.0.9",
+            "1.0.10",
+            "1.0.22" } );
+        
+        
         // TODO: write more unit tests.
     }
 
     private void assertSort( String[] rawVersions, String[] expectedSort )
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.addAll( Arrays.asList( rawVersions ) );
 
         Collections.sort( versions, VersionComparator.getInstance() );
