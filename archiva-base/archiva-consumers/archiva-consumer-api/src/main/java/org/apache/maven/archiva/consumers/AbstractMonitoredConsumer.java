@@ -35,7 +35,7 @@ public abstract class AbstractMonitoredConsumer
     extends AbstractLogEnabled
     implements BaseConsumer
 {
-    private Set monitors = new HashSet();
+    private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
 
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
@@ -49,9 +49,9 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerError( String type, String message )
     {
-        for ( Iterator itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
         {
-            ConsumerMonitor monitor = (ConsumerMonitor) itmonitors.next();
+            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerError( this, type, message );
@@ -65,9 +65,9 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerWarning( String type, String message )
     {
-        for ( Iterator itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
         {
-            ConsumerMonitor monitor = (ConsumerMonitor) itmonitors.next();
+            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerWarning( this, type, message );
@@ -81,9 +81,9 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerInfo( String message )
     {
-        for ( Iterator itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
         {
-            ConsumerMonitor monitor = (ConsumerMonitor) itmonitors.next();
+            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerInfo( this, message );

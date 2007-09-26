@@ -81,9 +81,9 @@ public class RepositoryPurgeConsumer
      */
     private FileTypes filetypes;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
-    private List propertyNameTriggers = new ArrayList();
+    private List<String> propertyNameTriggers = new ArrayList<String>();
 
     private RepositoryPurge repoPurge;
 
@@ -106,12 +106,12 @@ public class RepositoryPurgeConsumer
         return false;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }
@@ -195,7 +195,7 @@ public class RepositoryPurgeConsumer
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers = new ArrayList();
+        propertyNameTriggers = new ArrayList<String>();
         propertyNameTriggers.add( "repositoryScanning" );
         propertyNameTriggers.add( "fileTypes" );
         propertyNameTriggers.add( "fileType" );

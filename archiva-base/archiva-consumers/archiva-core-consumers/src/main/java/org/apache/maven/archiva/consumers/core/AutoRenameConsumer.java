@@ -60,9 +60,9 @@ public class AutoRenameConsumer
 
     private File repositoryDir;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
-    private Map extensionRenameMap = new HashMap();
+    private Map<String, String> extensionRenameMap = new HashMap<String, String>();
 
     public AutoRenameConsumer()
     {
@@ -101,12 +101,12 @@ public class AutoRenameConsumer
         /* do nothing */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }
@@ -117,7 +117,7 @@ public class AutoRenameConsumer
         File file = new File( this.repositoryDir, path );
         if ( file.exists() )
         {
-            Iterator itExtensions = this.extensionRenameMap.keySet().iterator();
+            Iterator<String> itExtensions = this.extensionRenameMap.keySet().iterator();
             while ( itExtensions.hasNext() )
             {
                 String extension = (String) itExtensions.next();

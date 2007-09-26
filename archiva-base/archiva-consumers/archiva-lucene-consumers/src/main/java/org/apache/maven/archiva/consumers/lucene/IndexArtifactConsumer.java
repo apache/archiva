@@ -77,14 +77,14 @@ public class IndexArtifactConsumer
     /**
      * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
      */
-    private Map bidirectionalLayoutMap;
+    private Map bidirectionalLayoutMap;  // TODO: replace with new bidir-repo-layout-factory
 
     /**
      * @plexus.requirement role-hint="lucene"
      */
     private RepositoryContentIndexFactory indexFactory;
 
-    private Map repositoryMap = new HashMap();
+    private Map<String, IndexedRepositoryDetails> repositoryMap = new HashMap<String, IndexedRepositoryDetails>();
 
     public void beginScan()
     {
@@ -96,7 +96,7 @@ public class IndexArtifactConsumer
         /* nothing to do here */
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return null; // TODO: define these as a list of artifacts.
     }
@@ -137,7 +137,7 @@ public class IndexArtifactConsumer
 
     private IndexedRepositoryDetails getIndexedRepositoryDetails( String id )
     {
-        return (IndexedRepositoryDetails) this.repositoryMap.get( id );
+        return this.repositoryMap.get( id );
     }
 
     public String getDescription()
@@ -181,10 +181,10 @@ public class IndexArtifactConsumer
         {
             this.repositoryMap.clear();
 
-            Iterator it = configuration.getConfiguration().getManagedRepositories().iterator();
+            Iterator<ManagedRepositoryConfiguration> it = configuration.getConfiguration().getManagedRepositories().iterator();
             while ( it.hasNext() )
             {
-                ManagedRepositoryConfiguration repoconfig = (ManagedRepositoryConfiguration) it.next();
+                ManagedRepositoryConfiguration repoconfig = it.next();
 
                 ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( repoconfig );
                 IndexedRepositoryDetails pnl = new IndexedRepositoryDetails();

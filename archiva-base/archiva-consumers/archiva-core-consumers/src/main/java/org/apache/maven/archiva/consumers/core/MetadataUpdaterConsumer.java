@@ -99,7 +99,7 @@ public class MetadataUpdaterConsumer
 
     private BidirectionalRepositoryLayout repositoryLayout;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     private long scanStartTimestamp = 0;
 
@@ -113,7 +113,7 @@ public class MetadataUpdaterConsumer
         return id;
     }
 
-    public void setIncludes( List includes )
+    public void setIncludes( List<String> includes )
     {
         this.includes = includes;
     }
@@ -141,12 +141,12 @@ public class MetadataUpdaterConsumer
         /* do nothing here */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }

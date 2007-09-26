@@ -75,13 +75,11 @@ public class ValidateChecksumConsumer
     /**
      * @plexus.requirement role="org.codehaus.plexus.digest.Digester"
      */
-    private List digesterList;
-
-    private ArchivaRepository repository;
+    private List<Digester> digesterList;
 
     private File repositoryDir;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     public String getId()
     {
@@ -101,7 +99,6 @@ public class ValidateChecksumConsumer
     public void beginScan( ArchivaRepository repository )
         throws ConsumerException
     {
-        this.repository = repository;
         this.repositoryDir = new File( repository.getUrl().getPath() );
     }
 
@@ -110,12 +107,12 @@ public class ValidateChecksumConsumer
         /* nothing to do */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }
@@ -149,9 +146,9 @@ public class ValidateChecksumConsumer
     public void initialize()
         throws InitializationException
     {
-        for ( Iterator itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
+        for ( Iterator<Digester> itDigesters = digesterList.iterator(); itDigesters.hasNext(); )
         {
-            Digester digester = (Digester) itDigesters.next();
+            Digester digester = itDigesters.next();
             includes.add( "**/*" + digester.getFilenameExtension() );
         }
     }

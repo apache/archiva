@@ -62,7 +62,7 @@ public class IndexArchiveTableOfContentsConsumer
 
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         // TODO Auto-generated method stub
         return null;

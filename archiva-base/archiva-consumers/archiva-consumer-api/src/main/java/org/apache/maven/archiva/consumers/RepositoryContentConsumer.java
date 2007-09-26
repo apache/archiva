@@ -19,7 +19,6 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
@@ -37,14 +36,14 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * 
      * @return the list of {@link String} patterns. (example: <code>"**<span />/*.pom"</code>)
      */
-    public List getIncludes();
+    public List<String> getIncludes();
     
     /**
      * Get the list of excluded file patterns for this consumer.
      * 
      * @return the list of {@link String} patterns. (example: <code>"**<span />/*.pom"</code>) - (can be null for no exclusions)
      */
-    public List getExcludes();
+    public List<String> getExcludes();
 
     /**
      * <p>

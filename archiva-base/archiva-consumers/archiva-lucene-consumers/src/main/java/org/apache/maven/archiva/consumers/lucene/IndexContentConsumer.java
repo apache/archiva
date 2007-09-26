@@ -91,9 +91,9 @@ public class IndexContentConsumer
      */
     private BidirectionalRepositoryLayoutFactory layoutFactory;
 
-    private List propertyNameTriggers = new ArrayList();
+    private List<String> propertyNameTriggers = new ArrayList<String>();
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     private RepositoryContentIndex index;
 
@@ -118,12 +118,12 @@ public class IndexContentConsumer
         return false;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }
@@ -208,7 +208,7 @@ public class IndexContentConsumer
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers = new ArrayList();
+        propertyNameTriggers = new ArrayList<String>();
         propertyNameTriggers.add( "repositoryScanning" );
         propertyNameTriggers.add( "fileTypes" );
         propertyNameTriggers.add( "fileType" );

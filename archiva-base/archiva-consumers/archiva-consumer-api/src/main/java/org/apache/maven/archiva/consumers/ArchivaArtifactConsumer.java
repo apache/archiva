@@ -36,7 +36,7 @@ public interface ArchivaArtifactConsumer extends BaseConsumer
      * 
      * @return the list of ({@link String}) artifact types to process.
      */
-    public List getIncludedTypes();
+    public List<String> getIncludedTypes();
 
     /**
      * <p>

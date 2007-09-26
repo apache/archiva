@@ -107,11 +107,11 @@ public class ProjectModelToDatabaseConsumer
      */
     private EffectiveProjectModelFilter effectiveModelFilter;
 
-    private List includes;
+    private List<String> includes;
 
     public ProjectModelToDatabaseConsumer()
     {
-        includes = new ArrayList();
+        includes = new ArrayList<String>();
         includes.add( "pom" );
     }
 
@@ -125,7 +125,7 @@ public class ProjectModelToDatabaseConsumer
         /* nothing to do here */
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return includes;
     }
@@ -291,8 +291,9 @@ public class ProjectModelToDatabaseConsumer
             {
                 StringBuffer emsg = new StringBuffer();
                 emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model [" ).append( model.toString() ).append( "]: " );
-                emsg.append( "The model artifactId [" ).append( model.getArtifactId() );
+                emsg.append( " has an invalid project model [" );
+                appendModel( emsg, model );
+                emsg.append( "]: The model artifactId [" ).append( model.getArtifactId() );
                 emsg.append( "] does not match the artifactId portion of the filename: " ).append( parts.artifactId );
                 
                 getLogger().warn(emsg.toString() );
@@ -306,8 +307,9 @@ public class ProjectModelToDatabaseConsumer
             {
                 StringBuffer emsg = new StringBuffer();
                 emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model [" ).append( model.toString() ).append( "]: " );
-                emsg.append( "The model version [" ).append( model.getVersion() );
+                emsg.append( " has an invalid project model [" );
+                appendModel( emsg, model );
+                emsg.append( "]; The model version [" ).append( model.getVersion() );
                 emsg.append( "] does not match the version portion of the filename: " ).append( parts.version );
                 
                 getLogger().warn(emsg.toString() );
@@ -323,6 +325,14 @@ public class ProjectModelToDatabaseConsumer
         }
 
         return true;
+    }
+
+    private void appendModel( StringBuffer buf, ArchivaProjectModel model )
+    {
+        buf.append( "groupId:" ).append( model.getGroupId() );
+        buf.append( "|artifactId:" ).append( model.getArtifactId() );
+        buf.append( "|version:" ).append( model.getVersion() );
+        buf.append( "|packaging:" ).append( model.getPackaging() );
     }
 
     private void addProblem( ArchivaArtifact artifact, String msg )

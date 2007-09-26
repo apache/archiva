@@ -44,6 +44,7 @@ import java.util.List;
  * M2 implementation for cleaning up the released snapshots.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * @version $Id$
  */
 public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge

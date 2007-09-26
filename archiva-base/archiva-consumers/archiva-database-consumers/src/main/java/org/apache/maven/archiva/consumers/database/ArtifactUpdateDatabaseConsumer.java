@@ -109,7 +109,7 @@ public class ArtifactUpdateDatabaseConsumer
 
     private BidirectionalRepositoryLayout layout;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     public String getId()
     {
@@ -126,12 +126,12 @@ public class ArtifactUpdateDatabaseConsumer
         return true;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }

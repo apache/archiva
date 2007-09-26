@@ -105,9 +105,9 @@ public class ArtifactMissingChecksumsConsumer
 
     private BidirectionalRepositoryLayout layout;
 
-    private List propertyNameTriggers = new ArrayList();
+    private List<String> propertyNameTriggers = new ArrayList<String>();
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     public String getId()
     {
@@ -146,12 +146,12 @@ public class ArtifactMissingChecksumsConsumer
         /* do nothing */
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return includes;
     }
@@ -215,7 +215,7 @@ public class ArtifactMissingChecksumsConsumer
     public void initialize()
         throws InitializationException
     {
-        propertyNameTriggers = new ArrayList();
+        propertyNameTriggers = new ArrayList<String>();
         propertyNameTriggers.add( "repositoryScanning" );
         propertyNameTriggers.add( "fileTypes" );
         propertyNameTriggers.add( "fileType" );

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 /**
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
+ * @version $Id$
  */
 public class RepositoryPurgeException
     extends Exception

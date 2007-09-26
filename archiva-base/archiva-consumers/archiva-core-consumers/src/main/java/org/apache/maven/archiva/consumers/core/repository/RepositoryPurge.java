@@ -19,17 +19,9 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
-
 /**
- *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @version
+ * @version $Id$
  */
 public interface RepositoryPurge
 {
@@ -40,5 +32,5 @@ public interface RepositoryPurge
      */
     public void process( String path )
         throws RepositoryPurgeException;
-    
+
 }
