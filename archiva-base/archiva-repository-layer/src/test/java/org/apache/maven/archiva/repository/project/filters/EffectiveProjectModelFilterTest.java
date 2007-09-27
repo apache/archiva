@@ -93,7 +93,7 @@ public class EffectiveProjectModelFilterTest
 
         ArchivaProjectModel effectiveModel = filter.filter( startModel );
 
-        ArchivaProjectModel expectedModel = createArchivaProjectModel( "src/test/effective-poms/"
+        ArchivaProjectModel expectedModel = createArchivaProjectModel( "src/test/expected-poms/"
             + "/archiva-model-effective.pom" );
 
         assertModel( expectedModel, effectiveModel );
