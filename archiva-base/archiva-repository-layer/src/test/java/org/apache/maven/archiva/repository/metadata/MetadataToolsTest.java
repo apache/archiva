@@ -26,6 +26,7 @@ import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.repository.MockConfiguration;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.PlexusTestCase;
 import org.custommonkey.xmlunit.DetailedDiff;

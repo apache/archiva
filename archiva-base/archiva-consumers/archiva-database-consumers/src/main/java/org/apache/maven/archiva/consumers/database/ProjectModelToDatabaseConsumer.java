@@ -159,20 +159,19 @@ public class ProjectModelToDatabaseConsumer
             ArchivaProjectModel model = reader.read( artifactFile );
 
             model.setOrigin( "filesystem" );
+            
+            // The version should be updated to the filename version if it is a unique snapshot
+            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
+            if ( VersionUtil.isUniqueSnapshot( parts.version ) )
+            {
+                model.setVersion( parts.version );
+            }
 
             // Filter the model
             model = expressionModelFilter.filter( model );
 
             // Resolve the project model
             model = effectiveModelFilter.filter( model );
-
-            // The version should be updated to the filename version if it is a unique snapshot
-            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
-            if ( model.getVersion().equals( VersionUtil.getBaseVersion( parts.version ) ) &&
-                VersionUtil.isUniqueSnapshot( parts.version ) )
-            {
-                model.setVersion( parts.version );
-            }
 
             if ( isValidModel( model, artifact ) )
             {

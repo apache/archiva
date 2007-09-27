@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.metadata;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -44,7 +44,7 @@ public class MockConfiguration
 {
     private Configuration configuration = new Configuration();
 
-    private List listeners = new ArrayList();
+    private List<RegistryListener> listeners = new ArrayList<RegistryListener>();
 
     private MockControl registryControl;
 
@@ -74,7 +74,7 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        Iterator it = listeners.iterator();
+        Iterator<RegistryListener> it = listeners.iterator();
         while ( it.hasNext() )
         {
             RegistryListener listener = (RegistryListener) it.next();

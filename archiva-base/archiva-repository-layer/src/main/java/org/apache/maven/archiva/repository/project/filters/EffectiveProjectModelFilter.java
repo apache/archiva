@@ -30,9 +30,6 @@ import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelMerge;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.codehaus.plexus.cache.Cache;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.logging.console.ConsoleLogger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,7 +45,6 @@ import java.util.Map;
  *                   role-hint="effective" 
  */
 public class EffectiveProjectModelFilter
-    extends AbstractLogEnabled
     implements ProjectModelFilter
 {
     private ProjectModelFilter expressionFilter = new ProjectModelExpressionFilter();
@@ -57,7 +53,7 @@ public class EffectiveProjectModelFilter
      * @plexus.requirement
      */
     private ProjectModelResolverFactory resolverFactory;
-    
+
     /**
      * @plexus.requirement role-hint="effective-project-cache"
      */
@@ -87,14 +83,15 @@ public class EffectiveProjectModelFilter
         {
             throw new IllegalStateException( "Unable to build effective pom with no project model resolvers defined." );
         }
-        
+
         ArchivaProjectModel effectiveProject;
         String projectKey = toProjectKey( project );
-        
-        synchronized( effectiveProjectCache )
+
+        synchronized ( effectiveProjectCache )
         {
-            if( effectiveProjectCache.hasKey( projectKey ) )
+            if ( effectiveProjectCache.hasKey( projectKey ) )
             {
+                DEBUG( "Fetching (from cache/projectKey): " + projectKey );
                 effectiveProject = (ArchivaProjectModel) effectiveProjectCache.get( projectKey );
                 return effectiveProject;
             }
@@ -106,37 +103,22 @@ public class EffectiveProjectModelFilter
         // Setup Expression Evaluation pieces.
         effectiveProject = expressionFilter.filter( effectiveProject );
 
-        getLogger().debug( "Starting build of effective with: " + effectiveProject );
+        DEBUG( "Starting build of effective with: " + effectiveProject );
 
         // Merge in all the parent poms.
         effectiveProject = mergeParent( effectiveProject );
 
         // Resolve dependency versions from dependency management.
         applyDependencyManagement( effectiveProject );
-        
-        synchronized( effectiveProjectCache )
+
+        synchronized ( effectiveProjectCache )
         {
+            DEBUG( "Putting (to cache/projectKey): " + projectKey );
             effectiveProjectCache.put( projectKey, effectiveProject );
         }
 
         // Return what we got.
         return effectiveProject;
-    }
-
-    private Logger logger;
-
-    protected Logger getLogger()
-    {
-        if ( logger == null )
-        {
-            logger = super.getLogger();
-            if ( logger == null )
-            {
-                logger = new ConsoleLogger( ConsoleLogger.LEVEL_INFO, this.getClass().getName() );
-            }
-        }
-
-        return logger;
     }
 
     private void applyDependencyManagement( ArchivaProjectModel pom )
@@ -148,11 +130,11 @@ public class EffectiveProjectModelFilter
             return;
         }
 
-        Map managedDependencies = createDependencyMap( pom.getDependencyManagement() );
-        Iterator it = pom.getDependencies().iterator();
+        Map<String, Dependency> managedDependencies = createDependencyMap( pom.getDependencyManagement() );
+        Iterator<Dependency> it = pom.getDependencies().iterator();
         while ( it.hasNext() )
         {
-            Dependency dep = (Dependency) it.next();
+            Dependency dep = it.next();
             String key = toVersionlessDependencyKey( dep );
 
             // Do we need to do anything?
@@ -172,49 +154,70 @@ public class EffectiveProjectModelFilter
     {
         ArchivaProjectModel mixedProject;
 
-        getLogger().debug( "Parent: " + pom.getParentProject() );
+        DEBUG( "Project: " + toProjectKey( pom ) );
 
         if ( pom.getParentProject() != null )
         {
             // Use parent reference.
             VersionedReference parentRef = pom.getParentProject();
 
-            getLogger().debug( "Has parent: " + parentRef );
-            
-            String pomKey = VersionedReference.toKey( parentRef );
-            
-            synchronized( effectiveProjectCache )
+            String parentKey = VersionedReference.toKey( parentRef );
+
+            DEBUG( "Has parent: " + parentKey );
+
+            ArchivaProjectModel parentProject;
+
+            synchronized ( effectiveProjectCache )
             {
-                if( effectiveProjectCache.hasKey( pomKey ) )
+                // is the pre-merged parent in the cache? 
+                if ( effectiveProjectCache.hasKey( parentKey ) )
                 {
-                    return (ArchivaProjectModel) effectiveProjectCache.get( pomKey );
+                    DEBUG( "Fetching (from cache/parentKey): " + parentKey );
+                    // Use the one from the cache.
+                    parentProject = (ArchivaProjectModel) effectiveProjectCache.get( parentKey );
+                }
+                else
+                {
+                    // Look it up, using resolvers.
+                    parentProject = this.resolverFactory.getCurrentResolverStack().findProject( parentRef );
                 }
             }
 
-            // Find parent using resolvers.
-            ArchivaProjectModel parentProject = this.resolverFactory.getCurrentResolverStack().findProject( parentRef );
-
             if ( parentProject != null )
             {
+                // Merge the pom with the parent pom.
                 parentProject = expressionFilter.filter( parentProject );
                 parentProject = mergeParent( parentProject );
+
+                // Cache the pre-merged parent.
+                synchronized ( effectiveProjectCache )
+                {
+                    DEBUG( "Putting (to cache/parentKey/merged): " + parentKey );
+                    // Add the merged parent pom to the cache.
+                    effectiveProjectCache.put( parentKey, parentProject );
+                }
+
+                // Now merge the parent with the current
                 mixedProject = ProjectModelMerge.merge( pom, parentProject );
             }
             else
             {
                 // Shortcircuit due to missing parent pom.
-                // TODO: Document this via monitor.
+                // TODO: Document this via a monitor.
                 mixedProject = mixinSuperPom( pom );
-            }
-            
-            synchronized( effectiveProjectCache )
-            {
-                effectiveProjectCache.put( pomKey, mixedProject );
+
+                // Cache the non-existant parent.
+                synchronized ( effectiveProjectCache )
+                {
+                    DEBUG( "Putting (to cache/parentKey/basicPom): " + parentKey );
+                    // Add the basic pom to cache.
+                    effectiveProjectCache.put( parentKey, createBasicPom( parentRef ) );
+                }
             }
         }
         else
         {
-            getLogger().debug( "No parent found" );
+            DEBUG( "No parent found" );
 
             /* Mix in the super-pom.
              * 
@@ -225,8 +228,19 @@ public class EffectiveProjectModelFilter
 
             mixedProject = mixinSuperPom( pom );
         }
-        
+
         return mixedProject;
+    }
+
+    private ArchivaProjectModel createBasicPom( VersionedReference ref )
+    {
+        ArchivaProjectModel model = new ArchivaProjectModel();
+        model.setGroupId( ref.getGroupId() );
+        model.setArtifactId( ref.getArtifactId() );
+        model.setVersion( ref.getVersion() );
+        model.setPackaging( "jar" );
+
+        return model;
     }
 
     /**
@@ -240,19 +254,19 @@ public class EffectiveProjectModelFilter
     private ArchivaProjectModel mixinSuperPom( ArchivaProjectModel pom )
     {
         // TODO: add super pom repositories.
-        getLogger().debug( "Mix in Super POM: " + pom );
+        DEBUG( "Mix in Super POM: " + pom );
 
         return pom;
     }
 
-    private static Map createDependencyMap( List dependencies )
+    private static Map<String, Dependency> createDependencyMap( List<Dependency> dependencies )
     {
-        Map ret = new HashMap();
+        Map<String, Dependency> ret = new HashMap<String, Dependency>();
 
-        Iterator it = dependencies.iterator();
+        Iterator<Dependency> it = dependencies.iterator();
         while ( it.hasNext() )
         {
-            Dependency dep = (Dependency) it.next();
+            Dependency dep = it.next();
             String key = toVersionlessDependencyKey( dep );
             ret.put( key, dep );
         }
@@ -270,7 +284,7 @@ public class EffectiveProjectModelFilter
 
         return key.toString();
     }
-    
+
     private String toProjectKey( ArchivaProjectModel project )
     {
         StringBuffer key = new StringBuffer();
@@ -280,5 +294,11 @@ public class EffectiveProjectModelFilter
         key.append( project.getVersion() );
 
         return key.toString();
+    }
+
+    private void DEBUG( String msg )
+    {
+        // Used in debugging of this object.
+        // System.out.println( "[EffectiveProjectModelFilter] " + msg );
     }
 }
