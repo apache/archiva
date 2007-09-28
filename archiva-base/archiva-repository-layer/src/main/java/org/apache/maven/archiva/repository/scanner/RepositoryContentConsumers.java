@@ -24,15 +24,17 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.collections.functors.OrPredicate;
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
-import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
 import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
+import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -213,32 +215,38 @@ public class RepositoryContentConsumers
     public void executeConsumers( ArchivaRepository repository, File localFile )
     {
         // Run the repository consumers
-        for ( RepositoryContentConsumer consumer : availableKnownConsumers )
-        {
-            consumeFile( consumer, repository, localFile );
-        }
-
-        for ( RepositoryContentConsumer consumer : availableInvalidConsumers )
-        {
-            consumeFile( consumer, repository, localFile );
-        }
-    }
-
-    private void consumeFile( RepositoryContentConsumer consumer, ArchivaRepository repository, File localFile )
-    {
         try
         {
-            consumer.beginScan( repository );
-            consumer.processFile( PathUtil.getRelative( repository.getUrl().getPath(), localFile ) );
-        }
-        catch ( ConsumerException e )
-        {
-            getLogger().error( "Error processing file: " + localFile, e );
-            // ignore, let next repo scan handle it
+            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getLogger() );
+
+            CollectionUtils.forAllDo( availableKnownConsumers, triggerBeginScan );
+            CollectionUtils.forAllDo( availableInvalidConsumers, triggerBeginScan );
+
+            // yuck. In case you can't read this, it says
+            // "process the file if the consumer has it in the includes list, and not in the excludes list"
+            BaseFile baseFile = new BaseFile( repository.getUrl().getPath(), localFile );
+            ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
+            predicate.setBasefile( baseFile );
+            ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure( getLogger() );
+            closure.setBasefile( baseFile );
+            predicate.setCaseSensitive( false );
+            Closure processIfWanted = IfClosure.getInstance( predicate, closure );
+
+            CollectionUtils.forAllDo( availableKnownConsumers, processIfWanted );
+
+            if ( predicate.getWantedFileCount() <= 0 )
+            {
+                // Nothing known processed this file.  It is invalid!
+                CollectionUtils.forAllDo( availableInvalidConsumers, closure );
+            }
         }
         finally
         {
-            consumer.completeScan();
+/* TODO: This is never called by the repository scanner instance, so not calling here either - but it probably should be?
+            CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
+            CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
+*/
         }
     }
+
 }

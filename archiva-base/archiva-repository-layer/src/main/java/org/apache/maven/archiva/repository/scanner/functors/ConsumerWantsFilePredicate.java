@@ -25,7 +25,7 @@ import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.SelectorUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * ConsumerWantsFilePredicate 
@@ -87,15 +87,12 @@ public class ConsumerWantsFilePredicate
 
     private boolean wantsFile( RepositoryContentConsumer consumer, String relativePath )
     {
-        Iterator it;
-
         // Test excludes first.
-        if ( consumer.getExcludes() != null )
+        List<String> excludes = consumer.getExcludes();
+        if ( excludes != null )
         {
-            it = consumer.getExcludes().iterator();
-            while ( it.hasNext() )
+            for ( String pattern : excludes )
             {
-                String pattern = (String) it.next();
                 if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
                 {
                     // Definately does NOT WANT FILE.
@@ -105,10 +102,8 @@ public class ConsumerWantsFilePredicate
         }
 
         // Now test includes.
-        it = consumer.getIncludes().iterator();
-        while ( it.hasNext() )
+        for ( String pattern : consumer.getIncludes() )
         {
-            String pattern = (String) it.next();
             if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
             {
                 // Specifically WANTS FILE.
