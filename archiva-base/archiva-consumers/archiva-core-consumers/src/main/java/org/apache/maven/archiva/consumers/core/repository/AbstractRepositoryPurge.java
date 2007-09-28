@@ -113,6 +113,8 @@ public abstract class AbstractRepositoryPurge
                                                                    artifact.getType() );
 
         artifactDao.deleteArtifact( queriedArtifact );
+
+        // TODO [MRM-37]: re-run the database consumers to clean up
     }
 
     /**

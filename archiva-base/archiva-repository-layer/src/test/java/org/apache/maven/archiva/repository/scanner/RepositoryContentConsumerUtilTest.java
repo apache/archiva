@@ -19,15 +19,20 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
+import org.easymock.MockControl;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
- * RepositoryContentConsumerUtilTest 
+ * RepositoryContentConsumerUtilTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -71,7 +76,7 @@ public class RepositoryContentConsumerUtilTest
         assertNotNull( "Known[sample-known] should not be null.", o );
         assertInstanceof( "Known[sample-known]", RepositoryContentConsumer.class, o );
         assertInstanceof( "Known[sample-known]", KnownRepositoryContentConsumer.class, o );
-        
+
         Map invalidConsumerMap = consumerutil.getSelectedInvalidConsumersMap();
         assertNotNull( "Invalid Consumer Map should not be null", invalidConsumerMap );
         assertEquals( "Invalid Consumer Map.size", 0, invalidConsumerMap.size() );
@@ -81,8 +86,8 @@ public class RepositoryContentConsumerUtilTest
     {
         if ( clazz.isInstance( o ) == false )
         {
-            fail( msg + ": Object [" + o.getClass().getName() + "] should have been an instanceof [" + clazz.getName()
-                + "]" );
+            fail( msg + ": Object [" + o.getClass().getName() + "] should have been an instanceof [" + clazz.getName() +
+                "]" );
         }
     }
 
@@ -99,5 +104,37 @@ public class RepositoryContentConsumerUtilTest
         List invalidConsumers = consumerutil.getAvailableInvalidConsumers();
         assertNotNull( "invalid consumers should not be null.", invalidConsumers );
         assertEquals( "invalid consumers", 0, invalidConsumers.size() );
+    }
+
+    public void testExecution()
+        throws Exception
+    {
+        MockControl knownControl = MockControl.createControl( KnownRepositoryContentConsumer.class );
+        RepositoryContentConsumers consumers = lookupRepositoryConsumerUtil();
+        KnownRepositoryContentConsumer knownConsumer = (KnownRepositoryContentConsumer) knownControl.getMock();
+        consumers.setAvailableKnownConsumers( Collections.singletonList( knownConsumer ) );
+
+        MockControl invalidControl = MockControl.createControl( InvalidRepositoryContentConsumer.class );
+        InvalidRepositoryContentConsumer invalidConsumer = (InvalidRepositoryContentConsumer) invalidControl.getMock();
+        consumers.setAvailableInvalidConsumers( Collections.singletonList( invalidConsumer ) );
+
+        ArchivaRepository repo =
+            new ArchivaRepository( "id", "name", getTestFile( "target/test-repo" ).toURL().toExternalForm() );
+        File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
+
+        knownConsumer.beginScan( repo );
+        knownConsumer.processFile( "path/to/test-file.txt" );
+        knownConsumer.completeScan();
+        knownControl.replay();
+
+        invalidConsumer.beginScan( repo );
+        invalidConsumer.processFile( "path/to/test-file.txt" );
+        invalidConsumer.completeScan();
+        invalidControl.replay();
+
+        consumers.executeConsumers( repo, testFile );
+
+        knownControl.verify();
+        invalidControl.verify();
     }
 }

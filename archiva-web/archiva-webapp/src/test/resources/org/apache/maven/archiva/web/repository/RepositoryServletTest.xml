@@ -38,6 +38,13 @@
       </configuration>
     </component>
 
+    <!-- Don't drag in the world just to test this -->
+    <component>
+      <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.archiva.web.repository.StubRepositoryContentConsumers</implementation>
+    </component>
+
     <!-- TODO: shouldn't need so many components just to use in-memory - is flaky since these are auto-generated -->
     <component>
       <role>org.codehaus.plexus.redback.system.SecuritySystem</role>

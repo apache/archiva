@@ -39,6 +39,7 @@ import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutF
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -114,6 +115,11 @@ public class DefaultRepositoryProxyConnectors
     private Map proxyConnectorMap = new HashMap();
 
     private Map networkProxyMap = new HashMap();
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentConsumers consumers;
 
     /**
      * Fetch an artifact from a remote repository.
@@ -474,6 +480,9 @@ public class DefaultRepositoryProxyConnectors
 
             return null;
         }
+
+        // Just-in-time update of the index and database by executing the consumers for this artifact
+        consumers.executeConsumers( connector.getSourceRepository(), localFile );
 
         // Everything passes.
         return localFile;

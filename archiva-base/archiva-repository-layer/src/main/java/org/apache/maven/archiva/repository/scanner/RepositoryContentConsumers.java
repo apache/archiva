@@ -24,16 +24,20 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.collections.functors.OrPredicate;
+import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
+import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,12 +63,12 @@ public class RepositoryContentConsumers
     /**
      * @plexus.requirement role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
      */
-    private List availableKnownConsumers;
+    private List<KnownRepositoryContentConsumer> availableKnownConsumers;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer"
      */
-    private List availableInvalidConsumers;
+    private List<InvalidRepositoryContentConsumer> availableInvalidConsumers;
 
     private Predicate selectedKnownPredicate;
 
@@ -186,13 +190,55 @@ public class RepositoryContentConsumers
         return ret;
     }
 
-    public List getAvailableKnownConsumers()
+    public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
         return availableKnownConsumers;
     }
 
-    public List getAvailableInvalidConsumers()
+    public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
         return availableInvalidConsumers;
+    }
+
+    public void setAvailableKnownConsumers( List<KnownRepositoryContentConsumer> availableKnownConsumers )
+    {
+        this.availableKnownConsumers = availableKnownConsumers;
+    }
+
+    public void setAvailableInvalidConsumers( List<InvalidRepositoryContentConsumer> availableInvalidConsumers )
+    {
+        this.availableInvalidConsumers = availableInvalidConsumers;
+    }
+
+    public void executeConsumers( ArchivaRepository repository, File localFile )
+    {
+        // Run the repository consumers
+        for ( RepositoryContentConsumer consumer : availableKnownConsumers )
+        {
+            consumeFile( consumer, repository, localFile );
+        }
+
+        for ( RepositoryContentConsumer consumer : availableInvalidConsumers )
+        {
+            consumeFile( consumer, repository, localFile );
+        }
+    }
+
+    private void consumeFile( RepositoryContentConsumer consumer, ArchivaRepository repository, File localFile )
+    {
+        try
+        {
+            consumer.beginScan( repository );
+            consumer.processFile( PathUtil.getRelative( repository.getUrl().getPath(), localFile ) );
+        }
+        catch ( ConsumerException e )
+        {
+            getLogger().error( "Error processing file: " + localFile, e );
+            // ignore, let next repo scan handle it
+        }
+        finally
+        {
+            consumer.completeScan();
+        }
     }
 }

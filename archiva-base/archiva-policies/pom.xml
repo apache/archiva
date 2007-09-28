@@ -45,11 +45,6 @@
       <artifactId>plexus-cache-ehcache</artifactId>
     </dependency>
     <dependency>
-      <groupId>easymock</groupId>
-      <artifactId>easymock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-slf4j-logging</artifactId>
       <scope>test</scope>
