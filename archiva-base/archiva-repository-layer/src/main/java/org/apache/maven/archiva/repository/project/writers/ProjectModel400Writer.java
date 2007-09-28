@@ -25,9 +25,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.CiManagement;
+import org.apache.maven.archiva.model.Dependency;
+import org.apache.maven.archiva.model.Exclusion;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.model.IssueManagement;
+import org.apache.maven.archiva.model.License;
 import org.apache.maven.archiva.model.MailingList;
+import org.apache.maven.archiva.model.Organization;
+import org.apache.maven.archiva.model.ProjectRepository;
 import org.apache.maven.archiva.model.Scm;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
@@ -97,24 +102,39 @@ public class ProjectModel400Writer
 
         addParent( root, model.getParentProject() );
 
-        addOptionalElementText( root, "groupId", model.getGroupId() );
+        addChildElement( root, "groupId", model.getGroupId() );
         root.addElement( "artifactId" ).setText( model.getArtifactId() );
 
-        addOptionalElementText( root, "version", model.getVersion() );
+        addChildElement( root, "version", model.getVersion() );
 
-        addOptionalElementText( root, "packaging", model.getPackaging() );
-        addOptionalElementText( root, "name", model.getName() );
-        addOptionalElementText( root, "description", model.getDescription() );
-        addOptionalElementText( root, "url", model.getUrl() );
+        addChildElement( root, "packaging", model.getPackaging() );
+        addChildElement( root, "name", model.getName() );
+        addChildElement( root, "description", model.getDescription() );
+        addChildElement( root, "url", model.getUrl() );
         // TODO: add inceptionYear to ArchivaProjectModel
+
+        addOrganization( root, model.getOrganization() );
 
         addIssueManagement( root, model.getIssueManagement() );
         addCiManagement( root, model.getCiManagement() );
         addMailingLists( root, model.getMailingLists() );
         addDevelopersAndContributors( root, model.getIndividuals() );
         // TODO: add distribution management to ArchivaProjectModel
+
+        addLicenses( root, model.getLicenses() );
+        addRepositories( root, model.getRepositories() );
+        addDependencyManagement( root, model.getDependencyManagement() );
+        addDependencies( root, model.getDependencies() );
+
         addReporting( root, model.getReports() );
         addScm( root, model.getScm() );
+
+        // <build> element
+        addPlugins( root, model.getPlugins() );
+        addBuildExtensions( root, model.getBuildExtensions() );
+
+        // <distributionManagement>
+        addRelocation( root, model.getRelocation() );
 
         fixDefaultNamespace( root );
 
@@ -128,37 +148,99 @@ public class ProjectModel400Writer
         }
     }
 
-    private void addScm( Element root, Scm scm )
+    private void addArtifactReference( Element elem, ArtifactReference ref, String defaultType )
     {
-        if( scm == null )
+        addChildElement( elem, "groupId", ref.getGroupId() );
+        addChildElement( elem, "artifactId", ref.getArtifactId() );
+        addChildElement( elem, "version", ref.getVersion() );
+        addChildElement( elem, "classifier", ref.getClassifier() );
+
+        if ( !StringUtils.equals( defaultType, ref.getType() ) )
         {
-            return;
+            addChildElement( elem, "type", ref.getType() );
         }
-        
-        Element elem = root.addElement( "scm" );
-        
-        addOptionalElementText( elem, "connection", scm.getConnection() );
-        addOptionalElementText( elem, "developerConnection", scm.getDeveloperConnection() );
-        addOptionalElementText( elem, "url", scm.getUrl() );
     }
 
-    private void addReporting( Element root, List<ArtifactReference> reports )
+    private void addBuildExtensions( Element root, List<ArtifactReference> buildExtensions )
     {
-        if ( CollectionUtils.isEmpty( reports ) )
+        if ( CollectionUtils.isEmpty( buildExtensions ) )
         {
             return;
         }
 
-        Element reporting = root.addElement( "reporting" );
-        Element plugins = reporting.addElement( "plugins" );
-
-        for ( ArtifactReference reference : reports )
+        Element build = root.element( "build" );
+        if ( build == null )
         {
-            Element plugin = plugins.addElement( "plugin" );
-            addOptionalElementText( plugin, "groupId", reference.getGroupId() );
-            addOptionalElementText( plugin, "artifactId", reference.getArtifactId() );
-            addOptionalElementText( plugin, "version", reference.getVersion() );
+            build = root.addElement( "build" );
         }
+
+        Element elemExtensions = build.addElement( "extensions" );
+
+        for ( ArtifactReference extension : buildExtensions )
+        {
+            Element elem = elemExtensions.addElement( "extension" );
+
+            addArtifactReference( elem, extension, "jar" );
+        }
+    }
+
+    private void addCiManagement( Element root, CiManagement ciManagement )
+    {
+        if ( ciManagement == null )
+        {
+            return;
+        }
+
+        Element elem = root.addElement( "ciManagement" );
+        addChildElement( elem, "system", ciManagement.getSystem() );
+        addChildElement( elem, "url", ciManagement.getUrl() );
+        // TODO: Add notifiers into ArchivaProjectModel 
+    }
+
+    private void addDependencies( Element root, List<Dependency> dependencies )
+    {
+        if ( CollectionUtils.isEmpty( dependencies ) )
+        {
+            return;
+        }
+
+        addDependencyList( root, dependencies );
+    }
+
+    private void addDependencyList( Element elemParent, List<Dependency> dependencies )
+    {
+        if ( CollectionUtils.isEmpty( dependencies ) )
+        {
+            return;
+        }
+
+        Element elemDeps = elemParent.addElement( "dependencies" );
+
+        for ( Dependency dep : dependencies )
+        {
+            Element elem = elemDeps.addElement( "dependency" );
+
+            addChildElement( elem, "groupId", dep.getGroupId() );
+            addChildElement( elem, "artifactId", dep.getArtifactId() );
+            addChildElement( elem, "version", dep.getVersion() );
+            addChildElement( elem, "classifier", dep.getClassifier() );
+            addChildElement( elem, "type", dep.getType() );
+            addChildElement( elem, "scope", dep.getScope() );
+            addChildElement( elem, "systemPath", dep.getSystemPath() );
+
+            addExclusions( elem, dep.getExclusions() );
+        }
+    }
+
+    private void addDependencyManagement( Element root, List<Dependency> dependencyManagement )
+    {
+        if ( CollectionUtils.isEmpty( dependencyManagement ) )
+        {
+            return;
+        }
+
+        Element elemDepMgmt = root.addElement( "dependencyManagement" );
+        addDependencyList( elemDepMgmt, dependencyManagement );
     }
 
     private void addDevelopersAndContributors( Element root, List<Individual> individuals )
@@ -181,7 +263,7 @@ public class ProjectModel400Writer
                 }
 
                 Element developer = developers.addElement( "developer" );
-                addOptionalElementText( developer, "id", individual.getPrincipal() );
+                addChildElement( developer, "id", individual.getPrincipal() );
                 addIndividual( developer, individual );
             }
             else
@@ -197,12 +279,31 @@ public class ProjectModel400Writer
         }
     }
 
+    private void addExclusions( Element elemParent, List<Exclusion> exclusions )
+    {
+        if ( CollectionUtils.isEmpty( exclusions ) )
+        {
+            return;
+        }
+
+        Element elemExclusions = elemParent.addElement( "exclusions" );
+
+        for ( Exclusion exclusion : exclusions )
+        {
+            Element elem = elemExclusions.addElement( "exclusion" );
+
+            addChildElement( elem, "groupId", exclusion.getGroupId() );
+            addChildElement( elem, "artifactId", exclusion.getArtifactId() );
+        }
+    }
+
     private void addIndividual( Element elem, Individual individual )
     {
-        addOptionalElementText( elem, "name", individual.getName() );
-        addOptionalElementText( elem, "email", individual.getEmail() );
-        addOptionalElementText( elem, "organization", individual.getOrganization() );
-        addOptionalElementText( elem, "timezone", individual.getTimezone() );
+        addChildElement( elem, "name", individual.getName() );
+        addChildElement( elem, "email", individual.getEmail() );
+        addChildElement( elem, "organization", individual.getOrganization() );
+        addChildElement( elem, "organizationUrl", individual.getOrganizationUrl() );
+        addChildElement( elem, "timezone", individual.getTimezone() );
 
         if ( CollectionUtils.isNotEmpty( individual.getRoles() ) )
         {
@@ -210,8 +311,38 @@ public class ProjectModel400Writer
             List<String> roleList = individual.getRoles();
             for ( String roleName : roleList )
             {
-                addOptionalElementText( roles, "role", roleName );
+                addChildElement( roles, "role", roleName );
             }
+        }
+    }
+
+    private void addIssueManagement( Element root, IssueManagement issueManagement )
+    {
+        if ( issueManagement == null )
+        {
+            return;
+        }
+
+        Element elem = root.addElement( "issueManagement" );
+        addChildElement( elem, "system", issueManagement.getSystem() );
+        addChildElement( elem, "url", issueManagement.getUrl() );
+    }
+
+    private void addLicenses( Element root, List<License> licenses )
+    {
+        if ( CollectionUtils.isEmpty( licenses ) )
+        {
+            return;
+        }
+
+        Element elemLicenses = root.addElement( "licenses" );
+
+        for ( License license : licenses )
+        {
+            Element elem = elemLicenses.addElement( "license" );
+            addChildElement( elem, "name", license.getName() );
+            addChildElement( elem, "url", license.getUrl() );
+            // TODO: research if we need <distribution> subelement.
         }
     }
 
@@ -227,37 +358,42 @@ public class ProjectModel400Writer
         for ( MailingList mailingList : mailingLists )
         {
             Element mlist = mlists.addElement( "mailingList" );
-            addOptionalElementText( mlist, "name", mailingList.getName() );
-            addOptionalElementText( mlist, "post", mailingList.getPostAddress() );
-            addOptionalElementText( mlist, "subscribe", mailingList.getSubscribeAddress() );
-            addOptionalElementText( mlist, "unsubscribe", mailingList.getUnsubscribeAddress() );
-            addOptionalElementText( mlist, "archive", mailingList.getMainArchiveUrl() );
+            addChildElement( mlist, "name", mailingList.getName() );
+            addChildElement( mlist, "post", mailingList.getPostAddress() );
+            addChildElement( mlist, "subscribe", mailingList.getSubscribeAddress() );
+            addChildElement( mlist, "unsubscribe", mailingList.getUnsubscribeAddress() );
+            addChildElement( mlist, "archive", mailingList.getMainArchiveUrl() );
+
+            addOtherArchives( mlist, mailingList.getOtherArchives() );
         }
     }
 
-    private void addCiManagement( Element root, CiManagement ciManagement )
+    private void addOtherArchives( Element mlist, List<String> otherArchives )
     {
-        if ( ciManagement == null )
+        if ( CollectionUtils.isEmpty( otherArchives ) )
         {
             return;
         }
 
-        Element elem = root.addElement( "ciManagement" );
-        addOptionalElementText( elem, "system", ciManagement.getSystem() );
-        addOptionalElementText( elem, "url", ciManagement.getUrl() );
-        // TODO: Add notifiers into ArchivaProjectModel 
+        Element elemOtherArchives = mlist.addElement( "otherArchives" );
+
+        for ( String archive : otherArchives )
+        {
+            addChildElement( elemOtherArchives, "otherArchive", archive );
+        }
     }
 
-    private void addIssueManagement( Element root, IssueManagement issueManagement )
+    private void addOrganization( Element root, Organization organization )
     {
-        if ( issueManagement == null )
+        if ( organization == null )
         {
             return;
         }
 
-        Element elem = root.addElement( "issueManagement" );
-        addOptionalElementText( elem, "system", issueManagement.getSystem() );
-        addOptionalElementText( elem, "url", issueManagement.getUrl() );
+        Element elem = root.addElement( "organization" );
+
+        addChildElement( elem, "name", organization.getName() );
+        addChildElement( elem, "url", organization.getUrl() );
     }
 
     private void addParent( Element root, VersionedReference parentProject )
@@ -273,10 +409,108 @@ public class ProjectModel400Writer
         parent.addElement( "version" ).setText( parentProject.getVersion() );
     }
 
+    private void addPlugins( Element root, List<ArtifactReference> plugins )
+    {
+        if ( CollectionUtils.isEmpty( plugins ) )
+        {
+            return;
+        }
+
+        Element build = root.element( "build" );
+        if ( build == null )
+        {
+            build = root.addElement( "build" );
+        }
+
+        Element elemPlugins = build.addElement( "plugins" );
+
+        for ( ArtifactReference plugin : plugins )
+        {
+            Element elem = elemPlugins.addElement( "plugin" );
+
+            addArtifactReference( elem, plugin, "maven-plugin" );
+        }
+    }
+
+    private void addRelocation( Element root, VersionedReference relocation )
+    {
+        if ( relocation == null )
+        {
+            return;
+        }
+
+        Element distribManagement = root.element( "distributionManagement" );
+
+        if ( distribManagement == null )
+        {
+            distribManagement = root.addElement( "distributionManagement" );
+        }
+
+        Element elem = distribManagement.addElement( "relocation" );
+        addChildElement( elem, "groupId", relocation.getGroupId() );
+        addChildElement( elem, "artifactId", relocation.getArtifactId() );
+        addChildElement( elem, "version", relocation.getVersion() );
+    }
+
+    private void addReporting( Element root, List<ArtifactReference> reports )
+    {
+        if ( CollectionUtils.isEmpty( reports ) )
+        {
+            return;
+        }
+
+        Element reporting = root.addElement( "reporting" );
+        Element plugins = reporting.addElement( "plugins" );
+
+        for ( ArtifactReference reference : reports )
+        {
+            Element plugin = plugins.addElement( "plugin" );
+            addChildElement( plugin, "groupId", reference.getGroupId() );
+            addChildElement( plugin, "artifactId", reference.getArtifactId() );
+            addChildElement( plugin, "version", reference.getVersion() );
+        }
+    }
+
+    private void addRepositories( Element root, List<ProjectRepository> repositories )
+    {
+        if ( CollectionUtils.isEmpty( repositories ) )
+        {
+            return;
+        }
+
+        Element elemRepos = root.addElement( "repositories" );
+        for ( ProjectRepository repository : repositories )
+        {
+            Element elem = elemRepos.addElement( "repository" );
+            addChildElement( elem, "id", repository.getId() );
+            addChildElement( elem, "name", repository.getName() );
+            addChildElement( elem, "url", repository.getUrl() );
+
+            if ( !StringUtils.equals( "default", repository.getLayout() ) )
+            {
+                addChildElement( elem, "layout", repository.getLayout() );
+            }
+        }
+    }
+
+    private void addScm( Element root, Scm scm )
+    {
+        if ( scm == null )
+        {
+            return;
+        }
+
+        Element elem = root.addElement( "scm" );
+
+        addChildElement( elem, "connection", scm.getConnection() );
+        addChildElement( elem, "developerConnection", scm.getDeveloperConnection() );
+        addChildElement( elem, "url", scm.getUrl() );
+    }
+
     /**
      * Fix the default namespace on all elements recursively.
      */
-    public void fixDefaultNamespace( Element elem )
+    private void fixDefaultNamespace( Element elem )
     {
         elem.remove( elem.getNamespace() );
         elem.setQName( QName.get( elem.getName(), DEFAULT_NAMESPACE, elem.getQualifiedName() ) );
@@ -297,7 +531,7 @@ public class ProjectModel400Writer
         }
     }
 
-    private static void addOptionalElementText( Element elem, String elemName, String text )
+    private static void addChildElement( Element elem, String elemName, String text )
     {
         if ( StringUtils.isBlank( text ) )
         {

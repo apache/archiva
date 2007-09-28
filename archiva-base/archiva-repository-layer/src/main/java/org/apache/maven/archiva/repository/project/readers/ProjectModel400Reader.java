@@ -51,8 +51,8 @@ import java.util.Properties;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
+ *
+ * @plexus.component
  *      role="org.apache.maven.archiva.repository.project.ProjectModelReader"
  *      role-hint="model400"
  */
@@ -133,23 +133,23 @@ public class ProjectModel400Reader
     /**
      * Get List of {@link ArtifactReference} objects from xpath expr.
      */
-    private List getArtifactReferenceList( XMLReader xml, String xpathExpr, String defaultType )
+    private List<ArtifactReference> getArtifactReferenceList( XMLReader xml, String xpathExpr, String defaultType )
         throws XMLException
     {
-        List plugins = new ArrayList();
+        List<ArtifactReference> refs = new ArrayList<ArtifactReference>();
 
-        Iterator it = xml.getElementList( xpathExpr ).iterator();
+        Iterator<Element> it = xml.getElementList( xpathExpr ).iterator();
         while ( it.hasNext() )
         {
-            Element elemPlugin = (Element) it.next();
+            Element elemPlugin = it.next();
 
-            plugins.add( getArtifactReference( elemPlugin, defaultType ) );
+            refs.add( getArtifactReference( elemPlugin, defaultType ) );
         }
 
-        return plugins;
+        return refs;
     }
 
-    private List getBuildExtensions( XMLReader xml )
+    private List<ArtifactReference> getBuildExtensions( XMLReader xml )
         throws XMLException
     {
         return getArtifactReferenceList( xml, "//project/build/extensions/extension", "jar" );
@@ -170,24 +170,23 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private List getDependencies( XMLReader xml )
+    private List<Dependency> getDependencies( XMLReader xml )
         throws XMLException
     {
         return getDependencyList( xml, new String[] { "dependencies" } );
     }
 
-    private List getDependencyList( XMLReader xml, String parts[] )
+    private List<Dependency> getDependencyList( XMLReader xml, String parts[] )
         throws XMLException
     {
-        List dependencyList = new ArrayList();
+        List<Dependency> dependencyList = new ArrayList<Dependency>();
 
         Element project = xml.getElement( "//project" );
 
         Element depsParent = project;
 
-        for ( int i = 0; i < parts.length; i++ )
+        for ( String part : parts )
         {
-            String part = parts[i];
             depsParent = depsParent.element( part );
             if ( depsParent == null )
             {
@@ -195,10 +194,10 @@ public class ProjectModel400Reader
             }
         }
 
-        Iterator it = depsParent.elementIterator( "dependency" );
+        Iterator<Element> it = depsParent.elementIterator( "dependency" );
         while ( it.hasNext() )
         {
-            Element elemDependency = (Element) it.next();
+            Element elemDependency = it.next();
             Dependency dependency = new Dependency();
 
             dependency.setGroupId( elemDependency.elementTextTrim( "groupId" ) );
@@ -228,24 +227,24 @@ public class ProjectModel400Reader
         return dependencyList;
     }
 
-    private List getDependencyManagement( XMLReader xml )
+    private List<Dependency> getDependencyManagement( XMLReader xml )
         throws XMLException
     {
         return getDependencyList( xml, new String[] { "dependencyManagement", "dependencies" } );
     }
 
-    private List getExclusions( Element elemDependency )
+    private List<Exclusion> getExclusions( Element elemDependency )
     {
-        List exclusions = new ArrayList();
+        List<Exclusion> exclusions = new ArrayList<Exclusion>();
 
         Element elemExclusions = elemDependency.element( "exclusions" );
 
         if ( elemExclusions != null )
         {
-            Iterator it = elemExclusions.elementIterator( "exclusion" );
+            Iterator<Element> it = elemExclusions.elementIterator( "exclusion" );
             while ( it.hasNext() )
             {
-                Element elemExclusion = (Element) it.next();
+                Element elemExclusion = it.next();
                 Exclusion exclusion = new Exclusion();
 
                 exclusion.setGroupId( elemExclusion.elementTextTrim( "groupId" ) );
@@ -258,10 +257,10 @@ public class ProjectModel400Reader
         return exclusions;
     }
 
-    private List getIndividuals( XMLReader xml )
+    private List<Individual> getIndividuals( XMLReader xml )
         throws XMLException
     {
-        List individuals = new ArrayList();
+        List<Individual> individuals = new ArrayList<Individual>();
 
         individuals.addAll( getIndividuals( xml, true, "//project/developers/developer" ) );
         individuals.addAll( getIndividuals( xml, false, "//project/contributors/contributor" ) );
@@ -269,18 +268,23 @@ public class ProjectModel400Reader
         return individuals;
     }
 
-    private List getIndividuals( XMLReader xml, boolean isCommitor, String xpathExpr )
+    private List<Individual> getIndividuals( XMLReader xml, boolean isCommitor, String xpathExpr )
         throws XMLException
     {
-        List ret = new ArrayList();
+        List<Individual> ret = new ArrayList<Individual>();
 
-        List modelPersonList = xml.getElementList( xpathExpr );
+        List<Element> modelPersonList = xml.getElementList( xpathExpr );
 
-        Iterator iter = modelPersonList.iterator();
+        Iterator<Element> iter = modelPersonList.iterator();
         while ( iter.hasNext() )
         {
-            Element elemPerson = (Element) iter.next();
+            Element elemPerson = iter.next();
             Individual individual = new Individual();
+
+            if ( isCommitor )
+            {
+                individual.setPrincipal( elemPerson.elementTextTrim( "id" ) );
+            }
 
             individual.setCommitor( isCommitor );
             individual.setEmail( elemPerson.elementTextTrim( "email" ) );
@@ -294,11 +298,11 @@ public class ProjectModel400Reader
             Element elemRoles = elemPerson.element( "roles" );
             if ( elemRoles != null )
             {
-                List roleNames = elemRoles.elements( "role" );
-                Iterator itRole = roleNames.iterator();
+                List<Element> roleNames = elemRoles.elements( "role" );
+                Iterator<Element> itRole = roleNames.iterator();
                 while ( itRole.hasNext() )
                 {
-                    Element role = (Element) itRole.next();
+                    Element role = itRole.next();
                     individual.addRole( role.getTextTrim() );
                 }
             }
@@ -329,19 +333,18 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private List getLicenses( XMLReader xml )
+    private List<License> getLicenses( XMLReader xml )
         throws XMLException
     {
-        List licenses = new ArrayList();
+        List<License> licenses = new ArrayList<License>();
 
         Element elemLicenses = xml.getElement( "//project/licenses" );
 
         if ( elemLicenses != null )
         {
-            Iterator itLicense = elemLicenses.elements( "license" ).iterator();
-            while ( itLicense.hasNext() )
+            List<Element> licenseList = elemLicenses.elements( "license" );
+            for ( Element elemLicense : licenseList )
             {
-                Element elemLicense = (Element) itLicense.next();
                 License license = new License();
 
                 // TODO: Create LicenseIdentity class to managed license ids.
@@ -357,16 +360,14 @@ public class ProjectModel400Reader
         return licenses;
     }
 
-    private List getMailingLists( XMLReader xml )
+    private List<MailingList> getMailingLists( XMLReader xml )
         throws XMLException
     {
-        List mailingLists = new ArrayList();
+        List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-        List mailingListElems = xml.getElementList( "//project/mailingLists/mailingList" );
-        Iterator it = mailingListElems.iterator();
-        while ( it.hasNext() )
+        List<Element> mailingListElems = xml.getElementList( "//project/mailingLists/mailingList" );
+        for ( Element elemMailingList : mailingListElems )
         {
-            Element elemMailingList = (Element) it.next();
             MailingList mlist = new MailingList();
 
             mlist.setName( elemMailingList.elementTextTrim( "name" ) );
@@ -378,11 +379,11 @@ public class ProjectModel400Reader
             Element elemOtherArchives = elemMailingList.element( "otherArchives" );
             if ( elemOtherArchives != null )
             {
-                List otherArchives = new ArrayList();
-                Iterator itother = elemOtherArchives.elementIterator( "otherArchive" );
-                while ( itother.hasNext() )
+                List<String> otherArchives = new ArrayList<String>();
+                List<Element> others = elemOtherArchives.elements( "otherArchive" );
+                for ( Element other : others )
                 {
-                    String otherArchive = ( (Element) itother.next() ).getTextTrim();
+                    String otherArchive = other.getTextTrim();
                     otherArchives.add( otherArchive );
                 }
 
@@ -425,7 +426,7 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private List getPlugins( XMLReader xml )
+    private List<ArtifactReference> getPlugins( XMLReader xml )
         throws XMLException
     {
         return getArtifactReferenceList( xml, "//project/build/plugins/plugin", "maven-plugin" );
@@ -440,7 +441,7 @@ public class ProjectModel400Reader
 
         Properties ret = new Properties();
 
-        Iterator itProps = elemProperties.elements().iterator();
+        Iterator<Element> itProps = elemProperties.elements().iterator();
         while ( itProps.hasNext() )
         {
             Element elemProp = (Element) itProps.next();
@@ -463,16 +464,16 @@ public class ProjectModel400Reader
         return null;
     }
 
-    private List getReports( XMLReader xml )
+    private List<ArtifactReference> getReports( XMLReader xml )
         throws XMLException
     {
         return getArtifactReferenceList( xml, "//project/reporting/plugins/plugin", "maven-plugin" );
     }
 
-    private List getRepositories( XMLReader xml )
+    private List<ProjectRepository> getRepositories( XMLReader xml )
         throws XMLException
     {
-        List repos = new ArrayList();
+        List<ProjectRepository> repos = new ArrayList<ProjectRepository>();
 
         repos.addAll( getRepositories( xml, false, "//project/repositories/repository" ) );
         repos.addAll( getRepositories( xml, true, "//project/pluginRepositories/pluginRepository" ) );
@@ -480,17 +481,15 @@ public class ProjectModel400Reader
         return repos;
     }
 
-    private List getRepositories( XMLReader xml, boolean isPluginRepo, String xpathExpr )
+    private List<ProjectRepository> getRepositories( XMLReader xml, boolean isPluginRepo, String xpathExpr )
         throws XMLException
     {
-        List ret = new ArrayList();
+        List<ProjectRepository> ret = new ArrayList<ProjectRepository>();
 
-        List repositoriesList = xml.getElementList( xpathExpr );
+        List<Element> repositoriesList = xml.getElementList( xpathExpr );
 
-        Iterator itRepos = repositoriesList.iterator();
-        while ( itRepos.hasNext() )
+        for ( Element elemRepo : repositoriesList )
         {
-            Element elemRepo = (Element) itRepos.next();
             ProjectRepository repo = new ProjectRepository();
 
             repo.setId( elemRepo.elementTextTrim( "id" ) );

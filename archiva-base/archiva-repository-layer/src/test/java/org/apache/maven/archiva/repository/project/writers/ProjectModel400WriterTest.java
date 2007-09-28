@@ -19,7 +19,6 @@ package org.apache.maven.archiva.repository.project.writers;
  * under the License.
  */
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
@@ -29,18 +28,10 @@ import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader
 import org.codehaus.plexus.PlexusTestCase;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
-import org.dom4j.Document;
-import org.dom4j.DocumentType;
-import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Map;
 
 /**
  * ProjectModel400WriterTest 
@@ -90,7 +81,7 @@ public class ProjectModel400WriterTest
         assertModelSimilar( expectedModel, actualModel );
     }
 
-    public void testReadWriteComplex()
+    public void testReadWriteMavenParent()
         throws Exception
     {
         ArchivaProjectModel model = createArchivaProjectModel( DEFAULT_REPOSITORY
@@ -98,6 +89,18 @@ public class ProjectModel400WriterTest
 
         String actualModel = writeToString( model );
         String expectedModel = getExpectedModelString( "maven-parent-4.pom" );
+
+        assertModelSimilar( expectedModel, actualModel );
+    }
+    
+    public void testReadWriteCocoon()
+        throws Exception
+    {
+        ArchivaProjectModel model = createArchivaProjectModel( DEFAULT_REPOSITORY
+            + "/org/apache/cocoon/cocoon/1/cocoon-1.pom" );
+
+        String actualModel = writeToString( model );
+        String expectedModel = getExpectedModelString( "cocoon-1.pom" );
 
         assertModelSimilar( expectedModel, actualModel );
     }
