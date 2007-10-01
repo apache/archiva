@@ -34,7 +34,7 @@ import java.util.Map;
 public class FiletypeToMapClosure
     implements Closure
 {
-    private Map map = new HashMap();
+    private Map<String, FileType> map = new HashMap<String, FileType>();
 
     public void execute( Object input )
     {
@@ -45,7 +45,7 @@ public class FiletypeToMapClosure
         }
     }
 
-    public Map getMap()
+    public Map<String, FileType> getMap()
     {
         return map;
     }

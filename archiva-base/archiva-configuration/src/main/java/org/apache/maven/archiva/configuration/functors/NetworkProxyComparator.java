@@ -30,10 +30,9 @@ import java.util.Comparator;
  * @version $Id$
  */
 public class NetworkProxyComparator
-    implements Comparator
+    implements Comparator<NetworkProxyConfiguration>
 {
-
-    public int compare( Object o1, Object o2 )
+    public int compare( NetworkProxyConfiguration o1, NetworkProxyConfiguration o2 )
     {
         if ( o1 == null && o2 == null )
         {
@@ -50,13 +49,8 @@ public class NetworkProxyComparator
             return -1;
         }
 
-        if ( ( o1 instanceof NetworkProxyConfiguration ) && ( o2 instanceof NetworkProxyConfiguration ) )
-        {
-            String id1 = ( (NetworkProxyConfiguration) o1 ).getId();
-            String id2 = ( (NetworkProxyConfiguration) o2 ).getId();
-            return id1.compareToIgnoreCase( id2 );
-        }
-
-        return 0;
+        String id1 = o1.getId();
+        String id2 = o2.getId();
+        return id1.compareToIgnoreCase( id2 );
     }
 }

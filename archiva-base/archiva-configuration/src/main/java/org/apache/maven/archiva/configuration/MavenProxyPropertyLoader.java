@@ -113,6 +113,7 @@ public class MavenProxyPropertyLoader
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Properties getSubset( Properties props, String prefix )
     {
         Enumeration keys = props.keys();

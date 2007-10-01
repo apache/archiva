@@ -83,7 +83,7 @@ public class DefaultArchivaConfiguration
     /**
      * Listeners we've registered.
      */
-    private List listeners = new LinkedList();
+    private List<RegistryListener> listeners = new LinkedList<RegistryListener>();
 
     public String getFilteredUserConfigFilename()
     {
@@ -119,9 +119,9 @@ public class DefaultArchivaConfiguration
 
         if ( !config.getRepositories().isEmpty() )
         {
-            for ( Iterator i = config.getRepositories().iterator(); i.hasNext(); )
+            for ( Iterator<V1RepositoryConfiguration> i = config.getRepositories().iterator(); i.hasNext(); )
             {
-                V1RepositoryConfiguration r = (V1RepositoryConfiguration) i.next();
+                V1RepositoryConfiguration r = i.next();
                 r.setScanned( r.isIndexed() );
 
                 if ( r.getUrl().startsWith( "file://" ) )
@@ -145,7 +145,7 @@ public class DefaultArchivaConfiguration
                 }
             }
         }
-
+        
         return config;
     }
 
@@ -181,11 +181,11 @@ public class DefaultArchivaConfiguration
         }
         else if ( baseSection != null )
         {
-            Collection keys = baseSection.getKeys();
+            Collection<String> keys = baseSection.getKeys();
             boolean foundList = false;
-            for ( Iterator i = keys.iterator(); i.hasNext() && !foundList; )
+            for ( Iterator<String> i = keys.iterator(); i.hasNext() && !foundList; )
             {
-                String key = (String) i.next();
+                String key = i.next();
 
                 // a little aggressive with the repositoryScanning and databaseScanning - should be no need to split
                 // that configuration
@@ -208,9 +208,9 @@ public class DefaultArchivaConfiguration
         }
 
         // escape all cron expressions to handle ','
-        for ( Iterator i = configuration.getManagedRepositories().iterator(); i.hasNext(); )
+        for ( Iterator<ManagedRepositoryConfiguration> i = configuration.getManagedRepositories().iterator(); i.hasNext(); )
         {
-            ManagedRepositoryConfiguration c = (ManagedRepositoryConfiguration) i.next();
+            ManagedRepositoryConfiguration c = i.next();
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }
 
@@ -244,9 +244,9 @@ public class DefaultArchivaConfiguration
         {
             ( (Initializable) registry ).initialize();
 
-            for ( Iterator i = listeners.iterator(); i.hasNext(); )
+            for ( Iterator<RegistryListener> i = listeners.iterator(); i.hasNext(); )
             {
-                RegistryListener l = (RegistryListener) i.next();
+                RegistryListener l = i.next();
 
                 addRegistryChangeListener( l );
             }
@@ -319,9 +319,9 @@ public class DefaultArchivaConfiguration
     private Configuration processExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
-        for ( Iterator i = config.getManagedRepositories().iterator(); i.hasNext(); )
+        for ( Iterator<ManagedRepositoryConfiguration> i = config.getManagedRepositories().iterator(); i.hasNext(); )
         {
-            ManagedRepositoryConfiguration c = (ManagedRepositoryConfiguration) i.next();
+            ManagedRepositoryConfiguration c = i.next();
             c.setLocation( removeExpressions( c.getLocation() ) );
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }

@@ -64,7 +64,7 @@ public class FileTypes
     /**
      * Map of default values for the file types.
      */
-    private Map defaultTypeMap = new HashMap();
+    private Map<String, List<String>> defaultTypeMap = new HashMap<String, List<String>>();
 
     /**
      * <p>
@@ -83,7 +83,7 @@ public class FileTypes
      * @param id the id to lookup.
      * @return the list of patterns.
      */
-    public List getFileTypePatterns( String id )
+    public List<String> getFileTypePatterns( String id )
     {
         Configuration config = archivaConfiguration.getConfiguration();
         Predicate selectedFiletype = new FiletypeSelectionPredicate( id );
@@ -95,7 +95,7 @@ public class FileTypes
             return filetype.getPatterns();
         }
 
-        List defaultPatterns = (List) defaultTypeMap.get( id );
+        List<String> defaultPatterns = defaultTypeMap.get( id );
 
         if ( CollectionUtils.isEmpty( defaultPatterns ) )
         {
@@ -116,7 +116,7 @@ public class FileTypes
                 .getResource( "/org/apache/maven/archiva/configuration/default-archiva.xml" );
 
             XMLReader reader = new XMLReader( "configuration", defaultArchivaXml );
-            List resp = reader.getElementList( "//configuration/repositoryScanning/fileTypes/fileType" );
+            List<Element> resp = reader.getElementList( "//configuration/repositoryScanning/fileTypes/fileType" );
 
             CollectionUtils.forAllDo( resp, new AddFileTypeToDefaultMap() );
         }
@@ -152,11 +152,11 @@ public class FileTypes
                 return;
             }
 
-            List patternElemList = patternsElem.elements( "pattern" );
+            List<Element> patternElemList = patternsElem.elements( "pattern" );
 
             ElementTextListClosure elemTextList = new ElementTextListClosure();
             CollectionUtils.forAllDo( patternElemList, elemTextList );
-            List patterns = elemTextList.getList();
+            List<String> patterns = elemTextList.getList();
 
             defaultTypeMap.put( id, patterns );
         }
