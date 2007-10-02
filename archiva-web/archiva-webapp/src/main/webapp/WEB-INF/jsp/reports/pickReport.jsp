@@ -30,7 +30,7 @@
 
 <div id="contentArea">
 
-  <ww:form action="generateReportAction" namespace="/report">
+  <ww:form action="generateReport" namespace="/report" validate="true">
     <ww:textfield label="Row Count" name="rowCount" value="100"/>
     <ww:textfield label="Group ID" name="groupId"/>
     <ww:select label="Repository ID" name="repositoryId" list="repositoryIds"/>

@@ -19,6 +19,8 @@ package org.apache.maven.archiva.web.action.reports;
  * under the License.
  */
 
+import com.opensymphony.xwork.Preparable;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.model.RepositoryProblem;
@@ -28,33 +30,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Show reports.
+ * PickReportAction 
  *
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="showReportsAction"
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @version $Id$
+ * 
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="pickReport"
  */
-public class ShowReportsAction
+public class PickReportAction
     extends PlexusActionSupport
+    implements Preparable
 {
     /**
      * @plexus.requirement role-hint="jdo"
      */
     protected ArchivaDAO dao;
 
-    private Collection repositoryIds = new ArrayList();
+    private Collection<String> repositoryIds = new ArrayList<String>();
 
     public static final String ALL_REPOSITORIES = "All Repositories";
 
-    public String execute()
-        throws Exception
+    public void prepare()
     {
         repositoryIds.add( ALL_REPOSITORIES );
-        repositoryIds.addAll(
-            dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
-
-        return SUCCESS;
+        repositoryIds.addAll( dao
+            .query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+    }
+    
+    public String input()
+        throws Exception
+    {
+        return INPUT;
     }
 
-    public Collection getRepositoryIds()
+    public Collection<String> getRepositoryIds()
     {
         return repositoryIds;
     }

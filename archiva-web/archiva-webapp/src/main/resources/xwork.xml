@@ -402,17 +402,18 @@
   </package>
 
   <package name="report" namespace="/report" extends="base">
-    <action name="showReports" class="showReportsAction">
-      <result>/WEB-INF/jsp/reports/showReports.jsp</result>
+    <action name="pickReport" class="pickReport">
+      <result>/WEB-INF/jsp/reports/pickReport.jsp</result>
     </action>
 
-    <action name="generateReportAction" class="generateReportAction">
-      <result name="success" type="jasper">
+    <action name="generateReport" class="generateReport">
+      <result name="jasper" type="jasper">
         <param name="location">/WEB-INF/jasperreports/report.jasper</param>
         <param name="dataSource">reports</param>
         <param name="format">HTML</param>
       </result>
-      <result name="basic">/WEB-INF/jsp/reports/basicReport.jsp</result>
+      <result name="input" type="redirect-action">pickReport</result>
+      <result name="success">/WEB-INF/jsp/reports/basicReport.jsp</result>
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
     </action>
   </package>

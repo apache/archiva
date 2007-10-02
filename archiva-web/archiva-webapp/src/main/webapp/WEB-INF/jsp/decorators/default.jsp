@@ -100,7 +100,7 @@
       <ul>
         <redback:ifAuthorized permission="archiva-access-reports">
           <li class="none">
-            <my:currentWWUrl action="showReports" namespace="/report">Show Reports</my:currentWWUrl>
+            <my:currentWWUrl action="pickReport" namespace="/report">Pick Report</my:currentWWUrl>
           </li>
         </redback:ifAuthorized>
           <%-- POSTPONED to 1.1 series

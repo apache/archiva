@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReportAction"
+ * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReport"
  */
 public class GenerateReportAction
     extends PlexusActionSupport
@@ -55,7 +55,7 @@ public class GenerateReportAction
 
     protected HttpServletRequest request;
 
-    protected List reports = new ArrayList();
+    protected List<RepositoryProblemReport> reports = new ArrayList<RepositoryProblemReport>();
 
     protected String groupId;
 
@@ -79,10 +79,10 @@ public class GenerateReportAction
 
     private static Boolean jasperPresent;
 
-    public String execute()
+    public String input()
         throws Exception
     {
-        List problemArtifacts = dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
+        List<RepositoryProblem> problemArtifacts = dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
 
         String contextPath =
             request.getRequestURL().substring( 0, request.getRequestURL().indexOf( request.getRequestURI() ) );
@@ -118,9 +118,9 @@ public class GenerateReportAction
         {
             return BLANK;
         }
-        else if ( !isJasperPresent() )
+        else if ( isJasperPresent() )
         {
-            return BASIC;
+            return "jasper";
         }
         else
         {
@@ -136,6 +136,10 @@ public class GenerateReportAction
             {
                 Class.forName( "net.sf.jasperreports.engine.JRExporterParameter" );
                 jasperPresent = Boolean.TRUE;
+            }
+            catch ( NoClassDefFoundError e )
+            {
+                jasperPresent = Boolean.FALSE;
             }
             catch ( ClassNotFoundException e )
             {
@@ -154,7 +158,7 @@ public class GenerateReportAction
 
         if ( groupId != null && ( !groupId.equals( "" ) ) )
         {
-            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ShowReportsAction.ALL_REPOSITORIES ) ) )
+            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( PickReportAction.ALL_REPOSITORIES ) ) )
             {
                 constraint = new RepositoryProblemConstraint( range, groupId, repositoryId );
             }
@@ -163,7 +167,7 @@ public class GenerateReportAction
                 constraint = new RepositoryProblemByGroupIdConstraint( range, groupId );
             }
         }
-        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ShowReportsAction.ALL_REPOSITORIES ) ) )
+        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( PickReportAction.ALL_REPOSITORIES ) ) )
         {
             constraint = new RepositoryProblemByRepositoryIdConstraint( range, repositoryId );
         }
@@ -180,7 +184,7 @@ public class GenerateReportAction
         this.request = request;
     }
 
-    public List getReports()
+    public List<RepositoryProblemReport> getReports()
     {
         return reports;
     }
