@@ -45,6 +45,7 @@ import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.WagonException;
 import org.apache.maven.wagon.authentication.AuthenticationException;
+import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -441,7 +442,8 @@ public class DefaultRepositoryProxyConnectors
 
                 transferChecksum( wagon, remoteRepository, remotePath, localFile, ".sha1" );
                 transferChecksum( wagon, remoteRepository, remotePath, localFile, ".md5" );
-            }
+            
+			}
         }
         catch ( ResourceDoesNotExistException e )
         {
@@ -691,15 +693,31 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
+        	AuthenticationInfo authInfo = null;
+        	String username = remoteRepository.getUsername();
+        	String password = remoteRepository.getPassword();
+        	if (username != null && password != null)
+        	{
+			getLogger().info("Using username " + username + " to connect to remote repository "
+				+ remoteRepository.getUrl());
+        		authInfo = new AuthenticationInfo();
+        		authInfo.setUserName(username);
+        		authInfo.setPassword(password);
+        	}
+		else
+		{
+			getLogger().info("No authentication for remote repository needed");
+		}
+
             Repository wagonRepository =
                 new Repository( remoteRepository.getId(), remoteRepository.getUrl().toString() );
             if ( networkProxy != null )
             {
-                wagon.connect( wagonRepository, networkProxy );
+                wagon.connect( wagonRepository, authInfo, networkProxy );
             }
             else
             {
-                wagon.connect( wagonRepository );
+                wagon.connect( wagonRepository, authInfo );
             }
             connected = true;
         }
@@ -871,6 +889,8 @@ public class DefaultRepositoryProxyConnectors
 
         ArchivaRepository repo = new ArchivaRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl() );
         repo.getModel().setLayoutName( repoConfig.getLayout() );
+        repo.setUsername(repoConfig.getUsername());
+        repo.setPassword(repoConfig.getPassword());
         return repo;
     }
 

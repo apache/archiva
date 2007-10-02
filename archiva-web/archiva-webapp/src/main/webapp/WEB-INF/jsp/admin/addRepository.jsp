@@ -21,17 +21,15 @@
 
 <html>
 <head>
-  <title>Admin: Add Repository</title>
+  <title>Admin: Add Managed Repository</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Add Repository</h1>
+<h1>Admin: Add Managed Repository</h1>
 
 <div id="contentArea">
-
-  <h2>Add Repository</h2>
 
   <ww:actionmessage/>
   <ww:form method="post" action="addRepository!commit" namespace="/admin" validate="true">

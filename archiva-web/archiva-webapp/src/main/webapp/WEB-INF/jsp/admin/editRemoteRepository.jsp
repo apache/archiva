@@ -21,19 +21,17 @@
 
 <html>
 <head>
-  <title>Admin: Edit Repository</title>
+  <title>Admin: Edit Remote Repository</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Edit Repository</h1>
+<h1>Admin: Edit Remote Repository</h1>
 
 <ww:actionerror/>
 
 <div id="contentArea">
-
-  <h2>Edit Repository</h2>
 
   <ww:actionmessage/>
   <ww:form method="post" action="editRemoteRepository!commit" namespace="/admin" validate="false">

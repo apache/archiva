@@ -21,5 +21,7 @@
 
 <ww:textfield name="repository.name" label="Name" size="50" required="true"/>
 <ww:textfield name="repository.url" label="URL" size="50" required="true"/>
+<ww:textfield name="repository.username" label="Username" size="25" required="false"/>
+<ww:password name="repository.password" label="Password" size="25" required="false"/>
 <ww:select list="#@java.util.LinkedHashMap@{'default' : 'Maven 2.x Repository', 'legacy' : 'Maven 1.x Repository'}"
            name="repository.layout" label="Type"/>

@@ -132,6 +132,24 @@
             The URL of the repository.
           </description>
         </field>
+	<field stash.maxSize="250">
+          <name>repositoryUsername</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Username of the repository.
+          </description>
+        </field>
+        <field stash.maxSize="250">
+          <name>repositoryPassword</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Password of the repository.
+          </description>
+        </field>
         <field stash.maxSize="20">
           <name>creationSource</name>
           <identifier>false</identifier>

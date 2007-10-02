@@ -28,7 +28,7 @@ package org.apache.maven.archiva.model;
 public class ArchivaRepository
 {
     private ArchivaRepositoryModel model;
-
+    
     private RepositoryURL url;
 
     protected boolean blacklisted;
@@ -77,6 +77,16 @@ public class ArchivaRepository
     {
         return this.url;
     }
+    
+    public void setUsername(String username)
+    {
+    	this.model.setRepositoryUsername(username);
+    }
+    
+    public void setPassword(String password)
+    {
+    	this.model.setRepositoryPassword(password);
+    }
 
     public ArchivaRepositoryModel getModel()
     {
@@ -101,6 +111,16 @@ public class ArchivaRepository
     public String getName()
     {
         return this.model.getName();
+    }
+    
+    public String getUsername()
+    {
+    	return model.getRepositoryUsername();
+    }
+    
+    public String getPassword()
+    {
+    	return model.getRepositoryPassword();
     }
 
     public String toString()

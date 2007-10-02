@@ -274,6 +274,22 @@
             The URL for this repository.
           </description>
         </field>
+        <field>
+          <name>username</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Username for this repository.
+          </description>
+        </field>
+        <field>
+          <name>password</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <description>
+            The Password for this repository.
+          </description>
+        </field>
       </fields>
     </class>
     <class>
