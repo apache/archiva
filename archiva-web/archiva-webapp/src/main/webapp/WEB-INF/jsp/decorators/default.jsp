@@ -45,9 +45,9 @@
 <body onload="<decorator:getProperty property="body.onload" />" class="composite">
 <div id="banner">
   <span id="bannerLeft">
-    <a href="http://maven.apache.org/archiva/">
+    <my:currentWWUrl action="index" namespace="/">
       <img src="<c:url value='/images/archiva.png' />" alt="" width="188" height="69"/>
-    </a>
+    </my:currentWWUrl>
   </span>
   <span id="bannerRight">
     <ww:action namespace="/components" name="companyInfo" executeResult="true"/>
