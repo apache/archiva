@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.startup;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.logging.Logger;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.util.regex.Matcher;
@@ -40,7 +39,6 @@ import java.util.regex.Pattern;
  */
 public class Banner
     extends AbstractLogEnabled
-    implements Initializable
 {
     public static String encode( String raw )
     {

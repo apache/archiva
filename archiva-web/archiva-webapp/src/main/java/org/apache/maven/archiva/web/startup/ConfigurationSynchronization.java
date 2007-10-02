@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -29,14 +30,11 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -50,7 +48,7 @@ import java.util.List;
  */
 public class ConfigurationSynchronization
     extends AbstractLogEnabled
-    implements RegistryListener, Initializable
+    implements RegistryListener
 {
     /**
      * @plexus.requirement role-hint="jdo"
@@ -80,12 +78,10 @@ public class ConfigurationSynchronization
         /* do nothing */
     }
 
-    private void synchConfiguration( List repos )
+    private void synchConfiguration( List<ManagedRepositoryConfiguration> repos )
     {
-        Iterator it = repos.iterator();
-        while ( it.hasNext() )
+        for ( ManagedRepositoryConfiguration repoConfig : repos )
         {
-            ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) it.next();
             try
             {
                 try
@@ -139,8 +135,8 @@ public class ConfigurationSynchronization
         }
     }
 
-    public void initialize()
-        throws InitializationException
+    public void startup()
+        throws ArchivaException
     {
         synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
         archivaConfiguration.addChangeListener( this );

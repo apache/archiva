@@ -19,12 +19,11 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.database.project.ProjectModelToDatabaseListener;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 /**
  * ResolverFactoryInit - Initialize the Resolver Factory, and hook it up to
@@ -39,13 +38,12 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
  */
 public class ResolverFactoryInit
     extends AbstractLogEnabled
-    implements Initializable
 {
     /**
      * @plexus.requirement role-hint="database"
      */
     private ProjectModelResolver databaseResolver;
-    
+
     /**
      * @plexus.requirement 
      *          role="org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolutionListener"
@@ -59,9 +57,9 @@ public class ResolverFactoryInit
      * @plexus.requirement
      */
     private ProjectModelResolverFactory resolverFactory;
-    
-    public void initialize()
-        throws InitializationException
+
+    public void startup()
+        throws ArchivaException
     {
         if ( !resolverFactory.getCurrentResolverStack().hasResolver( databaseResolver ) )
         {

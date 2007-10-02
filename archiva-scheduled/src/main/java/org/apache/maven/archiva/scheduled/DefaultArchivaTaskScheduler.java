@@ -35,6 +35,7 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.scheduler.Scheduler;
+import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.TaskQueue;
 import org.codehaus.plexus.taskqueue.TaskQueueException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
@@ -44,7 +45,6 @@ import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
 import java.text.ParseException;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,17 +92,29 @@ public class DefaultArchivaTaskScheduler
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
+    public void startup()
+        throws ArchivaException
+    {
+        try
+        {
+            start();
+        }
+        catch ( StartingException e )
+        {
+            throw new ArchivaException( e.getMessage(), e );
+        }
+    }
+    
     public void start()
         throws StartingException
     {
         try
         {
-            List repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
+            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
+                .getManagedRepositories();
 
-            for ( Iterator i = repositories.iterator(); i.hasNext(); )
+            for ( ManagedRepositoryConfiguration repoConfig : repositories )
             {
-                ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) i.next();
-
                 if ( repoConfig.isScanned() )
                 {
                     scheduleRepositoryJobs( repoConfig );
@@ -242,12 +254,11 @@ public class DefaultArchivaTaskScheduler
         // currently we have to reschedule all repo jobs because we don't know where the changed one came from
         if ( "refreshCronExpression".equals( propertyName ) )
         {
-            List repositories = archivaConfiguration.getConfiguration().getManagedRepositories();
+            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
+            .getManagedRepositories();
 
-            for ( Iterator i = repositories.iterator(); i.hasNext(); )
+            for ( ManagedRepositoryConfiguration repoConfig : repositories )
             {
-                ManagedRepositoryConfiguration repoConfig = (ManagedRepositoryConfiguration) i.next();
-
                 if ( repoConfig.getRefreshCronExpression() != null )
                 {
                     try
@@ -282,7 +293,7 @@ public class DefaultArchivaTaskScheduler
     public boolean isProcessingAnyRepositoryTask()
         throws ArchivaException
     {
-        List queue = null;
+        List<? extends Task> queue = null;
 
         try
         {
@@ -299,7 +310,7 @@ public class DefaultArchivaTaskScheduler
     public boolean isProcessingRepositoryTask( String repositoryId )
         throws ArchivaException
     {
-        List queue = null;
+        List<? extends Task> queue = null;
 
         try
         {
@@ -316,7 +327,7 @@ public class DefaultArchivaTaskScheduler
     public boolean isProcessingDatabaseTask()
         throws ArchivaException
     {
-        List queue = null;
+        List<? extends Task> queue = null;
 
         try
         {

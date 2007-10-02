@@ -55,4 +55,6 @@ public interface ArchivaTaskScheduler
     public void scheduleDatabaseTasks()
         throws TaskExecutionException;
 
+    public void startup()
+        throws ArchivaException;
 }
