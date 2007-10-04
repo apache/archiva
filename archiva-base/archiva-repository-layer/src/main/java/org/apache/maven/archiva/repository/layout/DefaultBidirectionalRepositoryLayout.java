@@ -181,7 +181,7 @@ public class DefaultBidirectionalRepositoryLayout
         String pathParts[] = StringUtils.split( normalizedPath, '/' );
 
         /* Minimum parts.
-         * 
+         *
          *   path = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar"
          *   path[0] = "commons-lang";        // The Group ID
          *   path[1] = "commons-lang";        // The Artifact ID
@@ -220,23 +220,23 @@ public class DefaultBidirectionalRepositoryLayout
             // Last part is the filename
             String filename = pathParts[filenamePos];
 
-            // Now we need to parse the filename to get the artifact version Id. 
-            prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, prefs.artifactId );
+            // Now we need to parse the filename to get the artifact version Id.
+            prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, prefs.artifactId, prefs.baseVersion );
 
             /* If classifier is discovered, see if it deserves to be.
-             * 
+             *
              * Filenames like "comm-3.0-u1.jar" might be identified as having a version of "3.0"
              * and a classifier of "u1".
-             * 
-             * This routine will take the version + classifier and compare it to the prefs.baseVersion and 
+             *
+             * This routine will take the version + classifier and compare it to the prefs.baseVersion and
              * move the classifierensure that
-             * 
+             *
              * javax/comm/3.0-u1/comm-3.0-u1.jar
              */
             if ( StringUtils.isNotBlank( prefs.fileParts.classifier ) )
             {
-                String conjoinedVersion = prefs.fileParts.version + "-" + prefs.fileParts.classifier; 
-                
+                String conjoinedVersion = prefs.fileParts.version + "-" + prefs.fileParts.classifier;
+
                 if( StringUtils.equals( prefs.baseVersion, conjoinedVersion ) )
                 {
                     prefs.fileParts.version = conjoinedVersion;
@@ -255,10 +255,10 @@ public class DefaultBidirectionalRepositoryLayout
         if ( prefs.fileParts != null )
         {
             /* Compare artifact version to path baseversion.
-             * 
+             *
              * Version naming in the wild can be strange at times.
              * Sometimes what is seen as a classifier is actually part of the version id.
-             * 
+             *
              * To compensate for this, the path is checked against the artifact.version and
              *  the concatenation of the artifact.version + "-" + artifact.classifier
              */

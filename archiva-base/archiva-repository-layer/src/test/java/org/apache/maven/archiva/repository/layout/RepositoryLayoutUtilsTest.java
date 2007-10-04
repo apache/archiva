@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.layout;
 import junit.framework.TestCase;
 
 /**
- * RepositoryLayoutUtilsTest 
+ * RepositoryLayoutUtilsTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -34,7 +34,7 @@ public class RepositoryLayoutUtilsTest extends TestCase
         assertFilenameParts( RepositoryLayoutUtils.splitFilename( "commons-lang-2.1.jar", "commons-lang" ),
                              "commons-lang", "2.1", null, "jar" );
     }
-    
+
     public void testSplitFilenameMavenTestPlugin() throws LayoutException
     {
         // Using maven 2 logic (artifactId is present in full path)
@@ -214,6 +214,16 @@ public class RepositoryLayoutUtilsTest extends TestCase
             /* Expected Path */
         }
     }
+
+    public void testSplitFilenameWithProposedVersion() throws LayoutException
+    {
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "jtidy-r8-21122004.jar", "jtidy", "r8-21122004" ),
+                             "jtidy", "r8-21122004", null, "jar" );
+
+        assertFilenameParts( RepositoryLayoutUtils.splitFilename( "jtidy-r8-21122004-sources.jar", "jtidy", "r8-21122004" ),
+            "jtidy", "r8-21122004", "sources", "jar" );
+    }
+
 
     private void assertFilenameParts( FilenameParts actualParts, String artifactId, String version, String classifier,
                                       String extension )
