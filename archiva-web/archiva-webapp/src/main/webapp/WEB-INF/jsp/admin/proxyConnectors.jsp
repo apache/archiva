@@ -103,7 +103,6 @@
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
-        <em>${connector.order}</em>
         <ww:a href="%{sortUpProxyConnectorUrl}" cssClass="up" title="Move Proxy Connector Up">
           <img src="${iconUpUrl}"/>
         </ww:a>
