@@ -218,7 +218,7 @@ public class ProjectModel400Reader
 
             if ( dependencyList.contains( dependency ) )
             {
-                // TODO: throw into monitor as issue.
+                // TODO: throw into monitor as "duplicate dependency" issue.
             }
 
             dependencyList.add( dependency );
