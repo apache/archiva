@@ -12,7 +12,11 @@
 
   <!-- Help identify bugs during testing -->
   <logger name="org.apache.maven.archiva">
-    <level value="debug"/>
+    <level value="info"/>
+  </logger>
+  
+  <logger name="net.sf.ehcache">
+    <level value="warn"/>
   </logger>
 
   <logger name="org.codehaus.plexus.security">
@@ -40,7 +44,7 @@
   </logger>
 
   <root>
-    <priority value ="debug" />
+    <priority value ="info" />
     <appender-ref ref="console" />
   </root>
 

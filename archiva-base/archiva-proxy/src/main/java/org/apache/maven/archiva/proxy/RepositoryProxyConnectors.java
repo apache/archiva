@@ -86,7 +86,7 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to look for.
      * @return the List of {@link ProxyConnector} objects.
      */
-    public List getProxyConnectors( ArchivaRepository repository );
+    public List<ProxyConnector> getProxyConnectors( ArchivaRepository repository );
 
     /**
      * Tests to see if the provided repository is a source repository for

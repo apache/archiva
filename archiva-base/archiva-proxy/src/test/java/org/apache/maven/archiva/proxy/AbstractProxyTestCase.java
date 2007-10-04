@@ -44,7 +44,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Locale;
 
 /**
@@ -162,15 +161,13 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
+        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
             emsg.append( "Found Temp Files in dir: " ).append( workingDir.getPath() );
-            Iterator it = tmpFiles.iterator();
-            while ( it.hasNext() )
+            for( File tfile: tmpFiles )
             {
-                File tfile = (File) it.next();
                 emsg.append( "\n   " ).append( tfile.getName() );
             }
             fail( emsg.toString() );

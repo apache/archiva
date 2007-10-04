@@ -86,7 +86,7 @@ public class WagonDelegate
         return delegate.resourceExists( resourceName );
     }
 
-    public List getFileList( String destinationDirectory )
+    public List<String> getFileList( String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         return delegate.getFileList( destinationDirectory );

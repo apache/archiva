@@ -20,19 +20,11 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureAction;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
-import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
-import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,75 +34,37 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="proxyConnectorsAction"
  */
 public class ProxyConnectorsAction
-    extends PlexusActionSupport
-    implements SecureAction, Preparable
+    extends AbstractProxyConnectorAction
+    implements Preparable
 {
-    /**
-     * @plexus.requirement
-     */
-    private ArchivaConfiguration archivaConfiguration;
-
-    private Map repoMap;
+    private Map<String, AbstractRepositoryConfiguration> repoMap;
 
     /**
      * Map of Proxy Connectors.
      */
-    private Map proxyConnectorMap;
+    private Map<String, List<ProxyConnectorConfiguration>> proxyConnectorMap;
 
     public void prepare()
     {
         Configuration config = archivaConfiguration.getConfiguration();
 
-        repoMap = new HashMap();
+        repoMap = new HashMap<String, AbstractRepositoryConfiguration>();
         repoMap.putAll( config.getRemoteRepositoriesAsMap() );
         repoMap.putAll( config.getManagedRepositoriesAsMap() );
 
-        proxyConnectorMap = new HashMap();
-
-        Closure addToProxyConnectorMap = new Closure()
-        {
-            public void execute( Object input )
-            {
-                if ( input instanceof ProxyConnectorConfiguration )
-                {
-                    ProxyConnectorConfiguration proxyConfig = (ProxyConnectorConfiguration) input;
-                    String key = proxyConfig.getSourceRepoId();
-
-                    List connectors = (List) proxyConnectorMap.get( key );
-                    if ( connectors == null )
-                    {
-                        connectors = new ArrayList();
-                        proxyConnectorMap.put( key, connectors );
-                    }
-
-                    connectors.add( proxyConfig );
-                }
-            }
-        };
-
-        CollectionUtils.forAllDo( config.getProxyConnectors(), addToProxyConnectorMap );
+        proxyConnectorMap = createProxyConnectorMap();
     }
 
-    public SecureActionBundle getSecureActionBundle()
-        throws SecureActionException
-    {
-        SecureActionBundle bundle = new SecureActionBundle();
-
-        bundle.setRequiresAuthentication( true );
-        bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, Resource.GLOBAL );
-
-        return bundle;
-    }
-
-    public Map getRepoMap()
+    public Map<String, AbstractRepositoryConfiguration> getRepoMap()
     {
         return repoMap;
     }
 
-    public Map getProxyConnectorMap()
+    public Map<String, List<ProxyConnectorConfiguration>> getProxyConnectorMap()
     {
         return proxyConnectorMap;
     }

@@ -20,6 +20,7 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryWriter;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -33,9 +34,11 @@ import org.codehaus.plexus.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Implementation of configuration holder that retrieves it from the registry.
@@ -145,7 +148,28 @@ public class DefaultArchivaConfiguration
                 }
             }
         }
-        
+
+        // Normalize the order fields in the proxy connectors.
+        if ( !config.getProxyConnectors().isEmpty() )
+        {
+            Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = config
+                .getProxyConnectorAsMap();
+
+            for ( String key : proxyConnectorMap.keySet() )
+            {
+                List<ProxyConnectorConfiguration> connectors = proxyConnectorMap.get( key );
+                // Sort connectors by order field.
+                Collections.sort( connectors, ProxyConnectorConfigurationOrderComparator.getInstance() );
+
+                // Normalize the order field values.
+                int order = 1;
+                for ( ProxyConnectorConfiguration connector : connectors )
+                {
+                    connector.setOrder( order++ );
+                }
+            }
+        }
+
         return config;
     }
 
@@ -161,7 +185,8 @@ public class DefaultArchivaConfiguration
         catch ( RegistryException e )
         {
             throw new ConfigurationRuntimeException(
-                "Fatal error: Unable to find the built-in default configuration and load it into the registry", e );
+                                                     "Fatal error: Unable to find the built-in default configuration and load it into the registry",
+                                                     e );
         }
         return registry.getSubset( KEY );
     }
@@ -189,10 +214,10 @@ public class DefaultArchivaConfiguration
 
                 // a little aggressive with the repositoryScanning and databaseScanning - should be no need to split
                 // that configuration
-                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" ) ||
-                    key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" ) ||
-                    key.startsWith( "databaseScanning" ) || key.startsWith( "remoteRepositories" ) ||
-                    key.startsWith( "managedRepositories" ) )
+                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" )
+                    || key.startsWith( "networkProxies" ) || key.startsWith( "repositoryScanning" )
+                    || key.startsWith( "databaseScanning" ) || key.startsWith( "remoteRepositories" )
+                    || key.startsWith( "managedRepositories" ) )
                 {
                     foundList = true;
                 }
@@ -203,12 +228,13 @@ public class DefaultArchivaConfiguration
                 this.configuration = null;
 
                 throw new IndeterminateConfigurationException(
-                    "Configuration can not be saved when it is loaded from two sources" );
+                                                               "Configuration can not be saved when it is loaded from two sources" );
             }
         }
 
         // escape all cron expressions to handle ','
-        for ( Iterator<ManagedRepositoryConfiguration> i = configuration.getManagedRepositories().iterator(); i.hasNext(); )
+        for ( Iterator<ManagedRepositoryConfiguration> i = configuration.getManagedRepositories().iterator(); i
+            .hasNext(); )
         {
             ManagedRepositoryConfiguration c = i.next();
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
@@ -217,7 +243,8 @@ public class DefaultArchivaConfiguration
         if ( configuration.getDatabaseScanning() != null )
         {
             configuration.getDatabaseScanning().setCronExpression(
-                escapeCronExpression( configuration.getDatabaseScanning().getCronExpression() ) );
+                                                                   escapeCronExpression( configuration
+                                                                       .getDatabaseScanning().getCronExpression() ) );
         }
 
         new ConfigurationRegistryWriter().write( configuration, section );
@@ -299,10 +326,10 @@ public class DefaultArchivaConfiguration
 
     private String removeExpressions( String directory )
     {
-        String value = StringUtils.replace( directory, "${appserver.base}",
-                                            registry.getString( "appserver.base", "${appserver.base}" ) );
-        value = StringUtils.replace( value, "${appserver.home}",
-                                     registry.getString( "appserver.home", "${appserver.home}" ) );
+        String value = StringUtils.replace( directory, "${appserver.base}", registry.getString( "appserver.base",
+                                                                                                "${appserver.base}" ) );
+        value = StringUtils.replace( value, "${appserver.home}", registry.getString( "appserver.home",
+                                                                                     "${appserver.home}" ) );
         return value;
     }
 

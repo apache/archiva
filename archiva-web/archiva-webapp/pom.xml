@@ -317,6 +317,10 @@
           </connectors>
           <systemProperties>
             <systemProperty>
+              <name>plexus.home</name>
+              <value>${project.build.directory}/appserver-base</value>
+            </systemProperty>
+            <systemProperty>
               <name>appserver.base</name>
               <value>${project.build.directory}/appserver-base</value>
             </systemProperty>

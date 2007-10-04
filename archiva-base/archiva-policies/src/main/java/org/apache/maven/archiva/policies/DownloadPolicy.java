@@ -44,7 +44,7 @@ public interface DownloadPolicy
      * 
      * @return the list of options for this policy.
      */
-    public List getOptions();
+    public List<String> getOptions();
 
     /**
      * Get the default option for this policy.

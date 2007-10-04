@@ -286,31 +286,31 @@
       <result name="input">/WEB-INF/jsp/admin/proxyConnectors.jsp</result>
     </action>
 
-    <action name="addProxyConnector" class="configureProxyConnectorAction" method="add">
+    <action name="addProxyConnector" class="addProxyConnectorAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/addProxyConnector.jsp</result>
+      <result name="success" type="redirect-action">proxyConnectors</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="editProxyConnector" class="editProxyConnectorAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
-    <action name="configureProxyConnector" class="configureProxyConnectorAction" method="input">
+    <action name="sortUpProxyConnector" class="sortProxyConnectorsAction" method="sortUp">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-
-    <action name="editProxyConnector" class="configureProxyConnectorAction" method="edit">
+    
+    <action name="sortDownProxyConnector" class="sortProxyConnectorsAction" method="sortDown">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-
-    <action name="saveProxyConnector" class="configureProxyConnectorAction" method="save">
-      <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
-      <interceptor-ref name="configuredPrepareParamsStack"/>
-    </action>
-
-    <action name="deleteProxyConnector" class="configureProxyConnectorAction" method="confirm">
+    
+    <action name="deleteProxyConnector" class="deleteProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>

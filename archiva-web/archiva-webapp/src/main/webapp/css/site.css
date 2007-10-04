@@ -245,72 +245,82 @@ div.repository {
 	border-bottom: 1px solid #DFDEDE;
 }
 
-tr.proxyConnector {
-	border-bottom: 1px solid #DFDEDE;
+div.proxyConfig {
+	border: 1px dashed #DFDEDE;
+	margin-bottom: 15px;
+	padding: 5px;
 }
 
-tr.proxyConnector td.managedRepo div,
-tr.proxyConnector td.remoteRepo div {
+div.proxyConfig div.managedRepo,
+div.proxyConfig div.remoteRepo {
     border: 1px dotted gray;
 	padding: 5px;
 	background-color: white;
 }
 
-tr.proxyConnector td.managedRepo img,
-tr.proxyConnector td.remoteRepo img {
+div.proxyConfig div.remoteRepo {
+	margin: 5px;
+}
+
+div.proxyConfig div.managedRepo img,
+div.proxyConfig div.remoteRepo img {
 	float: left;
 	border: 0px;
 }
 
-tr.proxyConnector td.managedRepo div p,
-tr.proxyConnector td.remoteRepo div p {
+div.proxyConfig div.managedRepo p,
+div.proxyConfig div.remoteRepo p {
 	margin: 0px;
 	margin-left: 40px;
 	padding: 0px;
 }
 
-tr.proxyConnector td.managedRepo div p.id,
-tr.proxyConnector td.remoteRepo div p.id {
+div.proxyConfig div.managedRepo p.id,
+div.proxyConfig div.remoteRepo p.id {
 	font-family: monospace;
 }
 
-tr.proxyConnector td.connector {
-	padding-left: 10px;
-	padding-right: 10px;	
+div.proxyConfig div.connector {
+	border: 1px solid #aaaaff;
+	margin-top: 10px;
+	margin-left: 40px !important;
 }
 
-tr.proxyConnector td.connector div.wrap {
-	margin-left: 10px;
-	margin-right: 10px;
-	padding: 5px;
-	border: 1px solid gray;
-	background-color: #eeeeee;
+div.proxyConfig a.expand {
+	font-size: 7pt;
+	color: gray;	
 }
 
-tr.proxyConnector td.connector div.controls {
+div.proxyConfig div.controls {
 	float: right;
 }
 
-tr.proxyConnector td.connector div h4 {
-	font-size: 1.0em;
+div.proxyConfig div.connector h4 {
+	padding: 3px;
+	font-size: 8pt;
 	margin: 0px;
 }
 
-tr.proxyConnector td.connector table {
+div.proxyConfig div.connector table.settings {
 	border: 0px;
 	background-color: transparent;
-	font-size: 0.8em;
+	font-size: 8pt;
+	margin-left: 10px;
 }
 
-tr.proxyConnector td.connector table p {
+div.proxyConfig div.connector table.settings th,
+div.proxyConfig div.connector table.settings td {
+	font-size: 8pt;
+}
+
+div.proxyConfig div.connector table.settings table.policies {
+	border: 1px dotted gray;
+}
+
+div.proxyConfig div.connector table p {
 	margin: 0px;
 	padding: 0px;
 }
-
-tr.seperator td {
-	border-top: 1px dashed #dddddd !important;
-}
-
 div.admin div.dark,
 div.admin div.lite {
 	border: 1px solid #aaaaaa;	

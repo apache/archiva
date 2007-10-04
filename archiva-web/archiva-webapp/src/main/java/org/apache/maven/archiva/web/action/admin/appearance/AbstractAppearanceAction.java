@@ -40,7 +40,7 @@ public abstract class AbstractAppearanceAction
     /**
      * @plexus.requirement role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
      */
-    private Map repositoryLayouts;
+    private Map<String, ArtifactRepositoryLayout> repositoryLayouts;
 
     /**
      * @plexus.requirement

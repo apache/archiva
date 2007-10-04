@@ -141,23 +141,49 @@
         java.util.Map<String, NetworkProxyConfiguration> map = new java.util.HashMap<String, NetworkProxyConfiguration>();
         if ( networkProxies != null )
         {
-            for ( java.util.Iterator i = networkProxies.iterator(); i.hasNext(); )
+            for ( java.util.Iterator<NetworkProxyConfiguration> i = networkProxies.iterator(); i.hasNext(); )
             {
-                NetworkProxyConfiguration proxy = (NetworkProxyConfiguration) i.next();
+                NetworkProxyConfiguration proxy = i.next();
                 map.put( proxy.getId(), proxy );
             }
         }
         return map;
     }
+    
+    public java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> getProxyConnectorAsMap()
+    {
+        java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = 
+            new java.util.HashMap<String, java.util.List<ProxyConnectorConfiguration>>();
+
+        java.util.Iterator<ProxyConnectorConfiguration> it = proxyConnectors.iterator();
+        while ( it.hasNext() )
+        {
+            ProxyConnectorConfiguration proxyConfig = it.next();
+            String key = proxyConfig.getSourceRepoId();
+
+            java.util.List<ProxyConnectorConfiguration> connectors = proxyConnectorMap.get( key );
+            if ( connectors == null )
+            {
+                connectors = new java.util.ArrayList<ProxyConnectorConfiguration>();
+                proxyConnectorMap.put( key, connectors );
+            }
+
+            connectors.add( proxyConfig );
+            java.util.Collections.sort( connectors,
+                org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator.getInstance() );
+        }
+
+        return proxyConnectorMap;
+    }    
 
     public java.util.Map<String, RemoteRepositoryConfiguration> getRemoteRepositoriesAsMap()
     {
         java.util.Map<String, RemoteRepositoryConfiguration> map = new java.util.HashMap<String, RemoteRepositoryConfiguration>();
         if ( remoteRepositories != null )
         {
-            for ( java.util.Iterator i = remoteRepositories.iterator(); i.hasNext(); )
+            for ( java.util.Iterator<RemoteRepositoryConfiguration> i = remoteRepositories.iterator(); i.hasNext(); )
             {
-                RemoteRepositoryConfiguration repo = (RemoteRepositoryConfiguration) i.next();
+                RemoteRepositoryConfiguration repo = i.next();
                 map.put( repo.getId(), repo );
             }
         }
@@ -168,9 +194,9 @@
     {
         if ( remoteRepositories != null )
         {
-            for ( java.util.Iterator i = remoteRepositories.iterator(); i.hasNext(); )
+            for ( java.util.Iterator<RemoteRepositoryConfiguration> i = remoteRepositories.iterator(); i.hasNext(); )
             {
-                RemoteRepositoryConfiguration repo = (RemoteRepositoryConfiguration) i.next();
+                RemoteRepositoryConfiguration repo = i.next();
                 if ( repo.getId().equals( id ) )
                 {
                     return repo;
@@ -185,9 +211,9 @@
         java.util.Map<String, ManagedRepositoryConfiguration> map = new java.util.HashMap<String, ManagedRepositoryConfiguration>();
         if ( managedRepositories != null )
         {
-            for ( java.util.Iterator i = managedRepositories.iterator(); i.hasNext(); )
+            for ( java.util.Iterator<ManagedRepositoryConfiguration> i = managedRepositories.iterator(); i.hasNext(); )
             {
-                ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) i.next();
+                ManagedRepositoryConfiguration repo = i.next();
                 map.put( repo.getId(), repo );
             }
         }
@@ -198,9 +224,9 @@
     {
         if ( managedRepositories != null )
         {
-            for ( java.util.Iterator i = managedRepositories.iterator(); i.hasNext(); )
+            for ( java.util.Iterator<ManagedRepositoryConfiguration> i = managedRepositories.iterator(); i.hasNext(); )
             {
-                ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) i.next();
+                ManagedRepositoryConfiguration repo = i.next();
                 if ( repo.getId().equals( id ) )
                 {
                     return repo;
@@ -517,11 +543,25 @@
       <name>ProxyConnectorConfiguration</name>
       <version>1.0.0+</version>
       <fields>
+        <field>
+          <name>order</name>
+          <version>1.0.0+</version>
+          <description>
+            The order of the proxy connectors. (0 means no order specified)
+          </description>
+          <type>int</type>
+          <defaultValue>0</defaultValue>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
           <version>1.0.0+</version>
           <code><![CDATA[
+    /**
+     * The order id for UNORDERED
+     */
+    public static final int UNORDERED = 0;
+    
     /**
      * The policy key {@link #getPolicies()} for snapshot handling.
      * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy} 

@@ -39,20 +39,22 @@ public class ProxyConnector
 
     private ArchivaRepository targetRepository;
 
-    private List blacklist;
+    private List<String> blacklist;
 
-    private List whitelist;
+    private List<String> whitelist;
 
     private String proxyId;
+    
+    private int order;
 
-    private Map policies;
+    private Map<String, String> policies;
 
-    public List getBlacklist()
+    public List<String> getBlacklist()
     {
         return blacklist;
     }
 
-    public void setBlacklist( List blacklist )
+    public void setBlacklist( List<String> blacklist )
     {
         this.blacklist = blacklist;
     }
@@ -77,22 +79,22 @@ public class ProxyConnector
         this.targetRepository = targetRepository;
     }
 
-    public List getWhitelist()
+    public List<String> getWhitelist()
     {
         return whitelist;
     }
 
-    public void setWhitelist( List whitelist )
+    public void setWhitelist( List<String> whitelist )
     {
         this.whitelist = whitelist;
     }
 
-    public Map getPolicies()
+    public Map<String, String> getPolicies()
     {
         return policies;
     }
 
-    public void setPolicies( Map policies )
+    public void setPolicies( Map<String, String> policies )
     {
         this.policies = policies;
     }
@@ -116,10 +118,10 @@ public class ProxyConnector
         sb.append( "  target:" ).append( this.targetRepository ).append( "\n" );
         sb.append( "  proxyId:" ).append( this.proxyId ).append( "\n" );
 
-        Iterator keys = this.policies.keySet().iterator();
+        Iterator<String> keys = this.policies.keySet().iterator();
         while ( keys.hasNext() )
         {
-            String name = (String) keys.next();
+            String name = keys.next();
             sb.append( "  policy[" ).append( name ).append( "]:" );
             sb.append( this.policies.get( name ) ).append( "\n" );
         }
@@ -132,5 +134,15 @@ public class ProxyConnector
     public void setPolicy( String policyId, String policySetting )
     {
         this.policies.put( policyId, policySetting );
+    }
+
+    public int getOrder()
+    {
+        return order;
+    }
+
+    public void setOrder( int order )
+    {
+        this.order = order;
     }
 }

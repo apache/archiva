@@ -27,7 +27,6 @@ import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -44,7 +43,7 @@ public class MockConfiguration
 {
     private Configuration configuration = new Configuration();
 
-    private List listeners = new ArrayList();
+    private List<RegistryListener> listeners = new ArrayList<RegistryListener>();
 
     private MockControl registryControl;
 
@@ -74,10 +73,8 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        Iterator it = listeners.iterator();
-        while ( it.hasNext() )
+        for( RegistryListener listener: listeners )
         {
-            RegistryListener listener = (RegistryListener) it.next();
             try
             {
                 listener.afterConfigurationChange( registryMock, name, value );

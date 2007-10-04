@@ -36,6 +36,8 @@
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif"/>
 <c:url var="iconEditUrl" value="/images/icons/edit.png"/>
 <c:url var="iconCreateUrl" value="/images/icons/create.png"/>
+<c:url var="iconUpUrl" value="/images/icons/up.gif"/>
+<c:url var="iconDownUrl" value="/images/icons/down.gif"/>
 
 <div id="contentArea">
 
@@ -59,26 +61,40 @@
   <strong>No Repository Proxy Connectors Defined.</strong>
 </c:when>
 <c:otherwise>
-<table width="100%">
+
+<div class="admin">
+
 <c:forEach items="${proxyConnectorMap}" var="repository" varStatus="i">
 
-<c:forEach items="${repository.value}" var="connector" varStatus="pc">
-<tr class="proxyConnector">
-<c:if test="${pc.first}">
-  <td class="managedRepo" rowspan="${fn:length(repository.value)}">
-    <div>
-      <img src="<c:url value="/images/archiva-splat-32.gif"/>"/>
+<div class="proxyConfig">
+  <div class="managedRepo">
+    <img src="<c:url value="/images/archiva-splat-32.gif"/>"/>
+    <p class="id">${repository.key}</p>
+    <p class="name">${repoMap[repository.key].name}</p>
+  </div>
 
-      <p class="id">${repository.key}</p>
-
-      <p class="name">${repoMap[repository.key].name}</p>
-    </div>
-  </td>
-</c:if>
-<td class="connector">
-  <div class="wrap">
+  <c:forEach items="${repository.value}" var="connector" varStatus="pc">
+  
+  <c:choose>
+    <c:when test='${(pc.index)%2 eq 0}'>
+      <c:set var="rowColor" value="dark" scope="page"/>
+    </c:when>
+    <c:otherwise>
+      <c:set var="rowColor" value="lite" scope="page"/>
+    </c:otherwise>
+  </c:choose>
+  
+  <div class="connector ${rowColor}"> 
     <div class="controls">
       <redback:ifAnyAuthorized permissions="archiva-manage-configuration">
+        <ww:url id="sortDownProxyConnectorUrl" action="sortDownProxyConnector">
+          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
+          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
+        </ww:url>
+        <ww:url id="sortUpProxyConnectorUrl" action="sortUpProxyConnector">
+          <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
+          <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
+        </ww:url>
         <ww:url id="editProxyConnectorUrl" action="editProxyConnector">
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
@@ -87,6 +103,13 @@
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
+        <em>${connector.order}</em>
+        <ww:a href="%{sortUpProxyConnectorUrl}" cssClass="up" title="Move Proxy Connector Up">
+          <img src="${iconUpUrl}"/>
+        </ww:a>
+        <ww:a href="%{sortDownProxyConnectorUrl}" cssClass="down" title="Move Proxy Connector Down">
+          <img src="${iconDownUrl}"/>
+        </ww:a>
         <ww:a href="%{editProxyConnectorUrl}" cssClass="edit" title="Edit Proxy Connector">
           <img src="${iconEditUrl}"/>
         </ww:a>
@@ -97,13 +120,22 @@
     </div>
 
     <h4>Proxy Connector</h4>
-    <table>
+    
+    <div class="remoteRepo">
+      <img src="<c:url value="/images/archiva-world.png"/>"/>
+      <p class="id">${connector.targetRepoId}</p>
+      <p class="name">${repoMap[connector.targetRepoId].name}</p>
+      <p class="url"><a href="${repoMap[connector.targetRepoId].url}">${repoMap[connector.targetRepoId].url}</a></p>
+    </div>
+    
+    <a class="expand" href="#" onclick="Effect.toggle('proxySettings_${connector.sourceRepoId}_${connector.targetRepoId}','slide'); return false;">Expand</a>
+    <table class="settings" style="display: none;" id="proxySettings_${connector.sourceRepoId}_${connector.targetRepoId}">
       <tr>
         <th nowrap="nowrap">Network Proxy:</th>
         <td>
           <c:choose>
             <c:when test="${empty(connector.proxyId)}">
-              <i>(Direct Connection)</i>
+              <span class="directConnection">(Direct Connection)</span>
             </c:when>
             <c:otherwise>
               <ww:url id="editProxyIdUrl" action="editNetworkProxy">
@@ -120,9 +152,14 @@
       <tr>
         <th>Policies:</th>
         <td nowrap="nowrap">
-          <c:forEach items="${connector.policies}" var="policies">
-            <p><em>${policies.key}</em>: ${policies.value}</p>
-          </c:forEach>
+          <table class="policies">
+            <c:forEach items="${connector.policies}" var="policies">
+              <tr>
+                <th>${policies.key}</th>
+                <td>${policies.value}</td>
+              </tr>
+            </c:forEach>
+          </table>
         </td>
       </tr>
 
@@ -152,30 +189,24 @@
         <tr>
           <th>Properties:</th>
           <td>
-            <c:forEach items="${connector.properties}" var="prop">
-              <p><em>${prop.key}</em>: ${prop.value}</p>
-            </c:forEach>
+            <table class="props">
+              <c:forEach items="${connector.properties}" var="prop">
+                <tr>
+                  <th>${prop.key}</th>
+                  <td>${prop.value}</td>
+                </tr>
+              </c:forEach>
+            </table>
           </td>
         </tr>
       </c:if>
     </table>
-  </div>
-</td>
-<td class="remoteRepo">
-  <div>
-    <img src="<c:url value="/images/archiva-world.png"/>"/>
+  </div> <%-- connector --%>
 
-    <p class="id">${connector.targetRepoId}</p>
-
-    <p class="name">${repoMap[connector.targetRepoId].name}</p>
-
-    <p class="url">${repoMap[connector.targetRepoId].url}</p>
-  </div>
-</td>
-</tr>
 </c:forEach>
+</div> <%-- proxyConfig --%>
 </c:forEach>
-</table>
+</div> <%-- admin --%>
 </c:otherwise>
 </c:choose>
 
