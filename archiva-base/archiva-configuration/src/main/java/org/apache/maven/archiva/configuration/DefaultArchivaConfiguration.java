@@ -35,10 +35,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of configuration holder that retrieves it from the registry.
@@ -84,9 +85,14 @@ public class DefaultArchivaConfiguration
     private String userConfigFilename;
 
     /**
-     * Listeners we've registered.
+     * Configuration Listeners we've registered.
      */
-    private List<RegistryListener> listeners = new LinkedList<RegistryListener>();
+    private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>();
+    
+    /**
+     * Registry Listeners we've registered.
+     */
+    private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
 
     public String getFilteredUserConfigFilename()
     {
@@ -249,6 +255,8 @@ public class DefaultArchivaConfiguration
 
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
+        
+        triggerEvent( ConfigurationEvent.SAVED );
 
         this.configuration = processExpressions( configuration );
     }
@@ -270,28 +278,64 @@ public class DefaultArchivaConfiguration
         try
         {
             ( (Initializable) registry ).initialize();
-
-            for ( Iterator<RegistryListener> i = listeners.iterator(); i.hasNext(); )
+            
+            for ( RegistryListener regListener: registryListeners )
             {
-                RegistryListener l = i.next();
-
-                addRegistryChangeListener( l );
+                addRegistryChangeListener( regListener );
             }
         }
         catch ( InitializationException e )
         {
             throw new RegistryException( "Unable to reinitialize configuration: " + e.getMessage(), e );
         }
+        
+        triggerEvent( ConfigurationEvent.SAVED );
 
         return registry.getSection( KEY + ".user" );
     }
 
+    private void triggerEvent( int type )
+    {
+        ConfigurationEvent evt = new ConfigurationEvent( type );
+        for ( ConfigurationListener listener : listeners )
+        {
+            try
+            {
+                listener.configurationEvent( evt );
+            }
+            catch ( Throwable t )
+            {
+                getLogger().warn( "Unable to notify of saved configuration event.", t );
+            }
+        }
+    }
+
+    public void addListener( ConfigurationListener listener )
+    {
+        if ( listener == null )
+        {
+            return;
+        }
+
+        listeners.add( listener );
+    }
+
+    public void removeListener( ConfigurationListener listener )
+    {
+        if ( listener == null )
+        {
+            return;
+        }
+
+        listeners.remove( listener );
+    }
+    
     public void addChangeListener( RegistryListener listener )
     {
         addRegistryChangeListener( listener );
 
         // keep track for later
-        listeners.add( listener );
+        registryListeners.add( listener );
     }
 
     private void addRegistryChangeListener( RegistryListener listener )
@@ -307,6 +351,7 @@ public class DefaultArchivaConfiguration
             section.addChangeListener( listener );
         }
     }
+
 
     public void initialize()
         throws InitializationException

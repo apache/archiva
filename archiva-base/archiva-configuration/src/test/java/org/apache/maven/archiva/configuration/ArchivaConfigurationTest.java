@@ -21,9 +21,7 @@ package org.apache.maven.archiva.configuration;
 
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.FileUtils;
-import org.easymock.AbstractMatcher;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -38,6 +36,7 @@ import java.util.Map;
 public class ArchivaConfigurationTest
     extends PlexusTestCase
 {
+    @SuppressWarnings("unused")
     private Registry registry;
 
     protected void setUp()
@@ -108,7 +107,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check known consumers", 9, repoScanning.getKnownContentConsumers().size() );
         assertEquals( "check invalid consumers", 1, repoScanning.getInvalidContentConsumers().size() );
 
-        List patterns = filetypes.getFileTypePatterns( "artifacts" );
+        List<String> patterns = filetypes.getFileTypePatterns( "artifacts" );
         assertNotNull( "check 'artifacts' file type", patterns );
         assertEquals( "check 'artifacts' patterns", 13, patterns.size() );
 
@@ -192,15 +191,12 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createRegistryListenerMockControl();
-        RegistryListener listener = (RegistryListener) control.getMock();
-        archivaConfiguration.addChangeListener( listener );
-
-        listener.beforeConfigurationChange( registry, "version", "1" );
-        listener.beforeConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
-
-        listener.afterConfigurationChange( registry, "version", "1" );
-        listener.afterConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+        MockControl control = createConfigurationListenerMockControl();
+        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        archivaConfiguration.addListener( listener );
+        
+        listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
+        control.setVoidCallable();
 
         control.replay();
 
@@ -221,21 +217,9 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
-    private static MockControl createRegistryListenerMockControl()
+    private static MockControl createConfigurationListenerMockControl()
     {
-        MockControl control = MockControl.createControl( RegistryListener.class );
-        control.setDefaultMatcher( new AbstractMatcher()
-        {
-            protected boolean argumentMatches( Object object, Object object1 )
-            {
-                return object instanceof Registry || super.argumentMatches( object, object1 );
-            }
-
-            protected String argumentToString( Object object )
-            {
-                return object instanceof Registry ? "<any>" : super.argumentToString( object );
-            }
-        } );
+        MockControl control = MockControl.createControl( ConfigurationListener.class );
         return control;
     }
 
@@ -291,12 +275,13 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createRegistryListenerMockControl();
-        RegistryListener listener = (RegistryListener) control.getMock();
-        archivaConfiguration.addChangeListener( listener );
+        MockControl control = createConfigurationListenerMockControl();
+        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        archivaConfiguration.addListener( listener );
 
-        listener.beforeConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
-        listener.afterConfigurationChange( registry, "webapp.ui.appletFindEnabled", Boolean.FALSE );
+        listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
+        // once from default creation, and again from manual call to save
+        control.setVoidCallable( 2 );
 
         control.replay();
 

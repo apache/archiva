@@ -49,9 +49,24 @@ public interface ArchivaConfiguration
         throws RegistryException, IndeterminateConfigurationException;
 
     /**
-     * Add a change listener so that registry changes are propogated.
+     * Add a configuration listener to notify of changes to the configuration.
      *
      * @param listener the listener
+     */
+    void addListener( ConfigurationListener listener );
+    
+    /**
+     * Remove a configuration listener to stop notifications of changes to the configuration.
+     *
+     * @param listener the listener
+     */
+    void removeListener( ConfigurationListener listener );
+    
+    /**
+     * Add a registry listener to notify of events in plexus-registry.
+     *
+     * @param listener the listener
+     * TODO: Remove in future.
      */
     void addChangeListener( RegistryListener listener );
 }

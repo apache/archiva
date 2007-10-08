@@ -21,14 +21,17 @@ package org.apache.maven.archiva.repository;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * MockConfiguration 
@@ -44,7 +47,8 @@ public class MockConfiguration
 {
     private Configuration configuration = new Configuration();
 
-    private List<RegistryListener> listeners = new ArrayList<RegistryListener>();
+    private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
+    private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
     private MockControl registryControl;
 
@@ -58,7 +62,7 @@ public class MockConfiguration
 
     public void addChangeListener( RegistryListener listener )
     {
-        listeners.add( listener );
+        registryListeners.add( listener );
     }
 
     public Configuration getConfiguration()
@@ -74,10 +78,8 @@ public class MockConfiguration
 
     public void triggerChange( String name, String value )
     {
-        Iterator<RegistryListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for(RegistryListener listener: registryListeners)
         {
-            RegistryListener listener = (RegistryListener) it.next();
             try
             {
                 listener.afterConfigurationChange( registryMock, name, value );
@@ -87,5 +89,15 @@ public class MockConfiguration
                 e.printStackTrace();
             }
         }
+    }
+
+    public void addListener( ConfigurationListener listener )
+    {
+        configListeners.add(listener);
+    }
+
+    public void removeListener( ConfigurationListener listener )
+    {
+        configListeners.remove( listener );
     }
 }
