@@ -24,8 +24,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
@@ -47,16 +48,16 @@ public class RepositoryScannerInstance
     /**
      * Consumers that process known content.
      */
-    private List knownConsumers;
+    private List<KnownRepositoryContentConsumer> knownConsumers;
 
     /**
      * Consumers that process unknown/invalid content.
      */
-    private List invalidConsumers;
+    private List<InvalidRepositoryContentConsumer> invalidConsumers;
 
-    ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
-    private RepositoryContentStatistics stats;
+    private RepositoryScanStatistics stats;
 
     private long onlyModifiedAfterTimestamp = 0;
 
@@ -66,8 +67,9 @@ public class RepositoryScannerInstance
 
     private Logger logger;
 
-    public RepositoryScannerInstance( ArchivaRepository repository, List knownConsumerList, List invalidConsumerList,
-                                      Logger logger )
+    public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
+                                      List<KnownRepositoryContentConsumer> knownConsumerList,
+                                      List<InvalidRepositoryContentConsumer> invalidConsumerList, Logger logger )
     {
         this.repository = repository;
         this.knownConsumers = knownConsumerList;
@@ -77,7 +79,7 @@ public class RepositoryScannerInstance
         this.consumerProcessFile = new ConsumerProcessFileClosure( logger );
         this.consumerWantsFile = new ConsumerWantsFilePredicate();
 
-        stats = new RepositoryContentStatistics();
+        stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
 
         Closure triggerBeginScan = new TriggerBeginScanClosure( repository, logger );
@@ -91,14 +93,14 @@ public class RepositoryScannerInstance
         }
     }
 
-    public RepositoryContentStatistics getStatistics()
+    public RepositoryScanStatistics getStatistics()
     {
         return stats;
     }
 
     public void directoryWalkStarting( File basedir )
     {
-        logger.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getUrl() );
+        logger.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerStart();
     }
 
@@ -118,7 +120,7 @@ public class RepositoryScannerInstance
 
         stats.increaseNewFileCount();
 
-        BaseFile basefile = new BaseFile( repository.getUrl().getPath(), file );
+        BaseFile basefile = new BaseFile( repository.getLocation(), file );
         
         consumerProcessFile.setBasefile( basefile );
         consumerWantsFile.setBasefile( basefile );
@@ -135,7 +137,7 @@ public class RepositoryScannerInstance
 
     public void directoryWalkFinished()
     {
-        logger.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getUrl() );
+        logger.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerFinished();
     }
 

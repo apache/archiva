@@ -20,11 +20,11 @@ package org.apache.maven.archiva.consumers.core.repository;
 */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -39,13 +39,13 @@ import java.io.FilenameFilter;
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
-    protected ArchivaRepository repository;
+    protected ManagedRepositoryConfiguration repository;
 
     protected BidirectionalRepositoryLayout layout;
 
     protected ArtifactDAO artifactDao;
 
-    public AbstractRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+    public AbstractRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
                                     ArtifactDAO artifactDao )
     {
         this.repository = repository;
@@ -81,7 +81,7 @@ public abstract class AbstractRepositoryPurge
         {
             artifactFiles[i].delete();
 
-            String[] artifactPathParts = artifactFiles[i].getAbsolutePath().split( repository.getUrl().getPath() );
+            String[] artifactPathParts = artifactFiles[i].getAbsolutePath().split( repository.getLocation() );
             String artifactPath = artifactPathParts[artifactPathParts.length - 1];
             if ( !artifactPath.toUpperCase().endsWith( "SHA1" ) && !artifactPath.toUpperCase().endsWith( "MD5" ) )
             {

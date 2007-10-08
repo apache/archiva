@@ -19,13 +19,13 @@ package org.apache.maven.archiva.indexer.bytecode;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.AbstractIndexCreationTestCase;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class BytecodeIndexTest extends AbstractIndexCreationTestCase
         return new BytecodeHandlers();
     }
 
-    public RepositoryContentIndex createIndex( RepositoryContentIndexFactory indexFactory, ArchivaRepository repository )
+    public RepositoryContentIndex createIndex( RepositoryContentIndexFactory indexFactory, ManagedRepositoryConfiguration repository )
     {
         return indexFactory.createBytecodeIndex( repository );
     }

@@ -19,10 +19,10 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
@@ -57,7 +57,7 @@ public class ProjectReaderConsumer
 
     private ProjectModelReader reader;
 
-    private ArchivaRepository repo;
+    private ManagedRepositoryConfiguration repo;
 
     private List includes;
 
@@ -94,7 +94,7 @@ public class ProjectReaderConsumer
         return includes;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         super.beginScan( repository );
@@ -106,7 +106,7 @@ public class ProjectReaderConsumer
     {
         super.processFile( path );
 
-        File pomFile = new File( repo.getUrl().getPath(), path );
+        File pomFile = new File( repo.getLocation(), path );
         try
         {
             ArchivaProjectModel model = reader.read( pomFile );

@@ -19,18 +19,18 @@
   -->
 
 <configuration>
-  <repositories>
-    <repository>
+  <managedRepositories>
+    <managedRepository>
       <id>testRepo</id>
       <name>Archiva Test Repository</name>
-      <url>file://${basedir}/src/test/repositories/default-repository</url>
+      <location>${basedir}/src/test/repositories/default-repository</location>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * ?</refreshCronExpression>
-    </repository>
-  </repositories>
+    </managedRepository>
+  </managedRepositories>
 
   <proxyConnectors />
 

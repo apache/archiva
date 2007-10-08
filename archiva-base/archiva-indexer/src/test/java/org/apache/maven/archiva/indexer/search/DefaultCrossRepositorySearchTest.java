@@ -19,7 +19,6 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
@@ -29,7 +28,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.MockConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -62,10 +60,7 @@ public class DefaultCrossRepositorySearchTest
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
-        ArchivaRepository repository =
-            new ArchivaRepository( TEST_DEFAULT_REPO_ID, TEST_DEFAULT_REPOSITORY_NAME, repoUri );
+        ManagedRepositoryConfiguration repository = createRepository( TEST_DEFAULT_REPO_ID, TEST_DEFAULT_REPOSITORY_NAME, repoDir );
 
         File indexLocation = new File( "target/index-crossrepo-" + getName() + "/" );
 
@@ -167,5 +162,14 @@ public class DefaultCrossRepositorySearchTest
         assertEquals( "Repository Hits", repoCount, results.getRepositories().size() );
 
         assertEquals( "Search Result Hits", hitCount, results.getHits().size() );
+    }
+    
+    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( location.getAbsolutePath() );
+        return repo;
     }
 }

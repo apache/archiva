@@ -42,7 +42,7 @@ public class ArchivaStartup
     /**
      * @plexus.requirement role-hint="default"
      */
-    private ConfigurationSynchronization configSync;
+    private SecuritySynchronization securitySync;
 
     /**
      * @plexus.requirement role-hint="default"
@@ -61,7 +61,7 @@ public class ArchivaStartup
 
         try
         {
-            configSync.startup();
+            securitySync.startup();
             resolverFactory.startup();
             taskScheduler.startup();
         }

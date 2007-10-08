@@ -31,9 +31,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -142,9 +140,9 @@ public class LocationArtifactsConsumer
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
     {
-        ArchivaRepository repository = findRepository( artifact );
+        ManagedRepositoryConfiguration repository = findRepository( artifact );
 
-        File artifactFile = new File( repository.getUrl().toString(), toPath( artifact ) );
+        File artifactFile = new File( repository.getLocation(), toPath( artifact ) );
         ArchivaProjectModel fsModel = readFilesystemModel( artifactFile );
         ArchivaProjectModel embeddedModel = readEmbeddedModel( artifact, artifactFile );
 
@@ -287,9 +285,9 @@ public class LocationArtifactsConsumer
         return new File( pomFilename );
     }
 
-    private ArchivaRepository findRepository( ArchivaArtifact artifact )
+    private ManagedRepositoryConfiguration findRepository( ArchivaArtifact artifact )
     {
-        return (ArchivaRepository) this.repositoryMap.get( artifact.getModel().getRepositoryId() );
+        return (ManagedRepositoryConfiguration) this.repositoryMap.get( artifact.getModel().getRepositoryId() );
     }
 
     private String toPath( ArchivaArtifact artifact )
@@ -337,12 +335,12 @@ public class LocationArtifactsConsumer
         {
             this.repositoryMap.clear();
 
-            Map<String, ManagedRepositoryConfiguration> map =
+            Map<String, ManagedRepositoryConfiguration> map = 
                 configuration.getConfiguration().getManagedRepositoriesAsMap();
+            
             for ( Map.Entry<String, ManagedRepositoryConfiguration> entry : map.entrySet() )
             {
-                ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( entry.getValue() );
-                this.repositoryMap.put( entry.getKey(), repository );
+                this.repositoryMap.put( entry.getKey(), entry.getValue() );
             }
         }
     }

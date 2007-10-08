@@ -22,13 +22,13 @@ package org.apache.maven.archiva.consumers.database;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -103,7 +103,7 @@ public class ArtifactUpdateDatabaseConsumer
      */
     private Digester digestMd5;
 
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private File repositoryDir;
 
@@ -136,15 +136,15 @@ public class ArtifactUpdateDatabaseConsumer
         return this.includes;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         this.repository = repository;
-        this.repositoryDir = new File( repository.getUrl().getPath() );
+        this.repositoryDir = new File( repository.getLocation() );
 
         try
         {
-            this.layout = layoutFactory.getLayout( repository.getModel().getLayoutName() );
+            this.layout = layoutFactory.getLayout( repository.getLayout() );
         }
         catch ( LayoutException e )
         {

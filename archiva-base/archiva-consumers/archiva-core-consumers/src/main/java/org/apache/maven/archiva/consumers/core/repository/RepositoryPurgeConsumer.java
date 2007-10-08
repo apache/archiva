@@ -26,7 +26,6 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -116,13 +115,13 @@ public class RepositoryPurgeConsumer
         return this.includes;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         BidirectionalRepositoryLayout repositoryLayout;
         try
         {
-            repositoryLayout = layoutFactory.getLayout( repository.getLayoutType() );
+            repositoryLayout = layoutFactory.getLayout( repository.getLayout() );
         }
         catch ( LayoutException e )
         {

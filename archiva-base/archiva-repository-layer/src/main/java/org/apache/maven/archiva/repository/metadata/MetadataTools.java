@@ -24,8 +24,9 @@ import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -116,7 +117,7 @@ public class MetadataTools
      * @return the Set of available versions, based on the project reference.
      * @throws LayoutException
      */
-    public Set<String> gatherAvailableVersions( ArchivaRepository managedRepository, ProjectReference reference )
+    public Set<String> gatherAvailableVersions( ManagedRepositoryConfiguration managedRepository, ProjectReference reference )
         throws LayoutException, IOException
     {
         String path = toPath( reference );
@@ -127,7 +128,7 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        File repoDir = new File( managedRepository.getUrl().getPath(), path );
+        File repoDir = new File( managedRepository.getLocation(), path );
 
         if ( !repoDir.exists() )
         {
@@ -169,7 +170,7 @@ public class MetadataTools
         return foundVersions;
     }
 
-    private boolean hasArtifact( ArchivaRepository managedRepository, VersionedReference reference )
+    private boolean hasArtifact( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
         throws LayoutException
     {
         try
@@ -192,10 +193,10 @@ public class MetadataTools
      * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
      * @throws LayoutException
      */
-    public ArtifactReference getFirstArtifact( ArchivaRepository managedRepository, VersionedReference reference )
+    public ArtifactReference getFirstArtifact( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
         throws LayoutException, IOException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
+        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
         String path = toPath( reference );
 
         int idx = path.lastIndexOf( '/' );
@@ -204,7 +205,7 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        File repoDir = new File( managedRepository.getUrl().getPath(), path );
+        File repoDir = new File( managedRepository.getLocation(), path );
 
         if ( !repoDir.exists() )
         {
@@ -227,7 +228,7 @@ public class MetadataTools
                 continue;
             }
 
-            String relativePath = PathUtil.getRelative( managedRepository.getUrl().getPath(), repoFiles[i] );
+            String relativePath = PathUtil.getRelative( managedRepository.getLocation(), repoFiles[i] );
 
             if ( matchesArtifactPattern( relativePath ) )
             {
@@ -247,10 +248,10 @@ public class MetadataTools
      * @return the Set of snapshot artifact versions found.
      * @throws LayoutException
      */
-    public Set<String> gatherSnapshotVersions( ArchivaRepository managedRepository, VersionedReference reference )
+    public Set<String> gatherSnapshotVersions( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
         throws LayoutException, IOException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
+        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
         String path = toPath( reference );
 
         int idx = path.lastIndexOf( '/' );
@@ -259,7 +260,7 @@ public class MetadataTools
             path = path.substring( 0, idx );
         }
 
-        File repoDir = new File( managedRepository.getUrl().getPath(), path );
+        File repoDir = new File( managedRepository.getLocation(), path );
 
         if ( !repoDir.exists() )
         {
@@ -285,7 +286,7 @@ public class MetadataTools
                 continue;
             }
 
-            String relativePath = PathUtil.getRelative( managedRepository.getUrl().getPath(), repoFiles[i] );
+            String relativePath = PathUtil.getRelative( managedRepository.getLocation(), repoFiles[i] );
 
             if ( matchesArtifactPattern( relativePath ) )
             {
@@ -490,7 +491,7 @@ public class MetadataTools
      * @param path       the path to the metadata.xml file to adjust the name of.
      * @return the newly adjusted path reference to the repository specific metadata path.
      */
-    public String getRepositorySpecificName( ArchivaRepository repository, String path )
+    public String getRepositorySpecificName( RemoteRepositoryConfiguration repository, String path )
     {
         return getRepositorySpecificName( repository.getId(), path );
     }
@@ -528,11 +529,11 @@ public class MetadataTools
         configuration.addChangeListener( this );
     }
 
-    public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository, ProjectReference reference,
+    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryConfiguration managedRepository, ProjectReference reference,
                                                         String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getUrl().getPath(), metadataPath );
+        File metadataFile = new File( managedRepository.getLocation(), metadataPath );
 
         try
         {
@@ -547,11 +548,11 @@ public class MetadataTools
         }
     }
 
-    public ArchivaRepositoryMetadata readProxyMetadata( ArchivaRepository managedRepository,
+    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryConfiguration managedRepository,
                                                         VersionedReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getUrl().getPath(), metadataPath );
+        File metadataFile = new File( managedRepository.getLocation(), metadataPath );
 
         try
         {
@@ -579,12 +580,12 @@ public class MetadataTools
      * @throws RepositoryMetadataException
      * @throws IOException
      */
-    public void updateMetadata( ArchivaRepository managedRepository, ProjectReference reference )
+    public void updateMetadata( ManagedRepositoryConfiguration managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
     {
         Comparator<String> comparator = VersionComparator.getInstance();
 
-        File metadataFile = new File( managedRepository.getUrl().getPath(), toPath( reference ) );
+        File metadataFile = new File( managedRepository.getLocation(), toPath( reference ) );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
@@ -660,11 +661,11 @@ public class MetadataTools
      * @throws RepositoryMetadataException
      * @throws IOException
      */
-    public void updateMetadata( ArchivaRepository managedRepository, VersionedReference reference )
+    public void updateMetadata( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
         throws LayoutException, RepositoryMetadataException, IOException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
-        File metadataFile = new File( managedRepository.getUrl().getPath(), toPath( reference ) );
+        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
+        File metadataFile = new File( managedRepository.getLocation(), toPath( reference ) );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
@@ -730,7 +731,7 @@ public class MetadataTools
                     throw new IOException( "Not snapshot artifact found to reference in " + reference );
                 }
 
-                File artifactFile = new File( managedRepository.getUrl().getPath(), layout.toPath( artifact ) );
+                File artifactFile = new File( managedRepository.getLocation(), layout.toPath( artifact ) );
 
                 if ( artifactFile.exists() )
                 {

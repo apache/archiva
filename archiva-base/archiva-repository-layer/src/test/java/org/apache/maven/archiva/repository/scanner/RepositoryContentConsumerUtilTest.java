@@ -19,10 +19,11 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.codehaus.plexus.PlexusTestCase;
 import org.easymock.MockControl;
 
@@ -38,7 +39,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class RepositoryContentConsumerUtilTest
-    extends PlexusTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     private RepositoryContentConsumers lookupRepositoryConsumerUtil()
         throws Exception
@@ -118,8 +119,7 @@ public class RepositoryContentConsumerUtilTest
         InvalidRepositoryContentConsumer invalidConsumer = (InvalidRepositoryContentConsumer) invalidControl.getMock();
         consumers.setAvailableInvalidConsumers( Collections.singletonList( invalidConsumer ) );
 
-        ArchivaRepository repo =
-            new ArchivaRepository( "id", "name", getTestFile( "target/test-repo" ).toURL().toExternalForm() );
+        ManagedRepositoryConfiguration repo = createRepository( "id", "name", getTestFile( "target/test-repo" ) );
         File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
         knownConsumer.beginScan( repo );

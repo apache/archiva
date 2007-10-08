@@ -20,8 +20,8 @@ package org.apache.maven.archiva.indexer.functors;
  */
 
 import org.apache.commons.collections.Transformer;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
  * HashcodesIndexTransformer 
@@ -41,9 +41,9 @@ public class HashcodesIndexTransformer
 
     public Object transform( Object input )
     {
-        if ( input instanceof ArchivaRepository )
+        if ( input instanceof ManagedRepositoryConfiguration )
         {
-            return indexFactory.createHashcodeIndex( (ArchivaRepository) input );
+            return indexFactory.createHashcodeIndex( (ManagedRepositoryConfiguration) input );
         }
 
         return input;

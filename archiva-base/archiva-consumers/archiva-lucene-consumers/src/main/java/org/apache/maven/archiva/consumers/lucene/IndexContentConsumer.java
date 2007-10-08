@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.lucene;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -30,7 +31,6 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -97,7 +97,7 @@ public class IndexContentConsumer
 
     private RepositoryContentIndex index;
 
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private File repositoryDir;
 
@@ -128,16 +128,16 @@ public class IndexContentConsumer
         return this.includes;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         this.repository = repository;
-        this.repositoryDir = new File( repository.getUrl().getPath() );
+        this.repositoryDir = new File( repository.getLocation() );
         this.index = indexFactory.createFileContentIndex( repository );
 
         try
         {
-            this.repositoryLayout = layoutFactory.getLayout( this.repository.getLayoutType() );
+            this.repositoryLayout = layoutFactory.getLayout( this.repository.getLayout() );
         }
         catch ( LayoutException e )
         {

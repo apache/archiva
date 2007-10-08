@@ -20,8 +20,8 @@ package org.apache.maven.archiva.repository.layout;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -38,7 +38,7 @@ import java.io.File;
 public abstract class AbstractBidirectionalRepositoryLayoutTestCase
     extends PlexusTestCase
 {
-    protected ArchivaRepository repository;
+    protected ManagedRepositoryConfiguration repository;
 
     protected void setUp()
         throws Exception
@@ -48,7 +48,7 @@ public abstract class AbstractBidirectionalRepositoryLayoutTestCase
         repository = createTestRepository();
     }
 
-    protected ArchivaRepository createTestRepository()
+    protected ManagedRepositoryConfiguration createTestRepository()
     {
         File targetDir = new File( getBasedir(), "target" );
         File testRepo = new File( targetDir, "test-repo" );
@@ -58,9 +58,11 @@ public abstract class AbstractBidirectionalRepositoryLayoutTestCase
             testRepo.mkdirs();
         }
 
-        String repoUri = "file://" + StringUtils.replace( testRepo.getAbsolutePath(), "\\", "/" );
-
-        return new ArchivaRepository( "testRepo", "Test Repository", repoUri );
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( "testRepo" );
+        repo.setName( "Test Repository" );
+        repo.setLocation( testRepo.getAbsolutePath() );
+        return repo;
     }
 
     protected ArchivaArtifact createArtifact( String groupId, String artifactId, String version, String classifier,
@@ -92,8 +94,8 @@ public abstract class AbstractBidirectionalRepositoryLayoutTestCase
     protected void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                             String version, String classifier, String type )
     {
-        String expectedId =
-            "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
+        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier
+            + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 

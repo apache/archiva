@@ -21,10 +21,10 @@ package org.apache.maven.archiva.consumers.core;
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
@@ -99,7 +99,7 @@ public class ArtifactMissingChecksumsConsumer
 
     private static final String TYPE_CHECKSUM_CANNOT_CREATE = "checksum-create-failure";
 
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private File repositoryDir;
 
@@ -124,13 +124,13 @@ public class ArtifactMissingChecksumsConsumer
         return false;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         this.repository = repository;
-        this.repositoryDir = new File( repository.getUrl().getPath() );
+        this.repositoryDir = new File( repository.getLocation() );
 
-        String layoutName = repository.getModel().getLayoutName();
+        String layoutName = repository.getLayout();
         if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
         {
             throw new ConsumerException( "Unable to process repository with layout [" + layoutName +

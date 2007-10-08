@@ -19,7 +19,8 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.repository.connector.RepositoryConnector;
 
 import java.util.Iterator;
@@ -35,9 +36,9 @@ import java.util.Map;
 public class ProxyConnector
     implements RepositoryConnector
 {
-    private ArchivaRepository sourceRepository;
+    private ManagedRepositoryConfiguration sourceRepository;
 
-    private ArchivaRepository targetRepository;
+    private RemoteRepositoryConfiguration targetRepository;
 
     private List<String> blacklist;
 
@@ -59,22 +60,22 @@ public class ProxyConnector
         this.blacklist = blacklist;
     }
 
-    public ArchivaRepository getSourceRepository()
+    public ManagedRepositoryConfiguration getSourceRepository()
     {
         return sourceRepository;
     }
 
-    public void setSourceRepository( ArchivaRepository sourceRepository )
+    public void setSourceRepository( ManagedRepositoryConfiguration sourceRepository )
     {
         this.sourceRepository = sourceRepository;
     }
 
-    public ArchivaRepository getTargetRepository()
+    public RemoteRepositoryConfiguration getTargetRepository()
     {
         return targetRepository;
     }
 
-    public void setTargetRepository( ArchivaRepository targetRepository )
+    public void setTargetRepository( RemoteRepositoryConfiguration targetRepository )
     {
         this.targetRepository = targetRepository;
     }

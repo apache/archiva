@@ -22,7 +22,6 @@ package org.apache.maven.archiva.database.jdo;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
-import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -60,11 +59,6 @@ public class JdoArchivaDAO
     /**
      * @plexus.requirement role-hint="jdo"
      */
-    private RepositoryDAO repositoryDAO;
-
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
     private RepositoryProblemDAO repositoryProblemDAO;
 
     public List query( SimpleConstraint constraint )
@@ -85,11 +79,6 @@ public class JdoArchivaDAO
     public ProjectModelDAO getProjectModelDAO()
     {
         return projectModelDAO;
-    }
-
-    public RepositoryDAO getRepositoryDAO()
-    {
-        return repositoryDAO;
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()

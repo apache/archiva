@@ -22,9 +22,9 @@ package org.apache.maven.archiva.indexer;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Searchable;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.util.Collection;
@@ -116,7 +116,7 @@ public interface RepositoryContentIndex
      * 
      * @return the repository that this index belongs to.
      */
-    ArchivaRepository getRepository();
+    ManagedRepositoryConfiguration getRepository();
 
     /**
      * Get the analyzer in use for this index.

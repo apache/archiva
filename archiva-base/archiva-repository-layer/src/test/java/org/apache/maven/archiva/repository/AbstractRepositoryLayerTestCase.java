@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.connector;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,22 +21,34 @@ package org.apache.maven.archiva.repository.connector;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.codehaus.plexus.PlexusTestCase;
 
-import java.util.List;
+import java.io.File;
 
 /**
- * RepositoryConnector 
+ * AbstractRepositoryLayerTestCase 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface RepositoryConnector
+public abstract class AbstractRepositoryLayerTestCase
+    extends PlexusTestCase
 {
-    public ManagedRepositoryConfiguration getSourceRepository();
+    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( location.getAbsolutePath() );
+        return repo;
+    }
 
-    public RemoteRepositoryConfiguration getTargetRepository();
-
-    public List<String> getBlacklist();
-    
-    public List<String> getWhitelist();
+    protected RemoteRepositoryConfiguration createRemoteRepository( String id, String name, String url )
+    {
+        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setUrl( url );
+        return repo;
+    }
 }

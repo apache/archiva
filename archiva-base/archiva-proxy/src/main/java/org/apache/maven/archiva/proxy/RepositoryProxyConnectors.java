@@ -19,7 +19,7 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -47,7 +47,7 @@ public interface RepositoryProxyConnectors
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ArtifactReference artifact )
         throws ProxyException;
     
     /**
@@ -62,7 +62,7 @@ public interface RepositoryProxyConnectors
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ArchivaRepository repository, VersionedReference metadata )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, VersionedReference metadata )
         throws ProxyException;
     
     /**
@@ -77,7 +77,7 @@ public interface RepositoryProxyConnectors
      * @return true if the fetch operation succeeded in obtaining content, false if no content was obtained.
      * @throws ProxyException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ArchivaRepository repository, ProjectReference metadata )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ProjectReference metadata )
         throws ProxyException;
 
     /**
@@ -86,7 +86,7 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to look for.
      * @return the List of {@link ProxyConnector} objects.
      */
-    public List<ProxyConnector> getProxyConnectors( ArchivaRepository repository );
+    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryConfiguration repository );
 
     /**
      * Tests to see if the provided repository is a source repository for
@@ -96,5 +96,5 @@ public interface RepositoryProxyConnectors
      * @return true if there are proxy connectors that use the provided 
      *   repository as a source repository.
      */
-    public boolean hasProxies( ArchivaRepository repository );
+    public boolean hasProxies( ManagedRepositoryConfiguration repository );
 }

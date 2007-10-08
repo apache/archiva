@@ -19,11 +19,9 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
-import org.apache.maven.archiva.repository.RepositoryException;
-import org.codehaus.plexus.PlexusTestCase;
+import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +35,7 @@ import java.util.List;
  * @version $Id$
  */
 public class RepositoryScannerTest
-    extends PlexusTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     private static final String[] ARTIFACT_PATTERNS = new String[] {
         "**/*.jar",
@@ -47,29 +45,25 @@ public class RepositoryScannerTest
         "**/*.war",
         "**/*.tar.gz" };
 
-    private ArchivaRepository createDefaultRepository()
+    private ManagedRepositoryConfiguration createDefaultRepository()
     {
         File repoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
-
-        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
-        ArchivaRepository repo = new ArchivaRepository( "testDefaultRepo", "Test Default Repository", repoUri );
+        
+        ManagedRepositoryConfiguration repo = createRepository( "testDefaultRepo", "Test Default Repository", repoDir );
 
         return repo;
     }
 
-    private ArchivaRepository createLegacyRepository()
+    private ManagedRepositoryConfiguration createLegacyRepository()
     {
         File repoDir = new File( getBasedir(), "src/test/repositories/legacy-repository" );
 
         assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
-        ArchivaRepository repo = new ArchivaRepository( "testLegacyRepo", "Test Legacy Repository", repoUri );
-        repo.getModel().setLayoutName( "legacy" );
+        ManagedRepositoryConfiguration repo = createRepository( "testLegacyRepo", "Test Legacy Repository", repoDir );
+        repo.setLayout( "legacy" );
 
         return repo;
     }
@@ -99,7 +93,7 @@ public class RepositoryScannerTest
     public void testDefaultRepositoryScanner()
         throws Exception
     {
-        ArchivaRepository repository = createDefaultRepository();
+        ManagedRepositoryConfiguration repository = createDefaultRepository();
 
         List knownConsumers = new ArrayList();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -166,7 +160,7 @@ public class RepositoryScannerTest
         actualArtifactPaths.add( "org/apache/testgroup/discovery/1.0/discovery-1.0.pom" );
         actualArtifactPaths.add( "javax/sql/jdbc/2.0/jdbc-2.0.jar" );
 
-        ArchivaRepository repository = createDefaultRepository();
+        ManagedRepositoryConfiguration repository = createDefaultRepository();
 
         List knownConsumers = new ArrayList();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -202,7 +196,7 @@ public class RepositoryScannerTest
         actualMetadataPaths.add( "javax/sql/maven-metadata-repository.xml" );
         actualMetadataPaths.add( "javax/maven-metadata.xml" );
 
-        ArchivaRepository repository = createDefaultRepository();
+        ManagedRepositoryConfiguration repository = createDefaultRepository();
 
         List knownConsumers = new ArrayList();
         KnownScanConsumer knownConsumer = new KnownScanConsumer();
@@ -238,7 +232,7 @@ public class RepositoryScannerTest
         actualProjectPaths.add( "org/apache/maven/samplejar/1.0/samplejar-1.0.pom" );
         actualProjectPaths.add( "org/apache/testgroup/discovery/1.0/discovery-1.0.pom" );
 
-        ArchivaRepository repository = createDefaultRepository();
+        ManagedRepositoryConfiguration repository = createDefaultRepository();
 
         List knownConsumers = new ArrayList();
         KnownScanConsumer consumer = new KnownScanConsumer();
@@ -278,7 +272,7 @@ public class RepositoryScannerTest
         actualArtifactPaths.add( "org.apache.maven.update/jars/test-not-updated-1.0.jar" );
         actualArtifactPaths.add( "org.apache.maven.update/jars/test-updated-1.0.jar" );
 
-        ArchivaRepository repository = createLegacyRepository();
+        ManagedRepositoryConfiguration repository = createLegacyRepository();
 
         List knownConsumers = new ArrayList();
         KnownScanConsumer consumer = new KnownScanConsumer();

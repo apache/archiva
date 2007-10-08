@@ -24,13 +24,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -167,7 +168,10 @@ public class ArchivaCli
     {
         String path = cli.getOptionValue( SCAN );
 
-        ArchivaRepository repo = new ArchivaRepository( "cliRepo", "Archiva CLI Provided Repo", "file://" + path );
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( "cliRepo" );
+        repo.setName( "Archiva CLI Provided Repo" );
+        repo.setLocation( path );
 
         List knownConsumerList = new ArrayList();
 
@@ -182,8 +186,8 @@ public class ArchivaCli
 
         try
         {
-            RepositoryContentStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList,
-                                                              ignoredContent, RepositoryScanner.FRESH_SCAN );
+            RepositoryScanStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList,
+                                                           ignoredContent, RepositoryScanner.FRESH_SCAN );
 
             System.out.println( "\n" + stats.toDump( repo ) );
         }

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * @param repository the repository that this consumer is being used for.
      * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
      */
-    public void beginScan( ArchivaRepository repository ) throws ConsumerException;
+    public void beginScan( ManagedRepositoryConfiguration repository ) throws ConsumerException;
 
     /**
      * <p>

@@ -20,9 +20,9 @@ package org.apache.maven.archiva.repository.scanner.functors;
  */
 
 import org.apache.commons.collections.Closure;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.logging.Logger;
 
 /**
@@ -34,11 +34,11 @@ import org.codehaus.plexus.logging.Logger;
 public class TriggerBeginScanClosure
     implements Closure
 {
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private Logger logger;
 
-    public TriggerBeginScanClosure( ArchivaRepository repository, Logger logger )
+    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Logger logger )
     {
         this.repository = repository;
         this.logger = logger;

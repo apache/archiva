@@ -20,14 +20,16 @@ package org.apache.maven.archiva.proxy;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.policies.CachedFailuresPolicy;
+import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
@@ -93,11 +95,11 @@ public abstract class AbstractProxyTestCase
 
     protected RepositoryProxyConnectors proxyHandler;
 
-    protected ArchivaRepository managedDefaultRepository;
+    protected ManagedRepositoryConfiguration managedDefaultRepository;
 
     protected File managedDefaultDir;
 
-    protected ArchivaRepository managedLegacyRepository;
+    protected ManagedRepositoryConfiguration managedLegacyRepository;
 
     protected File managedLegacyDir;
 
@@ -246,40 +248,25 @@ public abstract class AbstractProxyTestCase
         return ref;
     }
 
-    protected ArchivaRepository createManagedLegacyRepository()
+    protected ManagedRepositoryConfiguration createManagedLegacyRepository()
     {
-        return createRepository( "src/test/repositories/legacy-managed", "testManagedLegacyRepo",
-                                 "Test Managed (Legacy) Repository", "legacy" );
+        return createRepository( "testManagedLegacyRepo", "Test Managed (Legacy) Repository",
+                                 "src/test/repositories/legacy-managed", "legacy" );
     }
 
-    protected ArchivaRepository createProxiedLegacyRepository()
+    protected ManagedRepositoryConfiguration createProxiedLegacyRepository()
     {
-        return createRepository( "src/test/repositories/legacy-proxied", "testProxiedLegacyRepo",
-                                 "Test Proxied (Legacy) Repository", "legacy" );
+        return createRepository( "testProxiedLegacyRepo", "Test Proxied (Legacy) Repository",
+                                 "src/test/repositories/legacy-proxied", "legacy" );
     }
 
-    protected ManagedRepositoryConfiguration createRepoConfig( ArchivaRepository repo )
+    protected ManagedRepositoryConfiguration createRepository( String id, String name, String path, String layout )
     {
-        return createRepoConfig( repo.getId(), repo.getName(), repo.getUrl().toString(), repo.getLayoutType() );
-    }
-
-    protected ManagedRepositoryConfiguration createRepoConfig( String id, String name, String path, String layout )
-    {
-        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
-
-        repoConfig.setId( id );
-        repoConfig.setName( name );
-
-        repoConfig.setLocation( path );
-        repoConfig.setLayout( layout );
-
-        return repoConfig;
-    }
-
-    protected ArchivaRepository createRepository( String id, String name, String path, String layout )
-    {
-        ArchivaRepository repo = new ArchivaRepository( id, name, PathUtil.toUrl( path ) );
-        repo.getModel().setLayoutName( layout );
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( path );
+        repo.setLayout( layout );
 
         return repo;
     }
@@ -320,6 +307,12 @@ public abstract class AbstractProxyTestCase
             }
         }
     }
+    
+    protected void saveConnector( String sourceRepoId, String targetRepoId )
+    {
+        saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
+                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+    }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
                                   String snapshotPolicy, String cacheFailuresPolicy )
@@ -356,24 +349,33 @@ public abstract class AbstractProxyTestCase
 
         repoConfig.setLocation( path );
 
+        int count = config.getConfiguration().getManagedRepositories().size();
         config.getConfiguration().addManagedRepository( repoConfig );
 
-        config.triggerChange( "repository", "" );
+        String prefix = "managedRepositories.managedRepository(" + count + ")";
+        config.triggerChange( prefix + ".id", repoConfig.getId() );
+        config.triggerChange( prefix + ".name", repoConfig.getName() );
+        config.triggerChange( prefix + ".location", repoConfig.getLocation() );
+        config.triggerChange( prefix + ".layout", repoConfig.getLayout() );
     }
 
-    protected void saveRemoteRepositoryConfig( String id, String name, String path, String layout )
+    protected void saveRemoteRepositoryConfig( String id, String name, String url, String layout )
     {
         RemoteRepositoryConfiguration repoConfig = new RemoteRepositoryConfiguration();
 
         repoConfig.setId( id );
         repoConfig.setName( name );
         repoConfig.setLayout( layout );
+        repoConfig.setUrl( url );
 
-        repoConfig.setUrl( path );
-
+        int count = config.getConfiguration().getRemoteRepositories().size();
         config.getConfiguration().addRemoteRepository( repoConfig );
 
-        config.triggerChange( "repository", "" );
+        String prefix = "remoteRepositories.remoteRepository(" + count + ")";
+        config.triggerChange( prefix + ".id", repoConfig.getId() );
+        config.triggerChange( prefix + ".name", repoConfig.getName() );
+        config.triggerChange( prefix + ".url", repoConfig.getUrl() );
+        config.triggerChange( prefix + ".layout", repoConfig.getLayout() );
     }
 
     protected File saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )
@@ -388,6 +390,7 @@ public abstract class AbstractProxyTestCase
         return repoLocation;
     }
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -405,9 +408,9 @@ public abstract class AbstractProxyTestCase
         managedDefaultRepository =
             createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
 
-        managedDefaultDir = new File( managedDefaultRepository.getUrl().getPath() );
+        managedDefaultDir = new File( managedDefaultRepository.getLocation() );
 
-        ManagedRepositoryConfiguration repoConfig = createRepoConfig( managedDefaultRepository );
+        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository;
 
         config.getConfiguration().addManagedRepository( repoConfig );
 
@@ -419,9 +422,9 @@ public abstract class AbstractProxyTestCase
         managedLegacyRepository = createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository",
                                                     REPOPATH_LEGACY_MANAGED_TARGET, "legacy" );
 
-        managedLegacyDir = new File( managedLegacyRepository.getUrl().getPath() );
+        managedLegacyDir = new File( managedLegacyRepository.getLocation() );
 
-        repoConfig = createRepoConfig( managedLegacyRepository );
+        repoConfig = managedLegacyRepository;
 
         config.getConfiguration().addManagedRepository( repoConfig );
 
@@ -484,7 +487,7 @@ public abstract class AbstractProxyTestCase
         {
             // This is just a warning.
             System.err.println(
-                "Skipping setup of testable managed repsoitory, source dir does not exist: " + sourceDir );
+                "[WARN] Skipping setup of testable managed repository, source dir does not exist: " + sourceDir );
             return;
         }
 

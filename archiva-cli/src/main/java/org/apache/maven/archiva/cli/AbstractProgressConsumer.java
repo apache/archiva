@@ -19,10 +19,10 @@ package org.apache.maven.archiva.cli;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 /**
  * AbstractProgressConsumer 
@@ -36,7 +36,7 @@ public abstract class AbstractProgressConsumer
 {
     private int count = 0;
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         this.count = 0;

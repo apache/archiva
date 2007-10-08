@@ -31,8 +31,6 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -184,17 +182,16 @@ public class IndexArtifactConsumer
             Iterator<ManagedRepositoryConfiguration> it = configuration.getConfiguration().getManagedRepositories().iterator();
             while ( it.hasNext() )
             {
-                ManagedRepositoryConfiguration repoconfig = it.next();
+                ManagedRepositoryConfiguration repository = it.next();
 
-                ArchivaRepository repository = ArchivaConfigurationAdaptor.toArchivaRepository( repoconfig );
                 IndexedRepositoryDetails pnl = new IndexedRepositoryDetails();
 
-                pnl.path = repository.getUrl().getPath();
-                pnl.layout = (BidirectionalRepositoryLayout) this.bidirectionalLayoutMap.get( repoconfig.getLayout() );
+                pnl.path = repository.getLocation();
+                pnl.layout = (BidirectionalRepositoryLayout) this.bidirectionalLayoutMap.get( repository.getLayout() );
 
                 pnl.index = indexFactory.createHashcodeIndex( repository );
 
-                this.repositoryMap.put( repoconfig.getId(), pnl );
+                this.repositoryMap.put( repository.getId(), pnl );
             }
         }
     }

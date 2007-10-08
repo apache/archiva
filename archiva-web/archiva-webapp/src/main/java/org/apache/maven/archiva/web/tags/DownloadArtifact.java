@@ -22,28 +22,31 @@ package org.apache.maven.archiva.web.tags;
 import com.opensymphony.webwork.WebWorkException;
 import com.opensymphony.webwork.components.Component;
 import com.opensymphony.xwork.util.OgnlValueStack;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.PageContext;
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.PageContext;
 
 /**
  * DownloadArtifact
@@ -60,6 +63,11 @@ public class DownloadArtifact
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
+    
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * @plexus.requirement
@@ -110,8 +118,8 @@ public class DownloadArtifact
             if ( relatedArtifacts != null )
             {
                 String repoId = ( (ArchivaArtifact) relatedArtifacts.get( 0 ) ).getModel().getRepositoryId();
-                ArchivaRepository repo = dao.getRepositoryDAO().getRepository( repoId );
-                BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayoutType() );
+                ManagedRepositoryConfiguration repo = findRepository( repoId );
+                BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayout() );
 
                 String prefix = req.getContextPath() + "/repository/" + repoId;
 
@@ -150,18 +158,23 @@ public class DownloadArtifact
         return super.end( writer, body );
     }
 
+    private ManagedRepositoryConfiguration findRepository( String repoId )
+    {
+        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
+    }
+
     private void appendError( StringBuffer sb, Exception e )
     {
         /* do nothing */
     }
 
-    private void appendMini( StringBuffer sb, String prefix, ArchivaRepository repo,
+    private void appendMini( StringBuffer sb, String prefix, ManagedRepositoryConfiguration repo,
                              BidirectionalRepositoryLayout layout, List relatedArtifacts )
     {
         /* do nothing */
     }
 
-    private void appendNormal( StringBuffer sb, String prefix, ArchivaRepository repo,
+    private void appendNormal( StringBuffer sb, String prefix, ManagedRepositoryConfiguration repo,
                                BidirectionalRepositoryLayout layout, List relatedArtifacts )
     {
         /*

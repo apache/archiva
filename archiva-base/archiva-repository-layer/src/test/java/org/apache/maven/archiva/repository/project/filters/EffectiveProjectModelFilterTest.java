@@ -20,10 +20,11 @@ package org.apache.maven.archiva.repository.project.filters;
  */
 
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Individual;
+import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
@@ -32,8 +33,7 @@ import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
 import org.apache.maven.archiva.repository.project.readers.ProjectModel400Reader;
-import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectResolver;
-import org.codehaus.plexus.PlexusTestCase;
+import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 
 import java.io.File;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class EffectiveProjectModelFilterTest
-    extends PlexusTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     private static final String DEFAULT_REPOSITORY = "src/test/repositories/default-repository";
 
@@ -72,12 +72,11 @@ public class EffectiveProjectModelFilterTest
     {
         File defaultRepoDir = new File( getBasedir(), DEFAULT_REPOSITORY );
 
-        ArchivaRepository repo = new ArchivaRepository( "defaultTestRepo", "Default Test Repo", "file://"
-            + defaultRepoDir.getAbsolutePath() );
+        ManagedRepositoryConfiguration repo = createRepository( "defaultTestRepo", "Default Test Repo", defaultRepoDir );
 
         ProjectModelReader reader = new ProjectModel400Reader();
         BidirectionalRepositoryLayout layout = new DefaultBidirectionalRepositoryLayout();
-        RepositoryProjectResolver resolver = new RepositoryProjectResolver( repo, reader, layout );
+        ManagedRepositoryProjectResolver resolver = new ManagedRepositoryProjectResolver( repo, reader, layout );
 
         return resolver;
     }

@@ -20,12 +20,11 @@ package org.apache.maven.archiva.scheduled.executors;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
@@ -142,27 +141,12 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
     public void testExecutor()
         throws Exception
     {
-        RepositoryDAO repoDao = dao.getRepositoryDAO();
-
         File repoDir = new File( getBasedir(), "src/test/repositories/default-repository" );
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
-        // Create it
-        ArchivaRepository repo = repoDao.createRepository( "testRepo", "Test Repository", repoUri );
+        ManagedRepositoryConfiguration repo = createRepository( "testRepo", "Test Repository", repoDir );
         assertNotNull( repo );
-
-        // Set some mandatory values
-        repo.getModel().setCreationSource( "Test Case" );
-        repo.getModel().setLayoutName( "default" );
-
-        // Save it.
-        ArchivaRepository repoSaved = repoDao.saveRepository( repo );
-        assertNotNull( repoSaved );
-        assertNotNull( repoSaved.getModel() );
-        assertEquals( "testRepo", JDOHelper.getObjectId( repoSaved.getModel() ).toString() );
 
         ArtifactDAO adao = dao.getArtifactDAO();
 
@@ -204,5 +188,14 @@ public class ArchivaDatabaseUpdateTaskExecutorTest
         List processedResultList = adao.queryArtifacts( new ArtifactsProcessedConstraint( true ) );
         assertNotNull( "Processed Results should not be null.", processedResultList );
         assertEquals( "Incorrect number of processed artifacts detected.", 1, processedResultList.size() );
+    }
+    
+    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( location.getAbsolutePath() );
+        return repo;
     }
 }

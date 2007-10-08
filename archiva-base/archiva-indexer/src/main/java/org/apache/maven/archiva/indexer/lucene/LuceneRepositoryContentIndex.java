@@ -29,10 +29,10 @@ import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Searchable;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -64,9 +64,9 @@ public class LuceneRepositoryContentIndex
      */
     private LuceneIndexHandlers indexHandlers;
     
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
-    public LuceneRepositoryContentIndex( ArchivaRepository repository, File indexDir, LuceneIndexHandlers handlers )
+    public LuceneRepositoryContentIndex( ManagedRepositoryConfiguration repository, File indexDir, LuceneIndexHandlers handlers )
     {
         this.repository = repository;
         this.indexLocation = indexDir;
@@ -399,7 +399,7 @@ public class LuceneRepositoryContentIndex
         return this.indexHandlers.getId();
     }
 
-    public ArchivaRepository getRepository()
+    public ManagedRepositoryConfiguration getRepository()
     {
         return repository;
     }

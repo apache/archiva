@@ -21,23 +21,17 @@ package org.apache.maven.archiva.repository.scanner;
 
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.IfClosure;
-import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.consumers.functors.PermanentConsumerPredicate;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +49,6 @@ import java.util.Map;
  */
 public class RepositoryContentConsumers
     extends AbstractLogEnabled
-    implements Initializable
 {
     /**
      * @plexus.requirement
@@ -72,122 +65,82 @@ public class RepositoryContentConsumers
      */
     private List<InvalidRepositoryContentConsumer> availableInvalidConsumers;
 
-    private Predicate selectedKnownPredicate;
-
-    private Predicate selectedInvalidPredicate;
-
-    class SelectedKnownRepoConsumersPredicate
-        implements Predicate
-    {
-        public boolean evaluate( Object object )
-        {
-            boolean satisfies = false;
-
-            if ( object instanceof KnownRepositoryContentConsumer )
-            {
-                KnownRepositoryContentConsumer known = (KnownRepositoryContentConsumer) object;
-                RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration()
-                    .getRepositoryScanning();
-
-                return scanning.getKnownContentConsumers().contains( known.getId() );
-            }
-
-            return satisfies;
-        }
-    }
-
-    class SelectedInvalidRepoConsumersPredicate
-        implements Predicate
-    {
-        public boolean evaluate( Object object )
-        {
-            boolean satisfies = false;
-
-            if ( object instanceof InvalidRepositoryContentConsumer )
-            {
-                InvalidRepositoryContentConsumer invalid = (InvalidRepositoryContentConsumer) object;
-                RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration()
-                    .getRepositoryScanning();
-
-                return scanning.getInvalidContentConsumers().contains( invalid.getId() );
-            }
-
-            return satisfies;
-        }
-    }
-
-    class RepoConsumerToMapClosure
-        implements Closure
-    {
-        private Map map = new HashMap();
-
-        public void execute( Object input )
-        {
-            if ( input instanceof RepositoryContentConsumer )
-            {
-                RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-                map.put( consumer.getId(), consumer );
-            }
-        }
-
-        public Map getMap()
-        {
-            return map;
-        }
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        Predicate permanentConsumers = new PermanentConsumerPredicate();
-
-        this.selectedKnownPredicate = new OrPredicate( permanentConsumers, new SelectedKnownRepoConsumersPredicate() );
-        this.selectedInvalidPredicate = new OrPredicate( permanentConsumers,
-                                                         new SelectedInvalidRepoConsumersPredicate() );
-    }
-
-    public List getSelectedKnownConsumerIds()
+    public List<String> getSelectedKnownConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
         return scanning.getKnownContentConsumers();
     }
 
-    public List getSelectedInvalidConsumerIds()
+    public List<String> getSelectedInvalidConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
         return scanning.getInvalidContentConsumers();
     }
 
-    public Map getSelectedKnownConsumersMap()
+    public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
     {
-        RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
-        Closure ifclosure = IfClosure.getInstance( selectedKnownPredicate, consumerMapClosure );
-        CollectionUtils.forAllDo( availableKnownConsumers, ifclosure );
+        Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<String, KnownRepositoryContentConsumer>();
 
-        return consumerMapClosure.getMap();
+        List<String> knownSelected = getSelectedKnownConsumerIds();
+
+        for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+        {
+            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                consumerMap.put( consumer.getId(), consumer );
+            }
+        }
+
+        return consumerMap;
     }
 
-    public Map getSelectedInvalidConsumersMap()
+    public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
     {
-        RepoConsumerToMapClosure consumerMapClosure = new RepoConsumerToMapClosure();
-        Closure ifclosure = IfClosure.getInstance( selectedInvalidPredicate, consumerMapClosure );
-        CollectionUtils.forAllDo( availableInvalidConsumers, ifclosure );
+        Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<String, InvalidRepositoryContentConsumer>();
 
-        return consumerMapClosure.getMap();
+        List<String> invalidSelected = getSelectedInvalidConsumerIds();
+
+        for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+        {
+            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                consumerMap.put( consumer.getId(), consumer );
+            }
+        }
+
+        return consumerMap;
     }
 
-    public List getSelectedKnownConsumers()
+    public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
     {
-        List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( availableKnownConsumers, selectedKnownPredicate ) );
+        List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
+
+        List<String> knownSelected = getSelectedInvalidConsumerIds();
+
+        for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+        {
+            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                ret.add( consumer );
+            }
+        }
 
         return ret;
     }
 
-    public List getSelectedInvalidConsumers()
+    public List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
     {
-        List ret = new ArrayList();
-        ret.addAll( CollectionUtils.select( availableInvalidConsumers, selectedInvalidPredicate ) );
+        List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
+
+        List<String> invalidSelected = getSelectedInvalidConsumerIds();
+
+        for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+        {
+            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            {
+                ret.add( consumer );
+            }
+        }
 
         return ret;
     }
@@ -212,7 +165,7 @@ public class RepositoryContentConsumers
         this.availableInvalidConsumers = availableInvalidConsumers;
     }
 
-    public void executeConsumers( ArchivaRepository repository, File localFile )
+    public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile )
     {
         // Run the repository consumers
         try
@@ -224,7 +177,7 @@ public class RepositoryContentConsumers
 
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
-            BaseFile baseFile = new BaseFile( repository.getUrl().getPath(), localFile );
+            BaseFile baseFile = new BaseFile( repository.getLocation(), localFile );
             ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
             predicate.setBasefile( baseFile );
             ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure( getLogger() );
@@ -242,10 +195,10 @@ public class RepositoryContentConsumers
         }
         finally
         {
-/* TODO: This is never called by the repository scanner instance, so not calling here either - but it probably should be?
-            CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
-            CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
-*/
+            /* TODO: This is never called by the repository scanner instance, so not calling here either - but it probably should be?
+                        CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
+                        CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
+            */
         }
     }
 

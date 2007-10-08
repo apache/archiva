@@ -21,8 +21,8 @@ package org.apache.maven.archiva.converter.legacy;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.converter.RepositoryConversionException;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -72,23 +72,13 @@ public class DefaultLegacyRepositoryConverter
     {
         try
         {
-            String legacyRepositoryUrl = PathUtil.toUrl( legacyRepositoryDirectory );
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            // workaround for spaces non converted by PathUtils in wagon
-            // TODO: remove it when PathUtils will be fixed
-            if ( legacyRepositoryUrl.indexOf( "%20" ) >= 0 )
-            {
-                legacyRepositoryUrl = StringUtils.replace( legacyRepositoryUrl, "%20", " " );
-            }
-            if ( defaultRepositoryUrl.indexOf( "%20" ) >= 0 )
-            {
-                defaultRepositoryUrl = StringUtils.replace( defaultRepositoryUrl, "%20", " " );
-            }
-
-            ArchivaRepository legacyRepository = new ArchivaRepository( "legacy", "Legacy Repository",
-                                                                        legacyRepositoryUrl );
-            legacyRepository.getModel().setLayoutName( "legacy" );
+            ManagedRepositoryConfiguration legacyRepository = new ManagedRepositoryConfiguration();
+            legacyRepository.setId( "legacy");
+            legacyRepository.setName( "Legacy Repository" );
+            legacyRepository.setLocation( legacyRepositoryDirectory.getAbsolutePath() );
+            legacyRepository.setLayout( "legacy" );
 
             ArtifactRepository repository = artifactRepositoryFactory.createArtifactRepository( "default",
                                                                                                 defaultRepositoryUrl,

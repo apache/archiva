@@ -286,10 +286,8 @@ public class ManagedDefaultTransferTest
         wagonMockControl.replay();
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied" );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2 );
 
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -307,7 +305,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
         ArtifactReference artifact = createArtifactReference( "default", path );
 
         expectedFile.delete();
@@ -318,15 +316,14 @@ public class ManagedDefaultTransferTest
         saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://dead.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied1" );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied2" );
 
-        wagonMock.getIfNewer( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ), 0 );
+        File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
+        wagonMock.getIfNewer( path, tmpFile, 0 );
         wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
 
-        wagonMock.getIfNewer( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ), 0 );
+        wagonMock.getIfNewer( path, tmpFile, 0 );
         wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
 
         wagonMockControl.replay();

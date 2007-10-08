@@ -22,8 +22,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
@@ -53,7 +53,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
     private RepositoryMetadataReader metadataReader;
 
-    public CleanupReleasedSnapshotsRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+    public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
                                                     ArtifactDAO artifactDao )
     {
         super( repository, layout, artifactDao );
@@ -65,7 +65,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getUrl().getPath(), path );
+            File artifactFile = new File( repository.getLocation(), path );
 
             if ( !artifactFile.exists() )
             {

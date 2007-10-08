@@ -20,9 +20,8 @@ package org.apache.maven.archiva.converter;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
@@ -49,7 +48,7 @@ public class RepositoryConverterTest
 {
     private ArtifactRepository sourceRepository;
 
-    private ArchivaRepository targetRepository;
+    private ManagedRepositoryConfiguration targetRepository;
 
     private LegacyRepositoryConverter repositoryConverter;
 
@@ -77,8 +76,11 @@ public class RepositoryConverterTest
         File targetBase = getTestFile( "target/test-target-repository" );
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
-        targetRepository = new ArchivaRepository( "target", "Target Repo", PathUtil.toUrl( targetBase ) );
-        targetRepository.getModel().setLayoutName( "default" );
+        targetRepository = new ManagedRepositoryConfiguration();
+        targetRepository.setId( "target" );
+        targetRepository.setName( "Target Repo" );
+        targetRepository.setLocation( targetBase.getAbsolutePath() );
+        targetRepository.setLayout( "default" );
 
         repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
 
@@ -144,7 +146,7 @@ public class RepositoryConverterTest
         throws IOException, RepositoryConversionException
     {
         File legacyRepoDir = new File( sourceRepository.getBasedir() );
-        File destRepoDir = new File( targetRepository.getUrl().getPath() );
+        File destRepoDir = new File( targetRepository.getLocation() );
         List excludes = new ArrayList();
         repositoryConverter.convertLegacyRepository( legacyRepoDir, destRepoDir, excludes );
     }

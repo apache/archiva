@@ -21,13 +21,13 @@ package org.apache.maven.archiva.scheduled.executors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -57,11 +57,11 @@ public class ArchivaRepositoryScanningTaskExecutor
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
-
+    
     /**
-     * @plexus.requirement role-hint="jdo"
+     * @plexus.requirement
      */
-    private RepositoryDAO repositoryDAO;
+    private ArchivaConfiguration archivaConfiguration;
 
     /**
      * The repository scanner component.
@@ -90,11 +90,11 @@ public class ArchivaRepositoryScanningTaskExecutor
         
         try
         {
-            ArchivaRepository arepo = repositoryDAO.getRepository( repoTask.getRepositoryId() );
+            ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoTask.getRepositoryId() );
 
             long sinceWhen = RepositoryScanner.FRESH_SCAN;
 
-            List results = dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
+            List<RepositoryContentStatistics> results = dao.query( new MostRecentRepositoryScanStatistics( arepo.getId() ) );
 
             if ( CollectionUtils.isNotEmpty( results ) )
             {
@@ -102,15 +102,19 @@ public class ArchivaRepositoryScanningTaskExecutor
                 sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
             }
 
-            RepositoryContentStatistics stats = repoScanner.scan( arepo, sinceWhen );
+            RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );
 
             getLogger().info( "Finished repository task: " + stats.toDump( arepo ) );
             
-            stats = (RepositoryContentStatistics) dao.save( stats );
-        }
-        catch ( ArchivaDatabaseException e )
-        {
-            throw new TaskExecutionException( "Database error when executing repository job.", e );
+            // I hate jpox and modello
+            RepositoryContentStatistics dbstats = new RepositoryContentStatistics();
+            dbstats.setDuration( stats.getDuration() );
+            dbstats.setNewFileCount( stats.getNewFileCount() );
+            dbstats.setRepositoryId( stats.getRepositoryId() );
+            dbstats.setTotalFileCount( stats.getTotalFileCount() );
+            dbstats.setWhenGathered( stats.getWhenGathered() );
+            
+            dao.save( dbstats );
         }
         catch ( RepositoryException e )
         {

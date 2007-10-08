@@ -19,12 +19,12 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.maven.archiva.converter.artifact.ArtifactConverter;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -79,7 +79,7 @@ public class LegacyConverterArtifactConsumer
         includes.add( "**/*.war" );
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
 

@@ -19,12 +19,10 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -33,8 +31,6 @@ import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
 import org.jpox.SchemaTool;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import java.io.File;
 import java.net.URL;
 import java.util.Date;
@@ -42,6 +38,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -53,33 +52,27 @@ public abstract class AbstractRepositoryPurgeTest
 
     public static final String TEST_REPO_NAME = "Test Repository";
 
-    public static final String TEST_REPO_URL = getBasedir() + "/target/test/test-repo/";
+    public static final String TEST_REPO_LOCATION = getBasedir() + "/target/test/test-repo/";
 
     public static final int TEST_RETENTION_COUNT = 2;
 
     public static final int TEST_DAYS_OLDER = 30;
 
-    public static final String PATH_TO_BY_DAYS_OLD_ARTIFACT =
-        "org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar";
+    public static final String PATH_TO_BY_DAYS_OLD_ARTIFACT = "org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar";
 
-    public static final String PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT =
-        "org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.jar";
+    public static final String PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT = "org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.jar";
 
-    public static final String PATH_TO_BY_RETENTION_COUNT_ARTIFACT =
-        "org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar";
+    public static final String PATH_TO_BY_RETENTION_COUNT_ARTIFACT = "org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar";
 
-    public static final String PATH_TO_BY_RETENTION_COUNT_POM =
-        "org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom";
+    public static final String PATH_TO_BY_RETENTION_COUNT_POM = "org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom";
 
-    public static final String PATH_TO_RELEASED_SNAPSHOT =
-        "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
+    public static final String PATH_TO_RELEASED_SNAPSHOT = "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
 
-    public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS =
-        "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
+    public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS = "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
 
     private ManagedRepositoryConfiguration config;
 
-    private ArchivaRepository repo;
+    private ManagedRepositoryConfiguration repo;
 
     private BidirectionalRepositoryLayout layout;
 
@@ -131,7 +124,7 @@ public abstract class AbstractRepositoryPurgeTest
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
-        URL jdoFileUrls[] = new URL[]{getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" )};
+        URL jdoFileUrls[] = new URL[] { getClass().getResource( "/org/apache/maven/archiva/model/package.jdo" ) };
 
         if ( ( jdoFileUrls == null ) || ( jdoFileUrls[0] == null ) )
         {
@@ -141,8 +134,8 @@ public abstract class AbstractRepositoryPurgeTest
         File propsFile = null; // intentional
         boolean verbose = true;
 
-        SchemaTool.deleteSchemaTables( jdoFileUrls, new URL[]{}, propsFile, verbose );
-        SchemaTool.createSchemaTables( jdoFileUrls, new URL[]{}, propsFile, verbose, null );
+        SchemaTool.deleteSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose );
+        SchemaTool.createSchemaTables( jdoFileUrls, new URL[] {}, propsFile, verbose, null );
 
         PersistenceManagerFactory pmf = jdoFactory.getPersistenceManagerFactory();
 
@@ -165,7 +158,7 @@ public abstract class AbstractRepositoryPurgeTest
         config.setId( TEST_REPO_ID );
         config.setName( TEST_REPO_NAME );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setLocation( TEST_REPO_URL );
+        config.setLocation( TEST_REPO_LOCATION );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setRetentionCount( TEST_RETENTION_COUNT );
@@ -173,11 +166,14 @@ public abstract class AbstractRepositoryPurgeTest
         return config;
     }
 
-    public ArchivaRepository getRepository()
+    public ManagedRepositoryConfiguration getRepository()
     {
         if ( repo == null )
         {
-            repo = new ArchivaRepository( TEST_REPO_ID, TEST_REPO_NAME, PathUtil.toUrl( TEST_REPO_URL ) );
+            repo = new ManagedRepositoryConfiguration();
+            repo.setId( TEST_REPO_ID );
+            repo.setName( TEST_REPO_NAME );
+            repo.setLocation( TEST_REPO_LOCATION );
         }
 
         return repo;

@@ -41,7 +41,6 @@ import org.apache.maven.archiva.indexer.hashcodes.HashcodesKeys;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -330,7 +329,7 @@ public class DefaultCrossRepositorySearch
             {
                 if ( repo.isScanned() )
                 {
-                    localIndexedRepositories.add( ArchivaConfigurationAdaptor.toArchivaRepository( repo ) );
+                    localIndexedRepositories.add( repo );
                 }
             }
         }

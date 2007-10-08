@@ -19,9 +19,9 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
@@ -31,21 +31,21 @@ import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import java.io.File;
 
 /**
- * Resolve Project from filesystem. 
+ * Resolve Project from managed repository. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class RepositoryProjectResolver
+public class ManagedRepositoryProjectResolver
     implements ProjectModelResolver, FilesystemBasedResolver
 {
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private ProjectModelReader reader;
 
     private BidirectionalRepositoryLayout layout;
 
-    public RepositoryProjectResolver( ArchivaRepository repository, ProjectModelReader reader,
+    public ManagedRepositoryProjectResolver( ManagedRepositoryConfiguration repository, ProjectModelReader reader,
                                       BidirectionalRepositoryLayout layout )
     {
         this.repository = repository;
@@ -60,7 +60,7 @@ public class RepositoryProjectResolver
             .getVersion(), "", "pom" );
 
         String path = layout.toPath( artifact );
-        File repoFile = new File( this.repository.getUrl().getPath(), path );
+        File repoFile = new File( this.repository.getLocation(), path );
 
         return reader.read( repoFile );
     }

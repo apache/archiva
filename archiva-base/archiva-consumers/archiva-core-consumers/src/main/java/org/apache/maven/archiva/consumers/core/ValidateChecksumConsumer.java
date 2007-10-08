@@ -19,10 +19,10 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -96,10 +96,10 @@ public class ValidateChecksumConsumer
         return false;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getUrl().getPath() );
+        this.repositoryDir = new File( repository.getLocation() );
     }
 
     public void completeScan()

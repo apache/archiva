@@ -19,10 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class SampleKnownConsumer
   extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         /* nothing to do */

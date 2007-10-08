@@ -22,13 +22,11 @@ package org.apache.maven.archiva.web.repository;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -38,20 +36,20 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * ProxiedDavServer
@@ -91,9 +89,7 @@ public class ProxiedDavServer
 
     private BidirectionalRepositoryLayout layout;
 
-    private ManagedRepositoryConfiguration repositoryConfiguration;
-
-    private ArchivaRepository managedRepository;
+    private ManagedRepositoryConfiguration managedRepository;
 
     public String getPrefix()
     {
@@ -122,14 +118,11 @@ public class ProxiedDavServer
 
         Configuration config = archivaConfiguration.getConfiguration();
 
-        repositoryConfiguration = config.findManagedRepositoryById( getPrefix() );
-
-        managedRepository =
-            ArchivaConfigurationAdaptor.toArchivaRepository( repositoryConfiguration );
+        managedRepository = config.findManagedRepositoryById( getPrefix() );
 
         try
         {
-            layout = layoutFactory.getLayout( managedRepository.getLayoutType() );
+            layout = layoutFactory.getLayout( managedRepository.getLayout() );
         }
         catch ( LayoutException e )
         {
@@ -332,6 +325,6 @@ public class ProxiedDavServer
 
     public ManagedRepositoryConfiguration getRepositoryConfiguration()
     {
-        return repositoryConfiguration;
+        return managedRepository;
     }
 }

@@ -52,7 +52,5 @@ public interface ArchivaDAO
 
     ProjectModelDAO getProjectModelDAO();
 
-    RepositoryDAO getRepositoryDAO();
-
     RepositoryProblemDAO getRepositoryProblemDAO();
 }

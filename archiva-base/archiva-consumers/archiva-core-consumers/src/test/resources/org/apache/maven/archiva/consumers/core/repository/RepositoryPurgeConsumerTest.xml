@@ -198,10 +198,6 @@
           <role-hint>jdo</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.database.RepositoryDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.database.RepositoryProblemDAO</role>
           <role-hint>jdo</role-hint>
         </requirement>
@@ -222,17 +218,6 @@
       <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
       <role-hint>jdo</role-hint>
       <implementation>org.apache.maven.archiva.database.jdo.JdoProjectModelDAO</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>
-          <role-hint>archiva</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.database.RepositoryDAO</role>
-      <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.database.jdo.JdoRepositoryDAO</implementation>
       <requirements>
         <requirement>
           <role>org.apache.maven.archiva.database.jdo.JdoAccess</role>

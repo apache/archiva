@@ -19,7 +19,7 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 /**
  * Obtain an index instance.
@@ -34,7 +34,7 @@ public interface RepositoryContentIndexFactory
      * @param repository the repository to create the content index from.
      * @return the index instance
      */
-    RepositoryContentIndex createBytecodeIndex( ArchivaRepository repository );
+    RepositoryContentIndex createBytecodeIndex( ManagedRepositoryConfiguration repository );
     
     /**
      * Method to create an instance of the file content index.
@@ -42,7 +42,7 @@ public interface RepositoryContentIndexFactory
      * @param repository the repository to create the file content index from.
      * @return the index instance
      */
-    RepositoryContentIndex createFileContentIndex( ArchivaRepository repository );
+    RepositoryContentIndex createFileContentIndex( ManagedRepositoryConfiguration repository );
 
     /**
      * Method to create an instance of the hashcode index.
@@ -50,5 +50,5 @@ public interface RepositoryContentIndexFactory
      * @param repository the repository to create the content index from.
      * @return the index instance
      */
-    RepositoryContentIndex createHashcodeIndex( ArchivaRepository repository );
+    RepositoryContentIndex createHashcodeIndex( ManagedRepositoryConfiguration repository );
 }

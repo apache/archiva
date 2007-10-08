@@ -22,10 +22,10 @@ package org.apache.maven.archiva.consumers.core;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -93,7 +93,7 @@ public class MetadataUpdaterConsumer
 
     private static final String TYPE_METADATA_IO = "metadata-io-warning";
 
-    private ArchivaRepository repository;
+    private ManagedRepositoryConfiguration repository;
 
     private File repositoryDir;
 
@@ -118,14 +118,14 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
-    public void beginScan( ArchivaRepository repository )
+    public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
         this.repository = repository;
-        this.repositoryDir = new File( repository.getUrl().getPath() );
+        this.repositoryDir = new File( repository.getLocation() );
         try
         {
-            this.repositoryLayout = layoutFactory.getLayout( repository.getLayoutType() );
+            this.repositoryLayout = layoutFactory.getLayout( repository.getLayout() );
         }
         catch ( LayoutException e )
         {

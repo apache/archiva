@@ -28,15 +28,14 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -132,7 +131,7 @@ public class DefaultRepositoryProxyConnectors
      *         could not be) fetched.
      * @throws ProxyException if there was a problem fetching the artifact.
      */
-    public File fetchFromProxies( ArchivaRepository repository, ArtifactReference artifact )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ArtifactReference artifact )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, artifact );
@@ -141,9 +140,9 @@ public class DefaultRepositoryProxyConnectors
         requestProperties.setProperty( "version", artifact.getVersion() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        for( ProxyConnector connector: connectors )
+        for ( ProxyConnector connector : connectors )
         {
-            ArchivaRepository targetRepository = connector.getTargetRepository();
+            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
             String targetPath = getLayout( targetRepository ).toPath( artifact );
 
             File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
@@ -163,7 +162,7 @@ public class DefaultRepositoryProxyConnectors
      *
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
      */
-    public File fetchFromProxies( ArchivaRepository repository, VersionedReference metadata )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, VersionedReference metadata )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
@@ -172,9 +171,9 @@ public class DefaultRepositoryProxyConnectors
         boolean hasFetched = false;
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        for( ProxyConnector connector: connectors )
+        for ( ProxyConnector connector : connectors )
         {
-            ArchivaRepository targetRepository = connector.getTargetRepository();
+            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
@@ -226,7 +225,7 @@ public class DefaultRepositoryProxyConnectors
      *
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
      */
-    public File fetchFromProxies( ArchivaRepository repository, ProjectReference metadata )
+    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ProjectReference metadata )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
@@ -235,9 +234,9 @@ public class DefaultRepositoryProxyConnectors
         boolean hasFetched = false;
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        for( ProxyConnector connector: connectors )
+        for ( ProxyConnector connector : connectors )
         {
-            ArchivaRepository targetRepository = connector.getTargetRepository();
+            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
@@ -284,16 +283,17 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
-    private File toLocalRepoFile( ArchivaRepository repository, ArchivaRepository targetRepository, String targetPath )
+    private File toLocalRepoFile( ManagedRepositoryConfiguration repository,
+                                  RemoteRepositoryConfiguration targetRepository, String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return new File( repository.getUrl().getPath(), repoPath );
+        return new File( repository.getLocation(), repoPath );
     }
 
     /**
-     * Test if the provided ArchivaRepository has any proxies configured for it.
+     * Test if the provided ManagedRepositoryConfiguration has any proxies configured for it.
      */
-    public boolean hasProxies( ArchivaRepository repository )
+    public boolean hasProxies( ManagedRepositoryConfiguration repository )
     {
         synchronized ( this.proxyConnectorMap )
         {
@@ -301,26 +301,26 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private File toLocalFile( ArchivaRepository repository, ArtifactReference artifact )
+    private File toLocalFile( ManagedRepositoryConfiguration repository, ArtifactReference artifact )
         throws ProxyException
     {
         BidirectionalRepositoryLayout sourceLayout = getLayout( repository );
         String sourcePath = sourceLayout.toPath( artifact );
-        return new File( repository.getUrl().getPath(), sourcePath );
+        return new File( repository.getLocation(), sourcePath );
     }
 
-    private File toLocalFile( ArchivaRepository repository, ProjectReference metadata )
+    private File toLocalFile( ManagedRepositoryConfiguration repository, ProjectReference metadata )
         throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getUrl().getPath(), sourcePath );
+        return new File( repository.getLocation(), sourcePath );
     }
 
-    private File toLocalFile( ArchivaRepository repository, VersionedReference metadata )
+    private File toLocalFile( ManagedRepositoryConfiguration repository, VersionedReference metadata )
         throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getUrl().getPath(), sourcePath );
+        return new File( repository.getLocation(), sourcePath );
     }
 
     /**
@@ -331,17 +331,43 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem obtaining the layout from the repository (usually due to a bad
      *                        configuration of the repository)
      */
-    private BidirectionalRepositoryLayout getLayout( ArchivaRepository repository )
+    private BidirectionalRepositoryLayout getLayout( ManagedRepositoryConfiguration repository )
         throws ProxyException
     {
         try
         {
-            return layoutFactory.getLayout( repository.getLayoutType() );
+            return layoutFactory.getLayout( repository.getLayout() );
         }
         catch ( LayoutException e )
         {
-            throw new ProxyException( "Unable to proxy due to bad repository layout definition [" + repository.getId()
-                + "] had a layout defined as [" + repository.getLayoutType() + "] : " + e.getMessage(), e );
+            throw new ProxyException(
+                                      "Unable to proxy due to bad managed repository layout definition ["
+                                          + repository.getId() + "] had a layout defined as [" + repository.getLayout()
+                                          + "] : " + e.getMessage(), e );
+        }
+    }
+    
+    /**
+     * Get the layout for the repository.
+     *
+     * @param repository the repository to get the layout from.
+     * @return the layout
+     * @throws ProxyException if there was a problem obtaining the layout from the repository (usually due to a bad
+     *                        configuration of the repository)
+     */
+    private BidirectionalRepositoryLayout getLayout( RemoteRepositoryConfiguration repository )
+        throws ProxyException
+    {
+        try
+        {
+            return layoutFactory.getLayout( repository.getLayout() );
+        }
+        catch ( LayoutException e )
+        {
+            throw new ProxyException(
+                                      "Unable to proxy due to bad remote repository layout definition ["
+                                          + repository.getId() + "] had a layout defined as [" + repository.getLayout()
+                                          + "] : " + e.getMessage(), e );
         }
     }
 
@@ -382,11 +408,11 @@ public class DefaultRepositoryProxyConnectors
      * @return the local file that was downloaded, or null if not downloaded.
      * @throws ProxyException if transfer was unsuccessful.
      */
-    private File transferFile( ProxyConnector connector, ArchivaRepository remoteRepository, String remotePath,
-                               File localFile, Properties requestProperties )
+    private File transferFile( ProxyConnector connector, RemoteRepositoryConfiguration remoteRepository,
+                               String remotePath, File localFile, Properties requestProperties )
         throws ProxyException
     {
-        String url = remoteRepository.getUrl().toString() + remotePath;
+        String url = remoteRepository.getUrl() + remotePath;
         requestProperties.setProperty( "url", url );
 
         // Is a whitelist defined?
@@ -423,7 +449,8 @@ public class DefaultRepositoryProxyConnectors
         Wagon wagon = null;
         try
         {
-            String protocol = remoteRepository.getUrl().getProtocol();
+            RepositoryURL repoUrl = new RepositoryURL( remoteRepository.getUrl() );
+            String protocol = repoUrl.getProtocol();
             wagon = (Wagon) wagons.get( protocol );
             if ( wagon == null )
             {
@@ -497,11 +524,11 @@ public class DefaultRepositoryProxyConnectors
      * @param type             the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
-    private void transferChecksum( Wagon wagon, ArchivaRepository remoteRepository, String remotePath, File localFile,
-                                   String type )
+    private void transferChecksum( Wagon wagon, RemoteRepositoryConfiguration remoteRepository, String remotePath,
+                                   File localFile, String type )
         throws ProxyException
     {
-        String url = remoteRepository.getUrl().toString() + remotePath;
+        String url = remoteRepository.getUrl() + remotePath;
 
         // Transfer checksum does not use the policy. 
         if ( urlFailureCache.hasFailedBefore( url + type ) )
@@ -537,7 +564,8 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem moving the downloaded file into place.
      * @throws WagonException if there was a problem tranfering the file.
      */
-    private File transferSimpleFile( Wagon wagon, ArchivaRepository remoteRepository, String remotePath, File localFile )
+    private File transferSimpleFile( Wagon wagon, RemoteRepositoryConfiguration remoteRepository, String remotePath,
+                                     File localFile )
         throws ProxyException, WagonException
     {
         assert ( remotePath != null );
@@ -612,9 +640,10 @@ public class DefaultRepositoryProxyConnectors
      * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String,Properties,File)})
      * @return true if all of the policies passed, false if a policy failed.
      */
-    private boolean applyPolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings, Properties request, File localFile )
+    private boolean applyPolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
+                                   Properties request, File localFile )
     {
-        for( Entry<String, ? extends DownloadPolicy> entry: policies.entrySet() )
+        for ( Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
         {
             String key = (String) entry.getKey();
             DownloadPolicy policy = entry.getValue();
@@ -674,7 +703,8 @@ public class DefaultRepositoryProxyConnectors
      * @param remoteRepository the remote repository to connect to.
      * @return true if the connection was successful. false if not connected.
      */
-    private boolean connectToRepository( ProxyConnector connector, Wagon wagon, ArchivaRepository remoteRepository )
+    private boolean connectToRepository( ProxyConnector connector, Wagon wagon,
+                                         RemoteRepositoryConfiguration remoteRepository )
     {
         boolean connected = false;
 
@@ -691,7 +721,7 @@ public class DefaultRepositoryProxyConnectors
             String password = remoteRepository.getPassword();
             if ( username != null && password != null )
             {
-                getLogger().info(
+                getLogger().debug(
                                   "Using username " + username + " to connect to remote repository "
                                       + remoteRepository.getUrl() );
                 authInfo = new AuthenticationInfo();
@@ -700,7 +730,7 @@ public class DefaultRepositoryProxyConnectors
             }
             else
             {
-                getLogger().info( "No authentication for remote repository needed" );
+                getLogger().debug( "No authentication for remote repository needed" );
             }
 
             Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getUrl().toString() );
@@ -742,7 +772,7 @@ public class DefaultRepositoryProxyConnectors
             return false;
         }
 
-        for( String pattern: patterns )
+        for ( String pattern : patterns )
         {
             if ( SelectorUtils.matchPath( pattern, path, false ) )
             {
@@ -756,7 +786,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
      */
-    public List<ProxyConnector> getProxyConnectors( ArchivaRepository repository )
+    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryConfiguration repository )
     {
         synchronized ( this.proxyConnectorMap )
         {
@@ -765,6 +795,8 @@ public class DefaultRepositoryProxyConnectors
             {
                 return Collections.EMPTY_LIST;
             }
+            
+            Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
             return ret;
         }
     }
@@ -792,8 +824,9 @@ public class DefaultRepositoryProxyConnectors
             ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
             this.proxyConnectorMap.clear();
 
-            List<ProxyConnectorConfiguration> proxyConfigs = archivaConfiguration.getConfiguration().getProxyConnectors();
-            for( ProxyConnectorConfiguration proxyConfig: proxyConfigs )
+            List<ProxyConnectorConfiguration> proxyConfigs = archivaConfiguration.getConfiguration()
+                .getProxyConnectors();
+            for ( ProxyConnectorConfiguration proxyConfig : proxyConfigs )
             {
                 String key = proxyConfig.getSourceRepoId();
 
@@ -831,23 +864,23 @@ public class DefaultRepositoryProxyConnectors
 
                 // Add the connector.
                 connectors.add( connector );
-                
+
                 // Ensure the list is sorted.
                 Collections.sort( connectors, proxyOrderSorter );
 
                 // Set the key to the list of connectors.
                 this.proxyConnectorMap.put( key, connectors );
             }
-            
-            
+
         }
 
         synchronized ( this.networkProxyMap )
         {
             this.networkProxyMap.clear();
 
-            List<NetworkProxyConfiguration> networkProxies = archivaConfiguration.getConfiguration().getNetworkProxies();
-            for( NetworkProxyConfiguration networkProxyConfig: networkProxies )
+            List<NetworkProxyConfiguration> networkProxies = archivaConfiguration.getConfiguration()
+                .getNetworkProxies();
+            for ( NetworkProxyConfiguration networkProxyConfig : networkProxies )
             {
                 String key = networkProxyConfig.getId();
 
@@ -864,24 +897,14 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private ArchivaRepository getRemoteRepository( String repoId )
+    private RemoteRepositoryConfiguration getRemoteRepository( String repoId )
     {
-        RemoteRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findRemoteRepositoryById( repoId );
-
-        ArchivaRepository repo = new ArchivaRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getUrl() );
-        repo.getModel().setLayoutName( repoConfig.getLayout() );
-        repo.setUsername( repoConfig.getUsername() );
-        repo.setPassword( repoConfig.getPassword() );
-        return repo;
+        return archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
     }
 
-    private ArchivaRepository getManagedRepository( String repoId )
+    private ManagedRepositoryConfiguration getManagedRepository( String repoId )
     {
-        ManagedRepositoryConfiguration repoConfig = archivaConfiguration.getConfiguration()
-            .findManagedRepositoryById( repoId );
-
-        return ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
+        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
     }
 
     public void initialize()

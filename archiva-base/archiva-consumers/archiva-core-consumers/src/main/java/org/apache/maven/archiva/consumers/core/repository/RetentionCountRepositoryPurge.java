@@ -20,8 +20,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 */
 
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -42,7 +42,7 @@ public class RetentionCountRepositoryPurge
 {
     private int retentionCount;
 
-    public RetentionCountRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+    public RetentionCountRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
                                           ArtifactDAO artifactDao, int retentionCount )
     {
         super( repository, layout, artifactDao );
@@ -54,7 +54,7 @@ public class RetentionCountRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getUrl().getPath(), path );
+            File artifactFile = new File( repository.getLocation(), path );
 
             if ( !artifactFile.exists() )
             {

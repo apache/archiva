@@ -19,12 +19,12 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryWalker;
@@ -54,19 +54,20 @@ public class DefaultRepositoryScanner
      */
     private RepositoryContentConsumers consumerUtil;
 
-    public RepositoryContentStatistics scan( ArchivaRepository repository, long changesSince )
+    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository, long changesSince )
         throws RepositoryException
     {
-        List knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
-        List invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
-        List ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
+        List<KnownRepositoryContentConsumer> knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
+        List<InvalidRepositoryContentConsumer> invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
+        List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
 
         return scan( repository, knownContentConsumers, invalidContentConsumers, ignoredPatterns, changesSince );
     }
 
-    public RepositoryContentStatistics scan( ArchivaRepository repository, List knownContentConsumers,
-                                             List invalidContentConsumers, List ignoredContentPatterns,
-                                             long changesSince )
+    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository,
+                                          List<KnownRepositoryContentConsumer> knownContentConsumers,
+                                          List<InvalidRepositoryContentConsumer> invalidContentConsumers,
+                                          List<String> ignoredContentPatterns, long changesSince )
         throws RepositoryException
     {
         if ( repository == null )
@@ -74,29 +75,24 @@ public class DefaultRepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        if ( !"file".equals( repository.getUrl().getProtocol() ) )
-        {
-            throw new UnsupportedOperationException( "Only filesystem repositories are supported." );
-        }
-
-        File repositoryBase = new File( repository.getUrl().getPath() );
+        File repositoryBase = new File( repository.getLocation() );
 
         if ( !repositoryBase.exists() )
         {
-            throw new UnsupportedOperationException(
-                "Unable to scan a repository, directory " + repositoryBase.getAbsolutePath() + " does not exist." );
+            throw new UnsupportedOperationException( "Unable to scan a repository, directory "
+                + repositoryBase.getAbsolutePath() + " does not exist." );
         }
 
         if ( !repositoryBase.isDirectory() )
         {
-            throw new UnsupportedOperationException(
-                "Unable to scan a repository, path " + repositoryBase.getAbsolutePath() + " is not a directory." );
+            throw new UnsupportedOperationException( "Unable to scan a repository, path "
+                + repositoryBase.getAbsolutePath() + " is not a directory." );
         }
 
         // Setup Includes / Excludes.
 
-        List allExcludes = new ArrayList();
-        List allIncludes = new ArrayList();
+        List<String> allExcludes = new ArrayList<String>();
+        List<String> allIncludes = new ArrayList<String>();
 
         if ( CollectionUtils.isNotEmpty( ignoredContentPatterns ) )
         {
@@ -115,8 +111,8 @@ public class DefaultRepositoryScanner
         dirWalker.setExcludes( allExcludes );
 
         // Setup the Scan Instance
-        RepositoryScannerInstance scannerInstance =
-            new RepositoryScannerInstance( repository, knownContentConsumers, invalidContentConsumers, getLogger() );
+        RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
+                                                                                   invalidContentConsumers, getLogger() );
         scannerInstance.setOnlyModifiedAfterTimestamp( changesSince );
 
         dirWalker.addDirectoryWalkListener( scannerInstance );
@@ -124,38 +120,21 @@ public class DefaultRepositoryScanner
         // Execute scan.
         dirWalker.scan();
 
-        RepositoryContentStatistics stats = scannerInstance.getStatistics();
+        RepositoryScanStatistics stats = scannerInstance.getStatistics();
 
-        ConsumerIdClosure consumerIdList;
-
-        consumerIdList = new ConsumerIdClosure();
-        CollectionUtils.forAllDo( knownContentConsumers, consumerIdList );
-        stats.setKnownConsumers( consumerIdList.getList() );
-
-        consumerIdList = new ConsumerIdClosure();
-        CollectionUtils.forAllDo( invalidContentConsumers, consumerIdList );
-        stats.setInvalidConsumers( consumerIdList.getList() );
+        stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
+        stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
 
         return stats;
     }
 
-    class ConsumerIdClosure
-        implements Closure
+    private List<String> gatherIds( List<? extends RepositoryContentConsumer> consumers )
     {
-        private List list = new ArrayList();
-
-        public void execute( Object input )
+        List<String> ids = new ArrayList<String>();
+        for ( RepositoryContentConsumer consumer : consumers )
         {
-            if ( input instanceof RepositoryContentConsumer )
-            {
-                RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-                list.add( consumer.getId() );
-            }
+            ids.add( consumer.getId() );
         }
-
-        public List getList()
-        {
-            return list;
-        }
+        return ids;
     }
 }

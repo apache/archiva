@@ -18,23 +18,22 @@ package org.apache.maven.archiva.repository.metadata;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.MockConfiguration;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.codehaus.plexus.PlexusTestCase;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +42,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 /**
  * MetadataToolsTest
  *
@@ -50,7 +51,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class MetadataToolsTest
-    extends PlexusTestCase
+    extends AbstractRepositoryLayerTestCase
 {
     private MetadataTools tools;
 
@@ -65,8 +66,8 @@ public class MetadataToolsTest
     public void testGatherAvailableVersionsMissingMultipleVersions()
         throws Exception
     {
-        assertAvailableVersions( "missing_metadata_b",
-                                 Arrays.asList( "1.0", "1.0.1", "2.0", "2.0.1", "2.0-20070821-dev" ) );
+        assertAvailableVersions( "missing_metadata_b", Arrays.asList( "1.0", "1.0.1", "2.0", "2.0.1",
+                                                                      "2.0-20070821-dev" ) );
     }
 
     public void testGatherAvailableVersionsSimpleYetIncomplete()
@@ -84,10 +85,15 @@ public class MetadataToolsTest
     public void testGatherSnapshotVersionsA()
         throws Exception
     {
-        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[]{"1.0-alpha-11-SNAPSHOT",
-            "1.0-alpha-11-20070221.194724-2", "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
-            "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6", "1.0-alpha-11-20070314.211405-9",
-            "1.0-alpha-11-20070316.175232-11"} );
+        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
+            "1.0-alpha-11-SNAPSHOT",
+            "1.0-alpha-11-20070221.194724-2",
+            "1.0-alpha-11-20070302.212723-3",
+            "1.0-alpha-11-20070303.152828-4",
+            "1.0-alpha-11-20070305.215149-5",
+            "1.0-alpha-11-20070307.170909-6",
+            "1.0-alpha-11-20070314.211405-9",
+            "1.0-alpha-11-20070316.175232-11" } );
     }
 
     public void testGatherSnapshotVersionsAWithProxies()
@@ -99,23 +105,28 @@ public class MetadataToolsTest
         createProxyConnector( "test-repo", "internal-snapshots" );
         createProxyConnector( "test-repo", "snapshots.codehaus.org" );
 
-        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[]{"1.0-alpha-11-SNAPSHOT",
-            "1.0-alpha-11-20070221.194724-2", "1.0-alpha-11-20070302.212723-3", "1.0-alpha-11-20070303.152828-4",
-            "1.0-alpha-11-20070305.215149-5", "1.0-alpha-11-20070307.170909-6", "1.0-alpha-11-20070314.211405-9",
+        assertSnapshotVersions( "snap_shots_a", "1.0-alpha-11-SNAPSHOT", new String[] {
+            "1.0-alpha-11-SNAPSHOT",
+            "1.0-alpha-11-20070221.194724-2",
+            "1.0-alpha-11-20070302.212723-3",
+            "1.0-alpha-11-20070303.152828-4",
+            "1.0-alpha-11-20070305.215149-5",
+            "1.0-alpha-11-20070307.170909-6",
+            "1.0-alpha-11-20070314.211405-9",
             "1.0-alpha-11-20070315.033030-10" /* Arrives in via snapshots.codehaus.org proxy */,
-            "1.0-alpha-11-20070316.175232-11"} );
+            "1.0-alpha-11-20070316.175232-11" } );
     }
 
     public void testGetRepositorySpecificName()
     {
-        ArchivaRepository repoJavaNet = new ArchivaRepository( "maven2-repository.dev.java.net",
-                                                               "Java.net Repository for Maven 2",
-                                                               "http://download.java.net/maven/2/" );
-        ArchivaRepository repoCentral =
-            new ArchivaRepository( "central", "Central Global Repository", "http://repo1.maven.org/maven2/" );
+        RemoteRepositoryConfiguration repoJavaNet = createRemoteRepository( "maven2-repository.dev.java.net",
+                                                                            "Java.net Repository for Maven 2",
+                                                                            "http://download.java.net/maven/2/" );
+        RemoteRepositoryConfiguration repoCentral = createRemoteRepository( "central", "Central Global Repository",
+                                                                            "http://repo1.maven.org/maven2/" );
 
-        String convertedName =
-            tools.getRepositorySpecificName( repoJavaNet, "commons-lang/commons-lang/maven-metadata.xml" );
+        String convertedName = tools.getRepositorySpecificName( repoJavaNet,
+                                                                "commons-lang/commons-lang/maven-metadata.xml" );
         assertMetadataPath( "commons-lang/commons-lang/maven-metadata-maven2-repository.dev.java.net.xml",
                             convertedName );
 
@@ -140,8 +151,12 @@ public class MetadataToolsTest
     public void testUpdateProjectMissingMultipleVersions()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "missing_metadata_b",
-                                      new String[]{"1.0", "1.0.1", "2.0", "2.0.1", "2.0-20070821-dev"} );
+        assertUpdatedProjectMetadata( "missing_metadata_b", new String[] {
+            "1.0",
+            "1.0.1",
+            "2.0",
+            "2.0.1",
+            "2.0-20070821-dev" } );
     }
 
     public void testUpdateProjectMissingMultipleVersionsWithProxies()
@@ -153,22 +168,30 @@ public class MetadataToolsTest
         createProxyConnector( "test-repo", "central" );
         createProxyConnector( "test-repo", "java.net" );
 
-        assertUpdatedProjectMetadata( "proxied_multi", new String[]{"1.0-spec" /* in java.net */, "1.0"
-            /* in managed, and central */, "1.0.1" /* in central */, "1.1" /* in managed */, "2.0-proposal-beta"
-            /* in java.net */, "2.0-spec" /* in java.net */, "2.0" /* in central, and java.net */, "2.0.1"
-            /* in java.net */, "2.1" /* in managed */, "3.0" /* in central */, "3.1" /* in central */}, "3.1", "3.1" );
+        assertUpdatedProjectMetadata( "proxied_multi", new String[] { 
+            "1.0-spec" /* in java.net */, 
+            "1.0" /* in managed, and central */, 
+            "1.0.1" /* in central */, 
+            "1.1" /* in managed */, 
+            "2.0-proposal-beta" /* in java.net */, 
+            "2.0-spec" /* in java.net */, 
+            "2.0" /* in central, and java.net */, 
+            "2.0.1" /* in java.net */, 
+            "2.1" /* in managed */, 
+            "3.0" /* in central */, 
+            "3.1" /* in central */}, "3.1", "3.1" );
     }
 
     public void testUpdateProjectSimpleYetIncomplete()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "incomplete_metadata_a", new String[]{"1.0"} );
+        assertUpdatedProjectMetadata( "incomplete_metadata_a", new String[] { "1.0" } );
     }
 
     public void testUpdateProjectSimpleYetMissing()
         throws Exception
     {
-        assertUpdatedProjectMetadata( "missing_metadata_a", new String[]{"1.0"} );
+        assertUpdatedProjectMetadata( "missing_metadata_a", new String[] { "1.0" } );
     }
 
     public void testUpdateVersionSimple10()
@@ -314,8 +337,8 @@ public class MetadataToolsTest
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
         reference.setArtifactId( artifactId );
 
-        String repoRootURL = PathUtil.toUrl( repoRootDir );
-        ArchivaRepository repo = new ArchivaRepository( "test-repo", "Test Repository: " + getName(), repoRootURL );
+        ManagedRepositoryConfiguration repo = createRepository( "test-repo", "Test Repository: "
+                                                                + getName(), repoRootDir );
 
         Set<String> testedVersionSet = tools.gatherAvailableVersions( repo, reference );
 
@@ -338,8 +361,8 @@ public class MetadataToolsTest
         reference.setArtifactId( artifactId );
         reference.setVersion( version );
 
-        String repoRootURL = PathUtil.toUrl( repoRootDir );
-        ArchivaRepository repo = new ArchivaRepository( "test-repo", "Test Repository: " + getName(), repoRootURL );
+        ManagedRepositoryConfiguration repo = createRepository( "test-repo", "Test Repository: "
+                                                                + getName(), repoRootDir );
 
         Set<String> testedVersionSet = tools.gatherSnapshotVersions( repo, reference );
 
@@ -358,19 +381,21 @@ public class MetadataToolsTest
         }
     }
 
-    private void assertMetadata( String expectedMetadata, ArchivaRepository repository, ProjectReference reference )
+    private void assertMetadata( String expectedMetadata, ManagedRepositoryConfiguration repository,
+                                 ProjectReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getUrl().getPath(), tools.toPath( reference ) );
+        File metadataFile = new File( repository.getLocation(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         XMLAssert.assertXMLEqual( expectedMetadata, actualMetadata );
     }
 
-    private void assertMetadata( String expectedMetadata, ArchivaRepository repository, VersionedReference reference )
+    private void assertMetadata( String expectedMetadata, ManagedRepositoryConfiguration repository,
+                                 VersionedReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getUrl().getPath(), tools.toPath( reference ) );
+        File metadataFile = new File( repository.getLocation(), tools.toPath( reference ) );
         String actualMetadata = FileUtils.readFileToString( metadataFile, null );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
@@ -396,7 +421,7 @@ public class MetadataToolsTest
                                                String releaseVersion )
         throws IOException, LayoutException, RepositoryMetadataException, SAXException, ParserConfigurationException
     {
-        ArchivaRepository testRepo = createTestRepo();
+        ManagedRepositoryConfiguration testRepo = createTestRepo();
         ProjectReference reference = new ProjectReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
         reference.setArtifactId( artifactId );
@@ -439,7 +464,7 @@ public class MetadataToolsTest
     private void assertUpdatedReleaseVersionMetadata( String artifactId, String version )
         throws IOException, LayoutException, RepositoryMetadataException, SAXException, ParserConfigurationException
     {
-        ArchivaRepository testRepo = createTestRepo();
+        ManagedRepositoryConfiguration testRepo = createTestRepo();
         VersionedReference reference = new VersionedReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
         reference.setArtifactId( artifactId );
@@ -463,7 +488,7 @@ public class MetadataToolsTest
                                                        String expectedTime, String expectedBuildNumber )
         throws IOException, LayoutException, RepositoryMetadataException, SAXException, ParserConfigurationException
     {
-        ArchivaRepository testRepo = createTestRepo();
+        ManagedRepositoryConfiguration testRepo = createTestRepo();
         VersionedReference reference = new VersionedReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
         reference.setArtifactId( artifactId );
@@ -516,7 +541,7 @@ public class MetadataToolsTest
         config.triggerChange( prefix + ".policies.cache-failures", connectorConfig.getPolicy( "cache-failures", "" ) );
     }
 
-    private ArchivaRepository createTestRepo()
+    private ManagedRepositoryConfiguration createTestRepo()
         throws IOException
     {
         File repoRoot = new File( "target/metadata-tests/" + getName() );
@@ -527,12 +552,10 @@ public class MetadataToolsTest
 
         repoRoot.mkdirs();
 
-        String repoRootURL = PathUtil.toUrl( repoRoot );
-
-        return new ArchivaRepository( "test-repo", "Test Repository: " + getName(), repoRootURL );
+        return createRepository( "test-repo", "Test Repository: " + getName(), repoRoot );
     }
 
-    private void prepTestRepo( ArchivaRepository repo, ProjectReference reference )
+    private void prepTestRepo( ManagedRepositoryConfiguration repo, ProjectReference reference )
         throws IOException
     {
         String groupDir = StringUtils.replaceChars( reference.getGroupId(), '.', '/' );
@@ -540,7 +563,7 @@ public class MetadataToolsTest
 
         File srcRepoDir = new File( "src/test/repositories/metadata-repository" );
         File srcDir = new File( srcRepoDir, path );
-        File destDir = new File( repo.getUrl().getPath(), path );
+        File destDir = new File( repo.getLocation(), path );
 
         assertTrue( "Source Dir exists: " + srcDir, srcDir.exists() );
         destDir.mkdirs();
@@ -548,7 +571,7 @@ public class MetadataToolsTest
         FileUtils.copyDirectory( srcDir, destDir );
     }
 
-    private void prepTestRepo( ArchivaRepository repo, VersionedReference reference )
+    private void prepTestRepo( ManagedRepositoryConfiguration repo, VersionedReference reference )
         throws IOException
     {
         ProjectReference projectRef = new ProjectReference();

@@ -19,10 +19,9 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 
 import java.util.List;
@@ -36,11 +35,11 @@ import java.util.List;
 public interface RepositoryScanner
 {
     /**
-     * The value to pass to {@link #scan(ArchivaRepository, long)} to have the scan
+     * The value to pass to {@link #scan(ManagedRepositoryConfiguration, long)} to have the scan
      * operate in a fresh fashion, with no check on changes based on timestamp.
      */
     public static final long FRESH_SCAN = 0;
-    
+
     /**
      * <p>
      * Typical Ignorable Content patterns.
@@ -70,7 +69,7 @@ public interface RepositoryScanner
         "**/README*",
         "**/CHANGELOG*",
         "**/KEYS*" };
-    
+
     /**
      * Scan the repository for content changes.
      * 
@@ -83,9 +82,9 @@ public interface RepositoryScanner
      * @return the statistics for this scan.
      * @throws RepositoryException if there was a fundamental problem with getting the discoverer started.
      */
-    public RepositoryContentStatistics scan( ArchivaRepository repository, long changesSince )
+    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository, long changesSince )
         throws RepositoryException;
-    
+
     /**
      * Scan the repository for content changes.
      * 
@@ -103,9 +102,10 @@ public interface RepositoryScanner
      * @return the statistics for this scan.
      * @throws RepositoryException if there was a fundamental problem with getting the discoverer started.
      */
-    public RepositoryContentStatistics scan( ArchivaRepository repository, List knownContentConsumers, 
-                                             List invalidContentConsumers, List ignoredContentPatterns,
-                                             long changesSince )
+    public RepositoryScanStatistics scan( ManagedRepositoryConfiguration repository,
+                                             List<KnownRepositoryContentConsumer> knownContentConsumers,
+                                             List<InvalidRepositoryContentConsumer> invalidContentConsumers,
+                                             List<String> ignoredContentPatterns, long changesSince )
         throws RepositoryException;
-    
+
 }

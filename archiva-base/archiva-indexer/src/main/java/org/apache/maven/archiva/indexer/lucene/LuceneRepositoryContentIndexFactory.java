@@ -27,7 +27,6 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesHandlers;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 
@@ -46,19 +45,19 @@ public class LuceneRepositoryContentIndexFactory
      */
     private ArchivaConfiguration configuration;
 
-    public RepositoryContentIndex createBytecodeIndex( ArchivaRepository repository )
+    public RepositoryContentIndex createBytecodeIndex( ManagedRepositoryConfiguration repository )
     {
         File indexDir = toIndexDir( repository, "bytecode" );
         return new LuceneRepositoryContentIndex( repository, indexDir, new BytecodeHandlers() );
     }
 
-    public RepositoryContentIndex createFileContentIndex( ArchivaRepository repository )
+    public RepositoryContentIndex createFileContentIndex( ManagedRepositoryConfiguration repository )
     {
         File indexDir = toIndexDir( repository, "filecontent" );
         return new LuceneRepositoryContentIndex( repository, indexDir, new FileContentHandlers() );
     }
 
-    public RepositoryContentIndex createHashcodeIndex( ArchivaRepository repository )
+    public RepositoryContentIndex createHashcodeIndex( ManagedRepositoryConfiguration repository )
     {
         File indexDir = toIndexDir( repository, "hashcodes" );
         return new LuceneRepositoryContentIndex( repository, indexDir, new HashcodesHandlers() );
@@ -71,7 +70,7 @@ public class LuceneRepositoryContentIndexFactory
      * @param indexId    the id of the index
      * @return the directory to put the index into.
      */
-    private File toIndexDir( ArchivaRepository repository, String indexId )
+    private File toIndexDir( ManagedRepositoryConfiguration repository, String indexId )
     {
         // Attempt to get the specified indexDir in the configuration first.
         ManagedRepositoryConfiguration repoConfig =
@@ -81,7 +80,7 @@ public class LuceneRepositoryContentIndexFactory
         if ( repoConfig == null )
         {
             // No configured index dir, use the repository path instead.
-            String repoPath = repository.getUrl().getPath();
+            String repoPath = repository.getLocation();
             indexDir = new File( repoPath, ".index/" + indexId + "/" );
         }
         else
@@ -90,7 +89,7 @@ public class LuceneRepositoryContentIndexFactory
             String repoPath = repoConfig.getIndexDir();
             if ( StringUtils.isBlank( repoPath ) )
             {
-                repoPath = repository.getUrl().getPath();
+                repoPath = repository.getLocation();
                 if ( !repoPath.endsWith( "/" ) )
                 {
                     repoPath += "/";

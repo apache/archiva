@@ -21,8 +21,8 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -40,7 +40,7 @@ public class DaysOldRepositoryPurge
 {
     private int daysOlder;
 
-    public DaysOldRepositoryPurge( ArchivaRepository repository, BidirectionalRepositoryLayout layout,
+    public DaysOldRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
                                    ArtifactDAO artifactDao, int daysOlder )
     {
         super( repository, layout, artifactDao );
@@ -52,7 +52,7 @@ public class DaysOldRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getUrl().getPath(), path );
+            File artifactFile = new File( repository.getLocation(), path );
 
             if ( !artifactFile.exists() )
             {

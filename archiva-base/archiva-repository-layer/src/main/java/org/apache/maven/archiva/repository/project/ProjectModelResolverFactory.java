@@ -23,15 +23,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.project.resolvers.NopProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
-import org.apache.maven.archiva.repository.project.resolvers.RepositoryProjectResolver;
+import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -98,20 +96,20 @@ public class ProjectModelResolverFactory
         archivaConfiguration.addChangeListener( this );
     }
 
-    private RepositoryProjectResolver toResolver( ArchivaRepository repo )
+    private ManagedRepositoryProjectResolver toResolver( ManagedRepositoryConfiguration repo )
         throws RepositoryException
     {
         try
         {
-            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayoutType() );
+            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayout() );
             ProjectModelReader reader = project400Reader;
 
-            if ( StringUtils.equals( "legacy", repo.getLayoutType() ) )
+            if ( StringUtils.equals( "legacy", repo.getLayout() ) )
             {
                 reader = project300Reader;
             }
 
-            RepositoryProjectResolver resolver = new RepositoryProjectResolver( repo, reader, layout );
+            ManagedRepositoryProjectResolver resolver = new ManagedRepositoryProjectResolver( repo, reader, layout );
             return resolver;
         }
         catch ( LayoutException e )
@@ -129,12 +127,11 @@ public class ProjectModelResolverFactory
 
             List<ManagedRepositoryConfiguration> list =
                 archivaConfiguration.getConfiguration().getManagedRepositories();
-            for ( ManagedRepositoryConfiguration repositoryConfiguration : list )
+            for ( ManagedRepositoryConfiguration repo : list )
             {
-                ArchivaRepository repo = ArchivaConfigurationAdaptor.toArchivaRepository( repositoryConfiguration );
                 try
                 {
-                    RepositoryProjectResolver resolver = toResolver( repo );
+                    ManagedRepositoryProjectResolver resolver = toResolver( repo );
 
                     // Add filesystem based resolver.
                     this.currentResolverStack.addProjectModelResolver( resolver );

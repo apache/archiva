@@ -20,7 +20,7 @@ package org.apache.maven.archiva.indexer.functors;
  */
 
 import org.apache.commons.collections.Predicate;
-import org.apache.maven.archiva.model.ArchivaRepository;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
 /**
  * UserAllowedToSearchRepositoryPredicate 
@@ -35,7 +35,7 @@ public class UserAllowedToSearchRepositoryPredicate
     {
         boolean satisfies = false;
 
-        if ( object instanceof ArchivaRepository )
+        if ( object instanceof ManagedRepositoryConfiguration )
         {
             // TODO: perform check here.
             satisfies = true; // Everyone is allowed! (for now)

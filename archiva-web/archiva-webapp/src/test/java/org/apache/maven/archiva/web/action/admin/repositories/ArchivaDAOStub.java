@@ -1,11 +1,9 @@
 package org.apache.maven.archiva.web.action.admin.repositories;
 
-import junit.framework.Assert;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
-import org.apache.maven.archiva.database.RepositoryDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
@@ -13,6 +11,8 @@ import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import junit.framework.Assert;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -68,11 +68,6 @@ public class ArchivaDAOStub
     }
 
     public ProjectModelDAO getProjectModelDAO()
-    {
-        throw new UnsupportedOperationException( "query not implemented for stub" );
-    }
-
-    public RepositoryDAO getRepositoryDAO()
     {
         throw new UnsupportedOperationException( "query not implemented for stub" );
     }

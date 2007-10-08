@@ -22,13 +22,13 @@ package org.apache.maven.archiva.indexer.hashcodes;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.AbstractSearchTestCase;
 import org.apache.maven.archiva.indexer.ArtifactKeys;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 
 import java.io.File;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class HashcodesSearchTest extends AbstractSearchTestCase
         return new HashcodesHandlers();
     }
 
-    public RepositoryContentIndex createIndex( RepositoryContentIndexFactory indexFactory, ArchivaRepository repository )
+    public RepositoryContentIndex createIndex( RepositoryContentIndexFactory indexFactory, ManagedRepositoryConfiguration repository )
     {
         return indexFactory.createHashcodeIndex( repository );
     }

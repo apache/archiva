@@ -19,7 +19,6 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,7 +26,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArchivaRepository;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -73,7 +71,7 @@ public abstract class AbstractIndexerTestCase
     }
 
     public abstract RepositoryContentIndex createIndex( RepositoryContentIndexFactory indexFactory,
-                                                        ArchivaRepository repository );
+                                                        ManagedRepositoryConfiguration repository );
 
     public abstract LuceneIndexHandlers getIndexHandler();
 
@@ -86,14 +84,14 @@ public abstract class AbstractIndexerTestCase
             (RepositoryContentIndexFactory) lookup( RepositoryContentIndexFactory.class
                 .getName(), "lucene" );
 
-        ArchivaRepository repository = createTestIndex( getIndexName() );
+        ManagedRepositoryConfiguration repository = createTestIndex( getIndexName() );
 
         index = createIndex( indexFactory, repository );
 
         indexHandlers = getIndexHandler();
     }
 
-    private ArchivaRepository createTestIndex( String indexName )
+    private ManagedRepositoryConfiguration createTestIndex( String indexName )
         throws Exception
     {
         File repoDir = new File( getBasedir(), "src/test/managed-repository" );
@@ -106,10 +104,8 @@ public abstract class AbstractIndexerTestCase
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
-        String repoUri = "file://" + StringUtils.replace( repoDir.getAbsolutePath(), "\\", "/" );
-
-        ArchivaRepository repository =
-            new ArchivaRepository( TEST_DEFAULT_REPO_ID, TEST_DEFAULT_REPOSITORY_NAME, repoUri );
+        ManagedRepositoryConfiguration repository = createRepository( TEST_DEFAULT_REPO_ID,
+                                                                      TEST_DEFAULT_REPOSITORY_NAME, repoDir );
 
         File indexLocation = new File( testIndexesDir, "/index-" + indexName + "-" + getName() + "/" );
 
@@ -227,5 +223,14 @@ public abstract class AbstractIndexerTestCase
         }
         writer.optimize();
         writer.close();
+    }
+    
+    protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( location.getAbsolutePath() );
+        return repo;
     }
 }

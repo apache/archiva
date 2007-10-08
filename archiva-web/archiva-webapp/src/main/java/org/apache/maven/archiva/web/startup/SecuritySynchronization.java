@@ -20,15 +20,9 @@ package org.apache.maven.archiva.web.startup;
  */
 
 import org.apache.maven.archiva.common.ArchivaException;
-import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.database.ObjectNotFoundException;
-import org.apache.maven.archiva.model.ArchivaRepository;
-import org.apache.maven.archiva.repository.ArchivaConfigurationAdaptor;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
@@ -42,19 +36,14 @@ import java.util.List;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.apache.maven.archiva.web.startup.ConfigurationSynchronization"
+ * 
+ * @plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
  * role-hint="default"
- * @todo consider whether we really need these in the database or not
  */
-public class ConfigurationSynchronization
+public class SecuritySynchronization
     extends AbstractLogEnabled
     implements RegistryListener
 {
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private ArchivaDAO dao;
-
     /**
      * @plexus.requirement role-hint="default"
      */
@@ -82,37 +71,6 @@ public class ConfigurationSynchronization
     {
         for ( ManagedRepositoryConfiguration repoConfig : repos )
         {
-            try
-            {
-                try
-                {
-                    ArchivaRepository repository = dao.getRepositoryDAO().getRepository( repoConfig.getId() );
-                    // Found repository.  Update it.
-
-                    repository.getModel().setName( repoConfig.getName() );
-                    repository.getModel().setUrl( PathUtil.toUrl( repoConfig.getLocation() ) );
-                    repository.getModel().setLayoutName( repoConfig.getLayout() );
-                    repository.getModel().setCreationSource( "configuration" );
-                    repository.getModel().setReleasePolicy( repoConfig.isReleases() );
-                    repository.getModel().setSnapshotPolicy( repoConfig.isSnapshots() );
-
-                    dao.getRepositoryDAO().saveRepository( repository );
-                }
-                catch ( ObjectNotFoundException e )
-                {
-                    // Add the repository to the database.
-                    getLogger().info( "Adding repository configuration to DB: " + repoConfig );
-                    ArchivaRepository drepo = ArchivaConfigurationAdaptor.toArchivaRepository( repoConfig );
-                    drepo.getModel().setCreationSource( "configuration" );
-                    dao.getRepositoryDAO().saveRepository( drepo );
-                }
-            }
-            catch ( ArchivaDatabaseException e )
-            {
-                // Log error.
-                getLogger().error( "Unable to add configured repositories to the database: " + e.getMessage(), e );
-            }
-
             // manage roles for repositories
             try
             {
