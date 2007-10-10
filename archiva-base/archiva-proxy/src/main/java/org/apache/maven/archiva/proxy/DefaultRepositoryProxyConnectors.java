@@ -151,7 +151,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( fileExists( downloadedFile ) )
             {
-                getLogger().info( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
+                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
                 return downloadedFile;
             }
         }
@@ -184,7 +184,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( fileExists( downloadedFile ) )
             {
-                getLogger().info( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
+                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
                 hasFetched = true;
             }
         }
@@ -253,7 +253,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( fileExists( downloadedFile ) )
             {
-                getLogger().info( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
+                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
                 hasFetched = true;
             }
         }
@@ -400,7 +400,7 @@ public class DefaultRepositoryProxyConnectors
         // Handle pre-download policy
         if ( !applyPolicies( this.preDownloadPolicies, connector.getPolicies(), requestProperties, localFile ) )
         {
-            getLogger().info( "Failed pre-download policies - " + localFile.getAbsolutePath() );
+            getLogger().debug( "Failed pre-download policies - " + localFile.getAbsolutePath() );
 
             if ( fileExists( localFile ) )
             {
@@ -459,7 +459,7 @@ public class DefaultRepositoryProxyConnectors
         // Handle post-download policies.
         if ( !applyPolicies( this.postDownloadPolicies, connector.getPolicies(), requestProperties, localFile ) )
         {
-            getLogger().info( "Failed post-download policies - " + localFile.getAbsolutePath() );
+            getLogger().debug( "Failed post-download policies - " + localFile.getAbsolutePath() );
 
             if ( fileExists( localFile ) )
             {
@@ -565,7 +565,7 @@ public class DefaultRepositoryProxyConnectors
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
                 {
-                    getLogger().info(
+                    getLogger().debug(
                                       "Not downloaded, as local file is newer than remote side: "
                                           + localFile.getAbsolutePath() );
                 }
@@ -619,7 +619,7 @@ public class DefaultRepositoryProxyConnectors
             getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
             if ( !policy.applyPolicy( setting, request, localFile ) )
             {
-                getLogger().info( "Didn't pass the [" + key + "] policy." );
+                getLogger().debug( "Didn't pass the [" + key + "] policy." );
                 return false;
             }
         }
@@ -711,14 +711,14 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ConnectionException e )
         {
-            getLogger().info(
+            getLogger().warn(
                               "Could not connect to " + remoteRepository.getRepository().getName() + ": "
                                   + e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            getLogger().info(
+            getLogger().warn(
                               "Could not connect to " + remoteRepository.getRepository().getName() + ": "
                                   + e.getMessage() );
             connected = false;
