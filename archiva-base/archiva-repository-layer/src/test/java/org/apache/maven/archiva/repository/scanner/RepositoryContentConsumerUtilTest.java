@@ -19,6 +19,7 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
@@ -26,6 +27,8 @@ import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.codehaus.plexus.PlexusTestCase;
 import org.easymock.MockControl;
+
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 
 import java.io.File;
 import java.util.Collections;
@@ -121,13 +124,13 @@ public class RepositoryContentConsumerUtilTest
 
         ManagedRepositoryConfiguration repo = createRepository( "id", "name", getTestFile( "target/test-repo" ) );
         File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
-
+        
         knownConsumer.beginScan( repo );
         knownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
         knownConsumer.getIncludes();
         knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
-        knownConsumer.processFile( "path/to/test-file.txt" );
+        knownConsumer.processFile( _OS("path/to/test-file.txt") );
 //        knownConsumer.completeScan();
         knownControl.replay();
 
@@ -154,7 +157,7 @@ public class RepositoryContentConsumerUtilTest
         knownControl.replay();
 
         invalidConsumer.beginScan( repo );
-        invalidConsumer.processFile( "path/to/test-file.xml" );
+        invalidConsumer.processFile( _OS("path/to/test-file.xml") );
         invalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
 //        invalidConsumer.completeScan();
@@ -177,7 +180,7 @@ public class RepositoryContentConsumerUtilTest
         knownControl.replay();
 
         invalidConsumer.beginScan( repo );
-        invalidConsumer.processFile( "path/to/test-file.txt" );
+        invalidConsumer.processFile( _OS("path/to/test-file.txt") );
         invalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
 //        invalidConsumer.completeScan();
@@ -187,5 +190,18 @@ public class RepositoryContentConsumerUtilTest
 
         knownControl.verify();
         invalidControl.verify();
+    }
+
+    /**
+     * Create an OS specific version of the filepath.
+     * Provide path in unix "/" format.
+     */
+    private String _OS( String path )
+    {
+        if ( SystemUtils.IS_OS_WINDOWS )
+        {
+            return path.replace( '/', '\\' );
+        }
+        return path;
     }
 }
