@@ -19,9 +19,6 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.Configuration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -32,8 +29,6 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -173,6 +168,14 @@ public class ProxiedDavServer
         throws ServletException
     {
         String resource = request.getLogicalResource();
+        
+        // Cleanup bad requests from maven 1.
+        // Often seen is a double slash.
+        // example: http://hostname:8080/archiva/repository/internal//pmd/jars/pmd-3.0.jar
+        if ( resource.startsWith( "/" ) )
+        {
+            resource = resource.substring( 1 );
+        }
 
         if ( resource.endsWith( ".sha1" ) || resource.endsWith( ".md5" ) )
         {
