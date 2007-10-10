@@ -34,7 +34,6 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -101,8 +100,6 @@ public class MetadataUpdaterConsumer
 
     private File repositoryDir;
 
-    private BidirectionalRepositoryLayout repositoryLayout;
-
     private List<String> includes = new ArrayList<String>();
 
     private long scanStartTimestamp = 0;
@@ -161,7 +158,7 @@ public class MetadataUpdaterConsumer
     {
         try
         {
-            ArtifactReference artifact = this.repositoryLayout.toArtifactReference( path );
+            ArtifactReference artifact = repository.toArtifactReference( path );
             updateVersionMetadata( artifact, path );
             updateProjectMetadata( artifact, path );
         }
