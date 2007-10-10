@@ -331,7 +331,7 @@ public class MetadataTools
         throws InitializationException
     {
         this.artifactPatterns = new ArrayList<String>();
-        this.proxies = new HashMap();
+        this.proxies = new HashMap<String, Set<String>>();
         initConfigVariables();
 
         configuration.addChangeListener( this );
@@ -342,6 +342,12 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
+        
+        if ( !metadataFile.exists() || !metadataFile.isFile() )
+        {
+            // Nothing to do. return null.
+            return null;
+        }
 
         try
         {
@@ -361,6 +367,12 @@ public class MetadataTools
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
         File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
+        
+        if ( !metadataFile.exists() || !metadataFile.isFile() )
+        {
+            // Nothing to do. return null.
+            return null;
+        }
 
         try
         {
@@ -659,14 +671,12 @@ public class MetadataTools
         {
             this.proxies.clear();
 
-            List proxyConfigs = configuration.getConfiguration().getProxyConnectors();
-            Iterator it = proxyConfigs.iterator();
-            while ( it.hasNext() )
+            List<ProxyConnectorConfiguration> proxyConfigs = configuration.getConfiguration().getProxyConnectors();
+            for( ProxyConnectorConfiguration proxyConfig: proxyConfigs )
             {
-                ProxyConnectorConfiguration proxyConfig = (ProxyConnectorConfiguration) it.next();
                 String key = proxyConfig.getSourceRepoId();
 
-                Set remoteRepoIds = this.proxies.get( key );
+                Set<String> remoteRepoIds = this.proxies.get( key );
 
                 if ( remoteRepoIds == null )
                 {
