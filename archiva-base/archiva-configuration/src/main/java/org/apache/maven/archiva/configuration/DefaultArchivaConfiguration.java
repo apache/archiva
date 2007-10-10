@@ -88,7 +88,7 @@ public class DefaultArchivaConfiguration
      * Configuration Listeners we've registered.
      */
     private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>();
-    
+
     /**
      * Registry Listeners we've registered.
      */
@@ -153,6 +153,9 @@ public class DefaultArchivaConfiguration
                     config.addRemoteRepository( repo );
                 }
             }
+
+            // Prevent duplicate repositories from showing up.
+            config.getRepositories().clear();
         }
 
         // Normalize the order fields in the proxy connectors.
@@ -255,7 +258,7 @@ public class DefaultArchivaConfiguration
 
         new ConfigurationRegistryWriter().write( configuration, section );
         section.save();
-        
+
         triggerEvent( ConfigurationEvent.SAVED );
 
         this.configuration = processExpressions( configuration );
@@ -278,8 +281,8 @@ public class DefaultArchivaConfiguration
         try
         {
             ( (Initializable) registry ).initialize();
-            
-            for ( RegistryListener regListener: registryListeners )
+
+            for ( RegistryListener regListener : registryListeners )
             {
                 addRegistryChangeListener( regListener );
             }
@@ -288,7 +291,7 @@ public class DefaultArchivaConfiguration
         {
             throw new RegistryException( "Unable to reinitialize configuration: " + e.getMessage(), e );
         }
-        
+
         triggerEvent( ConfigurationEvent.SAVED );
 
         return registry.getSection( KEY + ".user" );
@@ -329,7 +332,7 @@ public class DefaultArchivaConfiguration
 
         listeners.remove( listener );
     }
-    
+
     public void addChangeListener( RegistryListener listener )
     {
         addRegistryChangeListener( listener );
@@ -351,7 +354,6 @@ public class DefaultArchivaConfiguration
             section.addChangeListener( listener );
         }
     }
-
 
     public void initialize()
         throws InitializationException
