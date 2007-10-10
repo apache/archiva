@@ -104,14 +104,14 @@ archiva-database/  archiva-site/       design/
         <ul>
           <li>The <code>javax.resource:connector:1.0:jar</code> artifact</li>
           <ol>
-            <li>Download the 1.0 connector zip from: <a href="Download the 1.0 connector zip from: http://java.sun.com/j2ee/connector/download.html">http://java.sun.com/j2ee/connector/download.html</a></li>
+            <li>Download the 1.0 connector zip from: <a href="http://java.sun.com/j2ee/connector/download.html">http://java.sun.com/j2ee/connector/download.html</a></li>
             <li>Unpack the zip to gain access to the jar file.</li>
             <li>Install it: <code>mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar</code></li>
           </ol>
           <li>The <code>javax.transaction:jta:1.0.1B:jar</code> artifact</li>
           <ol>
-            <li>Download the 1.0.1B jta zip from: <a href="Download the 1.0.1B jta zip from: http://java.sun.com/products/jta/">http://java.sun.com/products/jta/</a></li>
-            <li>Install it: <code>mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip</code></li>
+            <li>Download the 1.0.1B jta zip from: <a href="http://java.sun.com/products/jta/">http://java.sun.com/products/jta/</a></li>
+            <li>Install it: <code>mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip</code></li>
           </ol>
         </ul>
       </subsection>
