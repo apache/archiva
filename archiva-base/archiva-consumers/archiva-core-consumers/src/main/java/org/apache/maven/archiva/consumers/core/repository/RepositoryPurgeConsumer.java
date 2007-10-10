@@ -26,9 +26,11 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -42,9 +44,11 @@ import java.util.List;
  * specified by the user.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="repository-purge"
- * instantiation-strategy="per-lookup
+ * 
+ * @plexus.component 
+ *      role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
+ *      role-hint="repository-purge"
+ *      instantiation-strategy="per-lookup
  */
 public class RepositoryPurgeConsumer
     extends AbstractMonitoredConsumer
@@ -66,14 +70,19 @@ public class RepositoryPurgeConsumer
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
-
-    /**
      * @plexus.requirement role-hint="jdo"
      */
     private ArchivaDAO dao;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryFactory;
+
+    /**
+     * @plexus.requirement
+     */
+    private MetadataTools metadataTools;
 
     /**
      * @plexus.requirement
@@ -118,34 +127,35 @@ public class RepositoryPurgeConsumer
     public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
-        BidirectionalRepositoryLayout repositoryLayout;
         try
         {
-            repositoryLayout = layoutFactory.getLayout( repository.getLayout() );
+            ManagedRepositoryContent repositoryContent = repositoryFactory.getManagedRepositoryContent( repository
+                .getId() );
+
+            if ( repository.getDaysOlder() != 0 )
+            {
+                repoPurge = new DaysOldRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
+                    .getDaysOlder() );
+            }
+            else
+            {
+                repoPurge = new RetentionCountRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
+                    .getRetentionCount() );
+            }
+
+            cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, dao.getArtifactDAO(),
+                                                                   metadataTools );
+
+            deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
         }
-        catch ( LayoutException e )
+        catch ( RepositoryNotFoundException e )
         {
-            throw new ConsumerException(
-                "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
+            throw new ConsumerException( "Can't run repository purge: " + e.getMessage(), e );
         }
-
-        ManagedRepositoryConfiguration repoConfig =
-            configuration.getConfiguration().findManagedRepositoryById( repository.getId() );
-
-        if ( repoConfig.getDaysOlder() != 0 )
+        catch ( RepositoryException e )
         {
-            repoPurge = new DaysOldRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(),
-                                                    repoConfig.getDaysOlder() );
+            throw new ConsumerException( "Can't run repository purge: " + e.getMessage(), e );
         }
-        else
-        {
-            repoPurge = new RetentionCountRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO(),
-                                                           repoConfig.getRetentionCount() );
-        }
-
-        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repository, repositoryLayout, dao.getArtifactDAO() );
-
-        deleteReleasedSnapshots = repoConfig.isDeleteReleasedSnapshots();
     }
 
     public void processFile( String path )
@@ -162,7 +172,7 @@ public class RepositoryPurgeConsumer
         }
         catch ( RepositoryPurgeException rpe )
         {
-            throw new ConsumerException( rpe.getMessage() );
+            throw new ConsumerException( rpe.getMessage(), rpe );
         }
     }
 

@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.content.LegacyArtifactExtensionMapping;
+import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,8 +42,6 @@ public class LegacyBidirectionalRepositoryLayout
     private static final String DIR_JAVA_SOURCE = "java-sources";
 
     private static final String PATH_SEPARATOR = "/";
-
-    private LegacyArtifactExtensionMapping extensionMapper = new LegacyArtifactExtensionMapping();
 
     private Map typeToDirectoryMap;
 
@@ -88,7 +86,7 @@ public class LegacyBidirectionalRepositoryLayout
                 path.append( '-' ).append( classifier );
             }
 
-            path.append( '.' ).append( extensionMapper.getExtension( type ) );
+            path.append( '.' ).append( ArtifactExtensionMapping.getExtension( type ) );
         }
 
         return path.toString();
@@ -169,7 +167,7 @@ public class LegacyBidirectionalRepositoryLayout
         prefs.fileParts = RepositoryLayoutUtils.splitFilename( filename, null );
 
         String trimPathType = prefs.pathType.substring( 0, prefs.pathType.length() - 1 );
-        prefs.type = extensionMapper.getType( trimPathType, filename );
+        prefs.type = ArtifactExtensionMapping.guessTypeFromFilename( filename );
 
         // Sanity Check: does it have an extension?
         if ( StringUtils.isEmpty( prefs.fileParts.extension ) )
@@ -185,7 +183,7 @@ public class LegacyBidirectionalRepositoryLayout
         }
 
         // Sanity Check: does extension match pathType on path?
-        String expectedExtension = extensionMapper.getExtension( trimPathType );
+        String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
         String actualExtension = prefs.fileParts.extension;
 
         if ( !expectedExtension.equals( actualExtension ) )

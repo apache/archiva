@@ -29,8 +29,12 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -70,7 +74,7 @@ public class MetadataUpdaterConsumer
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement
@@ -93,7 +97,7 @@ public class MetadataUpdaterConsumer
 
     private static final String TYPE_METADATA_IO = "metadata-io-warning";
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepositoryContent repository;
 
     private File repositoryDir;
 
@@ -118,22 +122,23 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repoConfig )
         throws ConsumerException
     {
-        this.repository = repository;
-        this.repositoryDir = new File( repository.getLocation() );
         try
         {
-            this.repositoryLayout = layoutFactory.getLayout( repository.getLayout() );
+            this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId() );
+            this.repositoryDir = new File( repository.getRepoRoot() );
+            this.scanStartTimestamp = System.currentTimeMillis();
         }
-        catch ( LayoutException e )
+        catch ( RepositoryNotFoundException e )
         {
-            throw new ConsumerException(
-                "Cannot operate with bad layout definition on repo [" + repository.getId() + "]: " + e.getMessage(),
-                e );
+            throw new ConsumerException( e.getMessage(), e );
         }
-        this.scanStartTimestamp = System.currentTimeMillis();
+        catch ( RepositoryException e )
+        {
+            throw new ConsumerException( e.getMessage(), e );
+        }
     }
 
     public void completeScan()
@@ -190,18 +195,24 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path +
-                "] to an internal project reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
+                + "] to an internal project reference: " + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
-                                  "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write project metadata for artifact [" + path
+                + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            triggerConsumerWarning( TYPE_METADATA_IO, "Project metadata not written due to IO warning: "
+                + e.getMessage() );
+        }
+        catch ( ContentNotFoundException e )
+        {
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Project metadata not written due to IO warning: " + e.getMessage() );
+                                    "Project metadata not written because no versions were found to update: "
+                                        + e.getMessage() );
         }
     }
 
@@ -230,18 +241,24 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path +
-                "] to an internal version reference: " + e.getMessage() );
+            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF, "Unable to convert path [" + path
+                + "] to an internal version reference: " + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
-            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
-                                  "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
+            triggerConsumerError( TYPE_METADATA_WRITE_FAILURE, "Unable to write version metadata for artifact [" + path
+                + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            triggerConsumerWarning( TYPE_METADATA_IO, "Version metadata not written due to IO warning: "
+                + e.getMessage() );
+        }
+        catch ( ContentNotFoundException e )
+        {
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Version metadata not written due to IO warning: " + e.getMessage() );
+                                    "Version metadata not written because no versions were found to update: "
+                                        + e.getMessage() );
         }
     }
 

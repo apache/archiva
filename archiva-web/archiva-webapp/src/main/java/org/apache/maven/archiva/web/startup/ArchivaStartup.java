@@ -28,7 +28,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

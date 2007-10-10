@@ -19,18 +19,20 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
+import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Purge the repository by retention count. Retain only the specified number of snapshots.
@@ -42,10 +44,10 @@ public class RetentionCountRepositoryPurge
 {
     private int retentionCount;
 
-    public RetentionCountRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
-                                          ArtifactDAO artifactDao, int retentionCount )
+    public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
+                                          int retentionCount )
     {
-        super( repository, layout, artifactDao );
+        super( repository, artifactDao );
         this.retentionCount = retentionCount;
     }
 
@@ -54,39 +56,42 @@ public class RetentionCountRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getLocation(), path );
+            File artifactFile = new File( repository.getRepoRoot(), path );
 
             if ( !artifactFile.exists() )
             {
                 return;
             }
 
-            FilenameParts parts = getFilenameParts( path );
+            ArtifactReference artifact = repository.toArtifactReference( path );
 
-            if ( VersionUtil.isSnapshot( parts.version ) )
+            if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
             {
-                File parentDir = artifactFile.getParentFile();
+                VersionedReference reference = new VersionedReference();
+                reference.setGroupId( artifact.getGroupId() );
+                reference.setArtifactId( artifact.getArtifactId() );
+                reference.setVersion( artifact.getVersion() );
 
-                if ( parentDir.isDirectory() )
+                List<String> versions = new ArrayList<String>( repository.getVersions( reference ) );
+
+                Collections.sort( versions, VersionComparator.getInstance() );
+
+                if ( retentionCount > versions.size() )
                 {
-                    File[] files = parentDir.listFiles();
-                    List uniqueVersionFilenames = getUniqueVersions( files );
-                    Collections.sort( uniqueVersionFilenames );
+                    // Done. nothing to do here. skip it.
+                    return;
+                }
 
-                    if ( uniqueVersionFilenames.size() > retentionCount )
+                int countToPurge = versions.size() - retentionCount;
+
+                for ( String version : versions )
+                {
+                    if ( countToPurge-- <= 0 )
                     {
-                        int count = uniqueVersionFilenames.size();
-                        for ( Iterator iter = uniqueVersionFilenames.iterator(); iter.hasNext(); )
-                        {
-                            String filename = (String) iter.next();
-                            if ( count > retentionCount )
-                            {
-                                File[] artifactFiles = getFiles( parentDir, filename );
-                                purge( artifactFiles );
-                                count--;
-                            }
-                        }
+                        break;
                     }
+
+                    doPurgeAllRelated( artifact, version );
                 }
             }
         }
@@ -94,37 +99,34 @@ public class RetentionCountRepositoryPurge
         {
             throw new RepositoryPurgeException( le.getMessage() );
         }
+        catch ( ContentNotFoundException e )
+        {
+            // Nothing to do here.
+            // TODO: Log this condition?
+        }
     }
 
-    private List getUniqueVersions( File[] files )
+    private void doPurgeAllRelated( ArtifactReference reference, String version )
+        throws LayoutException
     {
-        List uniqueVersions = new ArrayList();
+        ArtifactReference artifact = new ArtifactReference();
+        artifact.setGroupId( reference.getGroupId() );
+        artifact.setArtifactId( reference.getArtifactId() );
+        artifact.setVersion( version );
+        artifact.setClassifier( reference.getClassifier() );
+        artifact.setType( reference.getType() );
+        
+        System.err.println( "Requesting (retention) purge of " + ArtifactReference.toKey( reference ) );
 
-        for ( int i = 0; i < files.length; i++ )
+        try
         {
-            if ( !( files[i].getName().toUpperCase() ).endsWith( "SHA1" ) &&
-                !( files[i].getName().toUpperCase() ).endsWith( "MD5" ) )
-            {
-                FilenameParts filenameParts = null;
-
-                // skip those files that have layout exception (no artifact id/no version/no extension)
-                try
-                {
-                    filenameParts = getFilenameParts( files[i].getAbsolutePath() );
-                }
-                catch ( LayoutException le )
-                {
-
-                }
-
-                if ( filenameParts != null &&
-                    !uniqueVersions.contains( filenameParts.artifactId + "-" + filenameParts.version ) )
-                {
-                    uniqueVersions.add( filenameParts.artifactId + "-" + filenameParts.version );
-                }
-            }
+            Set<ArtifactReference> related = repository.getRelatedArtifacts( artifact );
+            purge( related );
         }
-
-        return uniqueVersions;
+        catch ( ContentNotFoundException e )
+        {
+            // Nothing to do here.
+            // TODO: Log this?
+        }
     }
 }

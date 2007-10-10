@@ -19,8 +19,8 @@ package org.apache.maven.archiva.repository.connector;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 
 import java.util.List;
 
@@ -32,9 +32,9 @@ import java.util.List;
  */
 public interface RepositoryConnector
 {
-    public ManagedRepositoryConfiguration getSourceRepository();
+    public ManagedRepositoryContent getSourceRepository();
 
-    public RemoteRepositoryConfiguration getTargetRepository();
+    public RemoteRepositoryContent getTargetRepository();
 
     public List<String> getBlacklist();
     

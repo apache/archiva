@@ -32,11 +32,15 @@
           <role-hint>retention-count</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.database.ArchivaDAO</role>
           <role-hint>jdo</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+          <role-hint>retention-count</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
@@ -59,6 +63,19 @@
       </requirements>
     </component>
     <component>
+      <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+      <role-hint>retention-count</role-hint>
+      <implementation>org.apache.maven.archiva.repository.RepositoryContentFactory</implementation>
+      <description>RepositoryContentRequest</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <role-hint>retention-count</role-hint>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <component>
       <role>org.codehaus.plexus.registry.Registry</role>
       <role-hint>retention-count</role-hint>
       <implementation>org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry</implementation>
@@ -68,25 +85,6 @@
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-      <implementation>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <role-hint>retention-count</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-          <field-name>layouts</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout</implementation>
     </component>
     <component>
       <role>org.apache.maven.archiva.configuration.FileTypes</role>
@@ -111,11 +109,15 @@
           <role-hint>days-old</role-hint>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.database.ArchivaDAO</role>
           <role-hint>jdo</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+          <role-hint>days-old</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
@@ -125,6 +127,19 @@
         <id>repository-purge</id>
         <description>Purge repository of old snapshots</description>
       </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+      <role-hint>days-old</role-hint>
+      <implementation>org.apache.maven.archiva.repository.RepositoryContentFactory</implementation>
+      <description>RepositoryContentRequest</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <role-hint>days-old</role-hint>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+      </requirements>
     </component>
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
@@ -147,25 +162,6 @@
                config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-      <implementation>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <role-hint>days-old</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-          <field-name>layouts</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout</implementation>
     </component>
     <component>
       <role>org.apache.maven.archiva.configuration.FileTypes</role>

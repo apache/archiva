@@ -56,7 +56,7 @@ import java.util.List;
 /**
  * ProjectModel400Writer for Maven 2 project model v4.0.0 pom files.  
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
  * @plexus.component 

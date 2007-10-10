@@ -29,16 +29,26 @@
       <role-hint>mock</role-hint>
       <implementation>org.apache.maven.archiva.proxy.MockConfiguration</implementation>
     </component>
+    <component>
+      <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+      <role-hint>mocked</role-hint>
+      <implementation>org.apache.maven.archiva.repository.RepositoryContentFactory</implementation>
+      <description>RepositoryContentRequest</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <role-hint>mock</role-hint>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
     
     <component>
       <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
       <implementation>org.apache.maven.archiva.repository.metadata.MetadataTools</implementation>
       <description>MetadataTools</description>
       <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-          <field-name>layoutFactory</field-name>
-        </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <field-name>filetypes</field-name>
@@ -67,12 +77,11 @@
           <field-name>wagons</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-          <field-name>layoutFactory</field-name>
+          <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
+          <role-hint>mocked</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
-          <field-name>metadataTools</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>

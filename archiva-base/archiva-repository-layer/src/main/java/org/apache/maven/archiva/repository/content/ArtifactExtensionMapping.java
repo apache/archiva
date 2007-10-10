@@ -19,22 +19,25 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AbstractArtifactExtensionMapping
+ * ArtifactExtensionMapping
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public abstract class AbstractArtifactExtensionMapping
+public class ArtifactExtensionMapping
 {
-    protected final Map typeToExtensionMap;
+    protected static final Map<String, String> typeToExtensionMap;
 
-    public AbstractArtifactExtensionMapping()
+    static
     {
-        typeToExtensionMap = new HashMap();
+        typeToExtensionMap = new HashMap<String, String>();
         typeToExtensionMap.put( "ejb-client", "jar" );
         typeToExtensionMap.put( "ejb", "jar" );
         typeToExtensionMap.put( "distribution-tgz", "tar.gz" );
@@ -49,7 +52,7 @@ public abstract class AbstractArtifactExtensionMapping
         typeToExtensionMap.put( "maven-archetype", "jar" );
     }
 
-    public String getExtension( String type )
+    public static String getExtension( String type )
     {
         // Try specialized types first.
         if ( typeToExtensionMap.containsKey( type ) )
@@ -59,5 +62,51 @@ public abstract class AbstractArtifactExtensionMapping
 
         // Return type
         return type;
+    }
+
+    public static String guessTypeFromFilename( File file )
+    {
+        return guessTypeFromFilename( file.getName() );
+    }
+
+    public static String guessTypeFromFilename( String filename )
+    {
+        if ( StringUtils.isBlank( filename ) )
+        {
+            return null;
+        }
+
+        String normalizedName = filename.toLowerCase().trim();
+        int idx = normalizedName.lastIndexOf( '.' );
+
+        if ( idx == ( -1 ) )
+        {
+            return null;
+        }
+
+        if ( normalizedName.endsWith( ".tar.gz" ) )
+        {
+            return "distribution-tgz";
+        }
+        if ( normalizedName.endsWith( ".tar.bz2" ) )
+        {
+            return "distribution-bzip";
+        }
+        else if ( normalizedName.endsWith( ".zip" ) )
+        {
+            return "distribution-zip";
+        }
+        else if ( normalizedName.endsWith( "-sources.jar" ) )
+        {
+            return "java-source";
+        }
+        else if ( normalizedName.endsWith( "-javadoc.jar" ) )
+        {
+            return "javadoc";
+        }
+        else
+        {
+            return normalizedName.substring( idx + 1 );
+        }
     }
 }

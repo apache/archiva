@@ -38,7 +38,7 @@ public class DaysOldRepositoryPurgeTest
         super.setUp();
 
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), getLayout(), dao, getRepoConfiguration().getDaysOlder() );
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder() );
     }
 
     private void setLastModified( String dirPath )

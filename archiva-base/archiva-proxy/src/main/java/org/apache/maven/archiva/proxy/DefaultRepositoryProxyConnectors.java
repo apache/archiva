@@ -24,10 +24,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.RepositoryURL;
@@ -36,8 +34,12 @@ import org.apache.maven.archiva.policies.DownloadPolicy;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
@@ -91,7 +93,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement
@@ -131,7 +133,7 @@ public class DefaultRepositoryProxyConnectors
      *         could not be) fetched.
      * @throws ProxyException if there was a problem fetching the artifact.
      */
-    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ArtifactReference artifact )
+    public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, artifact );
@@ -142,8 +144,8 @@ public class DefaultRepositoryProxyConnectors
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
         {
-            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
-            String targetPath = getLayout( targetRepository ).toPath( artifact );
+            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
+            String targetPath = targetRepository.toPath( artifact );
 
             File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
 
@@ -162,7 +164,7 @@ public class DefaultRepositoryProxyConnectors
      *
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
      */
-    public File fetchFromProxies( ManagedRepositoryConfiguration repository, VersionedReference metadata )
+    public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
@@ -173,7 +175,7 @@ public class DefaultRepositoryProxyConnectors
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
         {
-            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
+            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
@@ -205,6 +207,12 @@ public class DefaultRepositoryProxyConnectors
                 // TODO: add into repository report?
             }
             catch ( IOException e )
+            {
+                getLogger()
+                    .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
+                // TODO: add into repository report?
+            }
+            catch ( ContentNotFoundException e )
             {
                 getLogger()
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
@@ -225,7 +233,7 @@ public class DefaultRepositoryProxyConnectors
      *
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
      */
-    public File fetchFromProxies( ManagedRepositoryConfiguration repository, ProjectReference metadata )
+    public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
         throws ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
@@ -236,7 +244,7 @@ public class DefaultRepositoryProxyConnectors
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
         {
-            RemoteRepositoryConfiguration targetRepository = connector.getTargetRepository();
+            RemoteRepositoryContent targetRepository = connector.getTargetRepository();
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
@@ -273,6 +281,12 @@ public class DefaultRepositoryProxyConnectors
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
+            catch ( ContentNotFoundException e )
+            {
+                getLogger()
+                    .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
+                // TODO: add into repository report?
+            }
         }
 
         if ( fileExists( localFile ) )
@@ -283,17 +297,17 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
-    private File toLocalRepoFile( ManagedRepositoryConfiguration repository,
-                                  RemoteRepositoryConfiguration targetRepository, String targetPath )
+    private File toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
+                                  String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return new File( repository.getLocation(), repoPath );
+        return new File( repository.getRepoRoot(), repoPath );
     }
 
     /**
-     * Test if the provided ManagedRepositoryConfiguration has any proxies configured for it.
+     * Test if the provided ManagedRepositoryContent has any proxies configured for it.
      */
-    public boolean hasProxies( ManagedRepositoryConfiguration repository )
+    public boolean hasProxies( ManagedRepositoryContent repository )
     {
         synchronized ( this.proxyConnectorMap )
         {
@@ -301,74 +315,24 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private File toLocalFile( ManagedRepositoryConfiguration repository, ArtifactReference artifact )
+    private File toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyException
     {
-        BidirectionalRepositoryLayout sourceLayout = getLayout( repository );
-        String sourcePath = sourceLayout.toPath( artifact );
-        return new File( repository.getLocation(), sourcePath );
+        return repository.toFile( artifact );
     }
 
-    private File toLocalFile( ManagedRepositoryConfiguration repository, ProjectReference metadata )
+    private File toLocalFile( ManagedRepositoryContent repository, ProjectReference metadata )
         throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getLocation(), sourcePath );
+        return new File( repository.getRepoRoot(), sourcePath );
     }
 
-    private File toLocalFile( ManagedRepositoryConfiguration repository, VersionedReference metadata )
+    private File toLocalFile( ManagedRepositoryContent repository, VersionedReference metadata )
         throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
-        return new File( repository.getLocation(), sourcePath );
-    }
-
-    /**
-     * Get the layout for the repository.
-     *
-     * @param repository the repository to get the layout from.
-     * @return the layout
-     * @throws ProxyException if there was a problem obtaining the layout from the repository (usually due to a bad
-     *                        configuration of the repository)
-     */
-    private BidirectionalRepositoryLayout getLayout( ManagedRepositoryConfiguration repository )
-        throws ProxyException
-    {
-        try
-        {
-            return layoutFactory.getLayout( repository.getLayout() );
-        }
-        catch ( LayoutException e )
-        {
-            throw new ProxyException(
-                                      "Unable to proxy due to bad managed repository layout definition ["
-                                          + repository.getId() + "] had a layout defined as [" + repository.getLayout()
-                                          + "] : " + e.getMessage(), e );
-        }
-    }
-    
-    /**
-     * Get the layout for the repository.
-     *
-     * @param repository the repository to get the layout from.
-     * @return the layout
-     * @throws ProxyException if there was a problem obtaining the layout from the repository (usually due to a bad
-     *                        configuration of the repository)
-     */
-    private BidirectionalRepositoryLayout getLayout( RemoteRepositoryConfiguration repository )
-        throws ProxyException
-    {
-        try
-        {
-            return layoutFactory.getLayout( repository.getLayout() );
-        }
-        catch ( LayoutException e )
-        {
-            throw new ProxyException(
-                                      "Unable to proxy due to bad remote repository layout definition ["
-                                          + repository.getId() + "] had a layout defined as [" + repository.getLayout()
-                                          + "] : " + e.getMessage(), e );
-        }
+        return new File( repository.getRepoRoot(), sourcePath );
     }
 
     /**
@@ -408,11 +372,11 @@ public class DefaultRepositoryProxyConnectors
      * @return the local file that was downloaded, or null if not downloaded.
      * @throws ProxyException if transfer was unsuccessful.
      */
-    private File transferFile( ProxyConnector connector, RemoteRepositoryConfiguration remoteRepository,
-                               String remotePath, File localFile, Properties requestProperties )
+    private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
+                               File localFile, Properties requestProperties )
         throws ProxyException
     {
-        String url = remoteRepository.getUrl() + remotePath;
+        String url = remoteRepository.getURL().getUrl() + remotePath;
         requestProperties.setProperty( "url", url );
 
         // Is a whitelist defined?
@@ -449,7 +413,7 @@ public class DefaultRepositoryProxyConnectors
         Wagon wagon = null;
         try
         {
-            RepositoryURL repoUrl = new RepositoryURL( remoteRepository.getUrl() );
+            RepositoryURL repoUrl = remoteRepository.getURL();
             String protocol = repoUrl.getProtocol();
             wagon = (Wagon) wagons.get( protocol );
             if ( wagon == null )
@@ -506,7 +470,7 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Just-in-time update of the index and database by executing the consumers for this artifact
-        consumers.executeConsumers( connector.getSourceRepository(), localFile );
+        consumers.executeConsumers( connector.getSourceRepository().getRepository(), localFile );
 
         // Everything passes.
         return localFile;
@@ -524,11 +488,11 @@ public class DefaultRepositoryProxyConnectors
      * @param type             the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
-    private void transferChecksum( Wagon wagon, RemoteRepositoryConfiguration remoteRepository, String remotePath,
+    private void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                    File localFile, String type )
         throws ProxyException
     {
-        String url = remoteRepository.getUrl() + remotePath;
+        String url = remoteRepository.getURL().getUrl() + remotePath;
 
         // Transfer checksum does not use the policy. 
         if ( urlFailureCache.hasFailedBefore( url + type ) )
@@ -564,7 +528,7 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem moving the downloaded file into place.
      * @throws WagonException if there was a problem tranfering the file.
      */
-    private File transferSimpleFile( Wagon wagon, RemoteRepositoryConfiguration remoteRepository, String remotePath,
+    private File transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                      File localFile )
         throws ProxyException, WagonException
     {
@@ -581,7 +545,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( localFile.exists() )
             {
-                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getName() );
+                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName() );
                 wagon.get( remotePath, temp );
                 success = true;
 
@@ -595,7 +559,9 @@ public class DefaultRepositoryProxyConnectors
             }
             else
             {
-                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getName() + " if updated" );
+                getLogger().debug(
+                                   "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
+                                       + " if updated" );
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
                 {
@@ -703,8 +669,7 @@ public class DefaultRepositoryProxyConnectors
      * @param remoteRepository the remote repository to connect to.
      * @return true if the connection was successful. false if not connected.
      */
-    private boolean connectToRepository( ProxyConnector connector, Wagon wagon,
-                                         RemoteRepositoryConfiguration remoteRepository )
+    private boolean connectToRepository( ProxyConnector connector, Wagon wagon, RemoteRepositoryContent remoteRepository )
     {
         boolean connected = false;
 
@@ -717,13 +682,13 @@ public class DefaultRepositoryProxyConnectors
         try
         {
             AuthenticationInfo authInfo = null;
-            String username = remoteRepository.getUsername();
-            String password = remoteRepository.getPassword();
+            String username = remoteRepository.getRepository().getUsername();
+            String password = remoteRepository.getRepository().getPassword();
             if ( username != null && password != null )
             {
                 getLogger().debug(
-                                  "Using username " + username + " to connect to remote repository "
-                                      + remoteRepository.getUrl() );
+                                   "Using username " + username + " to connect to remote repository "
+                                       + remoteRepository.getURL() );
                 authInfo = new AuthenticationInfo();
                 authInfo.setUserName( username );
                 authInfo.setPassword( password );
@@ -733,7 +698,7 @@ public class DefaultRepositoryProxyConnectors
                 getLogger().debug( "No authentication for remote repository needed" );
             }
 
-            Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getUrl().toString() );
+            Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
             if ( networkProxy != null )
             {
                 wagon.connect( wagonRepository, authInfo, networkProxy );
@@ -746,12 +711,16 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ConnectionException e )
         {
-            getLogger().info( "Could not connect to " + remoteRepository.getName() + ": " + e.getMessage() );
+            getLogger().info(
+                              "Could not connect to " + remoteRepository.getRepository().getName() + ": "
+                                  + e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            getLogger().info( "Could not connect to " + remoteRepository.getName() + ": " + e.getMessage() );
+            getLogger().info(
+                              "Could not connect to " + remoteRepository.getRepository().getName() + ": "
+                                  + e.getMessage() );
             connected = false;
         }
 
@@ -786,7 +755,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
      */
-    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryConfiguration repository )
+    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
     {
         synchronized ( this.proxyConnectorMap )
         {
@@ -795,7 +764,7 @@ public class DefaultRepositoryProxyConnectors
             {
                 return Collections.EMPTY_LIST;
             }
-            
+
             Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
             return ret;
         }
@@ -830,46 +799,61 @@ public class DefaultRepositoryProxyConnectors
             {
                 String key = proxyConfig.getSourceRepoId();
 
-                // Create connector object.
-                ProxyConnector connector = new ProxyConnector();
-                connector.setSourceRepository( getManagedRepository( proxyConfig.getSourceRepoId() ) );
-                connector.setTargetRepository( getRemoteRepository( proxyConfig.getTargetRepoId() ) );
-                connector.setProxyId( proxyConfig.getProxyId() );
-                connector.setPolicies( proxyConfig.getPolicies() );
-                connector.setOrder( proxyConfig.getOrder() );
-
-                // Copy any blacklist patterns.
-                List<String> blacklist = new ArrayList<String>();
-                if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
+                try
                 {
-                    blacklist.addAll( proxyConfig.getBlackListPatterns() );
-                }
-                connector.setBlacklist( blacklist );
+                    // Create connector object.
+                    ProxyConnector connector = new ProxyConnector();
 
-                // Copy any whitelist patterns.
-                List<String> whitelist = new ArrayList<String>();
-                if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
+                    connector.setSourceRepository( repositoryFactory.getManagedRepositoryContent( proxyConfig
+                        .getSourceRepoId() ) );
+                    connector.setTargetRepository( repositoryFactory.getRemoteRepositoryContent( proxyConfig
+                        .getTargetRepoId() ) );
+
+                    connector.setProxyId( proxyConfig.getProxyId() );
+                    connector.setPolicies( proxyConfig.getPolicies() );
+                    connector.setOrder( proxyConfig.getOrder() );
+
+                    // Copy any blacklist patterns.
+                    List<String> blacklist = new ArrayList<String>();
+                    if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
+                    {
+                        blacklist.addAll( proxyConfig.getBlackListPatterns() );
+                    }
+                    connector.setBlacklist( blacklist );
+
+                    // Copy any whitelist patterns.
+                    List<String> whitelist = new ArrayList<String>();
+                    if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
+                    {
+                        whitelist.addAll( proxyConfig.getWhiteListPatterns() );
+                    }
+                    connector.setWhitelist( whitelist );
+
+                    // Get other connectors
+                    List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
+                    if ( connectors == null )
+                    {
+                        // Create if we are the first.
+                        connectors = new ArrayList<ProxyConnector>();
+                    }
+
+                    // Add the connector.
+                    connectors.add( connector );
+
+                    // Ensure the list is sorted.
+                    Collections.sort( connectors, proxyOrderSorter );
+
+                    // Set the key to the list of connectors.
+                    this.proxyConnectorMap.put( key, connectors );
+                }
+                catch ( RepositoryNotFoundException e )
                 {
-                    whitelist.addAll( proxyConfig.getWhiteListPatterns() );
+                    getLogger().warn( "Unable to use proxy connector: " + e.getMessage(), e );
                 }
-                connector.setWhitelist( whitelist );
-
-                // Get other connectors
-                List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
-                if ( connectors == null )
+                catch ( RepositoryException e )
                 {
-                    // Create if we are the first.
-                    connectors = new ArrayList<ProxyConnector>();
+                    getLogger().warn( "Unable to use proxy connector: " + e.getMessage(), e );
                 }
-
-                // Add the connector.
-                connectors.add( connector );
-
-                // Ensure the list is sorted.
-                Collections.sort( connectors, proxyOrderSorter );
-
-                // Set the key to the list of connectors.
-                this.proxyConnectorMap.put( key, connectors );
             }
 
         }
@@ -895,16 +879,6 @@ public class DefaultRepositoryProxyConnectors
                 this.networkProxyMap.put( key, proxy );
             }
         }
-    }
-
-    private RemoteRepositoryConfiguration getRemoteRepository( String repoId )
-    {
-        return archivaConfiguration.getConfiguration().findRemoteRepositoryById( repoId );
-    }
-
-    private ManagedRepositoryConfiguration getManagedRepository( String repoId )
-    {
-        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
     }
 
     public void initialize()

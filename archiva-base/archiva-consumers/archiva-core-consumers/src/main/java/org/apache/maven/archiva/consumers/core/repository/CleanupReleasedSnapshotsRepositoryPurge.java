@@ -19,29 +19,45 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.ProjectReference;
+import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
-import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * M2 implementation for cleaning up the released snapshots.
+ * <p>
+ * This will look in a single managed repository, and purge any snapshots that are present
+ * that have a corresponding released version on the same repository.
+ * </p>
+ * 
+ * <p>
+ * So, if you have the following (presented in the m2/default layout form) ...
+ * <pre>
+ *   /com/foo/foo-tool/1.0-SNAPSHOT/foo-tool-1.0-SNAPSHOT.jar
+ *   /com/foo/foo-tool/1.1-SNAPSHOT/foo-tool-1.1-SNAPSHOT.jar
+ *   /com/foo/foo-tool/1.2.1-SNAPSHOT/foo-tool-1.2.1-SNAPSHOT.jar
+ *   /com/foo/foo-tool/1.2.1/foo-tool-1.2.1.jar
+ *   /com/foo/foo-tool/2.0-SNAPSHOT/foo-tool-2.0-SNAPSHOT.jar
+ *   /com/foo/foo-tool/2.0/foo-tool-2.0.jar
+ *   /com/foo/foo-tool/2.1-SNAPSHOT/foo-tool-2.1-SNAPSHOT.jar
+ * </pre>
+ * then the current highest ranked released (non-snapshot) version is 2.0, which means
+ * the snapshots from 1.0-SNAPSHOT, 1.1-SNAPSHOT, 1.2.1-SNAPSHOT, and 2.0-SNAPSHOT can
+ * be purged.  Leaving 2.1-SNAPSHOT in alone.
+ * </p>
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
@@ -49,15 +65,13 @@ import java.util.List;
 public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge
 {
-    public static final String SNAPSHOT = "-SNAPSHOT";
+    private MetadataTools metadataTools;
 
-    private RepositoryMetadataReader metadataReader;
-
-    public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
-                                                    ArtifactDAO artifactDao )
+    public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
+                                                    MetadataTools metadataTools )
     {
-        super( repository, layout, artifactDao );
-        metadataReader = new RepositoryMetadataReader();
+        super( repository, artifactDao );
+        this.metadataTools = metadataTools;
     }
 
     public void process( String path )
@@ -65,126 +79,135 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getLocation(), path );
+            File artifactFile = new File( repository.getRepoRoot(), path );
 
             if ( !artifactFile.exists() )
             {
+                // Nothing to do here, file doesn't exist, skip it.
                 return;
             }
 
-            FilenameParts parts = getFilenameParts( path );
+            ArtifactReference artifact = repository.toArtifactReference( path );
 
-            if ( VersionUtil.isSnapshot( parts.version ) )
+            if ( !VersionUtil.isSnapshot( artifact.getVersion() ) )
             {
-                // version
-                File versionDir = artifactFile.getParentFile();
+                // Nothing to do here, not a snapshot, skip it.
+                return;
+            }
 
-                // artifactID - scan for other versions
-                File artifactIdDir = versionDir.getParentFile();
+            ProjectReference reference = new ProjectReference();
+            reference.setGroupId( artifact.getGroupId() );
+            reference.setArtifactId( artifact.getArtifactId() );
 
-                boolean updated = false;
+            // Gather up all of the versions.
+            List<String> allVersions = new ArrayList<String>( repository.getVersions( reference ) );
 
-                List versions = getVersionsInDir( artifactIdDir );
-                Collections.sort( versions, VersionComparator.getInstance() );
-                for ( int j = 0; j < versions.size(); j++ )
+            // Split the versions into released and snapshots.
+            List<String> releasedVersions = new ArrayList<String>();
+            List<String> snapshotVersions = new ArrayList<String>();
+
+            for ( String version : allVersions )
+            {
+                if ( VersionUtil.isSnapshot( version ) )
                 {
-                    String version = (String) versions.get( j );
-
-                    if ( VersionComparator.getInstance().compare( version, versionDir.getName() ) > 0 )
-                    {
-                        purge( versionDir.listFiles() );
-
-                        FileUtils.deleteDirectory( versionDir );
-
-                        updated = true;
-
-                        break;
-                    }
+                    snapshotVersions.add( version );
                 }
-
-                if ( updated )
+                else
                 {
-                    updateMetadata( artifactIdDir );
+                    releasedVersions.add( version );
                 }
             }
+
+            Collections.sort( allVersions, VersionComparator.getInstance() );
+            Collections.sort( releasedVersions, VersionComparator.getInstance() );
+            Collections.sort( snapshotVersions, VersionComparator.getInstance() );
+
+            // Find out the highest released version.
+            String highestReleasedVersion = allVersions.get( allVersions.size() - 1 );
+
+            // Now clean out any version that is earlier than the highest released version.
+            boolean needsMetadataUpdate = false;
+
+            VersionedReference versionRef = new VersionedReference();
+            versionRef.setGroupId( artifact.getGroupId() );
+            versionRef.setArtifactId( artifact.getArtifactId() );
+
+            for ( String version : snapshotVersions )
+            {
+                if ( VersionComparator.getInstance().compare( version, highestReleasedVersion ) < 0 )
+                {
+                    versionRef.setVersion( version );
+                    repository.deleteVersion( versionRef );
+                    needsMetadataUpdate = true;
+                }
+            }
+
+            if ( needsMetadataUpdate )
+            {
+                updateMetadata( artifact );
+            }
         }
-        catch ( LayoutException le )
+        catch ( LayoutException e )
         {
-            throw new RepositoryPurgeException( le.getMessage() );
+            throw new RepositoryPurgeException( e.getMessage(), e );
         }
-        catch ( IOException ie )
+        catch ( ContentNotFoundException e )
         {
-            throw new RepositoryPurgeException( ie.getMessage() );
+            throw new RepositoryPurgeException( e.getMessage(), e );
         }
     }
 
-    private void updateMetadata( File artifactIdDir )
-        throws RepositoryPurgeException
+    private void updateMetadata( ArtifactReference artifact )
     {
+        VersionedReference versionRef = new VersionedReference();
+        versionRef.setGroupId( artifact.getGroupId() );
+        versionRef.setArtifactId( artifact.getArtifactId() );
+        versionRef.setVersion( artifact.getVersion() );
 
-        File[] metadataFiles = getFiles( artifactIdDir, "maven-metadata" );
-        List availableVersions = getVersionsInDir( artifactIdDir );
+        ProjectReference projectRef = new ProjectReference();
+        projectRef.setGroupId( artifact.getGroupId() );
+        projectRef.setArtifactId( artifact.getArtifactId() );
 
-        Collections.sort( availableVersions );
-
-        String latestReleased = getLatestReleased( availableVersions );
-        for ( int i = 0; i < metadataFiles.length; i++ )
+        try
         {
-            if ( !( metadataFiles[i].getName().toUpperCase() ).endsWith( "SHA1" ) &&
-                !( metadataFiles[i].getName().toUpperCase() ).endsWith( "MD5" ) )
-            {
-                try
-                {
-                    Date lastUpdated = new Date();
-                    ArchivaRepositoryMetadata metadata = metadataReader.read( metadataFiles[i] );
-                    metadata.setAvailableVersions( availableVersions );
-                    metadata.setLatestVersion( (String) availableVersions.get( availableVersions.size() - 1 ) );
-                    metadata.setReleasedVersion( latestReleased );
-                    metadata.setLastUpdatedTimestamp( lastUpdated );
-                    metadata.setLastUpdated( Long.toString( lastUpdated.getTime() ) );
-
-                    RepositoryMetadataWriter.write( metadata, metadataFiles[i] );
-                }
-                catch ( RepositoryMetadataException rme )
-                {
-                    // continue updating other metadata files even if there is an exception
-                    // @todo log to console
-                }
-            }
+            metadataTools.updateMetadata( repository, versionRef );
         }
-    }
-
-    private String getLatestReleased( List availableVersions )
-    {
-        List reversedOrder = new ArrayList( availableVersions );
-        Collections.reverse( reversedOrder );
-        String latestReleased = "";
-
-        for ( Iterator iter = reversedOrder.iterator(); iter.hasNext(); )
+        catch ( ContentNotFoundException e )
         {
-            String version = (String) iter.next();
-            if ( !VersionUtil.getBaseVersion( version ).endsWith( SNAPSHOT ) )
-            {
-                latestReleased = version;
-                return latestReleased;
-            }
+            // Ignore. (Just means we have no snapshot versions left to reference).
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            // Ignore. 
+        }
+        catch ( IOException e )
+        {
+            // Ignore. 
+        }
+        catch ( LayoutException e )
+        {
+            // Ignore.
         }
 
-        return latestReleased;
-    }
-
-    private List getVersionsInDir( File artifactIdDir )
-    {
-        String[] versionsAndMore = artifactIdDir.list();
-        List versions = new ArrayList();
-        for ( int j = 0; j < versionsAndMore.length; j++ )
+        try
         {
-            if ( VersionUtil.isVersion( versionsAndMore[j] ) )
-            {
-                versions.add( versionsAndMore[j] );
-            }
+            metadataTools.updateMetadata( repository, projectRef );
         }
-
-        return versions;
+        catch ( ContentNotFoundException e )
+        {
+            // Ignore. (Just means we have no snapshot versions left to reference).
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            // Ignore. 
+        }
+        catch ( IOException e )
+        {
+            // Ignore. 
+        }
+        catch ( LayoutException e )
+        {
+            // Ignore.
+        }
     }
 }

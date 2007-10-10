@@ -108,7 +108,7 @@ public class RepositoryServlet
 
     public synchronized ManagedRepositoryConfiguration getRepository( String prefix )
     {
-        if ( repositoryMap == null )
+        if ( repositoryMap.isEmpty() )
         {
             repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
         }
@@ -216,9 +216,9 @@ public class RepositoryServlet
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
-            if ( propertyName.endsWith( ".id" ) || propertyName.endsWith( ".location" ) )
+            synchronized ( repositoryMap )
             {
-                repositoryMap = null;
+                repositoryMap.clear();
             }
         }
     }

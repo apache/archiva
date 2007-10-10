@@ -39,7 +39,7 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
-        repoPurge = new RetentionCountRepositoryPurge( getRepository(), getLayout(), dao,
+        repoPurge = new RetentionCountRepositoryPurge( getRepository(), dao,
                                                        getRepoConfiguration().getRetentionCount() );
     }
 

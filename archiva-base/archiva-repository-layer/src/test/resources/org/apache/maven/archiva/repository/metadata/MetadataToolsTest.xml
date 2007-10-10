@@ -31,10 +31,6 @@
       <description>MetadataTools</description>
       <requirements>
         <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-          <field-name>layoutFactory</field-name>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
           <field-name>filetypes</field-name>
         </requirement>

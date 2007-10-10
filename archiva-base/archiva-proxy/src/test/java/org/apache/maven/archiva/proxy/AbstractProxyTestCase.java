@@ -31,6 +31,7 @@ import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.wagon.Wagon;
@@ -95,15 +96,13 @@ public abstract class AbstractProxyTestCase
 
     protected RepositoryProxyConnectors proxyHandler;
 
-    protected ManagedRepositoryConfiguration managedDefaultRepository;
+    protected ManagedRepositoryContent managedDefaultRepository;
 
     protected File managedDefaultDir;
 
-    protected ManagedRepositoryConfiguration managedLegacyRepository;
+    protected ManagedRepositoryContent managedLegacyRepository;
 
     protected File managedLegacyDir;
-
-    protected BidirectionalRepositoryLayoutFactory layoutFactory;
 
     protected MockConfiguration config;
 
@@ -163,12 +162,12 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[]{"tmp"}, false );
+        Collection<File> tmpFiles = FileUtils.listFiles( workingDir, new String[] { "tmp" }, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuffer emsg = new StringBuffer();
             emsg.append( "Found Temp Files in dir: " ).append( workingDir.getPath() );
-            for( File tfile: tmpFiles )
+            for ( File tfile : tmpFiles )
             {
                 emsg.append( "\n   " ).append( tfile.getName() );
             }
@@ -220,8 +219,8 @@ public abstract class AbstractProxyTestCase
                 {
                     if ( !destination.exists() && !destination.mkdirs() )
                     {
-                        throw new IOException(
-                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                        throw new IOException( "Could not create destination directory '"
+                            + destination.getAbsolutePath() + "'." );
                     }
 
                     copyDirectoryStructure( file, destination );
@@ -234,33 +233,22 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-    protected ArtifactReference createArtifactReference( String layoutType, String path )
+    protected ManagedRepositoryContent createManagedLegacyRepository()
         throws Exception
-    {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( layoutType );
-        ArchivaArtifact artifact = layout.toArtifact( path );
-        ArtifactReference ref = new ArtifactReference();
-        ref.setGroupId( artifact.getGroupId() );
-        ref.setArtifactId( artifact.getArtifactId() );
-        ref.setVersion( artifact.getVersion() );
-        ref.setClassifier( artifact.getClassifier() );
-        ref.setType( artifact.getType() );
-        return ref;
-    }
-
-    protected ManagedRepositoryConfiguration createManagedLegacyRepository()
     {
         return createRepository( "testManagedLegacyRepo", "Test Managed (Legacy) Repository",
                                  "src/test/repositories/legacy-managed", "legacy" );
     }
 
-    protected ManagedRepositoryConfiguration createProxiedLegacyRepository()
+    protected ManagedRepositoryContent createProxiedLegacyRepository()
+        throws Exception
     {
         return createRepository( "testProxiedLegacyRepo", "Test Proxied (Legacy) Repository",
                                  "src/test/repositories/legacy-proxied", "legacy" );
     }
 
-    protected ManagedRepositoryConfiguration createRepository( String id, String name, String path, String layout )
+    protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
+        throws Exception
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
@@ -268,7 +256,10 @@ public abstract class AbstractProxyTestCase
         repo.setLocation( path );
         repo.setLayout( layout );
 
-        return repo;
+        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class,
+                                                                                  layout );
+        repoContent.setRepository( repo );
+        return repoContent;
     }
 
     protected UrlFailureCache lookupUrlFailureCache()
@@ -307,15 +298,15 @@ public abstract class AbstractProxyTestCase
             }
         }
     }
-    
+
     protected void saveConnector( String sourceRepoId, String targetRepoId )
     {
         saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
     }
 
-    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy, String releasePolicy,
-                                  String snapshotPolicy, String cacheFailuresPolicy )
+    protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy,
+                                  String releasePolicy, String snapshotPolicy, String cacheFailuresPolicy )
     {
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
@@ -396,21 +387,18 @@ public abstract class AbstractProxyTestCase
     {
         super.setUp();
 
-        layoutFactory = (BidirectionalRepositoryLayoutFactory) lookup( BidirectionalRepositoryLayoutFactory.class
-            .getName() );
-
         config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getName();
         File repoLocation = getTestFile( repoPath );
 
-        managedDefaultRepository =
-            createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
+        managedDefaultRepository = createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath,
+                                                     "default" );
 
-        managedDefaultDir = new File( managedDefaultRepository.getLocation() );
+        managedDefaultDir = new File( managedDefaultRepository.getRepoRoot() );
 
-        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository;
+        ManagedRepositoryConfiguration repoConfig = managedDefaultRepository.getRepository();
 
         config.getConfiguration().addManagedRepository( repoConfig );
 
@@ -422,23 +410,23 @@ public abstract class AbstractProxyTestCase
         managedLegacyRepository = createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository",
                                                     REPOPATH_LEGACY_MANAGED_TARGET, "legacy" );
 
-        managedLegacyDir = new File( managedLegacyRepository.getLocation() );
+        managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
 
-        repoConfig = managedLegacyRepository;
+        repoConfig = managedLegacyRepository.getRepository();
 
         config.getConfiguration().addManagedRepository( repoConfig );
 
         // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
-                                    new File( REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1", new File( REPOPATH_PROXIED1 ).toURL()
+            .toExternalForm(), "default" );
 
         // Setup target (proxied to) repository.
-        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
-                                    new File( REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
+        saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2", new File( REPOPATH_PROXIED2 ).toURL()
+            .toExternalForm(), "default" );
 
         // Setup target (proxied to) repository using legacy layout.
-        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository",
-                                    new File( REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
+        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository", new File( REPOPATH_PROXIED_LEGACY )
+            .toURL().toExternalForm(), "legacy" );
 
         // Setup the proxy handler.
         proxyHandler = (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
@@ -486,8 +474,8 @@ public abstract class AbstractProxyTestCase
         if ( !sourceDir.exists() )
         {
             // This is just a warning.
-            System.err.println(
-                "[WARN] Skipping setup of testable managed repository, source dir does not exist: " + sourceDir );
+            System.err.println( "[WARN] Skipping setup of testable managed repository, source dir does not exist: "
+                + sourceDir );
             return;
         }
 

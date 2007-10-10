@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.content.DefaultArtifactExtensionMapping;
+import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 
 /**
  * DefaultBidirectionalRepositoryLayout - the layout mechanism for use by Maven 2.x repositories.
@@ -64,8 +64,6 @@ public class DefaultBidirectionalRepositoryLayout
     private static final char GROUP_SEPARATOR = '.';
 
     private static final char ARTIFACT_SEPARATOR = '-';
-
-    private DefaultArtifactExtensionMapping extensionMapper = new DefaultArtifactExtensionMapping();
 
     public String getId()
     {
@@ -147,7 +145,7 @@ public class DefaultBidirectionalRepositoryLayout
                     path.append( ARTIFACT_SEPARATOR ).append( classifier );
                 }
 
-                path.append( GROUP_SEPARATOR ).append( extensionMapper.getExtension( type ) );
+                path.append( GROUP_SEPARATOR ).append( ArtifactExtensionMapping.getExtension( type ) );
             }
         }
 
@@ -244,7 +242,7 @@ public class DefaultBidirectionalRepositoryLayout
                 }
             }
 
-            prefs.type = extensionMapper.getType( filename );
+            prefs.type = ArtifactExtensionMapping.guessTypeFromFilename( filename );
         }
         catch ( LayoutException e )
         {

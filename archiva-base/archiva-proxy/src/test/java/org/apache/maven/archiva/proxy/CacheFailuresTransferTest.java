@@ -45,7 +45,7 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -79,7 +79,7 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -113,7 +113,7 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );

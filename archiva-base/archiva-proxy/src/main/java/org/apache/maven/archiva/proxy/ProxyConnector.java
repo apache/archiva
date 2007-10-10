@@ -19,8 +19,8 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.connector.RepositoryConnector;
 
 import java.util.Iterator;
@@ -36,9 +36,9 @@ import java.util.Map;
 public class ProxyConnector
     implements RepositoryConnector
 {
-    private ManagedRepositoryConfiguration sourceRepository;
+    private ManagedRepositoryContent sourceRepository;
 
-    private RemoteRepositoryConfiguration targetRepository;
+    private RemoteRepositoryContent targetRepository;
 
     private List<String> blacklist;
 
@@ -60,22 +60,22 @@ public class ProxyConnector
         this.blacklist = blacklist;
     }
 
-    public ManagedRepositoryConfiguration getSourceRepository()
+    public ManagedRepositoryContent getSourceRepository()
     {
         return sourceRepository;
     }
 
-    public void setSourceRepository( ManagedRepositoryConfiguration sourceRepository )
+    public void setSourceRepository( ManagedRepositoryContent sourceRepository )
     {
         this.sourceRepository = sourceRepository;
     }
 
-    public RemoteRepositoryConfiguration getTargetRepository()
+    public RemoteRepositoryContent getTargetRepository()
     {
         return targetRepository;
     }
 
-    public void setTargetRepository( RemoteRepositoryConfiguration targetRepository )
+    public void setTargetRepository( RemoteRepositoryContent targetRepository )
     {
         this.targetRepository = targetRepository;
     }
@@ -115,8 +115,8 @@ public class ProxyConnector
         StringBuffer sb = new StringBuffer();
 
         sb.append( "ProxyConnector[\n" );
-        sb.append( "  source:" ).append( this.sourceRepository ).append( "\n" );
-        sb.append( "  target:" ).append( this.targetRepository ).append( "\n" );
+        sb.append( "  source: [managed] " ).append( this.sourceRepository.getRepoRoot() ).append( "\n" );
+        sb.append( "  target: [remote] " ).append( this.targetRepository.getRepository().getUrl() ).append( "\n" );
         sb.append( "  proxyId:" ).append( this.proxyId ).append( "\n" );
 
         Iterator<String> keys = this.policies.keySet().iterator();

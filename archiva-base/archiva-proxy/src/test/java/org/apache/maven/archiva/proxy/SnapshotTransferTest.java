@@ -44,7 +44,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -65,7 +65,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -88,7 +88,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
         expectedFile.setLastModified( getPastDate().getTime() );
@@ -111,7 +111,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
         expectedFile.setLastModified( getFutureDate().getTime() );
@@ -201,7 +201,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 
@@ -225,7 +225,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 
@@ -249,7 +249,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -274,7 +274,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         expectedFile.delete();
         assertFalse( expectedFile.exists() );
@@ -300,7 +300,7 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 

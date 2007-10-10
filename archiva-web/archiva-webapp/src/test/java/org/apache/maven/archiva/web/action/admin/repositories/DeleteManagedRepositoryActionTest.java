@@ -38,7 +38,7 @@ import java.util.Collections;
 /**
  * DeleteManagedRepositoryActionTest 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class DeleteManagedRepositoryActionTest

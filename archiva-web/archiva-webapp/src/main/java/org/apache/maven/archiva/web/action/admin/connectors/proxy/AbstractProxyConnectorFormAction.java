@@ -36,7 +36,7 @@ import java.util.Map;
  * AbstractProxyConnectorFormAction - generic fields and methods for either add or edit actions related with the 
  * Proxy Connector. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractProxyConnectorFormAction

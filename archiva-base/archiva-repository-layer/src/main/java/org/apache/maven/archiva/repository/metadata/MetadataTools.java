@@ -16,24 +16,25 @@ package org.apache.maven.archiva.repository.metadata;
  * limitations under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -45,9 +46,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,8 +65,8 @@ import java.util.regex.Matcher;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
  * @plexus.component role="org.apache.maven.archiva.repository.metadata.MetadataTools"
- * @todo use the maven-repository-metadata classes instead for merging
  */
 public class MetadataTools
     implements RegistryListener, Initializable
@@ -79,11 +82,6 @@ public class MetadataTools
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
-
-    /**
-     * @plexus.requirement
-     */
     private ArchivaConfiguration configuration;
 
     /**
@@ -95,7 +93,15 @@ public class MetadataTools
 
     private Map<String, Set<String>> proxies;
 
-    private static final char NUMS[] = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private static final char NUMS[] = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+    private static final SimpleDateFormat lastUpdatedFormat;
+
+    static
+    {
+        lastUpdatedFormat = new SimpleDateFormat( "yyyyMMddHHmmss" );
+        lastUpdatedFormat.setTimeZone( DateUtils.UTC_TIME_ZONE );
+    }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -111,201 +117,24 @@ public class MetadataTools
     }
 
     /**
-     * Gather the Available Versions (on disk) for a specific Project Reference, based on filesystem
-     * information.
-     *
-     * @return the Set of available versions, based on the project reference.
-     * @throws LayoutException
-     */
-    public Set<String> gatherAvailableVersions( ManagedRepositoryConfiguration managedRepository, ProjectReference reference )
-        throws LayoutException, IOException
-    {
-        String path = toPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
-        {
-            path = path.substring( 0, idx );
-        }
-
-        File repoDir = new File( managedRepository.getLocation(), path );
-
-        if ( !repoDir.exists() )
-        {
-            throw new IOException( "Unable to calculate Available Local Versions on a non-existant directory: " +
-                repoDir.getAbsolutePath() );
-        }
-
-        if ( !repoDir.isDirectory() )
-        {
-            throw new IOException(
-                "Unable to calculate Available Local Versions on a non-directory: " + repoDir.getAbsolutePath() );
-        }
-
-        Set<String> foundVersions = new HashSet<String>();
-        VersionedReference versionRef = new VersionedReference();
-        versionRef.setGroupId( reference.getGroupId() );
-        versionRef.setArtifactId( reference.getArtifactId() );
-
-        File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
-        {
-            if ( !repoFiles[i].isDirectory() )
-            {
-                // Skip it. not a directory.
-                continue;
-            }
-
-            // Test if dir has an artifact, which proves to us that it is a valid version directory.
-            String version = repoFiles[i].getName();
-            versionRef.setVersion( version );
-
-            if ( hasArtifact( managedRepository, versionRef ) )
-            {
-                // Found an artifact, must be a valid version.
-                foundVersions.add( version );
-            }
-        }
-
-        return foundVersions;
-    }
-
-    private boolean hasArtifact( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
-        throws LayoutException
-    {
-        try
-        {
-            return ( getFirstArtifact( managedRepository, reference ) != null );
-        }
-        catch ( IOException e )
-        {
-            return false;
-        }
-    }
-
-    /**
-     * Get the first Artifact found in the provided VersionedReference location.
-     *
-     * @param managedRepository the repository to search within.
-     * @param reference         the reference to the versioned reference to search within
-     * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
-     *         no artifact was found within the versioned reference.
-     * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
-     * @throws LayoutException
-     */
-    public ArtifactReference getFirstArtifact( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
-        throws LayoutException, IOException
-    {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
-        String path = toPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
-        {
-            path = path.substring( 0, idx );
-        }
-
-        File repoDir = new File( managedRepository.getLocation(), path );
-
-        if ( !repoDir.exists() )
-        {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: " +
-                repoDir.getAbsolutePath() );
-        }
-
-        if ( !repoDir.isDirectory() )
-        {
-            throw new IOException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
-        }
-
-        File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
-        {
-            if ( repoFiles[i].isDirectory() )
-            {
-                // Skip it. it's a directory.
-                continue;
-            }
-
-            String relativePath = PathUtil.getRelative( managedRepository.getLocation(), repoFiles[i] );
-
-            if ( matchesArtifactPattern( relativePath ) )
-            {
-                ArtifactReference artifact = layout.toArtifactReference( relativePath );
-
-                return artifact;
-            }
-        }
-
-        // No artifact was found.
-        return null;
-    }
-
-    /**
      * Gather the set of snapshot versions found in a particular versioned reference.
      *
      * @return the Set of snapshot artifact versions found.
      * @throws LayoutException
+     * @throws ContentNotFoundException 
      */
-    public Set<String> gatherSnapshotVersions( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
-        throws LayoutException, IOException
+    public Set<String> gatherSnapshotVersions( ManagedRepositoryContent managedRepository, VersionedReference reference )
+        throws LayoutException, IOException, ContentNotFoundException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
-        String path = toPath( reference );
-
-        int idx = path.lastIndexOf( '/' );
-        if ( idx > 0 )
-        {
-            path = path.substring( 0, idx );
-        }
-
-        File repoDir = new File( managedRepository.getLocation(), path );
-
-        if ( !repoDir.exists() )
-        {
-            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: " +
-                repoDir.getAbsolutePath() );
-        }
-
-        if ( !repoDir.isDirectory() )
-        {
-            throw new IOException(
-                "Unable to gather the list of snapshot versions on a non-directory: " + repoDir.getAbsolutePath() );
-        }
-
-        Set<String> foundVersions = new HashSet<String>();
-
-        // First gather up the versions found as artifacts in the managed repository.
-        File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
-        {
-            if ( repoFiles[i].isDirectory() )
-            {
-                // Skip it. it's a directory.
-                continue;
-            }
-
-            String relativePath = PathUtil.getRelative( managedRepository.getLocation(), repoFiles[i] );
-
-            if ( matchesArtifactPattern( relativePath ) )
-            {
-                ArtifactReference artifact = layout.toArtifactReference( relativePath );
-
-                if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
-                {
-                    foundVersions.add( artifact.getVersion() );
-                }
-            }
-        }
+        Set<String> foundVersions = managedRepository.getVersions( reference );
 
         // Next gather up the referenced 'latest' versions found in any proxied repositories
         // maven-metadata-${proxyId}.xml files that may be present.
 
         // Does this repository have a set of remote proxied repositories?
-        Set proxiedRepoIds = this.proxies.get( managedRepository.getId() );
+        Set<String> proxiedRepoIds = this.proxies.get( managedRepository.getId() );
 
-        if ( proxiedRepoIds != null )
+        if ( CollectionUtils.isNotEmpty( proxiedRepoIds ) )
         {
             String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
             baseVersion = baseVersion.substring( 0, baseVersion.indexOf( VersionUtil.SNAPSHOT ) - 1 );
@@ -371,7 +200,7 @@ public class MetadataTools
         {
             // Scary check, but without it, all paths are version references;
             throw new RepositoryMetadataException(
-                "Not a versioned reference, as version id on path has no number in it." );
+                                                   "Not a versioned reference, as version id on path has no number in it." );
         }
 
         reference.setArtifactId( pathParts[artifactIdOffset] );
@@ -463,27 +292,6 @@ public class MetadataTools
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
-    private boolean matchesArtifactPattern( String relativePath )
-    {
-        // Correct the slash pattern.
-        relativePath = relativePath.replace( '\\', '/' );
-        
-        Iterator<String> it = this.artifactPatterns.iterator();
-        while ( it.hasNext() )
-        {
-            String pattern = it.next();
-            
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
-            {
-                // Found match
-                return true;
-            }
-        }
-
-        // No match.
-        return false;
-    }
-
     /**
      * Adjusts a path for a metadata.xml file to its repository specific path.
      *
@@ -491,7 +299,7 @@ public class MetadataTools
      * @param path       the path to the metadata.xml file to adjust the name of.
      * @return the newly adjusted path reference to the repository specific metadata path.
      */
-    public String getRepositorySpecificName( RemoteRepositoryConfiguration repository, String path )
+    public String getRepositorySpecificName( RemoteRepositoryContent repository, String path )
     {
         return getRepositorySpecificName( repository.getId(), path );
     }
@@ -529,11 +337,11 @@ public class MetadataTools
         configuration.addChangeListener( this );
     }
 
-    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryConfiguration managedRepository, ProjectReference reference,
-                                                        String proxyId )
+    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
+                                                        ProjectReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getLocation(), metadataPath );
+        File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
 
         try
         {
@@ -548,11 +356,11 @@ public class MetadataTools
         }
     }
 
-    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryConfiguration managedRepository,
+    public ArchivaRepositoryMetadata readProxyMetadata( ManagedRepositoryContent managedRepository,
                                                         VersionedReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        File metadataFile = new File( managedRepository.getLocation(), metadataPath );
+        File metadataFile = new File( managedRepository.getRepoRoot(), metadataPath );
 
         try
         {
@@ -579,27 +387,26 @@ public class MetadataTools
      * @throws LayoutException
      * @throws RepositoryMetadataException
      * @throws IOException
+     * @throws ContentNotFoundException 
      */
-    public void updateMetadata( ManagedRepositoryConfiguration managedRepository, ProjectReference reference )
-        throws LayoutException, RepositoryMetadataException, IOException
+    public void updateMetadata( ManagedRepositoryContent managedRepository, ProjectReference reference )
+        throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        Comparator<String> comparator = VersionComparator.getInstance();
+        File metadataFile = new File( managedRepository.getRepoRoot(), toPath( reference ) );
 
-        File metadataFile = new File( managedRepository.getLocation(), toPath( reference ) );
+        long lastUpdated = getExistingLastUpdated( metadataFile );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
         metadata.setArtifactId( reference.getArtifactId() );
 
-        // Gather up the versions found in the managed repository.
-        Set<String> availableVersions = gatherAvailableVersions( managedRepository, reference );
+        // Gather up all versions found in the managed repository.
+        Set<String> allVersions = managedRepository.getVersions( reference );
 
         // Does this repository have a set of remote proxied repositories?
-        Set proxiedRepoIds = this.proxies.get( managedRepository.getId() );
+        Set<String> proxiedRepoIds = this.proxies.get( managedRepository.getId() );
 
-        String latestVersion = null;
-        String releaseVersion = null;
-        if ( proxiedRepoIds != null )
+        if ( CollectionUtils.isNotEmpty( proxiedRepoIds ) )
         {
             // Add in the proxied repo version ids too.
             Iterator<String> it = proxiedRepoIds.iterator();
@@ -610,41 +417,118 @@ public class MetadataTools
                 ArchivaRepositoryMetadata proxyMetadata = readProxyMetadata( managedRepository, reference, proxyId );
                 if ( proxyMetadata != null )
                 {
-                    availableVersions.addAll( proxyMetadata.getAvailableVersions() );
+                    allVersions.addAll( proxyMetadata.getAvailableVersions() );
+                    long proxyLastUpdated = getLastUpdated( proxyMetadata );
 
-                    if ( latestVersion == null ||
-                        comparator.compare( proxyMetadata.getLatestVersion(), latestVersion ) > 0 )
-                    {
-                        latestVersion = proxyMetadata.getLatestVersion();
-                    }
-
-                    if ( releaseVersion == null ||
-                        comparator.compare( proxyMetadata.getReleasedVersion(), releaseVersion ) > 0 )
-                    {
-                        releaseVersion = proxyMetadata.getReleasedVersion();
-                    }
+                    lastUpdated = Math.max( lastUpdated, proxyLastUpdated );
                 }
             }
         }
 
-        if ( availableVersions.size() == 0 )
+        if ( allVersions.size() == 0 )
         {
             throw new IOException( "No versions found for reference." );
         }
 
         // Sort the versions
-        List<String> sortedVersions = new ArrayList<String>();
-        sortedVersions.addAll( availableVersions );
-        Collections.sort( sortedVersions, new VersionComparator() );
+        List<String> sortedVersions = new ArrayList<String>( allVersions );
+        Collections.sort( sortedVersions, VersionComparator.getInstance() );
+
+        // Split the versions into released and snapshots.
+        List<String> releasedVersions = new ArrayList<String>();
+        List<String> snapshotVersions = new ArrayList<String>();
+
+        for ( String version : sortedVersions )
+        {
+            if ( VersionUtil.isSnapshot( version ) )
+            {
+                snapshotVersions.add( version );
+            }
+            else
+            {
+                releasedVersions.add( version );
+            }
+        }
+
+        Collections.sort( releasedVersions, VersionComparator.getInstance() );
+        Collections.sort( snapshotVersions, VersionComparator.getInstance() );
+
+        String latestVersion = sortedVersions.get( sortedVersions.size() - 1 );
+        String releaseVersion = null;
+
+        if ( CollectionUtils.isNotEmpty( releasedVersions ) )
+        {
+            releaseVersion = releasedVersions.get( releasedVersions.size() - 1 );
+        }
 
         // Add the versions to the metadata model.
         metadata.setAvailableVersions( sortedVersions );
 
         metadata.setLatestVersion( latestVersion );
         metadata.setReleasedVersion( releaseVersion );
+        if ( lastUpdated > 0 )
+        {
+            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( lastUpdated ) );
+        }
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
+    }
+
+    private Date toLastUpdatedDate( long lastUpdated )
+    {
+        Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+        cal.setTimeInMillis( lastUpdated );
+
+        return cal.getTime();
+    }
+
+    private long getLastUpdated( ArchivaRepositoryMetadata metadata )
+    {
+        if ( metadata == null )
+        {
+            // Doesn't exist.
+            return 0;
+        }
+
+        try
+        {
+            String lastUpdated = metadata.getLastUpdated();
+            if ( StringUtils.isBlank( lastUpdated ) )
+            {
+                // Not set.
+                return 0;
+            }
+
+            Date lastUpdatedDate = lastUpdatedFormat.parse( lastUpdated );
+            return lastUpdatedDate.getTime();
+        }
+        catch ( ParseException e )
+        {
+            // Bad format on the last updated string.
+            return 0;
+        }
+    }
+
+    private long getExistingLastUpdated( File metadataFile )
+    {
+        if ( !metadataFile.exists() )
+        {
+            // Doesn't exist.
+            return 0;
+        }
+
+        try
+        {
+            ArchivaRepositoryMetadata metadata = RepositoryMetadataReader.read( metadataFile );
+
+            return getLastUpdated( metadata );
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            // Error.
+            return 0;
+        }
     }
 
     /**
@@ -660,16 +544,22 @@ public class MetadataTools
      * @throws LayoutException
      * @throws RepositoryMetadataException
      * @throws IOException
+     * @throws ContentNotFoundException 
      */
-    public void updateMetadata( ManagedRepositoryConfiguration managedRepository, VersionedReference reference )
-        throws LayoutException, RepositoryMetadataException, IOException
+    public void updateMetadata( ManagedRepositoryContent managedRepository, VersionedReference reference )
+        throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        BidirectionalRepositoryLayout layout = layoutFactory.getLayout( managedRepository.getLayout() );
-        File metadataFile = new File( managedRepository.getLocation(), toPath( reference ) );
+        File metadataFile = new File( managedRepository.getRepoRoot(), toPath( reference ) );
+
+        long originalLastUpdated = getExistingLastUpdated( metadataFile );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
         metadata.setArtifactId( reference.getArtifactId() );
+        if ( originalLastUpdated > 0 )
+        {
+            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( originalLastUpdated ) );
+        }
 
         if ( VersionUtil.isSnapshot( reference.getVersion() ) )
         {
@@ -678,11 +568,12 @@ public class MetadataTools
 
             // Gather up all of the versions found in the reference dir, and any
             // proxied maven-metadata.xml files.
-            Set snapshotVersions = gatherSnapshotVersions( managedRepository, reference );
+            Set<String> snapshotVersions = gatherSnapshotVersions( managedRepository, reference );
 
             if ( snapshotVersions.isEmpty() )
             {
-                throw new IOException( "Not snapshot versions found to reference." );
+                throw new ContentNotFoundException( "No snapshot versions found on reference ["
+                    + VersionedReference.toKey( reference ) + "]." );
             }
 
             // sort the list to determine to aide in determining the Latest version.
@@ -731,7 +622,7 @@ public class MetadataTools
                     throw new IOException( "Not snapshot artifact found to reference in " + reference );
                 }
 
-                File artifactFile = new File( managedRepository.getLocation(), layout.toPath( artifact ) );
+                File artifactFile = managedRepository.toFile( artifact );
 
                 if ( artifactFile.exists() )
                 {
@@ -741,8 +632,8 @@ public class MetadataTools
             }
             else
             {
-                throw new RepositoryMetadataException(
-                    "Unable to process snapshot version <" + latestVersion + "> reference <" + reference + ">" );
+                throw new RepositoryMetadataException( "Unable to process snapshot version <" + latestVersion
+                    + "> reference <" + reference + ">" );
             }
         }
         else
@@ -787,5 +678,84 @@ public class MetadataTools
                 this.proxies.put( key, remoteRepoIds );
             }
         }
+    }
+
+    /**
+     * Get the first Artifact found in the provided VersionedReference location.
+     *
+     * @param managedRepository the repository to search within.
+     * @param reference         the reference to the versioned reference to search within
+     * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
+     *         no artifact was found within the versioned reference.
+     * @throws IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
+     * @throws LayoutException
+     */
+    public ArtifactReference getFirstArtifact( ManagedRepositoryContent managedRepository, VersionedReference reference )
+        throws LayoutException, IOException
+    {
+        String path = toPath( reference );
+
+        int idx = path.lastIndexOf( '/' );
+        if ( idx > 0 )
+        {
+            path = path.substring( 0, idx );
+        }
+
+        File repoDir = new File( managedRepository.getRepoRoot(), path );
+
+        if ( !repoDir.exists() )
+        {
+            throw new IOException( "Unable to gather the list of snapshot versions on a non-existant directory: "
+                + repoDir.getAbsolutePath() );
+        }
+
+        if ( !repoDir.isDirectory() )
+        {
+            throw new IOException( "Unable to gather the list of snapshot versions on a non-directory: "
+                + repoDir.getAbsolutePath() );
+        }
+
+        File repoFiles[] = repoDir.listFiles();
+        for ( int i = 0; i < repoFiles.length; i++ )
+        {
+            if ( repoFiles[i].isDirectory() )
+            {
+                // Skip it. it's a directory.
+                continue;
+            }
+
+            String relativePath = PathUtil.getRelative( managedRepository.getRepoRoot(), repoFiles[i] );
+
+            if ( matchesArtifactPattern( relativePath ) )
+            {
+                ArtifactReference artifact = managedRepository.toArtifactReference( relativePath );
+
+                return artifact;
+            }
+        }
+
+        // No artifact was found.
+        return null;
+    }
+
+    private boolean matchesArtifactPattern( String relativePath )
+    {
+        // Correct the slash pattern.
+        relativePath = relativePath.replace( '\\', '/' );
+
+        Iterator<String> it = this.artifactPatterns.iterator();
+        while ( it.hasNext() )
+        {
+            String pattern = it.next();
+
+            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
+            {
+                // Found match
+                return true;
+            }
+        }
+
+        // No match.
+        return false;
     }
 }

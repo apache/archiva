@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.metadata;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,26 +19,32 @@ package org.apache.maven.archiva.repository.metadata;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 /**
- * AllTests 
+ * RepositoryNotFoundException 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class RepositoryNotFoundException
+    extends RepositoryException
 {
 
-    public static Test suite()
+    public RepositoryNotFoundException()
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.metadata" );
-        //$JUnit-BEGIN$
-        suite.addTestSuite( RepositoryMetadataWriterTest.class );
-        suite.addTestSuite( RepositoryMetadataReaderTest.class );
-        //$JUnit-END$
-        return suite;
     }
 
+    public RepositoryNotFoundException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public RepositoryNotFoundException( String message )
+    {
+        super( message );
+    }
+
+    public RepositoryNotFoundException( Throwable cause )
+    {
+        super( cause );
+    }
 }

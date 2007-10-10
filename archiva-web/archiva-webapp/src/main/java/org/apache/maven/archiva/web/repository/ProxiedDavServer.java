@@ -27,6 +27,11 @@ import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.proxy.ProxyException;
 import org.apache.maven.archiva.proxy.RepositoryProxyConnectors;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -70,7 +75,12 @@ public class ProxiedDavServer
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
+    private RepositoryContentFactory repositoryFactory;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryRequest repositoryRequest;
 
     /**
      * @plexus.requirement role-hint="default"
@@ -82,14 +92,7 @@ public class ProxiedDavServer
      */
     private MetadataTools metadataTools;
 
-    /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
-
-    private BidirectionalRepositoryLayout layout;
-
-    private ManagedRepositoryConfiguration managedRepository;
+    private ManagedRepositoryContent managedRepository;
 
     public String getPrefix()
     {
@@ -116,17 +119,17 @@ public class ProxiedDavServer
     {
         davServer.init( servletConfig );
 
-        Configuration config = archivaConfiguration.getConfiguration();
-
-        managedRepository = config.findManagedRepositoryById( getPrefix() );
-
         try
         {
-            layout = layoutFactory.getLayout( managedRepository.getLayout() );
+            managedRepository = repositoryFactory.getManagedRepositoryContent( getPrefix() );
         }
-        catch ( LayoutException e )
+        catch ( RepositoryNotFoundException e )
         {
-            throw new DavServerException( "Unable to initialize dav server: " + e.getMessage(), e );
+            throw new DavServerException( e.getMessage(), e );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new DavServerException( e.getMessage(), e );
         }
     }
 
@@ -146,7 +149,7 @@ public class ProxiedDavServer
              * some versions of Maven's WebDAV don't
              * correctly create the collections themselves.
              */
-            
+
             File rootDirectory = getRootDirectory();
             if ( rootDirectory != null )
             {
@@ -154,15 +157,15 @@ public class ProxiedDavServer
             }
         }
 
-        // MRM-503 - Metadata file need Pragma:no-cache response header.
+        // [MRM-503] - Metadata file need Pragma:no-cache response header.
         if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
         {
             response.addHeader( "Pragma", "no-cache" );
             response.addHeader( "Cache-Control", "no-cache" );
         }
-        
-        // TODO: determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
-        
+
+        // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
+
         davServer.process( request, response );
     }
 
@@ -223,28 +226,19 @@ public class ProxiedDavServer
         }
 
         // Not any of the above? Then it's gotta be an artifact reference.
-        ArtifactReference artifact;
-        BidirectionalRepositoryLayout resourceLayout;
-
         try
         {
-            resourceLayout = layoutFactory.getLayoutForPath( resource );
-        }
-        catch ( LayoutException e )
-        {
-            /* invalid request - eat it */
-            return;
-        }
-
-        try
-        {
-            artifact = resourceLayout.toArtifactReference( resource );
+            // Get the artifact reference in a layout neutral way.
+            ArtifactReference artifact = repositoryRequest.toArtifactReference( resource );
+            
             if ( artifact != null )
             {
                 applyServerSideRelocation( artifact );
 
                 connectors.fetchFromProxies( managedRepository, artifact );
-                request.getRequest().setPathInfo( layout.toPath( artifact ) );
+                
+                // Set the path to the resource using managed repository specific layout format.
+                request.getRequest().setPathInfo( managedRepository.toPath( artifact ) );
                 return;
             }
         }
@@ -287,7 +281,7 @@ public class ProxiedDavServer
         connectors.fetchFromProxies( managedRepository, pomReference );
 
         // Open and read the POM from the managed repo
-        File pom = new File( getRootDirectory(), layout.toPath( pomReference ) );
+        File pom = managedRepository.toFile( pomReference );
         try
         {
             Model model = new MavenXpp3Reader().read( new FileReader( pom ) );
@@ -323,7 +317,7 @@ public class ProxiedDavServer
         }
     }
 
-    public ManagedRepositoryConfiguration getRepositoryConfiguration()
+    public ManagedRepositoryContent getRepository()
     {
         return managedRepository;
     }

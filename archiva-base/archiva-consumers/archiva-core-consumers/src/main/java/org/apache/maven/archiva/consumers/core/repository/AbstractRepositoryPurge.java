@@ -19,37 +19,33 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Set;
 
 /**
+ * Base class for all repository purge tasks.
+ * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractRepositoryPurge
     implements RepositoryPurge
 {
-    protected ManagedRepositoryConfiguration repository;
-
-    protected BidirectionalRepositoryLayout layout;
+    protected ManagedRepositoryContent repository;
 
     protected ArtifactDAO artifactDao;
 
-    public AbstractRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
-                                    ArtifactDAO artifactDao )
+    public AbstractRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao )
     {
         this.repository = repository;
-        this.layout = layout;
         this.artifactDao = artifactDao;
     }
 
@@ -69,36 +65,82 @@ public abstract class AbstractRepositoryPurge
         return files;
     }
 
+    protected String toRelativePath( File artifactFile )
+    {
+        String artifactPath = artifactFile.getAbsolutePath();
+        if ( artifactPath.startsWith( repository.getRepoRoot() ) )
+        {
+            artifactPath = artifactPath.substring( repository.getRepoRoot().length() );
+        }
+
+        return artifactPath;
+    }
+
     /**
      * Purge the repo. Update db and index of removed artifacts.
      *
      * @param artifactFiles
      * @throws RepositoryIndexException
      */
-    protected void purge( File[] artifactFiles )
+    protected void purge( Set<ArtifactReference> references )
     {
-        for ( int i = 0; i < artifactFiles.length; i++ )
+        for ( ArtifactReference reference : references )
         {
-            artifactFiles[i].delete();
+            File artifactFile = repository.toFile( reference );
 
-            String[] artifactPathParts = artifactFiles[i].getAbsolutePath().split( repository.getLocation() );
-            String artifactPath = artifactPathParts[artifactPathParts.length - 1];
-            if ( !artifactPath.toUpperCase().endsWith( "SHA1" ) && !artifactPath.toUpperCase().endsWith( "MD5" ) )
+            System.err.println( "Purging: " + artifactFile.getAbsolutePath() );
+            artifactFile.delete();
+            purgeSupportFiles( artifactFile );
+
+            // intended to be swallowed
+            // continue updating the database for all artifacts
+            try
             {
-                // intended to be swallowed
-                // continue updating the database for all artifacts
-                try
-                {
-                    updateDatabase( artifactPath );
-                }
-                catch ( ArchivaDatabaseException ae )
-                {
-                    //@todo determine logging to be used
-                }
-                catch ( LayoutException le )
-                {
+                String artifactPath = toRelativePath( artifactFile );
+                updateDatabase( artifactPath );
+            }
+            catch ( ArchivaDatabaseException ae )
+            {
+                // TODO: determine logging to be used
+            }
+            catch ( LayoutException le )
+            {
+                // Ignore
+            }
+        }
+    }
 
-                }
+    /**
+     * <p>
+     * This find support files for the artifactFile and deletes them.
+     * </p>
+     * 
+     * <p>
+     * Support Files are things like ".sha1", ".md5", ".asc", etc.
+     * </p>
+     * 
+     * @param artifactFile the file to base off of.
+     */
+    private void purgeSupportFiles( File artifactFile )
+    {
+        File parentDir = artifactFile.getParentFile();
+
+        if ( !parentDir.exists() )
+        {
+            return;
+        }
+
+        FilenameFilter filter = new ArtifactFilenameFilter( artifactFile.getName() );
+
+        File[] files = parentDir.listFiles( filter );
+
+        for ( File file : files )
+        {
+            if ( file.exists() && file.isFile() )
+            {
+                file.delete();
+                System.err.println( "Deleting support file: " + file.getAbsolutePath() );
+                // TODO: log that it was deleted?
             }
         }
     }
@@ -106,8 +148,7 @@ public abstract class AbstractRepositoryPurge
     private void updateDatabase( String path )
         throws ArchivaDatabaseException, LayoutException
     {
-
-        ArchivaArtifact artifact = layout.toArtifact( path );
+        ArtifactReference artifact = repository.toArtifactReference( path );
         ArchivaArtifact queriedArtifact = artifactDao.getArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                                                    artifact.getVersion(), artifact.getClassifier(),
                                                                    artifact.getType() );
@@ -116,23 +157,4 @@ public abstract class AbstractRepositoryPurge
 
         // TODO [MRM-37]: re-run the database consumers to clean up
     }
-
-    /**
-     * Get the artifactId, version, extension and classifier from the path parameter
-     *
-     * @param path
-     * @return
-     * @throws LayoutException
-     */
-    protected FilenameParts getFilenameParts( String path )
-        throws LayoutException
-    {
-        String normalizedPath = StringUtils.replace( path, "\\", "/" );
-        String pathParts[] = StringUtils.split( normalizedPath, '/' );
-
-        FilenameParts parts = RepositoryLayoutUtils.splitFilename( pathParts[pathParts.length - 1], null );
-
-        return parts;
-    }
-
 }

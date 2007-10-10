@@ -130,7 +130,24 @@ public class DefaultBidirectionalRepositoryLayoutTest
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
-    
+
+    /**
+     * [MRM-519] version identifiers within filename cause misidentification of version.
+     * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
+     */
+    public void testGoodVersionKeywordInArtifactId()
+        throws LayoutException
+    {
+        String groupId = "maven";
+        String artifactId = "maven-test-plugin";
+        String version = "1.8.2";
+        String classifier = null;
+        String type = "pom";
+        String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.pom";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
     /**
      * [MRM-486] Can not deploy artifact test.maven-arch:test-arch due to "No ArtifactID Detected"
      */
@@ -143,10 +160,10 @@ public class DefaultBidirectionalRepositoryLayoutTest
         String classifier = null;
         String type = "pom";
         String path = "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.pom";
-        
+
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
-    
+
     /**
      * It may seem odd, but this is a valid artifact.
      */
@@ -159,7 +176,7 @@ public class DefaultBidirectionalRepositoryLayoutTest
         String classifier = null;
         String type = "pom";
         String path = "com/company/department/com.company.department/0.2/com.company.department-0.2.pom";
-        
+
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
@@ -175,10 +192,10 @@ public class DefaultBidirectionalRepositoryLayoutTest
         String classifier = null;
         String type = "pom";
         String path = "com/company/department/com.company.department.project/0.3/com.company.department.project-0.3.pom";
-        
+
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
-    
+
     public void testGoodComFooTool()
         throws LayoutException
     {

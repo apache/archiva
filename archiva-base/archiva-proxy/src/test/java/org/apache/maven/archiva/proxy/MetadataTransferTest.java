@@ -129,7 +129,7 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // Nothing fetched.  Should only contain contents of what is in the repository.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.1", "2.0" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.1", "2.0" }, "2.0", "2.0" );
     }
 
     public void testGetProjectMetadataProxiedNotLocalMultipleRemotes()
@@ -155,7 +155,7 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // Nothing fetched.  Should only contain contents of what is in the repository.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1" }, "1.0.1", "1.0.1" );
         assertRepoProjectMetadata( ID_PROXIED1, requestedResource, new String[] { "1.0" } );
         assertRepoProjectMetadata( ID_PROXIED2, requestedResource, new String[] { "1.0.1" } );
     }
@@ -206,7 +206,7 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // Remote fetched.  Local created/updated.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0.5" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0.5" }, "1.0.5", "1.0.5" );
         assertRepoProjectMetadata( ID_PROXIED1, requestedResource, new String[] { "1.0.5" } );
     }
 
@@ -223,7 +223,7 @@ public class MetadataTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
@@ -231,7 +231,7 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // metadata fetched from both repos, and merged with local version.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1", "2.0" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1", "2.0" }, "2.0", "2.0" );
         assertRepoProjectMetadata( ID_PROXIED1, requestedResource, new String[] { "1.0", "2.0" } );
         assertRepoProjectMetadata( ID_PROXIED2, requestedResource, new String[] { "1.0", "1.0.1" } );
     }
@@ -249,7 +249,7 @@ public class MetadataTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
@@ -257,7 +257,7 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // metadata not fetched from both repos, and local version exists.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" }, "1.0-beta-2", "1.0-beta-2" );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
     }
@@ -273,14 +273,14 @@ public class MetadataTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
 
         // One proxy setup, metadata fetched from remote, local exists.
         assertFetchProject( requestedResource );
 
         // Remote fetched.  Local updated.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22", "2.0" } );
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22", "2.0" }, "2.0", "2.0" );
         assertRepoProjectMetadata( ID_PROXIED1, requestedResource, new String[] { "1.0.22", "2.0" } );
     }
 
@@ -819,7 +819,8 @@ public class MetadataTransferTest
      * @param requestedResource the requested resource
      * @throws Exception 
      */
-    private void assertProjectMetadataContents( String requestedResource, String expectedVersions[] )
+    private void assertProjectMetadataContents( String requestedResource, String expectedVersions[],
+                                                String latestVersion, String releaseVersion )
         throws Exception
     {
         File actualFile = new File( managedDefaultDir, requestedResource );
@@ -832,6 +833,8 @@ public class MetadataTransferTest
         ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
         m.setGroupId( metadata.getGroupId() );
         m.setArtifactId( metadata.getArtifactId() );
+        m.setLatestVersion( latestVersion );
+        m.setReleasedVersion( releaseVersion );
 
         if ( expectedVersions != null )
         {

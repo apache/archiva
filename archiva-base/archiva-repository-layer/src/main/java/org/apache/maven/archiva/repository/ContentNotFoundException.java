@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.repository.layout;
+package org.apache.maven.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,27 +19,33 @@ package org.apache.maven.archiva.repository.layout;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 /**
- * AllTests - Useful for developers using IDEs.
+ * ContentNotFoundException is thrown in response for requests for content that is not the repository. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class ContentNotFoundException
+    extends RepositoryException
 {
-    public static Test suite()
+
+    public ContentNotFoundException()
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.repository.layout" );
-        //$JUnit-BEGIN$
-        suite.addTestSuite( BidirectionalRepositoryLayoutFactoryTest.class );
-        suite.addTestSuite( LegacyBidirectionalRepositoryLayoutTest.class );
-        suite.addTestSuite( DefaultBidirectionalRepositoryLayoutTest.class );
-        suite.addTestSuite( RepositoryLayoutUtilsTest.class );
-        //$JUnit-END$
-        return suite;
+        super();
     }
 
+    public ContentNotFoundException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public ContentNotFoundException( String message )
+    {
+        super( message );
+    }
+
+    public ContentNotFoundException( Throwable cause )
+    {
+        super( cause );
+    }
 }

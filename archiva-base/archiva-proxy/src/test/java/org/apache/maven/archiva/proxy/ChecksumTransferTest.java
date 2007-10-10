@@ -46,7 +46,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -71,7 +71,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -96,7 +96,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -120,7 +120,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -144,7 +144,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -168,7 +168,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -190,7 +190,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -215,7 +215,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -237,7 +237,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -262,7 +262,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -284,7 +284,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -309,7 +309,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -334,7 +334,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -359,7 +359,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.exists() );
@@ -384,7 +384,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         FileUtils.deleteDirectory( expectedFile.getParentFile() );
         assertFalse( expectedFile.getParentFile().exists() );
@@ -429,7 +429,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 
@@ -453,7 +453,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 
@@ -477,7 +477,7 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = createArtifactReference( "default", path );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 

@@ -28,7 +28,7 @@ import java.io.File;
 /**
  * AbstractRepositoryLayerTestCase 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoryLayerTestCase
@@ -50,5 +50,19 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setName( name );
         repo.setUrl( url );
         return repo;
+    }
+
+    protected RemoteRepositoryContent createRemoteRepositoryContent( String id, String name, String url, String layout )
+        throws Exception
+    {
+        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setUrl( url );
+
+        RemoteRepositoryContent repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, layout );
+        repoContent.setRepository( repo );
+
+        return repoContent;
     }
 }

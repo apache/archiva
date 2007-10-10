@@ -23,9 +23,7 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
@@ -72,9 +70,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     private ManagedRepositoryConfiguration config;
 
-    private ManagedRepositoryConfiguration repo;
-
-    private BidirectionalRepositoryLayout layout;
+    private ManagedRepositoryContent repo;
 
     protected ArtifactDAO dao;
 
@@ -161,33 +157,22 @@ public abstract class AbstractRepositoryPurgeTest
         config.setLocation( TEST_REPO_LOCATION );
         config.setReleases( true );
         config.setSnapshots( true );
+        config.setDeleteReleasedSnapshots( true );
         config.setRetentionCount( TEST_RETENTION_COUNT );
 
         return config;
     }
 
-    public ManagedRepositoryConfiguration getRepository()
+    public ManagedRepositoryContent getRepository()
+        throws Exception
     {
         if ( repo == null )
         {
-            repo = new ManagedRepositoryConfiguration();
-            repo.setId( TEST_REPO_ID );
-            repo.setName( TEST_REPO_NAME );
-            repo.setLocation( TEST_REPO_LOCATION );
+            repo = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
+            repo.setRepository( getRepoConfiguration() );
         }
 
         return repo;
-    }
-
-    public BidirectionalRepositoryLayout getLayout()
-        throws LayoutException
-    {
-        if ( layout == null )
-        {
-            layout = new DefaultBidirectionalRepositoryLayout();
-        }
-
-        return layout;
     }
 
     protected void populateDb( String groupId, String artifactId, List versions )

@@ -36,9 +36,7 @@ import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.RepositoryLayoutUtils;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
@@ -160,11 +158,10 @@ public class ProjectModelToDatabaseConsumer
 
             model.setOrigin( "filesystem" );
             
-            // The version should be updated to the filename version if it is a unique snapshot
-            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
-            if ( VersionUtil.isUniqueSnapshot( parts.version ) )
+            // The version should be updated to the artifact/filename version if it is a unique snapshot
+            if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
             {
-                model.setVersion( parts.version );
+                model.setVersion( artifact.getVersion() );
             }
 
             // Filter the model
@@ -282,45 +279,35 @@ public class ProjectModelToDatabaseConsumer
     {
         File artifactFile = toFile( artifact );
 
-        try
+        if ( !artifact.getArtifactId().equalsIgnoreCase( model.getArtifactId() ) )
         {
-            FilenameParts parts = RepositoryLayoutUtils.splitFilename( artifactFile.getName(), null );
+            StringBuffer emsg = new StringBuffer();
+            emsg.append( "File " ).append( artifactFile.getName() );
+            emsg.append( " has an invalid project model [" );
+            appendModel( emsg, model );
+            emsg.append( "]: The model artifactId [" ).append( model.getArtifactId() );
+            emsg.append( "] does not match the artifactId portion of the filename: " ).append( artifact.getArtifactId() );
+            
+            getLogger().warn(emsg.toString() );
+            addProblem( artifact, emsg.toString() );
 
-            if ( !parts.artifactId.equalsIgnoreCase( model.getArtifactId() ) )
-            {
-                StringBuffer emsg = new StringBuffer();
-                emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model [" );
-                appendModel( emsg, model );
-                emsg.append( "]: The model artifactId [" ).append( model.getArtifactId() );
-                emsg.append( "] does not match the artifactId portion of the filename: " ).append( parts.artifactId );
-                
-                getLogger().warn(emsg.toString() );
-                addProblem( artifact, emsg.toString() );
-
-                return false;
-            }
-
-            if ( !parts.version.equalsIgnoreCase( model.getVersion() ) &&
-                !VersionUtil.getBaseVersion( parts.version ).equalsIgnoreCase( model.getVersion() ) )
-            {
-                StringBuffer emsg = new StringBuffer();
-                emsg.append( "File " ).append( artifactFile.getName() );
-                emsg.append( " has an invalid project model [" );
-                appendModel( emsg, model );
-                emsg.append( "]; The model version [" ).append( model.getVersion() );
-                emsg.append( "] does not match the version portion of the filename: " ).append( parts.version );
-                
-                getLogger().warn(emsg.toString() );
-                addProblem( artifact, emsg.toString() );
-
-                return false;
-            }
-
+            return false;
         }
-        catch ( LayoutException le )
+
+        if ( !artifact.getVersion().equalsIgnoreCase( model.getVersion() ) &&
+            !VersionUtil.getBaseVersion( artifact.getVersion() ).equalsIgnoreCase( model.getVersion() ) )
         {
-            throw new ConsumerException( le.getMessage() );
+            StringBuffer emsg = new StringBuffer();
+            emsg.append( "File " ).append( artifactFile.getName() );
+            emsg.append( " has an invalid project model [" );
+            appendModel( emsg, model );
+            emsg.append( "]; The model version [" ).append( model.getVersion() );
+            emsg.append( "] does not match the version portion of the filename: " ).append( artifact.getVersion() );
+            
+            getLogger().warn(emsg.toString() );
+            addProblem( artifact, emsg.toString() );
+
+            return false;
         }
 
         return true;

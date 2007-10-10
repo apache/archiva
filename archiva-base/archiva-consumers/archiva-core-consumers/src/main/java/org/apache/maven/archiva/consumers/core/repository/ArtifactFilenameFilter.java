@@ -41,10 +41,9 @@ public class ArtifactFilenameFilter
     {
         this.filename = filename;
     }
-
+    
     public boolean accept( File dir, String name )
     {
         return ( name.startsWith( filename ) );
     }
-
 }

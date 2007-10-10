@@ -19,31 +19,43 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArtifactDAO;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.FilenameParts;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ContentNotFoundException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
+import java.util.regex.Matcher;
 
 /**
- * Purge repository for snapshots older than the specified days in the repository configuration.
+ * Purge from repository all snapshots older than the specified days in the repository configuration.
  *
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge
 {
+    private static final SimpleDateFormat timestampParser;
+    static
+    {
+        timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+        timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
+    }
+
     private int daysOlder;
 
-    public DaysOldRepositoryPurge( ManagedRepositoryConfiguration repository, BidirectionalRepositoryLayout layout,
-                                   ArtifactDAO artifactDao, int daysOlder )
+    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
+                                   int daysOlder )
     {
-        super( repository, layout, artifactDao );
+        super( repository, artifactDao );
         this.daysOlder = daysOlder;
     }
 
@@ -52,52 +64,40 @@ public class DaysOldRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getLocation(), path );
+            File artifactFile = new File( repository.getRepoRoot(), path );
 
             if ( !artifactFile.exists() )
             {
                 return;
             }
 
-            FilenameParts parts = getFilenameParts( path );
+            ArtifactReference artifact = repository.toArtifactReference( path );
 
-            Calendar olderThanThisDate = Calendar.getInstance();
+            Calendar olderThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
             olderThanThisDate.add( Calendar.DATE, -daysOlder );
 
-            if ( VersionUtil.isGenericSnapshot( parts.version ) )
+            // Is this a generic snapshot "1.0-SNAPSHOT" ?
+            if ( VersionUtil.isGenericSnapshot( artifact.getVersion() ) )
             {
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                 {
-                    doPurge( artifactFile, parts.extension );
+                    doPurgeAllRelated( artifactFile );
                 }
             }
-            else if ( VersionUtil.isUniqueSnapshot( parts.version ) )
+            // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
+            else if ( VersionUtil.isUniqueSnapshot( artifact.getVersion() ) )
             {
-                String[] versionParts = StringUtils.split( parts.version, '-' );
-                String timestamp = StringUtils.remove( versionParts[1], '.' );
-                int year = Integer.parseInt( StringUtils.substring( timestamp, 0, 4 ) );
-                int month = Integer.parseInt( StringUtils.substring( timestamp, 4, 6 ) ) - 1;
-                int day = Integer.parseInt( StringUtils.substring( timestamp, 6, 8 ) );
-                int hour = Integer.parseInt( StringUtils.substring( timestamp, 8, 10 ) );
-                int min = Integer.parseInt( StringUtils.substring( timestamp, 10, 12 ) );
-                int sec = Integer.parseInt( StringUtils.substring( timestamp, 12 ) );
+                Calendar timestampCal = uniqueSnapshotToCalendar( artifact.getVersion() );
 
-                Calendar timestampDate = Calendar.getInstance();
-                timestampDate.set( year, month, day, hour, min, sec );
-
-                if ( timestampDate.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
+                if ( timestampCal.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
                 {
-                    doPurge( artifactFile, parts.extension );
+                    doPurgeAllRelated( artifactFile );
                 }
-                else
+                else if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                 {
-                    if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
-                    {
-                        doPurge( artifactFile, parts.extension );
-                    }
+                    doPurgeAllRelated( artifactFile );
                 }
             }
-
         }
         catch ( LayoutException le )
         {
@@ -105,13 +105,52 @@ public class DaysOldRepositoryPurge
         }
     }
 
-    private void doPurge( File artifactFile, String extension )
+    private Calendar uniqueSnapshotToCalendar( String version )
     {
-        String[] fileParts = artifactFile.getName().split( "." + extension );
+        // The latestVersion will contain the full version string "1.0-alpha-5-20070821.213044-8"
+        // This needs to be broken down into ${base}-${timestamp}-${build_number}
 
-        File[] artifactFiles = getFiles( artifactFile.getParentFile(), fileParts[0] );
+        Matcher m = VersionUtil.UNIQUE_SNAPSHOT_PATTERN.matcher( version );
+        if ( m.matches() )
+        {
+            Matcher mtimestamp = VersionUtil.TIMESTAMP_PATTERN.matcher( m.group( 2 ) );
+            if ( mtimestamp.matches() )
+            {
+                String tsDate = mtimestamp.group( 1 );
+                String tsTime = mtimestamp.group( 2 );
 
-        purge( artifactFiles );
+                Date versionDate;
+                try
+                {
+                    versionDate = timestampParser.parse( tsDate + "." + tsTime );
+                    Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+                    cal.setTime( versionDate );
+
+                    return cal;
+                }
+                catch ( ParseException e )
+                {
+                    // Invalid Date/Time
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void doPurgeAllRelated( File artifactFile ) throws LayoutException
+    {
+        ArtifactReference reference = repository.toArtifactReference( artifactFile.getAbsolutePath() );
+        
+        try
+        {
+            Set<ArtifactReference> related = repository.getRelatedArtifacts( reference );
+            purge( related );
+        }
+        catch ( ContentNotFoundException e )
+        {
+            // Nothing to do here.
+            // TODO: Log this?
+        }
     }
 }
-
