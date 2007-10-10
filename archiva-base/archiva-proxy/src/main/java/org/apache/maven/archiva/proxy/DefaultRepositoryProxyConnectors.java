@@ -580,7 +580,7 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ResourceDoesNotExistException e )
         {
-            getLogger().warn( "Resource does not exist: " + e.getMessage() );
+            getLogger().debug( "Resource does not exist: " + e.getMessage() );
             throw e;
         }
         catch ( WagonException e )
