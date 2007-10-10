@@ -559,8 +559,7 @@ public class DefaultRepositoryProxyConnectors
             }
             else
             {
-                getLogger().debug(
-                                   "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
+                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
                                        + " if updated" );
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
@@ -580,12 +579,14 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ResourceDoesNotExistException e )
         {
-            getLogger().debug( "Resource does not exist: " + e.getMessage() );
+            getLogger().debug( "Resource [" + remoteRepository.getURL() + "/" + remotePath + "] does not exist: "
+                                   + e.getMessage() );
             throw e;
         }
         catch ( WagonException e )
         {
-            getLogger().warn( "Download failure:" + e.getMessage(), e );
+            getLogger().warn( "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:"
+                                  + e.getMessage(), e );
             throw e;
         }
         finally
