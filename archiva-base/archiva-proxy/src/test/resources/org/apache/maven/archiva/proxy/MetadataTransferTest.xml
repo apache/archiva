@@ -58,6 +58,10 @@
           <role-hint>mock</role-hint>
           <field-name>configuration</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.common.utils.Checksums</role>
+          <field-name>checksums</field-name>
+        </requirement>
       </requirements>
     </component>
     

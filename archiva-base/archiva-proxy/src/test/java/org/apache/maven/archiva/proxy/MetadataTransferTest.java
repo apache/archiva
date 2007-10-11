@@ -129,7 +129,9 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // Nothing fetched.  Should only contain contents of what is in the repository.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.1", "2.0" }, "2.0", "2.0" );
+        // A metadata update is not performed in this use case.  Local metadata content is only
+        // updated via the metadata updater consumer.
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0" }, null, null );
     }
 
     public void testGetProjectMetadataProxiedNotLocalMultipleRemotes()
@@ -257,7 +259,9 @@ public class MetadataTransferTest
         assertFetchProject( requestedResource );
 
         // metadata not fetched from both repos, and local version exists.
-        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" }, "1.0-beta-2", "1.0-beta-2" );
+        // Since there was no updated metadata content from a remote/proxy, a metadata update on
+        // the local file never ran.  Local only updates are performed via the metadata updater consumer.
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
     }
