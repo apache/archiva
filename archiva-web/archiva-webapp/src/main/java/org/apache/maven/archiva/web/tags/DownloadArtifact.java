@@ -33,6 +33,11 @@ import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -67,12 +72,7 @@ public class DownloadArtifact
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     private HttpServletRequest req;
 
@@ -97,8 +97,8 @@ public class DownloadArtifact
         try
         {
             dao = (ArchivaDAO) PlexusTagUtil.lookup( pageContext, ArchivaDAO.ROLE, "jdo" );
-            layoutFactory = (BidirectionalRepositoryLayoutFactory) PlexusTagUtil
-                .lookup( pageContext, BidirectionalRepositoryLayoutFactory.class );
+            repositoryFactory = (RepositoryContentFactory) PlexusTagUtil.lookup( pageContext,
+                                                                                 RepositoryContentFactory.class );
         }
         catch ( ComponentLookupException e )
         {
@@ -113,23 +113,22 @@ public class DownloadArtifact
         try
         {
             Constraint constraint = new ArtifactsRelatedConstraint( groupId, artifactId, version );
-            List relatedArtifacts = dao.getArtifactDAO().queryArtifacts( constraint );
+            List<ArchivaArtifact> relatedArtifacts = dao.getArtifactDAO().queryArtifacts( constraint );
 
             if ( relatedArtifacts != null )
             {
                 String repoId = ( (ArchivaArtifact) relatedArtifacts.get( 0 ) ).getModel().getRepositoryId();
-                ManagedRepositoryConfiguration repo = findRepository( repoId );
-                BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayout() );
+                ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
 
                 String prefix = req.getContextPath() + "/repository/" + repoId;
 
                 if ( mini )
                 {
-                    appendMini( sb, prefix, repo, layout, relatedArtifacts );
+                    appendMini( sb, prefix, repo, relatedArtifacts );
                 }
                 else
                 {
-                    appendNormal( sb, prefix, repo, layout, relatedArtifacts );
+                    appendNormal( sb, prefix, repo, relatedArtifacts );
                 }
             }
         }
@@ -141,9 +140,15 @@ public class DownloadArtifact
         {
             appendError( sb, e );
         }
-        catch ( LayoutException e )
+        catch ( RepositoryNotFoundException e )
         {
-            appendError( sb, e );
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        catch ( RepositoryException e )
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
         try
@@ -158,24 +163,19 @@ public class DownloadArtifact
         return super.end( writer, body );
     }
 
-    private ManagedRepositoryConfiguration findRepository( String repoId )
-    {
-        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
-    }
-
     private void appendError( StringBuffer sb, Exception e )
     {
         /* do nothing */
     }
 
-    private void appendMini( StringBuffer sb, String prefix, ManagedRepositoryConfiguration repo,
-                             BidirectionalRepositoryLayout layout, List relatedArtifacts )
+    private void appendMini( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
+                             List<ArchivaArtifact> relatedArtifacts )
     {
-        /* do nothing */
+        // TODO: write 1 line download link for main artifact.
     }
 
-    private void appendNormal( StringBuffer sb, String prefix, ManagedRepositoryConfiguration repo,
-                               BidirectionalRepositoryLayout layout, List relatedArtifacts )
+    private void appendNormal( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
+                               List<ArchivaArtifact> relatedArtifacts )
     {
         /*
          * <div class="download">
@@ -220,11 +220,11 @@ public class DownloadArtifact
             sb.append( "\n<tr>" );
 
             sb.append( "<td class=\"icon\">" );
-            appendImageLink( sb, prefix, layout, artifact );
+            appendImageLink( sb, prefix, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"type\">" );
-            appendLink( sb, prefix, layout, artifact );
+            appendLink( sb, prefix, repo, artifact );
             sb.append( "</td>" );
 
             sb.append( "<td class=\"size\">" );
@@ -243,19 +243,26 @@ public class DownloadArtifact
         sb.append( "</div>" ); // close "download"
     }
 
-    private void appendImageLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
+    private void appendImageLink( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
                                   ArchivaArtifact artifact )
     {
         String type = artifact.getType();
         String linkText = "<img src=\"" + req.getContextPath() + "/images/download-type-" + type + ".png\" />";
-        appendLink( sb, prefix, layout, artifact, linkText );
+        appendLink( sb, prefix, repo, artifact, linkText );
     }
 
-    private static void appendLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
+    private static void appendLink( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
                                     ArchivaArtifact artifact, String linkText )
     {
         StringBuffer url = new StringBuffer();
-        String path = layout.toPath( artifact );
+        
+        ArtifactReference ref = new ArtifactReference();
+        ref.setGroupId( artifact.getGroupId() );
+        ref.setArtifactId( artifact.getArtifactId() );
+        ref.setVersion( artifact.getVersion() );
+        ref.setClassifier( artifact.getClassifier() );
+        ref.setType( artifact.getType() );
+        String path = repo.toPath( ref );
 
         url.append( prefix );
         url.append( "/" ).append( path );
@@ -271,13 +278,13 @@ public class DownloadArtifact
         sb.append( "</a>" );
     }
 
-    private void appendLink( StringBuffer sb, String prefix, BidirectionalRepositoryLayout layout,
+    private void appendLink( StringBuffer sb, String prefix, ManagedRepositoryContent repo,
                              ArchivaArtifact artifact )
     {
         String type = artifact.getType();
         String linkText = StringUtils.capitalize( type );
 
-        appendLink( sb, prefix, layout, artifact, linkText );
+        appendLink( sb, prefix, repo, artifact, linkText );
     }
 
     private void appendFilesize( StringBuffer sb, ArchivaArtifact artifact )
