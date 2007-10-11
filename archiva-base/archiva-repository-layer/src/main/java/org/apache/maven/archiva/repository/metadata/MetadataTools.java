@@ -20,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.common.utils.Checksums;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
@@ -88,6 +89,11 @@ public class MetadataTools
      * @plexus.requirement
      */
     private FileTypes filetypes;
+    
+    /**
+     * @plexus.requirement
+     */
+    private Checksums checksums;
 
     private List<String> artifactPatterns;
 
@@ -485,6 +491,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
+        checksums.update( metadataFile );
     }
 
     private Date toLastUpdatedDate( long lastUpdated )
@@ -656,6 +663,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
+        checksums.update( metadataFile );
     }
 
     private void initConfigVariables()
