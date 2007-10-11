@@ -170,7 +170,8 @@ public class DefaultRepositoryProxyConnectors
         File localFile = toLocalFile( repository, metadata );
 
         Properties requestProperties = new Properties();
-        boolean hasFetched = false;
+        boolean metadataNeedsUpdating = false;
+        long originalTimestamp = getLastModified( localFile );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
@@ -179,17 +180,21 @@ public class DefaultRepositoryProxyConnectors
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
-            File downloadedFile = transferFile( connector, targetRepository, targetPath, localRepoFile,
-                                                requestProperties );
+            long originalMetadataTimestamp = getLastModified( localRepoFile );
+            transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
 
-            if ( fileExists( downloadedFile ) )
+            if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
             {
-                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
-                hasFetched = true;
+                metadataNeedsUpdating = true;
             }
         }
 
-        if ( hasFetched || fileExists( localFile ) )
+        if ( hasBeenUpdated( localFile, originalTimestamp ) )
+        {
+            metadataNeedsUpdating = true;
+        }
+
+        if ( metadataNeedsUpdating )
         {
             try
             {
@@ -228,6 +233,27 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    private long getLastModified( File file )
+    {
+        if ( !file.exists() || !file.isFile() )
+        {
+            return 0;
+        }
+
+        return file.lastModified();
+    }
+    
+    private boolean hasBeenUpdated( File file, long originalLastModified )
+    {
+        if ( !file.exists() || !file.isFile() )
+        {
+            return false;
+        }
+        
+        long currentLastModified = getLastModified( file );
+        return ( currentLastModified > originalLastModified );
+    }
+
     /**
      * Fetch from the proxies a metadata.xml file for the groupId:artifactId metadata contents.
      *
@@ -239,7 +265,8 @@ public class DefaultRepositoryProxyConnectors
         File localFile = toLocalFile( repository, metadata );
 
         Properties requestProperties = new Properties();
-        boolean hasFetched = false;
+        boolean metadataNeedsUpdating = false;
+        long originalTimestamp = getLastModified( localFile );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
         for ( ProxyConnector connector : connectors )
@@ -248,17 +275,21 @@ public class DefaultRepositoryProxyConnectors
             String targetPath = metadataTools.toPath( metadata );
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
-            File downloadedFile = transferFile( connector, targetRepository, targetPath, localRepoFile,
-                                                requestProperties );
+            long originalMetadataTimestamp = getLastModified( localRepoFile );
+            transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
 
-            if ( fileExists( downloadedFile ) )
+            if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
             {
-                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
-                hasFetched = true;
+                metadataNeedsUpdating = true;
             }
         }
 
-        if ( hasFetched || fileExists( localFile ) )
+        if ( hasBeenUpdated( localFile, originalTimestamp ) )
+        {
+            metadataNeedsUpdating = true;
+        }
+
+        if ( metadataNeedsUpdating )
         {
             try
             {
@@ -428,7 +459,6 @@ public class DefaultRepositoryProxyConnectors
 
                 transferChecksum( wagon, remoteRepository, remotePath, localFile, ".sha1" );
                 transferChecksum( wagon, remoteRepository, remotePath, localFile, ".md5" );
-
             }
         }
         catch ( ResourceDoesNotExistException e )
