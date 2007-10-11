@@ -19,9 +19,11 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.util.FileUtils;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -480,6 +482,15 @@ public class ArchivaConfigurationTest
     public void testAutoDetectV1()
         throws Exception
     {
+        // Setup the autodetect-v1.xml file in the target directory (so we can save/load it)
+        File userFile = getTestFile( "target/test-autodetect-v1/archiva-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        userFile.getParentFile().mkdirs();
+        FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ), userFile );
+
+        // Load the original (unconverted) archiva.xml
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-autodetect-v1" );
 
@@ -496,6 +507,34 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
+        
+        // Test that only 1 set of repositories exist.
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
+        
+        // Save the file.
+        archivaConfiguration.save( configuration );
+        
+        // Release existing
+        release( archivaConfiguration );
+
+        // Reload.
+        archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-autodetect-v1" );
+        
+        // Test that only 1 set of repositories exist.
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
+        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositoriesAsMap().size() );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
+        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
+        
+        /* FIXME: can't get rid of old v1 <repositories> section programatically.
+        String actualXML = FileUtils.fileRead( userFile );
+        XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
+        XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
+         */
     }
 
     public void testArchivaV1()

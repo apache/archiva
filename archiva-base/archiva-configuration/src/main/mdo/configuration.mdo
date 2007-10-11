@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -41,10 +42,16 @@
           <required>true</required>
           <description>This is the version of the configuration format.</description>
         </field>
-        <field>
+        <field java.adder="false">
+          <description>
+ @deprecated use managedRepositories or remoteRepositories instead.
+          </description>
           <name>repositories</name>
           <version>1.0.0</version>
-          <association>
+          <association java.generate-add="false" 
+                       java.generate-remove="false"
+                       java.generate-break="false"
+                       java.generate-create="false">
             <type>V1RepositoryConfiguration</type>
             <multiplicity>*</multiplicity>
           </association>

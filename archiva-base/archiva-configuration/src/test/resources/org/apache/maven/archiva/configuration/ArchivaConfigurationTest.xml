@@ -104,8 +104,9 @@
       <configuration>
         <properties>
           <system/>
-          <xml fileName="${basedir}/src/test/conf/autodetect-v1.xml"
-               config-name="org.apache.maven.archiva" config-at="org.apache.maven.archiva"/>
+          <xml fileName="${basedir}/target/test-autodetect-v1/archiva-user.xml" config-optional="true"
+               config-name="org.apache.maven.archiva.user" 
+               config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
     </component>
