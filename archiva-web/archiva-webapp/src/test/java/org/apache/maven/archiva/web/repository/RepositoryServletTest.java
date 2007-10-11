@@ -26,6 +26,7 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.PlexusConstants;
@@ -107,7 +108,7 @@ public class RepositoryServletTest
         Configuration c = configuration.getConfiguration();
         c.removeManagedRepository( c.findManagedRepositoryById( REPOSITORY_ID ) );
         // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
-        triggerConfigurationChange( servlet, "managedRepositories.managedRepository(0).id", REPOSITORY_ID );
+        servlet.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED) );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( REPOSITORY_ID );
         assertNull( repository );
@@ -125,7 +126,7 @@ public class RepositoryServletTest
         repo.setName( NEW_REPOSITORY_NAME );
         c.addManagedRepository( repo );
         // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
-        triggerConfigurationChange( servlet, "managedRepositories.managedRepository(2).id", NEW_REPOSITORY_ID );
+        servlet.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED) );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );
         assertNotNull( repository );
@@ -135,11 +136,5 @@ public class RepositoryServletTest
         repository = servlet.getRepository( REPOSITORY_ID );
         assertNotNull( repository );
         assertEquals( "Archiva Managed Internal Repository", repository.getName() );
-    }
-
-    private void triggerConfigurationChange( RepositoryServlet servlet, String name, String value )
-    {
-        servlet.beforeConfigurationChange( null, name, value );
-        servlet.afterConfigurationChange( null, name, value );
     }
 }
