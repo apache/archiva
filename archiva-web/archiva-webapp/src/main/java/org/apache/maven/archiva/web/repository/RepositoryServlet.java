@@ -20,7 +20,8 @@ package org.apache.maven.archiva.web.repository;
  */
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ConfigurationNames;
+import org.apache.maven.archiva.configuration.ConfigurationEvent;
+import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
@@ -32,21 +33,21 @@ import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
+import org.codehaus.plexus.webdav.DavServerManager;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * RepositoryServlet
@@ -56,7 +57,7 @@ import java.util.Map;
  */
 public class RepositoryServlet
     extends MultiplexedWebDavServlet
-    implements RegistryListener
+    implements ConfigurationListener
 {
     private SecuritySystem securitySystem;
 
@@ -78,7 +79,7 @@ public class RepositoryServlet
         audit = (AuditLog) lookup( AuditLog.ROLE );
 
         configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-        configuration.addChangeListener( this );
+        configuration.addListener( this );
 
         repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
     }
@@ -206,19 +207,38 @@ public class RepositoryServlet
 
         return true;
     }
-
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    
+    public void configurationEvent( ConfigurationEvent event )
     {
-        // nothing to do
+        if( event.getType() == ConfigurationEvent.SAVED )
+        {
+            initRepositories();
+        }
     }
 
-    public synchronized void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    private void initRepositories()
     {
-        if ( ConfigurationNames.isManagedRepositories( propertyName ) )
+        synchronized ( repositoryMap )
         {
-            synchronized ( repositoryMap )
+            repositoryMap.clear();
+            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
+        }
+        
+        DavServerManager davManager = getDavManager();
+        
+        synchronized ( davManager )
+        {
+            // Clear out the old servers.
+            davManager.removeAllServers();
+            
+            // Create new servers.
+            try
             {
-                repositoryMap.clear();
+                initServers( getServletConfig() );
+            }
+            catch ( DavServerException e )
+            {
+                log( "Unable to init servers: " + e.getMessage(), e );
             }
         }
     }
