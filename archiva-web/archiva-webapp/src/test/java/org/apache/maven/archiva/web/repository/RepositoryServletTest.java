@@ -124,6 +124,12 @@ public class RepositoryServletTest
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( NEW_REPOSITORY_ID );
         repo.setName( NEW_REPOSITORY_NAME );
+        File repoRoot = new File( getBasedir(), "target/test-repository-root" );
+        if ( !repoRoot.exists() )
+        {
+            repoRoot.mkdirs();
+        }
+        repo.setLocation( repoRoot.getAbsolutePath() );
         c.addManagedRepository( repo );
         // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
         servlet.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED) );

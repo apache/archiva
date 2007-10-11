@@ -111,7 +111,7 @@ public class RepositoryServlet
     {
         if ( repositoryMap.isEmpty() )
         {
-            repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
+            repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
         }
         return repositoryMap.get( prefix );
     }
