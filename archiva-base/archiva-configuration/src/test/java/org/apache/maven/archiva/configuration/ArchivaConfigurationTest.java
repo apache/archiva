@@ -19,11 +19,10 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.registry.Registry;
+import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.util.FileUtils;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -40,12 +39,12 @@ public class ArchivaConfigurationTest
 {
     @SuppressWarnings("unused")
     private Registry registry;
-
+    
     protected void setUp()
         throws Exception
     {
         super.setUp();
-
+        
         registry = (Registry) lookup( Registry.ROLE, "commons-configuration" );
     }
 
@@ -304,9 +303,11 @@ public class ArchivaConfigurationTest
     {
         DefaultArchivaConfiguration archivaConfiguration =
             (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-
+        
         assertEquals( System.getProperty( "user.home" ) + "/.m2/archiva.xml",
-                      archivaConfiguration.getFilteredUserConfigFilename() );
+                      archivaConfiguration.getUserConfigFilename() );
+        assertEquals( System.getProperty( "appserver.base", "${appserver.base}" ) + "/conf/archiva.xml",
+                      archivaConfiguration.getAltConfigFilename() );
     }
 
     public void testStoreConfigurationFallback()
@@ -455,6 +456,36 @@ public class ArchivaConfigurationTest
             configuration = archivaConfiguration.getConfiguration();
             assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
         }
+    }
+    
+    public void testLoadConfigurationFromInvalidBothLocationsOnDisk() throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(),
+                                                                                   "test-not-allowed-to-write-to-both" );
+        Configuration config = archivaConfiguration.getConfiguration();
+        
+        try
+        {
+            archivaConfiguration.save( config );
+            fail( "Should have thrown a RegistryException because the configuration can't be saved." );
+        }
+        catch ( RegistryException e )
+        {
+            /* expected exception */
+        }
+    }
+    
+    public void testLoadConfigurationFromInvalidUserLocationOnDisk() throws Exception
+    {
+        File testConfDir = getTestFile( "target/test-appserver-base/conf/" );
+        testConfDir.mkdirs();
+        
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(),
+                                                                                   "test-not-allowed-to-write-to-user" );
+        Configuration config = archivaConfiguration.getConfiguration();
+        archivaConfiguration.save( config );
+        // No Exception == test passes. 
+        // Expected Path is: Should not have thrown an exception.
     }
 
     public void testConfigurationUpgradeFrom09()

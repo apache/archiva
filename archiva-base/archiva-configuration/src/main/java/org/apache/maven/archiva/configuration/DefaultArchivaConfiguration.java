@@ -23,6 +23,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryWriter;
+import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
+import org.codehaus.plexus.evaluator.EvaluatorException;
+import org.codehaus.plexus.evaluator.ExpressionEvaluator;
+import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -85,6 +89,11 @@ public class DefaultArchivaConfiguration
     private String userConfigFilename;
 
     /**
+     * @plexus.configuration default-value="${appserver.base}/conf/archiva.xml"
+     */
+    private String altConfigFilename;
+
+    /**
      * Configuration Listeners we've registered.
      */
     private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>();
@@ -93,11 +102,6 @@ public class DefaultArchivaConfiguration
      * Registry Listeners we've registered.
      */
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
-
-    public String getFilteredUserConfigFilename()
-    {
-        return StringUtils.replace( userConfigFilename, "${user.home}", System.getProperty( "user.home" ) );
-    }
 
     public synchronized Configuration getConfiguration()
     {
@@ -268,14 +272,17 @@ public class DefaultArchivaConfiguration
         throws RegistryException
     {
         // TODO: may not be needed under commons-configuration 1.4 - check
-        File file = new File( getFilteredUserConfigFilename() );
-        try
+        // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 10/11/2007 (joakime)
+        
+        String contents = "<configuration />";
+        if ( !writeFile( "user configuration", userConfigFilename, contents ) )
         {
-            FileUtils.writeStringToFile( file, "<configuration/>", "UTF-8" );
-        }
-        catch ( IOException e )
-        {
-            throw new RegistryException( "Unable to create configuration file: " + e.getMessage(), e );
+            if ( !writeFile( "alternative configuration", altConfigFilename, contents ) )
+            {
+                throw new RegistryException( "Unable to create configuration file in either user ["
+                    + userConfigFilename + "] or alternative [" + altConfigFilename
+                    + "] locations on disk, usually happens when not allowed to write to those locations." );
+            }
         }
 
         try
@@ -295,6 +302,30 @@ public class DefaultArchivaConfiguration
         triggerEvent( ConfigurationEvent.SAVED );
 
         return registry.getSection( KEY + ".user" );
+    }
+
+    /**
+     * Attempts to write the contents to a file, if an IOException occurs, return false.
+     * 
+     * @param filetype the filetype (freeform text) to use in logging messages when failure to write.
+     * @param path the path to write to.
+     * @param contents the contents to write.
+     * @return true if write successful.
+     */
+    private boolean writeFile( String filetype, String path, String contents )
+    {
+        File file = new File( path );
+
+        try
+        {
+            FileUtils.writeStringToFile( file, contents, "UTF-8" );
+            return true;
+        }
+        catch ( IOException e )
+        {
+            getLogger().error( "Unable to create " + filetype + " file: " + e.getMessage(), e );
+            return false;
+        }
     }
 
     private void triggerEvent( int type )
@@ -358,6 +389,20 @@ public class DefaultArchivaConfiguration
     public void initialize()
         throws InitializationException
     {
+        // Resolve expressions in the userConfigFilename and altConfigFilename
+        try
+        {
+            ExpressionEvaluator expressionEvaluator = new DefaultExpressionEvaluator();
+            expressionEvaluator.addExpressionSource( new SystemPropertyExpressionSource() );
+            userConfigFilename = expressionEvaluator.expand( userConfigFilename );
+            altConfigFilename = expressionEvaluator.expand( altConfigFilename );
+        }
+        catch ( EvaluatorException e )
+        {
+            throw new InitializationException( "Unable to evaluate expressions found in "
+                + "userConfigFilename or altConfigFilename." );
+        }
+
         registry.addChangeListener( this );
     }
 
@@ -408,5 +453,15 @@ public class DefaultArchivaConfiguration
         }
 
         return config;
+    }
+
+    public String getUserConfigFilename()
+    {
+        return userConfigFilename;
+    }
+
+    public String getAltConfigFilename()
+    {
+        return altConfigFilename;
     }
 }
