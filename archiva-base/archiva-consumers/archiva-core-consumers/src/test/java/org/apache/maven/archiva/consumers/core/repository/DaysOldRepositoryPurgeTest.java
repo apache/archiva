@@ -19,8 +19,6 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,27 +54,20 @@ public class DaysOldRepositoryPurgeTest
     {
         populateDbForTestByLastModified();
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
-        setLastModified( "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/" );
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
+        
+        setLastModified( projectRoot + "/2.2-SNAPSHOT/" );
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
     }
 
     public void testMetadataDrivenSnapshots()
@@ -84,57 +75,38 @@ public class DaysOldRepositoryPurgeTest
     {
         populateDbForTestMetadataDrivenSnapshots();
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
 
+        String versionRoot = repoRoot + "/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT";
+        
         // this should be deleted since the filename version (timestamp) is older than
         // 100 days even if the last modified date was <100 days ago
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/plexus-utils-1.4.3-20070113.163208-4.jar" );
+        assertDeleted( versionRoot + "/plexus-utils-1.4.3-20070113.163208-4.jar.sha1" );
+        assertDeleted( versionRoot + "/plexus-utils-1.4.3-20070113.163208-4.pom" );
+        assertDeleted( versionRoot + "/plexus-utils-1.4.3-20070113.163208-4.pom.sha1" );
 
         // musn't be deleted since the filename version (timestamp) is not older than 100 days
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070618.102615-5.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070618.102615-5.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070618.102615-5.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070618.102615-5.pom.sha1" ).exists() );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070618.102615-5.jar" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070618.102615-5.jar.sha1" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070618.102615-5.pom" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070618.102615-5.pom.sha1" );
 
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070630.113158-6.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070630.113158-6.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070630.113158-6.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070630.113158-6.pom.sha1" ).exists() );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070630.113158-6.jar" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070630.113158-6.jar.sha1" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070630.113158-6.pom" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070630.113158-6.pom.sha1" );
 
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070707.122114-7.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070707.122114-7.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070707.122114-7.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070707.122114-7.pom.sha1" ).exists() );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070707.122114-7.jar" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070707.122114-7.jar.sha1" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070707.122114-7.pom" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-20070707.122114-7.pom.sha1" );
 
         // mustn't be deleted since the last modified date is <100 days (this is not a timestamped version)
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-SNAPSHOT.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-SNAPSHOT.pom" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.jar" );
+        assertExists( versionRoot + "/plexus-utils-1.4.3-SNAPSHOT.pom" );
     }
 
     protected void tearDown()
@@ -147,7 +119,7 @@ public class DaysOldRepositoryPurgeTest
     private void populateDbForTestByLastModified()
         throws Exception
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "2.2-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
@@ -156,7 +128,7 @@ public class DaysOldRepositoryPurgeTest
     private void populateDbForTestMetadataDrivenSnapshots()
         throws Exception
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "1.4.3-20070113.163208-4" );
         versions.add( "1.4.3-20070618.102615-5" );
         versions.add( "1.4.3-20070630.113158-6" );

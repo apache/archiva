@@ -24,16 +24,10 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.codehaus.plexus.util.IOUtil;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -42,9 +36,9 @@ import java.util.List;
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
-    private void setLastModified()
+    private void setLastModified( String path )
     {
-        File dir = new File( "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/" );
+        File dir = new File( path );
         File[] contents = dir.listFiles();
         for ( int i = 0; i < contents.length; i++ )
         {
@@ -67,66 +61,41 @@ public class RepositoryPurgeConsumerTest
         
         repoPurgeConsumer.beginScan( repoConfiguration );
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
         
+        String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
+        
         // assert if removed from repo
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.sha1" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.sha1" );
 
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.sha1" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.sha1" );
 
         // assert if not removed from repo
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.sha1" ).exists() );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.sha1" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.sha1" );
 
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.sha1" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.sha1" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.sha1" );
     }
 
     private void addRepoToConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
@@ -151,29 +120,27 @@ public class RepositoryPurgeConsumerTest
 
         repoPurgeConsumer.beginScan( repoConfiguration );
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
 
-        setLastModified();
+        setLastModified( projectRoot + "/2.2-SNAPSHOT" );
 
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar"  );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
     }
 
+    /**
+     * Test the snapshot clean consumer on a repository set to NOT clean/delete snapshots
+     * based on released versions. 
+     * 
+     * @throws Exception
+     */
     public void testReleasedSnapshotsWereNotCleaned()
         throws Exception
     {
@@ -183,74 +150,37 @@ public class RepositoryPurgeConsumerTest
         populateDbForReleasedSnapshotsTest();
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
-        repoConfiguration.setDeleteReleasedSnapshots( false );
+        repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
         
         repoPurgeConsumer.beginScan( repoConfiguration );
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
 
         // check if the snapshot wasn't removed
-        assertTrue(
-            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" ).exists() );
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
+        		
+        assertExists( projectRoot + "/2.3-SNAPSHOT" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" );
+        assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" );
 
         // check if metadata file wasn't updated
-        File artifactMetadataFile =
-            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/maven-metadata-local.xml" );
+        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        FileReader fileReader = new FileReader( artifactMetadataFile );
-        Document document;
-
-        try
-        {
-            SAXBuilder builder = new SAXBuilder();
-            document = builder.build( fileReader );
-        }
-        finally
-        {
-            IOUtil.close( fileReader );
-        }
-
-        // parse the metadata file
-        XPath xPath = XPath.newInstance( "//metadata/versioning" );
-        Element rootElement = document.getRootElement();
-
-        Element versioning = (Element) xPath.selectSingleNode( rootElement );
-        Element el = (Element) xPath.newInstance( "./latest" ).selectSingleNode( versioning );
-        assertEquals( "2.3-SNAPSHOT", el.getValue() );
-
-        el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
-        assertTrue( el.getValue().equals( "20070315032817" ) );
-
-        List nodes = xPath.newInstance( "./versions" ).selectNodes( versioning );
-
-        boolean found = false;
-        for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
-        {
-            el = (Element) iter.next();
-            if ( el.getValue().trim().equals( "2.3-SNAPSHOT" ) )
-            {
-                found = true;
-            }
-        }
-        assertTrue( found );
-
-        FileUtils.deleteDirectory( testDir );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        
+        String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
+        
+        XMLAssert.assertXpathEvaluatesTo( "2.3-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
+        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+                                     "//metadata/versioning/versions/version", metadataXml );
+        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
     }
 
     public void testReleasedSnapshotsWereCleaned()
@@ -267,75 +197,39 @@ public class RepositoryPurgeConsumerTest
         
         repoPurgeConsumer.beginScan( repoConfiguration );
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurgeConsumer.processFile( PATH_TO_RELEASED_SNAPSHOT );
 
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
+
         // check if the snapshot was removed
-        assertFalse(
-            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" ).exists() );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" );
 
         // check if metadata file was updated
-        File artifactMetadataFile =
-            new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/maven-metadata.xml" );
-
-        FileReader fileReader = new FileReader( artifactMetadataFile );
-        Document document;
-
-        try
-        {
-            SAXBuilder builder = new SAXBuilder();
-            document = builder.build( fileReader );
-        }
-        finally
-        {
-            IOUtil.close( fileReader );
-        }
-
-        // parse the metadata file
-        XPath xPath = XPath.newInstance( "//metadata/versioning" );
-        Element rootElement = document.getRootElement();
-
-        Element versioning = (Element) xPath.selectSingleNode( rootElement );
-        Element el = (Element) xPath.newInstance( "./latest" ).selectSingleNode( versioning );
-        assertEquals( "2.3", el.getValue() );
-
-        el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
-        // FIXME: assertFalse( el.getValue().equals( "20070315032817" ) );
-
-        List nodes = xPath.newInstance( "./versions" ).selectNodes( rootElement );
-
-        boolean found = false;
-        for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
-        {
-            el = (Element) iter.next();
-            if ( el.getValue().equals( "2.3-SNAPSHOT" ) )
-            {
-                found = true;
-            }
-        }
-        assertFalse( found );
-
-        FileUtils.deleteDirectory( testDir );
-    }
+        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
+        
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        
+        String expectedVersions = "<expected><versions><version>2.2</version>"
+            + "<version>2.3</version></versions></expected>";
+        
+        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
+        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+                                     "//metadata/versioning/versions/version", metadataXml );
+        // FIXME [MRM-535]: XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
+   }
 
     public void populateDbForRetentionCountTest()
         throws ArchivaDatabaseException
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "1.0RC1-20070504.153317-1" );
         versions.add( "1.0RC1-20070504.160758-2" );
         versions.add( "1.0RC1-20070505.090015-3" );
@@ -347,7 +241,7 @@ public class RepositoryPurgeConsumerTest
     private void populateDbForDaysOldTest()
         throws ArchivaDatabaseException
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "2.2-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
@@ -356,10 +250,9 @@ public class RepositoryPurgeConsumerTest
     public void populateDbForReleasedSnapshotsTest()
         throws ArchivaDatabaseException
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "2.3-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-plugin-plugin", versions );
     }
-
 }

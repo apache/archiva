@@ -22,16 +22,10 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
-import org.codehaus.plexus.util.IOUtil;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -46,7 +40,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         super.setUp();
 
         MetadataTools metadataTools = (MetadataTools) lookup( MetadataTools.class );
-
+        
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), dao, metadataTools );
     }
 
@@ -55,105 +49,46 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     {
         populateReleasedSnapshotsTest();
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT );
 
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
+        
         // check if the snapshot was removed
-        assertFalse( new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" )
-            .exists() );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" );
 
         // check if the released version was not removed
-        assertTrue( new File( "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3" ).exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3-sources.jar" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3-sources.jar.md5" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3-sources.jar.sha1" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.jar" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.jar.md5" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.jar.sha1" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.pom" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.pom.md5" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/2.3/maven-plugin-plugin-2.3.pom.sha1" )
-            .exists() );
+        assertExists( projectRoot + "/2.3" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3-sources.jar" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3-sources.jar.md5" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3-sources.jar.sha1" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.jar" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.jar.md5" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.jar.sha1" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.pom" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.pom.md5" );
+        assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.pom.sha1" );
 
         // check if metadata file was updated
-        File artifactMetadataFile = new File(
-                                              "target/test/test-repo/org/apache/maven/plugins/maven-plugin-plugin/maven-metadata.xml" );
+        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        FileReader fileReader = new FileReader( artifactMetadataFile );
-        Document document;
-
-        try
-        {
-            SAXBuilder builder = new SAXBuilder();
-            document = builder.build( fileReader );
-        }
-        finally
-        {
-            IOUtil.close( fileReader );
-        }
-
-        // parse the metadata file
-        XPath xPath = XPath.newInstance( "//metadata/versioning" );
-        Element rootElement = document.getRootElement();
-
-        Element versioning = (Element) xPath.selectSingleNode( rootElement );
-        Element el = (Element) xPath.newInstance( "./latest" ).selectSingleNode( versioning );
-        assertEquals( "2.3", el.getValue() );
-
-        el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
-        // FIXME: assertFalse( el.getValue().equals( "20070315032817" ) );
-
-        List nodes = xPath.newInstance( "./versions" ).selectNodes( rootElement );
-
-        boolean found = false;
-        for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
-        {
-            el = (Element) iter.next();
-            if ( el.getValue().equals( "2.3-SNAPSHOT" ) )
-            {
-                found = true;
-            }
-        }
-        assertFalse( found );
-
-        FileUtils.deleteDirectory( testDir );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        
+        String expectedVersions = "<expected><versions><version>2.2</version>" +
+        		"<version>2.3</version></versions></expected>";
+        
+        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/release", metadataXml );
+        XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
+        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+                                     "//metadata/versioning/versions/version", metadataXml );
+        // FIXME [MRM-535]: XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
 
     public void testHigherSnapshotExists()
@@ -161,103 +96,48 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     {
         populateHigherSnapshotExistsTest();
 
-        File testDir = new File( "target/test" );
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurge.process( PATH_TO_HIGHER_SNAPSHOT_EXISTS );
+        
+        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-source-plugin";
 
         // check if the snapshot was removed
-        assertFalse( new File( "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.md5" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.sha1" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.md5" )
-            .exists() );
-        assertFalse( new File(
-                               "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.sha1" )
-            .exists() );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.sha1" );
 
         // check if the released version was not removed
-        assertTrue( new File( "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar.md5" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar.sha1" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.md5" )
-            .exists() );
-        assertTrue( new File(
-                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.sha1" )
-            .exists() );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar.md5" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.jar.sha1" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.md5" );
+        assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.sha1" );
 
         // check if metadata file was updated
-        File artifactMetadataFile = new File(
-                                              "target/test/test-repo/org/apache/maven/plugins/maven-source-plugin/maven-metadata.xml" );
+        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
-        FileReader fileReader = new FileReader( artifactMetadataFile );
-        Document document;
-
-        try
-        {
-            SAXBuilder builder = new SAXBuilder();
-            document = builder.build( fileReader );
-        }
-        finally
-        {
-            IOUtil.close( fileReader );
-        }
-
-        // parse the metadata file
-        XPath xPath = XPath.newInstance( "//metadata/versioning" );
-        Element rootElement = document.getRootElement();
-
-        Element versioning = (Element) xPath.selectSingleNode( rootElement );
-        Element el = (Element) xPath.newInstance( "./latest" ).selectSingleNode( versioning );
-        assertEquals( "2.0.4-SNAPSHOT", el.getValue() );
-
-        el = (Element) xPath.newInstance( "./lastUpdated" ).selectSingleNode( versioning );
-        // FIXME: assertFalse( el.getValue().equals( "20070427033345" ) );
-
-        List nodes = xPath.newInstance( "./versions" ).selectNodes( rootElement );
-
-        boolean found = false;
-        for ( Iterator iter = nodes.iterator(); iter.hasNext(); )
-        {
-            el = (Element) iter.next();
-            if ( el.getValue().equals( "2.0.3-SNAPSHOT" ) )
-            {
-                found = true;
-            }
-        }
-        assertFalse( found );
-
-        FileUtils.deleteDirectory( testDir );
+        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
+        
+        String expectedVersions = "<expected><versions><version>2.0.2</version>" +
+        		"<version>2.0.4-SNAPSHOT</version></versions></expected>";
+        
+        XMLAssert.assertXpathEvaluatesTo( "2.0.4-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
+        XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
+                                     "//metadata/versioning/versions/version", metadataXml );
+        // FIXME [MRM-535]: XMLAssert.assertXpathEvaluatesTo( "20070427033345", "//metadata/versioning/lastUpdated", metadataXml );
     }
 
     private void populateReleasedSnapshotsTest()
         throws ArchivaDatabaseException
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "2.3-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-plugin-plugin", versions );
@@ -266,7 +146,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     private void populateHigherSnapshotExistsTest()
         throws Exception
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "2.0.3-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-source-plugin", versions );

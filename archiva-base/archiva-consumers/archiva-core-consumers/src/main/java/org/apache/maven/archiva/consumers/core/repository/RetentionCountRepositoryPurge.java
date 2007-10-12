@@ -116,8 +116,6 @@ public class RetentionCountRepositoryPurge
         artifact.setClassifier( reference.getClassifier() );
         artifact.setType( reference.getType() );
         
-        System.err.println( "Requesting (retention) purge of " + ArtifactReference.toKey( reference ) );
-
         try
         {
             Set<ArtifactReference> related = repository.getRelatedArtifacts( artifact );

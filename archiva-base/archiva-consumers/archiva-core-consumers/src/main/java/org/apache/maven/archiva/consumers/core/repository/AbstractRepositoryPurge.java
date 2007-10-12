@@ -88,7 +88,6 @@ public abstract class AbstractRepositoryPurge
         {
             File artifactFile = repository.toFile( reference );
 
-            System.err.println( "Purging: " + artifactFile.getAbsolutePath() );
             artifactFile.delete();
             purgeSupportFiles( artifactFile );
 
@@ -139,7 +138,6 @@ public abstract class AbstractRepositoryPurge
             if ( file.exists() && file.isFile() )
             {
                 file.delete();
-                System.err.println( "Deleting support file: " + file.getAbsolutePath() );
                 // TODO: log that it was deleted?
             }
         }

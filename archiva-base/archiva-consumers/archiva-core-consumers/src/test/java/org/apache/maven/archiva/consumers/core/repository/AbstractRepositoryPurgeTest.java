@@ -19,6 +19,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -30,12 +31,12 @@ import org.codehaus.plexus.jdo.JdoFactory;
 import org.jpox.SchemaTool;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -49,8 +50,6 @@ public abstract class AbstractRepositoryPurgeTest
     public static final String TEST_REPO_ID = "test-repo";
 
     public static final String TEST_REPO_NAME = "Test Repository";
-
-    public static final String TEST_REPO_LOCATION = getBasedir() + "/target/test/test-repo/";
 
     public static final int TEST_RETENTION_COUNT = 2;
 
@@ -113,10 +112,8 @@ public abstract class AbstractRepositoryPurgeTest
 
         Properties properties = jdoFactory.getProperties();
 
-        for ( Iterator it = properties.entrySet().iterator(); it.hasNext(); )
+        for ( Entry<Object, Object> entry : properties.entrySet() )
         {
-            Map.Entry entry = (Map.Entry) it.next();
-
             System.setProperty( (String) entry.getKey(), (String) entry.getValue() );
         }
 
@@ -143,6 +140,15 @@ public abstract class AbstractRepositoryPurgeTest
 
         dao = (ArtifactDAO) lookup( ArtifactDAO.class.getName(), "jdo" );
     }
+    
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        super.tearDown();
+        config = null;
+        repo = null;
+    }
 
     public ManagedRepositoryConfiguration getRepoConfiguration()
     {
@@ -154,7 +160,7 @@ public abstract class AbstractRepositoryPurgeTest
         config.setId( TEST_REPO_ID );
         config.setName( TEST_REPO_NAME );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        config.setLocation( TEST_REPO_LOCATION );
+        config.setLocation( getTestRepoRoot().getAbsolutePath() );
         config.setReleases( true );
         config.setSnapshots( true );
         config.setDeleteReleasedSnapshots( true );
@@ -175,13 +181,11 @@ public abstract class AbstractRepositoryPurgeTest
         return repo;
     }
 
-    protected void populateDb( String groupId, String artifactId, List versions )
+    protected void populateDb( String groupId, String artifactId, List<String> versions )
         throws ArchivaDatabaseException
     {
-        for ( Iterator iter = versions.iterator(); iter.hasNext(); )
+        for ( String version : versions )
         {
-            String version = (String) iter.next();
-
             ArchivaArtifact artifact = dao.createArtifact( groupId, artifactId, version, "", "jar" );
             assertNotNull( artifact );
             artifact.getModel().setLastModified( new Date() );
@@ -197,5 +201,30 @@ public abstract class AbstractRepositoryPurgeTest
             savedArtifact = dao.saveArtifact( artifact );
             assertNotNull( savedArtifact );
         }
+    }
+
+    protected void assertDeleted( String path )
+    {
+        assertFalse( "File should have been deleted: " + path, new File( path ).exists() );
+    }
+
+    protected void assertExists( String path )
+    {
+        assertTrue( "File should exist: " + path, new File( path ).exists() );
+    }
+    
+    protected File getTestRepoRoot()
+    {
+        return getTestFile( "target/test-" + getName() + "/test-repo" );
+    }
+
+    protected String prepareTestRepo()
+        throws IOException
+    {
+        File testDir = getTestRepoRoot();
+        FileUtils.deleteDirectory( testDir );
+        FileUtils.copyDirectory( getTestFile( "target/test-classes/test-repo" ), testDir );
+        
+        return testDir.getAbsolutePath();
     }
 }

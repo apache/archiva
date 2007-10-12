@@ -19,9 +19,6 @@ package org.apache.maven.archiva.consumers.core.repository;
 * under the License.
 */
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,67 +50,41 @@ public class RetentionCountRepositoryPurgeTest
     {
         populateIfJarWasFoundDb();
 
-        File testDir = new File( "target/test" );
-        testDir.mkdir();
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
+        
+        String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
 
         // assert if removed from repo
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.sha1" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.pom.sha1" );
 
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.jar.sha1" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.md5" );
+        assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.160758-2.pom.sha1" );
 
         // assert if not removed from repo
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.sha1" ).exists() );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.jar.sha1" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070505.090015-3.pom.sha1" );
 
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.sha1" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.jar.sha1" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.md5" );
+        assertExists( versionRoot + "/jruby-rake-plugin-1.0RC1-20070506.090132-4.pom.sha1" );
     }
 
     /**
@@ -126,72 +97,46 @@ public class RetentionCountRepositoryPurgeTest
     {
         populateIfPomWasFoundDb();
 
-        File testDir = new File( "target/test" );
-        testDir.mkdir();
-        FileUtils.copyDirectoryToDirectory( new File( "target/test-classes/test-repo" ), testDir );
+        String repoRoot = prepareTestRepo();
 
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
 
+        String versionRoot = repoRoot + "/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT";
+        
         // assert if removed from repo
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.jar" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.jar.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.jar.sha1" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.pom" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.pom.md5" ).exists() );
-        assertFalse( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070427.065136-1.pom.sha1" ).exists() );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar" );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar.md5" );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar.sha1" );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.pom" );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.pom.md5" );
+        assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.pom.sha1" );
 
         // assert if not removed from repo
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.pom.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3-sources.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3-sources.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070615.105019-3-sources.jar.sha1" ).exists() );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.pom" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.pom.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.pom.sha1" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.jar" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.jar.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3.jar.sha1" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3-sources.jar" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3-sources.jar.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070615.105019-3-sources.jar.sha1" );
 
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.pom.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2.jar.sha1" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2-sources.jar" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.md5" ).exists() );
-        assertTrue( new File(
-            "target/test/test-repo/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.sha1" ).exists() );
-
-        FileUtils.deleteDirectory( testDir );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.pom" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.pom.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.pom.sha1" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.jar" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.jar.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2.jar.sha1" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2-sources.jar" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.md5" );
+        assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.sha1" );
     }
 
     public void populateIfJarWasFoundDb()
         throws Exception
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "1.0RC1-20070504.153317-1" );
         versions.add( "1.0RC1-20070504.160758-2" );
         versions.add( "1.0RC1-20070505.090015-3" );
@@ -203,7 +148,7 @@ public class RetentionCountRepositoryPurgeTest
     public void populateIfPomWasFoundDb()
         throws Exception
     {
-        List versions = new ArrayList();
+        List<String> versions = new ArrayList<String>();
         versions.add( "1.1.2-20070427.065136-1" );
         versions.add( "1.1.2-20070615.105019-3" );
         versions.add( "1.1.2-20070506.163513-2" );
