@@ -385,6 +385,12 @@
         <groupId>jaxen</groupId>
         <artifactId>jaxen</artifactId>
         <version>1.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.jdo</groupId>
@@ -400,16 +406,24 @@
         <groupId>jpox</groupId>
         <artifactId>jpox</artifactId>
         <version>1.1.7</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jsp-api</artifactId>
         <version>2.0</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
         <version>1.1.2</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>log4j</groupId>
@@ -582,6 +596,12 @@
         <artifactId>redback-xwork-content</artifactId>
         <version>${redback.version}</version>
         <type>war</type>
+        <exclusions>
+          <exclusion>
+            <groupId>classworlds</groupId>
+            <artifactId>classworlds</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
@@ -597,6 +617,16 @@
         <groupId>org.codehaus.plexus.registry</groupId>
         <artifactId>plexus-registry-commons</artifactId>
         <version>1.0-alpha-2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ant</groupId>
+            <artifactId>ant-optional</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.webdav</groupId>
