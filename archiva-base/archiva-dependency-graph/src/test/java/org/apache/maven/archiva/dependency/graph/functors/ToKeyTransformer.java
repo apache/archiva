@@ -23,9 +23,9 @@ import org.apache.commons.collections.Transformer;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphKeys;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
-import org.apache.maven.archiva.dependency.graph.Keys;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.Keys;
 
 /**
  * ToKeyTransformer 

@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Exclusion;
+import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.VersionedReference;
 
 import java.util.ArrayList;
