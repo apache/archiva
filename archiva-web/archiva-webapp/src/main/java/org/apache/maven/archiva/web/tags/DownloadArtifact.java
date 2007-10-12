@@ -25,28 +25,21 @@ import com.opensymphony.xwork.util.OgnlValueStack;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsRelatedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.text.DecimalFormat;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -76,6 +69,7 @@ public class DownloadArtifact
 
     private HttpServletRequest req;
 
+    @SuppressWarnings("unused")
     private HttpServletResponse res;
 
     private String groupId;
@@ -213,10 +207,8 @@ public class DownloadArtifact
         sb.append( "<p class=\"body\">" );
 
         sb.append( "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">" );
-        Iterator it = relatedArtifacts.iterator();
-        while ( it.hasNext() )
+        for ( ArchivaArtifact artifact : relatedArtifacts )
         {
-            ArchivaArtifact artifact = (ArchivaArtifact) it.next();
             sb.append( "\n<tr>" );
 
             sb.append( "<td class=\"icon\">" );
@@ -256,13 +248,7 @@ public class DownloadArtifact
     {
         StringBuffer url = new StringBuffer();
         
-        ArtifactReference ref = new ArtifactReference();
-        ref.setGroupId( artifact.getGroupId() );
-        ref.setArtifactId( artifact.getArtifactId() );
-        ref.setVersion( artifact.getVersion() );
-        ref.setClassifier( artifact.getClassifier() );
-        ref.setType( artifact.getType() );
-        String path = repo.toPath( ref );
+        String path = repo.toPath( artifact );
 
         url.append( prefix );
         url.append( "/" ).append( path );
