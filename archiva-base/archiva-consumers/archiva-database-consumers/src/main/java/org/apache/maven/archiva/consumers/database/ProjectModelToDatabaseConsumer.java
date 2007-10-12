@@ -21,9 +21,6 @@ package org.apache.maven.archiva.consumers.database;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
@@ -32,11 +29,13 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.reporting.artifact.CorruptArtifactReport;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.content.ManagedLegacyRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
@@ -77,12 +76,7 @@ public class ProjectModelToDatabaseConsumer
     /**
      * @plexus.requirement
      */
-    private ArchivaConfiguration archivaConfiguration;
-
-    /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement role-hint="model400"
@@ -143,11 +137,11 @@ public class ProjectModelToDatabaseConsumer
             return;
         }
 
-        File artifactFile = toFile( artifact );
-        AbstractRepositoryConfiguration repo = getRepository( artifact );
+        ManagedRepositoryContent repo = getRepository( artifact );
+        File artifactFile = repo.toFile( artifact );
         ProjectModelReader reader = project400Reader;
 
-        if ( StringUtils.equals( "legacy", repo.getLayout() ) )
+        if ( repo instanceof ManagedLegacyRepositoryContent )
         {
             reader = project300Reader;
         }
@@ -170,16 +164,16 @@ public class ProjectModelToDatabaseConsumer
             // Resolve the project model
             model = effectiveModelFilter.filter( model );
 
-            if ( isValidModel( model, artifact ) )
+            if ( isValidModel( model, repo, artifact ) )
             {
-                getLogger().info( "Add project model " + model + " to database." );
+                getLogger().info( "Adding project model to database - " + Keys.toKey( model ) );
 
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
             {
                 getLogger().warn(
-                    "Invalid or corrupt pom. Project model " + model + " was not added in the database." );
+                    "Invalid or corrupt pom. Project model not added to database - " + Keys.toKey( model ) );
             }
 
         }
@@ -219,29 +213,18 @@ public class ProjectModelToDatabaseConsumer
         }
     }
 
-    private ManagedRepositoryConfiguration getRepository( ArchivaArtifact artifact )
+    private ManagedRepositoryContent getRepository( ArchivaArtifact artifact )
+        throws ConsumerException
     {
         String repoId = artifact.getModel().getRepositoryId();
-        return archivaConfiguration.getConfiguration().findManagedRepositoryById( repoId );
-    }
-
-    private File toFile( ArchivaArtifact artifact )
-    {
-        ManagedRepositoryConfiguration repoConfig = getRepository( artifact );
-
-        BidirectionalRepositoryLayout layout = null;
-
         try
         {
-            layout = layoutFactory.getLayout( artifact );
+            return repositoryFactory.getManagedRepositoryContent( repoId );
         }
-        catch ( LayoutException e )
+        catch ( RepositoryException e )
         {
-            getLogger().warn( "Unable to determine layout of " + artifact + ": " + e.getMessage(), e );
-            return null;
+            throw new ConsumerException( "Unable to process project model: " + e.getMessage(), e );
         }
-
-        return new File( repoConfig.getLocation(), layout.toPath( artifact ) );
     }
 
     public String getDescription()
@@ -260,24 +243,10 @@ public class ProjectModelToDatabaseConsumer
         return true;
     }
 
-    private String toPath( ArchivaArtifact artifact )
-    {
-        try
-        {
-            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
-            return layout.toPath( artifact );
-        }
-        catch ( LayoutException e )
-        {
-            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
-            return null;
-        }
-    }
-
-    private boolean isValidModel( ArchivaProjectModel model, ArchivaArtifact artifact )
+    private boolean isValidModel( ArchivaProjectModel model, ManagedRepositoryContent repo, ArchivaArtifact artifact )
         throws ConsumerException
     {
-        File artifactFile = toFile( artifact );
+        File artifactFile = repo.toFile( artifact );
 
         if ( !artifact.getArtifactId().equalsIgnoreCase( model.getArtifactId() ) )
         {
@@ -324,9 +293,11 @@ public class ProjectModelToDatabaseConsumer
     private void addProblem( ArchivaArtifact artifact, String msg )
         throws ConsumerException
     {
+        ManagedRepositoryContent repo = getRepository( artifact );
+        
         RepositoryProblem problem = new RepositoryProblem();
         problem.setRepositoryId( artifact.getModel().getRepositoryId() );
-        problem.setPath( toPath( artifact ) );
+        problem.setPath( repo.toPath( artifact ) );
         problem.setGroupId( artifact.getGroupId() );
         problem.setArtifactId( artifact.getArtifactId() );
         problem.setVersion( artifact.getVersion() );
