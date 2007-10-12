@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -330,6 +331,11 @@ public class ManagedDefaultRepositoryContent
     }
 
     public File toFile( ArtifactReference reference )
+    {
+        return new File( repository.getLocation(), toPath( reference ) );
+    }
+    
+    public File toFile( ArchivaArtifact reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
     }

@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.content;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -73,6 +74,18 @@ public abstract class AbstractDefaultRepositoryContent
         path.append( MAVEN_METADATA );
     
         return path.toString();
+    }
+    
+    public String toPath( ArchivaArtifact reference )
+    {
+        if ( reference == null )
+        {
+            throw new IllegalArgumentException( "ArchivaArtifact cannot be null" );
+        }
+
+        String baseVersion = VersionUtil.getBaseVersion( reference.getVersion() );
+        return toPath( reference.getGroupId(), reference.getArtifactId(), baseVersion, reference.getVersion(),
+                       reference.getClassifier(), reference.getType() );
     }
 
     public String toPath( ArtifactReference reference )

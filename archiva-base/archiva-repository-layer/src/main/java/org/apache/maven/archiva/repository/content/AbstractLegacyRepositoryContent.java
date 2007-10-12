@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.content;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
@@ -54,6 +55,17 @@ public abstract class AbstractLegacyRepositoryContent
         throws LayoutException
     {
         return LegacyPathParser.toArtifactReference( path );
+    }
+    
+    public String toPath( ArchivaArtifact reference )
+    {
+        if ( reference == null )
+        {
+            throw new IllegalArgumentException( "Artifact reference cannot be null" );
+        }
+
+        return toPath( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(), reference
+            .getClassifier(), reference.getType() );
     }
 
     public String toPath( ArtifactReference reference )

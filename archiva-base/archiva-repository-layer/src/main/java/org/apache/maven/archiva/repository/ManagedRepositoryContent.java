@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository;
  */
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -101,7 +102,7 @@ public interface ManagedRepositoryContent
     public ManagedRepositoryConfiguration getRepository();
 
     /**
-     * Given a specific ProjectReference, return the list of available versions for
+     * Given a specific {@link ProjectReference}, return the list of available versions for
      * that project reference.
      * 
      * @param reference the project reference to work off of.
@@ -114,7 +115,7 @@ public interface ManagedRepositoryContent
 
     /**
      * <p>
-     * Given a specific VersionedReference, return the list of available versions for that
+     * Given a specific {@link VersionedReference}, return the list of available versions for that
      * versioned reference.
      * </p>
      * 
@@ -174,15 +175,23 @@ public interface ManagedRepositoryContent
         throws LayoutException;
 
     /**
-     * Given an ArtifactReference, return the file reference to the artifact.
+     * Given an {@link ArtifactReference}, return the file reference to the artifact.
      *
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
     public File toFile( ArtifactReference reference );
+    
+    /**
+     * Given an {@link ArchivaArtifact}, return the file reference to the artifact.
+     *
+     * @param reference the archiva artifact to use.
+     * @return the relative path to the artifact.
+     */
+    public File toFile( ArchivaArtifact reference );
 
     /**
-     * Given a project reference, return the path to the metadata for
+     * Given a {@link ProjectReference}, return the path to the metadata for
      * the project. 
      * 
      * @param reference the reference to use.
@@ -191,7 +200,7 @@ public interface ManagedRepositoryContent
     public String toMetadataPath( ProjectReference reference );
 
     /**
-     * Given a versioned reference, return the path to the metadata for
+     * Given a {@link VersionedReference}, return the path to the metadata for
      * the specific version of the project. 
      * 
      * @param reference the reference to use.
@@ -200,10 +209,18 @@ public interface ManagedRepositoryContent
     public String toMetadataPath( VersionedReference reference );
 
     /**
-     * Given an ArtifactReference, return the relative path to the artifact.
+     * Given an {@link ArtifactReference}, return the relative path to the artifact.
      *
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
     public String toPath( ArtifactReference reference );
+    
+    /**
+     * Given an {@link ArchivaArtifact}, return the relative path to the artifact.
+     *
+     * @param reference the archiva artifact to use.
+     * @return the relative path to the artifact.
+     */
+    public String toPath( ArchivaArtifact reference );
 }
