@@ -23,6 +23,7 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
@@ -69,19 +70,25 @@ public class SecuritySynchronization
 
     private void synchConfiguration( List<ManagedRepositoryConfiguration> repos )
     {
+        // NOTE: Remote Repositories do not have roles or security placed around them.
+        
         for ( ManagedRepositoryConfiguration repoConfig : repos )
         {
             // manage roles for repositories
             try
             {
-                if ( !roleManager.templatedRoleExists( "archiva-repository-observer", repoConfig.getId() ) )
+                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, 
+                                                       repoConfig.getId() ) )
                 {
-                    roleManager.createTemplatedRole( "archiva-repository-observer", repoConfig.getId() );
+                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, 
+                                                     repoConfig.getId() );
                 }
 
-                if ( !roleManager.templatedRoleExists( "archiva-repository-manager", repoConfig.getId() ) )
+                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, 
+                                                       repoConfig.getId() ) )
                 {
-                    roleManager.createTemplatedRole( "archiva-repository-manager", repoConfig.getId() );
+                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, 
+                                                     repoConfig.getId() );
                 }
             }
             catch ( RoleManagerException e )
@@ -89,7 +96,6 @@ public class SecuritySynchronization
                 // Log error.
                 getLogger().error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
             }
-
         }
     }
 

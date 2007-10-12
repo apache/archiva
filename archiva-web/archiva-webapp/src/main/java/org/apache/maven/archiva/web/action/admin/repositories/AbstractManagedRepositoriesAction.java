@@ -22,6 +22,10 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.codehaus.plexus.redback.rbac.RbacManagerException;
+import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 
@@ -43,6 +47,11 @@ public abstract class AbstractManagedRepositoriesAction
      * @plexus.requirement role-hint="default"
      */
     protected RoleManager roleManager;
+    
+    /**
+     * @plexus.requirement role-hint="cached"
+     */
+    protected RBACManager rbacManager;
 
     public RoleManager getRoleManager()
     {
@@ -75,10 +84,32 @@ public abstract class AbstractManagedRepositoriesAction
 
     protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository ) throws RoleManagerException
     {
+        String repoId = newRepository.getId();
+        
         // TODO: double check these are configured on start up
         // TODO: belongs in the business logic
-        roleManager.createTemplatedRole( "archiva-repository-manager", newRepository.getId() );
-        roleManager.createTemplatedRole( "archiva-repository-observer", newRepository.getId() );
+        
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
+
+        if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
+
+        try
+        {
+            UserAssignment ua = rbacManager.getUserAssignment( ArchivaRoleConstants.GUEST_ROLE );
+            ua.addRoleName( ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId );
+            rbacManager.saveUserAssignment( ua );
+        }
+        catch ( RbacManagerException e )
+        {
+            getLogger().warn( "Unable to add role [" + ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - "
+                              + repoId + "] to Guest user.", e );
+        }
     }
 
     protected void removeContents( ManagedRepositoryConfiguration existingRepository )
@@ -99,9 +130,18 @@ public abstract class AbstractManagedRepositoriesAction
     protected void removeRepositoryRoles( ManagedRepositoryConfiguration existingRepository )
         throws RoleManagerException
     {
-        roleManager.removeTemplatedRole( "archiva-repository-manager", existingRepository.getId() );
-        roleManager.removeTemplatedRole( "archiva-repository-observer", existingRepository.getId() );
+        String repoId = existingRepository.getId();
+        
+        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
+        
+        if ( roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
 
-        getLogger().debug( "removed user roles associated with repository " + existingRepository.getId() );
+        getLogger().debug( "removed user roles associated with repository " + repoId );
     }
 }

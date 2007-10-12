@@ -24,6 +24,7 @@ import com.opensymphony.xwork.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
@@ -112,9 +113,14 @@ public class EditManagedRepositoryActionTest
     public void testEditRepository()
         throws Exception
     {
-        // TODO: should be in the business model
-        roleManager.createTemplatedRole( "archiva-repository-manager", REPO_ID );
-        roleManager.createTemplatedRole( "archiva-repository-observer", REPO_ID );
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManagerControl.setVoidCallable();
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.setReturnValue( false );
+        roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.setVoidCallable();
 
         roleManagerControl.replay();
 

@@ -25,8 +25,10 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
+import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
@@ -114,8 +116,10 @@ public class DeleteManagedRepositoryActionTest
     }
 
     public void testDeleteRepositoryKeepContent()
-        throws RegistryException, IndeterminateConfigurationException
+        throws Exception
     {
+        prepareRoleManagerMock();
+        
         Configuration configuration = prepDeletionTest( createRepository(), "delete-entry" );
         String status = action.deleteEntry();
         assertEquals( Action.SUCCESS, status );
@@ -126,8 +130,10 @@ public class DeleteManagedRepositoryActionTest
     }
 
     public void testDeleteRepositoryDeleteContent()
-        throws RegistryException, IndeterminateConfigurationException
+        throws Exception
     {
+        prepareRoleManagerMock();
+        
         Configuration configuration = prepDeletionTest( createRepository(), "delete-contents" );
         String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
@@ -226,4 +232,15 @@ public class DeleteManagedRepositoryActionTest
         repository.setDeleteReleasedSnapshots( true );
     }
 
+    private void prepareRoleManagerMock()
+        throws RoleManagerException
+    {
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManagerControl.setReturnValue( true );
+        roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, REPO_ID );
+        roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.setReturnValue( true );
+        roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
+        roleManagerControl.replay();
+    }
 }
