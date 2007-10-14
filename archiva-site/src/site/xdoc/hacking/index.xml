@@ -34,12 +34,20 @@
 
       <div class="p">
         Be sure to read the sections for Database, Configuration, and
-        Concepts.  Beyond that, the javadoc is your friend.
+        Concepts.  Beyond that, the
+        <a href="../ref/latest/apidocs/index.html">Javadoc</a>
+        is your friend.
+      </div>
+
+      <div class="p">
+        Developer reference docs for the latest snapshot
+        can be found starting
+        <a href="../ref/latest/index.html">here</a>.
       </div>
 
       <div class="p">
          If you don't see the topic covered here, ask!  Ask in the
-         <a href="/mail-list.html">archiva-dev mailing list</a>,
+         <a href="../mail-lists.html">archiva-dev mailing list</a>,
          or in the <a href="irc://irc.codehaus.org/#archiva">#archiva</a>
          irc channel.
       </div>
