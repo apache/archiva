@@ -77,7 +77,7 @@
     </repository>
     <site>
       <id>apache.website</id>
-      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/</url>
+      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/ref/${project.version}</url>
     </site>
   </distributionManagement>
   <build>
@@ -180,7 +180,7 @@
     <module>archiva-scheduled</module>
     <module>archiva-web</module>
     <module>archiva-cli</module>
-    <module>archiva-site</module>
+    <!-- <module>archiva-site</module> -->
     <!-- <module>maven-meeper</module> -->
   </modules>
   <dependencies>
@@ -686,11 +686,14 @@
   </dependencyManagement>
   <reporting>
     <plugins>
+      <!-- This breaks site generation with 'cobertura.ser does not exist'
+           in the archiva-signature-consumers and archiva-applet modules. 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.0</version>
       </plugin>
+      -->
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <configuration>
