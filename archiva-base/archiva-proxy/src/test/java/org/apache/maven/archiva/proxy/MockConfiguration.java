@@ -97,4 +97,9 @@ public class MockConfiguration
     {
         configListeners.remove( listener );
     }
+
+    public boolean isDefaulted()
+    {
+        return false;
+    }
 }
