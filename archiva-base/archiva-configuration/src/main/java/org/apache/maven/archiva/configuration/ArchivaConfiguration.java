@@ -47,6 +47,15 @@ public interface ArchivaConfiguration
      */
     void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException;
+    
+    /**
+     * Determines if the configuration in use was as a result of a defaulted configuration.
+     * 
+     * @return true if the configuration was created from the default-archiva.xml as opposed
+     *              to being loaded from the usual locations of ${user.home}/.m2/archiva.xml or
+     *              ${appserver.base}/conf/archiva.xml
+     */
+    boolean isDefaulted();
 
     /**
      * Add a configuration listener to notify of changes to the configuration.

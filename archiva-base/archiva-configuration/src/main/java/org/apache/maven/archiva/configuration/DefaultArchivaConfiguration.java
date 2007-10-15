@@ -46,22 +46,28 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * <p>
  * Implementation of configuration holder that retrieves it from the registry.
- * <p/>
+ * </p>
+ * <p>
  * The registry layers and merges the 2 configuration files: user, and application server.
- * <p/>
+ * </p>
+ * <p>
  * Instead of relying on the model defaults, if the registry is empty a default configuration file is loaded and
  * applied from a resource. The defaults are not loaded into the registry as the lists (eg repositories) could no longer
  * be removed if that was the case.
- * <p/>
+ * </p>
+ * <p>
  * When saving the configuration, it is saved to the location it was read from. If it was read from the defaults, it
  * will be saved to the user location.
  * However, if the configuration contains information from both sources, an exception is raised as this is currently
  * unsupported. The reason for this is that it is not possible to identify where to re-save elements, and can result
  * in list configurations (eg repositories) becoming inconsistent.
- * <p/>
+ * </p>
+ * <p>
  * If the configuration is outdated, it will be upgraded when it is loaded. This is done by checking the version flag
  * before reading it from the registry.
+ * </p>
  *
  * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
@@ -102,6 +108,12 @@ public class DefaultArchivaConfiguration
      * Registry Listeners we've registered.
      */
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
+    
+    /**
+     * Boolean to help determine if the configuration exists as a result of pulling in
+     * the default-archiva.xml
+     */
+    private boolean isConfigurationDefaulted = false;
 
     public synchronized Configuration getConfiguration()
     {
@@ -194,6 +206,7 @@ public class DefaultArchivaConfiguration
         try
         {
             registry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml", KEY );
+            this.isConfigurationDefaulted = true;
         }
         catch ( RegistryException e )
         {
@@ -272,7 +285,7 @@ public class DefaultArchivaConfiguration
         throws RegistryException
     {
         // TODO: may not be needed under commons-configuration 1.4 - check
-        // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 10/11/2007 (joakime)
+        // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 2007-10-11 (joakime)
         
         String contents = "<configuration />";
         if ( !writeFile( "user configuration", userConfigFilename, contents ) )
@@ -463,5 +476,10 @@ public class DefaultArchivaConfiguration
     public String getAltConfigFilename()
     {
         return altConfigFilename;
+    }
+
+    public boolean isDefaulted()
+    {
+        return this.isConfigurationDefaulted;
     }
 }
