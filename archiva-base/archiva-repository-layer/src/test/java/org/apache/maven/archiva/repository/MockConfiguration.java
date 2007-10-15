@@ -27,10 +27,7 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.easymock.MockControl;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -99,5 +96,10 @@ public class MockConfiguration
     public void removeListener( ConfigurationListener listener )
     {
         configListeners.remove( listener );
+    }
+    
+    public boolean isDefaulted()
+    {
+        return false;
     }
 }
