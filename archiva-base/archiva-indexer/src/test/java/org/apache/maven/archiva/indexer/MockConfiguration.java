@@ -96,4 +96,9 @@ public class MockConfiguration implements ArchivaConfiguration
     {
         configListeners.remove( listener );
     }
+    
+    public boolean isDefaulted()
+    {
+        return false;
+    }
 }
