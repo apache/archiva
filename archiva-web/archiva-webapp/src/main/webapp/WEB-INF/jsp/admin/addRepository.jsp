@@ -39,7 +39,7 @@
   </ww:form>
 
   <script type="text/javascript">
-    document.getElementById("addRepository_id").focus();
+    document.getElementById("addRepository_repository_id").focus();
   </script>
 
 </div>
