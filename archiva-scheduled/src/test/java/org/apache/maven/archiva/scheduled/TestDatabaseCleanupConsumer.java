@@ -70,12 +70,12 @@ public class TestDatabaseCleanupConsumer
 
     public String getDescription()
     {
-        return "Test Consumer for Database Unprocessed";
+        return "Test Consumer for Database Cleanup";
     }
 
     public String getId()
     {
-        return "test-db-unprocessed";
+        return "test-db-cleanup";
     }
 
     public boolean isPermanent()

@@ -23,13 +23,23 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 
 import java.util.List;
+import java.io.File;
 
 /**
- * DatabaseCleanupRemoveArtifactConsumer 
+ * Consumer for cleaning up the database of artifacts that are no longer existing in the repository. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
@@ -50,6 +60,21 @@ public class DatabaseCleanupRemoveArtifactConsumer
      */
     private String description;
 
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArtifactDAO artifactDAO;
+
+    /**
+     * @plexus.requirement
+     */
+    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryFactory;
+
     public void beginScan()
     {
         // TODO Auto-generated method stub
@@ -59,21 +84,38 @@ public class DatabaseCleanupRemoveArtifactConsumer
     public void completeScan()
     {
         // TODO Auto-generated method stub
-
     }
 
     public List<String> getIncludedTypes()
-    {
-        // TODO Auto-generated method stub
-        return null;
+    {   
+    	return null;
     }
 
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
-    {
-        // TODO Auto-generated method stub
-
-    }
+    {	
+    	try
+    	{
+	    	ManagedRepositoryContent repositoryContent = 
+	    		repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+	 
+	    	File file = new File( repositoryContent.getRepoRoot(), toPath( artifact ) );
+	    	
+	    	if( !file.exists() )
+	        {	        	     
+	    		artifactDAO.deleteArtifact( artifact );
+	        }	    	
+    	}
+    	catch ( RepositoryException re )
+    	{
+    		throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
+    				re.getMessage() );
+    	}
+    	catch ( ArchivaDatabaseException e )
+        {
+            throw new ConsumerException( e.getMessage() );
+        }
+    }    	
 
     public String getDescription()
     {
@@ -90,4 +132,34 @@ public class DatabaseCleanupRemoveArtifactConsumer
         return false;
     }
 
+    public void setArtifactDAO( ArtifactDAO artifactDAO)
+    {
+        this.artifactDAO = artifactDAO;
+    }
+
+    public void setBidirectionalRepositoryLayoutFactory( BidirectionalRepositoryLayoutFactory layoutFactory )
+    {
+        this.layoutFactory = layoutFactory;
+    }
+    
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    private String toPath( ArchivaArtifact artifact )
+    {
+        try
+        {
+            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
+
+            return layout.toPath( artifact );
+        }
+        catch ( LayoutException e )
+        {
+            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
+            return null;
+        }
+    }
+    
 }

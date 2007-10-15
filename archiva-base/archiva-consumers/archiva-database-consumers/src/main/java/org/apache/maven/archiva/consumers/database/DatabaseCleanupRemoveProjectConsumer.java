@@ -19,17 +19,31 @@ package org.apache.maven.archiva.consumers.database;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.database.ProjectModelDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.io.File;
 
 /**
- * DatabaseCleanupRemoveProjectConsumer 
+ * Consumer for removing or deleting from the database the project models fo artifacts that have been
+ * deleted/removed from the repository.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ *         <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version $Id$
  * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
@@ -50,29 +64,72 @@ public class DatabaseCleanupRemoveProjectConsumer
      */
     private String description;
 
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ProjectModelDAO projectModelDAO;
+
+    /**
+     * @plexus.requirement
+     */
+    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryFactory;
+
     public void beginScan()
     {
         // TODO Auto-generated method stub
-
     }
 
     public void completeScan()
     {
         // TODO Auto-generated method stub
-
     }
 
     public List<String> getIncludedTypes()
-    {
-        // TODO Auto-generated method stub
-        return null;
+    {       	
+    	return null;
     }
 
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
-    {
-        // TODO Auto-generated method stub
-
+    {    	
+    	if ( !StringUtils.equals( "pom", artifact.getType() ) )
+        {
+            // Not a pom.  Skip it.
+            return;
+        }
+    	
+    	try
+    	{
+	    	ManagedRepositoryContent repositoryContent = 
+	    		repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+	        
+	    	File file = new File( repositoryContent.getRepoRoot(), toPath( artifact ) );
+	    	
+	    	if( !file.exists() )
+	        {	        	
+        		ArchivaProjectModel projectModel = projectModelDAO.getProjectModel( 
+        				artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );   
+        		
+        		projectModelDAO.deleteProjectModel( projectModel );        		
+	        }
+    	}
+    	catch ( RepositoryException re )
+    	{
+    		re.printStackTrace();
+    		throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
+    				re.getMessage() );
+    	}
+    	catch ( ArchivaDatabaseException e )
+        {
+    		e.printStackTrace();
+            throw new ConsumerException( e.getMessage() );
+        }    	
+      
     }
 
     public String getDescription()
@@ -88,6 +145,36 @@ public class DatabaseCleanupRemoveProjectConsumer
     public boolean isPermanent()
     {
         return false;
+    }    
+
+    private String toPath( ArchivaArtifact artifact )
+    {
+        try
+        {
+            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
+
+            return layout.toPath( artifact );
+        }
+        catch ( LayoutException e )
+        {
+            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
+            return null;
+        }
     }
 
+    public void setProjectModelDAO( ProjectModelDAO projectModelDAO )
+    {
+        this.projectModelDAO = projectModelDAO;
+    }
+
+    public void setBidirectionalRepositoryLayoutFactory( BidirectionalRepositoryLayoutFactory layoutFactory )
+    {
+        this.layoutFactory = layoutFactory;
+    }
+    
+    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
+    {
+        this.repositoryFactory = repositoryFactory;
+    }
+    
 }

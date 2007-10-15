@@ -95,7 +95,7 @@ public class DatabaseConsumers
                 DatabaseCleanupConsumer consumer = (DatabaseCleanupConsumer) object;
                 DatabaseScanningConfiguration config = archivaConfiguration.getConfiguration().getDatabaseScanning();
 
-                return config.getUnprocessedConsumers().contains( consumer.getId() );
+                return config.getCleanupConsumers().contains( consumer.getId() );
             }
 
             return satisfies;

@@ -146,9 +146,6 @@
     </unprocessedConsumers>
     <cleanupConsumers>
       <cleanupConsumer>test-db-cleanup</cleanupConsumer>
-      <cleanupConsumer>not-present-remove-db-artifact</cleanupConsumer>
-      <cleanupConsumer>not-present-remove-db-project</cleanupConsumer>
-      <cleanupConsumer>not-present-remove-indexed</cleanupConsumer>
     </cleanupConsumers>
   </databaseScanning>
 
