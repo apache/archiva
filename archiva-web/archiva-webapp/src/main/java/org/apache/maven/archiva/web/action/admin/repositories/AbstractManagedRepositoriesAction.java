@@ -23,9 +23,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 
@@ -48,11 +45,6 @@ public abstract class AbstractManagedRepositoriesAction
      */
     protected RoleManager roleManager;
     
-    /**
-     * @plexus.requirement role-hint="cached"
-     */
-    protected RBACManager rbacManager;
-
     public RoleManager getRoleManager()
     {
         return roleManager;
@@ -97,18 +89,6 @@ public abstract class AbstractManagedRepositoriesAction
         if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
         {
             roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
-        }
-
-        try
-        {
-            UserAssignment ua = rbacManager.getUserAssignment( ArchivaRoleConstants.GUEST_ROLE );
-            ua.addRoleName( ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId );
-            rbacManager.saveUserAssignment( ua );
-        }
-        catch ( RbacManagerException e )
-        {
-            getLogger().warn( "Unable to add role [" + ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - "
-                              + repoId + "] to Guest user.", e );
         }
     }
 

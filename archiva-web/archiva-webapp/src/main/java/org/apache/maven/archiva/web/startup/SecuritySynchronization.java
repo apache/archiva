@@ -25,6 +25,9 @@ import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.redback.rbac.RBACManager;
+import org.codehaus.plexus.redback.rbac.RbacManagerException;
+import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.registry.Registry;
@@ -49,6 +52,11 @@ public class SecuritySynchronization
      * @plexus.requirement role-hint="default"
      */
     private RoleManager roleManager;
+    
+    /**
+     * @plexus.requirement role-hint="cached"
+     */
+    private RBACManager rbacManager;
 
     /**
      * @plexus.requirement
@@ -104,5 +112,29 @@ public class SecuritySynchronization
     {
         synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
         archivaConfiguration.addChangeListener( this );
+        
+        if ( archivaConfiguration.isDefaulted() )
+        {
+            assignRepositoryObserverToGuestUser( archivaConfiguration.getConfiguration().getManagedRepositories() );
+        }
+    }
+
+    private void assignRepositoryObserverToGuestUser( List<ManagedRepositoryConfiguration> repos )
+    {
+        for ( ManagedRepositoryConfiguration repoConfig : repos )
+        {
+            String repoId = repoConfig.getId();
+            try
+            {
+                UserAssignment ua = rbacManager.getUserAssignment( ArchivaRoleConstants.GUEST_ROLE );
+                ua.addRoleName( ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId );
+                rbacManager.saveUserAssignment( ua );
+            }
+            catch ( RbacManagerException e )
+            {
+                getLogger().warn( "Unable to add role [" + ArchivaRoleConstants.REPOSITORY_OBSERVER_ROLE_PREFIX + " - "
+                                      + repoId + "] to Guest user.", e );
+            }
+        }
     }
 }
