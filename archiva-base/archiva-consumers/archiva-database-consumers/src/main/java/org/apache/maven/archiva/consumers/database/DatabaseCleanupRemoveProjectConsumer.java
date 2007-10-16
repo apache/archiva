@@ -119,14 +119,12 @@ public class DatabaseCleanupRemoveProjectConsumer
 	        }
     	}
     	catch ( RepositoryException re )
-    	{
-    		re.printStackTrace();
+    	{    		
     		throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
     				re.getMessage() );
     	}
     	catch ( ArchivaDatabaseException e )
-        {
-    		e.printStackTrace();
+        {    	
             throw new ConsumerException( e.getMessage() );
         }    	
       
