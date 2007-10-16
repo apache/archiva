@@ -28,9 +28,6 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 
 import java.util.List;
 import java.io.File;
@@ -64,11 +61,6 @@ public class DatabaseCleanupRemoveArtifactConsumer
      * @plexus.requirement role-hint="jdo"
      */
     private ArtifactDAO artifactDAO;
-
-    /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
     
     /**
      * @plexus.requirement
@@ -98,9 +90,9 @@ public class DatabaseCleanupRemoveArtifactConsumer
     	{
 	    	ManagedRepositoryContent repositoryContent = 
 	    		repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
-	 
-	    	File file = new File( repositoryContent.getRepoRoot(), toPath( artifact ) );
-	    	
+	 	    	
+	    	File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
+	    		    	
 	    	if( !file.exists() )
 	        {	        	     
 	    		artifactDAO.deleteArtifact( artifact );
@@ -136,30 +128,9 @@ public class DatabaseCleanupRemoveArtifactConsumer
     {
         this.artifactDAO = artifactDAO;
     }
-
-    public void setBidirectionalRepositoryLayoutFactory( BidirectionalRepositoryLayoutFactory layoutFactory )
-    {
-        this.layoutFactory = layoutFactory;
-    }
     
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
-    }
-
-    private String toPath( ArchivaArtifact artifact )
-    {
-        try
-        {
-            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
-
-            return layout.toPath( artifact );
-        }
-        catch ( LayoutException e )
-        {
-            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
-            return null;
-        }
-    }
-    
+    }     
 }

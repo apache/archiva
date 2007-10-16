@@ -25,7 +25,6 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
@@ -39,8 +38,6 @@ public class AbstractDatabaseCleanupTest
     extends PlexusTestCase
 {
     ArchivaConfiguration archivaConfig;
-
-    BidirectionalRepositoryLayoutFactory layoutFactory;
     
     RepositoryContentFactory repositoryFactory;
 
@@ -73,9 +70,6 @@ public class AbstractDatabaseCleanupTest
         repo.setLocation( new File( getBasedir(), "src/test/resources/test-repo" ).toString() );
 
         archivaConfig.save( configuration );
-
-        // set bidirectional repository layout factory
-        layoutFactory = (BidirectionalRepositoryLayoutFactory) lookup( BidirectionalRepositoryLayoutFactory.class );
         
         repositoryFactory = (RepositoryContentFactory) lookup( RepositoryContentFactory.class );
     }

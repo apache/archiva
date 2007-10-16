@@ -42,25 +42,6 @@
         </properties>
       </configuration>
     </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-      <implementation>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <role-hint>database-cleanup</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-          <field-name>layouts</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout</implementation>
-    </component>
     
     <component>
       <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>      

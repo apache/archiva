@@ -21,24 +21,6 @@
 <component-set>
   <components>
     <component>
-      <role>org.apache.maven.archiva.consumers.DatabaseCleanupConsumer</role>
-      <role-hint>not-present-remove-db-artifact</role-hint>
-      <implementation>org.apache.maven.archiva.consumers.database.DatabaseCleanupRemoveArtifactConsumer</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <role-hint>database-cleanup</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.database.ArtifactDAO</role>
-          <role-hint>jdo</role-hint>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <role-hint>database-cleanup</role-hint>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
@@ -59,25 +41,6 @@
                  config-name="org.apache.maven.archiva.base" config-at="org.apache.maven.archiva"/>
         </properties>
       </configuration>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</role>
-      <implementation>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory</implementation>
-      <requirements>
-        <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <role-hint>database-cleanup</role-hint>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-          <field-name>layouts</field-name>
-        </requirement>
-      </requirements>
-    </component>
-    <component>
-      <role>org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout</implementation>
     </component>
     
     <component>

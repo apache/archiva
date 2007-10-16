@@ -50,8 +50,6 @@ public class DatabaseCleanupRemoveArtifactConsumerTest
 
         dbCleanupRemoveArtifactConsumer.setArtifactDAO( artifactDAOMock );
         
-        dbCleanupRemoveArtifactConsumer.setBidirectionalRepositoryLayoutFactory( layoutFactory );
-        
         dbCleanupRemoveArtifactConsumer.setRepositoryFactory( repositoryFactory );
     }
 

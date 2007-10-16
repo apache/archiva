@@ -51,8 +51,6 @@ public class DatabaseCleanupRemoveProjectConsumerTest
 
         dbCleanupRemoveProjectConsumer.setProjectModelDAO( projectModelDAOMock );
         
-        dbCleanupRemoveProjectConsumer.setBidirectionalRepositoryLayoutFactory( layoutFactory );
-        
         dbCleanupRemoveProjectConsumer.setRepositoryFactory( repositoryFactory );
     }
 
