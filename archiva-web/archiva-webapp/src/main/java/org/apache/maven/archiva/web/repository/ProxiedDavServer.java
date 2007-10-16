@@ -132,11 +132,15 @@ public class ProxiedDavServer
     public void process( DavServerRequest request, HttpServletResponse response )
         throws DavServerException, ServletException, IOException
     {
-        if ( WebdavMethodUtil.isReadMethod( request.getRequest().getMethod() ) )
+        boolean isGet = WebdavMethodUtil.isReadMethod( request.getRequest().getMethod() );
+        boolean isPut = WebdavMethodUtil.isWriteMethod( request.getRequest().getMethod() );
+        
+        if ( isGet )
         {
             fetchContentFromProxies( request );
         }
-        else
+
+        if ( isPut )
         {
             /* Create parent directories that don't exist when writing a file
              * This actually makes this implementation not compliant to the
@@ -153,22 +157,30 @@ public class ProxiedDavServer
             }
         }
 
-        // [MRM-503] - Metadata file need Pragma:no-cache response header.
-        if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
+        if ( isGet )
         {
-            response.addHeader( "Pragma", "no-cache" );
-            response.addHeader( "Cache-Control", "no-cache" );
+            if ( resourceExists( request ) )
+            {
+                // [MRM-503] - Metadata file need Pragma:no-cache response header.
+                if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
+                {
+                    response.addHeader( "Pragma", "no-cache" );
+                    response.addHeader( "Cache-Control", "no-cache" );
+                }
+
+                // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
+
+                davServer.process( request, response );
+            }
+            else
+            {
+                respondResourceMissing( request, response );
+            }
         }
 
-        // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
-
-        if( resourceExists( request ) )
+        if ( isPut )
         {
             davServer.process( request, response );
-        }
-        else
-        {
-            respondResourceMissing( request, response );
         }
     }
 
