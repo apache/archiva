@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -161,7 +162,64 @@ public class ProxiedDavServer
 
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
 
-        davServer.process( request, response );
+        if( resourceExists( request ) )
+        {
+            davServer.process( request, response );
+        }
+        else
+        {
+            respondResourceMissing( request, response );
+        }
+    }
+
+    private void respondResourceMissing( DavServerRequest request, HttpServletResponse response )
+    {
+        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+
+        try
+        {
+            StringBuffer missingUrl = new StringBuffer();
+            missingUrl.append( request.getRequest().getScheme() ).append( "://" );
+            missingUrl.append( request.getRequest().getServerName() ).append( ":" );
+            missingUrl.append( request.getRequest().getServerPort() );
+            missingUrl.append( request.getRequest().getServletPath() );
+            // missingUrl.append( request.getRequest().getPathInfo() );
+
+            String message = "Error 404 Not Found";
+
+            PrintWriter out = new PrintWriter( response.getOutputStream() );
+
+            response.setContentType( "text/html; charset=\"UTF-8\"" );
+
+            out.println( "<html>" );
+            out.println( "<head><title>" + message + "</title></head>" );
+            out.println( "<body>" );
+
+            out.print( "<p><h1>" );
+            out.print( message );
+            out.println( "</h1></p>" );
+
+            out.print( "<p>The following resource does not exist: <a href=\"" );
+            out.print( missingUrl.toString() );
+            out.println( "\">" );
+            out.print( missingUrl.toString() );
+            out.println( "</a></p>" );
+
+            out.println( "</body></html>" );
+
+            out.flush();
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean resourceExists( DavServerRequest request )
+    {
+        String resource = request.getLogicalResource();
+        File resourceFile = new File( managedRepository.getRepoRoot(), resource );
+        return resourceFile.exists();
     }
 
     private void fetchContentFromProxies( DavServerRequest request )
