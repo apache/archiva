@@ -501,6 +501,22 @@ public class MetadataTools
 
         return cal.getTime();
     }
+    
+    private long toLastUpdatedLong( String timestampString )
+    {
+        try
+        {
+            Date date = lastUpdatedFormat.parse( timestampString );
+            Calendar cal = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
+            cal.setTime( date );
+
+            return cal.getTimeInMillis();
+        }
+        catch ( ParseException e )
+        {
+            return 0;
+        }
+    }
 
     private long getLastUpdated( ArchivaRepositoryMetadata metadata )
     {
@@ -570,16 +586,12 @@ public class MetadataTools
     {
         File metadataFile = new File( managedRepository.getRepoRoot(), toPath( reference ) );
 
-        long originalLastUpdated = getExistingLastUpdated( metadataFile );
+        long lastUpdated = getExistingLastUpdated( metadataFile );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
         metadata.setGroupId( reference.getGroupId() );
         metadata.setArtifactId( reference.getArtifactId() );
-        if ( originalLastUpdated > 0 )
-        {
-            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( originalLastUpdated ) );
-        }
-
+        
         if ( VersionUtil.isSnapshot( reference.getVersion() ) )
         {
             // Do SNAPSHOT handling.
@@ -619,7 +631,11 @@ public class MetadataTools
                     {
                         String tsDate = mtimestamp.group( 1 );
                         String tsTime = mtimestamp.group( 2 );
-                        metadata.setLastUpdated( tsDate + tsTime );
+                        
+                        long snapshotLastUpdated = toLastUpdatedLong( tsDate + tsTime );
+                        
+                        lastUpdated = Math.max( lastUpdated, snapshotLastUpdated );
+                        
                         metadata.getSnapshotVersion().setTimestamp( m.group( 2 ) );
                     }
                 }
@@ -631,9 +647,12 @@ public class MetadataTools
 
                 metadata.setSnapshotVersion( new SnapshotVersion() );
 
-                /* TODO: Should this be the last updated timestamp of the file, or in the case of an 
+                /* Disabled due to decision in [MRM-535].
+                 * Do not set metadata.lastUpdated to file.lastModified.
+                 * 
+                 * Should this be the last updated timestamp of the file, or in the case of an 
                  * archive, the most recent timestamp in the archive?
-                 */
+                 * 
                 ArtifactReference artifact = getFirstArtifact( managedRepository, reference );
 
                 if ( artifact == null )
@@ -648,6 +667,7 @@ public class MetadataTools
                     Date lastModified = new Date( artifactFile.lastModified() );
                     metadata.setLastUpdatedTimestamp( lastModified );
                 }
+                */
             }
             else
             {
@@ -659,6 +679,12 @@ public class MetadataTools
         {
             // Do RELEASE handling.
             metadata.setVersion( reference.getVersion() );
+        }
+
+        // Set last updated
+        if ( lastUpdated > 0 )
+        {
+            metadata.setLastUpdatedTimestamp( toLastUpdatedDate( lastUpdated ) );
         }
 
         // Save the metadata model to disk.
