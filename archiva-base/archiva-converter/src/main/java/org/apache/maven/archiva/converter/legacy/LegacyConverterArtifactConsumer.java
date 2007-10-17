@@ -26,7 +26,8 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.maven.archiva.converter.artifact.ArtifactConverter;
 import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.content.ManagedDefaultRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -60,11 +61,8 @@ public class LegacyConverterArtifactConsumer
      */
     private ArtifactFactory artifactFactory;
 
-    /**
-     * @plexus.requirement role-hint="legacy"
-     */
-    private BidirectionalRepositoryLayout bidirectionalLayout;
-
+    private ManagedRepositoryContent managedRepository;
+    
     private ArtifactRepository destinationRepository;
 
     private List includes;
@@ -82,7 +80,8 @@ public class LegacyConverterArtifactConsumer
     public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
-
+        this.managedRepository = new ManagedDefaultRepositoryContent();
+        this.managedRepository.setRepository( repository );
     }
 
     public void completeScan()
@@ -105,7 +104,7 @@ public class LegacyConverterArtifactConsumer
     {
         try
         {
-            ArtifactReference reference = bidirectionalLayout.toArtifactReference( path );
+            ArtifactReference reference = managedRepository.toArtifactReference( path );
             Artifact artifact = artifactFactory.createArtifact( reference.getGroupId(), reference.getArtifactId(),
                                                                 reference.getVersion(), reference.getClassifier(),
                                                                 reference.getType() );
