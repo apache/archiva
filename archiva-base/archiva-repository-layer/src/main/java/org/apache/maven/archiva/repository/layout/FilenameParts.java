@@ -1,5 +1,8 @@
 package org.apache.maven.archiva.repository.layout;
 
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +27,7 @@ package org.apache.maven.archiva.repository.layout;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * @deprecated to not use directly. Use {@link ManagedRepositoryContent} or {@link RemoteRepositoryContent} instead.
  */
 public class FilenameParts
 {

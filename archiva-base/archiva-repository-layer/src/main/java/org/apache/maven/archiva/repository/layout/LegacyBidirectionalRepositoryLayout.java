@@ -22,6 +22,8 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
 import org.apache.maven.archiva.repository.content.ArtifactExtensionMapping;
 
 import java.util.HashMap;
@@ -33,6 +35,8 @@ import java.util.Map;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role-hint="legacy"
+ * 
+ * @deprecated to not use directly. Use {@link ManagedRepositoryContent} or {@link RemoteRepositoryContent} instead.
  */
 public class LegacyBidirectionalRepositoryLayout
     implements BidirectionalRepositoryLayout

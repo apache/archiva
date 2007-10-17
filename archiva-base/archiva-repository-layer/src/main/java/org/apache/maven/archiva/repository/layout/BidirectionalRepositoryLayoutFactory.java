@@ -24,6 +24,8 @@ import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -39,6 +41,9 @@ import java.util.Map;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @deprecated use {@link RepositoryContentFactory} instead.
+ * 
  * @plexus.component role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory"
  */
 public class BidirectionalRepositoryLayoutFactory
@@ -57,6 +62,10 @@ public class BidirectionalRepositoryLayoutFactory
 
     private Map repositoryMap = new HashMap();
 
+    /**
+     * @deprecated use {@link RepositoryContentFactory#getManagedRepositoryContent(String)} or 
+     *                 {@link RepositoryContentFactory#getRemoteRepositoryContent(String)} instead.
+     */
     public BidirectionalRepositoryLayout getLayout( String type )
         throws LayoutException
     {
@@ -69,6 +78,9 @@ public class BidirectionalRepositoryLayoutFactory
         return (BidirectionalRepositoryLayout) layouts.get( type );
     }
 
+    /**
+     * @deprecated use {@link RepositoryRequest#toArtifactReference(String)} instead.
+     */
     public BidirectionalRepositoryLayout getLayoutForPath( String path )
         throws LayoutException
     {
@@ -84,6 +96,10 @@ public class BidirectionalRepositoryLayoutFactory
     }
 
 
+    /**
+     * @deprecated use {@link RepositoryContentFactory#getManagedRepositoryContent(String)} or 
+     *                 {@link RepositoryContentFactory#getRemoteRepositoryContent(String)} instead.
+     */
     public BidirectionalRepositoryLayout getLayout( ArchivaArtifact artifact )
         throws LayoutException
     {

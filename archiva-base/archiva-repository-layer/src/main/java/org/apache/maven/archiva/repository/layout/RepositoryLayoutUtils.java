@@ -21,12 +21,18 @@ package org.apache.maven.archiva.repository.layout;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
 
 /**
  * RepositoryLayoutUtils - utility methods common for most BidirectionalRepositoryLayout implementation. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @deprecated use {@link RepositoryContentFactory} and {@link ManagedRepositoryContent} 
+ *             or {@link RemoteRepositoryContent} instead.
  */
 public class RepositoryLayoutUtils
 {
@@ -61,6 +67,7 @@ public class RepositoryLayoutUtils
      *                  (null to allow algorithm to calculate one)
      * @return the parts of the filename.
      * @throws LayoutException
+     * @deprecated to not use directly. Use {@link ManagedRepositoryContent} or {@link RemoteRepositoryContent} instead.
      */
     public static FilenameParts splitFilename( String filename, String possibleArtifactId ) throws LayoutException
     {
@@ -85,6 +92,7 @@ public class RepositoryLayoutUtils
      *                  (null to allow algorithm to calculate one)
      * @return the parts of the filename.
      * @throws LayoutException
+     * @deprecated to not use directly. Use {@link ManagedRepositoryContent} or {@link RemoteRepositoryContent} instead.
      */
     public static FilenameParts splitFilename( String filename, String possibleArtifactId,
                                                String possibleVersion ) throws LayoutException

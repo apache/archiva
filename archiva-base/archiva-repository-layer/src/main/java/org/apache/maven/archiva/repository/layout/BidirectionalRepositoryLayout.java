@@ -22,6 +22,10 @@ package org.apache.maven.archiva.repository.layout;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RemoteRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.content.RepositoryRequest;
 
 /**
  * BidirectionalRepositoryLayout - Similar in scope to ArtifactRepositoryLayout, but does
@@ -29,6 +33,8 @@ import org.apache.maven.archiva.model.VersionedReference;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * 
+ * @deprecated use {@link RepositoryContentFactory} instead.
  */
 public interface BidirectionalRepositoryLayout
 {
@@ -36,12 +42,16 @@ public interface BidirectionalRepositoryLayout
      * Get the identifier for this layout.
      *
      * @return the identifier for this layout.
+     * 
+     * @deprecated use {@link ManagedRepositoryContent#getId()} or {@link RemoteRepositoryContent#getId()} instead.
      */
     public String getId();
 
     /**
      * Given a repository relative path, return <code>true</code> if the path is valid
      * according to the repository layout.
+     * 
+     * @deprecated use {@link RepositoryRequest#toArtifactReference(String)} instead.
      */
     public boolean isValidPath( String path );
 
@@ -50,6 +60,8 @@ public interface BidirectionalRepositoryLayout
      *
      * @param artifact the artifact to use.
      * @return the relative path to the artifact.
+     * 
+     * @deprecated use {@link ManagedRepositoryContent#toPath(ArchivaArtifact)} instead.
      */
     public String toPath( ArchivaArtifact artifact );
 
@@ -58,6 +70,9 @@ public interface BidirectionalRepositoryLayout
      *
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
+     * 
+     * @deprecated use {@link ManagedRepositoryContent#toPath(ArtifactReference))} or 
+     *                 {@link RemoteRepositoryContent#toPath(ArtifactReference)} instead.
      */
     public String toPath( ArtifactReference reference );
 
@@ -68,6 +83,9 @@ public interface BidirectionalRepositoryLayout
      * @return the {@link ArchivaArtifact} representing the path. (or null if path cannot be converted to
      *         an {@link ArchivaArtifact})
      * @throws LayoutException if there was a problem converting the path to an artifact.
+     * 
+     * @deprecated use {@link ManagedRepositoryContent#toArtifactReference(String))} or 
+     *                 {@link RemoteRepositoryContent#toArtifactReference(String)} instead.
      */
     public ArchivaArtifact toArtifact( String path )
         throws LayoutException;
@@ -79,6 +97,9 @@ public interface BidirectionalRepositoryLayout
      * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to
      *         a {@link ArtifactReference})
      * @throws LayoutException if there was a problem converting the path to an artifact.
+     * 
+     * @deprecated use {@link ManagedRepositoryContent#toArtifactReference(String))} or 
+     *                 {@link RemoteRepositoryContent#toArtifactReference(String)} instead.
      */
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException;
