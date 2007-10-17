@@ -31,8 +31,10 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -82,14 +84,14 @@ public class IndexContentConsumer
     private FileTypes filetypes;
 
     /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryFactory;
+    
+    /**
      * @plexus.requirement role-hint="lucene"
      */
     private RepositoryContentIndexFactory indexFactory;
-
-    /**
-     * @plexus.requirement
-     */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
 
     private List<String> propertyNameTriggers = new ArrayList<String>();
 
@@ -97,11 +99,9 @@ public class IndexContentConsumer
 
     private RepositoryContentIndex index;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepositoryContent repository;
 
     private File repositoryDir;
-
-    private BidirectionalRepositoryLayout repositoryLayout;
 
     public String getId()
     {
@@ -128,21 +128,18 @@ public class IndexContentConsumer
         return this.includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repo )
         throws ConsumerException
     {
-        this.repository = repository;
-        this.repositoryDir = new File( repository.getLocation() );
-        this.index = indexFactory.createFileContentIndex( repository );
-
         try
         {
-            this.repositoryLayout = layoutFactory.getLayout( this.repository.getLayout() );
+            this.repository = repositoryFactory.getManagedRepositoryContent( repo.getId() );
+            this.repositoryDir = new File( repository.getRepoRoot() );
+            this.index = indexFactory.createFileContentIndex( repository.getRepository() );
         }
-        catch ( LayoutException e )
+        catch ( RepositoryException e )
         {
-            throw new ConsumerException(
-                "Unable to initialize consumer due to unknown repository layout: " + e.getMessage(), e );
+            throw new ConsumerException( "Unable to start IndexContentConsumer: " + e.getMessage(), e );
         }
     }
 
@@ -160,7 +157,8 @@ public class IndexContentConsumer
             // Test for possible artifact reference syntax.
             try
             {
-                ArchivaArtifact artifact = this.repositoryLayout.toArtifact( path );
+                ArtifactReference ref = repository.toArtifactReference( path );
+                ArchivaArtifact artifact = new ArchivaArtifact( ref );
                 record.setArtifact( artifact );
             }
             catch ( LayoutException e )
