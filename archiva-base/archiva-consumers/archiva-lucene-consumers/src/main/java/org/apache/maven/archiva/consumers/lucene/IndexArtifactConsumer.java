@@ -31,7 +31,9 @@ import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
@@ -73,9 +75,9 @@ public class IndexArtifactConsumer
     private ArchivaConfiguration configuration;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
+     * @plexus.requirement 
      */
-    private Map bidirectionalLayoutMap;  // TODO: replace with new bidir-repo-layout-factory
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement role-hint="lucene"
@@ -108,7 +110,7 @@ public class IndexArtifactConsumer
 
         IndexedRepositoryDetails pnl = getIndexedRepositoryDetails( artifact );
 
-        String artifactPath = pnl.layout.toPath( artifact );
+        String artifactPath = pnl.repository.toPath( artifact );
         record.setFilename( artifactPath );
 
         try
@@ -184,23 +186,27 @@ public class IndexArtifactConsumer
             {
                 ManagedRepositoryConfiguration repository = it.next();
 
-                IndexedRepositoryDetails pnl = new IndexedRepositoryDetails();
+                try
+                {
+                    IndexedRepositoryDetails pnl = new IndexedRepositoryDetails();
 
-                pnl.path = repository.getLocation();
-                pnl.layout = (BidirectionalRepositoryLayout) this.bidirectionalLayoutMap.get( repository.getLayout() );
+                    pnl.repository = repositoryFactory.getManagedRepositoryContent( repository.getId() );
 
-                pnl.index = indexFactory.createHashcodeIndex( repository );
+                    pnl.index = indexFactory.createHashcodeIndex( repository );
 
-                this.repositoryMap.put( repository.getId(), pnl );
+                    this.repositoryMap.put( repository.getId(), pnl );
+                }
+                catch ( RepositoryException e )
+                {
+                    getLogger().error( "Unable to load repository content object: " + e.getMessage(), e );
+                }
             }
         }
     }
 
     class IndexedRepositoryDetails
     {
-        public String path;
-
-        public BidirectionalRepositoryLayout layout;
+        public ManagedRepositoryContent repository;
 
         public RepositoryContentIndex index;
     }
