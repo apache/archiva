@@ -27,8 +27,8 @@
 <%@ page import="java.util.Calendar" %>
 <html>
 <head>
-  <title>Maven Archiva ::
-    <decorator:title default="Maven Archiva"/>
+  <title>Apache Archiva \
+    <decorator:title default="Apache Archiva"/>
   </title>
 
   <link rel="stylesheet" href="<c:url value="/css/maven-base.css"/>" type="text/css" media="all"/>
