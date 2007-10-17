@@ -25,7 +25,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -38,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * ArtifactMissingChecksumsConsumer - Create missing checksums for the artifact.
@@ -74,11 +72,6 @@ public class ArtifactMissingChecksumsConsumer
     private FileTypes filetypes;
 
     /**
-     * @plexus.requirement role="org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout"
-     */
-    private Map bidirectionalLayoutMap; // TODO: replace with new bidir-repo-layout-factory
-
-    /**
      * @plexus.requirement role-hint="sha1"
      */
     private Digester digestSha1;
@@ -99,11 +92,7 @@ public class ArtifactMissingChecksumsConsumer
 
     private static final String TYPE_CHECKSUM_CANNOT_CREATE = "checksum-create-failure";
 
-    private ManagedRepositoryConfiguration repository;
-
     private File repositoryDir;
-
-    private BidirectionalRepositoryLayout layout;
 
     private List<String> propertyNameTriggers = new ArrayList<String>();
 
@@ -124,21 +113,10 @@ public class ArtifactMissingChecksumsConsumer
         return false;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repo )
         throws ConsumerException
     {
-        this.repository = repository;
-        this.repositoryDir = new File( repository.getLocation() );
-
-        String layoutName = repository.getLayout();
-        if ( !bidirectionalLayoutMap.containsKey( layoutName ) )
-        {
-            throw new ConsumerException( "Unable to process repository with layout [" + layoutName +
-                "] as there is no corresponding " + BidirectionalRepositoryLayout.class.getName() +
-                " implementation available." );
-        }
-
-        this.layout = (BidirectionalRepositoryLayout) bidirectionalLayoutMap.get( layoutName );
+        this.repositoryDir = new File( repo.getLocation() );
     }
 
     public void completeScan()
