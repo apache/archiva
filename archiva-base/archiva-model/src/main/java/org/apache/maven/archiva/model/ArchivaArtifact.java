@@ -77,6 +77,11 @@ public class ArchivaArtifact
         model.setSnapshot( VersionUtil.isSnapshot( model.getVersion() ) );
         this.baseVersion = VersionUtil.getBaseVersion( model.getVersion() );
     }
+    
+    public ArchivaArtifact( ArtifactReference ref )
+    {
+        this( ref.getGroupId(), ref.getArtifactId(), ref.getVersion(), ref.getClassifier(), ref.getType() );
+    }
 
     public ArchivaArtifactModel getModel()
     {
