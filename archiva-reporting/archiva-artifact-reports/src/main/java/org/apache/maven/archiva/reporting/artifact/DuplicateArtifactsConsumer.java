@@ -32,16 +32,15 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.constraints.ArtifactsByChecksumConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.RepositoryProblem;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -85,9 +84,9 @@ public class DuplicateArtifactsConsumer
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<String>();
 
     public String getId()
     {
@@ -114,7 +113,7 @@ public class DuplicateArtifactsConsumer
         /* do nothing */
     }
 
-    public List getIncludedTypes()
+    public List<String> getIncludedTypes()
     {
         return null;
     }
@@ -124,7 +123,7 @@ public class DuplicateArtifactsConsumer
     {
         String checksumSha1 = artifact.getModel().getChecksumSHA1();
 
-        List results = null;
+        List<ArchivaArtifact> results = null;
         try
         {
             results = dao.getArtifactDAO().queryArtifacts( new ArtifactsByChecksumConstraint(
@@ -150,11 +149,8 @@ public class DuplicateArtifactsConsumer
                 return;
             }
 
-            Iterator it = results.iterator();
-            while ( it.hasNext() )
+            for ( ArchivaArtifact dupArtifact : results )
             {
-                ArchivaArtifact dupArtifact = (ArchivaArtifact) it.next();
-
                 if ( dupArtifact.equals( artifact ) )
                 {
                     // Skip reference to itself.
@@ -190,10 +186,11 @@ public class DuplicateArtifactsConsumer
     {
         try
         {
-            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( artifact );
-            return layout.toPath( artifact );
+            String repoId = artifact.getModel().getRepositoryId();
+            ManagedRepositoryContent repo = repositoryFactory.getManagedRepositoryContent( repoId );
+            return repo.toPath( artifact );
         }
-        catch ( LayoutException e )
+        catch ( RepositoryException e )
         {
             getLogger().warn( "Unable to calculate path for artifact: " + artifact );
             return "";
