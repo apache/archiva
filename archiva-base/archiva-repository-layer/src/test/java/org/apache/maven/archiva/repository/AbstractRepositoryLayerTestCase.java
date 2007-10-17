@@ -51,6 +51,21 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setUrl( url );
         return repo;
     }
+    
+    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location, String layout )
+        throws Exception
+    {
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
+        repo.setId( id );
+        repo.setName( name );
+        repo.setLocation( location.getAbsolutePath() );
+        repo.setLayout( layout );
+
+        ManagedRepositoryContent repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, layout );
+        repoContent.setRepository( repo );
+
+        return repoContent;
+    }
 
     protected RemoteRepositoryContent createRemoteRepositoryContent( String id, String name, String url, String layout )
         throws Exception
@@ -59,6 +74,7 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setId( id );
         repo.setName( name );
         repo.setUrl( url );
+        repo.setLayout( layout );
 
         RemoteRepositoryContent repoContent = (RemoteRepositoryContent) lookup( RemoteRepositoryContent.class, layout );
         repoContent.setRepository( repo );

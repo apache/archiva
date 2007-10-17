@@ -19,11 +19,10 @@ package org.apache.maven.archiva.repository.project.resolvers;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
@@ -39,18 +38,14 @@ import java.io.File;
 public class ManagedRepositoryProjectResolver
     implements ProjectModelResolver, FilesystemBasedResolver
 {
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepositoryContent repository;
 
     private ProjectModelReader reader;
 
-    private BidirectionalRepositoryLayout layout;
-
-    public ManagedRepositoryProjectResolver( ManagedRepositoryConfiguration repository, ProjectModelReader reader,
-                                      BidirectionalRepositoryLayout layout )
+    public ManagedRepositoryProjectResolver( ManagedRepositoryContent repository, ProjectModelReader reader )
     {
         this.repository = repository;
         this.reader = reader;
-        this.layout = layout;
     }
 
     public ArchivaProjectModel resolveProjectModel( VersionedReference reference )
@@ -59,8 +54,7 @@ public class ManagedRepositoryProjectResolver
         ArchivaArtifact artifact = new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference
             .getVersion(), "", "pom" );
 
-        String path = layout.toPath( artifact );
-        File repoFile = new File( this.repository.getLocation(), path );
+        File repoFile = repository.toFile( artifact );
 
         return reader.read( repoFile );
     }

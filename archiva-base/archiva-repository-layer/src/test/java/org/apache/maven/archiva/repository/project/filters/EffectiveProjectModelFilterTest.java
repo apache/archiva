@@ -20,13 +20,11 @@ package org.apache.maven.archiva.repository.project.filters;
  */
 
 import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Dependency;
 import org.apache.maven.archiva.model.Individual;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.DefaultBidirectionalRepositoryLayout;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
@@ -68,15 +66,14 @@ public class EffectiveProjectModelFilterTest
         return reader.read( pomFile );
     }
 
-    private ProjectModelResolver createDefaultRepositoryResolver()
+    private ProjectModelResolver createDefaultRepositoryResolver() throws Exception
     {
         File defaultRepoDir = new File( getBasedir(), DEFAULT_REPOSITORY );
 
-        ManagedRepositoryConfiguration repo = createRepository( "defaultTestRepo", "Default Test Repo", defaultRepoDir );
+        ManagedRepositoryContent repo = createManagedRepositoryContent( "defaultTestRepo", "Default Test Repo", defaultRepoDir, "default" );
 
         ProjectModelReader reader = new ProjectModel400Reader();
-        BidirectionalRepositoryLayout layout = new DefaultBidirectionalRepositoryLayout();
-        ManagedRepositoryProjectResolver resolver = new ManagedRepositoryProjectResolver( repo, reader, layout );
+        ManagedRepositoryProjectResolver resolver = new ManagedRepositoryProjectResolver( repo, reader );
 
         return resolver;
     }

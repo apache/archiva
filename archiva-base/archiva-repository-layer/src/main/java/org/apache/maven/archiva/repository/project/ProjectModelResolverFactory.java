@@ -23,13 +23,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-import org.apache.maven.archiva.repository.layout.LayoutException;
+import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.NopProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
-import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -53,11 +52,11 @@ public class ProjectModelResolverFactory
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-
+    
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement role-hint="model400"
@@ -68,7 +67,7 @@ public class ProjectModelResolverFactory
      * @plexus.requirement role-hint="model300"
      */
     private ProjectModelReader project300Reader;
-
+    
     private ProjectModelResolverStack currentResolverStack = new ProjectModelResolverStack();
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
@@ -99,24 +98,15 @@ public class ProjectModelResolverFactory
     private ManagedRepositoryProjectResolver toResolver( ManagedRepositoryConfiguration repo )
         throws RepositoryException
     {
-        try
-        {
-            BidirectionalRepositoryLayout layout = layoutFactory.getLayout( repo.getLayout() );
-            ProjectModelReader reader = project400Reader;
+        ManagedRepositoryContent repoContent = repositoryFactory.getManagedRepositoryContent( repo.getId() );
+        ProjectModelReader reader = project400Reader;
 
-            if ( StringUtils.equals( "legacy", repo.getLayout() ) )
-            {
-                reader = project300Reader;
-            }
-
-            ManagedRepositoryProjectResolver resolver = new ManagedRepositoryProjectResolver( repo, reader, layout );
-            return resolver;
-        }
-        catch ( LayoutException e )
+        if ( StringUtils.equals( "legacy", repo.getLayout() ) )
         {
-            throw new RepositoryException(
-                "Unable to create RepositoryProjectResolver due to invalid layout spec: " + repo );
+            reader = project300Reader;
         }
+
+        return new ManagedRepositoryProjectResolver( repoContent, reader );
     }
 
     private void update()
