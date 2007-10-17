@@ -29,8 +29,10 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -50,8 +52,8 @@ import java.util.List;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * @plexus.component role="org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer"
- * role-hint="update-db-artifact"
- * instantiation-strategy="per-lookup"
+ *                   role-hint="update-db-artifact"
+ *                   instantiation-strategy="per-lookup"
  */
 public class ArtifactUpdateDatabaseConsumer
     extends AbstractMonitoredConsumer
@@ -61,7 +63,7 @@ public class ArtifactUpdateDatabaseConsumer
 
     private static final String DB_ERROR = "db-error";
 
-    private static final String CHECKSUM_CALCULATION = null;
+    private static final String CHECKSUM_CALCULATION = "checksum-calc";
 
     /**
      * @plexus.configuration default-value="update-db-artifact"
@@ -91,7 +93,7 @@ public class ArtifactUpdateDatabaseConsumer
     /**
      * @plexus.requirement
      */
-    private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private RepositoryContentFactory repositoryFactory;
 
     /**
      * @plexus.requirement role-hint="sha1"
@@ -103,11 +105,9 @@ public class ArtifactUpdateDatabaseConsumer
      */
     private Digester digestMd5;
 
-    private ManagedRepositoryConfiguration repository;
+    private ManagedRepositoryContent repository;
 
     private File repositoryDir;
-
-    private BidirectionalRepositoryLayout layout;
 
     private List<String> includes = new ArrayList<String>();
 
@@ -136,19 +136,17 @@ public class ArtifactUpdateDatabaseConsumer
         return this.includes;
     }
 
-    public void beginScan( ManagedRepositoryConfiguration repository )
+    public void beginScan( ManagedRepositoryConfiguration repo )
         throws ConsumerException
     {
-        this.repository = repository;
-        this.repositoryDir = new File( repository.getLocation() );
-
         try
         {
-            this.layout = layoutFactory.getLayout( repository.getLayout() );
+            this.repository = repositoryFactory.getManagedRepositoryContent( repo.getId() );
+            this.repositoryDir = new File( repository.getRepoRoot() );
         }
-        catch ( LayoutException e )
+        catch(RepositoryException e)
         {
-            throw new ConsumerException( e.getMessage(), e );
+            throw new ConsumerException( "Unable to start ArtifactUpdateDatabaseConsumer: " + e.getMessage(), e );
         }
     }
 
@@ -214,7 +212,7 @@ public class ArtifactUpdateDatabaseConsumer
     {
         try
         {
-            ArchivaArtifact artifact = layout.toArtifact( path );
+            ArtifactReference artifact = repository.toArtifactReference( path );
 
             ArchivaArtifact liveArtifact = dao.getArtifactDAO().createArtifact( artifact.getGroupId(),
                                                                                 artifact.getArtifactId(),
