@@ -36,6 +36,11 @@ public class InvalidScanConsumer
     extends AbstractMonitoredConsumer
     implements InvalidRepositoryContentConsumer
 {
+    /**
+     * @plexus.configuration default-value="unset-id"
+     */
+    private String id = "unset-id";
+    
     private int processCount = 0;
 
     public void beginScan( ManagedRepositoryConfiguration repository )
@@ -72,7 +77,7 @@ public class InvalidScanConsumer
 
     public String getId()
     {
-        return "test-invalid-consumer";
+        return id;
     }
 
     public boolean isPermanent()

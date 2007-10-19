@@ -75,7 +75,6 @@
       </fileType>
     </fileTypes>
     <knownContentConsumers>
-      <knownContentConsumer>sample-known</knownContentConsumer>
       <knownContentConsumer>update-db-artifact</knownContentConsumer>
       <knownContentConsumer>create-missing-checksums</knownContentConsumer>
       <knownContentConsumer>update-db-repository-metadata</knownContentConsumer>

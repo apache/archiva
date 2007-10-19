@@ -39,6 +39,11 @@ public class SampleKnownConsumer
   extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
+    /**
+     * @plexus.configuration default-value="unset-id"
+     */
+    private String id = "unset-id";
+    
     public void beginScan( ManagedRepositoryConfiguration repository )
         throws ConsumerException
     {
@@ -73,7 +78,7 @@ public class SampleKnownConsumer
 
     public String getId()
     {
-        return "sample-known";
+        return id;
     }
 
     public boolean isPermanent()
