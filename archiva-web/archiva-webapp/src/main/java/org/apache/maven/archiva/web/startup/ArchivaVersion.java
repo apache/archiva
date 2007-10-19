@@ -34,8 +34,15 @@ import java.util.Properties;
  */
 public class ArchivaVersion
 {
+    public static String VERSION = "Unknown";
+    
     public static String determineVersion( ClassLoader cloader )
     {
+        if ( VERSION != null )
+        {
+            return VERSION;
+        }
+        
         /* This is the search order of modules to find the version.
          */
         String modules[] = new String[] {
@@ -60,7 +67,6 @@ public class ArchivaVersion
             "archiva-webapp",
             "archiva-security",
             "archiva-applet",
-            "archiva-cli",
             "archiva-xml-tools" };
 
         for ( int i = 0; i < modules.length; i++ )
@@ -77,7 +83,8 @@ public class ArchivaVersion
                     String version = props.getProperty( "version" );
                     if ( StringUtils.isNotBlank( version ) )
                     {
-                        return version;
+                        VERSION = version;
+                        return VERSION;
                     }
                 }
                 catch ( IOException e )
@@ -87,7 +94,7 @@ public class ArchivaVersion
             }
         }
 
-        return "Unknown";
+        return VERSION;
     }
 
     private static URL findModulePom( ClassLoader cloader, String module )

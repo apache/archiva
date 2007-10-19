@@ -25,6 +25,8 @@
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
 <%@ page import="java.util.Calendar" %>
+<%@ page import="org.apache.maven.archiva.web.startup.ArchivaVersion" %>
+
 <html>
 <head>
   <title>Apache Archiva \
@@ -173,8 +175,11 @@
   }
 %>
 <div id="footer">
-  <div class="xright">&#169;
-    Copyright &copy; <%= copyrightRange %> Apache Software Foundation
+  <div class="xleft">
+    Apache Archiva <%= ArchivaVersion.VERSION %>
+  </div>
+  <div class="xright">
+    Copyright &#169; <%= copyrightRange %> Apache Software Foundation
   </div>
 
   <div class="clear">
