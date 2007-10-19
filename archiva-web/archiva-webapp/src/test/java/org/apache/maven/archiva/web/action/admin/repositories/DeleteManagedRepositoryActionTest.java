@@ -25,6 +25,8 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -120,7 +122,7 @@ public class DeleteManagedRepositoryActionTest
     {
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), "delete-entry" );
+        Configuration configuration = prepDeletionTest( createRepository(), 3 );
         String status = action.deleteEntry();
         assertEquals( Action.SUCCESS, status );
 
@@ -134,7 +136,7 @@ public class DeleteManagedRepositoryActionTest
     {
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), "delete-contents" );
+        Configuration configuration = prepDeletionTest( createRepository(), 3 );
         String status = action.deleteContents();
         assertEquals( Action.SUCCESS, status );
 
@@ -142,12 +144,33 @@ public class DeleteManagedRepositoryActionTest
 
         assertFalse( location.exists() );
     }
+    
+    public void testDeleteRepositoryAndAssociatedProxyConnectors()
+        throws Exception
+    {
+        Configuration configuration = prepDeletionTest( createRepository(), 4 );
+        configuration.addRemoteRepository( createRemoteRepository( "codehaus", "http://repository.codehaus.org" ) );
+        configuration.addRemoteRepository( createRemoteRepository( "java.net", "http://dev.java.net/maven2" ) );
+        configuration.addProxyConnector( createProxyConnector( REPO_ID, "codehaus" ) );
 
+        prepareRoleManagerMock();
+
+        assertEquals( 1, configuration.getProxyConnectors().size() );
+        
+        String status = action.deleteContents();
+        assertEquals( Action.SUCCESS, status );
+
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+        assertEquals( 0, configuration.getProxyConnectors().size() );
+
+        assertFalse( location.exists() );
+    }
+    
     public void testDeleteRepositoryCancelled()
         throws Exception
     {
         ManagedRepositoryConfiguration originalRepository = createRepository();
-        Configuration configuration = prepDeletionTest( originalRepository, null );
+        Configuration configuration = prepDeletionTest( originalRepository, 3 );
         String status = action.execute();
         assertEquals( Action.SUCCESS, status );
 
@@ -158,7 +181,7 @@ public class DeleteManagedRepositoryActionTest
         assertTrue( location.exists() );
     }
 
-    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, String mode )
+    private Configuration prepDeletionTest( ManagedRepositoryConfiguration originalRepository, int expectCountGetConfig )
         throws RegistryException, IndeterminateConfigurationException
     {
         location.mkdirs();
@@ -166,9 +189,7 @@ public class DeleteManagedRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, expectCountGetConfig );
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -213,23 +234,36 @@ public class DeleteManagedRepositoryActionTest
     {
         ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
         r.setId( REPO_ID );
-        populateRepository( r );
+        r.setName( "repo name" );
+        r.setLocation( location.getAbsolutePath() );
+        r.setLayout( "default" );
+        r.setRefreshCronExpression( "* 0/5 * * * ?" );
+        r.setDaysOlder( 0 );
+        r.setRetentionCount( 0 );
+        r.setReleases( true );
+        r.setSnapshots( true );
+        r.setScanned( false );
+        r.setDeleteReleasedSnapshots( false );
         return r;
     }
 
-    private void populateRepository( ManagedRepositoryConfiguration repository )
+    private RemoteRepositoryConfiguration createRemoteRepository(String id, String url)
     {
-        repository.setId( REPO_ID );
-        repository.setName( "repo name" );
-        repository.setLocation( location.getAbsolutePath() );
-        repository.setLayout( "default" );
-        repository.setRefreshCronExpression( "* 0/5 * * * ?" );
-        repository.setDaysOlder( 31 );
-        repository.setRetentionCount( 20 );
-        repository.setReleases( true );
-        repository.setSnapshots( true );
-        repository.setScanned( false );
-        repository.setDeleteReleasedSnapshots( true );
+        RemoteRepositoryConfiguration r = new RemoteRepositoryConfiguration();
+        r.setId( id );
+        r.setUrl( url );
+        r.setLayout( "default" );
+        
+        return r;
+    }
+    
+    private ProxyConnectorConfiguration createProxyConnector( String managedRepoId, String remoteRepoId )
+    {
+        ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
+        connector.setSourceRepoId( managedRepoId );
+        connector.setTargetRepoId( remoteRepoId );
+
+        return connector;
     }
 
     private void prepareRoleManagerMock()

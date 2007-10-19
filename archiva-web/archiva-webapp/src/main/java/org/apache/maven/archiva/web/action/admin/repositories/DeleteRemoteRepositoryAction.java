@@ -23,7 +23,10 @@ import com.opensymphony.xwork.Preparable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+
+import java.util.List;
 
 /**
  * DeleteRemoteRepositoryAction 
@@ -81,7 +84,16 @@ public class DeleteRemoteRepositoryAction
 
     private void cleanupRepositoryData( RemoteRepositoryConfiguration existingRepository )
     {
-        // TODO: [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        
+        List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getTargetRepoId(), existingRepository.getId() ) )
+            {
+                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+            }
+        }
     }
 
     public RemoteRepositoryConfiguration getRepository()

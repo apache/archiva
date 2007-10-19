@@ -24,9 +24,11 @@ import com.opensymphony.xwork.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * DeleteManagedRepositoryAction 
@@ -123,7 +125,15 @@ public class DeleteManagedRepositoryAction
 
         // TODO: [MRM-265] After removing a managed repository - Browse/Search still see it
         
-        // TODO: [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
+        List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
+        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
+        {
+            if ( StringUtils.equals( proxyConnector.getSourceRepoId(), cleanupRepository.getId() ) )
+            {
+                archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
+            }
+        }
     }
 
     public ManagedRepositoryConfiguration getRepository()

@@ -24,6 +24,8 @@ import com.opensymphony.xwork.Action;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.registry.RegistryException;
@@ -89,11 +91,12 @@ public class DeleteRemoteRepositoryActionTest
         throws RegistryException, IndeterminateConfigurationException
     {
         Configuration configuration = createConfigurationForEditing( createRepository() );
+        configuration.addManagedRepository( createManagedRepository( "internal", getTestPath( "target/repo/internal" ) ) );
+        configuration.addManagedRepository( createManagedRepository( "snapshots", getTestPath( "target/repo/snapshots" ) ) );
+        configuration.addProxyConnector( createProxyConnector( "internal", REPO_ID) );
         
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 4 );
         
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -106,10 +109,13 @@ public class DeleteRemoteRepositoryActionTest
         assertNotNull( repository );
         assertRepositoryEquals( repository, createRepository() );
         
+        assertEquals( 1, configuration.getProxyConnectors().size() );
+        
         String status = action.delete();
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getRemoteRepositories().isEmpty() );
+        assertEquals( 0, configuration.getProxyConnectors().size() );
     }
 
     public void testDeleteRemoteRepositoryCancelled()
@@ -119,9 +125,7 @@ public class DeleteRemoteRepositoryActionTest
         Configuration configuration = createConfigurationForEditing( originalRepository );
 
         archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
-        archivaConfiguration.getConfiguration();
-        archivaConfigurationControl.setReturnValue( configuration );
+        archivaConfigurationControl.setReturnValue( configuration, 2 );
 
         archivaConfiguration.save( configuration );
         archivaConfigurationControl.replay();
@@ -165,6 +169,32 @@ public class DeleteRemoteRepositoryActionTest
         assertEquals( expectedRepository.getUrl(), actualRepository.getUrl() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
     }
+    
+    private ManagedRepositoryConfiguration createManagedRepository( String string, String testPath )
+    {
+        ManagedRepositoryConfiguration r = new ManagedRepositoryConfiguration();
+        r.setId( REPO_ID );
+        r.setName( "repo name" );
+        r.setLocation( testPath );
+        r.setLayout( "default" );
+        r.setRefreshCronExpression( "* 0/5 * * * ?" );
+        r.setDaysOlder( 0 );
+        r.setRetentionCount( 0 );
+        r.setReleases( true );
+        r.setSnapshots( true );
+        r.setScanned( false );
+        r.setDeleteReleasedSnapshots( false );
+        return r;
+    }
+
+    private ProxyConnectorConfiguration createProxyConnector( String managedRepoId, String remoteRepoId )
+    {
+        ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
+        connector.setSourceRepoId( managedRepoId );
+        connector.setTargetRepoId( remoteRepoId );
+
+        return connector;
+    }
 
     private void populateRepository( RemoteRepositoryConfiguration repository )
     {
@@ -174,6 +204,5 @@ public class DeleteRemoteRepositoryActionTest
         repository.setLayout( "default" );
     }
     
-    // TODO: what if there are proxy connectors attached to a deleted repository?
     // TODO: what about removing proxied content if a proxy is removed?
 }
