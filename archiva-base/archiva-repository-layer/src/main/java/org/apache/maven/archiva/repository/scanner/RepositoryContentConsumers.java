@@ -65,18 +65,50 @@ public class RepositoryContentConsumers
      */
     private List<InvalidRepositoryContentConsumer> availableInvalidConsumers;
 
+    /**
+     * <p>
+     * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
+     * been selected in the configuration to execute.
+     * </p>
+     * 
+     * <p>
+     * NOTE: This list can be larger and contain entries that might not exist or be available
+     * in the classpath, or as a component.
+     * </p>
+     * 
+     * @return the list of consumer ids that have been selected by the configuration.
+     */
     public List<String> getSelectedKnownConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
         return scanning.getKnownContentConsumers();
     }
 
+    /**
+     * <p>
+     * Get the list of Ids associated with those {@link InvalidRepositoryContentConsumer} that have
+     * been selected in the configuration to execute.
+     * </p>
+     * 
+     * <p>
+     * NOTE: This list can be larger and contain entries that might not exist or be available
+     * in the classpath, or as a component.
+     * </p>
+     * 
+     * @return the list of consumer ids that have been selected by the configuration.
+     */
     public List<String> getSelectedInvalidConsumerIds()
     {
         RepositoryScanningConfiguration scanning = archivaConfiguration.getConfiguration().getRepositoryScanning();
         return scanning.getInvalidContentConsumers();
     }
 
+    /**
+     * Get the map of {@link String} ids to {@link KnownRepositoryContentConsumer} implementations,
+     * for those consumers that have been selected according to the active configuration. 
+     * 
+     * @return the map of String ids to {@link KnownRepositoryContentConsumer} objects.
+     */
     public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
     {
         Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<String, KnownRepositoryContentConsumer>();
@@ -94,6 +126,12 @@ public class RepositoryContentConsumers
         return consumerMap;
     }
 
+    /**
+     * Get the map of {@link String} ids to {@link InvalidRepositoryContentConsumer} implementations,
+     * for those consumers that have been selected according to the active configuration. 
+     * 
+     * @return the map of String ids to {@link InvalidRepositoryContentConsumer} objects.
+     */
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
     {
         Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<String, InvalidRepositoryContentConsumer>();
@@ -111,6 +149,13 @@ public class RepositoryContentConsumers
         return consumerMap;
     }
 
+    /**
+     * Get the list of {@link KnownRepositoryContentConsumer} objects that are
+     * selected according to the active configuration.
+     * 
+     * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
+     *         by the active configuration.
+     */
     public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
     {
         List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
@@ -128,6 +173,13 @@ public class RepositoryContentConsumers
         return ret;
     }
 
+    /**
+     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
+     * selected according to the active configuration.
+     * 
+     * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected
+     *         by the active configuration.
+     */
     public List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
     {
         List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
@@ -145,26 +197,65 @@ public class RepositoryContentConsumers
         return ret;
     }
 
+    /**
+     * Get the list of {@link KnownRepositoryContentConsumer} objects that are
+     * available and present in the classpath and as components in the IoC.
+     * 
+     * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath 
+     *         and as a component in the IoC.
+     */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
         return availableKnownConsumers;
     }
 
+    /**
+     * Get the list of {@link InvalidRepositoryContentConsumer} objects that are
+     * available and present in the classpath and as components in the IoC.
+     * 
+     * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath 
+     *         and as a component in the IoC.
+     */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
         return availableInvalidConsumers;
     }
 
+    /**
+     * Set the list of {@link KnownRepositoryContentConsumer} objects that are
+     * available.
+     * 
+     * NOTE: This is an override for the base functionality as a component, this
+     * is used by archiva-cli and the unit testing framework.
+     * 
+     * @return the list of available {@link KnownRepositoryContentConsumer}.
+     */
     public void setAvailableKnownConsumers( List<KnownRepositoryContentConsumer> availableKnownConsumers )
     {
         this.availableKnownConsumers = availableKnownConsumers;
     }
 
+    /**
+     * Set the list of {@link InvalidRepositoryContentConsumer} objects that are
+     * available.
+     * 
+     * NOTE: This is an override for the base functionality as a component, this
+     * is used by archiva-cli and the unit testing framework.
+     * 
+     * @return the list of available {@link InvalidRepositoryContentConsumer}.
+     */
     public void setAvailableInvalidConsumers( List<InvalidRepositoryContentConsumer> availableInvalidConsumers )
     {
         this.availableInvalidConsumers = availableInvalidConsumers;
     }
 
+    /**
+     * A convienence method to execute all of the active selected consumers for a 
+     * particular arbitrary file.
+     * 
+     * @param repository the repository configuration to use.
+     * @param localFile the local file to execute the consumers against.
+     */
     public void executeConsumers( ManagedRepositoryConfiguration repository, File localFile )
     {
         // Run the repository consumers
