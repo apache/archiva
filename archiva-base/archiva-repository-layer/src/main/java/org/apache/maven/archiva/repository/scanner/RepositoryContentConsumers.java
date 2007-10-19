@@ -115,7 +115,7 @@ public class RepositoryContentConsumers
     {
         List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
 
-        List<String> knownSelected = getSelectedInvalidConsumerIds();
+        List<String> knownSelected = getSelectedKnownConsumerIds();
 
         for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
         {

@@ -25,10 +25,7 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
-import org.codehaus.plexus.PlexusTestCase;
 import org.easymock.MockControl;
-
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry;
 
 import java.io.File;
 import java.util.Collections;
