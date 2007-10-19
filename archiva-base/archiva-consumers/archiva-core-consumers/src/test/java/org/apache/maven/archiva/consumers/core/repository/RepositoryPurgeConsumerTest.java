@@ -223,7 +223,7 @@ public class RepositoryPurgeConsumerTest
         XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
-        // FIXME [MRM-535]: XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
+        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
    }
 
     public void populateDbForRetentionCountTest()
