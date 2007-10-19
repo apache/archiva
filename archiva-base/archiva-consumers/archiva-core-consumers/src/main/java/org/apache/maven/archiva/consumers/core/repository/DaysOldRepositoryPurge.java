@@ -43,20 +43,17 @@ import java.util.regex.Matcher;
 public class DaysOldRepositoryPurge
     extends AbstractRepositoryPurge
 {
-    private static final SimpleDateFormat timestampParser;
-    static
-    {
-        timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-        timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
-    }
+    private SimpleDateFormat timestampParser;
 
     private int daysOlder;
-
+    
     public DaysOldRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
                                    int daysOlder )
     {
         super( repository, artifactDao );
         this.daysOlder = daysOlder;
+        timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
+        timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
 
     public void process( String path )

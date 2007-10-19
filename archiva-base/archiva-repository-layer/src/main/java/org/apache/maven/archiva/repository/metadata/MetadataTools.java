@@ -101,9 +101,9 @@ public class MetadataTools
 
     private static final char NUMS[] = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-    private static final SimpleDateFormat lastUpdatedFormat;
+    private SimpleDateFormat lastUpdatedFormat;
 
-    static
+    public MetadataTools()
     {
         lastUpdatedFormat = new SimpleDateFormat( "yyyyMMddHHmmss" );
         lastUpdatedFormat.setTimeZone( DateUtils.UTC_TIME_ZONE );

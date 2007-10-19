@@ -23,6 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -39,6 +40,8 @@ public class RepositoryScanStatistics
     private transient List<String> invalidConsumers;
 
     private transient long startTimestamp;
+    
+    private SimpleDateFormat df = new SimpleDateFormat();
 
     public void triggerStart()
     {
@@ -76,7 +79,6 @@ public class RepositoryScanStatistics
 
     public String toDump( ManagedRepositoryConfiguration repo )
     {
-        java.text.SimpleDateFormat df = new java.text.SimpleDateFormat();
         StringBuffer buf = new StringBuffer();
 
         buf.append( "\n.\\ Scan of " ).append( this.getRepositoryId() );
