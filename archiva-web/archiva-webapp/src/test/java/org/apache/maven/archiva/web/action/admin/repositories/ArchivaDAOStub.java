@@ -4,6 +4,7 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
+import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
@@ -46,6 +47,7 @@ public class ArchivaDAOStub
     public List query( SimpleConstraint constraint )
     {
         Assert.assertEquals( RepositoryContentStatistics.class, constraint.getResultClass() );
+        
 
         List<RepositoryContentStatistics> stats = new ArrayList<RepositoryContentStatistics>();
         for ( String repo : configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() )
@@ -64,16 +66,22 @@ public class ArchivaDAOStub
 
     public ArtifactDAO getArtifactDAO()
     {
-        throw new UnsupportedOperationException( "query not implemented for stub" );
+        throw new UnsupportedOperationException( "method not implemented for stub" );
     }
 
     public ProjectModelDAO getProjectModelDAO()
     {
-        throw new UnsupportedOperationException( "query not implemented for stub" );
+        throw new UnsupportedOperationException( "method not implemented for stub" );
     }
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
-        throw new UnsupportedOperationException( "query not implemented for stub" );
+        throw new UnsupportedOperationException( "method not implemented for stub" );
     }
+    
+    public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
+    {
+        throw new UnsupportedOperationException( "method not implemented for stub" );
+    }
+    
 }

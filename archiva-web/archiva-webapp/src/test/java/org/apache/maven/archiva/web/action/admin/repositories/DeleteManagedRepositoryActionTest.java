@@ -25,8 +25,12 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
@@ -57,7 +61,7 @@ public class DeleteManagedRepositoryActionTest
     private MockControl archivaConfigurationControl;
 
     private ArchivaConfiguration archivaConfiguration;
-
+    
     private static final String REPO_ID = "repo-ident";
 
     private File location;
@@ -68,7 +72,7 @@ public class DeleteManagedRepositoryActionTest
         super.setUp();
 
         action = (DeleteManagedRepositoryAction) lookup( Action.class.getName(), "deleteManagedRepositoryAction" );
-
+        
         archivaConfigurationControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfiguration = (ArchivaConfiguration) archivaConfigurationControl.getMock();
         action.setArchivaConfiguration( archivaConfiguration );
@@ -76,7 +80,7 @@ public class DeleteManagedRepositoryActionTest
         roleManagerControl = MockControl.createControl( RoleManager.class );
         roleManager = (RoleManager) roleManagerControl.getMock();
         action.setRoleManager( roleManager );
-        location = getTestFile( "target/test/location" );
+        location = getTestFile( "target/test/location" );          
     }
 
     public void testSecureActionBundle()
@@ -119,11 +123,13 @@ public class DeleteManagedRepositoryActionTest
 
     public void testDeleteRepositoryKeepContent()
         throws Exception
-    {
+    {    	
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 3 );
-        String status = action.deleteEntry();
+        Configuration configuration = prepDeletionTest( createRepository(), 3 );                
+        
+        String status = action.deleteEntry();        
+                
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -136,8 +142,10 @@ public class DeleteManagedRepositoryActionTest
     {
         prepareRoleManagerMock();
         
-        Configuration configuration = prepDeletionTest( createRepository(), 3 );
+        Configuration configuration = prepDeletionTest( createRepository(), 3 );              
+        
         String status = action.deleteContents();
+               
         assertEquals( Action.SUCCESS, status );
 
         assertTrue( configuration.getManagedRepositories().isEmpty() );
@@ -277,4 +285,14 @@ public class DeleteManagedRepositoryActionTest
         roleManager.removeTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, REPO_ID );
         roleManagerControl.replay();
     }
+    
+    protected ArchivaProjectModel createProjectModel( String groupId, String artifactId, String version )
+    {
+        ArchivaProjectModel projectModel = new ArchivaProjectModel();
+        projectModel.setGroupId( groupId );
+        projectModel.setArtifactId( artifactId );
+        projectModel.setVersion( version );
+
+        return projectModel;
+    }   
 }

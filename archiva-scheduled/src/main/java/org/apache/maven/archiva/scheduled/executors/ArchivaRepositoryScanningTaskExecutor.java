@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -114,11 +115,11 @@ public class ArchivaRepositoryScanningTaskExecutor
             dbstats.setTotalFileCount( stats.getTotalFileCount() );
             dbstats.setWhenGathered( stats.getWhenGathered() );
             
-            dao.save( dbstats );
+            dao.getRepositoryContentStatisticsDAO().saveRepositoryContentStatistics( dbstats );
         }
         catch ( RepositoryException e )
         {
             throw new TaskExecutionException( "Repository error when executing repository job.", e );
-        }
+        }        
     }
 }

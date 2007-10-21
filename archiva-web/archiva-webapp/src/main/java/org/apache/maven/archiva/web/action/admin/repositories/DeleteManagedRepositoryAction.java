@@ -24,18 +24,29 @@ import com.opensymphony.xwork.Preparable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
+import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.ObjectNotFoundException;
+import org.apache.maven.archiva.database.constraints.ArtifactsByRepositoryConstraint;
+import org.apache.maven.archiva.database.constraints.RepositoryContentStatisticsByRepositoryConstraint;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
+
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+
 import org.codehaus.plexus.redback.role.RoleManagerException;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * DeleteManagedRepositoryAction 
- *
+ * DeleteManagedRepositoryAction
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteManagedRepositoryAction"
  */
 public class DeleteManagedRepositoryAction
@@ -45,6 +56,11 @@ public class DeleteManagedRepositoryAction
     private ManagedRepositoryConfiguration repository;
 
     private String repoid;
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private ArchivaDAO archivaDAO;
 
     public void prepare()
     {
@@ -89,13 +105,12 @@ public class DeleteManagedRepositoryAction
         try
         {
             Configuration configuration = archivaConfiguration.getConfiguration();
+            cleanupRepositoryData( existingRepository );
             removeRepository( repoid, configuration );
             result = saveConfiguration( configuration );
 
             if ( result.equals( SUCCESS ) )
             {
-                cleanupRepositoryData( existingRepository );
-
                 if ( deleteContents )
                 {
                     removeContents( existingRepository );
@@ -112,19 +127,26 @@ public class DeleteManagedRepositoryAction
             addActionError( "Unable to delete repository: " + e.getMessage() );
             result = ERROR;
         }
+        catch ( ArchivaDatabaseException e )
+        {
+            addActionError( "Unable to delete repositoy: " + e.getMessage() );
+            result = ERROR;
+        }
 
         return result;
     }
 
     private void cleanupRepositoryData( ManagedRepositoryConfiguration cleanupRepository )
-        throws RoleManagerException
+        throws RoleManagerException, ArchivaDatabaseException
     {
         removeRepositoryRoles( cleanupRepository );
 
         // TODO: [MRM-382] Remove index from artifacts of deleted managed repositories.
 
-        // TODO: [MRM-265] After removing a managed repository - Browse/Search still see it
-        
+        // [MRM-265] After removing a managed repository - Browse/Search still see it
+        cleanupDatabase( cleanupRepository.getId() );
+        cleanupScanStats( cleanupRepository.getId() );
+
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
         List<ProxyConnectorConfiguration> proxyConnectors = getProxyConnectors();
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
@@ -133,6 +155,52 @@ public class DeleteManagedRepositoryAction
             {
                 archivaConfiguration.getConfiguration().removeProxyConnector( proxyConnector );
             }
+        }
+    }
+
+    private void cleanupDatabase( String repoId )
+        throws ArchivaDatabaseException
+    {
+        Constraint constraint = new ArtifactsByRepositoryConstraint( repoId );
+
+        List<ArchivaArtifact> artifacts = archivaDAO.getArtifactDAO().queryArtifacts( constraint );
+
+        for ( ArchivaArtifact artifact : artifacts )
+        {
+            getLogger().info( "Removing artifact " + artifact + " from the database." );
+            try
+            {
+                archivaDAO.getArtifactDAO().deleteArtifact( artifact );
+
+                ArchivaProjectModel projectModel =
+                    archivaDAO.getProjectModelDAO().getProjectModel( artifact.getGroupId(), artifact.getArtifactId(),
+                                                                     artifact.getVersion() );
+
+                archivaDAO.getProjectModelDAO().deleteProjectModel( projectModel );
+            }
+            catch ( ObjectNotFoundException oe )
+            {
+                getLogger().info( "Project model of artifact " + artifact + " does not exist in the database. " +
+                                      "Moving on to the next artifact." );
+            }
+            catch ( ArchivaDatabaseException ae )
+            {
+                getLogger().info( "Unable to delete artifact " + artifact + " from the database. " +
+                                      "Moving on to the next artifact." );
+            }
+        }
+    }
+
+    private void cleanupScanStats( String repoId )
+        throws ArchivaDatabaseException
+    {
+        List<RepositoryContentStatistics> results =
+            archivaDAO.getRepositoryContentStatisticsDAO().queryRepositoryContentStatistics(
+            new RepositoryContentStatisticsByRepositoryConstraint( repoId ) );
+
+        for ( RepositoryContentStatistics stats : results )
+        {
+            archivaDAO.getRepositoryContentStatisticsDAO().deleteRepositoryContentStatistics( stats );
         }
     }
 
@@ -154,5 +222,15 @@ public class DeleteManagedRepositoryAction
     public void setRepoid( String repoid )
     {
         this.repoid = repoid;
+    }
+
+    public void setArchivaDAO( ArchivaDAO archivaDAO )
+    {
+        this.archivaDAO = archivaDAO;
+    }
+
+    public ArchivaDAO getArchivaDAO()
+    {
+        return archivaDAO;
     }
 }

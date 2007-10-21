@@ -22,6 +22,8 @@ package org.apache.maven.archiva.database;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.maven.archiva.model.RepositoryContentStatistics;
+
 /**
  * ArchivaDAO - The interface for all content within the database.
  *
@@ -47,10 +49,12 @@ public interface ArchivaDAO
      * @return the post-serialized object.
      */
     Object save( Serializable obj );
-
+    
     ArtifactDAO getArtifactDAO();
 
     ProjectModelDAO getProjectModelDAO();
 
     RepositoryProblemDAO getRepositoryProblemDAO();
+    
+    RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO();
 }

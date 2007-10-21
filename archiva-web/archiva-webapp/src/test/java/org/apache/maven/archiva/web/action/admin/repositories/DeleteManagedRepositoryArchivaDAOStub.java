@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.database.jdo;
+package org.apache.maven.archiva.web.action.admin.repositories;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,33 +19,29 @@ package org.apache.maven.archiva.database.jdo;
  * under the License.
  */
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.RepositoryContentStatisticsDAO;
 import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
- * JdoArchivaDAO 
- *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * @version $Id$
+ * DeleteManagedRepositoryArchivaDAOStub
  * 
- * @plexus.component role-hint="jdo"
+ * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * @version
  */
-public class JdoArchivaDAO
-    extends AbstractLogEnabled
+public class DeleteManagedRepositoryArchivaDAOStub
     implements ArchivaDAO
 {
     /**
-     * @plexus.requirement role-hint="archiva"
+     * @plexus.requirement role-hint="jdo"
      */
-    private JdoAccess jdo;
+    private ProjectModelDAO projectModelDAO;
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -55,29 +51,18 @@ public class JdoArchivaDAO
     /**
      * @plexus.requirement role-hint="jdo"
      */
-    private ProjectModelDAO projectModelDAO;
-
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private RepositoryProblemDAO repositoryProblemDAO;
-    
-    /**
-     * @plexus.requirement role-hint="jdo"
-     */
-    private RepositoryContentStatisticsDAO repositoryContentStatisticsDAO;
-
+    private RepositoryContentStatisticsDAO repoContentStatisticsDAO;
 
     public List query( SimpleConstraint constraint )
     {
-        return jdo.queryObjects( constraint );
+        return null;
     }
 
     public Object save( Serializable obj )
     {
-        return jdo.saveObject( obj );
+        throw new UnsupportedOperationException( "query not implemented for stub" );
     }
-    
+
     public ArtifactDAO getArtifactDAO()
     {
         return artifactDAO;
@@ -90,11 +75,11 @@ public class JdoArchivaDAO
 
     public RepositoryProblemDAO getRepositoryProblemDAO()
     {
-        return repositoryProblemDAO;
+        throw new UnsupportedOperationException( "query not implemented for stub" );
     }
-    
+
     public RepositoryContentStatisticsDAO getRepositoryContentStatisticsDAO()
     {
-        return repositoryContentStatisticsDAO;
+        return repoContentStatisticsDAO;
     }
 }
