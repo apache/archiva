@@ -98,7 +98,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             if ( CollectionUtils.isNotEmpty( results ) )
             {
-                RepositoryContentStatistics lastStats = (RepositoryContentStatistics) results.get( 0 );
+                RepositoryContentStatistics lastStats = results.get( 0 );
                 sinceWhen = lastStats.getWhenGathered().getTime() + lastStats.getDuration();
             }
 
