@@ -42,6 +42,8 @@ public class KnownScanConsumer
 
     private List includes = new ArrayList();
 
+    private boolean processUnmodified = false;
+
     public List getExcludes()
     {
         return null;
@@ -98,5 +100,15 @@ public class KnownScanConsumer
     public boolean isPermanent()
     {
         return false;
+    }
+
+    public boolean isProcessUnmodified()
+    {
+        return processUnmodified;
+    }
+
+    public void setProcessUnmodified( boolean processUnmodified )
+    {
+        this.processUnmodified = processUnmodified;
     }
 }

@@ -42,6 +42,8 @@ public class ConsumerWantsFilePredicate
 
     private int wantedFileCount = 0;
 
+    private long changesSince = 0;
+
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;
@@ -52,7 +54,19 @@ public class ConsumerWantsFilePredicate
             if ( wantsFile( consumer, StringUtils.replace( basefile.getRelativePath(), "\\", "/" ) ) )
             {
                 satisfies = true;
+                
+                // regardless of the timestamp, we record that it was wanted so it doesn't get counted as invalid
                 wantedFileCount++;
+
+                if ( !consumer.isProcessUnmodified() )
+                {
+                    // Timestamp finished points to the last successful scan, not this current one.
+                    if ( basefile.lastModified() < changesSince )
+                    {
+                        // Skip file as no change has occured.
+                        satisfies = false;
+                    }
+                }
             }
         }
 
@@ -113,5 +127,10 @@ public class ConsumerWantsFilePredicate
 
         // Not included, and Not excluded?  Default to EXCLUDE.
         return false;
+    }
+
+    public void setChangesSince( long changesSince )
+    {
+        this.changesSince = changesSince;
     }
 }

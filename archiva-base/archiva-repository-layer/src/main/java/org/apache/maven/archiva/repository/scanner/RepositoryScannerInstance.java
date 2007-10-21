@@ -59,7 +59,7 @@ public class RepositoryScannerInstance
 
     private RepositoryScanStatistics stats;
 
-    private long onlyModifiedAfterTimestamp = 0;
+    private long changesSince = 0;
 
     private ConsumerProcessFileClosure consumerProcessFile;
 
@@ -93,6 +93,18 @@ public class RepositoryScannerInstance
         }
     }
 
+    public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
+                                      List<KnownRepositoryContentConsumer> knownContentConsumers,
+                                      List<InvalidRepositoryContentConsumer> invalidContentConsumers, Logger logger,
+                                      long changesSince )
+    {
+        this( repository, knownContentConsumers, invalidContentConsumers, logger );
+
+        consumerWantsFile.setChangesSince( changesSince );
+
+        this.changesSince = changesSince;
+    }
+
     public RepositoryScanStatistics getStatistics()
     {
         return stats;
@@ -111,15 +123,12 @@ public class RepositoryScannerInstance
         stats.increaseFileCount();
 
         // Timestamp finished points to the last successful scan, not this current one.
-        if ( file.lastModified() < onlyModifiedAfterTimestamp )
+        if ( file.lastModified() >= changesSince )
         {
-            // Skip file as no change has occured.
-            logger.debug( "Skipping, No Change: " + file.getAbsolutePath() );
-            return;
+            stats.increaseNewFileCount();
         }
 
-        stats.increaseNewFileCount();
-
+        // consume files regardless - the predicate will check the timestamp
         BaseFile basefile = new BaseFile( repository.getLocation(), file );
         
         consumerProcessFile.setBasefile( basefile );
@@ -139,16 +148,6 @@ public class RepositoryScannerInstance
     {
         logger.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerFinished();
-    }
-
-    public long getOnlyModifiedAfterTimestamp()
-    {
-        return onlyModifiedAfterTimestamp;
-    }
-
-    public void setOnlyModifiedAfterTimestamp( long onlyModifiedAfterTimestamp )
-    {
-        this.onlyModifiedAfterTimestamp = onlyModifiedAfterTimestamp;
     }
 
     /**

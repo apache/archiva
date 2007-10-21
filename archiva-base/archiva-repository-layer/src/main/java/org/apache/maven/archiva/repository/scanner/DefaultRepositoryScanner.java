@@ -112,8 +112,7 @@ public class DefaultRepositoryScanner
 
         // Setup the Scan Instance
         RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
-                                                                                   invalidContentConsumers, getLogger() );
-        scannerInstance.setOnlyModifiedAfterTimestamp( changesSince );
+                                                                                   invalidContentConsumers, getLogger(), changesSince );
 
         dirWalker.addDirectoryWalkListener( scannerInstance );
 

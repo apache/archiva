@@ -216,4 +216,9 @@ public class RepositoryPurgeConsumer
         initIncludes();
     }
 
+    public boolean isProcessUnmodified()
+    {
+        // we need to check all files for deletion, especially if not modified
+        return true;
+    }
 }

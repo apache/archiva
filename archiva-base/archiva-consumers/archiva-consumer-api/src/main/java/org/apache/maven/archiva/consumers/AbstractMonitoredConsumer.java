@@ -94,4 +94,9 @@ public abstract class AbstractMonitoredConsumer
             }
         }
     }
+
+    public boolean isProcessUnmodified()
+    {
+        return false;
+    }
 }

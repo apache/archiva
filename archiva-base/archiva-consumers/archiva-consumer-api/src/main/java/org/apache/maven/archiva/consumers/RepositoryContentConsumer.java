@@ -89,4 +89,11 @@ public interface RepositoryContentConsumer extends BaseConsumer
      * @todo! this is never called by the RepositoryScannerInstance
      */
     public void completeScan();
+
+    /**
+     * Whether the consumer should process files that have not been modified since the time passed in to the scan
+     * method.
+     * @return whether to process the unmodified files
+     */
+    boolean isProcessUnmodified();
 }
