@@ -132,16 +132,16 @@
 </tr>
 <tr>
   <th>Releases Included</th>
-  <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> ${repository.releases}</td>
+  <td class="${repository.releases ? 'donemark' : 'errormark'} booleanIcon"> </td>
 </tr>
 <tr>
   <th>Snapshots Included</th>
-  <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.snapshots}</td>
+  <td class="${repository.snapshots ? 'donemark' : 'errormark'} booleanIcon"> </td>
 </tr>
 <c:if test="${repository.snapshots}">
   <tr>
     <th>Delete Released Snapshots</th>
-    <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> ${repository.deleteReleasedSnapshots}</td>
+    <td class="${repository.deleteReleasedSnapshots ? 'donemark' : 'errormark'} booleanIcon"> </td>
   </tr>
   <tr>
     <th>Repository Purge By Days Older Than</th>
@@ -154,7 +154,7 @@
 </c:if>
 <tr>
   <th>Scanned</th>
-  <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"> ${repository.scanned}</td>
+  <td class="${repository.scanned ? 'donemark' : 'errormark'} booleanIcon"> </td>
 </tr>
 <c:if test="${repository.scanned}">
   <tr>
