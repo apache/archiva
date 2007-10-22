@@ -253,9 +253,70 @@ public class LegacyPathParserTest
         String groupId = "maven";
         String artifactId = "maven-test-plugin";
         String version = "1.8.2";
-        String type = "jar";
+        String type = "pom";
 
-        String path = "maven/jars/maven-test-plugin-1.8.2.jar";
+        String path = "maven/poms/maven-test-plugin-1.8.2.pom";
+
+        assertLayout( path, groupId, artifactId, version, type );
+    }
+    
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
+     */
+    public void testGoodDetectPluginMavenTest()
+        throws LayoutException
+    {
+        String groupId = "maven";
+        String artifactId = "maven-test-plugin";
+        String version = "1.8.2";
+        String type = "maven-plugin";
+        String path = "maven/plugins/maven-test-plugin-1.8.2.jar";
+
+        assertLayout( path, groupId, artifactId, version, type );
+    }
+    
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     */
+    public void testGoodDetectPluginAvalonMeta()
+        throws LayoutException
+    {
+        String groupId = "avalon-meta";
+        String artifactId = "avalon-meta-plugin";
+        String version = "1.1";
+        String type = "maven-plugin";
+        String path = "avalon-meta/plugins/avalon-meta-plugin-1.1.jar";
+
+        assertLayout( path, groupId, artifactId, version, type );
+    }
+    
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     */
+    public void testGoodDetectPluginCactusMaven()
+        throws LayoutException
+    {
+        String groupId = "cactus";
+        String artifactId = "cactus-maven";
+        String version = "1.7dev-20040815";
+        String type = "maven-plugin";
+        String path = "cactus/plugins/cactus-maven-1.7dev-20040815.jar";
+
+        assertLayout( path, groupId, artifactId, version, type );
+    }
+    
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     */
+    public void testGoodDetectPluginGeronimoPackaging()
+        throws LayoutException
+    {
+        String groupId = "geronimo";
+        String artifactId = "geronimo-packaging-plugin";
+        String version = "1.0.1";
+        String type = "maven-plugin";
+        String path = "geronimo/plugins/geronimo-packaging-plugin-1.0.1.jar";
 
         assertLayout( path, groupId, artifactId, version, type );
     }

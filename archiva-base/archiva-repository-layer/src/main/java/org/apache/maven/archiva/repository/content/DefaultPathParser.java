@@ -147,8 +147,13 @@ public class DefaultPathParser
 
             // Set the type.
             artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
-
-            artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+            
+            // Special case for maven plugins
+            if ( StringUtils.equals( "jar", artifact.getType() ) && 
+                 ArtifactExtensionMapping.isMavenPlugin( artifact.getArtifactId() ) )
+            {
+                artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
+            }
         }
         catch ( LayoutException e )
         {
@@ -181,4 +186,5 @@ public class DefaultPathParser
 
         return artifact;
     }
+    
 }

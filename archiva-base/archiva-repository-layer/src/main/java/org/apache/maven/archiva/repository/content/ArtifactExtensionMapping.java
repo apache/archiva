@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * ArtifactExtensionMapping
@@ -33,7 +34,13 @@ import java.util.Map;
  */
 public class ArtifactExtensionMapping
 {
-    protected static final Map<String, String> typeToExtensionMap;
+    public static final String MAVEN_ARCHETYPE = "maven-archetype";
+
+    public static final String MAVEN_PLUGIN = "maven-plugin";
+    
+    private static final Map<String, String> typeToExtensionMap;
+
+    private static final Pattern mavenPluginPattern = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
 
     static
     {
@@ -47,9 +54,8 @@ public class ArtifactExtensionMapping
         typeToExtensionMap.put( "javadoc", "jar" );
         typeToExtensionMap.put( "aspect", "jar" );
         typeToExtensionMap.put( "uberjar", "jar" );
-        typeToExtensionMap.put( "plugin", "jar" );
-        typeToExtensionMap.put( "maven-plugin", "jar" );
-        typeToExtensionMap.put( "maven-archetype", "jar" );
+        typeToExtensionMap.put( MAVEN_PLUGIN, "jar" );
+        typeToExtensionMap.put( MAVEN_ARCHETYPE, "jar" );
     }
 
     public static String getExtension( String type )
@@ -108,5 +114,16 @@ public class ArtifactExtensionMapping
         {
             return normalizedName.substring( idx + 1 );
         }
+    }
+    
+    /**
+     * Determine if a given artifact Id conforms to the naming scheme for a maven plugin.
+     * 
+     * @param artifactId the artifactId to test.
+     * @return true if this artifactId conforms to the naming scheme for a maven plugin.
+     */
+    public static boolean isMavenPlugin( String artifactId )
+    {
+        return mavenPluginPattern.matcher( artifactId ).matches();
     }
 }

@@ -38,7 +38,7 @@ public class FilenameParser
 
     private int offset;
 
-    private static final Pattern specialCases = Pattern.compile( "(maven-.*-plugin)|(maven-plugin)" );
+    private static final Pattern mavenPluginPattern = Pattern.compile( "(maven-.*-plugin)|(.*-maven-plugin)" );
 
     private static final Pattern extensionPattern = Pattern.compile( "(.tar.gz$)|(.tar.bz2$)|(.[a-z0-9]{1,4}$)",
                                                                      Pattern.CASE_INSENSITIVE );
@@ -143,7 +143,7 @@ public class FilenameParser
         StringBuffer ver = new StringBuffer();
 
         // Any text upto the end of a special case is considered non-version. 
-        Matcher specialMat = specialCases.matcher( name );
+        Matcher specialMat = mavenPluginPattern.matcher( name );
         if ( specialMat.find() )
         {
             ver.append( name.substring( offset, specialMat.end() ) );

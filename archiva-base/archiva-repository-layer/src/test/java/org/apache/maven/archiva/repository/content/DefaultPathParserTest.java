@@ -258,6 +258,39 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
+     */
+    public void testGoodDetectMavenTestPlugin()
+        throws LayoutException
+    {
+        String groupId = "maven";
+        String artifactId = "maven-test-plugin";
+        String version = "1.8.2";
+        String classifier = null;
+        String type = "maven-plugin";
+        String path = "maven/maven-test-plugin/1.8.2/maven-test-plugin-1.8.2.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
+     */
+    public void testGoodDetectCoberturaMavenPlugin()
+        throws LayoutException
+    {
+        String groupId = "org.codehaus.mojo";
+        String artifactId = "cobertura-maven-plugin";
+        String version = "2.1";
+        String classifier = null;
+        String type = "maven-plugin";
+        String path = "org/codehaus/mojo/cobertura-maven-plugin/2.1/cobertura-maven-plugin-2.1.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
     public void testToArtifactOnEmptyPath()
     {
         try
@@ -309,7 +342,7 @@ public class DefaultPathParserTest
             /* expected path */
         }
     }
-    
+
     /**
      * Perform a path to artifact reference lookup, and verify the results. 
      */
@@ -321,7 +354,7 @@ public class DefaultPathParserTest
         ArtifactReference testReference = DefaultPathParser.toArtifactReference( path );
         assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
     }
-    
+
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {

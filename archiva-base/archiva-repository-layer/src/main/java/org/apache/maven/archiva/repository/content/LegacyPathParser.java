@@ -127,25 +127,34 @@ public class LegacyPathParser
             }
         }
 
+        // Set Type
         artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
-
+        
         // Sanity Check: does it have an extension?
         if ( StringUtils.isEmpty( artifact.getType() ) )
         {
             throw new LayoutException( INVALID_ARTIFACT_PATH + "no extension found." );
         }
 
-        String trimPathType = expectedType.substring( 0, expectedType.length() - 1 );
-
-        // Sanity Check: does extension match pathType on path?
-        String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
-        String actualExtension = parser.getExtension();
-
-        if ( !expectedExtension.equals( actualExtension ) )
+        // Special Case with Maven Plugins
+        if ( StringUtils.equals( "jar", artifact.getType() ) && StringUtils.equals( "plugins", expectedType ) )
         {
-            throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + actualExtension
-                + "] and layout specified type [" + expectedType + "] (which maps to extension: [" + expectedExtension
-                + "]) on path [" + path + "]" );
+            artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
+        }
+        else
+        {
+            // Sanity Check: does extension match pathType on path?
+            String trimPathType = expectedType.substring( 0, expectedType.length() - 1 );
+    
+            String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
+            String actualExtension = parser.getExtension();
+    
+            if ( !expectedExtension.equals( actualExtension ) )
+            {
+                throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + actualExtension
+                    + "] and layout specified type [" + expectedType + "] (which maps to extension: ["
+                    + expectedExtension + "]) on path [" + path + "]" );
+            }
         }
 
         return artifact;
