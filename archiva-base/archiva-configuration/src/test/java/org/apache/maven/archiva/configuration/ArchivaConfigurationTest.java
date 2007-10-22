@@ -20,9 +20,9 @@ package org.apache.maven.archiva.configuration;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.util.FileUtils;
+import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -37,17 +37,6 @@ import java.util.Map;
 public class ArchivaConfigurationTest
     extends PlexusTestCase
 {
-    @SuppressWarnings("unused")
-    private Registry registry;
-    
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-        
-        registry = (Registry) lookup( Registry.ROLE, "commons-configuration" );
-    }
-
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
     {
@@ -195,7 +184,7 @@ public class ArchivaConfigurationTest
         MockControl control = createConfigurationListenerMockControl();
         ConfigurationListener listener = (ConfigurationListener) control.getMock();
         archivaConfiguration.addListener( listener );
-        
+
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
         control.setVoidCallable();
 
@@ -220,8 +209,7 @@ public class ArchivaConfigurationTest
 
     private static MockControl createConfigurationListenerMockControl()
     {
-        MockControl control = MockControl.createControl( ConfigurationListener.class );
-        return control;
+        return MockControl.createControl( ConfigurationListener.class );
     }
 
     public void testStoreConfigurationUser()
@@ -303,7 +291,7 @@ public class ArchivaConfigurationTest
     {
         DefaultArchivaConfiguration archivaConfiguration =
             (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-        
+
         assertEquals( System.getProperty( "user.home" ) + "/.m2/archiva.xml",
                       archivaConfiguration.getUserConfigFilename() );
         assertEquals( System.getProperty( "appserver.base", "${appserver.base}" ) + "/conf/archiva.xml",
@@ -457,13 +445,14 @@ public class ArchivaConfigurationTest
             assertTrue( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
         }
     }
-    
-    public void testLoadConfigurationFromInvalidBothLocationsOnDisk() throws Exception
+
+    public void testLoadConfigurationFromInvalidBothLocationsOnDisk()
+        throws Exception
     {
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(),
-                                                                                   "test-not-allowed-to-write-to-both" );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-not-allowed-to-write-to-both" );
         Configuration config = archivaConfiguration.getConfiguration();
-        
+
         try
         {
             archivaConfiguration.save( config );
@@ -474,14 +463,15 @@ public class ArchivaConfigurationTest
             /* expected exception */
         }
     }
-    
-    public void testLoadConfigurationFromInvalidUserLocationOnDisk() throws Exception
+
+    public void testLoadConfigurationFromInvalidUserLocationOnDisk()
+        throws Exception
     {
         File testConfDir = getTestFile( "target/test-appserver-base/conf/" );
         testConfDir.mkdirs();
-        
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(),
-                                                                                   "test-not-allowed-to-write-to-user" );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-not-allowed-to-write-to-user" );
         Configuration config = archivaConfiguration.getConfiguration();
         archivaConfiguration.save( config );
         // No Exception == test passes. 
@@ -538,34 +528,33 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "internal", repository.getId() );
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
-        
+
         // Test that only 1 set of repositories exist.
         assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
         assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
         assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
-        
+
         // Save the file.
         archivaConfiguration.save( configuration );
-        
+
         // Release existing
         release( archivaConfiguration );
 
         // Reload.
         archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-autodetect-v1" );
-        
+        configuration = archivaConfiguration.getConfiguration();
+
         // Test that only 1 set of repositories exist.
         assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
         assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositoriesAsMap().size() );
         assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
         assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
         assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
-        
-        /* FIXME: can't get rid of old v1 <repositories> section programatically.
+
         String actualXML = FileUtils.fileRead( userFile );
         XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
         XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
-         */
     }
 
     public void testArchivaV1()
@@ -579,6 +568,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
 
         assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
+        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
 
         Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();
 
