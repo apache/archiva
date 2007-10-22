@@ -24,8 +24,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="redback" uri="http://plexus.codehaus.org/redback/taglib-1.0" %>
-<%@ page import="java.util.Calendar" %>
 <%@ page import="org.apache.maven.archiva.web.startup.ArchivaVersion" %>
+<%@ page import="java.util.Calendar" %>
 
 <html>
 <head>
@@ -176,7 +176,7 @@
 %>
 <div id="footer">
   <div class="xleft">
-    Apache Archiva <%= ArchivaVersion.VERSION %>
+    Apache Archiva <%= ArchivaVersion.getVersion() %>
   </div>
   <div class="xright">
     Copyright &#169; <%= copyrightRange %> Apache Software Foundation

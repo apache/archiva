@@ -34,18 +34,22 @@ import java.util.Properties;
  */
 public class ArchivaVersion
 {
-    public static String VERSION = "Unknown";
-    
+    private static String version = null;
+
+    private ArchivaVersion()
+    {
+    }
+
     public static String determineVersion( ClassLoader cloader )
     {
-        if ( VERSION != null )
+        if ( version != null )
         {
-            return VERSION;
+            return version;
         }
         
         /* This is the search order of modules to find the version.
          */
-        String modules[] = new String[] {
+        String[] modules = new String[] {
             "archiva-common",
             "archiva-configuration",
             "archiva-database",
@@ -83,8 +87,8 @@ public class ArchivaVersion
                     String version = props.getProperty( "version" );
                     if ( StringUtils.isNotBlank( version ) )
                     {
-                        VERSION = version;
-                        return VERSION;
+                        ArchivaVersion.version = version;
+                        return this.version;
                     }
                 }
                 catch ( IOException e )
@@ -94,12 +98,17 @@ public class ArchivaVersion
             }
         }
 
-        return VERSION;
+        version = "<Unknown Version>";
+        return version;
     }
 
     private static URL findModulePom( ClassLoader cloader, String module )
     {
-        URL ret = cloader.getResource( "/META-INF/maven/org.apache.maven.archiva/" + module + "/pom.properties" );
-        return ret;
+        return cloader.getResource( "/META-INF/maven/org.apache.maven.archiva/" + module + "/pom.properties" );
+    }
+
+    public static String getVersion()
+    {
+        return version;
     }
 }
