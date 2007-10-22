@@ -20,47 +20,58 @@
 
 <configuration>
   <version>1</version>
-  <managedRepositories>
-    <managedRepository>
+  <repositories>
+    <repository>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
-      <location>${appserver.base}/repositories/internal</location>
+      <url>file://${appserver.base}/repositories/internal</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * ?</refreshCronExpression>
-    </managedRepository>
-    <managedRepository>
+    </repository>
+    <repository>
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
-      <location>${appserver.base}/repositories/snapshots</location>
+      <url>file://${appserver.base}/repositories/snapshots</url>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0,30 * * ?</refreshCronExpression>
-    </managedRepository>
-  </managedRepositories>
-  
-  <remoteRepositories>
-    <remoteRepository>
+    </repository>
+    <repository>
       <id>central</id>
       <name>Central Repository</name>
       <url>http://repo1.maven.org/maven2</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
-    </remoteRepository>
-    <remoteRepository>
+      <indexed>false</indexed>
+    </repository>
+    <repository>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Repository for Maven 2</name>
       <url>https://maven2-repository.dev.java.net/nonav/repository</url>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
-    </remoteRepository>
-  </remoteRepositories>
+      <indexed>false</indexed>
+    </repository>
+    <repository>
+      <id>test-repo</id>
+      <name>Test Repository</name>
+      <url>file://${appserver.base}/test-repo</url>
+      <layout>default</layout>
+      <releases>true</releases>
+      <snapshots>true</snapshots>
+      <indexed>true</indexed>
+      <refreshCronExpression>0 0 * * ?</refreshCronExpression>
+      <daysOlder>100</daysOlder>
+      <deleteReleasedSnapshots>true</deleteReleasedSnapshots>
+    </repository>
+  </repositories>
 
   <proxyConnectors>
     <proxyConnector>

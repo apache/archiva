@@ -21,6 +21,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
@@ -58,15 +59,15 @@ public class RepositoryPurgeConsumerTest
         repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
         repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
-        
+
         repoPurgeConsumer.beginScan( repoConfiguration );
 
         String repoRoot = prepareTestRepo();
 
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
-        
+
         String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
-        
+
         // assert if removed from repo
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar.md5" );
@@ -101,9 +102,11 @@ public class RepositoryPurgeConsumerTest
     private void addRepoToConfiguration( String configHint, ManagedRepositoryConfiguration repoConfiguration )
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class,
-                                                                                   configHint );
-        archivaConfiguration.getConfiguration().addManagedRepository( repoConfiguration );
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, configHint );
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        configuration.removeManagedRepository( configuration.findManagedRepositoryById( repoConfiguration.getId() ) );
+        configuration.addManagedRepository( repoConfiguration );
     }
 
     public void testConsumerByDaysOld()
@@ -115,7 +118,7 @@ public class RepositoryPurgeConsumerTest
             KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
-        repoConfiguration.setDaysOlder( TEST_DAYS_OLDER ); 
+        repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration );
@@ -127,7 +130,7 @@ public class RepositoryPurgeConsumerTest
 
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar"  );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
@@ -137,8 +140,8 @@ public class RepositoryPurgeConsumerTest
 
     /**
      * Test the snapshot clean consumer on a repository set to NOT clean/delete snapshots
-     * based on released versions. 
-     * 
+     * based on released versions.
+     *
      * @throws Exception
      */
     public void testReleasedSnapshotsWereNotCleaned()
@@ -152,7 +155,7 @@ public class RepositoryPurgeConsumerTest
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
         repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
-        
+
         repoPurgeConsumer.beginScan( repoConfiguration );
 
         String repoRoot = prepareTestRepo();
@@ -161,7 +164,7 @@ public class RepositoryPurgeConsumerTest
 
         // check if the snapshot wasn't removed
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
-        		
+
         assertExists( projectRoot + "/2.3-SNAPSHOT" );
         assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" );
         assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar.md5" );
@@ -174,13 +177,13 @@ public class RepositoryPurgeConsumerTest
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
         String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
-        
+
         String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
-        
+
         XMLAssert.assertXpathEvaluatesTo( "2.3-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
+        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
     }
 
     public void testReleasedSnapshotsWereCleaned()
@@ -194,7 +197,7 @@ public class RepositoryPurgeConsumerTest
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
         repoConfiguration.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
-        
+
         repoPurgeConsumer.beginScan( repoConfiguration );
 
         String repoRoot = prepareTestRepo();
@@ -214,17 +217,17 @@ public class RepositoryPurgeConsumerTest
 
         // check if metadata file was updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
-        
+
         String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
-        
-        String expectedVersions = "<expected><versions><version>2.2</version>"
-            + "<version>2.3</version></versions></expected>";
-        
+
+        String expectedVersions =
+            "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
+
         XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
-        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );        
-   }
+        XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );
+    }
 
     public void populateDbForRetentionCountTest()
         throws ArchivaDatabaseException
