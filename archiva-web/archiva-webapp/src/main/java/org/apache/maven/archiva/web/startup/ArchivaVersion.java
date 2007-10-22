@@ -88,7 +88,7 @@ public class ArchivaVersion
                     if ( StringUtils.isNotBlank( version ) )
                     {
                         ArchivaVersion.version = version;
-                        return this.version;
+                        return version;
                     }
                 }
                 catch ( IOException e )
