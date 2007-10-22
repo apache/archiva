@@ -172,6 +172,8 @@ public class DefaultArchivaConfiguration
 
             // Prevent duplicate repositories from showing up.
             config.getRepositories().clear();
+
+            registry.removeSubset( KEY + ".repositories" );
         }
 
         // Normalize the order fields in the proxy connectors.
