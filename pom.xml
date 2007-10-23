@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva</name>
-  <version>1.0-beta-4-SNAPSHOT</version>
+  <version>1.0-beta-3-SNAPSHOT</version>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
@@ -135,7 +135,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.0-alpha-5</version>
+        <version>1.0-alpha-6</version>
         <executions>
           <execution>
             <goals>
@@ -143,7 +143,7 @@
             </goals>
             <configuration>
               <resourceBundles>
-                <resourceBundle>org.apache:apache-jar-resource-bundle:1.2</resourceBundle>
+                <resourceBundle>org.apache:apache-jar-resource-bundle:1.3</resourceBundle>
               </resourceBundles>
             </configuration>
           </execution>
@@ -518,7 +518,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-expression-evaluator</artifactId>
-        <version>1.0-rc1</version>
+        <version>1.0-alpha-2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -630,7 +630,7 @@
       <dependency>
         <groupId>org.codehaus.plexus.webdav</groupId>
         <artifactId>plexus-webdav-simple</artifactId>
-        <version>1.0-alpha-4</version>
+        <version>1.0-alpha-4-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
