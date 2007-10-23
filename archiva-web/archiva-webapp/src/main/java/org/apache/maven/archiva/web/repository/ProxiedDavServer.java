@@ -36,6 +36,7 @@ import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
@@ -355,6 +356,12 @@ public class ProxiedDavServer
 
         // Open and read the POM from the managed repo
         File pom = managedRepository.toFile( pomReference );
+        
+        if( !pom.exists() )
+        {
+            return;
+        }
+        
         try
         {
             Model model = new MavenXpp3Reader().read( new FileReader( pom ) );
@@ -384,9 +391,13 @@ public class ProxiedDavServer
         {
             // Artifact has no POM in repo : ignore
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
-            // invalid POM : ignore
+            // Unable to read POM : ignore.
+        }
+        catch ( XmlPullParserException e )
+        {
+            // Invalid POM : ignore
         }
     }
 
