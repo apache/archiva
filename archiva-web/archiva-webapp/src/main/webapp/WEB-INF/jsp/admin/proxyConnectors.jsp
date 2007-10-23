@@ -99,7 +99,7 @@
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
         </ww:url>
-        <ww:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirm">
+        <ww:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
           <ww:param name="source" value="%{'${connector.sourceRepoId}'}"/>
           <ww:param name="target" value="%{'${connector.targetRepoId}'}"/>
         </ww:url>
