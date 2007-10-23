@@ -19,6 +19,7 @@ package org.apache.maven.archiva.model;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 /**
@@ -34,6 +35,29 @@ public class Keys
         return toKey( model.getGroupId(), model.getArtifactId(), model.getVersion() );
     }
 
+    public static String toKey( ArtifactReference ref )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( ref.getGroupId() ).append( ":" );
+        key.append( ref.getArtifactId() ).append( ":" );
+        key.append( ref.getVersion() ).append( ":" );
+        key.append( StringUtils.defaultString( ref.getClassifier() ) ).append( ":" );
+        key.append( ref.getType() );
+
+        return key.toString();
+    }
+
+    public static String toKey( ProjectReference ref )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( ref.getGroupId() ).append( ":" );
+        key.append( ref.getArtifactId() );
+
+        return key.toString();
+    }
+
     public static String toKey( String groupId, String artifactId, String version )
     {
         StringBuffer key = new StringBuffer();
@@ -41,6 +65,17 @@ public class Keys
         key.append( groupId ).append( ":" );
         key.append( artifactId ).append( ":" );
         key.append( version );
+
+        return key.toString();
+    }
+    
+    public static String toKey( VersionedReference ref )
+    {
+        StringBuffer key = new StringBuffer();
+
+        key.append( ref.getGroupId() ).append( ":" );
+        key.append( ref.getArtifactId() ).append( ":" );
+        key.append( ref.getVersion() );
 
         return key.toString();
     }
