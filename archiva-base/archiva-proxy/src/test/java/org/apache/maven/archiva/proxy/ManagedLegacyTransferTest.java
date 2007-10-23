@@ -37,39 +37,46 @@ import java.io.File;
 public class ManagedLegacyTransferTest
     extends AbstractProxyTestCase
 {
-    public void testLegacyManagedRepoGetNotPresent()
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does not
+     * exist in the managed legacy repository, but does exist on a remote default layout repository.
+     */
+    public void testManagedLegacyNotPresentRemoteDefaultPresent()
         throws Exception
     {
         String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
         File expectedFile = new File( managedLegacyDir, path );
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
-    
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
-    
+
+        assertNotExistsInManagedLegacyRepo( expectedFile );
+
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-    
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
+
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
-    
+
         File proxied2File = new File( REPOPATH_PROXIED1,
                                       "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar" );
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
-    
-        // TODO: timestamp preservation requires support for that in wagon
-        //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
 
-    public void testLegacyManagedRepoGetAlreadyPresent()
+    /**
+     * Incoming request on a Managed Legacy repository, for content that already
+     * exist in the managed legacy repository, and also exist on a remote default layout repository.
+     */
+    public void testManagedLegacyPresentRemoteDefaultPresent()
         throws Exception
     {
         String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        String remotePath = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
+        
         File expectedFile = new File( managedLegacyDir, path );
-        ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
+        File remoteFile = new File( REPOPATH_PROXIED1, remotePath );
 
-        assertTrue( expectedFile.exists() );
+        setManagedOlderThanRemote( expectedFile, remoteFile );
+        
+        ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
@@ -77,79 +84,142 @@ public class ManagedLegacyTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-        File proxied2File = new File( REPOPATH_PROXIED1,
-                                      "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar" );
-        assertFileEquals( expectedFile, downloadedFile, proxied2File );
+        assertFileEquals( expectedFile, downloadedFile, remoteFile );
         assertNoTempFiles( expectedFile );
     }
 
-    public void testLegacyManagedAndProxyRepoGetNotPresent()
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does not
+     * exist in the managed legacy repository, and does not exist on a remote legacy layout repository.
+     */
+    public void testManagedLegacyNotPresentRemoteLegacyPresent()
         throws Exception
     {
-        String path = "org.apache.maven.test/jars/get-default-layout-1.0.jar";
+        String path = "org.apache.maven.test/plugins/get-legacy-plugin-1.0.jar";
         File expectedFile = new File( managedLegacyDir, path );
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
-        assertFalse( expectedFile.exists() );
+        assertNotExistsInManagedLegacyRepo( expectedFile );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
         File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, path );
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
-
-        // TODO: timestamp preservation requires support for that in wagon
-        //    assertEquals( "Check file timestamp", proxiedFile.lastModified(), file.lastModified() );
     }
 
-    public void testLegacyManagedAndProxyRepoGetAlreadyPresent()
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does exist in the 
+     * managed legacy repository, and also exists on a remote legacy layout repository. 
+     */
+    public void testManagedLegacyPresentRemoteLegacyPresent()
         throws Exception
     {
         String path = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        File remoteFile = new File( REPOPATH_PROXIED_LEGACY, path );
+
+        setManagedOlderThanRemote( expectedFile, remoteFile );
+        
+        ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
+
+        assertFileEquals( expectedFile, downloadedFile, remoteFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does exist in the 
+     * managed legacy repository, and does not exist on a remote legacy layout repository. 
+     */
+    public void testManagedLegacyPresentRemoteLegacyNotPresent()
+        throws Exception
+    {
+        String path = "org.apache.maven.test/jars/managed-only-lib-2.1.jar";
         File expectedFile = new File( managedLegacyDir, path );
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
         assertTrue( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, path );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
-    /* FIXME
-    public void testDefaultRequestConvertedToLegacyPathInManagedRepo()
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does exist in the 
+     * managed legacy repository, and does not exists on a remote default layout repository. 
+     */
+    public void testManagedLegacyPresentRemoteDefaultNotPresent()
         throws Exception
     {
-        // Check that a Maven2 default request is translated to a legacy path in
-        // the managed repository.
-
-        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        File expectedFile = new File( managedLegacyDir, legacyPath );
+        String path = "org.apache.maven.test/jars/managed-only-lib-2.1.jar";
+        File expectedFile = new File( managedLegacyDir, path );
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        assertTrue( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
-    */
+
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does not exist in the 
+     * managed legacy repository, and does not exists on a remote legacy layout repository. 
+     */
+    public void testManagedLegacyNotPresentRemoteLegacyNotPresent()
+        throws Exception
+    {
+        String path = "org.apache.archiva.test/jars/mystery-lib-1.0.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
+
+        assertNotExistsInManagedLegacyRepo( expectedFile );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_LEGACY_PROXIED );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
+
+        assertNotDownloaded( downloadedFile );
+        assertNoTempFiles( expectedFile );
+    }
+
+    /**
+     * Incoming request on a Managed Legacy repository, for content that does not exist in the 
+     * managed legacy repository, and does not exists on a remote default layout repository. 
+     */
+    public void testManagedLegacyNotPresentRemoteDefaultNotPresent()
+        throws Exception
+    {
+        String path = "org.apache.archiva.test/jars/mystery-lib-2.1.jar";
+        File expectedFile = new File( managedLegacyDir, path );
+        ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
+
+        assertNotExistsInManagedLegacyRepo( expectedFile );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1 );
+
+        File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
+
+        assertNotDownloaded( downloadedFile );
+        assertNoTempFiles( expectedFile );
+    }
 }

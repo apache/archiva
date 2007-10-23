@@ -27,6 +27,7 @@ import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -147,14 +148,29 @@ public class DefaultRepositoryProxyConnectors
             RemoteRepositoryContent targetRepository = connector.getTargetRepository();
             String targetPath = targetRepository.toPath( artifact );
 
-            File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile, requestProperties );
-
-            if ( fileExists( downloadedFile ) )
+            try
             {
-                getLogger().debug( "Successfully transfered: " + downloadedFile.getAbsolutePath() );
-                return downloadedFile;
+                File downloadedFile = transferFile( connector, targetRepository, targetPath, localFile,
+                                                    requestProperties );
+
+                if ( fileExists( downloadedFile ) )
+                {
+                    getLogger().debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
+                    return downloadedFile;
+                }
+            }
+            catch ( NotFoundException e )
+            {
+                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( NotModifiedException e )
+            {
+                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
             }
         }
+        getLogger().debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
 
         return null;
     }
@@ -181,11 +197,27 @@ public class DefaultRepositoryProxyConnectors
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
-            transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
-
-            if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
+            
+            try
             {
-                metadataNeedsUpdating = true;
+                transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
+
+                if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
+                {
+                    metadataNeedsUpdating = true;
+                }
+            }
+            catch ( NotFoundException e )
+            {
+                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
+                                       + " not found on remote repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( NotModifiedException e )
+            {
+                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
+                                       + " not updated on remote repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
             }
         }
 
@@ -258,9 +290,10 @@ public class DefaultRepositoryProxyConnectors
      * Fetch from the proxies a metadata.xml file for the groupId:artifactId metadata contents.
      *
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
+     * @throws ProxyException if there was a problem fetching the metadata file.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
-        throws ProxyException
+        throws NotFoundException, NotModifiedException, ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
 
@@ -276,12 +309,27 @@ public class DefaultRepositoryProxyConnectors
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
-            transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
-
-            if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
+            try
             {
-                metadataNeedsUpdating = true;
+                transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
+    
+                if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
+                {
+                    metadataNeedsUpdating = true;
+                }
             }
+            catch ( NotFoundException e )
+            {
+                getLogger().debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( NotModifiedException e )
+            {
+                getLogger().debug( "Project Metadata " + Keys.toKey( metadata )
+                                       + " not updated on remote repository \""
+                                       + targetRepository.getRepository().getId() + "\"." );
+            }
+            
         }
 
         if ( hasBeenUpdated( localFile, originalTimestamp ) )
@@ -401,11 +449,14 @@ public class DefaultRepositoryProxyConnectors
      * @param localFile         the local file to place the downloaded resource into
      * @param requestProperties the request properties to utilize for policy handling.
      * @return the local file that was downloaded, or null if not downloaded.
+     * @throws NotFoundException if the file was not found on the remote repository.
+     * @throws NotModifiedException if the localFile was present, and the resource was present on remote repository,
+     *                              but the remote resource is not newer than the local File.
      * @throws ProxyException if transfer was unsuccessful.
      */
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
                                File localFile, Properties requestProperties )
-        throws ProxyException
+        throws NotFoundException, NotModifiedException, ProxyException
     {
         String url = remoteRepository.getURL().getUrl() + remotePath;
         requestProperties.setProperty( "url", url );
@@ -461,15 +512,20 @@ public class DefaultRepositoryProxyConnectors
                 transferChecksum( wagon, remoteRepository, remotePath, localFile, ".md5" );
             }
         }
-        catch ( ResourceDoesNotExistException e )
+        catch ( NotFoundException e )
         {
             // Do not cache url here.
-            return null;
+            throw e;
         }
-        catch ( WagonException e )
+        catch ( NotModifiedException e )
+        {
+            // Do not cache url here.
+            throw e; 
+        }
+        catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url );
-            return null;
+            throw e;
         }
         finally
         {
@@ -507,9 +563,9 @@ public class DefaultRepositoryProxyConnectors
     }
 
     /**
+     * <p>
      * Quietly transfer the checksum file from the remote repository to the local file.
-     * <p/>
-     * NOTE: This will not throw a WagonException if the checksum is unable to be downloaded.
+     * </p>
      *
      * @param wagon            the wagon instance (should already be connected) to use.
      * @param remoteRepository the remote repository to transfer from.
@@ -536,14 +592,22 @@ public class DefaultRepositoryProxyConnectors
             transferSimpleFile( wagon, remoteRepository, remotePath + type, hashFile );
             getLogger().debug( "Checksum" + type + " Downloaded: " + hashFile );
         }
-        catch ( ResourceDoesNotExistException e )
+        catch ( NotFoundException e )
         {
-            getLogger().debug( "Checksum" + type + " Not Download: " + e.getMessage() );
+            getLogger().debug( "Transfer failed, checksum not found: " + url );
+            // Consume it, do not pass this on.
         }
-        catch ( WagonException e )
+        catch ( NotModifiedException e )
+        {
+            getLogger().debug( "Transfer skipped, checksum not modified: " + url );
+            // Consume it, do not pass this on.
+        }
+        catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url + type );
             getLogger().warn( "Transfer failed on checksum: " + url + " : " + e.getMessage(), e );
+            // Critical issue, pass it on.
+            throw e;
         }
     }
 
@@ -560,7 +624,7 @@ public class DefaultRepositoryProxyConnectors
      */
     private File transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                      File localFile )
-        throws ProxyException, WagonException
+        throws NotFoundException, NotModifiedException, ProxyException
     {
         assert ( remotePath != null );
 
@@ -573,7 +637,7 @@ public class DefaultRepositoryProxyConnectors
 
             boolean success = false;
 
-            if ( localFile.exists() )
+            if ( !localFile.exists() )
             {
                 getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName() );
                 wagon.get( remotePath, temp );
@@ -594,11 +658,11 @@ public class DefaultRepositoryProxyConnectors
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
                 {
-                    getLogger().debug(
-                                      "Not downloaded, as local file is newer than remote side: "
-                                          + localFile.getAbsolutePath() );
+                    throw new NotModifiedException( "Not downloaded, as local file is newer than remote side: "
+                                                    + localFile.getAbsolutePath() );
                 }
-                else if ( temp.exists() )
+                
+                if ( temp.exists() )
                 {
                     getLogger().debug( "Downloaded successfully." );
                     moveTempToTarget( temp, localFile );
@@ -609,15 +673,13 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ResourceDoesNotExistException e )
         {
-            getLogger().debug( "Resource [" + remoteRepository.getURL() + "/" + remotePath + "] does not exist: "
-                                   + e.getMessage() );
-            throw e;
+            throw new NotFoundException( "Resource [" + remoteRepository.getURL() + "/" + remotePath
+                + "] does not exist: " + e.getMessage(), e );
         }
         catch ( WagonException e )
         {
-            getLogger().warn( "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:"
+            throw new ProxyException( "Download failure on resource [" + remoteRepository.getURL() + "/" + remotePath + "]:"
                                   + e.getMessage(), e );
-            throw e;
         }
         finally
         {

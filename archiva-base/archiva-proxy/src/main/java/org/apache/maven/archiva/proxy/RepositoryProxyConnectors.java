@@ -19,7 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;

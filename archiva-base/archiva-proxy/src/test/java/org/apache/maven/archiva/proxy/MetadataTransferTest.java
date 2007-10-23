@@ -141,8 +141,6 @@ public class MetadataTransferTest
         String requestedResource = "org/apache/maven/test/get-default-layout/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
 
-        setupTestableManagedRepository( requestedResource );
-
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
@@ -167,8 +165,6 @@ public class MetadataTransferTest
     {
         // Non-existant project metadata that does not exist locally and doesn't exist on remotes.
         String requestedResource = "org/apache/maven/test/get-bogus-artifact/maven-metadata.xml";
-        setupTestableManagedRepository( requestedResource );
-
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)

@@ -25,7 +25,7 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.wagon.TransferFailedException;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 
 import java.io.File;
 
@@ -377,7 +377,7 @@ public class ChecksumTransferTest
                          "3f7341545f21226b6f49a3c2704cb9be  get-default-layout-1.0.jar" );
     }
 
-    public void testGetChecksumTransferFailed()
+    public void testGetChecksumNotFoundOnRemote()
         throws Exception
     {
         String path = "org/apache/maven/test/get-checksum-sha1-only/1.0/get-checksum-sha1-only-1.0.jar";
@@ -396,12 +396,12 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        wagonMock.getIfNewer( path, new File( expectedFile.getAbsolutePath() + ".tmp" ), 0 );
-        wagonMockControl.setReturnValue( true );
-        wagonMock.getIfNewer( path + ".sha1", new File( expectedFile.getAbsolutePath() + ".sha1.tmp" ), 0 );
-        wagonMockControl.setReturnValue( true );
-        wagonMock.getIfNewer( path + ".md5", new File( expectedFile.getAbsolutePath() + ".md5.tmp" ), 0 );
-        wagonMockControl.setThrowable( new TransferFailedException( "transfer failed" ) );
+        wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
+        wagonMockControl.setVoidCallable();
+        wagonMock.get( path + ".sha1", new File( expectedFile.getAbsolutePath() + ".sha1.tmp" ) );
+        wagonMockControl.setVoidCallable();
+        wagonMock.get( path + ".md5", new File( expectedFile.getAbsolutePath() + ".md5.tmp" ) );
+        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Resource does not exist." ) );
         wagonMockControl.replay();
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -429,9 +429,11 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        
+        setManagedOlderThanRemote( expectedFile, remoteFile );
 
-        assertTrue( expectedFile.exists() );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
@@ -453,12 +455,14 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+
+        setManagedOlderThanRemote( expectedFile, remoteFile );
+        
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
-
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.IGNORED,
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -477,9 +481,11 @@ public class ChecksumTransferTest
         setupTestableManagedRepository( path );
 
         File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        
+        setManagedOlderThanRemote( expectedFile, remoteFile );
 
-        assertTrue( expectedFile.exists() );
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,

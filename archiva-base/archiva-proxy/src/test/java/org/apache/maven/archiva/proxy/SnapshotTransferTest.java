@@ -111,19 +111,20 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        
+        setManagedNewerThanRemote( expectedFile, remoteFile );
+        
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
-        expectedFile.setLastModified( getFutureDate().getTime() );
-
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1 );
 
+        // Attempt to download.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        // Should not have downloaded as managed is newer than remote.
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -225,12 +226,12 @@ public class SnapshotTransferTest
         setupTestableManagedRepository( path );
         
         File expectedFile = new File( managedDefaultDir, path );
+        File remoteFile = new File( REPOPATH_PROXIED1, path );
+
+        setManagedNewerThanRemote( expectedFile, remoteFile );
+        long expectedTimestamp = expectedFile.lastModified(); 
+        
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        assertTrue( expectedFile.exists() );
-
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
-        expectedFile.setLastModified( proxiedFile.lastModified() );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
@@ -238,7 +239,8 @@ public class SnapshotTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertNotDownloaded( downloadedFile );
+        assertNotModified( expectedFile, expectedTimestamp );
         assertNoTempFiles( expectedFile );
     }
 

@@ -137,7 +137,8 @@ public abstract class AbstractProxyTestCase
         assertNotNull( "Expected File should not be null.", expectedFile );
         assertNotNull( "Actual File should not be null.", actualFile );
 
-        assertTrue( "Check file exists.", actualFile.exists() );
+        assertTrue( "Check actual file exists.", actualFile.exists() );
+        assertEquals( "Check filename path is appropriate.", expectedFile.getCanonicalPath(), actualFile.getCanonicalPath() );
         assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
 
         String expectedContents = FileUtils.readFileToString( sourceFile, null );
@@ -486,6 +487,54 @@ public abstract class AbstractProxyTestCase
 
         // Copy directory structure.
         copyDirectoryStructure( sourceDir, destDir );
+    }
+
+    protected void setManagedNewerThanRemote( File managedFile, File remoteFile )
+    {
+        assertTrue( "Managed File should exist: ", managedFile.exists() );
+        assertTrue( "Remote File should exist: ", remoteFile.exists() );
+        
+        managedFile.setLastModified( remoteFile.lastModified() + 55000 );
+    }
+
+    protected void setManagedOlderThanRemote( File managedFile, File remoteFile )
+    {
+        assertTrue( "Managed File should exist: ", managedFile.exists() );
+        assertTrue( "Remote File should exist: ", remoteFile.exists() );
+        
+        managedFile.setLastModified( remoteFile.lastModified() - 55000 );
+    }
+
+    protected void assertNotModified( File file, long expectedModificationTime )
+    {
+        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.", 
+                      expectedModificationTime, file.lastModified() );
+    }
+
+    protected void assertNotExistsInManagedLegacyRepo( File file )
+        throws Exception
+    {
+        String managedLegacyPath = managedLegacyDir.getCanonicalPath();
+        String testFile = file.getCanonicalPath();
+    
+        assertTrue( "Unit Test Failure: File <" + testFile
+            + "> should be have been defined within the legacy managed path of <" + managedLegacyPath + ">", testFile
+            .startsWith( managedLegacyPath ) );
+    
+        assertFalse( "File < " + testFile + "> should not exist in managed legacy repository.", file.exists() );
+    }
+
+    protected void assertNotExistsInManagedDefaultRepo( File file )
+        throws Exception
+    {
+        String managedDefaultPath = managedDefaultDir.getCanonicalPath();
+        String testFile = file.getCanonicalPath();
+    
+        assertTrue( "Unit Test Failure: File <" + testFile
+            + "> should be have been defined within the managed default path of <" + managedDefaultPath + ">", testFile
+            .startsWith( managedDefaultPath ) );
+    
+        assertFalse( "File < " + testFile + "> should not exist in managed default repository.", file.exists() );
     }
 
     protected static Date getFutureDate()

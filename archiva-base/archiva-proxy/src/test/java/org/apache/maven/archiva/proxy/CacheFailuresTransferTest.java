@@ -26,7 +26,7 @@ import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.wagon.TransferFailedException;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 
 import java.io.File;
 
@@ -45,10 +45,11 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
+        setupTestableManagedRepository( path );
+        
+        assertNotExistsInManagedDefaultRepo( expectedFile );
+        
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
@@ -60,17 +61,16 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
 
-        wagonMock.getIfNewer( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ), 0 );
-        TransferFailedException failedException = new TransferFailedException( "transfer failed" );
-        wagonMockControl.setThrowable( failedException );
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMockControl.replay();
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
-
         wagonMockControl.verify();
+        
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -79,10 +79,12 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
+        
+        setupTestableManagedRepository( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        assertNotExistsInManagedDefaultRepo( expectedFile );
+        
+        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
@@ -94,9 +96,8 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
                        SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
 
-        wagonMock.getIfNewer( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ), 0 );
-        TransferFailedException failedException = new TransferFailedException( "transfer failed" );
-        wagonMockControl.setThrowable( failedException );
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMockControl.replay();
 
