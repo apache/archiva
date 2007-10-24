@@ -103,8 +103,17 @@ public class RepositoryServlet
 
             DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
 
+            server.setUseIndexHtml( true );
             server.addListener( audit );
         }
+    }
+    
+    @Override
+    protected void service( HttpServletRequest httpRequest, HttpServletResponse httpResponse )
+        throws ServletException, IOException
+    {
+        // Wrap the incoming request to adjust paths and whatnot.
+        super.service( new PolicingServletRequest( httpRequest ), httpResponse );
     }
 
     public synchronized ManagedRepositoryConfiguration getRepository( String prefix )

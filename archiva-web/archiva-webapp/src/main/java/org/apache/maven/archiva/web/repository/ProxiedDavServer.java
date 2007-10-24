@@ -138,7 +138,62 @@ public class ProxiedDavServer
         
         if ( isGet )
         {
-            fetchContentFromProxies( request );
+            // Default behaviour is to treat the resource natively.
+            String resource = request.getLogicalResource();
+            File resourceFile = new File( managedRepository.getRepoRoot(), resource );
+
+            // If this a directory resource, then we are likely browsing.
+            if ( resourceFile.exists() && resourceFile.isDirectory() )
+            {
+                // TODO: [MRM-440] - If webdav URL lacks a trailing /, navigating to all links in the listing return 404.
+                // TODO: Issue redirect with proper pathing.
+                
+                // Process the request.
+                davServer.process( request, response );
+                
+                // All done.
+                return;
+            }
+
+            // At this point the incoming request can either be in default or legacy layout format.
+            try
+            {
+                // Perform an adjustment of the resource to the managed repository expected path.
+                resource = repositoryRequest.toNativePath( request.getLogicalResource(), managedRepository );
+                resourceFile = new File( managedRepository.getRepoRoot(), resource );
+
+                // Adjust the pathInfo resource to be in the format that the dav server impl expects.
+                request.getRequest().setPathInfo( resource );
+
+                // Attempt to fetch the resource from any defined proxy.
+                fetchContentFromProxies( request, resource );
+            }
+            catch ( LayoutException e )
+            {
+                // Invalid resource, pass it on.
+                respondResourceMissing( request, response, e );
+
+                // All done.
+                return;
+            }
+
+            if ( resourceFile.exists() )
+            {
+                // [MRM-503] - Metadata file need Pragma:no-cache response header.
+                if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
+                {
+                    response.addHeader( "Pragma", "no-cache" );
+                    response.addHeader( "Cache-Control", "no-cache" );
+                }
+
+                // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
+
+                davServer.process( request, response );
+            }
+            else
+            {
+                respondResourceMissing( request, response, null );
+            }
         }
 
         if ( isPut )
@@ -156,36 +211,16 @@ public class ProxiedDavServer
             {
                 new File( rootDirectory, request.getLogicalResource() ).getParentFile().mkdirs();
             }
-        }
-
-        if ( isGet )
-        {
-            if ( resourceExists( request ) )
-            {
-                // [MRM-503] - Metadata file need Pragma:no-cache response header.
-                if ( request.getLogicalResource().endsWith( "/maven-metadata.xml" ) )
-                {
-                    response.addHeader( "Pragma", "no-cache" );
-                    response.addHeader( "Cache-Control", "no-cache" );
-                }
-
-                // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
-
-                davServer.process( request, response );
-            }
-            else
-            {
-                respondResourceMissing( request, response );
-            }
-        }
-
-        if ( isPut )
-        {
+            
+            // Allow the dav server to process the put request.
             davServer.process( request, response );
+            
+            // All done.
+            return;
         }
     }
 
-    private void respondResourceMissing( DavServerRequest request, HttpServletResponse response )
+    private void respondResourceMissing( DavServerRequest request, HttpServletResponse response, Throwable t )
     {
         response.setStatus( HttpServletResponse.SC_NOT_FOUND );
 
@@ -196,7 +231,6 @@ public class ProxiedDavServer
             missingUrl.append( request.getRequest().getServerName() ).append( ":" );
             missingUrl.append( request.getRequest().getServerPort() );
             missingUrl.append( request.getRequest().getServletPath() );
-            // missingUrl.append( request.getRequest().getPathInfo() );
 
             String message = "Error 404 Not Found";
 
@@ -217,6 +251,13 @@ public class ProxiedDavServer
             out.println( "\">" );
             out.print( missingUrl.toString() );
             out.println( "</a></p>" );
+            
+            if ( t != null )
+            {
+                out.println( "<pre>" );
+                t.printStackTrace( out );
+                out.println( "</pre>" );
+            }
 
             out.println( "</body></html>" );
 
@@ -228,74 +269,23 @@ public class ProxiedDavServer
         }
     }
 
-    private boolean resourceExists( DavServerRequest request )
-    {
-        String resource = request.getLogicalResource();
-        File resourceFile = new File( managedRepository.getRepoRoot(), resource );
-        return resourceFile.exists();
-    }
-
-    private void fetchContentFromProxies( DavServerRequest request )
+    private void fetchContentFromProxies( DavServerRequest request, String resource )
         throws ServletException
     {
-        String resource = request.getLogicalResource();
-        
-        // Cleanup bad requests from maven 1.
-        // Often seen is a double slash.
-        // example: http://hostname:8080/archiva/repository/internal//pmd/jars/pmd-3.0.jar
-        if ( resource.startsWith( "/" ) )
-        {
-            resource = resource.substring( 1 );
-        }
-
-        if ( resource.endsWith( ".sha1" ) || resource.endsWith( ".md5" ) )
+        if ( repositoryRequest.isSupportFile( resource ) )
         {
             // Checksums are fetched with artifact / metadata.
+            
+            // Need to adjust the path for the checksum resource.
             return;
         }
 
         // Is it a Metadata resource?
-        if ( resource.endsWith( "/" + MetadataTools.MAVEN_METADATA ) )
+        if ( repositoryRequest.isDefault( resource ) && repositoryRequest.isMetadata( resource ) )
         {
-            ProjectReference project;
-            VersionedReference versioned;
-
-            try
+            if ( fetchMetadataFromProxies( request, resource ) )
             {
-
-                versioned = metadataTools.toVersionedReference( resource );
-                if ( versioned != null )
-                {
-                    connectors.fetchFromProxies( managedRepository, versioned );
-                    request.getRequest().setPathInfo( metadataTools.toPath( versioned ) );
-                    return;
-                }
-            }
-            catch ( RepositoryMetadataException e )
-            {
-                /* eat it */
-            }
-            catch ( ProxyException e )
-            {
-                throw new ServletException( "Unable to fetch versioned metadata resource.", e );
-            }
-
-            try
-            {
-                project = metadataTools.toProjectReference( resource );
-                if ( project != null )
-                {
-                    connectors.fetchFromProxies( managedRepository, project );
-                    request.getRequest().setPathInfo( metadataTools.toPath( project ) );
-                }
-            }
-            catch ( RepositoryMetadataException e )
-            {
-                /* eat it */
-            }
-            catch ( ProxyException e )
-            {
-                throw new ServletException( "Unable to fetch project metadata resource.", e );
+                return;
             }
         }
 
@@ -324,6 +314,52 @@ public class ProxiedDavServer
         {
             throw new ServletException( "Unable to fetch artifact resource.", e );
         }
+    }
+
+    private boolean fetchMetadataFromProxies( DavServerRequest request, String resource )
+        throws ServletException
+    {
+        ProjectReference project;
+        VersionedReference versioned;
+
+        try
+        {
+
+            versioned = metadataTools.toVersionedReference( resource );
+            if ( versioned != null )
+            {
+                connectors.fetchFromProxies( managedRepository, versioned );
+                return true;
+            }
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            /* eat it */
+        }
+        catch ( ProxyException e )
+        {
+            throw new ServletException( "Unable to fetch versioned metadata resource.", e );
+        }
+
+        try
+        {
+            project = metadataTools.toProjectReference( resource );
+            if ( project != null )
+            {
+                connectors.fetchFromProxies( managedRepository, project );
+                return true;
+            }
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            /* eat it */
+        }
+        catch ( ProxyException e )
+        {
+            throw new ServletException( "Unable to fetch project metadata resource.", e );
+        }
+        
+        return false;
     }
 
     /**
@@ -399,6 +435,13 @@ public class ProxiedDavServer
         {
             // Invalid POM : ignore
         }
+    }
+    
+    @Override
+    public void setUseIndexHtml( boolean useIndexHtml )
+    {
+        super.setUseIndexHtml( useIndexHtml );
+        davServer.setUseIndexHtml( useIndexHtml );
     }
 
     public ManagedRepositoryContent getRepository()
