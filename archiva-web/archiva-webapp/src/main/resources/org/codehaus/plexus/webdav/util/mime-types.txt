@@ -12,6 +12,7 @@
 
 application/andrew-inset                 ez
 application/atom+xml                     atom
+application/java-archive                 jar
 application/mac-binhex40                 hqx
 application/mac-compactpro               cpt
 application/mathml+xml                   mathml
@@ -45,7 +46,6 @@ application/x-dvi                        dvi
 application/x-futuresplash               spl
 application/x-gtar                       gtar
 application/x-hdf                        hdf
-application/x-jar                        jar
 application/x-java-jnlp-file             jnlp
 application/x-javascript                 js
 application/x-koan                       skp skd skt skm

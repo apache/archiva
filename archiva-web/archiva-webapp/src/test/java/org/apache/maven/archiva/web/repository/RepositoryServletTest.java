@@ -315,6 +315,96 @@ public class RepositoryServletTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
     
+    public void testGetNoProxySnapshotArtifactDefaultLayout()
+        throws Exception
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+        assertRepositoryValid( servlet, REPOSITORY_ID );
+
+        String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
+        String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
+
+        File artifactFile = new File( repositoryLocation, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response OK", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+    }
+    
+    public void testGetNoProxySnapshotArtifactLegacyLayout()
+        throws Exception
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+        assertRepositoryValid( servlet, REPOSITORY_ID );
+
+        String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
+        String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
+
+        File artifactFile = new File( repositoryLocation, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + 
+                                                      "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response OK", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+    }
+    
+    public void testGetNoProxyTimestampedSnapshotArtifactDefaultLayout()
+        throws Exception
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+        assertRepositoryValid( servlet, REPOSITORY_ID );
+
+        String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-20050821.023400-1.jar";
+        String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
+
+        File artifactFile = new File( repositoryLocation, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response OK", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+    }
+    
+    public void testGetNoProxyTimestampedSnapshotArtifactLegacyLayout()
+        throws Exception
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+        assertRepositoryValid( servlet, REPOSITORY_ID );
+
+        String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-20050821.023400-1.jar";
+        String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
+
+        File artifactFile = new File( repositoryLocation, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/"
+            + "commons-lang/jars/commons-lang-2.1-20050821.023400-1.jar" );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response OK", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+    }
+    
     public void testMimeTypesAvailable()
         throws Exception
     {
@@ -325,9 +415,10 @@ public class RepositoryServletTest
         assertEquals( "sha1", "text/plain", mimeTypes.getMimeType( "foo.sha1" ) );
         assertEquals( "md5", "text/plain", mimeTypes.getMimeType( "foo.md5" ) );
         assertEquals( "pgp", "application/pgp-encrypted", mimeTypes.getMimeType( "foo.pgp" ) );
+        assertEquals( "jar", "application/java-archive", mimeTypes.getMimeType( "foo.jar" ) );
     }
 
-    private void dumpResponse( WebResponse response )
+    public static void dumpResponse( WebResponse response )
     {
         System.out.println( "---(response)---" );
         System.out.println( "" + response.getResponseCode() + " " + response.getResponseMessage() );
@@ -355,18 +446,14 @@ public class RepositoryServletTest
         ManagedRepositoryConfiguration repository = servlet.getRepository( repoId );
         assertNotNull( "Archiva Managed Repository id:<" + repoId + "> should exist.", repository );
         File repoRoot = new File( repository.getLocation() );
-        assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.", repoRoot
-            .exists()
-            && repoRoot.isDirectory() );
+        assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.", 
+                    repoRoot.exists() && repoRoot.isDirectory() );
     }
 
     private void saveConfiguration()
         throws Exception
     {
         configuration.save( configuration.getConfiguration() );
-        // TODO it would be better to use a mock configuration and "save" to more accurately reflect the calls made
-        // RepositoryServlet servlet
-        // servlet.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
     }
 
     private ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
