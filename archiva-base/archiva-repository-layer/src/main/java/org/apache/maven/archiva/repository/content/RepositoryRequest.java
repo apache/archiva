@@ -99,13 +99,30 @@ public class RepositoryRequest
     public ArtifactReference toArtifactReference( String requestedPath )
         throws LayoutException
     {
-        if ( isDefault( requestedPath ) )
+        if ( StringUtils.isBlank( requestedPath ) )
         {
-            return DefaultPathParser.toArtifactReference( requestedPath );
+            throw new LayoutException( "Blank request path is not a valid." );
         }
-        else if ( isLegacy( requestedPath ) )
+        
+        String path = requestedPath;
+        while ( path.startsWith( "/" ) )
         {
-            return LegacyPathParser.toArtifactReference( requestedPath );
+            path = path.substring( 1 );
+
+            // Only slash? that's bad, mmm-kay?
+            if ( "/".equals( path ) )
+            {
+                throw new LayoutException( "Invalid request path: Slash only." );
+            }
+        }
+
+        if ( isDefault( path ) )
+        {
+            return DefaultPathParser.toArtifactReference( path );
+        }
+        else if ( isLegacy( path ) )
+        {
+            return LegacyPathParser.toArtifactReference( path );
         }
         else
         {

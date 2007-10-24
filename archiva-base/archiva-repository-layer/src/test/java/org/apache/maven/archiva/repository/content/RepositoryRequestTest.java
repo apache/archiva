@@ -127,8 +127,10 @@ public class RepositoryRequestTest
         throws Exception
     {
         assertValid( "org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", null, "pom" );
+        // Starting slash should not prevent detection.
+        assertValid( "/org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", null, "pom" );
     }
-
+    
     public void testValidDefaultDerbyPom()
         throws Exception
     {
