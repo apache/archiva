@@ -40,6 +40,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.codehaus.plexus.webdav.AbstractDavServerComponent;
 import org.codehaus.plexus.webdav.DavServerComponent;
 import org.codehaus.plexus.webdav.DavServerException;
+import org.codehaus.plexus.webdav.DavServerListener;
 import org.codehaus.plexus.webdav.servlet.DavServerRequest;
 import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
 
@@ -438,12 +439,37 @@ public class ProxiedDavServer
     }
     
     @Override
+    public void addListener( DavServerListener listener )
+    {
+        super.addListener( listener );
+        davServer.addListener( listener );
+    }
+    
+    @Override
+    public boolean isUseIndexHtml()
+    {
+        return davServer.isUseIndexHtml();
+    }
+    
+    @Override
+    public boolean hasResource( String resource )
+    {
+        return davServer.hasResource( resource );
+    }
+    
+    @Override
+    public void removeListener( DavServerListener listener )
+    {
+        davServer.removeListener( listener );
+    }
+    
+    @Override
     public void setUseIndexHtml( boolean useIndexHtml )
     {
         super.setUseIndexHtml( useIndexHtml );
         davServer.setUseIndexHtml( useIndexHtml );
     }
-
+    
     public ManagedRepositoryContent getRepository()
     {
         return managedRepository;
