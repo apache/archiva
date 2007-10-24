@@ -292,6 +292,29 @@ public class RepositoryServletTest
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
     
+    public void testGetNoProxyArtifactLegacyLayout()
+        throws Exception
+    {
+        RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
+        assertNotNull( servlet );
+        assertRepositoryValid( servlet, REPOSITORY_ID );
+
+        String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
+        String expectedArtifactContents = "dummy-commons-lang-artifact";
+
+        File artifactFile = new File( repositoryLocation, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + 
+                                                      "commons-lang/jars/commons-lang-2.1.jar" );
+        WebResponse response = sc.getResponse( request );
+        assertEquals( "Response OK", HttpServletResponse.SC_OK, response.getResponseCode() );
+
+        assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
+    }
+    
     public void testMimeTypesAvailable()
         throws Exception
     {
