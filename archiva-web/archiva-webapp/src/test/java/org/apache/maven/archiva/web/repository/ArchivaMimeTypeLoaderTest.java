@@ -19,31 +19,29 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.codehaus.plexus.webdav.servlet.DavServerRequest;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.webdav.util.MimeTypes;
 
 /**
- * UnauthenticatedRepositoryServlet 
+ * ArchivaMimeTypesTest 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class UnauthenticatedRepositoryServlet
-    extends RepositoryServlet
+public class ArchivaMimeTypeLoaderTest
+    extends PlexusTestCase
 {
-    public boolean isAuthorized( DavServerRequest davRequest, HttpServletResponse response )
-        throws ServletException, IOException
+    public void testArchivaTypes()
+        throws Exception
     {
-        return true;
-    }
-    
-    @Override
-    public boolean isAuthenticated( DavServerRequest davRequest, HttpServletResponse response )
-        throws ServletException, IOException
-    {
-        return true;
+        lookup( ArchivaMimeTypeLoader.class );
+        MimeTypes mimeTypes = (MimeTypes) lookup( MimeTypes.class );
+        assertNotNull( mimeTypes );
+
+        // Test for some added types.
+        assertEquals( "sha1", "text/plain", mimeTypes.getMimeType( "foo.sha1" ) );
+        assertEquals( "md5", "text/plain", mimeTypes.getMimeType( "foo.md5" ) );
+        assertEquals( "pgp", "application/pgp-encrypted", mimeTypes.getMimeType( "foo.pgp" ) );
+        assertEquals( "jar", "application/java-archive", mimeTypes.getMimeType( "foo.jar" ) );
     }
 }

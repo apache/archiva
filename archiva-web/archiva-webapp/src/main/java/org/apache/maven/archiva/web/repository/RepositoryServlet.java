@@ -68,12 +68,16 @@ public class RepositoryServlet
     private ArchivaConfiguration configuration;
 
     private Map<String, ManagedRepositoryConfiguration> repositoryMap;
+    
+    private ArchivaMimeTypeLoader mimeTypeLoader;
 
     public synchronized void initComponents()
         throws ServletException
     {
         super.initComponents();
-
+        
+        mimeTypeLoader = (ArchivaMimeTypeLoader) lookup( ArchivaMimeTypeLoader.class.getName() );
+        
         securitySystem = (SecuritySystem) lookup( SecuritySystem.ROLE );
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
         audit = (AuditLog) lookup( AuditLog.ROLE );
@@ -106,6 +110,53 @@ public class RepositoryServlet
             server.setUseIndexHtml( true );
             server.addListener( audit );
         }
+    }
+    
+    @Override
+    public void destroy()
+    {
+        try
+        {
+            release( securitySystem );
+        }
+        catch ( ServletException e )
+        {
+            log( "Unable to release SecuritySystem : " + e.getMessage(), e );
+        }
+        try
+        {
+            release( httpAuth );
+        }
+        catch ( ServletException e )
+        {
+            log( "Unable to release HttpAuth : " + e.getMessage(), e );
+        }
+        try
+        {
+            release( audit );
+        }
+        catch ( ServletException e )
+        {
+            log( "Unable to release AuditLog : " + e.getMessage(), e );
+        }
+        try
+        {
+            release( configuration );
+        }
+        catch ( ServletException e )
+        {
+            log( "Unable to release ArchivaConfiguration : " + e.getMessage(), e );
+        }
+        try
+        {
+            release( mimeTypeLoader );
+        }
+        catch ( ServletException e )
+        {
+            log( "Unable to release ArchivaMimeTypeLoader : " + e.getMessage(), e );
+        }
+
+        super.destroy();
     }
     
     @Override

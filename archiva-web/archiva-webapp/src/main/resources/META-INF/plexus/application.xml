@@ -198,6 +198,15 @@
         </otherProperties>
       </configuration>
     </component>
+    
+    <component>
+      <role>org.codehaus.plexus.webdav.util.MimeTypes</role>
+      <implementation>org.codehaus.plexus.webdav.util.MimeTypes</implementation>
+      <description>MimeTypes</description>
+      <configuration>
+        <resource>archiva-mime-types.txt</resource>
+      </configuration>
+    </component>
 
     <!--
      | Logger manager
