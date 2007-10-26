@@ -41,22 +41,26 @@ public class ArchivaArtifact
     {
         if ( empty( groupId ) )
         {
-            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty groupId." );
+            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty groupId ["
+                + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
         }
 
         if ( empty( artifactId ) )
         {
-            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty artifactId." );
+            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty artifactId ["
+                + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
         }
 
         if ( empty( version ) )
         {
-            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty version." );
+            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty version ["
+                + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
         }
 
         if ( empty( type ) )
         {
-            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty type." );
+            throw new IllegalArgumentException( "Unable to create ArchivaArtifact with empty type ["
+                + Keys.toKey( groupId, artifactId, version, classifier, type ) + "]" );
         }
 
         model = new ArchivaArtifactModel();

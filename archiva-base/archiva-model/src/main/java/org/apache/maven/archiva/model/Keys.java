@@ -34,18 +34,23 @@ public class Keys
     {
         return toKey( model.getGroupId(), model.getArtifactId(), model.getVersion() );
     }
-
-    public static String toKey( ArtifactReference ref )
+    
+    public static String toKey( String groupId, String artifactId, String version, String classifier, String type )
     {
         StringBuffer key = new StringBuffer();
 
-        key.append( ref.getGroupId() ).append( ":" );
-        key.append( ref.getArtifactId() ).append( ":" );
-        key.append( ref.getVersion() ).append( ":" );
-        key.append( StringUtils.defaultString( ref.getClassifier() ) ).append( ":" );
-        key.append( ref.getType() );
+        key.append( groupId ).append( ":" );
+        key.append( artifactId ).append( ":" );
+        key.append( version ).append( ":" );
+        key.append( StringUtils.defaultString( classifier ) ).append( ":" );
+        key.append( type );
 
         return key.toString();
+    }
+
+    public static String toKey( ArtifactReference ref )
+    {
+        return toKey( ref.getGroupId(), ref.getArtifactId(), ref.getVersion(), ref.getClassifier(), ref.getType() );
     }
 
     public static String toKey( ProjectReference ref )
@@ -71,12 +76,6 @@ public class Keys
     
     public static String toKey( VersionedReference ref )
     {
-        StringBuffer key = new StringBuffer();
-
-        key.append( ref.getGroupId() ).append( ":" );
-        key.append( ref.getArtifactId() ).append( ":" );
-        key.append( ref.getVersion() );
-
-        return key.toString();
+        return toKey( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
     }
 }
