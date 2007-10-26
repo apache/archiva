@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva</name>
-  <version>1.0-beta-4-SNAPSHOT</version>
+  <version>1.0-beta-3-SNAPSHOT</version>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
