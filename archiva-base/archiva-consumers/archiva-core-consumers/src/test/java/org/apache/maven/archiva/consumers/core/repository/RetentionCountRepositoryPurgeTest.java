@@ -20,7 +20,12 @@ package org.apache.maven.archiva.consumers.core.repository;
 */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 
 /**
  * Test RetentionsCountRepositoryPurgeTest
@@ -36,8 +41,13 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
+        Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
+        
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), dao,
-                                                       getRepoConfiguration().getRetentionCount() );
+                                                       getRepoConfiguration().getRetentionCount(), map );
     }
 
     /**

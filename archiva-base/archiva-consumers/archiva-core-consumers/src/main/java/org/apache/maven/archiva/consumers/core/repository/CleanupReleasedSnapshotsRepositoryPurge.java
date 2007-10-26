@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -68,9 +70,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     private MetadataTools metadataTools;
 
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                                    MetadataTools metadataTools )
+                    MetadataTools metadataTools, Map<String, RepositoryContentIndex> indices )
     {
-        super( repository, artifactDao );
+        super( repository, artifactDao, indices );
         this.metadataTools = metadataTools;
     }
 

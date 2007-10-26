@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
@@ -32,6 +33,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -45,9 +47,9 @@ public class RetentionCountRepositoryPurge
     private int retentionCount;
 
     public RetentionCountRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                          int retentionCount )
+                                          int retentionCount, Map<String, RepositoryContentIndex> indices )
     {
-        super( repository, artifactDao );
+        super( repository, artifactDao, indices );
         this.retentionCount = retentionCount;
     }
 

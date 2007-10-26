@@ -20,28 +20,37 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class CleanupReleasedSnapshotsRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
-{
+{   
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
+        Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
+        
         MetadataTools metadataTools = (MetadataTools) lookup( MetadataTools.class );
         
-        repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), dao, metadataTools );
+        repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), dao, metadataTools, map );
     }
 
     public void testReleasedSnapshots()
@@ -50,6 +59,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         populateReleasedSnapshotsTest();
 
         String repoRoot = prepareTestRepo();
+        
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT );
 

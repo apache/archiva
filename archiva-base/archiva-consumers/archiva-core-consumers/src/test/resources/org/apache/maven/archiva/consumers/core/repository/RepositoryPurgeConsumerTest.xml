@@ -45,6 +45,11 @@
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
+          <role-hint>lucene</role-hint>
+          <field-name>indexFactory</field-name>
+        </requirement>
       </requirements>
       <configuration>
         <id>repository-purge</id>
@@ -121,6 +126,11 @@
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
+          <role-hint>lucene</role-hint>
+          <field-name>indexFactory</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -265,6 +275,13 @@
           </property>
         </otherProperties>
       </configuration>
+    </component>
+    
+    <!-- LuceneRepositoryIndexFactory -->
+    <component>
+      <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
+      <role-hint>lucene</role-hint>
+      <implementation>org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexFactoryStub</implementation>
     </component>
 
   </components>

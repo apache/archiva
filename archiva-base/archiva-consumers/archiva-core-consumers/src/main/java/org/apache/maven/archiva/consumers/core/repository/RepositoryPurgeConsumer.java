@@ -26,6 +26,8 @@ import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.database.ArchivaDAO;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -37,7 +39,9 @@ import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Consumer for removing old snapshots in the repository based on the criteria
@@ -98,6 +102,11 @@ public class RepositoryPurgeConsumer
     private RepositoryPurge cleanUp;
 
     private boolean deleteReleasedSnapshots;
+    
+    /**
+     * @plexus.requirement role-hint="lucene"
+     */
+    private RepositoryContentIndexFactory indexFactory;
 
     public String getId()
     {
@@ -129,22 +138,27 @@ public class RepositoryPurgeConsumer
     {
         try
         {
+            Map<String, RepositoryContentIndex> indices = new HashMap<String, RepositoryContentIndex>();
+            indices.put( "bytecode", indexFactory.createBytecodeIndex( repository ) );
+            indices.put( "hashcodes", indexFactory.createHashcodeIndex( repository ) );
+            indices.put( "filecontent", indexFactory.createFileContentIndex( repository ) );
+            
             ManagedRepositoryContent repositoryContent = repositoryFactory.getManagedRepositoryContent( repository
                 .getId() );
 
             if ( repository.getDaysOlder() != 0 )
             {
                 repoPurge = new DaysOldRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
-                    .getDaysOlder() );
+                    .getDaysOlder(), indices );
             }
             else
             {
                 repoPurge = new RetentionCountRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
-                    .getRetentionCount() );
+                    .getRetentionCount(), indices );
             }
 
             cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, dao.getArtifactDAO(),
-                                                                   metadataTools );
+                                                                   metadataTools, indices );
 
             deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
         }

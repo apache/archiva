@@ -21,7 +21,12 @@ package org.apache.maven.archiva.consumers.core.repository;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -35,8 +40,13 @@ public class DaysOldRepositoryPurgeTest
     {
         super.setUp();
 
+        Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
+        
         repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder() );
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), map );
     }
 
     private void setLastModified( String dirPath )

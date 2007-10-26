@@ -84,143 +84,156 @@ public class LuceneRepositoryContentIndex
     public void modifyRecords( Collection records )
         throws RepositoryIndexException
     {
-        IndexModifier indexModifier = null;
-        try
+        synchronized( repository )
         {
-            indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
-            indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
-
-            for ( Iterator i = records.iterator(); i.hasNext(); )
+            IndexModifier indexModifier = null;
+            try
             {
-                LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
-
-                if ( record != null )
+                indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
+                indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
+    
+                for ( Iterator i = records.iterator(); i.hasNext(); )
                 {
-                    Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
-
-                    indexModifier.deleteDocuments( term );
-
-                    Document document = indexHandlers.getConverter().convert( record );
-
-                    indexModifier.addDocument( document );
+                    LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
+    
+                    if ( record != null )
+                    {
+                        Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
+    
+                        indexModifier.deleteDocuments( term );
+    
+                        Document document = indexHandlers.getConverter().convert( record );
+    
+                        indexModifier.addDocument( document );
+                    }
                 }
+                indexModifier.optimize();
             }
-            indexModifier.optimize();
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
-        }
-        finally
-        {
-            closeQuietly( indexModifier );
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
+            }
+            finally
+            {
+                closeQuietly( indexModifier );
+            }
         }
     }
 
     public void modifyRecord( LuceneRepositoryContentRecord record )
         throws RepositoryIndexException
     {
-        IndexModifier indexModifier = null;
-        try
+        synchronized( repository )
         {
-            indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
-            indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
-
-            if ( record != null )
+            IndexModifier indexModifier = null;
+            try
             {
-                Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
-
-                indexModifier.deleteDocuments( term );
-
-                Document document = indexHandlers.getConverter().convert( record );
-
-                indexModifier.addDocument( document );
+                indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
+                indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
+    
+                if ( record != null )
+                {
+                    Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
+    
+                    indexModifier.deleteDocuments( term );
+    
+                    Document document = indexHandlers.getConverter().convert( record );
+    
+                    indexModifier.addDocument( document );
+                }
+                indexModifier.optimize();
             }
-            indexModifier.optimize();
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
-        }
-        finally
-        {
-            closeQuietly( indexModifier );
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Error updating index: " + e.getMessage(), e );
+            }
+            finally
+            {
+                closeQuietly( indexModifier );
+            }
         }
     }
+        
 
     private void addRecords( Collection records )
         throws RepositoryIndexException
     {
-        IndexWriter indexWriter;
-        try
+        synchronized( repository )
         {
-            indexWriter = new IndexWriter( indexLocation, indexHandlers.getAnalyzer(), !exists() );
-            indexWriter.setMaxFieldLength( MAX_FIELD_LENGTH );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Unable to open index", e );
-        }
-
-        try
-        {
-            for ( Iterator i = records.iterator(); i.hasNext(); )
+            IndexWriter indexWriter;
+            try
             {
-                LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
-
-                if ( record != null )
-                {
-                    Document document = indexHandlers.getConverter().convert( record );
-
-                    indexWriter.addDocument( document );
-                }
+                indexWriter = new IndexWriter( indexLocation, indexHandlers.getAnalyzer(), !exists() );
+                indexWriter.setMaxFieldLength( MAX_FIELD_LENGTH );
             }
-
-            indexWriter.optimize();
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryIndexException( "Failed to add an index document", e );
-        }
-        finally
-        {
-            closeQuietly( indexWriter );
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Unable to open index", e );
+            }
+    
+            try
+            {
+                for ( Iterator i = records.iterator(); i.hasNext(); )
+                {
+                    LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
+    
+                    if ( record != null )
+                    {
+                        Document document = indexHandlers.getConverter().convert( record );
+    
+                        indexWriter.addDocument( document );
+                    }
+                }
+    
+                indexWriter.optimize();
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryIndexException( "Failed to add an index document", e );
+            }
+            finally
+            {
+                closeQuietly( indexWriter );
+            }
         }
     }
 
     public void deleteRecords( Collection records )
         throws RepositoryIndexException
     {
-        if ( exists() )
+        synchronized( repository )
         {
-            IndexReader indexReader = null;
-            try
+            if ( exists() )
             {
-                indexReader = IndexReader.open( indexLocation );
-
-                for ( Iterator i = records.iterator(); i.hasNext(); )
+                IndexReader indexReader = null;
+                try
                 {
-                    LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
-
-                    if ( record != null )
+                    indexReader = IndexReader.open( indexLocation );
+    
+                    for ( Iterator i = records.iterator(); i.hasNext(); )
                     {
-                        Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
-
-                        indexReader.deleteDocuments( term );
+                        LuceneRepositoryContentRecord record = (LuceneRepositoryContentRecord) i.next();
+    
+                        if ( record != null )
+                        {
+                            Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
+                            
+                            indexReader.deleteDocuments( term );                            
+                        }
                     }
                 }
-            }
-            catch ( IOException e )
-            {
-                throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
-            }
-            finally
-            {
-                closeQuietly( indexReader );
+                catch ( IOException e )
+                {
+                    throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
+                }
+                finally
+                {
+                    closeQuietly( indexReader );
+                }
             }
         }
     }
-
+    
     public Collection getAllRecordKeys()
         throws RepositoryIndexException
     {
@@ -230,38 +243,41 @@ public class LuceneRepositoryContentIndex
     private List getAllFieldValues( String fieldName )
         throws RepositoryIndexException
     {
-        List keys = new ArrayList();
-
-        if ( exists() )
+        synchronized( repository )
         {
-            IndexReader indexReader = null;
-            TermEnum terms = null;
-            try
+            List keys = new ArrayList();
+    
+            if ( exists() )
             {
-                indexReader = IndexReader.open( indexLocation );
-
-                terms = indexReader.terms( new Term( fieldName, "" ) );
-                while ( fieldName.equals( terms.term().field() ) )
+                IndexReader indexReader = null;
+                TermEnum terms = null;
+                try
                 {
-                    keys.add( terms.term().text() );
-
-                    if ( !terms.next() )
+                    indexReader = IndexReader.open( indexLocation );
+    
+                    terms = indexReader.terms( new Term( fieldName, "" ) );
+                    while ( fieldName.equals( terms.term().field() ) )
                     {
-                        break;
+                        keys.add( terms.term().text() );
+    
+                        if ( !terms.next() )
+                        {
+                            break;
+                        }
                     }
                 }
+                catch ( IOException e )
+                {
+                    throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
+                }
+                finally
+                {
+                    closeQuietly( indexReader );
+                    closeQuietly( terms );
+                }
             }
-            catch ( IOException e )
-            {
-                throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
-            }
-            finally
-            {
-                closeQuietly( indexReader );
-                closeQuietly( terms );
-            }
+            return keys;
         }
-        return keys;
     }
     
     public Searchable getSearchable()

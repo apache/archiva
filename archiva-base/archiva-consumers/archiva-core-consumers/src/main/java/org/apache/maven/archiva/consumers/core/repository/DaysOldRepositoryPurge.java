@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
@@ -32,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -48,9 +50,9 @@ public class DaysOldRepositoryPurge
     private int daysOlder;
     
     public DaysOldRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                   int daysOlder )
+                                   int daysOlder, Map<String, RepositoryContentIndex> indices )
     {
-        super( repository, artifactDao );
+        super( repository, artifactDao, indices );
         this.daysOlder = daysOlder;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
         timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
