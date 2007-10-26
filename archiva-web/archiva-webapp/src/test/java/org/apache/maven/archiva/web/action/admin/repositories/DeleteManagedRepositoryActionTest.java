@@ -66,6 +66,12 @@ public class DeleteManagedRepositoryActionTest
 
     private File location;
 
+    @Override
+    protected String getCustomConfigurationName()
+    {
+        return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
+    }
+    
     protected void setUp()
         throws Exception
     {

@@ -30,12 +30,12 @@ import org.apache.maven.archiva.database.RepositoryProblemDAO;
 import org.apache.maven.archiva.database.SimpleConstraint;
 
 /**
- * DeleteManagedRepositoryArchivaDAOStub
+ * AbstractManagedRepositoryArchivaDAOStub
  * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  * @version
  */
-public class DeleteManagedRepositoryArchivaDAOStub
+public class AbstractManagedRepositoryArchivaDAOStub
     implements ArchivaDAO
 {
     /**

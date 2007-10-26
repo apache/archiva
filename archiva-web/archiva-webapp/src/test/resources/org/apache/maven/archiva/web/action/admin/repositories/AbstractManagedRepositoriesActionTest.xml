@@ -18,17 +18,21 @@
   -->
 
 <plexus>
-  <components>  
-  	<component>
+  <components>
+    <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
       <lifecycle-handler>basic</lifecycle-handler>
     </component>
+    
     <component>
-      <role>org.codehaus.plexus.redback.role.RoleManager</role>
-      <role-hint>default</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.RoleManagerStub</implementation>
+      <role>com.opensymphony.xwork.Action</role>
+      <role-hint>addManagedRepositoryAction</role-hint>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.AddManagedRepositoryAction</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <!--  no requirements set  -->
     </component>
+    
     <component>
       <role>com.opensymphony.xwork.Action</role>
       <role-hint>deleteManagedRepositoryAction</role-hint>
@@ -42,26 +46,36 @@
         </requirement>
       </requirements>
     </component>
-  	<component>
+    
+    <component>
+      <role>com.opensymphony.xwork.Action</role>
+      <role-hint>editManagedRepositoryAction</role-hint>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.EditManagedRepositoryAction</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+      <!--  no requirements set  -->
+    </component>
+    
+    <!-- DAO : Stubs -->
+    <component>
       <role>org.apache.maven.archiva.database.ArchivaDAO</role>
       <role-hint>jdo</role-hint>
-      <implementation>org.apache.maven.archiva.web.action.admin.repositories.DeleteManagedRepositoryArchivaDAOStub</implementation>
+      <implementation>org.apache.maven.archiva.web.action.admin.repositories.AbstractManagedRepositoryArchivaDAOStub</implementation>
       <requirements>
-      	<requirement>
-      		<role>org.apache.maven.archiva.database.ArtifactDAO</role>
-      		<role-hint>jdo</role-hint>
-      		<field-name>artifactDAO</field-name>
-      	</requirement>
-      	<requirement>
-      		<role>org.apache.maven.archiva.database.ProjectModelDAO</role>
-      		<role-hint>jdo</role-hint>
-      		<field-name>projectModelDAO</field-name>
-      	</requirement>
-      	<requirement>
-      		<role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
-      		<role-hint>jdo</role-hint>
-      		<field-name>repoContentStatisticsDAO</field-name>
-      	</requirement>      	 
+        <requirement>
+          <role>org.apache.maven.archiva.database.ArtifactDAO</role>
+          <role-hint>jdo</role-hint>
+          <field-name>artifactDAO</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.database.ProjectModelDAO</role>
+          <role-hint>jdo</role-hint>
+          <field-name>projectModelDAO</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.database.RepositoryContentStatisticsDAO</role>
+          <role-hint>jdo</role-hint>
+          <field-name>repoContentStatisticsDAO</field-name>
+        </requirement>         
       </requirements>            
     </component>
     <component>
@@ -79,5 +93,6 @@
       <role-hint>jdo</role-hint>
       <implementation>org.apache.maven.archiva.web.action.admin.repositories.RepositoryContentStatisticsDAOStub</implementation>
     </component>        
+    
   </components>
 </plexus>
