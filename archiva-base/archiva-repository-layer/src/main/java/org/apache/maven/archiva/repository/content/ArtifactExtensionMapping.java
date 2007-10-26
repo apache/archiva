@@ -67,7 +67,7 @@ public class ArtifactExtensionMapping
         }
 
         // Return type
-        return type;
+        return type.replace( '-', '.' );
     }
 
     public static String guessTypeFromFilename( File file )

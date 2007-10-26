@@ -143,10 +143,25 @@ public class DefaultPathParser
             }
 
             // Do we have a classifier?
-            artifact.setClassifier( parser.remaining() );
-
-            // Set the type.
-            artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+            switch(parser.seperator())
+            {
+                case '-':
+                    // Definately a classifier.
+                    artifact.setClassifier( parser.remaining() );
+                    
+                    // Set the type.
+                    artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+                    break;
+                case '.':
+                    // We have an dual extension possibility.
+                    String extension = parser.remaining() + '.' + parser.getExtension();
+                    artifact.setType( extension.replace( '.', '-' ) );
+                    break;
+                case 0:
+                    // End of the filename, only a simple extension left. - Set the type.
+                    artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+                    break;
+            }
             
             // Special case for maven plugins
             if ( StringUtils.equals( "jar", artifact.getType() ) && 

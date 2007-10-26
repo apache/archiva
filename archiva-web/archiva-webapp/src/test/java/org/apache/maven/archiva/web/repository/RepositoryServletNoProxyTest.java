@@ -217,4 +217,25 @@ public class RepositoryServletNoProxyTest
 
         assertEquals( "Expected file contents", expectedArtifactContents, response.getText() );
     }
+    
+    /**
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
+     */
+    public void testGetNoProxyDualExtensionDefaultLayout()
+        throws Exception
+    {
+        String expectedContents = "the-contents-of-the-dual-extension";
+        String dualExtensionPath = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
+
+        File checksumFile = new File( repoRootInternal, dualExtensionPath );
+        checksumFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( checksumFile, expectedContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + dualExtensionPath );
+        WebResponse response = sc.getResponse( request );
+        assertResponseOK( response );
+
+        assertEquals( "Expected file contents", expectedContents, response.getText() );
+    }
 }

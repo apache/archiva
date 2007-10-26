@@ -52,6 +52,22 @@ public class DefaultPathParserTest
     }
 
     /** 
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error 
+     */
+    public void testGoodButDualExtensions()
+        throws LayoutException
+    {
+        String groupId = "org.project";
+        String artifactId = "example-presentation";
+        String version = "3.2";
+        String classifier = null;
+        String type = "xml-zip";
+        String path = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+    
+    /** 
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      * @throws LayoutException 

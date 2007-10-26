@@ -295,6 +295,33 @@ public class RepositoryRequestTest
         return createManagedRepositoryContent( "test-internal", "Internal Test Repo", repoRoot, layout );
     }
     
+    /**
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
+     */
+    public void testToNativePathArtifactDefaultToDefaultDualExtension()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "default" );
+
+        // Test (artifact) default to default - dual extension
+        assertEquals( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip", repoRequest
+            .toNativePath( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip", repository ) );
+    }
+    
+    /**
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
+     */
+    public void testToNativePathArtifactLegacyToDefaultDualExtension()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "default" );
+
+        // Test (artifact) legacy to default - dual extension
+        // NOTE: The detection of a dual extension is flawed.
+        assertEquals( "org/project/example-presentation/3.2.xml/example-presentation-3.2.xml.zip", repoRequest
+            .toNativePath( "org.project/zips/example-presentation-3.2.xml.zip", repository ) );
+    }
+    
     public void testToNativePathMetadataDefaultToDefault()
         throws Exception
     {

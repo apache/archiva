@@ -113,6 +113,28 @@ public class FilenameParser
 
         return null;
     }
+    
+    /**
+     * Get the current seperator character.
+     * 
+     * @return the seperator character (either '.' or '-'), or 0 if no seperator character available.
+     */
+    protected char seperator()
+    {
+        // Past the end of the string?
+        if ( offset >= name.length() )
+        {
+            return 0;
+        }
+
+        // Before the start of the string?
+        if ( offset <= 0 )
+        {
+            return 0;
+        }
+
+        return name.charAt( offset - 1 );
+    }
 
     protected String getName()
     {
@@ -207,4 +229,6 @@ public class FilenameParser
 
         return ver.toString();
     }
+
+    
 }

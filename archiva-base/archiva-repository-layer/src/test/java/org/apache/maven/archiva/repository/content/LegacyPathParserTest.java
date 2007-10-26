@@ -58,6 +58,21 @@ public class LegacyPathParserTest
     {
         assertBadPath( "org.apache.maven.test/jars/artifactId-1.0.war", "wrong package extension" );
     }
+    
+    /** 
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error 
+     */
+    public void testGoodButDualExtensions()
+        throws LayoutException
+    {
+        String groupId = "org.project";
+        String artifactId = "example-presentation";
+        String version = "3.2.xml";
+        String type = "distribution-zip";
+        String path = "org.project/zips/example-presentation-3.2.xml.zip";
+
+        assertLayout( path, groupId, artifactId, version, type );
+    }
 
     /** 
      * [MRM-432] Oddball version spec.

@@ -97,10 +97,25 @@ public class FilenameParserTest
 
         assertEquals( "ganymede-ssh2", parser.expect( "ganymede-ssh2" ) );
         assertEquals( "build250", parser.expect( "build250" ) );
+        assertEquals( '-', parser.seperator() );
         assertEquals( "sources", parser.remaining() );
         
         assertNull( parser.expect( "jar" ) );
     }
+    
+    public void testExpectWithRemainingDualExtensions()
+    {
+        FilenameParser parser = new FilenameParser( "example-presentation-3.2.xml.zip" );
+
+        assertEquals( "example-presentation-3.2.xml", parser.getName() );
+        assertEquals( "zip", parser.getExtension() );
+
+        assertEquals( "example-presentation", parser.expect( "example-presentation" ) );
+        assertEquals( "3.2", parser.expect( "3.2" ) );
+        assertEquals( '.', parser.seperator() );
+        assertEquals( "xml", parser.remaining() );
+        
+   }
     
     public void testNextNonVersion()
     {
