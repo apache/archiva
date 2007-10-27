@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.tags;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.dependency.DependencyGraphFactory;
 import org.apache.maven.archiva.dependency.graph.DependencyGraph;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder;
@@ -31,6 +32,7 @@ import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphWalker;
 import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.DependencyScope;
+import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -40,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 
 /**
@@ -113,22 +114,38 @@ public class DependencyTree
         }
     }
 
-    public List gatherTreeList( String groupId, String artifactId, String modelVersion, String nodevar,
-                                PageContext pageContext )
-        throws JspException
+    public List<TreeEntry> gatherTreeList( String groupId, String artifactId, String modelVersion, String nodevar,
+                                PageContext pageContext ) throws ArchivaException
     {
         if ( StringUtils.isBlank( groupId ) )
         {
-            String emsg = "Error generating dependency tree: groupId is blank.";
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: groupId is blank.";
             getLogger().error( emsg );
-            throw new JspException( emsg );
+            throw new ArchivaException( emsg );
+        }
+
+        if ( StringUtils.isBlank( artifactId ) )
+        {
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: artifactId is blank.";
+            getLogger().error( emsg );
+            throw new ArchivaException( emsg );
+        }
+
+        if ( StringUtils.isBlank( modelVersion ) )
+        {
+            String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
+                + "]: version is blank.";
+            getLogger().error( emsg );
+            throw new ArchivaException( emsg );
         }
 
         DependencyGraph graph = fetchGraph( groupId, artifactId, modelVersion );
 
         if ( graph == null )
         {
-            throw new JspException( "Graph is null." );
+            throw new ArchivaException( "Graph is unexpectedly null." );
         }
 
         TreeListVisitor treeListVisitor = new TreeListVisitor();
@@ -141,22 +158,22 @@ public class DependencyTree
     class TreeListVisitor
         extends BaseVisitor
     {
-        private List list;
+        private List<TreeEntry> list;
 
         private int walkDepth;
 
         private int outputDepth;
 
-        private Stack entryStack = new Stack();
+        private Stack<TreeEntry> entryStack = new Stack<TreeEntry>();
 
         private TreeEntry currentEntry;
 
         public TreeListVisitor()
         {
-            this.list = new ArrayList();
+            this.list = new ArrayList<TreeEntry>();
         }
 
-        public List getList()
+        public List<TreeEntry> getList()
         {
             return this.list;
         }
@@ -214,6 +231,7 @@ public class DependencyTree
     }
 
     private DependencyGraph fetchGraph( String groupId, String artifactId, String modelVersion )
+        throws ArchivaException
     {
         // TODO Cache the results to disk, in XML format, in the same place as the artifact is located.
 
@@ -225,13 +243,14 @@ public class DependencyTree
         try
         {
             DependencyGraph depGraph = graphFactory.getGraph( projectRef );
- 
+
             return depGraph;
         }
         catch ( GraphTaskException e )
         {
-            getLogger().warn( "Unable to get Graph: " + e.getMessage(), e );
-            return null;
+            String emsg = "Unable to generate graph for [" + Keys.toKey( projectRef ) + "] : " + e.getMessage();
+            getLogger().warn( emsg, e );
+            throw new ArchivaException( emsg, e );
         }
     }
 

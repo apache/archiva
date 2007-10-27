@@ -20,11 +20,14 @@ package org.apache.maven.archiva.web.tags;
  */
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.web.tags.DependencyTree.TreeEntry;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,7 +67,7 @@ public class DependencyTreeTag
 
     private Iterator treeIterator;
 
-    private List tree;
+    private List<TreeEntry> tree;
 
     private TreeEntry currentTreeEntry;
 
@@ -125,20 +128,30 @@ public class DependencyTreeTag
             nodevar = "node";
         }
 
-        this.tree = deptree.gatherTreeList( groupId, artifactId, modelVersion, nodevar, pageContext );
-
-        if ( CollectionUtils.isEmpty( this.tree ) )
-        {
-            return SKIP_BODY;
-        }
-
-        treeIterator = tree.iterator();
-
         out( "<div class=\"dependency-graph\">" );
-
-        currentTreeEntry = (TreeEntry) treeIterator.next();
-        out( currentTreeEntry.getPre() );
-        exposeVariables();
+        try
+        {
+            this.tree = deptree.gatherTreeList( groupId, artifactId, modelVersion, nodevar, pageContext );
+    
+            if ( CollectionUtils.isEmpty( this.tree ) )
+            {
+                return SKIP_BODY;
+            }
+    
+            treeIterator = tree.iterator();
+    
+            currentTreeEntry = (TreeEntry) treeIterator.next();
+            out( currentTreeEntry.getPre() );
+            exposeVariables();
+        }
+        catch ( ArchivaException e )
+        {
+            treeIterator = IteratorUtils.EMPTY_LIST_ITERATOR;
+            
+            out("<pre>");
+            e.printStackTrace( new PrintWriter( pageContext.getOut() ) );
+            out("</pre>");
+        }
 
         return EVAL_BODY_INCLUDE;
     }
