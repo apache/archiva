@@ -120,6 +120,7 @@ public abstract class AbstractRepositoryPurge
             bytecodeRecord.setArtifact( artifact );
             bytecodeRecords.add( bytecodeRecord );
 
+            // TODO: this needs to be logged
             artifactFile.delete();
             purgeSupportFiles( artifactFile );
 
@@ -178,7 +179,7 @@ public abstract class AbstractRepositoryPurge
             if ( file.exists() && file.isFile() )
             {
                 file.delete();
-                // TODO: log that it was deleted?
+                // TODO: log that it was deleted
             }
         }
     }
