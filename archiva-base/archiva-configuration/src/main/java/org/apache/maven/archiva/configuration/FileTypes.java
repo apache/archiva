@@ -19,19 +19,19 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
-import org.apache.maven.archiva.xml.ElementTextListClosure;
-import org.apache.maven.archiva.xml.XMLException;
-import org.apache.maven.archiva.xml.XMLReader;
+import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.dom4j.Element;
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
 
-import java.net.URL;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +46,7 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
  */
 public class FileTypes
+    extends AbstractLogEnabled
     implements Initializable
 {
     public static final String ARTIFACTS = "artifacts";
@@ -108,57 +109,59 @@ public class FileTypes
     public void initialize()
         throws InitializationException
     {
+        /* Initialize Default Type Map */
         defaultTypeMap.clear();
 
+        String errMsg = "Unable to load default archiva configuration for FileTypes: ";
+        
         try
         {
-            URL defaultArchivaXml = this.getClass()
-                .getResource( "/org/apache/maven/archiva/configuration/default-archiva.xml" );
+            CommonsConfigurationRegistry commonsRegistry = new CommonsConfigurationRegistry();
 
-            XMLReader reader = new XMLReader( "configuration", defaultArchivaXml );
-            List<Element> resp = reader.getElementList( "//configuration/repositoryScanning/fileTypes/fileType" );
+            // Configure commonsRegistry
+            Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
+            fld.setAccessible( true );
+            fld.set( commonsRegistry, new CombinedConfiguration() );
+            commonsRegistry.enableLogging( getLogger() );
+            commonsRegistry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml" );
+            
+            // Read configuration as it was intended.
+            ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();
+            Configuration defaultConfig = configReader.read( commonsRegistry );
 
-            CollectionUtils.forAllDo( resp, new AddFileTypeToDefaultMap() );
+            // Store the default file type declaration.
+            List<FileType> filetypes = defaultConfig.getRepositoryScanning().getFileTypes();
+            for ( FileType filetype : filetypes )
+            {
+                List<String> patterns = defaultTypeMap.get( filetype.getId() );
+                if ( patterns == null )
+                {
+                    patterns = new ArrayList<String>();
+                }
+                patterns.addAll( filetype.getPatterns() );
+
+                defaultTypeMap.put( filetype.getId(), patterns );
+            }
         }
-        catch ( XMLException e )
+        catch ( RegistryException e )
         {
-            throw new InitializationException( "Unable to setup default filetype maps.", e );
+            throw new InitializationException( errMsg + e.getMessage(), e );
         }
-    }
-
-    class AddFileTypeToDefaultMap
-        implements Closure
-    {
-        public void execute( Object input )
+        catch ( SecurityException e )
         {
-            if ( !( input instanceof Element ) )
-            {
-                // Not an element. skip.
-                return;
-            }
-
-            Element elem = (Element) input;
-            if ( !StringUtils.equals( "fileType", elem.getName() ) )
-            {
-                // Not a 'fileType' element. skip.
-                return;
-            }
-
-            String id = elem.elementText( "id" );
-            Element patternsElem = elem.element( "patterns" );
-            if ( patternsElem == null )
-            {
-                // No patterns. skip.
-                return;
-            }
-
-            List<Element> patternElemList = patternsElem.elements( "pattern" );
-
-            ElementTextListClosure elemTextList = new ElementTextListClosure();
-            CollectionUtils.forAllDo( patternElemList, elemTextList );
-            List<String> patterns = elemTextList.getList();
-
-            defaultTypeMap.put( id, patterns );
+            throw new InitializationException( errMsg + e.getMessage(), e );
+        }
+        catch ( NoSuchFieldException e )
+        {
+            throw new InitializationException( errMsg + e.getMessage(), e );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            throw new InitializationException( errMsg + e.getMessage(), e );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new InitializationException( errMsg + e.getMessage(), e );
         }
     }
 }
