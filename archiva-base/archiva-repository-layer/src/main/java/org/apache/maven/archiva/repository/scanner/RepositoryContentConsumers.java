@@ -65,6 +65,10 @@ public class RepositoryContentConsumers
      */
     private List<InvalidRepositoryContentConsumer> availableInvalidConsumers;
 
+    private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
+
+    private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
+
     /**
      * <p>
      * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
@@ -113,14 +117,9 @@ public class RepositoryContentConsumers
     {
         Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<String, KnownRepositoryContentConsumer>();
 
-        List<String> knownSelected = getSelectedKnownConsumerIds();
-
-        for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+        for ( KnownRepositoryContentConsumer consumer : getSelectedKnownConsumers() )
         {
-            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-            {
-                consumerMap.put( consumer.getId(), consumer );
-            }
+            consumerMap.put( consumer.getId(), consumer );
         }
 
         return consumerMap;
@@ -136,14 +135,9 @@ public class RepositoryContentConsumers
     {
         Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<String, InvalidRepositoryContentConsumer>();
 
-        List<String> invalidSelected = getSelectedInvalidConsumerIds();
-
-        for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+        for ( InvalidRepositoryContentConsumer consumer : getSelectedInvalidConsumers() )
         {
-            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-            {
-                consumerMap.put( consumer.getId(), consumer );
-            }
+            consumerMap.put( consumer.getId(), consumer );
         }
 
         return consumerMap;
@@ -156,21 +150,24 @@ public class RepositoryContentConsumers
      * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
      *         by the active configuration.
      */
-    public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
+    public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
     {
-        List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
-
-        List<String> knownSelected = getSelectedKnownConsumerIds();
-
-        for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+        if ( selectedKnownConsumers == null )
         {
-            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-            {
-                ret.add( consumer );
-            }
-        }
+            List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
 
-        return ret;
+            List<String> knownSelected = getSelectedKnownConsumerIds();
+
+            for ( KnownRepositoryContentConsumer consumer : availableKnownConsumers )
+            {
+                if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+                {
+                    ret.add( consumer );
+                }
+            }
+            this.selectedKnownConsumers = ret;
+        }
+        return selectedKnownConsumers;
     }
 
     /**
@@ -180,21 +177,24 @@ public class RepositoryContentConsumers
      * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected
      *         by the active configuration.
      */
-    public List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
+    public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
     {
-        List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
-
-        List<String> invalidSelected = getSelectedInvalidConsumerIds();
-
-        for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+        if ( selectedInvalidConsumers == null )
         {
-            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
-            {
-                ret.add( consumer );
-            }
-        }
+            List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
 
-        return ret;
+            List<String> invalidSelected = getSelectedInvalidConsumerIds();
+
+            for ( InvalidRepositoryContentConsumer consumer : availableInvalidConsumers )
+            {
+                if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+                {
+                    ret.add( consumer );
+                }
+            }
+            selectedInvalidConsumers = ret;
+        }
+        return selectedInvalidConsumers;
     }
 
     /**
@@ -263,8 +263,10 @@ public class RepositoryContentConsumers
         {
             Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getLogger() );
 
-            CollectionUtils.forAllDo( availableKnownConsumers, triggerBeginScan );
-            CollectionUtils.forAllDo( availableInvalidConsumers, triggerBeginScan );
+            List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
+            List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();
+            CollectionUtils.forAllDo( selectedKnownConsumers, triggerBeginScan );
+            CollectionUtils.forAllDo( selectedInvalidConsumers, triggerBeginScan );
 
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
@@ -276,12 +278,12 @@ public class RepositoryContentConsumers
             predicate.setCaseSensitive( false );
             Closure processIfWanted = IfClosure.getInstance( predicate, closure );
 
-            CollectionUtils.forAllDo( availableKnownConsumers, processIfWanted );
+            CollectionUtils.forAllDo( selectedKnownConsumers, processIfWanted );
 
             if ( predicate.getWantedFileCount() <= 0 )
             {
                 // Nothing known processed this file.  It is invalid!
-                CollectionUtils.forAllDo( availableInvalidConsumers, closure );
+                CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
             }
         }
         finally
@@ -293,4 +295,13 @@ public class RepositoryContentConsumers
         }
     }
 
+    public void setSelectedKnownConsumers( List<KnownRepositoryContentConsumer> selectedKnownConsumers )
+    {
+        this.selectedKnownConsumers = selectedKnownConsumers;
+    }
+
+    public void setSelectedInvalidConsumers( List<InvalidRepositoryContentConsumer> selectedInvalidConsumers )
+    {
+        this.selectedInvalidConsumers = selectedInvalidConsumers;
+    }
 }

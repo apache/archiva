@@ -190,26 +190,35 @@ public class RepositoryContentConsumersTest
     {
         MockControl knownControl = MockControl.createNiceControl( KnownRepositoryContentConsumer.class );
         RepositoryContentConsumers consumers = lookupRepositoryConsumers();
-        KnownRepositoryContentConsumer knownConsumer = (KnownRepositoryContentConsumer) knownControl.getMock();
-        consumers.setAvailableKnownConsumers( Collections.singletonList( knownConsumer ) );
+        KnownRepositoryContentConsumer selectedKnownConsumer = (KnownRepositoryContentConsumer) knownControl.getMock();
+        KnownRepositoryContentConsumer unselectedKnownConsumer =
+            (KnownRepositoryContentConsumer) MockControl.createNiceControl(
+                KnownRepositoryContentConsumer.class ).getMock();
+        consumers.setAvailableKnownConsumers( Arrays.asList( selectedKnownConsumer, unselectedKnownConsumer ) );
+        consumers.setSelectedKnownConsumers( Collections.singletonList( selectedKnownConsumer ) );
 
         MockControl invalidControl = MockControl.createControl( InvalidRepositoryContentConsumer.class );
-        InvalidRepositoryContentConsumer invalidConsumer = (InvalidRepositoryContentConsumer) invalidControl.getMock();
-        consumers.setAvailableInvalidConsumers( Collections.singletonList( invalidConsumer ) );
+        InvalidRepositoryContentConsumer selectedInvalidConsumer =
+            (InvalidRepositoryContentConsumer) invalidControl.getMock();
+        InvalidRepositoryContentConsumer unselectedInvalidConsumer =
+            (InvalidRepositoryContentConsumer) MockControl.createControl(
+                InvalidRepositoryContentConsumer.class ).getMock();
+        consumers.setAvailableInvalidConsumers( Arrays.asList( selectedInvalidConsumer, unselectedInvalidConsumer ) );
+        consumers.setSelectedInvalidConsumers( Collections.singletonList( selectedInvalidConsumer ) );
 
         ManagedRepositoryConfiguration repo = createRepository( "id", "name", getTestFile( "target/test-repo" ) );
         File testFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
-        knownConsumer.beginScan( repo );
-        knownConsumer.getExcludes();
+        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
-        knownConsumer.getIncludes();
+        selectedKnownConsumer.getIncludes();
         knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
-        knownConsumer.processFile( _OS( "path/to/test-file.txt" ) );
+        selectedKnownConsumer.processFile( _OS( "path/to/test-file.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        invalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.beginScan( repo );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
 
@@ -223,17 +232,17 @@ public class RepositoryContentConsumersTest
 
         File notIncludedTestFile = getTestFile( "target/test-repo/path/to/test-file.xml" );
 
-        knownConsumer.beginScan( repo );
-        knownConsumer.getExcludes();
+        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.EMPTY_LIST );
-        knownConsumer.getIncludes();
+        selectedKnownConsumer.getIncludes();
         knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        invalidConsumer.beginScan( repo );
-        invalidConsumer.processFile( _OS( "path/to/test-file.xml" ) );
-        invalidConsumer.getId();
+        selectedInvalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.xml" ) );
+        selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
@@ -248,15 +257,15 @@ public class RepositoryContentConsumersTest
 
         File excludedTestFile = getTestFile( "target/test-repo/path/to/test-file.txt" );
 
-        knownConsumer.beginScan( repo );
-        knownConsumer.getExcludes();
+        selectedKnownConsumer.beginScan( repo );
+        selectedKnownConsumer.getExcludes();
         knownControl.setReturnValue( Collections.singletonList( "**/test-file.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay();
 
-        invalidConsumer.beginScan( repo );
-        invalidConsumer.processFile( _OS( "path/to/test-file.txt" ) );
-        invalidConsumer.getId();
+        selectedInvalidConsumer.beginScan( repo );
+        selectedInvalidConsumer.processFile( _OS( "path/to/test-file.txt" ) );
+        selectedInvalidConsumer.getId();
         invalidControl.setReturnValue( "invalid" );
         //        invalidConsumer.completeScan();
         invalidControl.replay();
