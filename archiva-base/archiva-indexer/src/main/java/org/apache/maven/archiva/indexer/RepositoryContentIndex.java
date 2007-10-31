@@ -80,6 +80,15 @@ public interface RepositoryContentIndex
      */
     void deleteRecords( Collection records )
         throws RepositoryIndexException;
+    
+    /**
+     * Delete a record from the index. Simply ignore the request any did not exist.
+     *
+     * @param record the record to be deleted
+     * @throws RepositoryIndexException if there is a problem removing the record
+     */
+    void deleteRecord( LuceneRepositoryContentRecord record )
+        throws RepositoryIndexException;
 
     /**
      * Retrieve all primary keys of records in the index.

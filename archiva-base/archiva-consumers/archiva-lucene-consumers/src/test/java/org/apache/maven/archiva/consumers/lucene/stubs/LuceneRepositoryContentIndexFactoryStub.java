@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers.core.repository.stubs;
+package org.apache.maven.archiva.consumers.lucene.stubs;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,6 +22,7 @@ package org.apache.maven.archiva.consumers.core.repository.stubs;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentIndex;
 
 /**
  * LuceneRepositoryContenIndexFactoryStub
@@ -35,8 +36,8 @@ public class LuceneRepositoryContentIndexFactoryStub
 
     public RepositoryContentIndex createBytecodeIndex( ManagedRepositoryConfiguration repository )
     {        
-        // TODO Auto-generated method stub
-        return new LuceneRepositoryContentIndexStub();
+        // TODO Auto-generated method stub        
+        return new LuceneRepositoryContentIndexStub(); 
     }
 
     public RepositoryContentIndex createFileContentIndex( ManagedRepositoryConfiguration repository )

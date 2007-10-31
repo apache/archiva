@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.consumers.core.repository.stubs;
+package org.apache.maven.archiva.consumers.lucene.stubs;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -129,9 +129,17 @@ public class LuceneRepositoryContentIndexStub
     
     public void deleteRecord( LuceneRepositoryContentRecord record )
         throws RepositoryIndexException
-    {        
-        // TODO Auto-generated method stub
+    {   
+        Assert.assertNotNull( record );      
         
+        // fail since the record to be deleted should only be the deleted-artifact-1.0.jar 
+        // according to the tests
+        if( record.getPrimaryKey().equals( 
+                "org/apache/maven/archiva/archiva-lucene-cleanup/1.0/archiva-lucene-cleanup-1.0.jar" ) && 
+                record.getPrimaryKey().equals( "org.apache.maven.archiva:archiva-lucene-cleanup:1.0:jar" ) )
+        {
+            Assert.fail();
+        }
     }
 
 }

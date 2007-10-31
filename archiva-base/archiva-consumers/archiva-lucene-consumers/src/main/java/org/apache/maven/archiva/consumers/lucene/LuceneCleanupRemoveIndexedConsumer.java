@@ -22,19 +22,27 @@ package org.apache.maven.archiva.consumers.lucene;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
+import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
+import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
 
+import java.io.File;
 import java.util.List;
 
 /**
- * LuceneCleanupRemoveIndexedConsumer 
- *
+ * LuceneCleanupRemoveIndexedConsumer
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
  * @plexus.component role="org.apache.maven.archiva.consumers.DatabaseCleanupConsumer"
- *                   role-hint="not-present-remove-indexed"
- *                   instantiation-strategy="per-lookup"
+ *                   role-hint="not-present-remove-indexed" instantiation-strategy="per-lookup"
  */
 public class LuceneCleanupRemoveIndexedConsumer
     extends AbstractMonitoredConsumer
@@ -49,6 +57,16 @@ public class LuceneCleanupRemoveIndexedConsumer
      * @plexus.configuration default-value="Remove indexed content if not present on filesystem."
      */
     private String description;
+
+    /**
+     * @plexus.requirement role-hint="lucene"
+     */
+    private RepositoryContentIndexFactory repoIndexFactory;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repoFactory;
 
     public void beginScan()
     {
@@ -71,8 +89,41 @@ public class LuceneCleanupRemoveIndexedConsumer
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
     {
-        // TODO Auto-generated method stub
+        try
+        {   
+            ManagedRepositoryContent repoContent =
+                repoFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
 
+            File file = new File( repoContent.getRepoRoot(), repoContent.toPath( artifact ) );
+            
+            if( !file.exists() )
+            {   
+                RepositoryContentIndex bytecodeIndex = repoIndexFactory.createBytecodeIndex( repoContent.getRepository() );
+                RepositoryContentIndex hashcodesIndex = repoIndexFactory.createHashcodeIndex( repoContent.getRepository() );
+                RepositoryContentIndex fileContentIndex =
+                    repoIndexFactory.createFileContentIndex( repoContent.getRepository() );
+    
+                FileContentRecord fileContentRecord = new FileContentRecord();
+                fileContentRecord.setFilename( repoContent.toPath( artifact ) );
+                fileContentIndex.deleteRecord( fileContentRecord );
+    
+                HashcodesRecord hashcodesRecord = new HashcodesRecord();
+                hashcodesRecord.setArtifact( artifact );
+                hashcodesIndex.deleteRecord( hashcodesRecord );
+    
+                BytecodeRecord bytecodeRecord = new BytecodeRecord();
+                bytecodeRecord.setArtifact( artifact );
+                bytecodeIndex.deleteRecord( bytecodeRecord );
+            }                
+        }
+        catch ( RepositoryException e )
+        {
+            throw new ConsumerException( "Can't run index cleanup consumer: " + e.getMessage() );
+        }
+        catch ( RepositoryIndexException e )
+        {
+            throw new ConsumerException( e.getMessage() );
+        }
     }
 
     public String getDescription()
@@ -90,4 +141,13 @@ public class LuceneCleanupRemoveIndexedConsumer
         return false;
     }
 
+    public void setRepositoryIndexFactory( RepositoryContentIndexFactory repoIndexFactory )
+    {
+        this.repoIndexFactory = repoIndexFactory;
+    }
+
+    public void setRepositoryContentFactory( RepositoryContentFactory repoFactory )
+    {
+        this.repoFactory = repoFactory;
+    }
 }

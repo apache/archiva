@@ -234,6 +234,38 @@ public class LuceneRepositoryContentIndex
         }
     }
     
+    public void deleteRecord( LuceneRepositoryContentRecord record )
+        throws RepositoryIndexException
+    {
+        synchronized( repository )
+        {
+            if ( exists() )
+            {
+                IndexReader indexReader = null;
+                try
+                {
+                    indexReader = IndexReader.open( indexLocation );    
+                    
+                    if ( record != null )
+                    {
+                        Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
+                        
+                        indexReader.deleteDocuments( term );                            
+                    }                    
+                }
+                catch ( IOException e )
+                {
+                    throw new RepositoryIndexException( "Error deleting document: " + e.getMessage(), e );
+                }
+                finally
+                {
+                    closeQuietly( indexReader );
+                }
+            }
+        }
+    }
+    
+    
     public Collection getAllRecordKeys()
         throws RepositoryIndexException
     {
