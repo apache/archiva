@@ -52,7 +52,7 @@ public class CachedFailuresPolicy
      */
     private UrlFailureCache urlFailureCache;
 
-    private List options = new ArrayList();
+    private List<String> options = new ArrayList<String>();
 
     public CachedFailuresPolicy()
     {
@@ -60,20 +60,21 @@ public class CachedFailuresPolicy
         options.add( CACHED );
     }
 
-    public boolean applyPolicy( String policySetting, Properties request, File localFile )
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )
         {
-            // No valid code? false it is then.
-            getLogger().error( "Unknown check-failures policyCode [" + policySetting + "]" );
-            return false;
+         // Not a valid code. 
+            throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting
+                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( IGNORED.equals( policySetting ) )
         {
             // Ignore.
             getLogger().debug( "OK to fetch, check-failures policy set to IGNORED." );
-            return true;
+            return;
         }
 
         String url = request.getProperty( "url" );
@@ -82,14 +83,11 @@ public class CachedFailuresPolicy
         {
             if ( urlFailureCache.hasFailedBefore( url ) )
             {
-                getLogger().debug( "NO to fetch, check-failures detected previous failure on url: " + url );
-                return false;
+                throw new PolicyViolationException( "NO to fetch, check-failures detected previous failure on url: " + url );
             }
         }
 
         getLogger().debug( "OK to fetch, check-failures detected no issues." );
-
-        return true;
     }
 
     public String getDefaultOption()
@@ -102,7 +100,7 @@ public class CachedFailuresPolicy
         return "cache-failures";
     }
 
-    public List getOptions()
+    public List<String> getOptions()
     {
         return options;
     }

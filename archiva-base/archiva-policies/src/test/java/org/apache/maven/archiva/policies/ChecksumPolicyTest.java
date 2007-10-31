@@ -155,7 +155,7 @@ public class ChecksumPolicyTest
         File localFile = createTestableFiles( null, null );
         Properties request = createRequest();
 
-        assertTrue( policy.applyPolicy( ChecksumPolicy.IGNORED, request, localFile ) );
+        policy.applyPolicy( ChecksumPolicy.IGNORED, request, localFile );
     }
 
     private void assertFailSetting( boolean expectedResult, String md5State, String sha1State )
@@ -165,11 +165,18 @@ public class ChecksumPolicyTest
         File localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
-        boolean actualResult = policy.applyPolicy( ChecksumPolicy.FAIL, request, localFile );
-        String msg = createMessage( ChecksumPolicy.FAIL, md5State, sha1State );
-
-        if ( actualResult == false )
+        boolean actualResult;
+        
+        try
         {
+            policy.applyPolicy( ChecksumPolicy.FAIL, request, localFile );
+            actualResult = true;
+        }
+        catch ( PolicyViolationException e )
+        {
+            actualResult = false;
+            String msg = createMessage( ChecksumPolicy.FAIL, md5State, sha1State );
+
             assertFalse( msg + " local file should not exist:", localFile.exists() );
             File md5File = new File( localFile.getAbsolutePath() + ".sha1" );
             File sha1File = new File( localFile.getAbsolutePath() + ".md5" );
@@ -187,7 +194,18 @@ public class ChecksumPolicyTest
         File localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
-        boolean actualResult = policy.applyPolicy( ChecksumPolicy.FIX, request, localFile );
+        boolean actualResult;
+        
+        try
+        {
+            policy.applyPolicy( ChecksumPolicy.FIX, request, localFile );
+            actualResult = true;
+        }
+        catch ( PolicyViolationException e )
+        {
+            actualResult = false;
+        }
+        
         assertEquals( createMessage( ChecksumPolicy.FIX, md5State, sha1State ), expectedResult, actualResult );
 
         // End result should be legitimate SHA1 and MD5 files.
@@ -278,8 +296,8 @@ public class ChecksumPolicyTest
     private File createTestableFiles( String md5State, String sha1State )
         throws Exception
     {
-        File sourceDir = new File( "src/test/resources/checksums/" );
-        File destDir = new File( "target/checksum-tests/" + getName() + "/" );
+        File sourceDir = getTestFile( "src/test/resources/checksums/" );
+        File destDir = getTestFile( "target/checksum-tests/" + getName() + "/" );
 
         FileUtils.copyFileToDirectory( new File( sourceDir, "artifact.jar" ), destDir );
 

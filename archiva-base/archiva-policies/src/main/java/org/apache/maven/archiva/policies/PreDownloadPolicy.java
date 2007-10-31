@@ -41,7 +41,8 @@ public interface PreDownloadPolicy extends DownloadPolicy
      * @param request the list of request properties that the policy might use.
      * @param localFile the local file that this policy affects
      * 
-     * @return true if the policy passes. false if not.
+     * @throws PolicyViolationException if the policy has been violated.
      */
-    public boolean applyPolicy( String policySetting, Properties request, File localFile );
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException;
 }

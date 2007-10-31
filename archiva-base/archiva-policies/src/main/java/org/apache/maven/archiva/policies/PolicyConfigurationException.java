@@ -19,26 +19,26 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.maven.archiva.common.ArchivaException;
 
 /**
- * Helper class for IDE testing.
+ * PolicyConfigurationException is thrown when a policy cannot be executed due to a 
+ * configuration issue. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class PolicyConfigurationException
+    extends ArchivaException
 {
 
-    public static Test suite()
+    public PolicyConfigurationException( String message, Throwable cause )
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.policies" );
-        //$JUnit-BEGIN$
-        suite.addTestSuite( ChecksumPolicyTest.class );
-        suite.addTestSuite( CachedFailuresPolicyTest.class );
-        //$JUnit-END$
-        return suite;
+        super( message, cause );
     }
 
+    public PolicyConfigurationException( String message )
+    {
+        super( message );
+    }
 }

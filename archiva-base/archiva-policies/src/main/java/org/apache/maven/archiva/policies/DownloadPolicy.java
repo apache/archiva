@@ -67,7 +67,8 @@ public interface DownloadPolicy
      * @param request the list of request properties that the policy might use.
      * @param localFile
      * 
-     * @return true if the policy passes.
+     * @throws PolicyViolationException if the policy has been violated.
      */
-    public boolean applyPolicy( String policySetting, Properties request, File localFile );
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException;
 }

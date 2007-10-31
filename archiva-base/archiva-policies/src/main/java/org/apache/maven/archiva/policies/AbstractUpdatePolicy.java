@@ -76,7 +76,7 @@ public abstract class AbstractUpdatePolicy
      */
     public static final String ONCE = "once";
 
-    private List options = new ArrayList();
+    private List<String> options = new ArrayList<String>();
 
     public AbstractUpdatePolicy()
     {
@@ -91,13 +91,20 @@ public abstract class AbstractUpdatePolicy
     
     protected abstract String getUpdateMode();
     
-    public List getOptions()
+    public List<String> getOptions()
     {
         return options;
     }
 
-    public boolean applyPolicy( String policySetting, Properties request, File localFile )
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException
     {
+        if ( !StringUtils.equals( request.getProperty( "filetype" ), "artifact" ) )
+        {
+            // Only process artifact file types.
+            return;
+        }
+        
         String version = request.getProperty( "version", "" );
         boolean isSnapshotVersion = false;
 
@@ -108,50 +115,48 @@ public abstract class AbstractUpdatePolicy
 
         if ( !options.contains( policySetting ) )
         {
-            // No valid code? false it is then.
-            getLogger().error( "Unknown artifact-update policyCode [" + policySetting + "]" );
-            return false;
+            // Not a valid code. 
+            throw new PolicyConfigurationException( "Unknown " + getUpdateMode() + " policy setting [" + policySetting
+                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( IGNORED.equals( policySetting ) )
         {
             // Ignored means ok to update.
             getLogger().debug( "OK to update, " + getUpdateMode() + " policy set to IGNORED." );
-            return true;
+            return;
         }
 
         // Test for mismatches.
         if ( !isSnapshotVersion && isSnapshotPolicy() )
         {
             getLogger().debug( "OK to update, snapshot policy does not apply for non-snapshot versions." );
-            return true;
+            return;
         }
 
         if ( isSnapshotVersion && !isSnapshotPolicy() )
         {
             getLogger().debug( "OK to update, release policy does not apply for snapshot versions." );
-            return true;
+            return;
         }
 
         if ( DISABLED.equals( policySetting ) )
         {
             // Disabled means no.
-            getLogger().debug( "NO to update, " + getUpdateMode() + " policy set to DISABLED." );
-            return false;
+            throw new PolicyViolationException( "NO to update, " + getUpdateMode() + " policy set to DISABLED." );
         }
 
         if ( !localFile.exists() )
         {
             // No file means it's ok.
             getLogger().debug( "OK to update " + getUpdateMode() + ", local file does not exist." );
-            return true;
+            return;
         }
 
         if ( ONCE.equals( policySetting ) )
         {
             // File exists, but policy is once.
-            getLogger().debug( "NO to update" + getUpdateMode() + ", local file exist (and policy is ONCE)." );
-            return false;
+            throw new PolicyViolationException( "NO to update " + getUpdateMode() + ", policy is ONCE, and local file exist." );
         }
 
         if ( DAILY.equals( policySetting ) )
@@ -161,7 +166,16 @@ public abstract class AbstractUpdatePolicy
             Calendar fileCal = Calendar.getInstance();
             fileCal.setTimeInMillis( localFile.lastModified() );
 
-            return cal.after( fileCal );
+            if( cal.after( fileCal ) )
+            {
+                // Its ok.
+                return;
+            }
+            else
+            {
+                throw new PolicyViolationException( "NO to update " + getUpdateMode()
+                    + ", policy is DAILY, local file exist, and has been updated within the last day." );
+            }
         }
 
         if ( HOURLY.equals( policySetting ) )
@@ -171,10 +185,19 @@ public abstract class AbstractUpdatePolicy
             Calendar fileCal = Calendar.getInstance();
             fileCal.setTimeInMillis( localFile.lastModified() );
 
-            return cal.after( fileCal );
+            if( cal.after( fileCal ) )
+            {
+                // Its ok.
+                return;
+            }
+            else
+            {
+                throw new PolicyViolationException( "NO to update " + getUpdateMode()
+                    + ", policy is HOURLY, local file exist, and has been updated within the last hour." );
+            }
         }
 
-        getLogger().error( "Unhandled policyCode [" + policySetting + "]" );
-        return false;
+        throw new PolicyConfigurationException( "Unable to process " + getUpdateMode()
+                                            + " policy of [" + policySetting + "], please file a bug report." );
     }
 }

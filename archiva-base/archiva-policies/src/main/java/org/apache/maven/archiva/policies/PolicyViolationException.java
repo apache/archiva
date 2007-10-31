@@ -19,31 +19,24 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Properties;
+import org.apache.maven.archiva.common.ArchivaException;
 
 /**
- * Policy to apply after the download has completed, but before the
- * resource is made available to the calling client. 
+ * PolicyViolationException 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface PostDownloadPolicy
-    extends DownloadPolicy
+public class PolicyViolationException
+    extends ArchivaException
 {
-    /**
-     * Apply the download policy.
-     * 
-     * A true result allows the download to succeed.  false indicates that the 
-     * download is a failure.
-     * 
-     * @param policySetting the policy setting.
-     * @param request the list of request properties that the policy might use.
-     * @param localFile the local file that this policy affects
-     * 
-     * @throws PolicyViolationException if the policy has been violated.
-     */
-    public void applyPolicy( String policySetting, Properties request, File localFile )
-        throws PolicyViolationException, PolicyConfigurationException;
+    public PolicyViolationException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
+    public PolicyViolationException( String message )
+    {
+        super( message );
+    }
 }

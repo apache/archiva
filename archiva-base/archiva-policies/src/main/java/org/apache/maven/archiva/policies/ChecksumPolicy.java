@@ -19,6 +19,7 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.Checksums;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -28,7 +29,8 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * ChecksumPolicy 
+ * ChecksumPolicy - a policy applied after the download to see if the file has been downloaded
+ * successfully and completely (or not).
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -68,60 +70,70 @@ public class ChecksumPolicy
         options.add( IGNORED );
     }
 
-    public boolean applyPolicy( String policySetting, Properties request, File localFile )
+    public void applyPolicy( String policySetting, Properties request, File localFile )
+        throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )
         {
-            // No valid code? false it is then.
-            getLogger().error( "Unknown checksum policyCode [" + policySetting + "]" );
-            return false;
+            // Not a valid code. 
+            throw new PolicyConfigurationException( "Unknown checksum policy setting [" + policySetting
+                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( IGNORED.equals( policySetting ) )
         {
             // Ignore.
-            return true;
+            return;
         }
 
         if ( !localFile.exists() )
         {
             // Local File does not exist.
-            getLogger().debug( "Local file " + localFile.getAbsolutePath() + " does not exist." );
-            return false;
+            throw new PolicyViolationException( "Checksum policy failure, local file " + localFile.getAbsolutePath()
+                + " does not exist to check." );
         }
 
         if ( FAIL.equals( policySetting ) )
         {
-            boolean checksPass = checksums.check( localFile ); 
-            if( ! checksPass )
+            if( checksums.check( localFile ) )
             {
-                File sha1File = new File( localFile.getAbsolutePath() + ".sha1" );
-                File md5File = new File( localFile.getAbsolutePath() + ".md5" );
+                return;
+            }
+            
+            File sha1File = new File( localFile.getAbsolutePath() + ".sha1" );
+            File md5File = new File( localFile.getAbsolutePath() + ".md5" );
 
-                // On failure. delete files.
-                if ( sha1File.exists() )
-                {
-                    sha1File.delete();
-                }
-
-                if ( md5File.exists() )
-                {
-                    md5File.delete();
-                }
-
-                localFile.delete();
+            // On failure. delete files.
+            if ( sha1File.exists() )
+            {
+                sha1File.delete();
             }
 
-            return checksPass;
+            if ( md5File.exists() )
+            {
+                md5File.delete();
+            }
+
+            localFile.delete();
+            throw new PolicyViolationException( "Checksums do not match, policy set to FAIL, "
+                + "deleting checksum files and local file " + localFile.getAbsolutePath() + "." );
         }
 
         if ( FIX.equals( policySetting ) )
         {
-            return checksums.update( localFile );
+            if( checksums.update( localFile ) )
+            {
+                return;
+            }
+            else
+            {
+                throw new PolicyViolationException( "Checksum policy set to FIX, "
+                    + "yet unable to update checksums for local file " + localFile.getAbsolutePath() + "." );
+            }
         }
 
-        getLogger().error( "Unhandled policyCode [" + policySetting + "]" );
-        return false;
+        throw new PolicyConfigurationException( "Unable to process checksum policy of [" + policySetting
+            + "], please file a bug report." );
     }
 
     public String getDefaultOption()

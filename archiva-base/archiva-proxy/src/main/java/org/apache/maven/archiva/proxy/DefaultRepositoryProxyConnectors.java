@@ -32,6 +32,8 @@ import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.RepositoryURL;
 import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.PolicyConfigurationException;
+import org.apache.maven.archiva.policies.PolicyViolationException;
 import org.apache.maven.archiva.policies.PostDownloadPolicy;
 import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
@@ -140,6 +142,7 @@ public class DefaultRepositoryProxyConnectors
         File localFile = toLocalFile( repository, artifact );
 
         Properties requestProperties = new Properties();
+        requestProperties.setProperty( "filetype", "artifact" );
         requestProperties.setProperty( "version", artifact.getVersion() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
@@ -186,6 +189,7 @@ public class DefaultRepositoryProxyConnectors
         File localFile = toLocalFile( repository, metadata );
 
         Properties requestProperties = new Properties();
+        requestProperties.setProperty( "filetype", "metadata" );
         boolean metadataNeedsUpdating = false;
         long originalTimestamp = getLastModified( localFile );
 
@@ -298,6 +302,7 @@ public class DefaultRepositoryProxyConnectors
         File localFile = toLocalFile( repository, metadata );
 
         Properties requestProperties = new Properties();
+        requestProperties.setProperty( "filetype", "metadata" );
         boolean metadataNeedsUpdating = false;
         long originalTimestamp = getLastModified( localFile );
 
@@ -480,15 +485,20 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Handle pre-download policy
-        if ( !applyPolicies( this.preDownloadPolicies, connector.getPolicies(), requestProperties, localFile ) )
+        try
         {
-            getLogger().debug( "Failed pre-download policies - " + localFile.getAbsolutePath() );
-
+            validatePolicies( this.preDownloadPolicies, connector.getPolicies(), requestProperties, localFile );
+        }
+        catch ( PolicyViolationException e )
+        {
+            String emsg = "Transfer not attempted on " + url + " : " + e.getMessage();
             if ( fileExists( localFile ) )
             {
+                getLogger().info( emsg + ": using already present local file." );
                 return localFile;
             }
 
+            getLogger().info( emsg );
             return null;
         }
 
@@ -543,10 +553,13 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Handle post-download policies.
-        if ( !applyPolicies( this.postDownloadPolicies, connector.getPolicies(), requestProperties, localFile ) )
+        try
         {
-            getLogger().debug( "Failed post-download policies - " + localFile.getAbsolutePath() );
-
+            validatePolicies( this.postDownloadPolicies, connector.getPolicies(), requestProperties, localFile );
+        }
+        catch ( PolicyViolationException e )
+        {
+            getLogger().info( "Transfer invalidated from " + url + " : " + e.getMessage() );
             if ( fileExists( localFile ) )
             {
                 return localFile;
@@ -697,10 +710,10 @@ public class DefaultRepositoryProxyConnectors
      * @param settings  the map of settings for the policies to execute. (Map of String policy keys, to String policy setting)
      * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String,Properties,File)})
      * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String,Properties,File)})
-     * @return true if all of the policies passed, false if a policy failed.
      */
-    private boolean applyPolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
+    private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
                                    Properties request, File localFile )
+        throws PolicyViolationException
     {
         for ( Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
         {
@@ -710,13 +723,15 @@ public class DefaultRepositoryProxyConnectors
             String setting = StringUtils.defaultString( (String) settings.get( key ), defaultSetting );
 
             getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
-            if ( !policy.applyPolicy( setting, request, localFile ) )
+            try
             {
-                getLogger().debug( "Didn't pass the [" + key + "] policy." );
-                return false;
+                policy.applyPolicy( setting, request, localFile );
+            }
+            catch ( PolicyConfigurationException e )
+            {
+                getLogger().error( e.getMessage(), e );
             }
         }
-        return true;
     }
 
     /**

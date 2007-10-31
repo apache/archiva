@@ -67,7 +67,7 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
 
-        assertTrue( policy.applyPolicy( CachedFailuresPolicy.IGNORED, request, localFile ) );
+        policy.applyPolicy( CachedFailuresPolicy.IGNORED, request, localFile );
     }
 
     public void testCachedNotInCache()
@@ -79,7 +79,7 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
 
-        assertTrue( policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile ) );
+        policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile );
     }
 
     public void testCachedInCache()
@@ -97,6 +97,14 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", url );
 
-        assertFalse( policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile ) );
+        try
+        {
+            policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile );
+            fail( "Expected a PolicyViolationException." );
+        }
+        catch ( PolicyViolationException e )
+        {
+            // expected path.
+        }
     }
 }
