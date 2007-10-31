@@ -192,12 +192,6 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-xwork-integration</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-    </dependency>
-     -->
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
@@ -225,6 +219,10 @@
       <artifactId>httpunit</artifactId>
       <version>1.6.2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>
