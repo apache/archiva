@@ -32,14 +32,16 @@ import java.util.List;
 public class BrowsingResults
 {
     private String selectedGroupId;
-    
+
     private String selectedArtifactId;
 
-    private List groupIds = null;
+    private List<String> selectedRepositoryIds = null;
 
-    private List artifacts = null;
+    private List<String> groupIds = null;
 
-    private List versions = null;
+    private List<String> artifacts = null;
+
+    private List<String> versions = null;
 
     public BrowsingResults()
     {
@@ -50,19 +52,19 @@ public class BrowsingResults
     {
         this.selectedGroupId = groupId;
     }
-    
+
     public BrowsingResults( String groupId, String artifactId )
     {
         this.selectedGroupId = groupId;
         this.selectedArtifactId = artifactId;
     }
 
-    public List getArtifacts()
+    public List<String> getArtifacts()
     {
         return artifacts;
     }
 
-    public List getGroupIds()
+    public List<String> getGroupIds()
     {
         return groupIds;
     }
@@ -77,7 +79,7 @@ public class BrowsingResults
         return selectedGroupId;
     }
 
-    public List getVersions()
+    public List<String> getVersions()
     {
         return versions;
     }
@@ -97,18 +99,28 @@ public class BrowsingResults
         return CollectionUtils.isNotEmpty( versions );
     }
 
-    public void setArtifacts( List artifacts )
+    public void setArtifacts( List<String> artifacts )
     {
         this.artifacts = artifacts;
     }
 
-    public void setGroupIds( List groupIds )
+    public void setGroupIds( List<String> groupIds )
     {
         this.groupIds = groupIds;
     }
 
-    public void setVersions( List versions )
+    public void setVersions( List<String> versions )
     {
         this.versions = versions;
+    }
+
+    public List<String> getSelectedRepositoryIds()
+    {
+        return selectedRepositoryIds;
+    }
+
+    public void setSelectedRepositoryIds( List<String> selectedRepositoryIds )
+    {
+        this.selectedRepositoryIds = selectedRepositoryIds;
     }
 }
