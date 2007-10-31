@@ -68,4 +68,18 @@ public class ArchivaRoleConstants
     public static final String TEMPLATE_REPOSITORY_MANAGER = "archiva-repository-manager";
     
     public static final String TEMPLATE_REPOSITORY_OBSERVER = "archiva-repository-observer";
+    
+    public static final String TEMPLATE_SYSTEM_ADMIN = "archiva-system-administrator";
+    
+    public static final String TEMPLATE_GUEST = "archiva-guest";
+    
+    public static String toRepositoryObserverRoleId( String repoId )
+    {
+        return TEMPLATE_REPOSITORY_OBSERVER + "-" + repoId;
+    }
+    
+    public static String toRepositoryObserverRoleName( String repoId )
+    {
+        return REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId;
+    }
 }
