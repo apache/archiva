@@ -579,10 +579,38 @@
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-memory</artifactId>
         <version>${redback.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.redback</groupId>
+        <artifactId>redback-users-memory</artifactId>
+        <version>${redback.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.redback</groupId>
+        <artifactId>redback-keys-memory</artifactId>
+        <version>${redback.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.redback</groupId>
+        <artifactId>redback-rbac-model</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.redback</groupId>
+        <artifactId>redback-authorization-rbac</artifactId>
+        <version>${redback.version}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.plexus.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
+        <version>${redback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus.redback</groupId>
+        <artifactId>redback-system</artifactId>
         <version>${redback.version}</version>
       </dependency>
       <dependency>
@@ -862,13 +890,23 @@
   <properties>
     <maven.version>2.0.5</maven.version>
     <wagon.version>1.0-beta-2</wagon.version>
-    <redback.version>1.0-alpha-3</redback.version>
+    <redback.version>1.0-alpha-4</redback.version>
   </properties>
   <!-- for plexus webdav snapshot -->
   <repositories>
     <repository>
       <id>codehaus.snapshots</id>
       <url>http://snapshots.repository.codehaus.org/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>redback.repo</id>
+      <url>https://dav.codehaus.org/repository/redback</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
     </repository>
   </repositories>
 </project>
