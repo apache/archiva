@@ -24,6 +24,7 @@ import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,13 +37,24 @@ import java.util.List;
 public class RepositoryBrowsingTest
     extends AbstractArchivaDatabaseTestCase
 {
+    private static final List<String> GUEST_REPO_IDS;
+
+    private static final String USER_GUEST = "guest";
+    
+    static
+    {
+        GUEST_REPO_IDS = new ArrayList<String>();
+        GUEST_REPO_IDS.add( "central" );
+        GUEST_REPO_IDS.add( "snapshots" );
+    }
+    
     private ArtifactDAO artifactDao;
 
     public ArchivaArtifact createArtifact( String groupId, String artifactId, String version )
     {
         ArchivaArtifact artifact = artifactDao.createArtifact( groupId, artifactId, version, "", "jar" );
         artifact.getModel().setLastModified( new Date() ); // mandatory field.
-        artifact.getModel().setRepositoryId( "testable_repo" );
+        artifact.getModel().setRepositoryId( "central" );
         return artifact;
     }
 
@@ -97,7 +109,7 @@ public class RepositoryBrowsingTest
         saveTestData();
 
         RepositoryBrowsing browser = lookupBrowser();
-        BrowsingResults results = browser.selectGroupId( "org.apache.maven.test" );
+        BrowsingResults results = browser.selectGroupId( USER_GUEST, GUEST_REPO_IDS, "org.apache.maven.test" );
         assertNotNull( "Browsing Results should not be null.", results );
 
         String expectedSubGroupIds[] = new String[] { "org.apache.maven.test.foo" };
@@ -110,7 +122,7 @@ public class RepositoryBrowsingTest
         saveTestData();
 
         RepositoryBrowsing browser = lookupBrowser();
-        BrowsingResults results = browser.getRoot();
+        BrowsingResults results = browser.getRoot( USER_GUEST, GUEST_REPO_IDS );
         assertNotNull( "Browsing Results should not be null.", results );
 
         String expectedRootGroupIds[] = new String[] { "commons-lang", "org" };

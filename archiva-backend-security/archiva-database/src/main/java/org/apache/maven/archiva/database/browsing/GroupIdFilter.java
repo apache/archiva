@@ -20,7 +20,6 @@ package org.apache.maven.archiva.database.browsing;
  */
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -77,21 +76,19 @@ public class GroupIdFilter
      * @param groups the list of groupIds.
      * @return
      */
-    public static List filterGroups( List groups )
+    public static List<String> filterGroups( List<String> groups )
     {
         GroupTreeNode tree = buildGroupTree( groups );
         return collateGroups( tree );
     }
 
-    public static GroupTreeNode buildGroupTree( List groups )
+    public static GroupTreeNode buildGroupTree( List<String> groups )
     {
         GroupTreeNode rootNode = new GroupTreeNode();
 
         // build a tree structure
-        for ( Iterator i = groups.iterator(); i.hasNext(); )
+        for ( String groupId : groups )
         {
-            String groupId = (String) i.next();
-
             StringTokenizer tok = new StringTokenizer( groupId, GROUP_SEPARATOR );
 
             GroupTreeNode node = rootNode;
@@ -108,7 +105,7 @@ public class GroupIdFilter
                 }
                 else
                 {
-                    node = (GroupTreeNode) node.getChildren().get( part );
+                    node = node.getChildren().get( part );
                 }
             }
         }
@@ -116,16 +113,14 @@ public class GroupIdFilter
         return rootNode;
     }
 
-    private static List collateGroups( GroupTreeNode rootNode )
+    private static List<String> collateGroups( GroupTreeNode rootNode )
     {
-        List groups = new ArrayList();
-        for ( Iterator i = rootNode.getChildren().values().iterator(); i.hasNext(); )
+        List<String> groups = new ArrayList<String>();
+        for ( GroupTreeNode node : rootNode.getChildren().values() )
         {
-            GroupTreeNode node = (GroupTreeNode) i.next();
-
             while ( node.getChildren().size() == 1 )
             {
-                node = (GroupTreeNode) node.getChildren().values().iterator().next();
+                node = node.getChildren().values().iterator().next();
             }
 
             groups.add( node.getFullName() );
@@ -139,7 +134,7 @@ public class GroupIdFilter
 
         private final String fullName;
 
-        private final Map children = new TreeMap();
+        private final Map<String, GroupTreeNode> children = new TreeMap<String, GroupTreeNode>();
 
         GroupTreeNode()
         {
@@ -163,7 +158,7 @@ public class GroupIdFilter
             return fullName;
         }
 
-        public Map getChildren()
+        public Map<String, GroupTreeNode> getChildren()
         {
             return children;
         }
