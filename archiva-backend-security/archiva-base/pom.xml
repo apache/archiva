@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2005-2006 The Apache Software Foundation.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva-parent</artifactId>
+    <version>1.0-beta-4-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>archiva-base</artifactId>
+  <name>Archiva Base</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>archiva-common</module>
+    <module>archiva-policies</module>
+    <module>archiva-configuration</module>
+    <module>archiva-consumers</module>
+    <module>archiva-indexer</module>
+    <module>archiva-model</module>
+    <module>archiva-dependency-graph</module>
+    <module>archiva-repository-layer</module>
+    <module>archiva-xml-tools</module>
+    <module>archiva-proxy</module>
+    <module>archiva-transaction</module>
+    <module>archiva-artifact-converter</module>
+    <module>archiva-converter</module>
+  </modules>
+</project>

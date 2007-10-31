@@ -1,0 +1,394 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<document>
+  <properties>
+    <title>Hacking Maven Archiva</title>
+  </properties>
+  <body>
+    <section name="Hacking Maven Archiva">
+      <div class="p">
+         So, you wanna start hacking away at Archiva huh?
+      </div>
+
+      <div class="p">
+         These pages are for you!
+      </div>
+
+      <div class="p">
+        Be sure to read the sections for Database, Configuration, and
+        Concepts.  Beyond that, the
+        <a href="../ref/latest/apidocs/index.html">Javadoc</a>
+        is your friend.
+      </div>
+
+      <div class="p">
+        Developer reference docs for the latest snapshot
+        can be found starting
+        <a href="../ref/latest/index.html">here</a>.
+      </div>
+
+      <div class="p">
+         If you don't see the topic covered here, ask!  Ask in the
+         <a href="../mail-lists.html">archiva-dev mailing list</a>,
+         or in the <a href="irc://irc.codehaus.org/#archiva">#archiva</a>
+         irc channel.
+      </div>
+
+      <subsection name="Getting the Source Code">
+        <p>
+          First, you'll need the source code.  It is stored in subversion on
+          the public svn.apache.org site.  You can use the
+          <a href="/source-repository.html">basic subversion access steps</a>,
+          or follow the steps below...
+        </p>
+
+<pre class="commandline">
+<span class="input">[code]$ <span class="command">svn checkout http://svn.apache.org/repos/asf/maven/archiva/trunk archiva</span></span>
+A    archiva/archiva-database
+A    archiva/archiva-database/src
+A    archiva/archiva-database/src/test
+A    archiva/archiva-database/src/test/java
+... (snip hundreds of checkout entries) ...
+A    archiva/archiva-scheduled/src/main/resources/META-INF/plexus
+A    archiva/archiva-scheduled/src/main/resources/META-INF/plexus/components.xml
+A    archiva/archiva-scheduled/pom.xml
+ U   archiva
+Checked out revision 539934.
+
+<span class="input">[code]$ <span class="command">ls</span></span>
+archiva
+
+<span class="input">[code]$ <span class="command">cd archiva</span></span>
+
+<span class="input">[code/archiva]$ <span class="command">ls</span></span>
+archiva-base/      archiva-reporting/  archiva-web/       maven-meeper/
+archiva-cli/       archiva-scheduled/  archiva-workflow/  pom.xml
+archiva-database/  archiva-site/       design/
+</pre>
+      </subsection>
+
+      <subsection name="The Tools">
+        <p>
+          You will need the following tools.
+        </p>
+        <ul>
+          <li>Maven 2.0.5 (or newer)</li>
+          <li>Java SDK 1.5.0_10 (or newer)</li>
+          <li>An IDE (or plain editor) of your choice.</li>
+        </ul>
+      </subsection>
+
+      <subsection name="Building Archiva">
+        <p>
+          Archiva uses the Maven tool suite to do all things within
+          the build. (compile, test, archive, install, deploy, etc...)
+          The standard goals apply here.
+        </p>
+        <p>
+          There are 2 non-distributable artifacts in use within archiva,
+          that cannot be placed on the public / global repository system
+          by anyone but Sun.  In order to build archiva, you will need to
+          manually install these artifact into your local repository.
+          Follow the steps below.
+        </p>
+        <ul>
+          <li>The <code>javax.resource:connector:1.0:jar</code> artifact</li>
+          <ol>
+            <li>Download the 1.0 connector zip from: <a href="http://java.sun.com/j2ee/connector/download.html">http://java.sun.com/j2ee/connector/download.html</a></li>
+            <li>Unpack the zip to gain access to the jar file.</li>
+            <li>Install it: <code>mvn install:install-file -DgroupId=javax.resource -DartifactId=connector -Dversion=1.0 -Dpackaging=jar -Dfile=connector.jar</code></li>
+          </ol>
+          <li>The <code>javax.transaction:jta:1.0.1B:jar</code> artifact</li>
+          <ol>
+            <li>Download the 1.0.1B jta zip from: <a href="http://java.sun.com/products/jta/">http://java.sun.com/products/jta/</a></li>
+            <li>Install it: <code>mvn install:install-file -DgroupId=javax.transaction -DartifactId=jta -Dversion=1.0.1B -Dpackaging=jar -Dfile=jta-1_0_1B-classes.zip</code></li>
+          </ol>
+        </ul>
+      </subsection>
+
+      <subsection name="Compile / Test">
+        <p>
+          Archiva uses the standard maven goals.  Use them.
+        </p>
+<pre class="commandline">
+<span class="input">[archiva]$ <span class="command">mvn clean install</span></span>
+[INFO] Scanning for projects...
+[INFO] Reactor build order: 
+[INFO]   Archiva
+
+... (snip output) ...
+
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4 minutes 29 seconds
+[INFO] Finished at: Sun May 20 17:00:09 EDT 2007
+[INFO] Final Memory: 50M/61M
+[INFO] ------------------------------------------------------------------------
+</pre>
+
+        <p>
+          NOTE: Your first compile will take the longest, as maven will
+          download all the missing dependencies into your local repository
+          at this point.
+        </p>
+      </subsection>
+
+      <subsection name="Running Archiva">
+        <p>
+          You have a few ways (in development time) to run archiva.
+        </p>
+
+        <ul>
+          <li>
+          <p>Using the jetty:run plugin w/default settings.</p>
+
+<pre class="commandline">
+<span class="input">[archiva]$ <span class="command">cd archiva-web/archiva-webapp</span></span>
+
+<span class="input">[archiva-webapp]$ <span class="command">mvn clean jetty:run</span></span>
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'jetty'.
+[INFO] ---------------------------------------------------------------------
+[INFO] Building Archiva Web :: Application
+[INFO]    task-segment: [clean, jetty:run]
+[INFO] ---------------------------------------------------------------------
+[INFO] [clean:clean]
+
+... ( snip lots of output ) ...
+
+2007-05-20 18:47:49.790:/:INFO:  Initializing org.codehaus.plexus.webdav.simple.SimpleDavServerComponent
+2007-05-20 18:47:49.813::INFO:  Started SelectChannelConnector @ 0.0.0.0:9091
+[INFO] Started Jetty Server
+[INFO] Starting scanner at interval of 10 seconds.
+</pre>
+          <p>At this point you can use your browser to goto <a href="http://localhost:9091/">http://localhost:9091/</a></p>
+          </li>
+
+          <li>Using the jetty:run plugin w/mysql settings.
+
+<pre class="commandline">
+<span class="input">[archiva]$ <span class="command">cd archiva-web/archiva-webapp</span></span>
+
+<span class="input">[archiva-webapp]$ <span class="command">mvn -Pmysql clean jetty:run</span></span>
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'jetty'.
+[INFO] ---------------------------------------------------------------------
+[INFO] Building Archiva Web :: Application
+[INFO]    task-segment: [clean, jetty:run]
+[INFO] ---------------------------------------------------------------------
+[INFO] [clean:clean]
+
+... ( snip lots of output ) ...
+
+2007-05-20 18:47:49.790:/:INFO:  Initializing org.codehaus.plexus.webdav.simple.SimpleDavServerComponent
+2007-05-20 18:47:49.813::INFO:  Started SelectChannelConnector @ 0.0.0.0:9091
+[INFO] Started Jetty Server
+[INFO] Starting scanner at interval of 10 seconds.
+</pre>
+          </li>
+          <li>Using the built plexus-application standalone binary.
+
+<pre class="commandline">
+<span class="input">[archiva]$ <span class="command">cd archiva-web/archiva-standalone/archiva-plexus-runtime/target</span></span>
+
+<span class="input">[target]$ <span class="command">tar -zxvf archiva-1.0-alpha-1-SNAPSHOT-bin.tar.gz</span></span>
+
+<span class="input">[target]$ <span class="command">cd archiva-1.0-alpha-1-SNAPSHOT/bin</span></span>
+
+<span class="input">[bin]$ <span class="command">ls</span></span>
+linux-x86-32         plexus.bat        solaris-sparc-64
+linux-x86-64         plexus.sh         solaris-x86-32
+macosx-universal-32  solaris-sparc-32  windows-x86-32
+
+<span class="input">[bin]$ <span class="command">cd linux-x86-32</span></span>
+
+<span class="input">[linux-x86-32]$ <span class="command">ls</span></span>
+libwrapper.so  run.sh  wrapper  wrapper.conf
+
+<span class="input">[linux-x86-32]$ <span class="command">./run.sh start</span></span>
+</pre>
+          </li>
+        </ul>
+      </subsection>
+    </section>
+
+    <section name="Databases">
+      <p>There are 2 databases in use by archiva.</p>
+      <ol>
+        <li>redback (security) - the database for security related information
+            such as Users, Roles, Permissions, Login Keys, etc...</li>
+        <li>archiva - the database that contains the repository information,
+            reports, statistics, etc...</li>
+      </ol>
+      <p>
+        See the general <a href="/database/index.html">database use and
+        care</a> section about this.
+      </p>
+    </section>
+
+    <section name="Configuration">
+      <p>The configuration of archiva is accomplished via the
+         <code>$HOME/.m2/archiva.xml</code> file.
+      </p>
+      <p>
+        See the general <a href="/configuration/index.html">configuration</a>
+        section on details about this.
+      </p>
+    </section>
+
+    <section name="Concepts">
+      <ul>
+        <li>Modules &amp; Source Tree</li>
+        <li>Plexus Basics</li>
+        <ul>
+          <li>Purpose</li>
+          <li>Role &amp; Hint</li>
+          <li>Descriptors</li>
+          <ul>
+            <li>META-INF/plexus/components.xml</li>
+            <li>META-INF/plexus/application.xml</li>
+            <li>src/test/resources/${package}/${test}.xml</li>
+          </ul>
+          <li>plexus-maven-plugin</li>
+          <ul>
+            <li>generated and/or merge</li>
+            <li>javadoc tags</li>
+          </ul>
+        </ul>
+        <li>Model</li>
+        <ul>
+          <li>Heirarchy of artifacts.</li>
+          <ul>
+            <li>Project: ( group Id + artifact Id )</li>
+            <li>Versioned: ( project + version )</li>
+            <li>Artifact: ( versioned + classifier + type )</li>
+          </ul>
+          <li>Types of objects.</li>
+          <ul>
+            <li>Archiva Project Model</li>
+            <li>Archiva Artifact</li>
+            <ul>
+              <li>Java Platform Extension</li>
+            </ul>
+            <li>Archiva Repository</li>
+            <li>Archiva Reposiotry Metadata</li>
+            <li>Repository Statistics</li>
+            <li>Repository Problem</li>
+          </ul>
+          <li>Types of Repositories</li>
+          <ul>
+            <li>Managed</li>
+            <ul>
+              <li>file://... URLs only</li>
+              <li>Indexed</li>
+              <li>Statistics</li>
+            </ul>
+            <li>Remote</li>
+          </ul>
+        </ul>
+        <li>Database / Persistence</li>
+        <ul>
+          <li>JDO / JPox</li>
+          <li>Query / Constraints</li>
+          <ul>
+            <li>Declarative</li>
+            <li>Simple</li>
+          </ul>
+        </ul>
+        <li>Scheduling</li>
+        <ul>
+          <li>How plexus-quartz &amp; plexus-taskqueue fit in.</li>
+          <li>Types of Jobs</li>
+          <ul>
+            <li>Repository Scanning</li>
+            <ul>
+              <li>Known Files</li>
+              <li>Ignored Files</li>
+              <li>Unknown Files</li>
+            </ul>
+            <li>Database Updates</li>
+            <ul>
+              <li>Periodic</li>
+              <ul>
+                <li>Unprocesed Process</li>
+                <li>Cleanup</li>
+              </ul>
+              <li>Nightly</li>
+            </ul>
+          </ul>
+        </ul>
+        <li>Consumers</li>
+        <ul>
+          <li>Purpose</li>
+          <li>Discovery</li>
+          <li>Configuration</li>
+          <li>Types of Consumers</li>
+          <ul>
+            <li>Repository Artifact</li>
+            <li>Database Unprocessed</li>
+            <li>Database Cleanup</li>
+          </ul>
+        </ul>
+        <li>Repository Connectors</li>
+        <ul>
+          <li>Proxy Connector</li>
+          <ul>
+            <li>Pre Download Policies</li>
+            <li>Post Download Policies</li>
+          </ul>
+        </ul>
+        <li>Maven Artifact / Project Libraries</li>
+        <ul>
+          <li>Bidirectional Repository Layout</li>
+          <li>Project Readers</li>
+          <li>Project Filters</li>
+          <li>Project Resolvers</li>
+        </ul>
+        <li>Indexer</li>
+        <ul>
+          <li>Bytecode</li>
+          <li>File Content</li>
+          <li>Hashcodes</li>
+          <li>Analyze / Index</li>
+          <li>Search / Query</li>
+        </ul>
+        <li>Reporting</li>
+        <ul>
+          <li>Reporting Manager</li>
+          <li>Artifact Reports</li>
+          <li>Metadata Reports</li>
+          <li>Project Reports</li>
+        </ul>
+        <li>Web Framework</li>
+        <ul>
+          <li>Webwork &amp; XWork</li>
+          <li>&lt;archiva: /&gt; taglib</li>
+          <ul>
+            <li>&lt;archiva:copy-paste /&gt;</li>
+            <li>&lt;archiva:download /&gt;</li>
+            <li>&lt;archiva:group-id-link /&gt;</li>
+          </ul>
+        </ul>
+      </ul>
+    </section>
+  </body>
+</document>

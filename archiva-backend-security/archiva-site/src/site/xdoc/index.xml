@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<document>
+  <properties>
+    <title>Welcome to Maven Archiva</title>
+  </properties>
+  <body>
+    <div id="downloadbox">
+      <h5>Get Archiva 1.0 Beta 2</h5>
+      <p>
+        <a href="download.html">
+          <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
+          Download
+        </a>
+        Archiva
+        <small>(23MB)</small>
+      </p>
+      <ul>
+        <li>
+          <a href="download.html#requirements">System Requirements</a>
+        </li>
+        <li>
+          <a href="download.html#installation">Installation Instructions</a>
+        </li>
+        <li>
+          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13638&amp;styleName=Text&amp;projectId=10980&amp;Create=Create">Release Notes</a>
+        </li>
+        <!--
+        <li>
+          <a href="guides/getting-started/index.html">Getting Started</a>
+        </li>
+        <li>
+          <a href="guides/index.html">Documentation</a>
+        </li>
+        -->
+      </ul>
+    </div>
+
+    <section name="Welcome to Maven Archiva">
+      <div class="p">
+         Archiva is currently under development.</div>
+
+      <div class="p">
+         Archiva is a build artifact repository manager for use with
+         build tools such as <a href="http://maven.apache.org">maven</a>,
+         <a href="http://maven.apache.org/continuum/">continuum</a>,
+         and <a href="http://ant.apache.org/">ant</a>.</div>
+
+      <div class="p">
+         It provides the following benefits:</div>
+
+      <ul>
+        <li>A place for like-minded developers to share artifacts
+            that are private in nature, such as found in proprietary
+            development shops.</li>
+        <li>The ability to act as a nearby (proxy) cache of popular global
+            repositories for better build performance.</li>
+        <li>Secure your repositories!  by user, by role, by repository,
+            read vs write access controls.</li>
+        <li>A tool to browse the repository information, and present it
+            in a user friendly way.</li>
+        <li>Maximize code reuse via a search / research tool to help
+            find artifacts that might be of the most use for your
+            immediate problem.</li>
+        <li>Implement controls on the artifacts that the developers
+            in your organization use.</li>
+        <li>Identify unknown artifacts based on large database of
+            known checksums for known artifacts.</li>
+        <li>Reporting on artifact usage, to help identify those
+            projects that are using your code.</li>
+        <li>Reporting tools.</li>
+        <li>Maintenance tools.</li>
+      </ul>
+    </section>
+
+    <section name="Latest News">
+      <p>
+        <ul>
+          <li>Archiva 1.0 Beta 2 Release Available - September 22, 2007</li>
+        </ul>
+        <ul>
+          <li>Archiva 1.0 Beta 1 Release Available - August 10, 2007</li>
+        </ul>
+        <ul>
+          <li>Archiva 1.0 Alpha 2 Release Available - June 29, 2007</li>
+        </ul>
+        <ul>
+          <li>Archiva 1.0 Alpha 1 Release Available - June 5, 2007</li>
+        </ul>
+        <ul>
+          <li>Archiva 0.9 Alpha 2 Release Available - May 18, 2007</li>
+        </ul>
+      </p>
+    </section>
+
+    <section name="Need Help?">
+      <p>Join the conversation!</p>
+      <ul>
+        <li>Try the Documentation: (see the navigation menu on the left)</li>
+        <li><a href="http://www.nabble.com/archiva-users-f16426.html">Archiva
+             Users</a> <a href="mail-lists.html">Mailing List</a>:
+            <a href="mailto:archiva-users-subscribe@maven.apache.org">archiva-users@maven.apache.org</a></li>
+        <li>Archiva IRC Channel:
+           <a href="irc://irc.codehaus.org/#archiva">#archiva</a> on
+           <a href="http://irc.codehaus.org/">irc.codehaus.org</a></li>
+      </ul>
+    </section>
+
+    <section name="Contributing">
+      <div class="p">
+         We welcome developers to the Maven community who are interested
+         in contributing. If you'd like to discuss Archiva, subscribe and
+         post to <a href="mail-lists.html">the development mailing list</a>
+         <code>archiva-dev@maven.apache.org</code>.
+      </div>
+
+      <div class="p">
+         Read the <a href="hacking/">Hacking Archiva</a> document.
+      </div>
+
+      <div class="p">
+         If you'd like to obtain the code, you can get it from Subversion.
+         See <a href="source-repository.html">SCM details</a> for more
+         information.
+      </div>
+
+      <div class="p">
+         Bugs, issues and new ideas should be reported in the issue tracker -
+         see <a href="issue-tracking.html">this page</a>.
+      </div>
+
+      <div class="p">
+         A user managed wiki of alternative documentation is available a
+         <a href="http://docs.codehaus.org/display/MAVENUSER/Archiva">the
+         Archiva wiki</a>.
+      </div>
+    </section>
+  </body>
+</document>

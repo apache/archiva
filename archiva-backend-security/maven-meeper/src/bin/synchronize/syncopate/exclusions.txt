@@ -1,0 +1,11 @@
+.htaccess
+**/.*
+**/distributions
+**SNAPSHOT*
+**snapshot*
+**-dev.*
+**-DEV.*
+**/dist
+**-200*
+README.txt
+**/CVS
