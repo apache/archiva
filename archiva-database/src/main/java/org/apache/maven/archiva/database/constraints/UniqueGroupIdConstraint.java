@@ -22,6 +22,8 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
+import java.util.List;
+
 /**
  * UniqueGroupIdConstraint 
  *
@@ -32,24 +34,46 @@ public class UniqueGroupIdConstraint
     extends AbstractSimpleConstraint
     implements Constraint
 {
-    private String sql;
+    private StringBuffer sql = new StringBuffer();
 
     public UniqueGroupIdConstraint()
     {
         /* this assumes search for no groupId prefix */
-        sql = "SELECT groupId FROM " + ArchivaArtifactModel.class.getName()
-            + " GROUP BY groupId ORDER BY groupId ASCENDING";
+        appendSelect( sql );
+        appendGroupBy( sql );
     }
 
-    public UniqueGroupIdConstraint( String groupIdPrefix )
+    public UniqueGroupIdConstraint( List<String> selectedRepositories )
     {
-        sql = "SELECT groupId FROM " + ArchivaArtifactModel.class.getName()
-            + " WHERE groupId.startsWith(groupIdPrefix) PARAMETERS String groupIdPrefix"
-            + " GROUP BY groupId ORDER BY groupId ASCENDING";
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositories );
+        appendGroupBy( sql );
+    }
+
+    public UniqueGroupIdConstraint( List<String> selectedRepositories, String groupIdPrefix )
+    {
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositories );
+        sql.append( " && " );
+        appendWhereGroupIdStartsWith( sql );
+        appendGroupBy( sql );
 
         super.params = new Object[] { groupIdPrefix };
     }
 
+    public UniqueGroupIdConstraint( String groupIdPrefix )
+    {
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        appendWhereGroupIdStartsWith( sql );
+        appendGroupBy( sql );
+
+        super.params = new Object[] { groupIdPrefix };
+    }
+
+    @SuppressWarnings("unchecked")
     public Class getResultClass()
     {
         return String.class;
@@ -57,6 +81,21 @@ public class UniqueGroupIdConstraint
 
     public String getSelectSql()
     {
-        return sql;
+        return sql.toString();
+    }
+
+    private void appendGroupBy( StringBuffer buf )
+    {
+        buf.append( " GROUP BY groupId ORDER BY groupId ASCENDING" );
+    }
+
+    private void appendSelect( StringBuffer buf )
+    {
+        buf.append( "SELECT groupId FROM " ).append( ArchivaArtifactModel.class.getName() );
+    }
+
+    private void appendWhereGroupIdStartsWith( StringBuffer buf )
+    {
+        buf.append( " groupId.startsWith(groupIdPrefix) PARAMETERS String groupIdPrefix" );
     }
 }
