@@ -22,6 +22,8 @@ package org.apache.maven.archiva.database.constraints;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
+import java.util.List;
+
 /**
  * Obtain a set of unique ArtifactIds for the specified groupId.
  *
@@ -32,7 +34,24 @@ public class UniqueArtifactIdConstraint
     extends AbstractSimpleConstraint
     implements Constraint
 {
-    private String sql;
+    private StringBuffer sql = new StringBuffer();
+
+    /**
+     * Obtain a set of unique ArtifactIds for the specified groupId.
+     * 
+     * @param groupId the groupId to search for artifactIds within.
+     */
+    public UniqueArtifactIdConstraint( List<String> selectedRepositoryIds, String groupId )
+    {
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositoryIds );
+        sql.append( " && " );
+        appendWhereSelectedGroupId( sql );
+        appendGroupBy( sql );
+
+        super.params = new Object[] { groupId };
+    }
 
     /**
      * Obtain a set of unique ArtifactIds for the specified groupId.
@@ -41,13 +60,15 @@ public class UniqueArtifactIdConstraint
      */
     public UniqueArtifactIdConstraint( String groupId )
     {
-        sql = "SELECT artifactId FROM " + ArchivaArtifactModel.class.getName()
-            + " WHERE groupId == selectedGroupId PARAMETERS String selectedGroupId"
-            + " GROUP BY artifactId ORDER BY artifactId ASCENDING";
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        appendWhereSelectedGroupId( sql );
+        appendGroupBy( sql );
 
         super.params = new Object[] { groupId };
     }
 
+    @SuppressWarnings("unchecked")
     public Class getResultClass()
     {
         return String.class;
@@ -55,6 +76,22 @@ public class UniqueArtifactIdConstraint
 
     public String getSelectSql()
     {
-        return sql;
+        return sql.toString();
     }
+
+    private void appendGroupBy( StringBuffer buf )
+    {
+        buf.append( " GROUP BY artifactId ORDER BY artifactId ASCENDING" );
+    }
+
+    private void appendSelect( StringBuffer buf )
+    {
+        buf.append( "SELECT artifactId FROM " ).append( ArchivaArtifactModel.class.getName() );
+    }
+
+    private void appendWhereSelectedGroupId( StringBuffer buf )
+    {
+        buf.append( " groupId == selectedGroupId PARAMETERS String selectedGroupId" );
+    }
+
 }

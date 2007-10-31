@@ -23,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 
+import java.util.List;
+
 /**
  * Obtain the list of version's for specific GroupId and ArtifactId.
  *
@@ -33,7 +35,36 @@ public class UniqueVersionConstraint
     extends AbstractSimpleConstraint
     implements Constraint
 {
-    private String sql;
+    private StringBuffer sql = new StringBuffer();
+
+    /**
+     * Obtain the list of version's for specific GroupId and ArtifactId.
+     * 
+     * @param selectedRepositoryIds the selected repository ids.
+     * @param groupId the selected groupId.
+     * @param artifactId the selected artifactId.
+     */
+    public UniqueVersionConstraint( List<String> selectedRepositoryIds, String groupId, String artifactId )
+    {
+        if ( StringUtils.isBlank( groupId ) )
+        {
+            throw new IllegalArgumentException( "A blank groupId is not allowed." );
+        }
+
+        if ( StringUtils.isBlank( artifactId ) )
+        {
+            throw new IllegalArgumentException( "A blank artifactId is not allowed." );
+        }
+
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        SqlBuilder.appendWhereSelectedRepositories( sql, "repositoryId", selectedRepositoryIds );
+        sql.append( " && " );
+        appendWhereSelectedGroupIdArtifactId( sql );
+        appendGroupBy( sql );
+
+        super.params = new Object[] { groupId, artifactId };
+    }
 
     /**
      * Obtain the list of version's for specific GroupId and ArtifactId.
@@ -53,14 +84,15 @@ public class UniqueVersionConstraint
             throw new IllegalArgumentException( "A blank artifactId is not allowed." );
         }
 
-        sql = "SELECT version FROM " + ArchivaArtifactModel.class.getName()
-            + " WHERE groupId == selectedGroupId && artifactId == selectedArtifactId"
-            + " PARAMETERS String selectedGroupId, String selectedArtifactId"
-            + " GROUP BY version ORDER BY version ASCENDING";
+        appendSelect( sql );
+        sql.append( " WHERE " );
+        appendWhereSelectedGroupIdArtifactId( sql );
+        appendGroupBy( sql );
 
         super.params = new Object[] { groupId, artifactId };
     }
 
+    @SuppressWarnings("unchecked")
     public Class getResultClass()
     {
         return String.class;
@@ -68,6 +100,22 @@ public class UniqueVersionConstraint
 
     public String getSelectSql()
     {
-        return sql;
+        return sql.toString();
+    }
+
+    private void appendGroupBy( StringBuffer buf )
+    {
+        buf.append( " GROUP BY version ORDER BY version ASCENDING" );
+    }
+
+    private void appendSelect( StringBuffer buf )
+    {
+        buf.append( "SELECT version FROM " ).append( ArchivaArtifactModel.class.getName() );
+    }
+
+    private void appendWhereSelectedGroupIdArtifactId( StringBuffer buf )
+    {
+        buf.append( " groupId == selectedGroupId && artifactId == selectedArtifactId" );
+        buf.append( " PARAMETERS String selectedGroupId, String selectedArtifactId" );
     }
 }
