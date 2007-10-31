@@ -63,7 +63,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         public RemoteRepositoryConfiguration config;
     }
 
-    protected static final long ONE_SECOND = ( 1000 * 60 );
+    protected static final long ONE_SECOND = ( 1000 /* milliseconds */ );
 
     protected static final long ONE_MINUTE = ( ONE_SECOND * 60 );
 
