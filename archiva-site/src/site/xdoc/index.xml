@@ -41,7 +41,7 @@
           <a href="download.html#installation">Installation Instructions</a>
         </li>
         <li>
-          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13660&styleName=Text&projectId=10980&Create=Create">Release Notes</a>
+          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13660&amp;styleName=Text&amp;projectId=10980&amp;Create=Create">Release Notes</a>
         </li>
         <!--
         <li>
