@@ -107,7 +107,7 @@ public class MavenProxyPropertyLoader
             proxyConnector.setProxyId( proxyKey );
             // TODO: convert cachePeriod to closest "daily" or "hourly"
             proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.DAILY );
-            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.IGNORED );
+            proxyConnector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ALWAYS );
 
             configuration.addProxyConnector( proxyConnector );
         }

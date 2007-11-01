@@ -19,10 +19,18 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryWriter;
+import org.apache.maven.archiva.policies.AbstractUpdatePolicy;
+import org.apache.maven.archiva.policies.CachedFailuresPolicy;
+import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.PostDownloadPolicy;
+import org.apache.maven.archiva.policies.PreDownloadPolicy;
 import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
@@ -37,13 +45,16 @@ import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 /**
  * <p>
@@ -87,8 +98,16 @@ public class DefaultArchivaConfiguration
      */
     private Configuration configuration;
 
-    private static final String KEY = "org.apache.maven.archiva";
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     */
+    private Map<String, PreDownloadPolicy> prePolicies;
 
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     */
+    private Map<String, PostDownloadPolicy> postPolicies;
+    
     /**
      * @plexus.configuration default-value="${user.home}/.m2/archiva.xml"
      */
@@ -114,6 +133,8 @@ public class DefaultArchivaConfiguration
      * the default-archiva.xml
      */
     private boolean isConfigurationDefaulted = false;
+
+    private static final String KEY = "org.apache.maven.archiva";
 
     public synchronized Configuration getConfiguration()
     {
@@ -176,9 +197,89 @@ public class DefaultArchivaConfiguration
             registry.removeSubset( KEY + ".repositories" );
         }
 
-        // Normalize the order fields in the proxy connectors.
         if ( !config.getProxyConnectors().isEmpty() )
         {
+            // Fix Proxy Connector Settings.
+
+            List<ProxyConnectorConfiguration> proxyConnectorList = new ArrayList<ProxyConnectorConfiguration>();
+            // Create a copy of the list to read from (to prevent concurrent modification exceptions)
+            proxyConnectorList.addAll( config.getProxyConnectors() );
+            // Remove the old connector list.
+            config.getProxyConnectors().clear();
+
+            for ( ProxyConnectorConfiguration connector : proxyConnectorList )
+            {
+                // Fix policies
+                boolean connectorValid = true;
+
+                Map<String, String> policies = new HashMap<String, String>();
+                // Make copy of policies
+                policies.putAll( connector.getPolicies() );
+                // Clear out policies
+                connector.getPolicies().clear();
+
+                // Work thru policies. cleaning them up.
+                for ( Entry<String, String> entry : policies.entrySet() )
+                {
+                    String policyId = entry.getKey();
+                    String setting = entry.getValue();
+
+                    // Upgrade old policy settings.
+                    if ( "releases".equals( policyId ) || "snapshots".equals( policyId ) )
+                    {
+                        if ( "ignored".equals( setting ) )
+                        {
+                            setting = AbstractUpdatePolicy.ALWAYS;
+                        }
+                        else if ( "disabled".equals( setting ) )
+                        {
+                            setting = AbstractUpdatePolicy.NEVER;
+                        }
+                    }
+                    else if ( "cache-failures".equals( policyId ) )
+                    {
+                        if ( "ignored".equals( setting ) )
+                        {
+                            setting = CachedFailuresPolicy.NO;
+                        }
+                        else if ( "cached".equals( setting ) )
+                        {
+                            setting = CachedFailuresPolicy.YES;
+                        }
+                    }
+                    else if ( "checksum".equals( policyId ) )
+                    {
+                        if ( "ignored".equals( setting ) )
+                        {
+                            setting = ChecksumPolicy.IGNORE;
+                        }
+                    }
+
+                    // Validate existance of policy key.
+                    if ( policyExists( policyId ) )
+                    {
+                        DownloadPolicy policy = findPolicy( policyId );
+                        // Does option exist?
+                        if ( !policy.getOptions().contains( setting ) )
+                        {
+                            setting = policy.getDefaultOption();
+                        }
+                        connector.addPolicy( policyId, setting );
+                    }
+                    else
+                    {
+                        // Policy key doesn't exist. Don't add it to golden version.
+                        getLogger().warn( "Policy [" + policyId + "] does not exist." );
+                    }
+                }
+
+                if ( connectorValid )
+                {
+                    config.addProxyConnector( connector );
+                }
+            }
+
+            // Normalize the order fields in the proxy connectors.
             Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = config
                 .getProxyConnectorAsMap();
 
@@ -198,6 +299,54 @@ public class DefaultArchivaConfiguration
         }
 
         return config;
+    }
+
+    private DownloadPolicy findPolicy( String policyId )
+    {
+        if ( MapUtils.isEmpty( prePolicies ) )
+        {
+            getLogger().error( "No PreDownloadPolicies found!" );
+            return null;
+        }
+
+        if ( MapUtils.isEmpty( postPolicies ) )
+        {
+            getLogger().error( "No PostDownloadPolicies found!" );
+            return null;
+        }
+
+        DownloadPolicy policy;
+
+        policy = prePolicies.get( policyId );
+        if ( policy != null )
+        {
+            return policy;
+        }
+
+        policy = postPolicies.get( policyId );
+        if ( policy != null )
+        {
+            return policy;
+        }
+
+        return null;
+    }
+
+    private boolean policyExists( String policyId )
+    {
+        if ( MapUtils.isEmpty( prePolicies ) )
+        {
+            getLogger().error( "No PreDownloadPolicies found!" );
+            return false;
+        }
+        
+        if ( MapUtils.isEmpty( postPolicies ) )
+        {
+            getLogger().error( "No PostDownloadPolicies found!" );
+            return false;
+        }
+        
+        return ( prePolicies.containsKey( policyId ) || postPolicies.containsKey( policyId ) );
     }
 
     private Registry readDefaultConfiguration()
@@ -288,7 +437,7 @@ public class DefaultArchivaConfiguration
     {
         // TODO: may not be needed under commons-configuration 1.4 - check
         // UPDATE: Upgrading to commons-configuration 1.4 breaks half the unit tests. 2007-10-11 (joakime)
-        
+
         String contents = "<configuration />";
         if ( !writeFile( "user configuration", userConfigFilename, contents ) )
         {

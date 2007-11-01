@@ -43,6 +43,13 @@ public class ChecksumPolicy
     implements PostDownloadPolicy
 {
     /**
+     * The IGNORE policy indicates that if the checksum policy is ignored, and
+     * the state of, contents of, or validity of the checksum files are not
+     * checked.
+     */
+    public static final String IGNORE = "ignore";
+    
+    /**
      * The FAIL policy indicates that if the checksum does not match the
      * downloaded file, then remove the downloaded artifact, and checksum
      * files, and fail the transfer to the client side.
@@ -67,7 +74,7 @@ public class ChecksumPolicy
     {
         options.add( FAIL );
         options.add( FIX );
-        options.add( IGNORED );
+        options.add( IGNORE );
     }
 
     public void applyPolicy( String policySetting, Properties request, File localFile )
@@ -80,9 +87,10 @@ public class ChecksumPolicy
                 + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
-        if ( IGNORED.equals( policySetting ) )
+        if ( IGNORE.equals( policySetting ) )
         {
             // Ignore.
+            getLogger().debug( "Checksum policy set to IGNORE." );
             return;
         }
 
@@ -123,6 +131,7 @@ public class ChecksumPolicy
         {
             if( checksums.update( localFile ) )
             {
+                getLogger().debug( "Checksum policy set to FIX, checksum files have been updated." );
                 return;
             }
             else

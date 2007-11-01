@@ -126,34 +126,34 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.DAILY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyDisabledProjectMetadata()
+    public void testSnapshotPolicyRejectProjectMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_PROJECT_METADATA, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_PROJECT_METADATA, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_PROJECT_METADATA, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyDisabledReleaseArtifact()
+    public void testSnapshotPolicyRejectReleaseArtifact()
         throws Exception
     {
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_RELEASE_ARTIFACT, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_RELEASE_ARTIFACT, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyDisabledSnapshotArtifact()
+    public void testSnapshotPolicyRejectSnapshotArtifact()
         throws Exception
     {
-        assertSnapshotPolicyViolation( SnapshotsPolicy.DISABLED, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
-        assertSnapshotPolicyViolation( SnapshotsPolicy.DISABLED, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
+        assertSnapshotPolicyViolation( SnapshotsPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
+        assertSnapshotPolicyViolation( SnapshotsPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyDisabledVersionedMetadata()
+    public void testSnapshotPolicyRejectVersionedMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_VERSION_METADATA, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.DISABLED, PATH_VERSION_METADATA, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_VERSION_METADATA, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.NEVER, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
     public void testSnapshotPolicyHourlyProjectMetadata()
@@ -218,34 +218,34 @@ public class SnapshotsPolicyTest
         assertSnapshotPolicy( SnapshotsPolicy.HOURLY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyIgnoredProjectMetadata()
+    public void testSnapshotPolicyAlwaysProjectMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_PROJECT_METADATA, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_PROJECT_METADATA, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_PROJECT_METADATA, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyIgnoredReleaseArtifact()
+    public void testSnapshotPolicyAlwaysReleaseArtifact()
         throws Exception
     {
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_RELEASE_ARTIFACT, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyIgnoredSnapshotArtifact()
+    public void testSnapshotPolicyAlwaysSnapshotArtifact()
         throws Exception
     {
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testSnapshotPolicyIgnoredVersionedMetadata()
+    public void testSnapshotPolicyAlwaysVersionedMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_VERSION_METADATA, NO_LOCAL );
-        assertSnapshotPolicy( SnapshotsPolicy.IGNORED, PATH_VERSION_METADATA, WITH_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_VERSION_METADATA, NO_LOCAL );
+        assertSnapshotPolicy( SnapshotsPolicy.ALWAYS, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
     public void testSnapshotPolicyOnceProjectMetadata()

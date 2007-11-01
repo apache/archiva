@@ -298,8 +298,8 @@ public abstract class AbstractProxyTestCase
 
     protected void saveConnector( String sourceRepoId, String targetRepoId )
     {
-        saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( sourceRepoId, targetRepoId, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
     }
 
     protected void saveConnector( String sourceRepoId, String targetRepoId, String checksumPolicy,

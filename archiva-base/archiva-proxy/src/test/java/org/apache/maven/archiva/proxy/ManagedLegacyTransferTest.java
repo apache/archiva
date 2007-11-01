@@ -79,8 +79,8 @@ public class ManagedLegacyTransferTest
         ArtifactReference artifact = managedLegacyRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_LEGACY_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedLegacyRepository, artifact );
 

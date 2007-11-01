@@ -148,14 +148,14 @@ public class ChecksumPolicyTest
         assertFixSetting( true, null, GOOD );
     }
 
-    public void testIgnored()
+    public void testIgnore()
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
         File localFile = createTestableFiles( null, null );
         Properties request = createRequest();
 
-        policy.applyPolicy( ChecksumPolicy.IGNORED, request, localFile );
+        policy.applyPolicy( ChecksumPolicy.IGNORE, request, localFile );
     }
 
     private void assertFailSetting( boolean expectedResult, String md5State, String sha1State )

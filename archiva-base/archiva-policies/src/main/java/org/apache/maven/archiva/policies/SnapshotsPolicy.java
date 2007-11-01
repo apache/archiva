@@ -33,9 +33,12 @@ public class SnapshotsPolicy
     extends AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
+    /**
+     * Defaults to {@link AbstractUpdatePolicy#HOURLY}
+     */
     public String getDefaultOption()
     {
-        return AbstractUpdatePolicy.IGNORED;
+        return AbstractUpdatePolicy.HOURLY;
     }
 
     protected boolean isSnapshotPolicy()

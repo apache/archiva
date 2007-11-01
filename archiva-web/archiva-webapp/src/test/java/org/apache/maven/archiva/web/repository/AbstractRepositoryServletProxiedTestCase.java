@@ -167,8 +167,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         connector.setTargetRepoId( remoteRepo.id );
         connector.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasesPolicy );
         connector.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotsPolicy );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORED );
-        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.IGNORED );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE );
+        connector.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO );
 
         archivaConfiguration.getConfiguration().addProxyConnector( connector );
     }
@@ -218,17 +218,17 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
     protected void setupConnector( String repoId, RemoteRepoInfo remoteRepo )
     {
-        setupConnector( repoId, remoteRepo, ReleasesPolicy.IGNORED, SnapshotsPolicy.IGNORED );
+        setupConnector( repoId, remoteRepo, ReleasesPolicy.ALWAYS, SnapshotsPolicy.ALWAYS );
     }
 
     protected void setupReleaseConnector( String managedRepoId, RemoteRepoInfo remoteRepo, String releasePolicy )
     {
-        setupConnector( managedRepoId, remoteRepo, releasePolicy, SnapshotsPolicy.IGNORED );
+        setupConnector( managedRepoId, remoteRepo, releasePolicy, SnapshotsPolicy.ALWAYS );
     }
 
     protected void setupSnapshotConnector( String managedRepoId, RemoteRepoInfo remoteRepo, String snapshotsPolicy )
     {
-        setupConnector( managedRepoId, remoteRepo, ReleasesPolicy.IGNORED, snapshotsPolicy );
+        setupConnector( managedRepoId, remoteRepo, ReleasesPolicy.ALWAYS, snapshotsPolicy );
     }
 
     protected void setupSnapshotsRemoteRepo()

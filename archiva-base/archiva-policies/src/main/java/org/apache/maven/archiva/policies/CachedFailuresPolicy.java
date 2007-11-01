@@ -41,11 +41,16 @@ public class CachedFailuresPolicy
     implements PreDownloadPolicy
 {
     /**
-     * The CACHED policy indicates that if the URL provided exists in the
-     * cached failures pool, then the policy fails, and the download isn't even
-     * attempted.
+     * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
+     * All resource requests are allowed thru to the remote repo.
      */
-    public static final String CACHED = "cached";
+    public static final String NO = "no";
+    
+    /**
+     * The YES policy setting means that the existence of old failures is checked, and will
+     * prevent the request from being performed against the remote repo.
+     */
+    public static final String YES = "yes";
 
     /**
      * @plexus.requirement role-hint="default"
@@ -56,8 +61,8 @@ public class CachedFailuresPolicy
 
     public CachedFailuresPolicy()
     {
-        options.add( IGNORED );
-        options.add( CACHED );
+        options.add( NO );
+        options.add( YES );
     }
 
     public void applyPolicy( String policySetting, Properties request, File localFile )
@@ -70,10 +75,10 @@ public class CachedFailuresPolicy
                 + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
-        if ( IGNORED.equals( policySetting ) )
+        if ( NO.equals( policySetting ) )
         {
-            // Ignore.
-            getLogger().debug( "OK to fetch, check-failures policy set to IGNORED." );
+            // Skip.
+            getLogger().debug( "OK to fetch, check-failures policy set to NO." );
             return;
         }
 
@@ -92,7 +97,7 @@ public class CachedFailuresPolicy
 
     public String getDefaultOption()
     {
-        return IGNORED;
+        return NO;
     }
 
     public String getId()

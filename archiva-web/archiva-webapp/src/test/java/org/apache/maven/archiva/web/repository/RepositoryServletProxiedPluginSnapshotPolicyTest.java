@@ -40,21 +40,21 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedNewer()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.IGNORED,
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.ALWAYS,
                                                      HAS_MANAGED_COPY, ( NEWER * OVER_ONE_DAY ) );
     }
 
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysManagedOlder()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.IGNORED, HAS_MANAGED_COPY,
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.ALWAYS, HAS_MANAGED_COPY,
                                                      ( OLDER * OVER_ONE_DAY ) );
     }
 
     public void testGetProxiedSnapshotsArtifactPolicyAlwaysNoManagedContent()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.IGNORED, NO_MANAGED_COPY );
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, SnapshotsPolicy.ALWAYS, NO_MANAGED_COPY );
     }
 
     public void testGetProxiedSnapshotsArtifactPolicyDailyFail()
@@ -77,23 +77,23 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
                                                      ( OLDER * OVER_ONE_DAY ) );
     }
 
-    public void testGetProxiedSnapshotsArtifactPolicyDisabledFail()
+    public void testGetProxiedSnapshotsArtifactPolicyRejectFail()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.DISABLED,
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER,
                                                      HAS_MANAGED_COPY );
     }
 
-    public void testGetProxiedSnapshotsArtifactPolicyDisabledNoManagedContentFail()
+    public void testGetProxiedSnapshotsArtifactPolicyRejectNoManagedContentFail()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_NOT_FOUND, SnapshotsPolicy.DISABLED, NO_MANAGED_COPY );
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_NOT_FOUND, SnapshotsPolicy.NEVER, NO_MANAGED_COPY );
     }
 
-    public void testGetProxiedSnapshotsArtifactPolicyDisabledPass()
+    public void testGetProxiedSnapshotsArtifactPolicyRejectPass()
         throws Exception
     {
-        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.DISABLED,
+        assertGetProxiedSnapshotsArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, SnapshotsPolicy.NEVER,
                                                      HAS_MANAGED_COPY );
     }
 

@@ -24,7 +24,10 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.apache.maven.archiva.policies.DownloadPolicy;
+import org.apache.maven.archiva.policies.CachedFailuresPolicy;
+import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.maven.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.MockConfiguration;
@@ -484,10 +487,10 @@ public class MetadataToolsTest
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
         connectorConfig.setTargetRepoId( targetRepoId );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, DownloadPolicy.IGNORED );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, DownloadPolicy.IGNORED );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, DownloadPolicy.IGNORED );
-        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, DownloadPolicy.IGNORED );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, ChecksumPolicy.IGNORE );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, ReleasesPolicy.ALWAYS );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, SnapshotsPolicy.ALWAYS );
+        connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CACHE_FAILURES, CachedFailuresPolicy.NO );
 
         int count = config.getConfiguration().getProxyConnectors().size();
         config.getConfiguration().addProxyConnector( connectorConfig );

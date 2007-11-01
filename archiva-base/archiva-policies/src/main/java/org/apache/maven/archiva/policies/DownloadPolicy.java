@@ -32,14 +32,6 @@ import java.util.Properties;
 public interface DownloadPolicy
 {
     /**
-     * The IGNORED policy means that the policy is ignored.
-     */
-    public static final String IGNORED = "ignored";
-    
-    public static final boolean PASS = true;
-    public static final boolean FAIL = false;
-    
-    /**
      * Get the list of options for this policy.
      * 
      * @return the list of options for this policy.

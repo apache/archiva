@@ -390,10 +390,12 @@ public class EditProxyConnectorActionTest
         ProxyConnectorConfiguration connector = new ProxyConnectorConfiguration();
         connector.setSourceRepoId( TEST_SOURCE_ID );
         connector.setTargetRepoId( TEST_TARGET_ID );
-        connector.getPolicies().put( "releases", ReleasesPolicy.IGNORED );
-        connector.getPolicies().put( "snapshots", SnapshotsPolicy.DISABLED );
-        connector.getPolicies().put( "checksum", ChecksumPolicy.FIX );
-        connector.getPolicies().put( "cache-failures", CachedFailuresPolicy.IGNORED );
+        
+        // TODO: Set these options programatically via list of available policies.
+        connector.getPolicies().put( "releases", new ReleasesPolicy().getDefaultOption() );
+        connector.getPolicies().put( "snapshots", new SnapshotsPolicy().getDefaultOption() );
+        connector.getPolicies().put( "checksum", new ChecksumPolicy().getDefaultOption() );
+        connector.getPolicies().put( "cache-failures", new CachedFailuresPolicy().getDefaultOption() );
 
         config.addProxyConnector( connector );
 

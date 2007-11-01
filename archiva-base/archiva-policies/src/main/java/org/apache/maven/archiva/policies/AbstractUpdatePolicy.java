@@ -40,10 +40,14 @@ public abstract class AbstractUpdatePolicy
     implements PreDownloadPolicy
 {
     /**
-     * The DISABLED policy means that the artifact retrieval isn't even attempted,
-     * let alone updated locally.
+     * The ALWAYS policy setting means that the artifact is always uipdated from the remote repo.
      */
-    public static final String DISABLED = "disabled";
+    public static final String ALWAYS = "always";
+    
+    /**
+     * The NEVER policy setting means that the artifact is never updated from the remote repo.
+     */
+    public static final String NEVER = "never";
 
     /**
      * <p>
@@ -80,11 +84,11 @@ public abstract class AbstractUpdatePolicy
 
     public AbstractUpdatePolicy()
     {
-        options.add( IGNORED );
-        options.add( DISABLED );
-        options.add( DAILY );
+        options.add( ALWAYS );
         options.add( HOURLY );
+        options.add( DAILY );
         options.add( ONCE );
+        options.add( NEVER );
     }
 
     protected abstract boolean isSnapshotPolicy();
@@ -120,10 +124,10 @@ public abstract class AbstractUpdatePolicy
                 + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
-        if ( IGNORED.equals( policySetting ) )
+        if ( ALWAYS.equals( policySetting ) )
         {
-            // Ignored means ok to update.
-            getLogger().debug( "OK to update, " + getUpdateMode() + " policy set to IGNORED." );
+            // Skip means ok to update.
+            getLogger().debug( "OK to update, " + getUpdateMode() + " policy set to ALWAYS." );
             return;
         }
 
@@ -140,10 +144,10 @@ public abstract class AbstractUpdatePolicy
             return;
         }
 
-        if ( DISABLED.equals( policySetting ) )
+        if ( NEVER.equals( policySetting ) )
         {
-            // Disabled means no.
-            throw new PolicyViolationException( "NO to update, " + getUpdateMode() + " policy set to DISABLED." );
+            // Reject means no.
+            throw new PolicyViolationException( "NO to update, " + getUpdateMode() + " policy set to NEVER." );
         }
 
         if ( !localFile.exists() )

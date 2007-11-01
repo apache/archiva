@@ -51,6 +51,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
 

@@ -126,34 +126,34 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.DAILY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
-    public void testReleasePolicyDisabledProjectMetadata()
+    public void testReleasePolicyRejectProjectMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_PROJECT_METADATA, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_PROJECT_METADATA, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_PROJECT_METADATA, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
-    public void testReleasePolicyDisabledReleaseArtifact()
+    public void testReleasePolicyRejectReleaseArtifact()
         throws Exception
     {
-        assertReleasesPolicyViolation( ReleasesPolicy.DISABLED, PATH_RELEASE_ARTIFACT, NO_LOCAL );
-        assertReleasesPolicyViolation( ReleasesPolicy.DISABLED, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
+        assertReleasesPolicyViolation( ReleasesPolicy.NEVER, PATH_RELEASE_ARTIFACT, NO_LOCAL );
+        assertReleasesPolicyViolation( ReleasesPolicy.NEVER, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testReleasePolicyDisabledSnapshotArtifact()
+    public void testReleasePolicyRejectSnapshotArtifact()
         throws Exception
     {
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testReleasePolicyDisabledVersionedMetadata()
+    public void testReleasePolicyRejectVersionedMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_VERSION_METADATA, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.DISABLED, PATH_VERSION_METADATA, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_VERSION_METADATA, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.NEVER, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
     public void testReleasePolicyHourlyProjectMetadata()
@@ -218,34 +218,34 @@ public class ReleasePolicyTest
         assertReleasesPolicy( ReleasesPolicy.HOURLY, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
-    public void testReleasePolicyIgnoredProjectMetadata()
+    public void testReleasePolicyAlwaysProjectMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_PROJECT_METADATA, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_PROJECT_METADATA, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_PROJECT_METADATA, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_PROJECT_METADATA, WITH_LOCAL );
     }
 
-    public void testReleasePolicyIgnoredReleaseArtifact()
+    public void testReleasePolicyAlwaysReleaseArtifact()
         throws Exception
     {
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_RELEASE_ARTIFACT, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_RELEASE_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testReleasePolicyIgnoredSnapshotArtifact()
+    public void testReleasePolicyAlwaysSnapshotArtifact()
         throws Exception
     {
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_SNAPSHOT_ARTIFACT, WITH_LOCAL );
     }
 
-    public void testReleasePolicyIgnoredVersionedMetadata()
+    public void testReleasePolicyAlwaysVersionedMetadata()
         throws Exception
     {
         // Pass the policy when working with metadata, no matter what.
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_VERSION_METADATA, NO_LOCAL );
-        assertReleasesPolicy( ReleasesPolicy.IGNORED, PATH_VERSION_METADATA, WITH_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_VERSION_METADATA, NO_LOCAL );
+        assertReleasesPolicy( ReleasesPolicy.ALWAYS, PATH_VERSION_METADATA, WITH_LOCAL );
     }
 
     public void testReleasePolicyOnceProjectMetadata()

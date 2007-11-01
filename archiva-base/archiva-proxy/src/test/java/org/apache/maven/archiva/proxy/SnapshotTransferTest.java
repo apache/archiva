@@ -50,8 +50,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNotDownloaded( downloadedFile );
@@ -71,8 +70,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -94,8 +92,7 @@ public class SnapshotTransferTest
         expectedFile.setLastModified( getPastDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -210,8 +207,7 @@ public class SnapshotTransferTest
         proxiedFile.setLastModified( getFutureDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -234,8 +230,7 @@ public class SnapshotTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -257,10 +252,10 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -282,8 +277,7 @@ public class SnapshotTransferTest
         assertFalse( expectedFile.exists() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
@@ -309,8 +303,7 @@ public class SnapshotTransferTest
         expectedFile.setLastModified( getPastDate().getTime() );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORED, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1);
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 

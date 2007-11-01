@@ -29,6 +29,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>empty</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -47,6 +55,14 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>upgrade-09</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
         </requirement>
       </requirements>
     </component>
@@ -71,6 +87,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configured</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -94,6 +118,14 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>autodetect-v1</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
         </requirement>
       </requirements>
     </component>
@@ -120,6 +152,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>archiva-v1</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -144,6 +184,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -166,6 +214,14 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>save-user</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -195,6 +251,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>configuration-both</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
     </component>
     <component>
@@ -219,6 +283,14 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>read-saved</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -246,6 +318,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>cron-expressions</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
       <configuration>
         <userConfigFilename>${basedir}/target/test/test-file.xml</userConfigFilename>
@@ -271,6 +351,14 @@
         <requirement>
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>not-allowed-to-write-to-both</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
         </requirement>
       </requirements>
       <configuration>
@@ -301,6 +389,14 @@
           <role>org.codehaus.plexus.registry.Registry</role>
           <role-hint>not-allowed-to-write-to-user</role-hint>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
       </requirements>
       <configuration>
         <user-config-filename>${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml</user-config-filename>
@@ -320,6 +416,25 @@
         </properties>
       </configuration>
     </component>
-    
+
+    <component>
+      <role>org.codehaus.plexus.cache.Cache</role>
+      <role-hint>url-failures-cache</role-hint>
+      <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+      <description>URL Failure Cache</description>
+      <configuration>
+        <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+        <disk-persistent>false</disk-persistent>
+        <eternal>false</eternal>
+        <max-elements-in-memory>1000</max-elements-in-memory>
+        <memory-eviction-policy>LRU</memory-eviction-policy>
+        <name>cache</name>
+        <overflow-to-disk>false</overflow-to-disk>
+        <!-- 45 minutes = 2700 seconds -->
+        <time-to-idle-seconds>2700</time-to-idle-seconds>
+        <!-- 30 minutes = 1800 seconds  -->
+        <time-to-live-seconds>1800</time-to-live-seconds>
+      </configuration>
+    </component>    
   </components>
 </component-set>

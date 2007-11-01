@@ -142,10 +142,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -168,10 +168,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -194,8 +194,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -216,10 +216,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertProjectMetadataContents( requestedResource, new String[] { "1.0" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -242,10 +242,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertProjectMetadataContents( requestedResource, new String[] { "1.0-beta-2" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -270,8 +270,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22" }, null, null );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -343,10 +343,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -373,8 +373,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
 
@@ -400,8 +400,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
 
@@ -427,8 +427,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertReleaseMetadataContents( requestedResource );
 
@@ -453,10 +453,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertReleaseMetadataContents( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -484,8 +484,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertReleaseMetadataContents( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -535,10 +535,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -560,8 +560,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertNoMetadata( requestedResource );
 
@@ -581,8 +581,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceNotFound( requestedResource );
 
@@ -601,10 +601,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertSnapshotMetadataContents( requestedResource, "20070822", "021008", 3 );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -626,10 +626,10 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertResourceExists( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -652,8 +652,8 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         assertSnapshotMetadataContents( requestedResource, "20050831", "101112", 1 );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );

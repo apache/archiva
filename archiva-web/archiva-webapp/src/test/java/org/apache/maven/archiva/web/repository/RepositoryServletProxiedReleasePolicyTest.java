@@ -40,21 +40,21 @@ public class RepositoryServletProxiedReleasePolicyTest
     public void testGetProxiedReleaseArtifactPolicyAlwaysManagedNewer()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.IGNORED, HAS_MANAGED_COPY,
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.ALWAYS, HAS_MANAGED_COPY,
                                                    ( NEWER * OVER_ONE_DAY ) );
     }
 
     public void testGetProxiedReleaseArtifactPolicyAlwaysManagedOlder()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.IGNORED, HAS_MANAGED_COPY,
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.ALWAYS, HAS_MANAGED_COPY,
                                                    ( OLDER * OVER_ONE_DAY ) );
     }
 
     public void testGetProxiedReleaseArtifactPolicyAlwaysNoManagedContent()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.IGNORED, NO_MANAGED_COPY );
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_REMOTE_CONTENTS, ReleasesPolicy.ALWAYS, NO_MANAGED_COPY );
     }
 
     public void testGetProxiedReleaseArtifactPolicyDailyFail()
@@ -77,22 +77,22 @@ public class RepositoryServletProxiedReleasePolicyTest
                                                    ( OLDER * OVER_ONE_DAY ) );
     }
 
-    public void testGetProxiedReleaseArtifactPolicyDisabledFail()
+    public void testGetProxiedReleaseArtifactPolicyRejectFail()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.DISABLED, HAS_MANAGED_COPY );
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
-    public void testGetProxiedReleaseArtifactPolicyDisabledNoManagedContentFail()
+    public void testGetProxiedReleaseArtifactPolicyRejectNoManagedContentFail()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_NOT_FOUND, ReleasesPolicy.DISABLED, NO_MANAGED_COPY );
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_NOT_FOUND, ReleasesPolicy.NEVER, NO_MANAGED_COPY );
     }
 
-    public void testGetProxiedReleaseArtifactPolicyDisabledPass()
+    public void testGetProxiedReleaseArtifactPolicyRejectPass()
         throws Exception
     {
-        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.DISABLED, HAS_MANAGED_COPY );
+        assertGetProxiedReleaseArtifactWithPolicy( EXPECT_MANAGED_CONTENTS, ReleasesPolicy.NEVER, HAS_MANAGED_COPY );
     }
 
     public void testGetProxiedReleaseArtifactPolicyHourlyFail()

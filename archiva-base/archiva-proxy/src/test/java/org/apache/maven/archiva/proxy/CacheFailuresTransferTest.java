@@ -56,10 +56,10 @@ public class CacheFailuresTransferTest
         saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
 
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
@@ -91,10 +91,10 @@ public class CacheFailuresTransferTest
         saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
-        saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.IGNORED );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
 
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
@@ -126,10 +126,10 @@ public class CacheFailuresTransferTest
         failurlCache.cacheFailure( url );
 
         // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
-        saveConnector( ID_DEFAULT_MANAGED, "proxied2", ChecksumPolicy.FIX, ReleasesPolicy.IGNORED,
-                       SnapshotsPolicy.IGNORED, CachedFailuresPolicy.CACHED );
+        saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
+        saveConnector( ID_DEFAULT_MANAGED, "proxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES );
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 

@@ -58,7 +58,7 @@ public class CachedFailuresPolicyTest
         return request;
     }
 
-    public void testIgnored()
+    public void testPolicyNo()
         throws Exception
     {
         DownloadPolicy policy = lookupPolicy();
@@ -67,10 +67,10 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
 
-        policy.applyPolicy( CachedFailuresPolicy.IGNORED, request, localFile );
+        policy.applyPolicy( CachedFailuresPolicy.NO, request, localFile );
     }
 
-    public void testCachedNotInCache()
+    public void testPolicyYesNotInCache()
         throws Exception
     {
         DownloadPolicy policy = lookupPolicy();
@@ -79,10 +79,10 @@ public class CachedFailuresPolicyTest
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
 
-        policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile );
+        policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
     }
 
-    public void testCachedInCache()
+    public void testPolicyYesInCache()
         throws Exception
     {
         UrlFailureCache urlFailureCache = lookupUrlFailureCache();
@@ -99,7 +99,7 @@ public class CachedFailuresPolicyTest
 
         try
         {
-            policy.applyPolicy( CachedFailuresPolicy.CACHED, request, localFile );
+            policy.applyPolicy( CachedFailuresPolicy.YES, request, localFile );
             fail( "Expected a PolicyViolationException." );
         }
         catch ( PolicyViolationException e )
