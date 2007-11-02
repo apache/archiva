@@ -19,21 +19,19 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import java.io.File;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.redback.rbac.Operation;
-import org.codehaus.plexus.redback.rbac.Permission;
 import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.Resource;
-import org.codehaus.plexus.redback.rbac.Role;
-import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserManager;
-
-import java.util.List;
 
 /**
  * DefaultUserRepositoriesTest 
@@ -44,8 +42,6 @@ import java.util.List;
 public class DefaultUserRepositoriesTest
     extends PlexusTestCase
 {
-    private static final String PERMISSION_READ_REPOSITORY = "Archiva Read Repository";
-
     private static final String USER_GUEST = "guest";
 
     private static final String USER_ADMIN = "admin";
@@ -58,27 +54,28 @@ public class DefaultUserRepositoriesTest
 
     private RoleManager roleManager;
 
+    private ArchivaConfiguration archivaConfiguration;
+
+    private UserRepositories userRepos;
+
     public void testGetObservableRepositoryIds()
         throws Exception
     {
-        UserRepositories userRepos = (UserRepositories) lookup( UserRepositories.class, "default" );
-        assertNotNull( userRepos );
-
         // create some users.
         createUser( USER_ALPACA, "Al 'Archiva' Paca" );
 
         assertEquals( "Expected users", 3, securitySystem.getUserManager().getUsers().size() );
 
         // some unassigned repo observer roles.
-        userRepos.createMissingRepositoryRoles( "central" );
-        userRepos.createMissingRepositoryRoles( "coporate" );
-        userRepos.createMissingRepositoryRoles( "internal" );
-        userRepos.createMissingRepositoryRoles( "snapshots" );
-        userRepos.createMissingRepositoryRoles( "secret" );
+        setupRepository( "central" );
+        setupRepository( "corporate" );
+        setupRepository( "internal" );
+        setupRepository( "snapshots" );
+        setupRepository( "secret" );
 
         // some assigned repo observer roles.
-        assignRepositoryObserverRole( USER_ALPACA, "central" );
         assignRepositoryObserverRole( USER_ALPACA, "corporate" );
+        assignRepositoryObserverRole( USER_ALPACA, "central" );
         assignRepositoryObserverRole( USER_GUEST, "corporate" );
         // the global repo observer role.
         assignGlobalRepositoryObserverRole( USER_ADMIN );
@@ -101,104 +98,30 @@ public class DefaultUserRepositoriesTest
         }
     }
 
+    private void setupRepository( String repoId )
+        throws Exception
+    {
+        // Add repo to configuration.
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        repoConfig.setId( repoId );
+        repoConfig.setName( "Testable repo <" + repoId + ">" );
+        repoConfig.setLocation( getTestPath( "target/test-repo/" + repoId ) );
+        archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
+
+        // Add repo roles to security.
+        userRepos.createMissingRepositoryRoles( repoId );
+    }
+
     private void assignGlobalRepositoryObserverRole( String principal )
         throws Exception
     {
-        Role role = createRepositoryObserverRole( ArchivaRoleConstants.GLOBAL_REPOSITORY_OBSERVER_ROLE,
-                                                  PERMISSION_READ_REPOSITORY, Resource.GLOBAL );
-        assignRole( principal, role );
+        roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GLOBAL_REPOSITORY_OBSERVER, principal );
     }
 
     private void assignRepositoryObserverRole( String principal, String repoId )
         throws Exception
     {
-        // String roleId = ArchivaRoleConstants.toRepositoryObserverRoleId( repoId );
-        String roleId = ArchivaRoleConstants.toRepositoryObserverRoleName( repoId );
-        roleManager.assignRole( roleId, principal );
-        
-//        Role role = createRepositoryObserverRole( roleName, PERMISSION_READ_REPOSITORY, repoId );
-//        assertEquals( roleName, role.getName() );
-//        assignRole( principal, role );
-    }
-
-    private void assignRole( String principal, Role role )
-        throws Exception
-    {
-        UserAssignment ua;
-
-        if ( rbacManager.userAssignmentExists( principal ) )
-        {
-            ua = rbacManager.getUserAssignment( principal );
-        }
-        else
-        {
-            ua = rbacManager.createUserAssignment( principal );
-        }
-
-        ua.addRoleName( role );
-
-        rbacManager.saveUserAssignment( ua );
-    }
-
-    private void createRepositoryObserverRole( String repoId )
-        throws Exception
-    {
-        createRepositoryObserverRole( ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ),
-                                      PERMISSION_READ_REPOSITORY + "-" + repoId, repoId );
-    }
-
-    private Role createRepositoryObserverRole( String roleName, String permissionName, String resourceId )
-        throws Exception
-    {
-        if ( rbacManager.roleExists( roleName ) )
-        {
-            return rbacManager.getRole( roleName );
-        }
-
-        Permission perm;
-        Operation operationRepoAccess;
-        Resource resource;
-
-        //        if ( rbacManager.resourceExists( resourceId ) )
-        //        {
-        //            resource = rbacManager.getResource( resourceId );
-        //        }
-        //        else
-        //        {
-        //            resource = rbacManager.createResource( resourceId );
-        //        }
-        resource = rbacManager.createResource( resourceId );
-
-        //        if ( rbacManager.operationExists( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
-        //        {
-        //            operationRepoAccess = rbacManager.getOperation( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
-        //        }
-        //        else
-        //        {
-        //            operationRepoAccess = rbacManager.createOperation( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
-        //        }
-        operationRepoAccess = rbacManager.createOperation( ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
-
-        //        if ( rbacManager.permissionExists( permissionName ) )
-        //        {
-        //            perm = rbacManager.getPermission( permissionName );
-        //        }
-        //        else
-        //        {
-        //            perm = rbacManager.createPermission( permissionName );
-        //        }
-        perm = rbacManager.createPermission( permissionName );
-        perm.setOperation( operationRepoAccess );
-        perm.setResource( resource );
-
-        Role role = rbacManager.createRole( roleName );
-        role.addPermission( perm );
-
-        rbacManager.saveOperation( operationRepoAccess );
-        rbacManager.savePermission( perm );
-        rbacManager.saveRole( role );
-
-        return role;
+        roleManager.assignTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId, principal );
     }
 
     private User createUser( String principal, String fullname )
@@ -219,10 +142,27 @@ public class DefaultUserRepositoriesTest
     {
         super.setUp();
 
+        File srcConfig = getTestFile( "src/test/resources/repository-archiva.xml" );
+        File destConfig = getTestFile( "target/test-conf/archiva.xml" );
+
+        destConfig.getParentFile().mkdirs();
+        destConfig.delete();
+
+        FileUtils.copyFile( srcConfig, destConfig );
+
         securitySystem = (SecuritySystem) lookup( SecuritySystem.class, "testable" );
         rbacManager = (RBACManager) lookup( RBACManager.class, "memory" );
         roleManager = (RoleManager) lookup( RoleManager.class, "default" );
-        
+        userRepos = (UserRepositories) lookup( UserRepositories.class, "default" );
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+
+        // Some basic asserts.
+        assertNotNull( securitySystem );
+        assertNotNull( rbacManager );
+        assertNotNull( roleManager );
+        assertNotNull( userRepos );
+        assertNotNull( archivaConfiguration );
+
         // Setup Admin User.
         User adminUser = createUser( USER_ADMIN, "Admin User" );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_SYSTEM_ADMIN, adminUser.getPrincipal().toString() );
@@ -230,5 +170,6 @@ public class DefaultUserRepositoriesTest
         // Setup Guest User.
         User guestUser = createUser( USER_GUEST, "Guest User" );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getPrincipal().toString() );
+
     }
 }

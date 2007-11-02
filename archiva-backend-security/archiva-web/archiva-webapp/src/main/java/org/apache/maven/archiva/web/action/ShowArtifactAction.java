@@ -26,8 +26,14 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,6 +52,16 @@ public class ShowArtifactAction
      * @plexus.requirement role-hint="default"
      */
     private RepositoryBrowsing repoBrowsing;
+    
+    /**
+     * @plexus.requirement
+     */
+    private UserRepositories userRepositories;
+    
+    /**
+     * @plexus.requirement role-hint="xwork"
+     */
+    private ArchivaUser archivaUser;
 
     /* .\ Input Parameters \.________________________________________ */
 
@@ -86,7 +102,7 @@ public class ShowArtifactAction
     {
         try
         {
-            this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+            this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         }
         catch ( ObjectNotFoundException oe )
         {
@@ -104,7 +120,7 @@ public class ShowArtifactAction
     public String dependencies()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
 
         this.dependencies = model.getDependencies();
 
@@ -117,7 +133,7 @@ public class ShowArtifactAction
     public String mailingLists()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
         this.mailingLists = model.getMailingLists();
 
         return SUCCESS;
@@ -142,9 +158,9 @@ public class ShowArtifactAction
     public String dependees()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
 
-        this.dependees = repoBrowsing.getUsedBy( groupId, artifactId, version );
+        this.dependees = repoBrowsing.getUsedBy( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
 
         return SUCCESS;
     }
@@ -155,9 +171,36 @@ public class ShowArtifactAction
     public String dependencyTree()
         throws ObjectNotFoundException, ArchivaDatabaseException
     {
-        this.model = repoBrowsing.selectVersion( groupId, artifactId, version );
+        this.model = repoBrowsing.selectVersion( getPrincipal(), getObservableRepos(), groupId, artifactId, version );
 
         return SUCCESS;
+    }
+    
+    private String getPrincipal()
+    {
+        return archivaUser.getActivePrincipal();
+    }
+    
+    private List<String> getObservableRepos()
+    {
+        try
+        {
+            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+            // TODO: pass this onto the screen.
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
     }
 
     public void validate()

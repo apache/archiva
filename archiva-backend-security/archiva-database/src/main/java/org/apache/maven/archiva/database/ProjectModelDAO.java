@@ -57,7 +57,7 @@ public interface ProjectModelDAO
     public ArchivaProjectModel getProjectModel( String groupId, String artifactId, String version )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
-    public List /*<ArchivaProjectModel>*/queryProjectModels( Constraint constraint )
+    public List<ArchivaProjectModel> queryProjectModels( Constraint constraint )
         throws ObjectNotFoundException, ArchivaDatabaseException;
 
     public ArchivaProjectModel saveProjectModel( ArchivaProjectModel model )

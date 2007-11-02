@@ -19,20 +19,21 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.redback.rbac.Permission;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.codehaus.plexus.redback.authentication.AuthenticationResult;
+import org.codehaus.plexus.redback.authorization.AuthorizationException;
 import org.codehaus.plexus.redback.rbac.RBACManager;
-import org.codehaus.plexus.redback.rbac.RbacManagerException;
-import org.codehaus.plexus.redback.rbac.RbacObjectNotFoundException;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
+import org.codehaus.plexus.redback.system.DefaultSecuritySession;
+import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * DefaultUserRepositories 
@@ -61,6 +62,11 @@ public class DefaultUserRepositories
      */
     private RoleManager roleManager;
     
+    /**
+     * @plexus.requirement
+     */
+    private ArchivaConfiguration archivaConfiguration;
+    
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
@@ -73,38 +79,35 @@ public class DefaultUserRepositories
             {
                 throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
             }
-
-            Map<String, List<Permission>> permissionMap = rbacManager.getAssignedPermissionMap( principal );
+            
+            AuthenticationResult authn = new AuthenticationResult( true, principal, null );
+            SecuritySession securitySession = new DefaultSecuritySession( authn, user );
             
             List<String> repoIds = new ArrayList<String>();
+
+            List<ManagedRepositoryConfiguration> repos = archivaConfiguration.getConfiguration().getManagedRepositories();
             
-            for( Entry<String,List<Permission>> entry: permissionMap.entrySet() )
+            for ( ManagedRepositoryConfiguration repo : repos )
             {
-                List<Permission> perms = entry.getValue();
-                
-                for( Permission perm: perms )
+                try
                 {
-                    System.out.println( "Principal[" + principal + "] : Permission[" + entry.getKey() + "]:" + perm.getName() + " - Operation:"
-                        + perm.getOperation().getName() + " - Resource:" + perm.getResource().getIdentifier() );
+                    String repoId = repo.getId();
+                    if ( securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
+                    {
+                        repoIds.add( repoId );
+                    }
+                }
+                catch ( AuthorizationException e )
+                {
+                    // swallow.
                 }
             }
-            
-            System.out.println("-");
             
             return repoIds;
         }
         catch ( UserNotFoundException e )
         {
             throw new PrincipalNotFoundException( "Unable to find principal " + principal + "" );
-        }
-        catch ( RbacObjectNotFoundException e )
-        {
-            throw new PrincipalNotFoundException( "Unable to find user role assignments for user " + principal, e );
-        }
-        catch ( RbacManagerException e )
-        {
-            throw new ArchivaSecurityException( "Unable to initialize underlying security framework: " + e.getMessage(),
-                                                e );
         }
     }
 

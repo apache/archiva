@@ -22,7 +22,15 @@ package org.apache.maven.archiva.web.action;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Browse the repository.
@@ -39,6 +47,16 @@ public class BrowseAction
      * @plexus.requirement role-hint="default"
      */
     private RepositoryBrowsing repoBrowsing;
+    
+    /**
+     * @plexus.requirement
+     */
+    private UserRepositories userRepositories;
+    
+    /**
+     * @plexus.requirement role-hint="xwork"
+     */
+    private ArchivaUser archivaUser;
 
     private BrowsingResults results;
 
@@ -48,7 +66,7 @@ public class BrowseAction
 
     public String browse()
     {
-        this.results = repoBrowsing.getRoot();
+        this.results = repoBrowsing.getRoot( getPrincipal(), getObservableRepos() );
         return SUCCESS;
     }
 
@@ -61,7 +79,7 @@ public class BrowseAction
             return ERROR;
         }
 
-        this.results = repoBrowsing.selectGroupId( groupId );
+        this.results = repoBrowsing.selectGroupId( getPrincipal(), getObservableRepos(), groupId );
         return SUCCESS;
     }
 
@@ -81,8 +99,35 @@ public class BrowseAction
             return ERROR;
         }
 
-        this.results = repoBrowsing.selectArtifactId( groupId, artifactId );
+        this.results = repoBrowsing.selectArtifactId( getPrincipal(), getObservableRepos(), groupId, artifactId );
         return SUCCESS;
+    }
+    
+    private String getPrincipal()
+    {
+        return archivaUser.getActivePrincipal();
+    }
+    
+    private List<String> getObservableRepos()
+    {
+        try
+        {
+            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+            // TODO: pass this onto the screen.
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
     }
 
     public String getGroupId()
