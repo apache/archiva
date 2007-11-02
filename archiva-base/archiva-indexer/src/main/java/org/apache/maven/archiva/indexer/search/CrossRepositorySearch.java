@@ -1,5 +1,7 @@
 package org.apache.maven.archiva.indexer.search;
 
+import java.util.List;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -35,7 +37,7 @@ public interface CrossRepositorySearch
      * @param limits the limits to apply to the search results.
      * @return the results.
      */
-    public SearchResults searchForTerm( String term, SearchResultLimits limits );
+    public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits );
     
     /**
      * Search for the specific bytecode across all repositories.
@@ -44,7 +46,7 @@ public interface CrossRepositorySearch
      * @param limits the limits to apply to the search results.
      * @return the results.
      */
-    public SearchResults searchForBytecode( String term, SearchResultLimits limits );
+    public SearchResults searchForBytecode( String principal, List<String> selectedRepos, String term, SearchResultLimits limits );
 
     /**
      * Search for the specific checksum string across all repositories.
@@ -53,5 +55,5 @@ public interface CrossRepositorySearch
      * @param limits the limits to apply to the search results.
      * @return the results.
      */
-    public SearchResults searchForChecksum( String checksum, SearchResultLimits limits );
+    public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum, SearchResultLimits limits );
 }

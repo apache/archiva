@@ -19,15 +19,16 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import junit.framework.AssertionFailedError;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeRecordLoader;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import junit.framework.AssertionFailedError;
 
 /**
  * BytecodeIndexPopulator
@@ -39,10 +40,10 @@ public class BytecodeIndexPopulator
     implements IndexPopulator
 {
 
-    public Map getObjectMap()
+    public Map<String,ArchivaArtifact> getObjectMap()
     {
 
-        Map dumps = new HashMap();
+        Map<String,ArchivaArtifact> dumps = new HashMap<String,ArchivaArtifact>();
 
         // archiva-common-1.0.jar.txt
         dumps.put( "archiva-common",
@@ -86,15 +87,13 @@ public class BytecodeIndexPopulator
         return artifact;
     }
 
-    public Map populate( File basedir )
+    public Map<String, BytecodeRecord> populate( File basedir )
     {
-        Map records = new HashMap();
+        Map<String, BytecodeRecord> records = new HashMap<String, BytecodeRecord>();
 
-        Map artifactDumps = getObjectMap();
-        for ( Iterator iter = artifactDumps.entrySet().iterator(); iter.hasNext(); )
+        for ( Entry<String, ArchivaArtifact> entry : getObjectMap().entrySet() )
         {
-            Map.Entry entry = (Map.Entry) iter.next();
-            ArchivaArtifact artifact = (ArchivaArtifact) entry.getValue();
+            ArchivaArtifact artifact = entry.getValue();
             File dumpFile = getDumpFile( basedir, artifact );
             BytecodeRecord record = BytecodeRecordLoader.loadRecord( dumpFile, artifact );
             record.setRepositoryId( "test-repo" );
