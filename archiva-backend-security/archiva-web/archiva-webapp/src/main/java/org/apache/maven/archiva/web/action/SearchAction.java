@@ -28,9 +28,15 @@ import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.search.CrossRepositorySearch;
 import org.apache.maven.archiva.indexer.search.SearchResultLimits;
 import org.apache.maven.archiva.indexer.search.SearchResults;
+import org.apache.maven.archiva.security.AccessDeniedException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,6 +66,16 @@ public class SearchAction
      * @plexus.requirement role-hint="default"
      */
     private CrossRepositorySearch crossRepoSearch;
+    
+    /**
+     * @plexus.requirement
+     */
+    private UserRepositories userRepositories;
+    
+    /**
+     * @plexus.requirement role-hint="xwork"
+     */
+    private ArchivaUser archivaUser;
 
     private static final String RESULTS = "results";
 
@@ -80,7 +96,7 @@ public class SearchAction
 
         SearchResultLimits limits = new SearchResultLimits( 0 );
 
-        results = crossRepoSearch.searchForTerm( q, limits );
+        results = crossRepoSearch.searchForTerm( getPrincipal(), getObservableRepos(), q, limits );
 
         if ( results.isEmpty() )
         {
@@ -125,15 +141,41 @@ public class SearchAction
             // 1 hit? return it's information directly!            
             return ARTIFACT;
         }
-        else
-        {
-            return RESULTS;
-        }
+        
+        return RESULTS;
     }
 
+    @Override
     public String doInput()
     {
         return INPUT;
+    }
+    
+    private String getPrincipal()
+    {
+        return archivaUser.getActivePrincipal();
+    }
+    
+    private List<String> getObservableRepos()
+    {
+        try
+        {
+            return userRepositories.getObservableRepositoryIds( getPrincipal() );
+        }
+        catch ( PrincipalNotFoundException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        catch ( AccessDeniedException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+            // TODO: pass this onto the screen.
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            getLogger().warn( e.getMessage(), e );
+        }
+        return Collections.emptyList();
     }
 
     public String getQ()

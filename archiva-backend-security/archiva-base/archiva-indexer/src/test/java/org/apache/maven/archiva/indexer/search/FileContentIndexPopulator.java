@@ -21,6 +21,7 @@ package org.apache.maven.archiva.indexer.search;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
+import org.apache.maven.archiva.model.ArchivaArtifact;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +39,14 @@ import junit.framework.AssertionFailedError;
 public class FileContentIndexPopulator
     implements IndexPopulator
 {
-    public Map getObjectMap()
+    public Map<String, ArchivaArtifact> getObjectMap()
     {
         return null;
     }
 
-    public Map populate( File basedir )
+    public Map<String, FileContentRecord> populate( File basedir )
     {
-        Map map = new HashMap();
+        Map<String, FileContentRecord> map = new HashMap<String, FileContentRecord>();
 
         File repoDir = new File( basedir, "src/test/managed-repository" );
 

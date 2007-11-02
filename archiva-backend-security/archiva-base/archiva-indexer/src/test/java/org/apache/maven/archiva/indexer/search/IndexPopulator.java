@@ -19,6 +19,9 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
+import org.apache.maven.archiva.model.ArchivaArtifact;
+
 import java.io.File;
 import java.util.Map;
 
@@ -30,7 +33,7 @@ import java.util.Map;
  */
 public interface IndexPopulator
 {
-    public Map getObjectMap();
+    public Map<String, ArchivaArtifact> getObjectMap();
 
-    public Map populate( File basedir );
+    public Map<String, ? extends LuceneRepositoryContentRecord> populate( File basedir );
 }
