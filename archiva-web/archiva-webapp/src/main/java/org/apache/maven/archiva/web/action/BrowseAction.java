@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.browsing.BrowsingResults;
 import org.apache.maven.archiva.database.browsing.RepositoryBrowsing;
@@ -66,7 +67,13 @@ public class BrowseAction
 
     public String browse()
     {
-        this.results = repoBrowsing.getRoot( getPrincipal(), getObservableRepos() );
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            return GlobalResults.ACCESS_TO_NO_REPOS;
+        }
+
+        this.results = repoBrowsing.getRoot( getPrincipal(), selectedRepos );
         return SUCCESS;
     }
 
@@ -79,7 +86,14 @@ public class BrowseAction
             return ERROR;
         }
 
-        this.results = repoBrowsing.selectGroupId( getPrincipal(), getObservableRepos(), groupId );
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            return GlobalResults.ACCESS_TO_NO_REPOS;
+        }
+
+        
+        this.results = repoBrowsing.selectGroupId( getPrincipal(), selectedRepos, groupId );
         return SUCCESS;
     }
 
@@ -99,7 +113,14 @@ public class BrowseAction
             return ERROR;
         }
 
-        this.results = repoBrowsing.selectArtifactId( getPrincipal(), getObservableRepos(), groupId, artifactId );
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            return GlobalResults.ACCESS_TO_NO_REPOS;
+        }
+
+        
+        this.results = repoBrowsing.selectArtifactId( getPrincipal(), selectedRepos, groupId, artifactId );
         return SUCCESS;
     }
     
