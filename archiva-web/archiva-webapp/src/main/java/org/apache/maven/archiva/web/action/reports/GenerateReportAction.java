@@ -20,12 +20,14 @@ package org.apache.maven.archiva.web.action.reports;
  */
 
 import com.opensymphony.webwork.interceptor.ServletRequestAware;
+import com.opensymphony.xwork.Preparable;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.Constraint;
 import org.apache.maven.archiva.database.constraints.RangeConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByGroupIdConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemByRepositoryIdConstraint;
 import org.apache.maven.archiva.database.constraints.RepositoryProblemConstraint;
+import org.apache.maven.archiva.database.constraints.UniqueFieldConstraint;
 import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.model.RepositoryProblemReport;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
@@ -37,6 +39,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -44,7 +47,7 @@ import java.util.List;
  */
 public class GenerateReportAction
     extends PlexusActionSupport
-    implements SecureAction, ServletRequestAware
+    implements SecureAction, ServletRequestAware, Preparable
 {
     /**
      * @plexus.requirement role-hint="jdo"
@@ -71,7 +74,7 @@ public class GenerateReportAction
 
     protected int rowCount = 100;
 
-    protected boolean isLastPage = false;
+    protected boolean isLastPage;
 
     public static final String BLANK = "blank";
 
@@ -79,10 +82,28 @@ public class GenerateReportAction
 
     private static Boolean jasperPresent;
 
-    public String input()
+    private Collection<String> repositoryIds;
+
+    public static final String ALL_REPOSITORIES = "All Repositories";
+
+    public void prepare()
+    {
+        repositoryIds = new ArrayList<String>();
+        repositoryIds.add( ALL_REPOSITORIES ); // comes first to be first in the list
+        repositoryIds.addAll(
+            dao.query( new UniqueFieldConstraint( RepositoryProblem.class.getName(), "repositoryId" ) ) );
+    }
+
+    public Collection<String> getRepositoryIds()
+    {
+        return repositoryIds;
+    }
+
+    public String execute()
         throws Exception
     {
-        List<RepositoryProblem> problemArtifacts = dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
+        List<RepositoryProblem> problemArtifacts =
+            dao.getRepositoryProblemDAO().queryRepositoryProblems( configureConstraint() );
 
         String contextPath =
             request.getRequestURL().substring( 0, request.getRequestURL().indexOf( request.getRequestURI() ) );
@@ -158,7 +179,7 @@ public class GenerateReportAction
 
         if ( groupId != null && ( !groupId.equals( "" ) ) )
         {
-            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( PickReportAction.ALL_REPOSITORIES ) ) )
+            if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ALL_REPOSITORIES ) ) )
             {
                 constraint = new RepositoryProblemConstraint( range, groupId, repositoryId );
             }
@@ -167,7 +188,7 @@ public class GenerateReportAction
                 constraint = new RepositoryProblemByGroupIdConstraint( range, groupId );
             }
         }
-        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( PickReportAction.ALL_REPOSITORIES ) ) )
+        else if ( repositoryId != null && ( !repositoryId.equals( "" ) && !repositoryId.equals( ALL_REPOSITORIES ) ) )
         {
             constraint = new RepositoryProblemByRepositoryIdConstraint( range, repositoryId );
         }

@@ -400,8 +400,8 @@
   </package>
 
   <package name="report" namespace="/report" extends="base">
-    <action name="pickReport" class="pickReport">
-      <result>/WEB-INF/jsp/reports/pickReport.jsp</result>
+    <action name="pickReport" class="generateReport" method="input">
+      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
     </action>
 
     <action name="generateReport" class="generateReport">
@@ -410,9 +410,9 @@
         <param name="dataSource">reports</param>
         <param name="format">HTML</param>
       </result>
-      <result name="input" type="redirect-action">pickReport</result>
-      <result name="success">/WEB-INF/jsp/reports/basicReport.jsp</result>
+      <result name="input">/WEB-INF/jsp/reports/pickReport.jsp</result>
       <result name="blank">/WEB-INF/jsp/reports/blankReport.jsp</result>
+      <result>/WEB-INF/jsp/reports/basicReport.jsp</result>
     </action>
   </package>
 </xwork>
