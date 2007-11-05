@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.Constraint;
@@ -95,8 +96,14 @@ public class SearchAction
         assert q != null && q.length() != 0;
 
         SearchResultLimits limits = new SearchResultLimits( 0 );
+        
+        List<String> selectedRepos = getObservableRepos();
+        if ( CollectionUtils.isEmpty( selectedRepos ) )
+        {
+            return GlobalResults.ACCESS_TO_NO_REPOS;
+        }
 
-        results = crossRepoSearch.searchForTerm( getPrincipal(), getObservableRepos(), q, limits );
+        results = crossRepoSearch.searchForTerm( getPrincipal(), selectedRepos, q, limits );
 
         if ( results.isEmpty() )
         {
