@@ -20,10 +20,12 @@ package org.apache.maven.archiva.consumers.core.repository;
 */
 
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -31,8 +33,11 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -49,11 +54,14 @@ public class DaysOldRepositoryPurge
 
     private int daysOlder;
     
+    private int retentionCount;
+    
     public DaysOldRepositoryPurge( ManagedRepositoryContent repository, ArtifactDAO artifactDao,
-                                   int daysOlder, Map<String, RepositoryContentIndex> indices )
+                                   int daysOlder, int retentionCount, Map<String, RepositoryContentIndex> indices )
     {
         super( repository, artifactDao, indices );
         this.daysOlder = daysOlder;
+        this.retentionCount = retentionCount;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
         timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
@@ -75,12 +83,29 @@ public class DaysOldRepositoryPurge
             Calendar olderThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
             olderThanThisDate.add( Calendar.DATE, -daysOlder );
 
+            // respect retention count
+            VersionedReference reference = new VersionedReference();
+            reference.setGroupId( artifact.getGroupId() );
+            reference.setArtifactId( artifact.getArtifactId() );
+            reference.setVersion( artifact.getVersion() );
+
+            List<String> versions = new ArrayList<String>( repository.getVersions( reference ) );
+
+            Collections.sort( versions, VersionComparator.getInstance() );
+            
+            
             // Is this a generic snapshot "1.0-SNAPSHOT" ?
             if ( VersionUtil.isGenericSnapshot( artifact.getVersion() ) )
             {
                 if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
-                {
-                    doPurgeAllRelated( artifactFile );
+                {                    
+                    if ( retentionCount > versions.size() )
+                    {
+                        // Done. nothing to do here. skip it.
+                        return;
+                    }
+                                        
+                    purgeArtifact( versions, artifactFile );
                 }
             }
             // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
@@ -89,18 +114,35 @@ public class DaysOldRepositoryPurge
                 Calendar timestampCal = uniqueSnapshotToCalendar( artifact.getVersion() );
 
                 if ( timestampCal.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
-                {
-                    doPurgeAllRelated( artifactFile );
+                {                    
+                    if ( retentionCount > versions.size() )
+                    {
+                        // Done. nothing to do here. skip it.
+                        return;
+                    }
+                    
+                    purgeArtifact( versions, artifactFile );                    
                 }
                 else if ( artifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
-                {
-                    doPurgeAllRelated( artifactFile );
+                {                    
+
+                    if ( retentionCount > versions.size() )
+                    {
+                        // Done. nothing to do here. skip it.
+                        return;
+                    }
+                    
+                    purgeArtifact( versions, artifactFile );                    
                 }
             }
         }
         catch ( LayoutException le )
         {
             throw new RepositoryPurgeException( le.getMessage() );
+        }
+        catch ( ContentNotFoundException e )
+        {
+            throw new RepositoryPurgeException( e.getMessage() );
         }
     }
 
@@ -150,6 +192,21 @@ public class DaysOldRepositoryPurge
         {
             // Nothing to do here.
             // TODO: Log this?
+        }
+    }
+    
+    private void purgeArtifact( List<String> versions, File artifactFile )
+        throws LayoutException
+    {
+        int countToPurge = versions.size() - retentionCount;
+
+        while( versions.iterator().hasNext() )
+        {
+            if ( countToPurge-- <= 0 )
+            {
+                break;
+            }
+            doPurgeAllRelated( artifactFile );
         }
     }
 }

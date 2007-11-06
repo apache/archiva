@@ -149,7 +149,7 @@ public class RepositoryPurgeConsumer
             if ( repository.getDaysOlder() != 0 )
             {
                 repoPurge = new DaysOldRepositoryPurge( repositoryContent, dao.getArtifactDAO(), repository
-                    .getDaysOlder(), indices );
+                    .getDaysOlder(), repository.getRetentionCount(), indices );
             }
             else
             {

@@ -46,7 +46,7 @@
   </field>
    <field name="repository.daysOlder">
 	<field-validator type="int">
-    	<param name="min">1</param>
+    	<param name="min">0</param>
         <param name="max">1000</param>
 		<message>Repository Purge By Days Older Than needs to be between ${min} and ${max}.</message>
 	</field-validator>    

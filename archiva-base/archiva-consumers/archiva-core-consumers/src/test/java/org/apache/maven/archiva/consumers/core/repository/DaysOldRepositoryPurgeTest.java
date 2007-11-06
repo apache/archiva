@@ -35,18 +35,18 @@ public class DaysOldRepositoryPurgeTest
     extends AbstractRepositoryPurgeTest
 {
 
+    private Map<String, RepositoryContentIndex> map;
+    
     protected void setUp()
         throws Exception
     {
         super.setUp();
 
-        Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
+        map = new HashMap<String, RepositoryContentIndex>();
         map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
         map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );        
         
-        repoPurge =
-            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), map );
     }
 
     private void setLastModified( String dirPath )
@@ -61,7 +61,11 @@ public class DaysOldRepositoryPurgeTest
 
     public void testByLastModified()
         throws Exception
-    {
+    {        
+        repoPurge =
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), 
+                            1, map );
+        
         populateDbForTestByLastModified();
 
         String repoRoot = prepareTestRepo();
@@ -83,6 +87,10 @@ public class DaysOldRepositoryPurgeTest
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
+        repoPurge =
+            new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), 
+                            getRepoConfiguration().getRetentionCount(), map );
+        
         populateDbForTestMetadataDrivenSnapshots();
 
         String repoRoot = prepareTestRepo();
