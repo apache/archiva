@@ -28,10 +28,16 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.MockConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
+import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
+import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,6 +53,7 @@ public class DefaultCrossRepositorySearchTest
 
     private static final String TEST_DEFAULT_REPO_ID = "testDefaultRepo";
 
+    @Override
     protected void setUp()
         throws Exception
     {
@@ -86,17 +93,17 @@ public class DefaultCrossRepositorySearchTest
         RepositoryContentIndex indexContents = indexFactory.createFileContentIndex( repository );
 
         // Now populate them.
-        Map hashcodesMap = ( new HashcodesIndexPopulator() ).populate( new File( getBasedir() ) );
+        Map<String, HashcodesRecord> hashcodesMap = new HashcodesIndexPopulator().populate( new File( getBasedir() ) );
         indexHashcode.indexRecords( hashcodesMap.values() );
         assertEquals( "Hashcode Key Count", hashcodesMap.size(), indexHashcode.getAllRecordKeys().size() );
         assertRecordCount( indexHashcode, hashcodesMap.size() );
 
-        Map bytecodeMap = ( new BytecodeIndexPopulator() ).populate( new File( getBasedir() ) );
+        Map<String, BytecodeRecord> bytecodeMap = new BytecodeIndexPopulator().populate( new File( getBasedir() ) );
         indexBytecode.indexRecords( bytecodeMap.values() );
         assertEquals( "Bytecode Key Count", bytecodeMap.size(), indexBytecode.getAllRecordKeys().size() );
         assertRecordCount( indexBytecode, bytecodeMap.size() );
 
-        Map contentMap = ( new FileContentIndexPopulator() ).populate( new File( getBasedir() ) );
+        Map<String, FileContentRecord> contentMap = new FileContentIndexPopulator().populate( new File( getBasedir() ) );
         indexContents.indexRecords( contentMap.values() );
         assertEquals( "File Content Key Count", contentMap.size(), indexContents.getAllRecordKeys().size() );
         assertRecordCount( indexContents, contentMap.size() );
@@ -125,23 +132,31 @@ public class DefaultCrossRepositorySearchTest
     {
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
-        SearchResultLimits limits = new SearchResultLimits( 0 );
-        limits.setPageSize( 20 );
-
-        SearchResults results = search.searchForTerm( "org", limits );
-        assertResults( 1, 7, results );
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+        
+        String expectedResults[] = new String[] { 
+            "org","org2","org3","org4","org5","org6","org7"
+        };
+        
+        assertSearchResults( expectedRepos, expectedResults, search, "org" );
     }
 
     public void testSearchTerm_Junit()
         throws Exception
     {
         CrossRepositorySearch search = lookupCrossRepositorySearch();
-
-        SearchResultLimits limits = new SearchResultLimits( 0 );
-        limits.setPageSize( 20 );
-
-        SearchResults results = search.searchForTerm( "junit", limits );
-        assertResults( 1, 3, results );
+        
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+        
+        String expectedResults[] = new String[] { 
+            "junit","junit2","junit3"
+        };
+        
+        assertSearchResults( expectedRepos, expectedResults, search, "junit" );
     }
 
     public void testSearchInvalidTerm()
@@ -149,21 +164,37 @@ public class DefaultCrossRepositorySearchTest
     {
         CrossRepositorySearch search = lookupCrossRepositorySearch();
 
-        SearchResultLimits limits = new SearchResultLimits( 0 );
-        limits.setPageSize( 20 );
-
-        SearchResults results = search.searchForTerm( "monosodium", limits );
-        assertResults( 1, 0, results );
-    }
-
-    private void assertResults( int repoCount, int hitCount, SearchResults results )
-    {
-        assertNotNull( "Search Results should not be null.", results );
-        assertEquals( "Repository Hits", repoCount, results.getRepositories().size() );
-
-        assertEquals( "Search Result Hits", hitCount, results.getHits().size() );
+        String expectedRepos[] = new String[] {
+            TEST_DEFAULT_REPO_ID
+        };
+        
+        String expectedResults[] = new String[] { 
+            // Nothing.
+        };
+        
+        assertSearchResults( expectedRepos, expectedResults, search, "monosodium" );
     }
     
+    private void assertSearchResults( String expectedRepos[], String expectedResults[], CrossRepositorySearch search, String term )
+        throws Exception
+    {
+        SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( 20 );
+        
+        List<String> selectedRepos = new ArrayList<String>();
+        selectedRepos.addAll( Arrays.asList( expectedRepos ) );
+        
+        SearchResults results = search.searchForTerm( "guest", selectedRepos, term, limits );
+        
+        assertNotNull( "Search Results should not be null.", results );
+        assertEquals( "Repository Hits", expectedRepos.length, results.getRepositories().size() );
+        // TODO: test the repository ids returned.
+
+        assertEquals( "Search Result Hits", expectedResults.length, results.getHits().size() );
+        // TODO: test the order of hits.
+        // TODO: test the value of the hits.
+    }
+
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();

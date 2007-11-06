@@ -35,6 +35,10 @@ public class ArchivaRoleConstants
     public static final String REGISTERED_USER_ROLE = "Registered User";
 
     public static final String GUEST_ROLE = "Guest";
+    
+    // principals
+    
+    public static final String PRINCIPAL_GUEST = "guest";
 
     // dynamic role prefixes
     public static final String REPOSITORY_MANAGER_ROLE_PREFIX = "Repository Manager";
@@ -68,4 +72,15 @@ public class ArchivaRoleConstants
     public static final String TEMPLATE_REPOSITORY_MANAGER = "archiva-repository-manager";
     
     public static final String TEMPLATE_REPOSITORY_OBSERVER = "archiva-repository-observer";
+    
+    public static final String TEMPLATE_GLOBAL_REPOSITORY_OBSERVER = "archiva-global-repository-observer"; 
+    
+    public static final String TEMPLATE_SYSTEM_ADMIN = "archiva-system-administrator";
+    
+    public static final String TEMPLATE_GUEST = "archiva-guest";
+    
+    public static String toRepositoryObserverRoleName( String repoId )
+    {
+        return REPOSITORY_OBSERVER_ROLE_PREFIX + " - " + repoId;
+    }
 }

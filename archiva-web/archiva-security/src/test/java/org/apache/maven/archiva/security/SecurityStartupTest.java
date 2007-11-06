@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,31 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import java.io.File;
-import java.util.Map;
+import org.codehaus.plexus.PlexusTestCase;
 
 /**
- * IndexPopulator 
+ * SecurityStartupTest 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface IndexPopulator
+public class SecurityStartupTest
+    extends PlexusTestCase
 {
-    public Map<String, ArchivaArtifact> getObjectMap();
+    private SecurityStartup secStart;
 
-    public Map<String, ? extends LuceneRepositoryContentRecord> populate( File basedir );
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        secStart = (SecurityStartup) lookup( SecurityStartup.class );
+    }
+
+    public void testEnvironmentChecks()
+        throws Exception
+    {
+        secStart.executeEnvironmentChecks();
+    }
 }

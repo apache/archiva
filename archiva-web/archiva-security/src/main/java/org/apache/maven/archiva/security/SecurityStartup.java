@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.web.startup;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,13 +24,10 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
-import org.codehaus.plexus.redback.role.RoleManager;
-import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
@@ -41,22 +38,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * ConfigurationSynchronization
+ * SecurityStartup 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  * 
- * @plexus.component role="org.apache.maven.archiva.web.startup.SecuritySynchronization"
- * role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.security.SecurityStartup"
  */
-public class SecuritySynchronization
+public class SecurityStartup
     extends AbstractLogEnabled
     implements RegistryListener
 {
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
-    private RoleManager roleManager;
+    private UserRepositories userRepos;
 
     /**
      * @plexus.requirement role-hint="cached"
@@ -77,7 +73,41 @@ public class SecuritySynchronization
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) )
         {
-            synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
+            createMissingManagedRepositoryRoles( archivaConfiguration.getConfiguration().getManagedRepositories() );
+        }
+    }
+
+    public void assignRepositoryObserverToGuestUser( List<ManagedRepositoryConfiguration> repos )
+    {
+        for ( ManagedRepositoryConfiguration repoConfig : repos )
+        {
+            String repoId = repoConfig.getId();
+
+            // TODO: Use the Redback / UserConfiguration..getString( "redback.default.guest" ) to get the right name.
+            String principal = "guest";
+
+            try
+            {
+                UserAssignment ua;
+
+                if ( rbacManager.userAssignmentExists( principal ) )
+                {
+                    ua = rbacManager.getUserAssignment( principal );
+                }
+                else
+                {
+                    ua = rbacManager.createUserAssignment( principal );
+                }
+
+                ua.addRoleName( ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) );
+                rbacManager.saveUserAssignment( ua );
+            }
+            catch ( RbacManagerException e )
+            {
+                getLogger().warn(
+                                  "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
+                                      + "] to " + principal + " user.", e );
+            }
         }
     }
 
@@ -86,7 +116,7 @@ public class SecuritySynchronization
         /* do nothing */
     }
 
-    private void synchConfiguration( List<ManagedRepositoryConfiguration> repos )
+    public void createMissingManagedRepositoryRoles( List<ManagedRepositoryConfiguration> repos )
     {
         // NOTE: Remote Repositories do not have roles or security placed around them.
 
@@ -95,43 +125,32 @@ public class SecuritySynchronization
             // manage roles for repositories
             try
             {
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoConfig
-                    .getId() ) )
-                {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoConfig
-                        .getId() );
-                }
-
-                if ( !roleManager.templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoConfig
-                    .getId() ) )
-                {
-                    roleManager.createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoConfig
-                        .getId() );
-                }
+                userRepos.createMissingRepositoryRoles( repoConfig.getId() );
             }
-            catch ( RoleManagerException e )
+            catch ( ArchivaSecurityException e )
             {
-                // Log error.
-                getLogger().error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
+                getLogger().warn( e.getMessage(), e );
             }
         }
     }
 
-    public void startup()
-        throws ArchivaException
+    public void createMissingRepositoryRoles( List<String> repoIds )
     {
-        executeEnvironmentChecks();
-
-        synchConfiguration( archivaConfiguration.getConfiguration().getManagedRepositories() );
-        archivaConfiguration.addChangeListener( this );
-
-        if ( archivaConfiguration.isDefaulted() )
+        for ( String repoId : repoIds )
         {
-            assignRepositoryObserverToGuestUser( archivaConfiguration.getConfiguration().getManagedRepositories() );
+            // manage roles for repositories
+            try
+            {
+                userRepos.createMissingRepositoryRoles( repoId );
+            }
+            catch ( ArchivaSecurityException e )
+            {
+                getLogger().warn( e.getMessage(), e );
+            }
         }
     }
 
-    private void executeEnvironmentChecks()
+    public void executeEnvironmentChecks()
         throws ArchivaException
     {
         if ( ( checkers == null ) || CollectionUtils.isEmpty( checkers.values() ) )
@@ -171,36 +190,17 @@ public class SecuritySynchronization
         }
     }
 
-    private void assignRepositoryObserverToGuestUser( List<ManagedRepositoryConfiguration> repos )
+    public void startup()
+        throws ArchivaException
     {
-        for ( ManagedRepositoryConfiguration repoConfig : repos )
+        executeEnvironmentChecks();
+
+        createMissingManagedRepositoryRoles( archivaConfiguration.getConfiguration().getManagedRepositories() );
+        archivaConfiguration.addChangeListener( this );
+
+        if ( archivaConfiguration.isDefaulted() )
         {
-            String repoId = repoConfig.getId();
-            
-            // TODO: Use the Redback / UserConfiguration..getString( "redback.default.guest" ) to get the right name.
-            String principal = "guest";
-            
-            try
-            {
-                UserAssignment ua;
-
-                if ( rbacManager.userAssignmentExists( principal ) )
-                {
-                    ua = rbacManager.getUserAssignment( principal );
-                }
-                else
-                {
-                    ua = rbacManager.createUserAssignment( principal );
-                }
-
-                ua.addRoleName( ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) );
-                rbacManager.saveUserAssignment( ua );
-            }
-            catch ( RbacManagerException e )
-            {
-                getLogger().warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
-                                      + "] to " + principal + " user.", e );
-            }
+            assignRepositoryObserverToGuestUser( archivaConfiguration.getConfiguration().getManagedRepositories() );
         }
     }
 }

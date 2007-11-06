@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,23 +19,22 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 /**
- * AllTests - conveinence test suite for IDE users. 
+ * PrincipalNotFoundException 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class PrincipalNotFoundException
+    extends ArchivaSecurityException
 {
-    public static Test suite()
+    public PrincipalNotFoundException( String message, Throwable cause )
     {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer.search" );
-        //$JUnit-BEGIN$
-        suite.addTestSuite( DefaultCrossRepositorySearchTest.class );
-        //$JUnit-END$
-        return suite;
+        super( message, cause );
+    }
+
+    public PrincipalNotFoundException( String message )
+    {
+        super( message );
     }
 }

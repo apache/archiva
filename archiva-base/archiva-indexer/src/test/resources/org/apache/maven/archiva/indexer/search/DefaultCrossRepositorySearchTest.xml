@@ -25,29 +25,9 @@
       <description>DefaultCrossRepositorySearch</description>
       <requirements>
         <requirement>
-          <role>org.apache.commons.collections.Transformer</role>
-          <role-hint>bytecode</role-hint>
-          <field-name>bytecodeIndexTransformer</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.commons.collections.Transformer</role>
-          <role-hint>filecontent</role-hint>
-          <field-name>filecontentIndexTransformer</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.commons.collections.Transformer</role>
-          <role-hint>hashcodes</role-hint>
-          <field-name>hashcodesIndexTransformer</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.commons.collections.Transformer</role>
-          <role-hint>searchable</role-hint>
-          <field-name>searchableTransformer</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.commons.collections.Predicate</role>
-          <role-hint>index-exists</role-hint>
-          <field-name>indexExistsPredicate</field-name>
+          <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
+          <role-hint>lucene</role-hint>
+          <field-name>indexFactory</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>

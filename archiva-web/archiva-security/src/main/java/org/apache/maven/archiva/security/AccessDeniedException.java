@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,22 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import java.io.File;
-import java.util.Map;
-
 /**
- * IndexPopulator 
+ * AccessDeniedException 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface IndexPopulator
+public class AccessDeniedException
+    extends ArchivaSecurityException
 {
-    public Map<String, ArchivaArtifact> getObjectMap();
+    public AccessDeniedException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-    public Map<String, ? extends LuceneRepositoryContentRecord> populate( File basedir );
+    public AccessDeniedException( String message )
+    {
+        super( message );
+    }
 }

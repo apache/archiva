@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer.search;
+package org.apache.maven.archiva.security;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,18 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import java.io.File;
-import java.util.Map;
-
 /**
- * IndexPopulator 
+ * ArchivaUser- interface to access the active principal. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public interface IndexPopulator
+public interface ArchivaUser
 {
-    public Map<String, ArchivaArtifact> getObjectMap();
-
-    public Map<String, ? extends LuceneRepositoryContentRecord> populate( File basedir );
+    /**
+     * Get the active principal from the security system.
+     * 
+     * @return the active principal. (if not authenticated, the guest principal is returned)
+     */
+    public String getActivePrincipal();
 }

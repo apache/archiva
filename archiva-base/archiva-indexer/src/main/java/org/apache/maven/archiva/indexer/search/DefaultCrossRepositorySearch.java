@@ -33,6 +33,9 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
+import org.apache.maven.archiva.indexer.RepositoryIndexException;
+import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
 import org.apache.maven.archiva.indexer.functors.UserAllowedToSearchRepositoryPredicate;
@@ -63,40 +66,20 @@ public class DefaultCrossRepositorySearch
     implements CrossRepositorySearch, RegistryListener, Initializable
 {
     /**
-     * @plexus.requirement role-hint="bytecode"
+     * @plexus.requirement role-hint="lucene"
      */
-    private Transformer bytecodeIndexTransformer;
-
-    /**
-     * @plexus.requirement role-hint="filecontent"
-     */
-    private Transformer filecontentIndexTransformer;
-
-    /**
-     * @plexus.requirement role-hint="hashcodes"
-     */
-    private Transformer hashcodesIndexTransformer;
-
-    /**
-     * @plexus.requirement role-hint="searchable"
-     */
-    private Transformer searchableTransformer;
-
-    /**
-     * @plexus.requirement role-hint="index-exists"
-     */
-    private Predicate indexExistsPredicate;
-
+    private RepositoryContentIndexFactory indexFactory;
+    
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration configuration;
 
-    private List localIndexedRepositories = new ArrayList();
+    private List<ManagedRepositoryConfiguration> localIndexedRepositories = new ArrayList<ManagedRepositoryConfiguration>();
 
-    public SearchResults searchForChecksum( String checksum, SearchResultLimits limits )
+    public SearchResults searchForChecksum( String principal, List<String> selectedRepos, String checksum, SearchResultLimits limits )
     {
-        List indexes = getHashcodeIndexes();
+        List<RepositoryContentIndex> indexes = getHashcodeIndexes( principal, selectedRepos );
 
         try
         {
@@ -117,9 +100,9 @@ public class DefaultCrossRepositorySearch
         return new SearchResults();
     }
 
-    public SearchResults searchForBytecode( String term, SearchResultLimits limits )
+    public SearchResults searchForBytecode( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
-        List indexes = getHashcodeIndexes();
+        List<RepositoryContentIndex> indexes = getHashcodeIndexes( principal, selectedRepos );
 
         try
         {
@@ -139,9 +122,9 @@ public class DefaultCrossRepositorySearch
         return new SearchResults();
     }
 
-    public SearchResults searchForTerm( String term, SearchResultLimits limits )
+    public SearchResults searchForTerm( String principal, List<String> selectedRepos, String term, SearchResultLimits limits )
     {
-        List indexes = getFileContentIndexes();
+        List<RepositoryContentIndex> indexes = getFileContentIndexes( principal, selectedRepos );
 
         try
         {
@@ -161,7 +144,7 @@ public class DefaultCrossRepositorySearch
         return new SearchResults();
     }
 
-    private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List indexes )
+    private SearchResults searchAll( LuceneQuery luceneQuery, SearchResultLimits limits, List<RepositoryContentIndex> indexes )
     {
         org.apache.lucene.search.Query specificQuery = luceneQuery.getLuceneQuery();
 
@@ -175,12 +158,11 @@ public class DefaultCrossRepositorySearch
 
         // Setup the converter
         LuceneEntryConverter converter = null;
-        RepositoryContentIndex index = (RepositoryContentIndex) indexes.get( 0 );
+        RepositoryContentIndex index = indexes.get( 0 );
         converter = index.getEntryConverter();
 
         // Process indexes into an array of Searchables.
-        List searchableList = new ArrayList( indexes );
-        CollectionUtils.transform( searchableList, searchableTransformer );
+        List<Searchable> searchableList = toSearchables( indexes );
 
         Searchable searchables[] = new Searchable[searchableList.size()];
         searchableList.toArray( searchables );
@@ -258,51 +240,101 @@ public class DefaultCrossRepositorySearch
         return results;
     }
 
-    private Predicate getAllowedToSearchReposPredicate()
+    private List<Searchable> toSearchables( List<RepositoryContentIndex> indexes )
     {
-        return new UserAllowedToSearchRepositoryPredicate();
+        List<Searchable> searchableList = new ArrayList<Searchable>();
+        for ( RepositoryContentIndex contentIndex : indexes )
+        {
+            try
+            {
+                searchableList.add( contentIndex.getSearchable() );
+            }
+            catch ( RepositoryIndexSearchException e )
+            {
+                getLogger().warn( "Unable to get searchable for index [" + contentIndex.getId() + "] :"
+                                      + e.getMessage(), e );
+            }
+        }
+        return searchableList;
     }
 
-    public List getBytecodeIndexes()
+    public List<RepositoryContentIndex> getBytecodeIndexes( String principal, List<String> selectedRepos )
     {
-        List ret = new ArrayList();
+        List<RepositoryContentIndex> ret = new ArrayList<RepositoryContentIndex>();
 
-        synchronized ( this.localIndexedRepositories )
+        for ( ManagedRepositoryConfiguration repoConfig : localIndexedRepositories )
         {
-            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
-            CollectionUtils.transform( ret, bytecodeIndexTransformer );
-            CollectionUtils.filter( ret, indexExistsPredicate );
+            // Only used selected repo
+            if ( selectedRepos.contains( repoConfig.getId() ) )
+            {
+                RepositoryContentIndex index = indexFactory.createBytecodeIndex( repoConfig );
+                // If they exist.
+                if ( indexExists( index ) )
+                {
+                    ret.add( index );
+                }
+            }
         }
 
         return ret;
     }
 
-    public List getFileContentIndexes()
+    public List<RepositoryContentIndex> getFileContentIndexes( String principal, List<String> selectedRepos )
     {
-        List ret = new ArrayList();
+        List<RepositoryContentIndex> ret = new ArrayList<RepositoryContentIndex>();
 
-        synchronized ( this.localIndexedRepositories )
+        for ( ManagedRepositoryConfiguration repoConfig : localIndexedRepositories )
         {
-            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
-            CollectionUtils.transform( ret, filecontentIndexTransformer );
-            CollectionUtils.filter( ret, indexExistsPredicate );
+            // Only used selected repo
+            if ( selectedRepos.contains( repoConfig.getId() ) )
+            {
+                RepositoryContentIndex index = indexFactory.createFileContentIndex( repoConfig );
+                // If they exist.
+                if ( indexExists( index ) )
+                {
+                    ret.add( index );
+                }
+            }
         }
 
         return ret;
     }
 
-    public List getHashcodeIndexes()
+    public List<RepositoryContentIndex> getHashcodeIndexes( String principal, List<String> selectedRepos )
     {
-        List ret = new ArrayList();
+        List<RepositoryContentIndex> ret = new ArrayList<RepositoryContentIndex>();
 
-        synchronized ( this.localIndexedRepositories )
+        for ( ManagedRepositoryConfiguration repoConfig : localIndexedRepositories )
         {
-            ret.addAll( CollectionUtils.select( this.localIndexedRepositories, getAllowedToSearchReposPredicate() ) );
-            CollectionUtils.transform( ret, hashcodesIndexTransformer );
-            CollectionUtils.filter( ret, indexExistsPredicate );
+            // Only used selected repo
+            if ( selectedRepos.contains( repoConfig.getId() ) )
+            {
+                RepositoryContentIndex index = indexFactory.createHashcodeIndex( repoConfig );
+                // If they exist.
+                if ( indexExists( index ) )
+                {
+                    ret.add( index );
+                }
+            }
         }
 
         return ret;
+    }
+    
+    private boolean indexExists( RepositoryContentIndex index )
+    {
+        try
+        {
+            return index.exists();
+        }
+        catch ( RepositoryIndexException e )
+        {
+            getLogger().info(
+                              "Repository Content Index [" + index.getId() + "] for repository ["
+                                  + index.getRepository().getId() + "] does not exist yet in ["
+                                  + index.getIndexDirectory().getAbsolutePath() + "]." );
+            return false;
+        }
     }
 
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

@@ -82,6 +82,7 @@
 
     <global-results>
       <!-- The following security-* result names arrive from the plexus-security package -->
+      
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
       <result name="security-login-locked" type="redirect-action">
@@ -126,6 +127,7 @@
       <!-- Generic Catchall for those action configurations that forget to
            include a result for 'error' -->
       <result name="error">/WEB-INF/jsp/generalError.jsp</result>
+      <result name="access_to_no_repos">/WEB-INF/jsp/accessToNoRepos.jsp</result>
     </global-results>
   </package>
 

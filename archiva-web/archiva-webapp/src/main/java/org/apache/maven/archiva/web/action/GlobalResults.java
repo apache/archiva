@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.indexer;
+package org.apache.maven.archiva.web.action;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,28 +19,13 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 /**
- * AllTests - conveinence test suite for IDE users. 
+ * GlobalResults - constants for global result definitions. 
  *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AllTests
+public class GlobalResults
 {
-
-    public static Test suite()
-    {
-        TestSuite suite = new TestSuite( "Test for org.apache.maven.archiva.indexer" );
-        //$JUnit-BEGIN$
-        suite.addTest( org.apache.maven.archiva.indexer.bytecode.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.hashcodes.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.query.AllTests.suite() );
-        suite.addTest( org.apache.maven.archiva.indexer.search.AllTests.suite() );
-        //$JUnit-END$
-        return suite;
-    }
-
+    public static final String ACCESS_TO_NO_REPOS = "access_to_no_repos";
 }
