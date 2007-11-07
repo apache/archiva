@@ -21,11 +21,79 @@
 <project>
   <body>
     <links>
-      <item name="Maven" href="http://maven.apache.org/"/>
+      <item name="Apache"     href="http://www.apache.org/"/>
+      <item name="Maven"      href="http://maven.apache.org/"/>
+      <item name="Continuum"  href="http://maven.apache.org/continuum/"/>
     </links>
 
-    <menu name="Documentation">
-      <item name="Welcome" href="/index.html"/>
+    <menu name="Introduction">
+      <item name="Welcome"      href="/index.html" />
+      <item name="License"      href="/license.html" /> <!-- Generated -->
+      <item name="Download"     href="/download.html" />
+      <item name="Quick Start"  href="/adminguide/quickstart.html" />
+    </menu>
+
+    <menu name="Users Guide">
+      <item name="Browsing"                  href="/userguide/browsing.html" />
+      <item name="Searching"                 href="/userguide/searching.html" />
+      <item name="WebDAV Features"           href="/userguide/webdav.html" />
+      <item name="Using Repository ..."      collapse="false">
+        <item name="As a Maven 2 repository" href="/userguide/using-maven2.html" />
+        <item name="As a Maven 1 repository" href="/userguide/using-maven1.html" />
+        <item name="As an Ivy repository"    href="/userguide/using-ivy.html" />
+      </item>
+      <item name="Deploying to Repository"   collapse="false">
+        <item name="Using Maven 2"           href="/userguide/deploy-maven2.html" />
+        <item name="Using Maven 1"           href="/userguide/deploy-maven1.html" />
+        <item name="Using Ant"               href="/userguide/deploy-ant.html" />
+      </item>
+    </menu>
+
+    <menu name="System Admin Guide">
+      <item name="Structure of Archiva"      href="/adminguide/structure.html" />
+      <item name="Installing"                href="/adminguide/installing.html" collapse="false">
+        <item name="Installing Standalone"   href="/adminguide/standalone.html" />
+        <item name="Installing on Jetty"     href="/adminguide/jetty.html" />
+        <item name="Installing on Tomcat"    href="/adminguide/tomcat.html" />
+        <item name="Installing on Geronimo"  href="/adminguide/geronimo.html" />
+      </item>
+      <item name="Databases"                 href="/adminguide/databases.html" collapse="false">
+        <item name="Embedded Derby DB"       href="/adminguide/derby.html" />
+        <item name="External MySQL"          href="/adminguide/mysql.html" />
+        <item name="External PostgreSQL"     href="/adminguide/postgres.html" />
+      </item>
+      <item name="Security"                  href="/adminguide/security.html" collapse="false">
+        <item name="Roles"                   href="/adminguide/roles.html" />
+        <item name="Using LDAP"              href="/adminguide/ldap.html" />
+      </item>
+      <item name="Runtime Configuration"     href="/adminguide/configuration.html" collapse="false">
+        <item name="Repositories"            href="/adminguide/repositories.html" />
+        <item name="Proxy Connectors"        href="/adminguide/proxy-connectors.html" />
+        <item name="Network Proxies"         href="/adminguide/network-proxies.html" />
+        <item name="Consumers"               href="/adminguide/consumers.html" />
+      </item>
+      <item name="Reports"                   href="/adminguide/reports.html" />
+      <item name="WebDAV Server"             href="/adminguide/webdav.html" />
+      <item name="Repository Synch"          href="/adminguide/repository-sync.html" />
+    </menu>
+
+    <menu name="Reference">
+      <item name="FAQ"                       href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ" />
+      <item name="Community"                 collapse="false">
+        <item name="How to Contribute"       href="/contributing.html" />
+        <item name="Development Team"        href="/team-list.html" />     <!-- Generated -->
+        <item name="Mailing Lists"           href="/mail-lists.html" />    <!-- Generated -->
+        <item name="Issue Tracking"          href="http://jira.codehaus.org/browse/MRM" />
+        <item name="Subversion Repository"   href="/source-repository.html" /> <!-- Generated -->
+      </item>
+      <item name="Building / Hacking"        href="/hacking/index.html" />
+      <item name="Java APIDoc (javadoc)"     href="/ref/1.0/apidoc/" />    <!-- Generated -->
+      <item name="Source Cross Reference"    href="/ref/1.0/xref/" />      <!-- Generated -->
+      <item name="Test Cross Reference"      href="/ref/1.0/test-xref/" /> <!-- Generated -->
+    </menu>
+
+    <!-- to be removed later, once content has been shifted to permanent home -->
+    <menu name="Old Menu (deprecated)">
       <item name="Getting Started" href="/guides/getting-started.html"/>
       <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
       <item name="Maven Configuration" href="/guides/maven-configuration.html"/>
@@ -34,7 +102,11 @@
       <item name="Hacking Archiva" href="/hacking/index.html"/>
     </menu>
 
+    <!--
+    Current generated reports are always empty when executed in archiva-site
+    Prefer to add useful generated reports to sections above.
     <menu ref="reports" inherit="bottom"/>
+      -->
   </body>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
@@ -42,7 +114,7 @@
   </skin>
   <publishDate format="dd MMM yyyy"/>
   <bannerLeft>
-    <name>Maven</name>
+    <name>Apache Maven</name>
     <src>http://maven.apache.org/images/apache-maven-project-2.png</src>
     <href>http://maven.apache.org/</href>
   </bannerLeft>
