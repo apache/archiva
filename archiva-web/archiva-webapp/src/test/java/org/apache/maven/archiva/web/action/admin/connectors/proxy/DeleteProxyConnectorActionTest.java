@@ -59,8 +59,8 @@ public class DeleteProxyConnectorActionTest
 
         // Show the confirm the delete of proxy connector screen.
         preRequest( action );
-        action.setSourceId( TEST_SOURCE_ID );
-        action.setTargetId( TEST_TARGET_ID );
+        action.setSource( TEST_SOURCE_ID );
+        action.setTarget( TEST_TARGET_ID );
         String status = action.confirmDelete();
         assertEquals( Action.INPUT, status );
         assertNoErrors( action );
@@ -76,24 +76,24 @@ public class DeleteProxyConnectorActionTest
         // a bad source id or target id to actually delete
 
         preRequest( action );
-        action.setSourceId( "bad-source" ); // id doesn't exist.
-        action.setTargetId( "bad-target" ); // id doesn't exist.
+        action.setSource( "bad-source" ); // id doesn't exist.
+        action.setTarget( "bad-target" ); // id doesn't exist.
         String status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
         assertHasErrors( action );
 
         preRequest( action );
-        action.setSourceId( "bad" ); // Bad doesn't exist.
-        action.setTargetId( TEST_TARGET_ID );
+        action.setSource( "bad" ); // Bad doesn't exist.
+        action.setTarget( TEST_TARGET_ID );
         status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
         assertHasErrors( action );
 
         preRequest( action );
-        action.setSourceId( TEST_SOURCE_ID );
-        action.setTargetId( "bad" ); // Bad doesn't exist.
+        action.setSource( TEST_SOURCE_ID );
+        action.setTarget( "bad" ); // Bad doesn't exist.
         status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
@@ -110,24 +110,24 @@ public class DeleteProxyConnectorActionTest
         // the source id or target id to actually delete
 
         preRequest( action );
-        action.setSourceId( null ); // No source Id.
-        action.setTargetId( null ); // No target Id.
+        action.setSource( null ); // No source Id.
+        action.setTarget( null ); // No target Id.
         String status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
         assertHasErrors( action );
 
         preRequest( action );
-        action.setSourceId( TEST_SOURCE_ID );
-        action.setTargetId( null ); // No target Id.
+        action.setSource( TEST_SOURCE_ID );
+        action.setTarget( null ); // No target Id.
         status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
         assertHasErrors( action );
 
         preRequest( action );
-        action.setSourceId( null ); // No source Id.
-        action.setTargetId( TEST_TARGET_ID );
+        action.setSource( null ); // No source Id.
+        action.setTarget( TEST_TARGET_ID );
         status = action.confirmDelete();
         // Should have resulted in an error.
         assertEquals( Action.ERROR, status );
@@ -142,8 +142,8 @@ public class DeleteProxyConnectorActionTest
 
         // Show the confirm the delete of proxy connector screen.
         preRequest( action );
-        action.setSourceId( TEST_SOURCE_ID );
-        action.setTargetId( TEST_TARGET_ID );
+        action.setSource( TEST_SOURCE_ID );
+        action.setTarget( TEST_TARGET_ID );
         String status = action.confirmDelete();
         assertEquals( Action.INPUT, status );
         assertNoErrors( action );

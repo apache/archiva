@@ -32,21 +32,21 @@ import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 public class DeleteProxyConnectorAction
     extends AbstractProxyConnectorAction
 {
-    private String sourceId;
+    private String source;
 
-    private String targetId;
+    private String target;
 
     private ProxyConnectorConfiguration proxyConfig;
 
     public String confirmDelete()
     {
-        this.proxyConfig = findProxyConnector( sourceId, targetId );
+        this.proxyConfig = findProxyConnector( source, target );
 
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to delete proxy configuration, configuration with source [" + sourceId
-                + "], and target [" + targetId + "] does not exist." );
+            addActionError( "Unable to delete proxy configuration, configuration with source [" + source
+                + "], and target [" + target + "] does not exist." );
             return ERROR;
         }
 
@@ -55,13 +55,13 @@ public class DeleteProxyConnectorAction
 
     public String delete()
     {
-        this.proxyConfig = findProxyConnector( sourceId, targetId );
+        this.proxyConfig = findProxyConnector( source, target );
 
         // Not set? Then there is nothing to delete.
         if ( this.proxyConfig == null )
         {
-            addActionError( "Unable to delete proxy configuration, configuration with source [" + sourceId
-                + "], and target [" + targetId + "] does not exist." );
+            addActionError( "Unable to delete proxy configuration, configuration with source [" + source
+                + "], and target [" + target + "] does not exist." );
             return ERROR;
         }
 
@@ -71,32 +71,32 @@ public class DeleteProxyConnectorAction
         }
         
         removeProxyConnector( proxyConfig );
-        addActionMessage( "Successfully removed proxy connector [" + sourceId + " , " + targetId + " ]" );
+        addActionMessage( "Successfully removed proxy connector [" + source + " , " + target + " ]" );
 
-        setSourceId( null );
-        setTargetId( null );
+        setSource( null );
+        setTarget( null );
         
         return saveConfiguration();
     }
 
-    public String getSourceId()
+    public String getSource()
     {
-        return sourceId;
+        return source;
     }
 
-    public void setSourceId( String sourceId )
+    public void setSource( String id )
     {
-        this.sourceId = sourceId;
+        this.source = id;
     }
 
-    public String getTargetId()
+    public String getTarget()
     {
-        return targetId;
+        return target;
     }
 
-    public void setTargetId( String targetId )
+    public void setTarget( String id )
     {
-        this.targetId = targetId;
+        this.target = id;
     }
 
     public ProxyConnectorConfiguration getProxyConfig()
