@@ -65,6 +65,8 @@ public class VersionUtil
 
     public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
 
+    public static final Pattern GENERIC_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-" + SNAPSHOT );
+    
     /**
      * <p>
      * Tests if the unknown string contains elements that identify it as a version string (or not).
@@ -151,6 +153,38 @@ public class VersionUtil
         else
         {
             return version;
+        }
+    }
+    
+    /**
+     * <p>
+     * Get the release version of the snapshot version.
+     * </p>
+     * 
+     * <p>
+     * If snapshot version is 1.0-SNAPSHOT, then release version would be 1.0
+     * And if snapshot version is 1.0-20070113.163208-1.jar, then release version would still be 1.0
+     * </p>
+     * 
+     * @param snapshotVersion
+     * @return
+     */
+    public static String getReleaseVersion( String snapshotVersion )
+    {
+        Matcher m = UNIQUE_SNAPSHOT_PATTERN.matcher( snapshotVersion );
+        
+        if( isGenericSnapshot( snapshotVersion ) )
+        {
+            m = GENERIC_SNAPSHOT_PATTERN.matcher( snapshotVersion );
+        }
+                
+        if ( m.matches() )
+        {   
+            return m.group( 1 );
+        }
+        else
+        {        
+            return snapshotVersion;
         }
     }
 

@@ -88,7 +88,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // check if metadata file was updated
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
-
+        
         String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
         
         String expectedVersions = "<expected><versions><version>2.2</version>" +
@@ -111,15 +111,15 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         repoPurge.process( PATH_TO_HIGHER_SNAPSHOT_EXISTS );
         
         String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-source-plugin";
-
-        // check if the snapshot was removed
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.md5" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.sha1" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.md5" );
-        assertDeleted( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.sha1" );
+        
+        // check if the snapshot was not removed
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.md5" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar.sha1" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.md5" );
+        assertExists( projectRoot + "/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.pom.sha1" );
 
         // check if the released version was not removed
         assertExists( projectRoot + "/2.0.4-SNAPSHOT" );
@@ -130,12 +130,12 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.md5" );
         assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.sha1" );
 
-        // check if metadata file was updated
+        // check if metadata file was not updated (because nothing was removed)
         File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
 
         String metadataXml = FileUtils.readFileToString( artifactMetadataFile, null );
         
-        String expectedVersions = "<expected><versions><version>2.0.2</version>" +
+        String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>" +
         		"<version>2.0.4-SNAPSHOT</version></versions></expected>";
         
         XMLAssert.assertXpathEvaluatesTo( "2.0.4-SNAPSHOT", "//metadata/versioning/latest", metadataXml );
@@ -143,7 +143,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070427033345", "//metadata/versioning/lastUpdated", metadataXml );
     }
-
+    
     private void populateReleasedSnapshotsTest()
         throws ArchivaDatabaseException
     {

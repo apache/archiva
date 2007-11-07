@@ -133,17 +133,17 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             VersionedReference versionRef = new VersionedReference();
             versionRef.setGroupId( artifact.getGroupId() );
             versionRef.setArtifactId( artifact.getArtifactId() );
-
+            
             for ( String version : snapshotVersions )
-            {
-                if ( VersionComparator.getInstance().compare( version, highestReleasedVersion ) < 0 )
+            {   
+                if( releasedVersions.contains( VersionUtil.getReleaseVersion( version ) ) )
                 {
                     versionRef.setVersion( version );
                     repository.deleteVersion( versionRef );
                     needsMetadataUpdate = true;
                 }
-            }
-
+            }           
+                        
             if ( needsMetadataUpdate )
             {
                 updateMetadata( artifact );
