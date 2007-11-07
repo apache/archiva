@@ -39,10 +39,16 @@ import java.io.IOException;
 public class CopyPasteSnippet
     extends AbstractLogEnabled
 {
-    public void write( Object o, PageContext pageContext )
+    public static final String PRE = "pre";
+    
+    public static final String TOGGLE = "toggle";
+    
+    public void write( String wrapper, Object o, PageContext pageContext )
         throws JspException
     {
+        StringBuffer prefix = new StringBuffer();
         StringBuffer buf = new StringBuffer();
+        StringBuffer suffix = new StringBuffer();
 
         if ( o == null )
         {
@@ -51,7 +57,24 @@ public class CopyPasteSnippet
         }
         else if ( o instanceof ManagedRepositoryConfiguration )
         {
-            createSnippet( buf, (ManagedRepositoryConfiguration) o, pageContext );
+            ManagedRepositoryConfiguration repo = (ManagedRepositoryConfiguration) o;
+            
+            if ( TOGGLE.equals( wrapper ) )
+            {
+                prefix.append( "<a href=\"#\" onclick=\"Effect.toggle('repoPom" );
+                prefix.append( repo.getId() ).append( "','slide'); return false;\">Show POM Snippet</a><br/>" );
+                prefix.append( "<pre class=\"pom\" style=\"display: none;\" id=\"repoPom" ).append( repo.getId() );
+                prefix.append( "\"><code>" );
+
+                suffix.append( "</code></pre>" );
+            }
+            else if ( PRE.equals( wrapper ) )
+            {
+                prefix.append( "<pre>" );
+                suffix.append( "</pre>" );
+            }
+            
+            createSnippet( buf, repo, pageContext );
         }
         else
         {
@@ -61,7 +84,11 @@ public class CopyPasteSnippet
         try
         {
             JspWriter out = pageContext.getOut();
+
+            out.write( prefix.toString() );
             out.write( StringEscapeUtils.escapeXml( buf.toString() ) );
+            out.write( suffix.toString() );
+            
             out.flush();
         }
         catch ( IOException e )
@@ -84,6 +111,8 @@ public class CopyPasteSnippet
 
         snippet.append( "    <" ).append( distRepoName ).append( ">\n" );
         snippet.append( "      <id>" ).append( repo.getId() ).append( "</id>\n" );
+        snippet.append( "      <url>dav:" ).append( ContextUtils.getBaseURL( pageContext, "repository" ) );
+        snippet.append( "/" ).append( repo.getId() ).append( "/" ).append( "</url>\n" );
 
         if ( !"default".equals( repo.getLayout() ) )
         {

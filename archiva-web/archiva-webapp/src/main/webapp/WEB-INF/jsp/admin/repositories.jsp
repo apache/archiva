@@ -214,10 +214,8 @@
 </c:if>
 <tr>
   <th>POM Snippet</th>
-  <td><a href="#" onclick="Effect.toggle('repoPom${repository.id}','slide'); return false;">Show POM Snippet</a><br/>
-    <pre class="pom" style="display: none;" id="repoPom${repository.id}"><code>
-      <archiva:copy-paste-snippet object="${repository}"/>
-    </code></pre>
+  <td>
+    <archiva:copy-paste-snippet object="${repository}" wrapper="toggle" />
   </td>
 </tr>
 </table>

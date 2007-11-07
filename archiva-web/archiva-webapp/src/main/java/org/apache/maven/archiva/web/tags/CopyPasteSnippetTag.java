@@ -34,6 +34,8 @@ public class CopyPasteSnippetTag
     extends TagSupport
 {
     private Object object;
+    
+    private String wrapper = CopyPasteSnippet.PRE;
 
     public void release()
     {
@@ -59,7 +61,7 @@ public class CopyPasteSnippetTag
             throw new JspException( "Unable to process snippet.  Component not found." );
         }
 
-        snippet.write( object, pageContext );
+        snippet.write( wrapper, object, pageContext );
 
         return super.doEndTag();
     }
@@ -67,5 +69,10 @@ public class CopyPasteSnippetTag
     public void setObject( Object object )
     {
         this.object = object;
+    }
+
+    public void setWrapper( String wrapper )
+    {
+        this.wrapper = wrapper;
     }
 }
