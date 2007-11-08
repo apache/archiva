@@ -146,8 +146,15 @@ public class ProxiedDavServer
             // If this a directory resource, then we are likely browsing.
             if ( resourceFile.exists() && resourceFile.isDirectory() )
             {
-                // TODO: [MRM-440] - If webdav URL lacks a trailing /, navigating to all links in the listing return 404.
-                // TODO: Issue redirect with proper pathing.
+                String requestURL = request.getRequest().getRequestURL().toString();
+                
+                // [MRM-440] - If webdav URL lacks a trailing /, navigating to all links in the listing return 404.
+                if( !requestURL.endsWith( "/" ) )
+                {
+                    String redirectToLocation = requestURL + "/";
+                    response.sendRedirect( redirectToLocation );
+                    return;
+                }
                 
                 // Process the request.
                 davServer.process( request, response );
