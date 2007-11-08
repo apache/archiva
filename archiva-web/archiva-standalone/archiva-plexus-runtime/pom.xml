@@ -64,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
@@ -115,7 +115,7 @@
           <runtimeConfigurationProperties>src/plexus.properties</runtimeConfigurationProperties>
           <runtimePath>target/plexus-archiva-runtime</runtimePath>
           <additionalCoreArtifacts>
-            <additionalCoreArtifact>commons-logging:commons-logging-api</additionalCoreArtifact>
+            <additionalCoreArtifact>commons-logging:commons-logging</additionalCoreArtifact>
             <additionalCoreArtifact>log4j:log4j</additionalCoreArtifact>
             <additionalCoreArtifact>org.apache.derby:derby</additionalCoreArtifact>
             <additionalCoreArtifact>org.codehaus.plexus:plexus-naming</additionalCoreArtifact>
