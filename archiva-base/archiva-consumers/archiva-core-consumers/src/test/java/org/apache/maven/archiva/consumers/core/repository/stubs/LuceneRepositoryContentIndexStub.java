@@ -41,15 +41,22 @@ import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 public class LuceneRepositoryContentIndexStub
     implements RepositoryContentIndex
 {
-
+    private int expectedRecordsSize;
+    
+    public LuceneRepositoryContentIndexStub()
+    {
+        
+    }
+    
+    public LuceneRepositoryContentIndexStub( int size )
+    {
+        expectedRecordsSize = size;
+    }
+    
     public void deleteRecords( Collection records )
         throws RepositoryIndexException
-    {
-        // TODO Auto-generated method stub
-        if( records.size() != 0 )
-        {
-            Assert.assertEquals( 2, records.size() );
-        }
+    {         
+        Assert.assertEquals( expectedRecordsSize, records.size() );        
     }
 
     public boolean exists()

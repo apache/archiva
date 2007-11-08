@@ -55,7 +55,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     public static final int TEST_DAYS_OLDER = 30;
 
-    public static final String PATH_TO_BY_DAYS_OLD_ARTIFACT = "org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar";
+    public static final String PATH_TO_BY_DAYS_OLD_ARTIFACT = "org/apache/maven/plugins/maven-install-plugin/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar";
 
     public static final String PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT = "org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT/plexus-utils-1.4.3-20070113.163208-4.jar";
 

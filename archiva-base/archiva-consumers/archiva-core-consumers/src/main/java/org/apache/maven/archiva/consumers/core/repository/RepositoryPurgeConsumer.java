@@ -235,4 +235,9 @@ public class RepositoryPurgeConsumer
         // we need to check all files for deletion, especially if not modified
         return true;
     }
+    
+    public void setRepositoryContentIndexFactory( RepositoryContentIndexFactory indexFactory )
+    {
+        this.indexFactory = indexFactory;
+    }
 }

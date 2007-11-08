@@ -40,13 +40,7 @@ public class DaysOldRepositoryPurgeTest
     protected void setUp()
         throws Exception
     {
-        super.setUp();
-
-        map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );        
-        
+        super.setUp();        
     }
 
     private void setLastModified( String dirPath )
@@ -62,9 +56,14 @@ public class DaysOldRepositoryPurgeTest
     public void testByLastModified()
         throws Exception
     {        
+        map = new HashMap<String, RepositoryContentIndex>();
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );        
+        
         repoPurge =
             new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), 
-                            1, map );
+                            getRepoConfiguration().getRetentionCount(), map );
         
         populateDbForTestByLastModified();
 
@@ -75,18 +74,38 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/2.2-SNAPSHOT/" );
 
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
-
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
+        
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.sha1" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
+        
+        // shouldn't be deleted because even if older than 30 days (because retention count = 2)
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.jar" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.jar.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.jar.sha1" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.sha1" );
+        
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
     }
 
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
+        map = new HashMap<String, RepositoryContentIndex>();
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub(2) );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub(2) );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub(2) );    
+        
         repoPurge =
             new DaysOldRepositoryPurge( getRepository(), dao, getRepoConfiguration().getDaysOlder(), 
                             getRepoConfiguration().getRetentionCount(), map );
@@ -138,6 +157,8 @@ public class DaysOldRepositoryPurgeTest
         throws Exception
     {
         List<String> versions = new ArrayList<String>();
+        versions.add( "2.2-20061118.060401-2" );
+        versions.add( "2.2-20070513.034619-5" );
         versions.add( "2.2-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );

@@ -95,59 +95,62 @@ public abstract class AbstractRepositoryPurge
      * @throws RepositoryIndexException
      */
     protected void purge( Set<ArtifactReference> references )
-    {
-        List<LuceneRepositoryContentRecord> fileContentRecords = new ArrayList<LuceneRepositoryContentRecord>();
-        List<LuceneRepositoryContentRecord> hashcodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
-        List<LuceneRepositoryContentRecord> bytecodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
-
-        for ( ArtifactReference reference : references )
+    {        
+        if( references != null && !references.isEmpty() )
         {
-            File artifactFile = repository.toFile( reference );
-
-            ArchivaArtifact artifact =
-                new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
-                                     reference.getClassifier(), reference.getType() );
-
-            FileContentRecord fileContentRecord = new FileContentRecord();
-            fileContentRecord.setFilename( repository.toPath( artifact ) );
-            fileContentRecords.add( fileContentRecord );
-
-            HashcodesRecord hashcodesRecord = new HashcodesRecord();
-            hashcodesRecord.setArtifact( artifact );
-            hashcodeRecords.add( hashcodesRecord );
-
-            BytecodeRecord bytecodeRecord = new BytecodeRecord();
-            bytecodeRecord.setArtifact( artifact );
-            bytecodeRecords.add( bytecodeRecord );
-
-            // TODO: this needs to be logged
-            artifactFile.delete();
-            purgeSupportFiles( artifactFile );
-
-            // intended to be swallowed
-            // continue updating the database for all artifacts
+            List<LuceneRepositoryContentRecord> fileContentRecords = new ArrayList<LuceneRepositoryContentRecord>();
+            List<LuceneRepositoryContentRecord> hashcodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
+            List<LuceneRepositoryContentRecord> bytecodeRecords = new ArrayList<LuceneRepositoryContentRecord>();
+            
+            for ( ArtifactReference reference : references )
+            {   
+                File artifactFile = repository.toFile( reference );
+                
+                ArchivaArtifact artifact =
+                    new ArchivaArtifact( reference.getGroupId(), reference.getArtifactId(), reference.getVersion(),
+                                         reference.getClassifier(), reference.getType() );
+    
+                FileContentRecord fileContentRecord = new FileContentRecord();
+                fileContentRecord.setFilename( repository.toPath( artifact ) );
+                fileContentRecords.add( fileContentRecord );
+    
+                HashcodesRecord hashcodesRecord = new HashcodesRecord();
+                hashcodesRecord.setArtifact( artifact );
+                hashcodeRecords.add( hashcodesRecord );
+    
+                BytecodeRecord bytecodeRecord = new BytecodeRecord();
+                bytecodeRecord.setArtifact( artifact );
+                bytecodeRecords.add( bytecodeRecord );
+    
+                // TODO: this needs to be logged
+                artifactFile.delete();
+                purgeSupportFiles( artifactFile );
+    
+                // intended to be swallowed
+                // continue updating the database for all artifacts
+                try
+                {
+                    String artifactPath = toRelativePath( artifactFile );
+                    updateDatabase( artifactPath );
+                }
+                catch ( ArchivaDatabaseException ae )
+                {
+                    // TODO: determine logging to be used
+                }
+                catch ( LayoutException le )
+                {
+                    // Ignore
+                }
+            }
+    
             try
             {
-                String artifactPath = toRelativePath( artifactFile );
-                updateDatabase( artifactPath );
+                updateIndices( fileContentRecords, hashcodeRecords, bytecodeRecords );
             }
-            catch ( ArchivaDatabaseException ae )
-            {
-                // TODO: determine logging to be used
-            }
-            catch ( LayoutException le )
+            catch ( RepositoryIndexException e )
             {
                 // Ignore
             }
-        }
-
-        try
-        {
-            updateIndices( fileContentRecords, hashcodeRecords, bytecodeRecords );
-        }
-        catch ( RepositoryIndexException e )
-        {
-            // Ignore
         }
     }
 
@@ -196,18 +199,18 @@ public abstract class AbstractRepositoryPurge
 
         // TODO [MRM-37]: re-run the database consumers to clean up
     }
-
+    
     private void updateIndices( List<LuceneRepositoryContentRecord> fileContentRecords,
                                 List<LuceneRepositoryContentRecord> hashcodeRecords,
                                 List<LuceneRepositoryContentRecord> bytecodeRecords )
         throws RepositoryIndexException
-    {
+    {        
         RepositoryContentIndex index = indices.get( "filecontent" );
         index.deleteRecords( fileContentRecords );
-
+        
         index = indices.get( "hashcodes" );
         index.deleteRecords( hashcodeRecords );
-
+        
         index = indices.get( "bytecode" );
         index.deleteRecords( bytecodeRecords );
     }

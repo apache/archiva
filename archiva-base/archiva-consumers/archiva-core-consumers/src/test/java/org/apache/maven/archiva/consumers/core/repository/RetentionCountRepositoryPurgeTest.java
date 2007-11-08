@@ -42,9 +42,9 @@ public class RetentionCountRepositoryPurgeTest
         super.setUp();
 
         Map<String, RepositoryContentIndex> map = new HashMap<String, RepositoryContentIndex>();
-        map.put( "filecontent", new LuceneRepositoryContentIndexStub() );
-        map.put( "hashcodes", new LuceneRepositoryContentIndexStub() );
-        map.put( "bytecode", new LuceneRepositoryContentIndexStub() );
+        map.put( "filecontent", new LuceneRepositoryContentIndexStub( 2 ) );
+        map.put( "hashcodes", new LuceneRepositoryContentIndexStub( 2 ) );
+        map.put( "bytecode", new LuceneRepositoryContentIndexStub( 2 ) );
         
         repoPurge = new RetentionCountRepositoryPurge( getRepository(), dao,
                                                        getRepoConfiguration().getRetentionCount(), map );

@@ -33,22 +33,28 @@ public class LuceneRepositoryContentIndexFactoryStub
     implements RepositoryContentIndexFactory
 {
 
+    private int expectedRecordsSize = 0;
+    
     public RepositoryContentIndex createBytecodeIndex( ManagedRepositoryConfiguration repository )
     {        
         // TODO Auto-generated method stub
-        return new LuceneRepositoryContentIndexStub();
+        return new LuceneRepositoryContentIndexStub( expectedRecordsSize );
     }
 
     public RepositoryContentIndex createFileContentIndex( ManagedRepositoryConfiguration repository )
     {
         // TODO Auto-generated method stub
-        return new LuceneRepositoryContentIndexStub();
+        return new LuceneRepositoryContentIndexStub( expectedRecordsSize );
     }
 
     public RepositoryContentIndex createHashcodeIndex( ManagedRepositoryConfiguration repository )
     {
         // TODO Auto-generated method stub
-        return new LuceneRepositoryContentIndexStub();
+        return new LuceneRepositoryContentIndexStub( expectedRecordsSize );
+    }    
+    
+    public void setExpectedRecordsSize( int size )
+    {
+        expectedRecordsSize = size;
     }
-
 }
