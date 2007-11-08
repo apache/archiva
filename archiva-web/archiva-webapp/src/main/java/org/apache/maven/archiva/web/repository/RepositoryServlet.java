@@ -63,8 +63,6 @@ public class RepositoryServlet
 
     private HttpAuthenticator httpAuth;
 
-    private AuditLog audit;
-
     private ArchivaConfiguration configuration;
 
     private Map<String, ManagedRepositoryConfiguration> repositoryMap;
@@ -80,7 +78,6 @@ public class RepositoryServlet
         
         securitySystem = (SecuritySystem) lookup( SecuritySystem.ROLE );
         httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
-        audit = (AuditLog) lookup( AuditLog.ROLE );
 
         configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
         configuration.addListener( this );
@@ -108,7 +105,6 @@ public class RepositoryServlet
             DavServerComponent server = createServer( repo.getId(), repoDir, servletConfig );
 
             server.setUseIndexHtml( true );
-            server.addListener( audit );
         }
     }
     
@@ -130,14 +126,6 @@ public class RepositoryServlet
         catch ( ServletException e )
         {
             log( "Unable to release HttpAuth : " + e.getMessage(), e );
-        }
-        try
-        {
-            release( audit );
-        }
-        catch ( ServletException e )
-        {
-            log( "Unable to release AuditLog : " + e.getMessage(), e );
         }
         try
         {

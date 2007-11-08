@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -28,10 +29,14 @@ import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.audit.AuditEvent;
+import org.apache.maven.archiva.repository.audit.AuditListener;
+import org.apache.maven.archiva.repository.audit.Auditable;
 import org.apache.maven.archiva.repository.content.RepositoryRequest;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
@@ -49,6 +54,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -64,12 +71,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ProxiedDavServer
     extends AbstractDavServerComponent
+    implements Auditable
 {
     /**
      * @plexus.requirement role-hint="simple"
      */
     private DavServerComponent davServer;
-
+    
+    /**
+     * @plexus.requirement role="org.apache.maven.archiva.repository.audit.AuditListener"
+     */
+    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+    
     /**
      * @plexus.requirement
      */
@@ -89,6 +102,11 @@ public class ProxiedDavServer
      * @plexus.requirement
      */
     private MetadataTools metadataTools;
+    
+    /**
+     * @plexus.requirement role-hint="xwork"
+     */
+    private ArchivaUser archivaUser;
 
     private ManagedRepositoryContent managedRepository;
 
@@ -136,11 +154,11 @@ public class ProxiedDavServer
     {
         boolean isGet = WebdavMethodUtil.isReadMethod( request.getRequest().getMethod() );
         boolean isPut = WebdavMethodUtil.isWriteMethod( request.getRequest().getMethod() );
+        String resource = request.getLogicalResource();
         
         if ( isGet )
         {
             // Default behaviour is to treat the resource natively.
-            String resource = request.getLogicalResource();
             File resourceFile = new File( managedRepository.getRepoRoot(), resource );
 
             // If this a directory resource, then we are likely browsing.
@@ -173,8 +191,13 @@ public class ProxiedDavServer
                 // Adjust the pathInfo resource to be in the format that the dav server impl expects.
                 request.getRequest().setPathInfo( resource );
 
+                boolean previouslyExisted = resourceFile.exists();
+                
                 // Attempt to fetch the resource from any defined proxy.
-                fetchContentFromProxies( request, resource );
+                if( fetchContentFromProxies( request, resource ) )
+                {
+                    processAuditEvents( request, resource, previouslyExisted, resourceFile, " (proxied)" );
+                }
             }
             catch ( LayoutException e )
             {
@@ -217,11 +240,23 @@ public class ProxiedDavServer
             File rootDirectory = getRootDirectory();
             if ( rootDirectory != null )
             {
-                new File( rootDirectory, request.getLogicalResource() ).getParentFile().mkdirs();
+                File destDir = new File( rootDirectory, resource ).getParentFile();
+                if( !destDir.exists() )
+                {
+                    destDir.mkdirs();
+                    String relPath = PathUtil.getRelative( rootDirectory.getAbsolutePath(), destDir );
+                    triggerAuditEvent( request, relPath, AuditEvent.CREATE_DIR );
+                }
             }
+            
+            File resourceFile = new File( managedRepository.getRepoRoot(), resource );
+            
+            boolean previouslyExisted = resourceFile.exists();
             
             // Allow the dav server to process the put request.
             davServer.process( request, response );
+            
+            processAuditEvents( request, resource, previouslyExisted, resourceFile, null );
             
             // All done.
             return;
@@ -277,7 +312,7 @@ public class ProxiedDavServer
         }
     }
 
-    private void fetchContentFromProxies( DavServerRequest request, String resource )
+    private boolean fetchContentFromProxies( DavServerRequest request, String resource )
         throws ServletException
     {
         if ( repositoryRequest.isSupportFile( resource ) )
@@ -285,16 +320,13 @@ public class ProxiedDavServer
             // Checksums are fetched with artifact / metadata.
             
             // Need to adjust the path for the checksum resource.
-            return;
+            return false;
         }
 
         // Is it a Metadata resource?
         if ( repositoryRequest.isDefault( resource ) && repositoryRequest.isMetadata( resource ) )
         {
-            if ( fetchMetadataFromProxies( request, resource ) )
-            {
-                return;
-            }
+            return fetchMetadataFromProxies( request, resource );
         }
 
         // Not any of the above? Then it's gotta be an artifact reference.
@@ -307,11 +339,11 @@ public class ProxiedDavServer
             {
                 applyServerSideRelocation( artifact );
 
-                connectors.fetchFromProxies( managedRepository, artifact );
+                File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
                 
                 // Set the path to the resource using managed repository specific layout format.
                 request.getRequest().setPathInfo( managedRepository.toPath( artifact ) );
-                return;
+                return ( proxiedFile != null );
             }
         }
         catch ( LayoutException e )
@@ -322,6 +354,7 @@ public class ProxiedDavServer
         {
             throw new ServletException( "Unable to fetch artifact resource.", e );
         }
+        return false;
     }
 
     private boolean fetchMetadataFromProxies( DavServerRequest request, String resource )
@@ -480,5 +513,83 @@ public class ProxiedDavServer
     public ManagedRepositoryContent getRepository()
     {
         return managedRepository;
+    }
+    
+    private void processAuditEvents( DavServerRequest request, String resource, boolean previouslyExisted,
+                                     File resourceFile, String suffix )
+    {
+        if( suffix == null )
+        {
+            suffix = "";
+        }
+        
+        // Process Create Audit Events.
+        if ( !previouslyExisted && resourceFile.exists() )
+        {
+            if ( resourceFile.isFile() )
+            {
+                triggerAuditEvent( request, resource, AuditEvent.CREATE_FILE + suffix );
+            }
+            else if ( resourceFile.isDirectory() )
+            {
+                triggerAuditEvent( request, resource, AuditEvent.CREATE_DIR + suffix );
+            }
+        }
+        // Process Remove Audit Events.
+        else if ( previouslyExisted && !resourceFile.exists() )
+        {
+            if ( resourceFile.isFile() )
+            {
+                triggerAuditEvent( request, resource, AuditEvent.REMOVE_FILE + suffix );
+            }
+            else if ( resourceFile.isDirectory() )
+            {
+                triggerAuditEvent( request, resource, AuditEvent.REMOVE_DIR + suffix );
+            }
+        }
+        // Process modify events.
+        else
+        {
+            if ( resourceFile.isFile() )
+            {
+                triggerAuditEvent( request, resource, AuditEvent.MODIFY_FILE + suffix );
+            }
+        }
+    }
+    
+    private void triggerAuditEvent( String user, String remoteIP, String resource, String action )
+    {
+        AuditEvent event = new AuditEvent( this.getPrefix(), user, resource, action );
+        event.setRemoteIP( remoteIP );
+
+        for ( AuditListener listener : auditListeners )
+        {
+            listener.auditEvent( event );
+        }
+    }
+
+    private void triggerAuditEvent( DavServerRequest request, String resource, String action )
+    {
+        triggerAuditEvent( archivaUser.getActivePrincipal(), getRemoteIP( request ), resource, action );
+    }
+
+    private String getRemoteIP( DavServerRequest request )
+    {
+        return request.getRequest().getRemoteAddr();
+    }
+
+    public void addAuditListener( AuditListener listener )
+    {
+        this.auditListeners.add( listener );
+    }
+
+    public void clearAuditListeners()
+    {
+        this.auditListeners.clear();
+    }
+
+    public void removeAuditListener( AuditListener listener )
+    {
+        this.auditListeners.remove( listener );
     }
 }
