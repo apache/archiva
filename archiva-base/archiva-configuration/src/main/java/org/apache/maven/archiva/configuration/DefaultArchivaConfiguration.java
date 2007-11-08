@@ -22,6 +22,7 @@ package org.apache.maven.archiva.configuration;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.functors.ProxyConnectorConfigurationOrderComparator;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
 import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryWriter;
@@ -41,7 +42,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,6 +195,24 @@ public class DefaultArchivaConfiguration
             config.getRepositories().clear();
 
             registry.removeSubset( KEY + ".repositories" );
+        }
+        
+        if ( !CollectionUtils.isEmpty( config.getRemoteRepositories() ) )
+        {
+            List<RemoteRepositoryConfiguration> remoteRepos = config.getRemoteRepositories();
+            for ( RemoteRepositoryConfiguration repo : remoteRepos )
+            {
+                // [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
+                if( StringUtils.isBlank( repo.getUsername() ) )
+                {
+                    repo.setUsername( null );
+                }
+                
+                if( StringUtils.isBlank( repo.getPassword() ) )
+                {
+                    repo.setPassword( null );
+                }
+            }
         }
 
         if ( !config.getProxyConnectors().isEmpty() )

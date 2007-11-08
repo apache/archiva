@@ -636,4 +636,29 @@ public class ArchivaConfigurationTest
 
         assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
     }
+
+    /**
+     * [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
+     */
+    public void testGetConfigurationFixEmptyRemoteRepoUsernamePassword()
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup(
+                                                                                   ArchivaConfiguration.class.getName(),
+                                                                                   "test-configuration" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+        assertConfiguration( configuration );
+        assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories().size() );
+
+        RemoteRepositoryConfiguration repository = (RemoteRepositoryConfiguration) configuration
+            .getRemoteRepositoriesAsMap().get( "maven2-repository.dev.java.net" );
+
+        assertEquals( "remote repository.url", "https://maven2-repository.dev.java.net/nonav/repository", repository.getUrl() );
+        assertEquals( "remote repository.name", "Java.net Repository for Maven 2", repository.getName() );
+        assertEquals( "remote repository.id", "maven2-repository.dev.java.net", repository.getId() );
+        assertEquals( "remote repository.layout", "default", repository.getLayout() );
+        assertNull( "remote repository.username == null", repository.getUsername() );
+        assertNull( "remote repository.password == null", repository.getPassword() );
+    }
 }

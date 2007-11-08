@@ -792,10 +792,10 @@ public class DefaultRepositoryProxyConnectors
             AuthenticationInfo authInfo = null;
             String username = remoteRepository.getRepository().getUsername();
             String password = remoteRepository.getRepository().getPassword();
-            if ( username != null && password != null )
+            
+            if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
             {
-                getLogger().debug(
-                                   "Using username " + username + " to connect to remote repository "
+                getLogger().debug( "Using username " + username + " to connect to remote repository "
                                        + remoteRepository.getURL() );
                 authInfo = new AuthenticationInfo();
                 authInfo.setUserName( username );

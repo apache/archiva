@@ -54,6 +54,8 @@
       <name>Java.net Repository for Maven 2</name>
       <url>https://maven2-repository.dev.java.net/nonav/repository</url>
       <layout>default</layout>
+      <username></username>
+      <password></password>
     </remoteRepository>
   </remoteRepositories>
 
@@ -62,17 +64,21 @@
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>central</targetRepoId>
       <proxyId/>
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>never</releasePolicy>
-      <failurePolicy>not-found</failurePolicy>
+      <policies>
+        <releases>ignored</releases>
+        <snapshots>disabled</snapshots>
+        <cache-failures>cached</cache-failures>
+      </policies>
     </proxyConnector>
     <proxyConnector>
       <sourceRepoId>internal</sourceRepoId>
       <targetRepoId>maven2-repository.dev.java.net</targetRepoId>
       <proxyId/>
-      <snapshotsPolicy>disabled</snapshotsPolicy>
-      <releasePolicy>never</releasePolicy>
-      <failurePolicy>not-found</failurePolicy>
+      <policies>
+        <releases>ignored</releases>
+        <snapshots>disabled</snapshots>
+        <cache-failures>cached</cache-failures>
+      </policies>
       <whiteListPatterns>
         <whiteListPattern>javax/**</whiteListPattern>
       </whiteListPatterns>
