@@ -30,7 +30,7 @@ Archiva Security Configuration
 
 * Properties
 
- Archiva makes use of Plexus Redback to handle user ids, passwords and roles.
+ Archiva makes use of Redback to handle user ids, passwords and roles.
  
  Security properties and password rules can be configured in the
  <<<security.properties>>> file, which by default is searched for in:
@@ -48,8 +48,8 @@ Archiva Security Configuration
 ~~ TODO: Link to plexus-redback documentation when available
 
  Following are some of the properties you can modify.  For a complete list,
- consult the default properties file in Plexus Redback's svn repo:
- {{{http://svn.codehaus.org/plexus/plexus-redback/trunk/redback-configuration/src/main/resources/org/codehaus/plexus/redback/config-defaults.properties}
+ consult the default properties file in Redback's svn repo:
+ {{{http://svn.codehaus.org/redback/redback/trunk/redback-configuration/src/main/resources/org/codehaus/plexus/redback/config-defaults.properties}
  config-defaults.properties}}
 
 +-----+
