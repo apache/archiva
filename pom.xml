@@ -353,7 +353,7 @@
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
+        <artifactId>commons-logging-api</artifactId>
         <version>1.0.4</version>
       </dependency>
       <dependency>
