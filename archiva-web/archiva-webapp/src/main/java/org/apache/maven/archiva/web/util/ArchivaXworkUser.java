@@ -24,6 +24,7 @@ import com.opensymphony.xwork.ActionContext;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
 import org.apache.maven.archiva.security.ArchivaUser;
 import org.codehaus.plexus.redback.system.SecuritySession;
+import org.codehaus.plexus.redback.system.SecuritySystemConstants;
 import org.codehaus.plexus.redback.users.User;
 
 import java.util.HashMap;
@@ -55,18 +56,19 @@ public class ArchivaXworkUser
 
     private SecuritySession getSecuritySession()
     {
-        return (SecuritySession) getContextSession().get( SecuritySession.ROLE );
+        return (SecuritySession) getContextSession().get( SecuritySystemConstants.SECURITY_SESSION_KEY );        
     }
 
     public String getActivePrincipal()
     {
-        SecuritySession securitySession = getSecuritySession();
+        SecuritySession securitySession = getSecuritySession();        
+        
         if ( securitySession == null )
         {
             return ArchivaRoleConstants.PRINCIPAL_GUEST;
         }
 
-        User user = securitySession.getUser();
+        User user = securitySession.getUser();        
         if ( user == null )
         {
             return ArchivaRoleConstants.PRINCIPAL_GUEST;
