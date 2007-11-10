@@ -179,7 +179,7 @@
     Apache Archiva <%= ArchivaVersion.getVersion() %>
   </div>
   <div class="xright">
-    Copyright &#169; <%= copyrightRange %> Apache Software Foundation
+    Copyright &#169; <%= copyrightRange %> The Apache Software Foundation
   </div>
 
   <div class="clear">
