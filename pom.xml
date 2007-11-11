@@ -33,7 +33,7 @@
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
     <version>1-SNAPSHOT</version>
-    <relativePath>../archiva-parent/pom.xml</relativePath>
+    <relativePath>../parent/pom.xml</relativePath>
   </parent>
 -->
   <name>Archiva</name>
