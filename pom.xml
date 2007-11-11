@@ -32,6 +32,7 @@
   <packaging>pom</packaging>
   <name>Archiva Common Parent Project</name>
   <version>1-SNAPSHOT</version>
+  <url>http://maven.apache.org/archiva/</url>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
