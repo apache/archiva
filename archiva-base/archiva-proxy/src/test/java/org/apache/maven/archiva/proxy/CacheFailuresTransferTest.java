@@ -40,6 +40,9 @@ import java.io.File;
 public class CacheFailuresTransferTest
     extends AbstractProxyTestCase
 {
+    // TODO: test some hard failures (eg TransferFailedException)
+    // TODO: test the various combinations of fetchFrom* (note: need only test when caching is enabled)
+
     public void testGetWithCacheFailuresOn()
         throws Exception
     {
@@ -68,6 +71,8 @@ public class CacheFailuresTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
+        // TODO: test failure is cached!
+
         wagonMockControl.verify();
         
         assertNotDownloaded( downloadedFile );
@@ -79,7 +84,6 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
-        
         setupTestableManagedRepository( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -103,9 +107,11 @@ public class CacheFailuresTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        // TODO: test failure is not cached!
 
         wagonMockControl.verify();
+
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 

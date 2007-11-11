@@ -33,6 +33,7 @@ import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.maven.wagon.TransferFailedException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 
@@ -45,14 +46,14 @@ import java.util.Arrays;
  * present in the repository.
  *
  * Test Case Naming is as follows.
- * 
+ *
  * <code>
  * public void testGet[Release|Snapshot|Project]Metadata[Not]Proxied[Not|On]Local[Not|On|Multiple]Remote
  * </code>
- * 
+ *
  * <pre>
  * Which should leave the following matrix of test cases.
- *  
+ *
  *   Metadata  | Proxied  | Local | Remote
  *   ----------+----------+-------+---------
  *   Release   | Not      | Not   | n/a (1)
@@ -79,7 +80,7 @@ import java.util.Arrays;
  *   Project   |          | On    | Not
  *   Project   |          | On    | On
  *   Project   |          | On    | Multiple
- *   
+ *
  * (1) If it isn't proxied, no point in having a remote.
  * </pre>
  *
@@ -94,9 +95,46 @@ public class MetadataTransferTest
      */
     private MetadataTools metadataTools;
 
+    // TODO: same test for other fetch* methods
+    public void testFetchFromTwoProxiesWhenFirstConnectionFails()
+        throws Exception
+    {
+        // Project metadata that does not exist locally, but has multiple versions in remote repos
+        String requestedResource = "org/apache/maven/test/get-default-layout/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertResourceNotFound( requestedResource );
+        assertNoRepoMetadata( "badproxied1", requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+
+        // ensure that a hard failure in the first proxy connector is skipped and the second repository checked
+        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(),
+                                      metadataTools.getRepositorySpecificName( "badproxied1", requestedResource ) );
+        wagonMock.get( requestedResource, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new TransferFailedException( "can't connect" ) );
+
+        wagonMockControl.replay();
+
+        assertFetchProject( requestedResource );
+
+        wagonMockControl.verify();
+
+        assertProjectMetadataContents( requestedResource, new String[] { "1.0.1" }, "1.0.1", "1.0.1" );
+        assertNoRepoMetadata( "badproxied1", requestedResource );
+        assertRepoProjectMetadata( ID_PROXIED2, requestedResource, new String[] { "1.0.1" } );
+    }
+
     /**
      * Attempt to get the project metadata for non-existant artifact.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is not created on the managed repository, nor returned
      *                  to the requesting client.
      */
@@ -287,7 +325,7 @@ public class MetadataTransferTest
     /**
      * A request for a release maven-metadata.xml file that does not exist locally, and the managed
      * repository has no proxied repositories set up.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is not created on the managed repository, nor returned
      *                  to the requesting client.
      */
@@ -310,7 +348,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that does exist locally, and the managed
      * repository has no proxied repositories set up.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is updated locally, based off of the managed repository
      *                  information, and then returned to the client.
      */
@@ -330,7 +368,7 @@ public class MetadataTransferTest
     /**
      * A request for a release maven-metadata.xml file that does not exist on the managed repository, but
      * exists on multiple remote repositories.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is downloaded from the remote into the repository specific
      *                  file location on the managed repository, a merge of the contents to the requested
      *                  maven-metadata.xml is performed, and then the merged maven-metadata.xml file is
@@ -362,7 +400,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that does not exist locally, nor does it exist in a remote
      * proxied repository.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is created locally, based off of managed repository
      *                  information, and then return to the client.
      */
@@ -387,7 +425,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that does not exist on the managed repository, but
      * exists on 1 remote repository.
-     * 
+     *
      * Expected result: the maven-metadata.xml file is downloaded from the remote into the repository specific
      *                  file location on the managed repository, a merge of the contents to the requested
      *                  maven-metadata.xml is performed, and then the merged maven-metadata.xml file is
@@ -414,7 +452,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that exists in the managed repository, but
      * not on any remote repository.
-     * 
+     *
      * Expected result: the maven-metadata.xml file does not exist on the remote proxied repository and
      *                  is not downloaded.  There is no repository specific metadata file on the managed
      *                  repository.  The managed repository maven-metadata.xml is returned to the
@@ -441,7 +479,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that exists in the managed repository, and on multiple
      * remote repositories.
-     * 
+     *
      * Expected result: the maven-metadata.xml file on the remote proxied repository is downloaded
      *                  and merged into the contents of the existing managed repository copy of
      *                  the maven-metadata.xml file.
@@ -472,7 +510,7 @@ public class MetadataTransferTest
     /**
      * A request for a maven-metadata.xml file that exists in the managed repository, and on one
      * remote repository.
-     * 
+     *
      * Expected result: the maven-metadata.xml file on the remote proxied repository is downloaded
      *                  and merged into the contents of the existing managed repository copy of
      *                  the maven-metadata.xml file.
@@ -668,9 +706,9 @@ public class MetadataTransferTest
 
     /**
      * Transfer the metadata file.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertFetchProject( String requestedResource )
         throws Exception
@@ -693,9 +731,9 @@ public class MetadataTransferTest
 
     /**
      * Transfer the metadata file, not expected to succeed.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertFetchProjectFailed( String requestedResource )
         throws Exception
@@ -711,9 +749,9 @@ public class MetadataTransferTest
 
     /**
      * Transfer the metadata file.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertFetchVersioned( String requestedResource )
         throws Exception
@@ -736,9 +774,9 @@ public class MetadataTransferTest
 
     /**
      * Transfer the metadata file, not expected to succeed.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertFetchVersionedFailed( String requestedResource )
         throws Exception
@@ -754,9 +792,9 @@ public class MetadataTransferTest
 
     /**
      * Test for the existance of the requestedResource in the default managed repository.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertResourceExists( String requestedResource )
         throws Exception
@@ -787,9 +825,9 @@ public class MetadataTransferTest
 
     /**
      * Ensures that the requested resource is not present in the managed repository.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertNoMetadata( String requestedResource )
         throws Exception
@@ -799,7 +837,7 @@ public class MetadataTransferTest
     }
 
     /**
-     * Ensures that the proxied repository specific maven metadata file does NOT exist in the 
+     * Ensures that the proxied repository specific maven metadata file does NOT exist in the
      * managed repository.
      * @param proxiedRepoId the proxied repository id to validate with.
      * @param requestedResource the resource requested.
@@ -815,9 +853,9 @@ public class MetadataTransferTest
     /**
      * Test for the existance of the requestedResource in the default managed repository, and if it exists,
      * does it contain the specified list of expected versions?
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertProjectMetadataContents( String requestedResource, String expectedVersions[],
                                                 String latestVersion, String releaseVersion )
@@ -851,9 +889,9 @@ public class MetadataTransferTest
     /**
      * Test for the existance of the requestedResource in the default managed repository, and if it exists,
      * does it contain the expected release maven-metadata.xml contents?
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertReleaseMetadataContents( String requestedResource )
         throws Exception
@@ -879,13 +917,13 @@ public class MetadataTransferTest
     /**
      * Test for the existance of the snapshot metadata in the default managed repository, and if it exists,
      * does it contain the expected release maven-metadata.xml contents?
-     * 
+     *
      * @param requestedResource the requested resource
      * @param expectedDate the date in "yyyyMMdd" format
      * @param expectedTime the time in "hhmmss" format
      * @param expectedBuildnumber the build number
-     * 
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     private void assertSnapshotMetadataContents( String requestedResource, String expectedDate, String expectedTime,
                                                  int expectedBuildnumber )
@@ -900,16 +938,16 @@ public class MetadataTransferTest
     }
 
     /**
-     * Test for the existance of the proxied repository specific snapshot metadata in the default managed 
+     * Test for the existance of the proxied repository specific snapshot metadata in the default managed
      * repository, and if it exists, does it contain the expected release maven-metadata.xml contents?
-     * 
+     *
      * @param proxiedRepoId the repository id of the proxied repository.
      * @param requestedResource the requested resource
      * @param expectedDate the date in "yyyyMMdd" format
      * @param expectedTime the time in "hhmmss" format
      * @param expectedBuildnumber the build number
-     * 
-     * @throws Exception 
+     *
+     * @throws Exception
      */
     private void assertRepoSnapshotMetadataContents( String proxiedRepoId, String requestedResource,
                                                      String expectedDate, String expectedTime, int expectedBuildnumber )
@@ -993,7 +1031,7 @@ public class MetadataTransferTest
     /**
      * Ensures that the repository specific maven metadata file exists, and contains the appropriate
      * list of expected versions within.
-     * 
+     *
      * @param proxiedRepoId
      * @param requestedResource
      */
@@ -1022,9 +1060,9 @@ public class MetadataTransferTest
 
     /**
      * Test for the non-existance of the requestedResource in the default managed repository.
-     * 
+     *
      * @param requestedResource the requested resource
-     * @throws Exception 
+     * @throws Exception
      */
     private void assertResourceNotFound( String requestedResource )
         throws Exception

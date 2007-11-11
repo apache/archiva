@@ -69,8 +69,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -137,7 +137,6 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem fetching the artifact.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
-        throws ProxyException
     {
         File localFile = toLocalFile( repository, artifact );
 
@@ -172,6 +171,13 @@ public class DefaultRepositoryProxyConnectors
                 getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
+            catch ( ProxyException e )
+            {
+                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                    "\" for artifact " + Keys.toKey( artifact ) + ", continuing to next repository. Error message: " +
+                    e.getMessage() );
+                getLogger().debug( "Full stack trace", e );
+            }
         }
         getLogger().debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
 
@@ -184,7 +190,6 @@ public class DefaultRepositoryProxyConnectors
      * @return the (local) metadata file that was fetched/merged/updated, or null if no metadata file exists.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, VersionedReference metadata )
-        throws ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
 
@@ -201,7 +206,7 @@ public class DefaultRepositoryProxyConnectors
 
             File localRepoFile = toLocalRepoFile( repository, targetRepository, targetPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
-            
+
             try
             {
                 transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
@@ -222,6 +227,13 @@ public class DefaultRepositoryProxyConnectors
                 getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
                                        + " not updated on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
+            }
+            catch ( ProxyException e )
+            {
+                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                    "\" for versioned Metadata " + Keys.toKey( metadata ) +
+                    ", continuing to next repository. Error message: " + e.getMessage() );
+                getLogger().debug( "Full stack trace", e );
             }
         }
 
@@ -278,14 +290,14 @@ public class DefaultRepositoryProxyConnectors
 
         return file.lastModified();
     }
-    
+
     private boolean hasBeenUpdated( File file, long originalLastModified )
     {
         if ( !file.exists() || !file.isFile() )
         {
             return false;
         }
-        
+
         long currentLastModified = getLastModified( file );
         return ( currentLastModified > originalLastModified );
     }
@@ -297,7 +309,6 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem fetching the metadata file.
      */
     public File fetchFromProxies( ManagedRepositoryContent repository, ProjectReference metadata )
-        throws NotFoundException, NotModifiedException, ProxyException
     {
         File localFile = toLocalFile( repository, metadata );
 
@@ -317,7 +328,7 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 transferFile( connector, targetRepository, targetPath, localRepoFile, requestProperties );
-    
+
                 if ( hasBeenUpdated( localRepoFile, originalMetadataTimestamp ) )
                 {
                     metadataNeedsUpdating = true;
@@ -334,7 +345,14 @@ public class DefaultRepositoryProxyConnectors
                                        + " not updated on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
-            
+            catch ( ProxyException e )
+            {
+                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                    "\" for project metadata " + Keys.toKey( metadata ) +
+                    ", continuing to next repository. Error message: " + e.getMessage() );
+                getLogger().debug( "Full stack trace", e );
+            }
+
         }
 
         if ( hasBeenUpdated( localFile, originalTimestamp ) )
@@ -400,20 +418,17 @@ public class DefaultRepositoryProxyConnectors
     }
 
     private File toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
-        throws ProxyException
     {
         return repository.toFile( artifact );
     }
 
     private File toLocalFile( ManagedRepositoryContent repository, ProjectReference metadata )
-        throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
         return new File( repository.getRepoRoot(), sourcePath );
     }
 
     private File toLocalFile( ManagedRepositoryContent repository, VersionedReference metadata )
-        throws ProxyException
     {
         String sourcePath = metadataTools.toPath( metadata );
         return new File( repository.getRepoRoot(), sourcePath );
@@ -461,7 +476,7 @@ public class DefaultRepositoryProxyConnectors
      */
     private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
                                File localFile, Properties requestProperties )
-        throws NotFoundException, NotModifiedException, ProxyException
+        throws ProxyException, NotModifiedException
     {
         String url = remoteRepository.getURL().getUrl() + remotePath;
         requestProperties.setProperty( "url", url );
@@ -530,7 +545,7 @@ public class DefaultRepositoryProxyConnectors
         catch ( NotModifiedException e )
         {
             // Do not cache url here.
-            throw e; 
+            throw e;
         }
         catch ( ProxyException e )
         {
@@ -637,7 +652,7 @@ public class DefaultRepositoryProxyConnectors
      */
     private File transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                      File localFile )
-        throws NotFoundException, NotModifiedException, ProxyException
+        throws ProxyException
     {
         assert ( remotePath != null );
 
@@ -674,7 +689,7 @@ public class DefaultRepositoryProxyConnectors
                     throw new NotModifiedException( "Not downloaded, as local file is newer than remote side: "
                                                     + localFile.getAbsolutePath() );
                 }
-                
+
                 if ( temp.exists() )
                 {
                     getLogger().debug( "Downloaded successfully." );
@@ -792,7 +807,7 @@ public class DefaultRepositoryProxyConnectors
             AuthenticationInfo authInfo = null;
             String username = remoteRepository.getRepository().getUsername();
             String password = remoteRepository.getRepository().getPassword();
-            
+
             if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
             {
                 getLogger().debug( "Using username " + username + " to connect to remote repository "
