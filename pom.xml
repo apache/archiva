@@ -21,17 +21,33 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
     <version>5</version>
     <relativePath>../pom/maven/pom.xml</relativePath>
   </parent>
-  <groupId>org.apache.maven.archiva</groupId>
-  <artifactId>archiva-parent</artifactId>
-  <packaging>pom</packaging>
+  <!-- TODO: once agreed/released, put this in place
+  <parent>
+    <groupId>org.apache.maven.archiva</groupId>
+    <artifactId>archiva-parent</artifactId>
+    <version>1-SNAPSHOT</version>
+    <relativePath>../archiva-parent/pom.xml</relativePath>
+  </parent>
+-->
   <name>Archiva</name>
+  <artifactId>archiva</artifactId>
+  <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
+  </scm>
+
+  <!-- TODO: remove below when archiva parent in place -->
+  <groupId>org.apache.maven.archiva</groupId>
   <description>
     Archiva is an application for managing one or more remote
     repositories, including administration, artifact handling,
@@ -65,21 +81,6 @@
       <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
     </mailingList>
   </mailingLists>
-  <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
-  </scm>
-  <distributionManagement>
-    <repository>
-      <id>apache.releases</id>
-      <url>scpexe://people.apache.org/www/people.apache.org/builds/maven/archiva/${version}/m2-staging-repository</url>
-    </repository>
-    <site>
-      <id>apache.website</id>
-      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/ref/${project.version}</url>
-    </site>
-  </distributionManagement>
   <build>
     <plugins>
       <plugin>
@@ -180,8 +181,7 @@
     <module>archiva-scheduled</module>
     <module>archiva-web</module>
     <module>archiva-cli</module>
-    <!-- <module>archiva-site</module> -->
-    <!-- <module>maven-meeper</module> -->
+    <module>archiva-site</module>
   </modules>
   <dependencies>
     <dependency>
@@ -862,6 +862,12 @@
           </plugin>
         </plugins>
       </build>
+      <distributionManagement>
+        <site>
+          <id>apache.website</id>
+          <url>scpexe://people.apache.org/www/maven.apache.org/archiva/reports/</url>
+        </site>
+      </distributionManagement>
     </profile>
     <profile>
       <id>release</id>
@@ -903,14 +909,14 @@
     <wagon.version>1.0-beta-2</wagon.version>
     <redback.version>1.0-alpha-4</redback.version>
   </properties>
-  <!-- for plexus webdav snapshot -->
-  <repositories>
+  <distributionManagement>
     <repository>
-      <id>codehaus.snapshots</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
+      <id>apache.releases</id>
+      <url>scpexe://people.apache.org/www/people.apache.org/builds/maven/archiva/${version}/m2-staging-repository</url>
     </repository>
-  </repositories>
+    <site>
+      <id>apache.website</id>
+      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/docs/${project.version}</url>
+    </site>
+  </distributionManagement>
 </project>

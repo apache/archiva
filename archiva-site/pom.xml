@@ -20,13 +20,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva-parent</artifactId>
-    <version>1.0-beta-3-SNAPSHOT</version>
+    <artifactId>archiva</artifactId>
+    <version>1.0-beta-4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-site</artifactId>
   <packaging>pom</packaging>
-  <name>Archiva Site</name>
+  <name>Archiva Documentation</name>
 
   <reporting>
     <excludeDefaults>true</excludeDefaults>
@@ -34,12 +34,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1</version>
         <reportSets>
           <reportSet>
             <reports>
-              <report>cim</report>
-              <report>issue-tracking</report>
-              <report>mailing-list</report>
               <report>license</report>
               <report>project-team</report>
               <report>scm</report>
@@ -49,7 +47,7 @@
       </plugin>
     </plugins>
   </reporting>
-  <!-- repeated here so that maven-site is not appended -->
+  <!-- prevent automatic artifactId appending -->
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk/</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk/</developerConnection>
@@ -59,53 +57,8 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>scp://people.apache.org/www/maven.apache.org/archiva</url>
+      <!-- prevent automatic artifactId appending -->
+      <url>scp://people.apache.org/www/maven.apache.org/archiva/docs/${project.version}</url>
     </site>
   </distributionManagement>
-
-  <mailingLists>
-    <mailingList>
-      <name>Maven Archiva User List</name>
-      <subscribe>archiva-users-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-users-unsubscribe@maven.apache.org</unsubscribe>
-      <post>archiva-users@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-users</archive>
-    </mailingList>
-    <mailingList>
-      <name>Maven Archiva Developer List</name>
-      <subscribe>archiva-dev-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-dev-unsubscribe@maven.apache.org</unsubscribe>
-      <post>archiva-dev@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-dev</archive>
-    </mailingList>
-    <mailingList>
-      <name>Maven Archiva Commits List</name>
-      <subscribe>archiva-commits-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>archiva-commits-unsubscribe@maven.apache.org</unsubscribe>
-      <post>archiva-commits@maven.apache.org</post>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
-    </mailingList>
-    <!-- duplication from parent pom - temporary until they inherit properly -->
-    <mailingList>
-      <name>Maven Announcements List</name>
-      <post>announce@maven.apache.org</post>
-      <subscribe>announce-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>announce-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-announce/</archive>
-    </mailingList>
-    <mailingList>
-      <name>Maven Issues List</name>
-      <post>issues@maven.apache.org</post>
-      <subscribe>issues-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>issues-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-issues/</archive>
-    </mailingList>
-    <mailingList>
-      <name>Maven Notifications List</name>
-      <post>notifications@maven.apache.org</post>
-      <subscribe>notifications-subscribe@maven.apache.org</subscribe>
-      <unsubscribe>notifications-unsubscribe@maven.apache.org</unsubscribe>
-      <archive>http://mail-archives.apache.org/mod_mbox/maven-notifications/</archive>
-    </mailingList>
-  </mailingLists>
 </project>

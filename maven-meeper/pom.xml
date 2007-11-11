@@ -19,8 +19,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
-    <artifactId>archiva-parent</artifactId>
-    <version>1.0-alpha-3-SNAPSHOT</version>
+    <artifactId>archiva</artifactId>
+    <version>1.0-alpha-4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>maven-meeper</artifactId>
