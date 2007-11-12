@@ -33,7 +33,7 @@ import junit.framework.AssertionFailedError;
 /**
  * HashcodesIndexPopulator 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class HashcodesIndexPopulator

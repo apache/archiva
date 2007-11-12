@@ -22,7 +22,7 @@ package org.apache.maven.archiva.web.action;
 /**
  * GlobalResults - constants for global result definitions. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class GlobalResults

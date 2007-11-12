@@ -22,7 +22,7 @@ package org.apache.maven.archiva.security;
 /**
  * ArchivaUser- interface to access the active principal. 
  *
- * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
+ * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public interface ArchivaUser
