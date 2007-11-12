@@ -478,7 +478,12 @@ public class DefaultRepositoryProxyConnectors
                                File localFile, Properties requestProperties )
         throws ProxyException, NotModifiedException
     {
-        String url = remoteRepository.getURL().getUrl() + remotePath;
+        String url = remoteRepository.getURL().getUrl();
+        if ( !url.endsWith( "/" ) )
+        {
+            url = url + "/";
+        }
+        url = url + remotePath;
         requestProperties.setProperty( "url", url );
 
         // Is a whitelist defined?
