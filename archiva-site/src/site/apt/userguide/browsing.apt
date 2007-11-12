@@ -1,8 +1,70 @@
  ------
  Browsing
+ ------  
+ The Maven Team
+ ------
+ 9 November 2007
  ------
 
-Browsing
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
 
-  :STUB: This is a documentation stub.
+~~ NOTE: For help with the syntax of this file, see:
+~~ http://maven.apache.org/guides/mini/guide-apt-format.html
+ 
 
+Browsing 
+
+* Permissions
+ 
+  The user can only browse those repositories where the user is an observer or a manager. If the user does not 
+  have permission to access any repository, a message saying "You have access to no repositories. Ask your 
+  system administrator for access" will be displayed.  
+
+* Repository Browse Layout
+
+  The current layout of the repositories in Repository Browse uses the Maven 2 layout, which is the groupId,
+  artifactId and version. When the version is clicked, the Artifact Info page (see the next section) will be
+  displayed. There is currently an issue with regard to Maven 1 artifacts, see {{{http://jira.codehaus.org/browse/MRM-585} http://jira.codehaus.org/browse/MRM-585}}.
+
+* Artifact Info
+
+  The Artifact Info page is divided into 5 views:
+  
+  1. Info. Basic information about the artifact is displayed here. These are the groupId, artifactId, version and 
+     packaging. A dependency pom snippet is also available, which a user can just copy and paste in a pom file 
+     to declare the artifact as a dependency of the project.
+  
+  2. Dependencies. The dependencies of the artifact will be listed here. The user can easily navigate to a specific
+     dependency by clicking on the groupId, artifactId or version link. The scope of the dependency is also shown.
+  
+  3. Dependency Tree. The dependencies of the artifact are displayed in a tree-like view, which can also be 
+     navigated.
+  
+  4. Used By. Lists all the artifacts in the repository which use this artifact.
+  
+  5. Mailing Lists. The project mailing lists available in the artifact's pom are displayed here.
+  
+* Downloading Artifacts
+
+  Artifacts can be downloaded from the artifact info page. All files, except for the metadata.xml files, that are 
+  associated with the artifact are available in the download box. The size of the files in bytes are displayed 
+  at the right section of the download box. 
+  
+  
+  
+   
