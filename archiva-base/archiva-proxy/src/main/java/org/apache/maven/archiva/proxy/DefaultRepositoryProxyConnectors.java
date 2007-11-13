@@ -492,7 +492,9 @@ public class DefaultRepositoryProxyConnectors
             // Path must belong to whitelist.
             if ( !matchesPattern( remotePath, connector.getWhitelist() ) )
             {
-                getLogger().debug( "Path [" + remotePath + "] is not part of defined whitelist (skipping transfer)." );
+                getLogger().debug( "Path [" + remotePath +
+                    "] is not part of defined whitelist (skipping transfer from repository [" +
+                    remoteRepository.getRepository().getName() + "])." );
                 return null;
             }
         }
@@ -500,7 +502,8 @@ public class DefaultRepositoryProxyConnectors
         // Is target path part of blacklist?
         if ( matchesPattern( remotePath, connector.getBlacklist() ) )
         {
-            getLogger().debug( "Path [" + remotePath + "] is part of blacklist (skipping transfer)." );
+            getLogger().debug( "Path [" + remotePath + "] is part of blacklist (skipping transfer from repository [" +
+                remoteRepository.getRepository().getName() + "])." );
             return null;
         }
 
