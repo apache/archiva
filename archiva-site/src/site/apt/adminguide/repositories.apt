@@ -1,8 +1,159 @@
  ------
  Understanding Repository Configuration of Apache Archiva
  ------
+ Maria Odea Ching
+ ------
+ 13 Nov 2007
+ ------
+
+~~ Licensed to the Apache Software Foundation (ASF) under one
+~~ or more contributor license agreements.  See the NOTICE file
+~~ distributed with this work for additional information
+~~ regarding copyright ownership.  The ASF licenses this file
+~~ to you under the Apache License, Version 2.0 (the
+~~ "License"); you may not use this file except in compliance
+~~ with the License.  You may obtain a copy of the License at
+~~
+~~   http://www.apache.org/licenses/LICENSE-2.0
+~~
+~~ Unless required by applicable law or agreed to in writing,
+~~ software distributed under the License is distributed on an
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+~~ KIND, either express or implied.  See the License for the
+~~ specific language governing permissions and limitations
+~~ under the License.
+
+~~ NOTE: For help with the syntax of this file, see:
+~~ http://maven.apache.org/guides/mini/guide-apt-format.html
 
 Understanding Repository Configuration of Apache Archiva
 
-  :STUB: This is a documentation stub.
+~~NOTE TO MYSELF: Review this! and improve the format and the contents 
+~~  			  Some parts sounds confusing to me (or am i just tired?)
 
+  Archiva has two types of repository configuration: managed repository and remote repository. 
+  
+* Managed Repository
+
+  A managed repository is a repository which resides locally to the server where Archiva is running. It could serve as a 
+  proxy repository, an internal deployment repository or a local mirror repository. 
+  
+  Managed repository fields:  
+  
+  1. identifier - the id of the repository. This must be unique.
+  
+  2. name - the name of the repository.
+  
+  3. directory - the location of the repository. If the path specified does not exist, Archiva will create the missing 
+  	 directories.
+  	
+  4. type - the repository layout (maven 2 or maven 1)
+  
+  5. cron - the cron schedule when repository scanning will be executed.
+  
+  6. repository purge by days older - the first option for repository purge. Archiva will check how old the artifact is
+  	 and if it is older than the set number of days in this field, then the artifact will be deleted respecting the retention
+  	 count (see #7) of course. In order to disable the purge by number of days old and set Archiva to purge by retention count, just set the 
+  	 repository purge field to 0. The maximum number of days which can be set here is 1000.
+  	
+  7. repository purge by retention count - the second option for repository purge. When running the repository purge, Archiva
+  	 will retain only the number of artifacts set for this field for a specific snapshot version. 
+  	
+  8. releases included - specifies whether there are released artifacts in the repository.
+  
+  9. snapshots included - specifies whether there are snapshot artifacts in the repository.
+  
+  10. scannable - specifies whether the repository can be scanned.
+  
+  11. delete released snapshots - specifies whether to remove those snapshot artifacts which already has release versions
+  	  of it in the repository during repository purge. 
+
+  Each repository has its own Webdav url. This allows the user to browse and access the repository via webdav. The url has the
+  following format: 
+ 
++----+  
+http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/archiva/repository/releases).
++----+
+
+  Managed repositories can be explicitly scanned by clicking the 'Scan Repository Now' button in the repositories page. A pom 
+  snippet is also available for each repository. The \<distributionManagement\> section can be copied and pasted into a 
+  project's pom to specify that the project will be deployed in that managed repository. The \<repositories\> section on the
+  other hand, can be copied and pasted to a project's pom.xml or to Maven's settings.xml to tell Maven to get artifacts
+  from the managed repository when building the project. 
+  
+  For more details about the repository purge from numbers 6 and 7 above, please take a look at the Repository Purge section
+  below.
+
+* Remote Repository
+
+  A remote repository is a repository which resides remotely. These repositories are usually the proxied repositories. See
+  Proxy Connectors on how to proxy a repository.
+
+  Remote repository fields:  
+  
+  1. identifier - the id of the remote repository.
+  
+  2. name - the name of the remote repository.
+  
+  3. url - the url of the remote repository.
+  
+  4. username - the username (if authentication is needed) to be used to access the repository.
+  
+  5. password - the password (if authentication is needed) to be used to access the repository.
+  
+  6. type - the layout (maven 2 or maven 1) of the remote repository.  
+
+* Repository Purge
+
+  Repository purge is the process of cleaning up the repository of old snapshots. When deploying a snapshot to a repository, 
+  Maven deploys the project/artifact with a timestamped version. Doing daily/nightly builds of the project then tends to bloat 
+  the repository. What if the artifact is large? Then disk space will definitely be a problem. That's where Archiva's repository 
+  purge feature comes in. Given a criteria to use -- by the number of days old and by retention count, it would clean up the 
+  repository by removing old snapshots.
+  
+  Let's take a look at different behaviours for repository purge using the following scenario:
+
++----+
+Artifacts in the repository:
+
+../artifact-x/2.0-SNAPSHOT/artifact-x-20061118.060401-2.jar
+../artifact-x/2.0-SNAPSHOT/artifact-x-20061118.060401-2.pom
+../artifact-x/2.0-SNAPSHOT/artifact-x-20070113.034619-3.jar
+../artifact-x/2.0-SNAPSHOT/artifact-x-20070113.034619-3.pom
+../artifact-x/2.0-SNAPSHOT/artifact-x-20070203.028902-4.jar
+../artifact-x/2.0-SNAPSHOT/artifact-x-20070203.028902-4.pom
++----+
+  
+  1. Repository Purge By Days Older
+  
+  Using this criteria for the purge, Archiva will check how old an artifact is and if it is older than the set value in the
+  repository purge by days older field, then the artifact will be deleted respecting the retention count of course.
+       
+  If repository purge by days older is set to 100 days (with repository purge by retention count field set to 1), 
+  and the current date is let's say 03-01-2007, given the scenario above.. the following artifacts will be retained:
+  artifact-x-20070113.034619-3.jar, artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and 
+  artifact-x-20070203.028902-4.pom. It is clear in the version timestamps that these 4 artifacts are not more than 
+  100 days old from the current date (which is 03-01-2007 in our example) so they are all retained. In this case
+  the retention count doesn't have any effect since the priority is the age of the artifact. 
+  
+  Now, if the repository purge by days older is set to 30 days (with repository purge by retention count field still 
+  set to 1) and the current date is still 03-01-2007, then given the same scenario above.. only the following artifacts
+  will be retained: artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom. In this case, we can see 
+  that the retained artifacts are still not older by the number of days set in the repository purge by days older field
+  and the retention count is still met.
+	  	
+  Now, let's set the repository purge by days older to 10 days (with repository purge by retention count field still 
+  set to 1) and the current date is still 03-01-2007, then still given the same repository contents above.. the 
+  following artifacts will still be retained: artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom.
+  It is clear from the version timestamps that the artifacts ARE MORE THAN the repository purge by days older value, 
+  which is 10 days. Why is it still retained? Recall the value of the repository purge by retention count -- 1 :)
+  This ensures that there is ALWAYS 1 artifact timestamped version retained for every unique version snapshot directory 
+  of an artifact. 	  	
+	  	
+  2. Repository Purge By Retention Count
+    
+  If the repository purge by retention count field is set to 2, then only the artifacts artifact-x-20070113.034619-3.jar,
+  artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom will be retained 
+  in the repository. The oldest snapshots will be deleted maintaining only a number of snapshots equivalent to the set 
+  retention count. 
+	  	
