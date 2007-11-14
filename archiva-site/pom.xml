@@ -58,7 +58,10 @@
     <site>
       <id>apache.website</id>
       <!-- prevent automatic artifactId appending -->
+<!-- TODO: we haven't switched yet, and we need .htaccess in place for current docs first too
       <url>scp://people.apache.org/www/maven.apache.org/archiva/docs/${project.version}</url>
+ -->
+      <url>scp://people.apache.org/www/maven.apache.org/archiva/</url>
     </site>
   </distributionManagement>
 </project>
