@@ -32,6 +32,7 @@
   <packaging>pom</packaging>
   <name>Archiva Common Parent Project</name>
   <version>1-SNAPSHOT</version>
+  <inceptionYear>2006</inceptionYear>
   <url>http://maven.apache.org/archiva/</url>
   <description>
     Archiva is an application for managing one or more remote
@@ -70,5 +71,21 @@
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/parent</developerConnection>
     <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/parent</url>
   </scm>
+  <properties>
+    <siteBaseDeployment>scp://people.apache.org/www/maven.apache.org/archiva</siteBaseDeployment>
+<!-- For testing
+    <siteBaseDeployment>file://localhost/www/maven.apache.org/archiva</siteBaseDeployment>
+-->
+  </properties>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>2.0-beta-5</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
 
