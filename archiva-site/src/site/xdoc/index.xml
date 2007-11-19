@@ -39,8 +39,15 @@
         maintenance on your repositories.
       </p>
 
-<!-- TODO: link to other content - quick start, guides, etc -->
-
+<!-- TODO: improve appearance of these links -->
+<p>
+  To get started with Archiva, read the following documentation:
+</p>
+<ul>
+<li><a href="/quick-start.html">A Quick Getting Started Guide</a></li>
+<li><a href="/userguide/index.html">User's Guide</a></li>
+<li><a href="/adminguide/index.html">Administrator's Guide</a></li>
+</ul>
 
 <!-- TODO: move to the feature tour
       <ul>

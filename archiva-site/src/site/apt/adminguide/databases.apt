@@ -6,3 +6,6 @@ Apache Archiva Databases
 
   :STUB: This is a documentation stub.
 
+~~TODO: give general information on configuration for an external database
+~~TODO: use mysql or external derby as an example
+~~TODO: link to wiki location that does others

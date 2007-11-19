@@ -6,3 +6,6 @@ Installing Standalone Distribution of Apache Archiva
 
   :STUB: This is a documentation stub.
 
+~~TODO: link to quick start as it covers the most basic scenario
+~~TODO: ensure to refer to advanced configuration options, such as PLEXUS_BASE
+
