@@ -20,11 +20,12 @@
 
 <project>
   <body>
-    <links>
-      <item name="Apache"     href="http://www.apache.org/"/>
-      <item name="Maven"      href="http://maven.apache.org/"/>
-      <item name="Continuum"  href="http://maven.apache.org/continuum/"/>
-    </links>
+    <breadcrumbs>
+      <item name="1.0-SNAPSHOT" href="/docs/1.0-SNAPSHOT/" />
+<!-- TODO in beta-6
+      <item name="${project.version}" href="/docs/${project.version}" />
+-->
+    </breadcrumbs>
 
     <menu name="Introduction">
       <item name="Welcome"      href="/index.html" />
@@ -101,24 +102,5 @@
       <item name="Other Configuration" href="/guides/configuration.html"/>
       <item name="Hacking Archiva" href="/hacking/index.html"/>
     </menu>
-
-    <!--
-    Current generated reports are always empty when executed in archiva-site
-    Prefer to add useful generated reports to sections above.
-    <menu ref="reports" inherit="bottom"/>
-      -->
   </body>
-  <skin>
-    <groupId>org.apache.maven.skins</groupId>
-    <artifactId>maven-stylus-skin</artifactId>
-  </skin>
-  <publishDate format="dd MMM yyyy"/>
-  <bannerLeft>
-    <name>Apache Maven</name>
-    <src>http://maven.apache.org/images/apache-maven-project-2.png</src>
-    <href>http://maven.apache.org/</href>
-  </bannerLeft>
-  <bannerRight>
-    <src>images/archiva-logo-banner.jpg</src>
-  </bannerRight>
 </project>

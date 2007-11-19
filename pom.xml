@@ -23,19 +23,11 @@
   <modelVersion>4.0.0</modelVersion>
   
   <parent>
-    <groupId>org.apache.maven</groupId>
-    <artifactId>maven-parent</artifactId>
-    <version>5</version>
-    <relativePath>../pom/maven/pom.xml</relativePath>
-  </parent>
-  <!-- TODO: once agreed/released, put this in place
-  <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
     <version>1-SNAPSHOT</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
--->
   <name>Archiva</name>
   <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
@@ -53,7 +45,7 @@
     repositories, including administration, artifact handling,
     browsing and searching.
   </description>
-  <url>http://maven.apache.org/archiva</url>
+  <url>http://maven.apache.org/archiva/</url>
   <issueManagement>
     <system>jira</system>
     <url>http://jira.codehaus.org/browse/MRM</url>
@@ -739,11 +731,13 @@
           <configLocation>config/maven_checks.xml</configLocation>
         </configuration>
       </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>findbugs-maven-plugin</artifactId>
-          <version>1.1.1</version>
-        </plugin>
+<!-- TODO: OOME
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>1.1.1</version>
+      </plugin>
+-->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>changelog-maven-plugin</artifactId>
@@ -862,12 +856,6 @@
           </plugin>
         </plugins>
       </build>
-      <distributionManagement>
-        <site>
-          <id>apache.website</id>
-          <url>scpexe://people.apache.org/www/maven.apache.org/archiva/reports/</url>
-        </site>
-      </distributionManagement>
     </profile>
     <profile>
       <id>release</id>
@@ -888,7 +876,7 @@
               </descriptors>
               <tarLongFileMode>gnu</tarLongFileMode>
               <appendAssemblyId>false</appendAssemblyId>
-              <finalName>apache-archiva-${version}-src</finalName>
+              <finalName>apache-archiva-${project.version}-src</finalName>
             </configuration>
             <executions>
               <execution>
@@ -910,13 +898,9 @@
     <redback.version>1.0-alpha-4</redback.version>
   </properties>
   <distributionManagement>
-    <repository>
-      <id>apache.releases</id>
-      <url>scpexe://people.apache.org/www/people.apache.org/builds/maven/archiva/${version}/m2-staging-repository</url>
-    </repository>
     <site>
       <id>apache.website</id>
-      <url>scpexe://people.apache.org/www/maven.apache.org/archiva/docs/${project.version}</url>
+      <url>${siteBaseDeployment}/reports/</url>
     </site>
   </distributionManagement>
 </project>

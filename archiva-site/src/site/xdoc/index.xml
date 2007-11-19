@@ -23,50 +23,26 @@
     <title>Welcome to Maven Archiva</title>
   </properties>
   <body>
-    <div id="downloadbox">
-      <h5>Get Archiva 1.0 Beta 4</h5>
-      <p>
-        <a href="download.html">
-          <img valign="top" src="http://maven.apache.org/images/folder-open.gif" border="0" alt="" title="download"/>
-          Download
-        </a>
-        Archiva
-        <small>(23MB)</small>
-      </p>
-      <ul>
-        <li>
-          <a href="download.html#requirements">System Requirements</a>
-        </li>
-        <li>
-          <a href="download.html#installation">Installation Instructions</a>
-        </li>
-        <li>        
-          <a href="http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13818&amp;styleName=Text&amp;projectId=10980&amp;Create=Create">Release Notes</a>
-        </li>
-        <!--
-        <li>
-          <a href="guides/getting-started/index.html">Getting Started</a>
-        </li>
-        <li>
-          <a href="guides/index.html">Documentation</a>
-        </li>
-        -->
-      </ul>
-    </div>
-
     <section name="Welcome to Maven Archiva">
-      <div class="p">
-         Archiva is currently under development.</div>
-
-      <div class="p">
+<!-- TODO: convert back to APT -->
+      <p>
          Archiva is a build artifact repository manager for use with
-         build tools such as <a href="http://maven.apache.org">maven</a>,
-         <a href="http://maven.apache.org/continuum/">continuum</a>,
-         and <a href="http://ant.apache.org/">ant</a>.</div>
+         build tools such as <a href="http://maven.apache.org">Maven</a>,
+         <a href="http://maven.apache.org/continuum/">Continuum</a>,
+         and <a href="http://ant.apache.org/">ANT</a>.
+      </p>
 
-      <div class="p">
-         It provides the following benefits:</div>
+      <p>
+        With Archiva, you can share artifacts with other developers and manage the associated
+        security required, aggregate (proxy) content from remote artifact repositories, visualise
+        your artifact utilisation with search, browse and reporting, and perform routine
+        maintenance on your repositories.
+      </p>
 
+<!-- TODO: link to other content - quick start, guides, etc -->
+
+
+<!-- TODO: move to the feature tour
       <ul>
         <li>A place for like-minded developers to share artifacts
             that are private in nature, such as found in proprietary
@@ -89,34 +65,10 @@
         <li>Reporting tools.</li>
         <li>Maintenance tools.</li>
       </ul>
+-->
     </section>
 
-    <section name="Latest News">
-      <p>
-        <ul>
-          <li>Archiva 1.0 Beta 4 Release Available - November 13, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 1.0 Beta 3 Release Available - November 1, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 1.0 Beta 2 Release Available - September 22, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 1.0 Beta 1 Release Available - August 10, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 1.0 Alpha 2 Release Available - June 29, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 1.0 Alpha 1 Release Available - June 5, 2007</li>
-        </ul>
-        <ul>
-          <li>Archiva 0.9 Alpha 2 Release Available - May 18, 2007</li>
-        </ul>
-      </p>
-    </section>
-
+<!-- TODO: move
     <section name="Need Help?">
       <p>Join the conversation!</p>
       <ul>
@@ -159,5 +111,6 @@
          Archiva wiki</a>.
       </div>
     </section>
+-->
   </body>
 </document>

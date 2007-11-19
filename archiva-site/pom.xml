@@ -27,6 +27,28 @@
   <artifactId>archiva-site</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Documentation</name>
+  <url>http://maven.apache.org/archiva/docs/${project.version}/</url>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <descriptor>src/site/assembly/docs.xml</descriptor>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <finalName>apache-archiva-${project.version}</finalName>
+  </build>
 
   <reporting>
     <excludeDefaults>true</excludeDefaults>
@@ -40,7 +62,6 @@
             <reports>
               <report>license</report>
               <report>project-team</report>
-              <report>scm</report>
             </reports>
           </reportSet>
         </reportSets>
@@ -57,11 +78,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <!-- prevent automatic artifactId appending -->
-<!-- TODO: we haven't switched yet, and we need .htaccess in place for current docs first too
-      <url>scp://people.apache.org/www/maven.apache.org/archiva/docs/${project.version}</url>
- -->
-      <url>scp://people.apache.org/www/maven.apache.org/archiva/</url>
+      <url>${siteBaseDeployment}/docs/${project.version}</url>
     </site>
   </distributionManagement>
 </project>
