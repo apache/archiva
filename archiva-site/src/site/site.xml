@@ -41,15 +41,19 @@
     </menu>
 
     <menu name="Administrators Guide">
+<!-- TODO: add an overview in future versions
       <item name="Structure of Archiva"      href="/adminguide/structure.html" />
-      <item name="Installing"                href="/adminguide/installing.html" collapse="true">
+-->
+      <item name="Installing Archiva"        href="/adminguide/installing.html" collapse="true">
         <item name="Installing Standalone"   href="/adminguide/standalone.html" />
         <item name="Installing as a WAR"     href="/adminguide/webapp.html" />
       </item>
       <item name="Databases"                 href="/adminguide/databases.html" />
       <item name="Security"                  href="/adminguide/security.html" collapse="true">
         <item name="Roles"                   href="/adminguide/roles.html" />
+<!-- TODO: for a future version
         <item name="Using LDAP"              href="/adminguide/ldap.html" />
+-->
       </item>
       <item name="Runtime Configuration"     href="/adminguide/configuration.html" collapse="true">
         <item name="Repositories"            href="/adminguide/repositories.html" />
@@ -62,7 +66,7 @@
     </menu>
 
     <menu name="Customising Archiva">
-      <item name="Write a Consumer Plugin"   href="/customising/writing-consumers.html" />
+      <item name="Writing a Consumer Plugin" href="/customising/writing-consumers.html" />
     </menu>
 
     <!-- to be removed later, once content has been shifted to permanent home -->
