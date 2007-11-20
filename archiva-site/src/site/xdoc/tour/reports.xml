@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Integrity Reports</title>
+    <author email="brett@apache.org">Brett Porter</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Integrity Reports">
+      <div style="text-align: center">
+        <img src="../images/tour/reports.png" width="640" height="401" alt="" />
+        <p>
+          ...
+        </p>
+        <p>
+          <a href="security.html">Previous: Role-based Security</a> |
+          <strong>Integrity Reports</strong> |
+          <a href="index.html">Next: Feature Tour</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>

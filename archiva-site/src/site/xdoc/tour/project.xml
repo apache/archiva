@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Project Information</title>
+    <author email="brett@apache.org">Brett Porter</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Project Information">
+      <div style="text-align: center">
+        <img src="../images/tour/project.png" width="640" height="401" alt="" />
+        <p>
+          ...
+        </p>
+        <p>
+          <a href="index.html">Previous: Feature Tour</a> |
+          <strong>Project Information</strong> |
+          <a href="search.html">Next: Artifact Search</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Graphical Administration</title>
+    <author email="brett@apache.org">Brett Porter</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Graphical Administration">
+      <div style="text-align: center">
+        <img src="../images/tour/admin.png" width="640" height="401" alt="" />
+        <p>
+          ...
+        </p>
+        <p>
+          <a href="proxy.html">Previous: Remote Proxying Cache</a> |
+          <strong>Graphical Administration</strong> |
+          <a href="security.html">Next: Role-based Security</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>

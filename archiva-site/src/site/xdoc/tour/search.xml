@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<document>
+  <properties>
+    <title>Artifact Search</title>
+    <author email="brett@apache.org">Brett Porter</author>
+  </properties>
+  <head>
+  </head>
+  <body>
+    <section name="Artifact Search">
+      <div style="text-align: center">
+        <img src="../images/tour/search.png" width="640" height="401" alt="" />
+        <p>
+          ...
+        </p>
+        <p>
+          <a href="project.html">Previous: Project Information</a> |
+          <strong>Artifact Search</strong> |
+          <a href="proxy.html">Next: Remote Proxying Cache</a>
+        </p>
+      </div>
+    </section>
+  </body>
+</document>
