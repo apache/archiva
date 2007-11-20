@@ -72,13 +72,13 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "ch.ethz.ganymed/jars/ganymed-ssh2-build210.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
@@ -89,13 +89,13 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "javax/jars/comm-3.0-u1.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
@@ -106,12 +106,12 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "javax.persistence/jars/ejb-3.0-public_review.jar";
 
-        /* 
+        /*
          * The version id of "public_review" can cause problems. is it part of
          * the version spec? or the classifier?
          */
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     public void testGoodCommonsLang()
@@ -123,7 +123,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "commons-lang/jars/commons-lang-2.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     public void testGoodDerby()
@@ -135,16 +135,16 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "org.apache.derby/jars/derby-10.2.2.0.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     /**
      * Test the ejb-client type spec.
-     * Type specs are not a 1 to 1 map to the extension. 
+     * Type specs are not a 1 to 1 map to the extension.
      * This tests that effect.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
-    /* TODO: Re-enabled in the future. 
+    /* TODO: Re-enabled in the future.
     public void testGoodFooEjbClient()
         throws LayoutException
     {
@@ -160,34 +160,36 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
     /**
      * Test the classifier.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodFooLibJavadoc()
         throws LayoutException
     {
         String groupId = "com.foo.lib";
         String artifactId = "foo-lib";
-        String version = "2.1-alpha-1-javadoc";
+        String version = "2.1-alpha-1";
         String type = "javadoc";
-        String path = "com.foo.lib/javadocs/foo-lib-2.1-alpha-1-javadoc.jar";
+        String classifier = "javadoc";
+        String path = "com.foo.lib/javadoc.jars/foo-lib-2.1-alpha-1-javadoc.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
     /**
      * Test the classifier, and java-source type spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodFooLibSources()
         throws LayoutException
     {
         String groupId = "com.foo.lib";
         String artifactId = "foo-lib";
-        String version = "2.1-alpha-1-sources";
+        String version = "2.1-alpha-1";
         String type = "java-source"; // oddball type-spec (should result in jar extension)
+        String classifier = "sources";
         String path = "com.foo.lib/java-sources/foo-lib-2.1-alpha-1-sources.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
     public void testGoodFooTool()
@@ -199,7 +201,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "com.foo/jars/foo-tool-1.0.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     public void testGoodGeronimoEjbSpec()
@@ -211,7 +213,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "org.apache.geronimo.specs/jars/geronimo-ejb_2.1_spec-1.0.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     public void testGoodLdapClientsPom()
@@ -223,12 +225,12 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "pom";
         String path = "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodSnapshotMavenTest()
         throws LayoutException
@@ -239,7 +241,7 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "jar";
         String path = "org.apache.archiva.test/jars/redonkulous-3.1-beta-1-20050831.101112-42.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     /**
@@ -256,9 +258,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
 
         String path = "maven/poms/maven-test-plugin-1.8.2.pom";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
-    
+
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
@@ -272,9 +274,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "maven-plugin";
         String path = "maven/plugins/maven-test-plugin-1.8.2.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
-    
+
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
@@ -287,9 +289,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "maven-plugin";
         String path = "avalon-meta/plugins/avalon-meta-plugin-1.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
-    
+
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
@@ -302,9 +304,9 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "maven-plugin";
         String path = "cactus/plugins/cactus-maven-1.7dev-20040815.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
-    
+
     /**
      * [MRM-562] Artifact type "maven-plugin" is not detected correctly in .toArtifactReference() methods.
      */
@@ -317,33 +319,34 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         String type = "maven-plugin";
         String path = "geronimo/plugins/geronimo-packaging-plugin-1.0.1.jar";
 
-        assertLayout( path, groupId, artifactId, version, type );
+        assertLayout( path, groupId, artifactId, version, null, type );
     }
 
     /**
      * Perform a roundtrip through the layout routines to determine success.
+     * @param classifier TODO
      */
-    private void assertLayout( String path, String groupId, String artifactId, String version, String type )
+    private void assertLayout( String path, String groupId, String artifactId, String version, String classifier, String type )
         throws LayoutException
     {
-        ArtifactReference expectedArtifact = createArtifact( groupId, artifactId, version, type );
+        ArtifactReference expectedArtifact = createArtifact( groupId, artifactId, version, classifier, type );
 
         // --- Artifact Tests.
-        // Artifact to Path 
+        // Artifact to Path
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( expectedArtifact ) );
 
         // --- Artifact Reference Tests
 
         // Path to Artifact Reference.
         ArtifactReference testReference = toArtifactReference( path );
-        assertArtifactReference( testReference, groupId, artifactId, version, type );
+        assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
 
         // And back again, using test Reference from previous step.
         assertEquals( "Artifact <" + expectedArtifact + "> to path:", path, toPath( testReference ) );
     }
-    
+
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
-                                          String version, String type )
+                                          String version, String classifier, String type )
     {
         String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + type;
 
@@ -352,17 +355,17 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertEquals( expectedId + " - Group ID", groupId, actualReference.getGroupId() );
         assertEquals( expectedId + " - Artifact ID", artifactId, actualReference.getArtifactId() );
         assertEquals( expectedId + " - Version ID", version, actualReference.getVersion() );
+        assertEquals( expectedId + " - classifier", classifier, actualReference.getClassifier() );
         assertEquals( expectedId + " - Type", type, actualReference.getType() );
-        // legacy has no classifier.
-        assertNull( expectedId + " - classifier", actualReference.getClassifier() );
     }
-    
-    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String type )
+
+    protected ArtifactReference createArtifact( String groupId, String artifactId, String version, String classifier, String type )
     {
         ArtifactReference artifact = new ArtifactReference();
         artifact.setGroupId( groupId );
         artifact.setArtifactId( artifactId );
         artifact.setVersion( version );
+        artifact.setClassifier( classifier );
         artifact.setType( type );
         assertNotNull( artifact );
         return artifact;

@@ -35,10 +35,6 @@ import java.util.Map;
  */
 public abstract class AbstractLegacyRepositoryContent
 {
-    private static final String DIR_JAVADOC = "javadoc.jars";
-
-    private static final String DIR_JAVA_SOURCE = "java-sources";
-
     private static final String PATH_SEPARATOR = "/";
 
     private static final Map<String, String> typeToDirectoryMap;
@@ -50,6 +46,7 @@ public abstract class AbstractLegacyRepositoryContent
         typeToDirectoryMap.put( ArtifactExtensionMapping.MAVEN_PLUGIN, "plugin" );
         typeToDirectoryMap.put( "distribution-tgz", "distribution" );
         typeToDirectoryMap.put( "distribution-zip", "distribution" );
+        typeToDirectoryMap.put( "javadoc", "javadoc.jar" );
     }
 
     public ArtifactReference toArtifactReference( String path )
@@ -57,7 +54,7 @@ public abstract class AbstractLegacyRepositoryContent
     {
         return LegacyPathParser.toArtifactReference( path );
     }
-    
+
     public String toPath( ArchivaArtifact reference )
     {
         if ( reference == null )
@@ -104,21 +101,6 @@ public abstract class AbstractLegacyRepositoryContent
 
     private String getDirectory( String classifier, String type )
     {
-        // Special Cases involving type + classifier
-        if ( "jar".equals( type ) && StringUtils.isNotBlank( classifier ) )
-        {
-            if ( "sources".equals( classifier ) )
-            {
-                return DIR_JAVA_SOURCE;
-            }
-
-            if ( "javadoc".equals( classifier ) )
-            {
-                return DIR_JAVADOC;
-            }
-        }
-
-        // Special Cases involving only type.
         String dirname = (String) typeToDirectoryMap.get( type );
 
         if ( dirname != null )

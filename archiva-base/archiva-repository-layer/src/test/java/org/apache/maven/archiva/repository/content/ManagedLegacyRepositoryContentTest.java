@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * ManagedLegacyRepositoryContentTest 
+ * ManagedLegacyRepositoryContentTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -49,8 +49,8 @@ public class ManagedLegacyRepositoryContentTest
     {
         assertVersions( "org.apache.maven", "testing", new String[] {
             "UNKNOWN",
-            "1.0-javadoc",
-            "1.0-sources",
+//            "1.0-javadoc",
+//            "1.0-sources",
             "1.0",
             "1.0-20050611.112233-1" } );
     }
@@ -59,8 +59,8 @@ public class ManagedLegacyRepositoryContentTest
         throws Exception
     {
         assertVersions( "org.apache.maven", "testing", "1.0", new String[] {
-            "1.0-javadoc",
-            "1.0-sources",
+//            "1.0-javadoc",
+//            "1.0-sources",
             "1.0",
             "1.0-20050611.112233-1" } );
     }
@@ -119,7 +119,7 @@ public class ManagedLegacyRepositoryContentTest
     public void testGetRelatedArtifacts()
         throws Exception
     {
-        ArtifactReference reference = createArtifact( "org.apache.maven", "testing", "1.0", "jar" );
+        ArtifactReference reference = createArtifact( "org.apache.maven", "testing", "1.0", null, "jar" );
 
         Set<ArtifactReference> related = repoContent.getRelatedArtifacts( reference );
         assertNotNull( related );
@@ -129,7 +129,7 @@ public class ManagedLegacyRepositoryContentTest
             "org.apache.maven/java-sources/testing-1.0-sources.jar",
             "org.apache.maven/jars/testing-1.0-20050611.112233-1.jar",
             "org.apache.maven/poms/testing-1.0.pom",
-            "org.apache.maven/javadocs/testing-1.0-javadoc.jar" };
+            "org.apache.maven/javadoc.jars/testing-1.0-javadoc.jar" };
 
         StringBuffer relatedDebugString = new StringBuffer();
         relatedDebugString.append( "[" );

@@ -157,6 +157,19 @@ public class LegacyPathParser
             }
         }
 
+        String classifier = ArtifactClassifierMapping.getClassifier( artifact.getType() );
+        if ( classifier != null )
+        {
+            String version = artifact.getVersion();
+            if ( ! version.endsWith( "-" + classifier ) )
+            {
+                throw new LayoutException( INVALID_ARTIFACT_PATH + expectedType + " artifacts must use the classifier " + classifier );
+            }
+            version = version.substring( 0, version.length() - classifier.length() - 1 );
+            artifact.setVersion( version );
+            artifact.setClassifier( classifier );
+        }
+
         return artifact;
     }
 }

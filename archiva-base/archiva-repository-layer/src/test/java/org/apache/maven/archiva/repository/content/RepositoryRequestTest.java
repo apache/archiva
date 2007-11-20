@@ -28,7 +28,7 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import java.io.File;
 
 /**
- * RepositoryRequestTest 
+ * RepositoryRequestTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -112,8 +112,8 @@ public class RepositoryRequestTest
     public void testValidLegacyCommonsLangJavadoc()
         throws Exception
     {
-        assertValid( "commons-lang/jars/commons-lang-2.1-javadoc.jar", "commons-lang", "commons-lang", "2.1-javadoc",
-                     null, "javadoc" );
+        assertValid( "commons-lang/javadoc.jars/commons-lang-2.1-javadoc.jar", "commons-lang", "commons-lang", "2.1",
+                     "javadoc", "javadoc" );
     }
 
     public void testValidDefaultCommonsLangJavadoc()
