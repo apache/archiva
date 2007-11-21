@@ -56,6 +56,12 @@
       <artifactId>archiva-plexus-application</artifactId>
       <type>plexus-application</type>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-docs</artifactId>
+      <type>zip</type>
+      <classifier>docs</classifier>
+    </dependency>
 
     <!-- Additional Core Artifacts -->
     <dependency>

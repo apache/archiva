@@ -319,6 +319,13 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-docs</artifactId>
+        <version>${pom.version}</version>
+        <type>zip</type>
+        <classifier>docs</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archiva</groupId>
         <artifactId>archiva-webapp</artifactId>
         <version>${pom.version}</version>
         <type>war</type>
