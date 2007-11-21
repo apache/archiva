@@ -11,7 +11,10 @@
       <div style="text-align: center">
         <img src="../images/tour/search.png" width="640" height="401" alt="" />
         <p>
-          ...
+          Browse the repository information, and present it in a user friendly way.
+          Maximize code reuse via a search / research tool to help find artifacts that might be of the most use for your immediate problem.
+          Identify unknown artifacts based on large database of known checksums for known artifacts.
+          <!-- TODO: improve -->
         </p>
         <p>
           <a href="project.html">Previous: Project Information</a> |

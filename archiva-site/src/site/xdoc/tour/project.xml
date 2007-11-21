@@ -11,7 +11,8 @@
       <div style="text-align: center">
         <img src="../images/tour/project.png" width="640" height="401" alt="" />
         <p>
-          ...
+          Reporting on artifact usage, to help identify those projects that are using your code.
+          <!-- TODO! -->
         </p>
         <p>
           <a href="index.html">Previous: Feature Tour</a> |

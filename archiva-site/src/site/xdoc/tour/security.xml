@@ -11,7 +11,8 @@
       <div style="text-align: center">
         <img src="../images/tour/security.png" width="640" height="401" alt="" />
         <p>
-          ...
+          Secure your repositories by user, by role, by repository, read vs write access controls.
+          <!-- TODO: improve -->
         </p>
         <p>
           <a href="admin.html">Previous: Graphical Administration</a> |
