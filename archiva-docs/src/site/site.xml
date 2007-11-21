@@ -71,7 +71,6 @@
 
     <!-- to be removed later, once content has been shifted to permanent home -->
     <menu name="Old Menu (deprecated)">
-      <item name="Getting Started" href="/guides/getting-started.html"/>
       <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
       <item name="Maven Configuration" href="/guides/maven-configuration.html"/>
       <item name="Security Configuration" href="/guides/security-configuration.html"/>
