@@ -11,8 +11,9 @@
       <div style="text-align: center">
         <img src="../images/tour/reports.png" width="640" height="401" alt="" />
         <p>
-          ...
-          <!-- TODO! -->
+          Archiva monitors the state of the managed repositories and keeps track of
+          potential problems to allow improvement of metadata and to assist in
+          troubleshooting problems.
         </p>
         <p>
           <a href="security.html">Previous: Role-based Security</a> |

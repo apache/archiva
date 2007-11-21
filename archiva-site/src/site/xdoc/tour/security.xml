@@ -11,8 +11,9 @@
       <div style="text-align: center">
         <img src="../images/tour/security.png" width="640" height="401" alt="" />
         <p>
-          Secure your repositories by user, by role, by repository, read vs write access controls.
-          <!-- TODO: improve -->
+          Archiva uses the Redback security framework to provide flexible role-based security controls for repositories.
+          You can use the graphical interface to maintain user accounts, as well as secure repositories for read and/or write
+          access for individuals, or given roles.
         </p>
         <p>
           <a href="admin.html">Previous: Graphical Administration</a> |

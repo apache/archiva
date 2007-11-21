@@ -11,10 +11,9 @@
       <div style="text-align: center">
         <img src="../images/tour/search.png" width="640" height="401" alt="" />
         <p>
-          Browse the repository information, and present it in a user friendly way.
-          Maximize code reuse via a search / research tool to help find artifacts that might be of the most use for your immediate problem.
-          Identify unknown artifacts based on large database of known checksums for known artifacts.
-          <!-- TODO: improve -->
+          Archiva has both a user-friendly browsing interface, and powerful search functionalities. The contents of all artifacts are indexed,
+          including Maven project information and Java class information to facilitate locating code within any repository.
+          By using the "Find Artifact" feature, you can identify unknown artifacts based on the database of known checksums for known artifacts.
         </p>
         <p>
           <a href="project.html">Previous: Project Information</a> |

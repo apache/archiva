@@ -11,8 +11,9 @@
       <div style="text-align: center">
         <img src="../images/tour/admin.png" width="640" height="401" alt="" />
         <p>
-          ...
-          <!-- TODO! -->
+          Archiva has a comprehensive web-based administration interface for configuring repositories,
+          remote proxies, scheduled jobs and more. The configuration is kept in sync with the XML
+          configuration files so that they can also be hand-edited if necessary.
         </p>
         <p>
           <a href="proxy.html">Previous: Remote Proxying Cache</a> |

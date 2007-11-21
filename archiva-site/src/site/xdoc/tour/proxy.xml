@@ -11,8 +11,9 @@
       <div style="text-align: center">
         <img src="../images/tour/proxy.png" width="640" height="401" alt="" />
         <p>
-          The ability to act as a nearby (proxy) cache of popular global repositories for better build performance.
-          <!-- TODO: improve description -->
+          Archiva can operate as a proxy for remote repositories, allowing you to improve build
+          performance by caching artifacts in a closer network location, and control artifact
+          usage through the use of white and black lists on proxy connectors.
         </p>
         <p>
           <a href="search.html">Previous: Artifact Search</a> |
