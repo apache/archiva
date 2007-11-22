@@ -28,8 +28,7 @@
 
 Understanding Repository Configuration of Apache Archiva
 
-~~NOTE TO MYSELF: Review this! and improve the format and the contents 
-~~  			  Some parts sounds confusing to me (or am i just tired?)
+~~TODO: revise more as suggested by Jeff in the dev list
 
   Archiva has two types of repository configuration: managed repository and remote repository. 
   
@@ -40,34 +39,39 @@ Understanding Repository Configuration of Apache Archiva
   
   Managed repository fields:  
   
-  1. identifier - the id of the repository. This must be unique.
+  * <identifier> - the id of the repository. This must be unique.
   
-  2. name - the name of the repository.
+  * <name> - the name of the repository.
   
-  3. directory - the location of the repository. If the path specified does not exist, Archiva will create the missing 
+  * <directory> - the location of the repository. If the path specified does not exist, Archiva will create the missing 
   	 directories.
   	
-  4. type - the repository layout (maven 2 or maven 1)
+  * <type> - the repository layout (maven 2 or maven 1)
   
-  5. cron - the cron schedule when repository scanning will be executed.
+  * <cron> - the cron schedule when repository scanning will be executed.
   
-  6. repository purge by days older - the first option for repository purge. Archiva will check how old the artifact is
+  * <repository purge by days older> - the first option for repository purge. Archiva will check how old the artifact is
   	 and if it is older than the set number of days in this field, then the artifact will be deleted respecting the retention
   	 count (see #7) of course. In order to disable the purge by number of days old and set Archiva to purge by retention count, just set the 
-  	 repository purge field to 0. The maximum number of days which can be set here is 1000.
+  	 repository purge field to 0. The maximum number of days which can be set here is 1000. See the Repository Purge section
+     below for more details. 
   	
-  7. repository purge by retention count - the second option for repository purge. When running the repository purge, Archiva
-  	 will retain only the number of artifacts set for this field for a specific snapshot version. 
+  * <repository purge by retention count> - the second option for repository purge. When running the repository purge, Archiva
+  	 will retain only the number of artifacts set for this field for a specific snapshot version. See the Repository Purge section
+     below for more details. 
   	
-  8. releases included - specifies whether there are released artifacts in the repository.
+  * <releases included> - specifies whether there are released artifacts in the repository.
   
-  9. snapshots included - specifies whether there are snapshot artifacts in the repository.
+  * <snapshots included> - specifies whether there are snapshot artifacts in the repository.
   
-  10. scannable - specifies whether the repository can be scanned.
+  * <scannable> - specifies whether the repository can be scanned, meaning it is a local repository which can be indexed, browsed,
+      purged, etc.
   
-  11. delete released snapshots - specifies whether to remove those snapshot artifacts which already has release versions
+  * <delete released snapshots> - specifies whether to remove those snapshot artifacts which already has release versions
   	  of it in the repository during repository purge. 
-
+  
+  []
+  
   Each repository has its own Webdav url. This allows the user to browse and access the repository via webdav. The url has the
   following format: 
  
@@ -75,15 +79,11 @@ Understanding Repository Configuration of Apache Archiva
 http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/archiva/repository/releases).
 +----+
 
-  Managed repositories can be explicitly scanned by clicking the 'Scan Repository Now' button in the repositories page. A pom 
-  snippet is also available for each repository. The \<distributionManagement\> section can be copied and pasted into a 
+  A pom snippet is also available for each repository. The \<distributionManagement\> section can be copied and pasted into a 
   project's pom to specify that the project will be deployed in that managed repository. The \<repositories\> section on the
   other hand, can be copied and pasted to a project's pom.xml or to Maven's settings.xml to tell Maven to get artifacts
   from the managed repository when building the project. 
   
-  For more details about the repository purge from numbers 6 and 7 above, please take a look at the Repository Purge section
-  below.
-
 * Remote Repository
 
   A remote repository is a repository which resides remotely. These repositories are usually the proxied repositories. See
@@ -91,17 +91,24 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 
   Remote repository fields:  
   
-  1. identifier - the id of the remote repository.
+  * <identifier> - the id of the remote repository.
   
-  2. name - the name of the remote repository.
+  * <name> - the name of the remote repository.
   
-  3. url - the url of the remote repository.
+  * <url> - the url of the remote repository.
   
-  4. username - the username (if authentication is needed) to be used to access the repository.
+  * <username> - the username (if authentication is needed) to be used to access the repository.
   
-  5. password - the password (if authentication is needed) to be used to access the repository.
+  * <password> - the password (if authentication is needed) to be used to access the repository.
   
-  6. type - the layout (maven 2 or maven 1) of the remote repository.  
+  * <type> - the layout (maven 2 or maven 1) of the remote repository.  
+  
+* Scanning a Repository
+ 
+  Repository scan can be executed on schedule or it can be explicitly executed by clicking the 'Scan Repository Now' button in 
+  the repositories page. For every artifact found by the repository scanner, processing is done on this artifact by different
+  consumers. Examples of the processing done are: indexing, repository purge and database update. Details about consumers are 
+  available in the Consumers page.
 
 * Repository Purge
 
@@ -124,7 +131,7 @@ Artifacts in the repository:
 ../artifact-x/2.0-SNAPSHOT/artifact-x-20070203.028902-4.pom
 +----+
   
-  1. Repository Purge By Days Older
+  [[1]] Repository Purge By Days Older
   
   Using this criteria for the purge, Archiva will check how old an artifact is and if it is older than the set value in the
   repository purge by days older field, then the artifact will be deleted respecting the retention count of course.
@@ -150,7 +157,7 @@ Artifacts in the repository:
   This ensures that there is ALWAYS 1 artifact timestamped version retained for every unique version snapshot directory 
   of an artifact. 	  	
 	  	
-  2. Repository Purge By Retention Count
+  [[2]] Repository Purge By Retention Count
     
   If the repository purge by retention count field is set to 2, then only the artifacts artifact-x-20070113.034619-3.jar,
   artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom will be retained 
