@@ -4,6 +4,11 @@
 
 Understanding Apache Archiva Security
 
-  :STUB: This is a documentation stub.
+  Archiva's security is managed by {{{http://redback.codehaus.org/} Redback}}. The following document describes how to configure your
+  repository security:
 
-  ~~TODO: walkthrough configuration
+    * {{{roles.html} Roles in Archiva}}
+
+    []
+
+  ~~TODO: LDAP
