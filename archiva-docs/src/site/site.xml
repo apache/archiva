@@ -68,7 +68,7 @@
     </menu>
 
     <menu name="Customising Archiva">
-      <item name="Writing a Consumer Plugin" href="/customising/writing-consumers.html" />
+      <item name="Writing a Consumer Plugin" href="/customising/writing-consumer.html" />
     </menu>
 
     <!-- to be removed later, once content has been shifted to permanent home -->
