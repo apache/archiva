@@ -4,5 +4,20 @@
 
 User Guide
 
-  :STUB: This is a documentation stub.
+  Welcome to the Archiva user's guide. Getting to know and use Archiva is very simple - please select one of the following documents to learn how to use
+  Archiva quickly.
+
+    * {{{browsing.html} Browsing Archiva repositories}}
+
+    * {{{searching.html} Searchin Archiva repositories}}
+
+    * {{{find-artifact.html} Identifying an unknown artifact by comparing the repository checksum database}}
+
+    * {{{using-repository.html} Using Archiva as a repository for Maven, Ivy, etc.}}
+
+    * {{{deploy.html} Deploying artifacts to the repository}}
+
+    []
+
+
 

@@ -5,6 +5,7 @@
 Installing Apache Archiva as a Web Application
 
 ~~TODO: link to wiki location for other application servers
+~~TODO: upgrading
 
 To deploy Archiva on Tomcat 5.5
 

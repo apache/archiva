@@ -6,6 +6,22 @@
 
 Release Notes for Archiva 1.0
 
-~~TODO: paste, instructions, etc?
+  The Apache Archiva team would like to announce the release of Archiva 1.0.
 
-  {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=12113&styleName=Text&projectId=10980} Release Notes from JIRA}}
+  Archiva 1.0 is {{{/download.html} available for download from the web site}}.
+
+  Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
+
+  If you have any questions, please consult:
+
+    * the web site: {{http://maven.apache.org/archiva/}}
+
+    * the archiva-user mailing list: {{http://maven.apache.org/archiva/mail-lists.html}}
+
+* Release Notes
+
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=12113&styleName=Text&projectId=10980} in JIRA}} and is reproduced below:
+
+~~TODO: paste
+
+

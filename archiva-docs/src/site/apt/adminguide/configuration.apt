@@ -4,5 +4,17 @@
 
 Runtime Configuration of Apache Archiva
 
-  :STUB: This is a documentation stub.
+  Archiva is primarily configured via the graphical administration interface.
+
+  The following describe the various sections of the administration menu:
+
+    * {{{repositories.html} Configuring repositories}}
+
+    * {{{proxy-connectors.html} Configuring proxy connectors}}
+
+    * {{{network-proxies.html} Configuring network proxies}}
+
+    * {{{consumers.html} Configuring repository scanning and consumers}}
+
+    []
 
