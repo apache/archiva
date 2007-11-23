@@ -29,7 +29,8 @@
 Installing Archiva
 
   The quickest way to install Archiva is to use the standalone distribution. This includes a bundled Jetty server, started using the Plexus Application Server.
-  For more information on advanced configuration of this instance, refer to the {{{adminguide/standalone.html} Administration Guide}}.
+  For more information on advanced configuration of this instance, refer to the {{{adminguide/standalone.html} Administration Guide}}. It is highly recommended
+  that if you intend to use this permanently that you use the base and installation separation described in that document.
 
   To get started right away, you can run the following after unpacking:
 
