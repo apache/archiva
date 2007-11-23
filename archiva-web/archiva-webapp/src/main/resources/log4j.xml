@@ -32,9 +32,13 @@
   <logger name="org.apache.maven">
     <level value="info"/>
   </logger>
-
+  
   <logger name="org.apache.maven.archiva">
     <level value="info" />
+  </logger>
+  
+  <logger name="org.apache.maven.archiva.repository.scanner">
+    <level value="debug" />
   </logger>
 
   <logger name="org.apache.archiva.AuditLog">
