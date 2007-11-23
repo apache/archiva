@@ -25,17 +25,17 @@
   <parent>
     <groupId>org.apache.maven.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>1</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <name>Archiva</name>
   <artifactId>archiva</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
+    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-1.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-1.0</developerConnection>
+    <url>https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-1.0</url>
   </scm>
 
   <!-- TODO: remove below when archiva parent in place -->
