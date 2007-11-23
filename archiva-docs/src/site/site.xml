@@ -70,12 +70,5 @@
     <menu name="Customising Archiva">
       <item name="Writing a Consumer Plugin" href="/customising/writing-consumer.html" />
     </menu>
-
-    <!-- to be removed later, once content has been shifted to permanent home -->
-    <menu name="Old Menu (deprecated)">
-      <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
-      <item name="Maven Configuration" href="/guides/maven-configuration.html"/>
-      <item name="Hacking Archiva" href="/hacking/index.html"/>
-    </menu>
   </body>
 </project>
