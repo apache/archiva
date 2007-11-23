@@ -7,13 +7,16 @@ Installing Apache Archiva as a Web Application
 ~~TODO: link to wiki location for other application servers
 ~~TODO: upgrading
 
+  Archiva can be deployed as a web application into any Java EE application server. This document will show an
+  example of doing so with Tomcat 5.5.
+
 To deploy Archiva on Tomcat 5.5
 
    * Create a directory in tomcat called archiva, at the same level as bin, conf, logs and the others.
 
-   * Copy the war file from apps/archiva/lib into the new directory
+   * Copy the war file into the new directory
 
-   * Create a conf/Catalina/localhost/archiva.xml file with the following data:
+   * Create a conf/Catalina/localhost/archiva.xml file with the following data (replace the database paths with a suitable location):
 
 +-------------------------------------------------------------------------+
  <?xml version="1.0" encoding="UTF-8"?>
@@ -24,13 +27,13 @@ To deploy Archiva on Tomcat 5.5
            username="sa"
            password=""
            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-           url="jdbc:derby:database/archiva;create=true" />
+           url="jdbc:derby:/path/to/database/archiva;create=true" />
 
  <Resource name="jdbc/archiva" auth="Container" type="javax.sql.DataSource"
            username="sa"
            password=""
            driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
-           url="jdbc:derby:database/archiva;create=true" />
+           url="jdbc:derby:/path/to/database/archiva;create=true" />
 
  <Resource name="mail/Session" auth="Container"
             type="javax.mail.Session"
@@ -43,10 +46,9 @@ To deploy Archiva on Tomcat 5.5
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
-   * Copy $HOME/.m2/org/apache/derby/derby/10.1.3.1/derby-10.1.3.1.jar (or from the remote repository) into the Tomcat
-   common/lib
+   * Install <<<derby-10.1.3.1.jar>>> into the Tomcat <<<common/lib>>>
 
-   * To deal with a current bug, you'll also need to add the following to your ${catalina.home}/conf/web.xml in the
+   * To deal with a current bug, you'll also need to add the following to your <<<${catalina.home}/conf/web.xml>>> in the
    relevant section (search for jspx):
 
 +-------------------------------------------------------------------------+
@@ -56,26 +58,24 @@ To deploy Archiva on Tomcat 5.5
   </servlet-mapping>
 +-------------------------------------------------------------------------+
 
- When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't appear to
+ When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't 
  cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but
  Tomcat fails to start the context and you have to shutdown and restart again.
 
-Updating Archiva within a Tomcat
+Archiva Configuration
 
-  While exploring Archiva, or perhaps while developing with it, you will want to delete the 
-  current state. Presuming you followed the instructions above, you will need to remove the 
-  following files from the ${catalina.home} directory. Ensure your Tomcat has first been 
-  shutdown.
+ Archiva is configured using the <<<~/.m2/archiva.xml>>> configuration file by default when using a Java EE application server. 
 
-+-------------------------------------------------------------------------+
-   # Remove the database
-   rm -r bin/database/ bin/derby.log
-   # Remove the archiva configuration
-   rm $HOME/.m2/archiva.xml
-   # Remove the temporary Tomcat files
-   rm webapps/archiva/ work/Catalina/localhost/archiva/ logs/*
-   # Remove the war file (if you're deploying a new one)
-   rm archiva/*.war
-+-------------------------------------------------------------------------+
+~~TODO: how to configure the other file
 
-~~TODO: what next? revise above too
+Upgrading Archiva
+
+  To upgrade the Archiva web application, simply replace the web application with an alternative. Since the database and configuration files are stored
+  externally to the application, no further maintainance is needed.
+
+  For general information about upgrading Archiva, see the relevant section in the {{{standalone.html#Upgrading%20Archiva} Installing standalone}} guide.
+
+Configuring and Running Archiva
+
+  Once Archiva is running, it is configured in the same way as the standalone instance. See the {{{../quick-start.html#Configuring%20and%20Running%20Archiva} quick start}} guide for more information.
+
