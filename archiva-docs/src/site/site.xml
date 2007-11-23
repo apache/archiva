@@ -52,6 +52,7 @@
       <item name="Databases"                 href="/adminguide/databases.html" />
       <item name="Security"                  href="/adminguide/security.html" collapse="true">
         <item name="Roles"                   href="/adminguide/roles.html" />
+        <item name="Customising"             href="/adminguide/customising-security.html" />
 <!-- TODO: for a future version
         <item name="Using LDAP"              href="/adminguide/ldap.html" />
 -->
@@ -74,7 +75,6 @@
     <menu name="Old Menu (deprecated)">
       <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
       <item name="Maven Configuration" href="/guides/maven-configuration.html"/>
-      <item name="Security Configuration" href="/guides/security-configuration.html"/>
       <item name="Hacking Archiva" href="/hacking/index.html"/>
     </menu>
   </body>

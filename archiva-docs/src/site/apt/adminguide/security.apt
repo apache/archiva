@@ -9,6 +9,8 @@ Understanding Apache Archiva Security
 
     * {{{roles.html} Roles in Archiva}}
 
+    * {{{customising-security.html} Customising Security}}
+
     []
 
   ~~TODO: LDAP
