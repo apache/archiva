@@ -6,7 +6,7 @@ Release Notes for Archiva 1.0
 
   The Apache Archiva team would like to announce the release of Archiva 1.0.
 
-  Archiva 1.0 is {{{/download.html} available for download from the web site}}.
+  Archiva 1.0 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 

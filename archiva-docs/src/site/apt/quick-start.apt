@@ -63,11 +63,11 @@ Installing Archiva
     * <<<snapshots>>> - a repository for storing deployed snapshots. This is not proxied to any remote repositories by default.
 
   In addition, the guest user has read access to these repositories, so you can make anonymous requests to either. To try this out, point a web browser at the following URL: 
-  {{{http://localhost:8080/archiva/repository/internal/junit/junit/3.8.1/junit-3.8.1.jar}}}. Though the artifact is not present locally, you will see in the Archiva logs that it is 
+  {{http://localhost:8080/archiva/repository/internal/junit/junit/3.8.1/junit-3.8.1.jar}}. Though the artifact is not present locally, you will see in the Archiva logs that it is 
   downloaded from the central repository, and then handed back to the browser and downloaded from Archiva. Future requests for the artifact will be much faster as they need not be
   downloaded from the central repository.
 
-  Once this artifact is downloaded, Archiva automatically indexes it, so you can access it's information at the following URL: {{{http://localhost:8080/archiva/browse/junit/junit/3.8.1/}}}.
+  Once this artifact is downloaded, Archiva automatically indexes it, so you can access it's information at the following URL: {{http://localhost:8080/archiva/browse/junit/junit/3.8.1/}}.
   It will also be available from the search interface.
 
 
