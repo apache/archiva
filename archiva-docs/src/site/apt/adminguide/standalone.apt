@@ -10,6 +10,26 @@ Installing Standalone Distribution of Apache Archiva
 ~~TODO: ensure to refer to advanced configuration options, such as PLEXUS_BASE
 ~~TODO: upgrading
 
+  Archiva's configuration is loaded from the following files, in order of most precedent:
+
+    * <<<~/.m2/archiva.xml>>>
+
+    * <<<$ARCHIVA_BASE/conf/archiva.xml>>>
+
+    * <<<$ARCHIVA_HOME/conf/archiva.xml>>>
+
+  When Archiva saves it's configuration, all configuration is stored to a single file. The file chosen is by the following rules:
+
+    * If <<<~/.m2/archiva.xml>>> exists, it is saved there
+
+    * Otherwise, it is saved to <<<$ARCHIVA_BASE/conf/archiva.xml>>>, regardless of whether it previously existed.
+
+  The configuration will never be saved in <<<$ARCHIVA_HOME>>>.
+
+  Note that the configuration can be edited, but only when Archiva is not running as it will not reload a changed configuration file, and will save over it
+  if something is changed in the web interface.
+
+
 {Upgrading Archiva}
 
    ...

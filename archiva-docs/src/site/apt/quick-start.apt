@@ -44,15 +44,12 @@ Installing Archiva
 
   Archiva is now running on <<<http://localhost:8080/archiva/>>>
 
-Setting up your Archiva instance
+{Setting up your Archiva instance}
 
   You can now browse the web administration of Archiva. There will be a few basic setup tasks to get started.
 
-   * On the first page - setup your administration user. The password requires a numerical character and must not be
-   longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
+  The first step is to setup your administration user. The password requires a numerical character and must not be
+  longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
 
-   * On the second page - setup your first repository. It can be both an m1 and an m2 repository.
-
-   * On the third page - setup your indexing. Mostly this means choosing a directory to put the index in. It'll
-   re-index every hour.
+~~TODO...
 

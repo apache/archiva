@@ -77,5 +77,5 @@ Upgrading Archiva
 
 Configuring and Running Archiva
 
-  Once Archiva is running, it is configured in the same way as the standalone instance. See the {{{../quick-start.html#Configuring%20and%20Running%20Archiva} quick start}} guide for more information.
+  Once Archiva is running, it is configured in the same way as the standalone instance. See the {{{../quick-start.html#Setting%20up%20your%20Archiva%20instance} quick start}} guide for more information.
 

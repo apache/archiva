@@ -75,7 +75,6 @@
       <item name="FAQ" href="http://docs.codehaus.org/display/MAVENUSER/Archiva+FAQ"/>
       <item name="Maven Configuration" href="/guides/maven-configuration.html"/>
       <item name="Security Configuration" href="/guides/security-configuration.html"/>
-      <item name="Other Configuration" href="/guides/configuration.html"/>
       <item name="Hacking Archiva" href="/hacking/index.html"/>
     </menu>
   </body>
