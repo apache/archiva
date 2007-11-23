@@ -4,7 +4,7 @@
 
 Installing Standalone Distribution of Apache Archiva
 
-  Installing the standalone distribution of Archiva is quite simple - for an example, see the {{{quick-start.html} Quick Start}} guide.
+  Installing the standalone distribution of Archiva is quite simple - for an example, see the {{{../quick-start.html} Quick Start}} guide.
 
   However, the best way to use this installation technique is to separate the configuration from the installation to make it easy to
   upgrade to newer versions in the future.
