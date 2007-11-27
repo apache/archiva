@@ -15,7 +15,7 @@ Archiva Security Configuration
 
  (In the above list, <<<~>>> is the home directory of the user who is running
  Archiva, and <<<$ARCHIVA_HOME>>> is the directory where Archiva is installed,
- such as <<</opt/archiva-1.0-SNAPSHOT>>>.)
+ such as <<</opt/archiva-1.0>>>.)
 
 ~~TODO: Link to plexus-redback documentation when available
 
