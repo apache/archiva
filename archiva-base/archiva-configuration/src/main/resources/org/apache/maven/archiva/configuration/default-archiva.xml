@@ -71,6 +71,13 @@
     </proxyConnector>
   </proxyConnectors>
 
+  <legacyArtifactPaths>
+    <legacyArtifactPath>
+        <path>jaxen/jars/jaxen-1.0-FCS-full.jar</path>
+        <artifact>jaxen:jaxen:1.0-FCS:full:jar</artifact>
+    </legacyArtifactPath>
+  </legacyArtifactPaths>
+
   <repositoryScanning>
     <fileTypes>
       <fileType>

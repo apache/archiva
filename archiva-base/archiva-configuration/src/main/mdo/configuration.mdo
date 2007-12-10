@@ -48,7 +48,7 @@
           </description>
           <name>repositories</name>
           <version>1.0.0</version>
-          <association java.generate-add="false" 
+          <association java.generate-add="false"
                        java.generate-remove="false"
                        java.generate-break="false"
                        java.generate-create="false">
@@ -106,6 +106,17 @@
           </description>
         </field>
         <field>
+          <name>legacyArtifactPaths</name>
+          <version>1.0.0+</version>
+          <association>
+            <type>LegacyArtifactPath</type>
+            <multiplicity>*</multiplicity>
+          </association>
+          <description>
+            The list of custom legacy path to artifact.
+          </description>
+        </field>
+        <field>
           <name>repositoryScanning</name>
           <version>1.0.0+</version>
           <association>
@@ -156,10 +167,10 @@
         }
         return map;
     }
-    
+
     public java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> getProxyConnectorAsMap()
     {
-        java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap = 
+        java.util.Map<String, java.util.List<ProxyConnectorConfiguration>> proxyConnectorMap =
             new java.util.HashMap<String, java.util.List<ProxyConnectorConfiguration>>();
 
         java.util.Iterator<ProxyConnectorConfiguration> it = proxyConnectors.iterator();
@@ -181,7 +192,7 @@
         }
 
         return proxyConnectorMap;
-    }    
+    }
 
     public java.util.Map<String, RemoteRepositoryConfiguration> getRemoteRepositoriesAsMap()
     {
@@ -247,7 +258,7 @@
       </codeSegments>
     </class>
 
-    <!-- 
+    <!--
      ____                      _ _
     |  _ \ ___ _ __   ___  ___(_) |_ ___  _ __ _   _
     | |_) / _ \ '_ \ / _ \/ __| | __/ _ \| '__| | | |
@@ -430,7 +441,58 @@
       </fields>
     </class>
 
-    <!-- 
+    <class>
+      <name>LegacyArtifactPath</name>
+      <version>1.0.0+</version>
+      <fields>
+        <field>
+          <name>path</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The legacy path.
+          </description>
+        </field>
+        <field>
+          <name>artifact</name>
+          <version>1.0.0+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The artifact reference, as " [groupId] : [artifactId] : [version] : [classifier] : [type] ".
+          </description>
+        </field>
+      </fields>
+      <codeSegments>
+        <codeSegment>
+          <version>1.0.0+</version>
+            <code><![CDATA[
+    public boolean match( String path )
+    {
+        return path.equals( this.path );
+    }
+
+    public org.apache.maven.archiva.model.ArtifactReference getArtifactReference()
+    {
+        org.apache.maven.archiva.model.ArtifactReference reference = new org.apache.maven.archiva.model.ArtifactReference();
+        String[] parts = artifact.split( ":" );
+        reference.setGroupId( parts[0] );
+        reference.setArtifactId( parts[1] );
+        reference.setVersion( parts[2] );
+        if ( parts[3].length() > 0 )
+        {
+            reference.setClassifier( parts[3] );
+        }
+        reference.setType( parts[4] );
+        return reference;
+    }
+       ]]></code>
+        </codeSegment>
+      </codeSegments>
+    </class>
+
+    <!--
       ____                            _
      / ___|___  _ __  _ __   ___  ___| |_ ___  _ __ ___
     | |   / _ \| '_ \| '_ \ / _ \/ __| __/ _ \| '__/ __|
@@ -519,7 +581,7 @@
           <code><![CDATA[
     /**
      * Obtain a specific policy from the underlying connector.
-     * 
+     *
      * @param policyId the policy id to fetch.
      * @param defaultValue the default value for the policy id.
      * @return the configured policy value (or default value if not found).
@@ -568,10 +630,10 @@
      * The order id for UNORDERED
      */
     public static final int UNORDERED = 0;
-    
+
     /**
      * The policy key {@link #getPolicies()} for snapshot handling.
-     * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy} 
+     * See {@link org.apache.maven.archiva.policies.SnapshotsPolicy}
      * for details on potential values to this policy key.
      */
     public static final String POLICY_SNAPSHOTS = "snapshots";
@@ -624,7 +686,7 @@
       </fields>
     </class>
 
-    <!-- 
+    <!--
      ____                _
     |  _ \ _ __ _____  _(_) ___  ___
     | |_) | '__/ _ \ \/ / |/ _ \/ __|
@@ -692,7 +754,7 @@
       </fields>
     </class>
 
-    <!-- 
+    <!--
      ____                        _
     / ___|  ___ __ _ _ __  _ __ (_)_ __   __ _
     \___ \ / __/ _` | '_ \| '_ \| | '_ \ / _` |
@@ -809,13 +871,13 @@
       </fields>
     </class>
 
-    <!--    
-    __        _______ ____    _    ____  ____  
-    \ \      / / ____| __ )  / \  |  _ \|  _ \ 
+    <!--
+    __        _______ ____    _    ____  ____
+    \ \      / / ____| __ )  / \  |  _ \|  _ \
      \ \ /\ / /|  _| |  _ \ / _ \ | |_) | |_) |
-      \ V  V / | |___| |_) / ___ \|  __/|  __/ 
-       \_/\_/  |_____|____/_/   \_\_|   |_|    
-                                               
+      \ V  V / | |___| |_) / ___ \|  __/|  __/
+       \_/\_/  |_____|____/_/   \_\_|   |_|
+
     -->
 
     <class>
