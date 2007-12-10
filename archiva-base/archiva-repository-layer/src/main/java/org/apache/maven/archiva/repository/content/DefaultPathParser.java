@@ -25,25 +25,22 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
- * DefaultPathParser is a parser for maven 2 (default layout) paths to ArtifactReference. 
+ * DefaultPathParser is a parser for maven 2 (default layout) paths to ArtifactReference.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.repository.content.DefaultPathParser"
+ *
+ * @plexus.component role="org.apache.maven.archiva.repository.content.PathParser" role-hint="default"
  */
-public class DefaultPathParser
+public class DefaultPathParser implements PathParser
 {
     private static final String INVALID_ARTIFACT_PATH = "Invalid path to Artifact: ";
 
     /**
-     * Convert a path to an ArtifactReference. 
-     * 
-     * @param path
-     * @return
-     * @throws LayoutException
+     * {@inheritDoc}
+     * @see org.apache.maven.archiva.repository.content.PathParser#toArtifactReference(java.lang.String)
      */
-    protected static ArtifactReference toArtifactReference( String path )
+    public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
         if ( StringUtils.isBlank( path ) )
@@ -148,7 +145,7 @@ public class DefaultPathParser
                 case '-':
                     // Definately a classifier.
                     artifact.setClassifier( parser.remaining() );
-                    
+
                     // Set the type.
                     artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
                     break;
@@ -162,9 +159,9 @@ public class DefaultPathParser
                     artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
                     break;
             }
-            
+
             // Special case for maven plugins
-            if ( StringUtils.equals( "jar", artifact.getType() ) && 
+            if ( StringUtils.equals( "jar", artifact.getType() ) &&
                  ArtifactExtensionMapping.isMavenPlugin( artifact.getArtifactId() ) )
             {
                 artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
@@ -201,5 +198,5 @@ public class DefaultPathParser
 
         return artifact;
     }
-    
+
 }

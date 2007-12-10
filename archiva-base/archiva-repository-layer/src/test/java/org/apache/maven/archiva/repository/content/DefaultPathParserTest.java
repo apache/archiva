@@ -6,7 +6,7 @@ import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
- * DefaultPathParserTest 
+ * DefaultPathParserTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -14,6 +14,8 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public class DefaultPathParserTest
     extends AbstractRepositoryLayerTestCase
 {
+    private PathParser parser = new DefaultPathParser();
+
     public void testBadPathMissingType()
     {
         assertBadPath( "invalid/invalid/1/invalid-1", "missing type" );
@@ -51,8 +53,8 @@ public class DefaultPathParserTest
                        "wrong artifact id" );
     }
 
-    /** 
-     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error 
+    /**
+     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
     public void testGoodButDualExtensions()
         throws LayoutException
@@ -66,11 +68,11 @@ public class DefaultPathParserTest
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
-    
-    /** 
+
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException
@@ -85,10 +87,10 @@ public class DefaultPathParserTest
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxComm()
         throws LayoutException
@@ -105,11 +107,11 @@ public class DefaultPathParserTest
 
     /**
      * Test the ejb-client type spec.
-     * Type specs are not a 1 to 1 map to the extension. 
+     * Type specs are not a 1 to 1 map to the extension.
      * This tests that effect.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
-    /* TODO: Re-enabled in the future. 
+    /* TODO: Re-enabled in the future.
     public void testGoodFooEjbClient()
         throws LayoutException
     {
@@ -124,10 +126,10 @@ public class DefaultPathParserTest
     }
     */
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecJavaxPersistence()
         throws LayoutException
@@ -139,11 +141,11 @@ public class DefaultPathParserTest
         String type = "jar";
         String path = "javax/persistence/ejb/3.0-public_review/ejb-3.0-public_review.jar";
 
-        /* 
+        /*
          * The version id of "public_review" can cause problems. is it part of
          * the version spec? or the classifier?
          * Since the path spec below shows it in the path, then it is really
-         * part of the version spec. 
+         * part of the version spec.
          */
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
@@ -225,7 +227,7 @@ public class DefaultPathParserTest
 
     /**
      * Test the classifier, and java-source type spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodFooLibSources()
         throws LayoutException
@@ -242,7 +244,7 @@ public class DefaultPathParserTest
 
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodSnapshotMavenTest()
         throws LayoutException
@@ -311,7 +313,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            DefaultPathParser.toArtifactReference( "" );
+            parser.toArtifactReference( "" );
             fail( "Should have failed due to empty path." );
         }
         catch ( LayoutException e )
@@ -324,7 +326,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            DefaultPathParser.toArtifactReference( null );
+            parser.toArtifactReference( null );
             fail( "Should have failed due to null path." );
         }
         catch ( LayoutException e )
@@ -337,7 +339,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            DefaultPathParser.toArtifactReference( "" );
+            parser.toArtifactReference( "" );
             fail( "Should have failed due to empty path." );
         }
         catch ( LayoutException e )
@@ -350,7 +352,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            DefaultPathParser.toArtifactReference( null );
+            parser.toArtifactReference( null );
             fail( "Should have failed due to null path." );
         }
         catch ( LayoutException e )
@@ -360,14 +362,14 @@ public class DefaultPathParserTest
     }
 
     /**
-     * Perform a path to artifact reference lookup, and verify the results. 
+     * Perform a path to artifact reference lookup, and verify the results.
      */
     private void assertLayout( String path, String groupId, String artifactId, String version, String classifier,
                                String type )
         throws LayoutException
     {
         // Path to Artifact Reference.
-        ArtifactReference testReference = DefaultPathParser.toArtifactReference( path );
+        ArtifactReference testReference = parser.toArtifactReference( path );
         assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
     }
 
@@ -393,7 +395,7 @@ public class DefaultPathParserTest
     {
         try
         {
-            DefaultPathParser.toArtifactReference( path );
+            parser.toArtifactReference( path );
             fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )

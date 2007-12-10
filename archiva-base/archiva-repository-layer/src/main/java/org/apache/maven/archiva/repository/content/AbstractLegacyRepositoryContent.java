@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * AbstractLegacyRepositoryContent 
+ * AbstractLegacyRepositoryContent
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -49,10 +49,15 @@ public abstract class AbstractLegacyRepositoryContent
         typeToDirectoryMap.put( "javadoc", "javadoc.jar" );
     }
 
+    /**
+     * @plexus.requirement role-hint="legacy"
+     */
+    private PathParser legacyPathParser;
+
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        return LegacyPathParser.toArtifactReference( path );
+        return legacyPathParser.toArtifactReference( path );
     }
 
     public String toPath( ArchivaArtifact reference )

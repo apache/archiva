@@ -19,23 +19,54 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
- * LegacyPathParser is a parser for maven 1 (legacy layout) paths to ArtifactReference. 
+ * LegacyPathParser is a parser for maven 1 (legacy layout) paths to
+ * ArtifactReference.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
+ * @plexus.component role="org.apache.maven.archiva.repository.content.PathParser"
+ * role-hint="legacy"
  */
 public class LegacyPathParser
+    implements PathParser
 {
     private static final String INVALID_ARTIFACT_PATH = "Invalid path to Artifact: ";
 
-    protected static ArtifactReference toArtifactReference( String path )
+    /**
+     * @plexus.requirement
+     */
+    protected ArchivaConfiguration configuration;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.apache.maven.archiva.repository.content.PathParser#toArtifactReference(java.lang.String)
+     */
+    public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
+        // First, look if a custom resolution rule has been set for this artifact
+        Collection legacy = configuration.getConfiguration().getLegacyArtifactPaths();
+        for ( Iterator iterator = legacy.iterator(); iterator.hasNext(); )
+        {
+            LegacyArtifactPath legacyPath = (LegacyArtifactPath) iterator.next();
+            if ( legacyPath.match( path ) )
+            {
+                return legacyPath.getArtifactReference();
+            }
+        }
+
         ArtifactReference artifact = new ArtifactReference();
 
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
@@ -54,8 +85,8 @@ public class LegacyPathParser
         {
             // Illegal Path Parts Length.
             throw new LayoutException( INVALID_ARTIFACT_PATH
-                + "legacy paths should only have 3 parts [groupId]/[type]s/[artifactId]-[version].[type], found "
-                + pathParts.length + " instead." );
+                    + "legacy paths should only have 3 parts [groupId]/[type]s/[artifactId]-[version].[type], found "
+                    + pathParts.length + " instead." );
         }
 
         // The Group ID.
@@ -68,7 +99,7 @@ public class LegacyPathParser
         if ( !expectedType.endsWith( "s" ) )
         {
             throw new LayoutException( INVALID_ARTIFACT_PATH
-                + "legacy paths should have an expected type ending in [s] in the second part of the path." );
+                    + "legacy paths should have an expected type ending in [s] in the second part of the path." );
         }
 
         // The Filename.
@@ -88,7 +119,7 @@ public class LegacyPathParser
                 parser.reset();
                 // Take the first section regardless of content.
                 String artifactId = parser.next();
-                
+
                 // Is there anything more that is considered not a version id?
                 String moreArtifactId = parser.nextNonVersion();
                 if ( StringUtils.isNotBlank( moreArtifactId ) )
@@ -129,7 +160,7 @@ public class LegacyPathParser
 
         // Set Type
         artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
-        
+
         // Sanity Check: does it have an extension?
         if ( StringUtils.isEmpty( artifact.getType() ) )
         {
@@ -145,10 +176,10 @@ public class LegacyPathParser
         {
             // Sanity Check: does extension match pathType on path?
             String trimPathType = expectedType.substring( 0, expectedType.length() - 1 );
-    
+
             String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
             String actualExtension = parser.getExtension();
-    
+
             if ( !expectedExtension.equals( actualExtension ) )
             {
                 throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + actualExtension

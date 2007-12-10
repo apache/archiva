@@ -28,7 +28,7 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
- * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout. 
+ * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -43,27 +43,32 @@ public abstract class AbstractDefaultRepositoryContent
 
     protected static final char ARTIFACT_SEPARATOR = '-';
 
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    private PathParser defaultPathParser;
+
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        return DefaultPathParser.toArtifactReference( path );
+        return defaultPathParser.toArtifactReference( path );
     }
 
     public String toMetadataPath( ProjectReference reference )
     {
         StringBuffer path = new StringBuffer();
-    
+
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
         path.append( MAVEN_METADATA );
-    
+
         return path.toString();
     }
 
     public String toMetadataPath( VersionedReference reference )
     {
         StringBuffer path = new StringBuffer();
-    
+
         path.append( formatAsDirectory( reference.getGroupId() ) ).append( PATH_SEPARATOR );
         path.append( reference.getArtifactId() ).append( PATH_SEPARATOR );
         if ( reference.getVersion() != null )
@@ -72,10 +77,10 @@ public abstract class AbstractDefaultRepositoryContent
             path.append( VersionUtil.getBaseVersion( reference.getVersion() ) ).append( PATH_SEPARATOR );
         }
         path.append( MAVEN_METADATA );
-    
+
         return path.toString();
     }
-    
+
     public String toPath( ArchivaArtifact reference )
     {
         if ( reference == null )

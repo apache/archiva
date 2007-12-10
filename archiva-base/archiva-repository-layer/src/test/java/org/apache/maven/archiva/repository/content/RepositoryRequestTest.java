@@ -130,7 +130,7 @@ public class RepositoryRequestTest
         // Starting slash should not prevent detection.
         assertValid( "/org.apache.derby/poms/derby-10.2.2.0.pom", "org.apache.derby", "derby", "10.2.2.0", null, "pom" );
     }
-    
+
     public void testValidDefaultDerbyPom()
         throws Exception
     {
@@ -214,7 +214,7 @@ public class RepositoryRequestTest
         assertTrue( repoRequest.isArtifact( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
         assertTrue( repoRequest.isArtifact( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
         assertTrue( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
-        
+
         assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.sha1" ) );
         assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.md5" ) );
         assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.asc" ) );
@@ -222,7 +222,7 @@ public class RepositoryRequestTest
         assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ) );
         assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/maven-metadata.xml" ) );
     }
-    
+
     public void testIsSupportFile()
     {
         assertTrue( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.sha1" ) );
@@ -231,7 +231,7 @@ public class RepositoryRequestTest
         assertTrue( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertTrue( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
         assertTrue( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.md5" ) );
-        
+
         assertFalse( repoRequest.isSupportFile( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
         assertFalse( repoRequest.isSupportFile( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
         assertFalse( repoRequest.isSupportFile( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
@@ -239,12 +239,12 @@ public class RepositoryRequestTest
         assertFalse( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ) );
         assertFalse( repoRequest.isSupportFile( "org/apache/derby/derby/maven-metadata.xml" ) );
     }
-    
+
     public void testIsMetadata()
     {
         assertTrue( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ));
         assertTrue( repoRequest.isMetadata( "org/apache/derby/derby/maven-metadata.xml" ));
-        
+
         assertFalse( repoRequest.isMetadata( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
         assertFalse( repoRequest.isMetadata( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
         assertFalse( repoRequest.isMetadata( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
@@ -252,49 +252,49 @@ public class RepositoryRequestTest
         assertFalse( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertFalse( repoRequest.isMetadata( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
     }
-    
+
     public void testIsDefault()
     {
         assertFalse( repoRequest.isDefault( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
         assertFalse( repoRequest.isDefault( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
         assertFalse( repoRequest.isDefault( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
-        
+
         assertTrue( repoRequest.isDefault( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
         assertTrue( repoRequest.isDefault( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
-        
+
         assertFalse( repoRequest.isDefault( null ) );
         assertFalse( repoRequest.isDefault( "" ) );
         assertFalse( repoRequest.isDefault( "foo" ) );
         assertFalse( repoRequest.isDefault( "some.short/path" ) );
     }
-    
+
     public void testIsLegacy()
     {
         assertTrue( repoRequest.isLegacy( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
         assertTrue( repoRequest.isLegacy( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
         assertTrue( repoRequest.isLegacy( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
-        
+
         assertFalse( repoRequest.isLegacy( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
         assertFalse( repoRequest.isLegacy( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
         assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
         assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
         assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
-        
+
         assertFalse( repoRequest.isLegacy( null ) );
         assertFalse( repoRequest.isLegacy( "" ) );
         assertFalse( repoRequest.isLegacy( "some.short/path" ) );
     }
-    
+
     private ManagedRepositoryContent createManagedRepo( String layout )
         throws Exception
     {
         File repoRoot = getTestFile( "target/test-repo" );
         return createManagedRepositoryContent( "test-internal", "Internal Test Repo", repoRoot, layout );
     }
-    
+
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
@@ -307,7 +307,7 @@ public class RepositoryRequestTest
         assertEquals( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip", repoRequest
             .toNativePath( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip", repository ) );
     }
-    
+
     /**
      * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
      */
@@ -321,7 +321,7 @@ public class RepositoryRequestTest
         assertEquals( "org/project/example-presentation/3.2.xml/example-presentation-3.2.xml.zip", repoRequest
             .toNativePath( "org.project/zips/example-presentation-3.2.xml.zip", repository ) );
     }
-    
+
     public void testToNativePathMetadataDefaultToDefault()
         throws Exception
     {
@@ -337,7 +337,7 @@ public class RepositoryRequestTest
     {
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
-        // Test (pom) legacy to default 
+        // Test (pom) legacy to default
         assertEquals( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", repoRequest
             .toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
     }
@@ -368,7 +368,7 @@ public class RepositoryRequestTest
             // expected path.
         }
     }
-    
+
     public void testNativePathBadRequestBlank()
         throws Exception
     {
@@ -385,7 +385,7 @@ public class RepositoryRequestTest
             // expected path.
         }
     }
-    
+
     public void testNativePathBadRequestNull()
         throws Exception
     {
@@ -402,7 +402,7 @@ public class RepositoryRequestTest
             // expected path.
         }
     }
-    
+
     public void testNativePathBadRequestUnknownType()
         throws Exception
     {
@@ -419,14 +419,14 @@ public class RepositoryRequestTest
             // expected path.
         }
     }
-    
+
     public void testToNativePathLegacyMetadataDefaultToLegacy()
         throws Exception
     {
         ManagedRepositoryContent repository = createManagedRepo( "legacy" );
 
         // Test (metadata) default to legacy
-        
+
         // Special Case: This direction is not supported, should throw a LayoutException.
         try
         {
@@ -438,7 +438,7 @@ public class RepositoryRequestTest
             // expected path.
         }
     }
-    
+
     public void testNativePathPomDefaultToLegacy()
         throws Exception
     {
@@ -448,13 +448,13 @@ public class RepositoryRequestTest
         assertEquals( "org.apache.derby/poms/derby-10.2.2.0.pom", repoRequest
             .toNativePath( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", repository ) );
     }
-    
+
     public void testNativePathSupportFileDefaultToLegacy()
         throws Exception
     {
         ManagedRepositoryContent repository = createManagedRepo( "legacy" );
 
-        // Test (supportfile) default to legacy 
+        // Test (supportfile) default to legacy
         assertEquals( "org.apache.derby/jars/derby-10.2.2.0.jar.sha1", repoRequest
             .toNativePath( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.jar.sha1", repository ) );
     }

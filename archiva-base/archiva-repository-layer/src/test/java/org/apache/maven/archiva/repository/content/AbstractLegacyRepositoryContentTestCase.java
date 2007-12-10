@@ -24,7 +24,7 @@ import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 
 /**
- * AbstractLegacyRepositoryContentTestCase 
+ * AbstractLegacyRepositoryContentTestCase
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -58,10 +58,10 @@ public abstract class AbstractLegacyRepositoryContentTestCase
         assertBadPath( "org.apache.maven.test/jars/artifactId-1.0.war", "wrong package extension" );
     }
 
-    /** 
+    /**
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
-     * @throws LayoutException 
+     * @throws LayoutException
      */
     public void testGoodButOddVersionSpecGanymedSsh2()
         throws LayoutException

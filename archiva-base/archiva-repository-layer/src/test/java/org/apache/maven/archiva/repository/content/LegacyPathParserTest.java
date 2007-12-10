@@ -20,6 +20,9 @@ package org.apache.maven.archiva.repository.content;
  */
 
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.DefaultArchivaConfiguration;
+import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.maven.archiva.repository.layout.LayoutException;
@@ -33,6 +36,26 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 public class LegacyPathParserTest
     extends AbstractRepositoryLayerTestCase
 {
+    private LegacyPathParser parser = new LegacyPathParser();
+
+    /**
+     * Configure the ArchivaConfiguration
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.PlexusTestCase#setUp()
+     */
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        ArchivaConfiguration config = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        LegacyArtifactPath jaxen = new LegacyArtifactPath();
+        jaxen.setPath( "jaxen/jars/jaxen-1.0-FCS-full.jar" );
+        jaxen.setArtifact( "jaxen:jaxen:1.0-FCS:full:jar" );
+        config.getConfiguration().addLegacyArtifactPath( jaxen );
+        parser.configuration = config;
+    }
+
+
     public void testBadPathArtifactIdMissingA()
     {
         assertBadPath( "groupId/jars/-1.0.jar", "artifactId is missing" );
@@ -339,21 +362,36 @@ public class LegacyPathParserTest
     }
 
     /**
+     * [MRM-594] add some hook in LegacyPathParser to allow exceptions in artifact resolution
+     */
+    public void testCustomExceptionsInArtifactResolution()
+        throws LayoutException
+    {
+        String groupId = "jaxen";
+        String artifactId = "jaxen";
+        String version = "1.0-FCS";
+        String type = "jar";
+        String classifier = "full";
+        String path = "jaxen/jars/jaxen-1.0-FCS-full.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
      * Perform a path to artifact reference lookup, and verify the results.
-     * @param classifier TODO
      */
     private void assertLayout( String path, String groupId, String artifactId, String version, String classifier, String type )
         throws LayoutException
     {
         // Path to Artifact Reference.
-        ArtifactReference testReference = LegacyPathParser.toArtifactReference( path );
+        ArtifactReference testReference = parser.toArtifactReference( path );
         assertArtifactReference( testReference, groupId, artifactId, version, classifier, type );
     }
 
     private void assertArtifactReference( ArtifactReference actualReference, String groupId, String artifactId,
                                           String version, String classifier, String type )
     {
-        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + type;
+        String expectedId = "ArtifactReference - " + groupId + ":" + artifactId + ":" + version + ":" + classifier + ":" + type;
 
         assertNotNull( expectedId + " - Should not be null.", actualReference );
 
@@ -368,7 +406,7 @@ public class LegacyPathParserTest
     {
         try
         {
-            LegacyPathParser.toArtifactReference( path );
+            parser.toArtifactReference( path );
             fail( "Should have thrown a LayoutException on the invalid path [" + path + "] because of [" + reason + "]" );
         }
         catch ( LayoutException e )

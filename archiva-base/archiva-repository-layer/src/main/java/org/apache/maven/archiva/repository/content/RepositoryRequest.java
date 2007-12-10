@@ -38,12 +38,12 @@ import java.util.List;
 
 /**
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
- * ArtifactReference.  
+ * ArtifactReference.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
+ *
+ * @plexus.component
  *      role="org.apache.maven.archiva.repository.content.RepositoryRequest"
  */
 public class RepositoryRequest
@@ -59,11 +59,21 @@ public class RepositoryRequest
      */
     private ArchivaConfiguration archivaConfiguration;
 
+    /**
+     * @plexus.requirement role-hint="default"
+     */
+    private PathParser defaultPathParser;
+
+    /**
+     * @plexus.requirement role-hint="legacy"
+     */
+    private PathParser legacyPathParser;
+
     private List<String> artifactPatterns;
 
     /**
      * Test path to see if it is an artifact being requested (or not).
-     * 
+     *
      * @param requestedPath the path to test.
      * @return true if it is an artifact being requested.
      */
@@ -91,10 +101,10 @@ public class RepositoryRequest
     /**
      * Takes an incoming requested path (in "/" format) and gleans the layout
      * and ArtifactReference appropriate for that content.
-     * 
+     *
      * @param requestedPath the relative path to the content.
      * @return the ArtifactReference for the requestedPath.
-     * @throws LayoutException if the request path is not layout valid. 
+     * @throws LayoutException if the request path is not layout valid.
      */
     public ArtifactReference toArtifactReference( String requestedPath )
         throws LayoutException
@@ -103,7 +113,7 @@ public class RepositoryRequest
         {
             throw new LayoutException( "Blank request path is not a valid." );
         }
-        
+
         String path = requestedPath;
         while ( path.startsWith( "/" ) )
         {
@@ -118,18 +128,18 @@ public class RepositoryRequest
 
         if ( isDefault( path ) )
         {
-            return DefaultPathParser.toArtifactReference( path );
+            return defaultPathParser.toArtifactReference( path );
         }
         else if ( isLegacy( path ) )
         {
-            return LegacyPathParser.toArtifactReference( path );
+            return legacyPathParser.toArtifactReference( path );
         }
         else
         {
             throw new LayoutException( "Not a valid request path layout, too short." );
         }
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a metadata request.
@@ -138,8 +148,8 @@ public class RepositoryRequest
      * NOTE: This does a cursory check on the path's last element.  A result of true
      * from this method is not a guarantee that the metadata is in a valid format, or
      * that it even contains data.
-     * </p> 
-     * 
+     * </p>
+     *
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely a metadata request.
      */
@@ -147,7 +157,7 @@ public class RepositoryRequest
     {
         return requestedPath.endsWith( "/" + MetadataTools.MAVEN_METADATA );
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a support file request.
@@ -159,8 +169,8 @@ public class RepositoryRequest
      * NOTE: This does a cursory check on the path's extension only.  A result of true
      * from this method is not a guarantee that the support resource is in a valid format, or
      * that it even contains data.
-     * </p> 
-     * 
+     * </p>
+     *
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely that of a support file request.
      */
@@ -175,7 +185,7 @@ public class RepositoryRequest
         String ext = requestedPath.substring( idx );
         return ( ".sha1".equals( ext ) || ".md5".equals( ext ) || ".asc".equals( ext ) || ".pgp".equals( ext ) );
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a default layout request.
@@ -183,10 +193,10 @@ public class RepositoryRequest
      * <p>
      * NOTE: This does a cursory check on the count of path elements only.  A result of
      * true from this method is not a guarantee that the path sections are valid and
-     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)} 
+     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)}
      * if you want a more complete analysis of the validity of the path.
      * </p>
-     * 
+     *
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely that of a default layout request.
      */
@@ -196,11 +206,11 @@ public class RepositoryRequest
         {
             return false;
         }
-        
+
         String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );
         return pathParts.length > 3;
     }
-    
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a legacy layout request.
@@ -208,10 +218,10 @@ public class RepositoryRequest
      * <p>
      * NOTE: This does a cursory check on the count of path elements only.  A result of
      * true from this method is not a guarantee that the path sections are valid and
-     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)} 
+     * can be resolved to an artifact reference.  use {@link #toArtifactReference(String)}
      * if you want a more complete analysis of the validity of the path.
      * </p>
-     * 
+     *
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely that of a legacy layout request.
      */
@@ -221,18 +231,18 @@ public class RepositoryRequest
         {
             return false;
         }
-        
+
         String pathParts[] = StringUtils.splitPreserveAllTokens( requestedPath, '/' );
         return pathParts.length == 3;
     }
-    
+
     /**
      * Adjust the requestedPath to conform to the native layout of the provided {@link ManagedRepositoryContent}.
-     * 
+     *
      * @param requestedPath the incoming requested path.
      * @param repository the repository to adjust to.
      * @return the adjusted (to native) path.
-     * @throws LayoutException if the path cannot be parsed. 
+     * @throws LayoutException if the path cannot be parsed.
      */
     public String toNativePath( String requestedPath, ManagedRepositoryContent repository ) throws LayoutException
     {
@@ -240,11 +250,11 @@ public class RepositoryRequest
         {
             throw new LayoutException( "Request Path is blank." );
         }
-        
+
         String referencedResource = requestedPath;
         // No checksum by default.
         String supportfile = "";
-        
+
         // Figure out support file, and actual referencedResource.
         if( isSupportFile( requestedPath ) )
         {
@@ -259,7 +269,7 @@ public class RepositoryRequest
             {
                 throw new LayoutException( "Cannot translate metadata request to legacy layout." );
             }
-            
+
             /* Nothing to translate.
              * Default layout is the only layout that can contain maven-metadata.xml files, and
              * if the managedRepository is layout legacy, this request would never occur.

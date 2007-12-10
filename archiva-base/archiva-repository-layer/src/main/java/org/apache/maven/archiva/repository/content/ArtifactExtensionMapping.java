@@ -37,7 +37,7 @@ public class ArtifactExtensionMapping
     public static final String MAVEN_ARCHETYPE = "maven-archetype";
 
     public static final String MAVEN_PLUGIN = "maven-plugin";
-    
+
     private static final Map<String, String> typeToExtensionMap;
 
     private static final Pattern mavenPluginPattern = Pattern.compile( "^(maven-.*-plugin)|(.*-maven-plugin)$" );
@@ -115,10 +115,10 @@ public class ArtifactExtensionMapping
             return normalizedName.substring( idx + 1 );
         }
     }
-    
+
     /**
      * Determine if a given artifact Id conforms to the naming scheme for a maven plugin.
-     * 
+     *
      * @param artifactId the artifactId to test.
      * @return true if this artifactId conforms to the naming scheme for a maven plugin.
      */
