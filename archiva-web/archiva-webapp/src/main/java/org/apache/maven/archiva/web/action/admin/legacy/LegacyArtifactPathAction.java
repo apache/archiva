@@ -41,6 +41,7 @@ import com.opensymphony.xwork.Preparable;
 /**
  * Shows the LegacyArtifactPath Tab for the administrator.
  *
+ * @since 1.1
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="legacyArtifactPathAction"
  */
 public class LegacyArtifactPathAction

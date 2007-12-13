@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 /**
  * ArtifactExtensionMapping
  *
+ * @since 1.1
  */
 public class ArtifactClassifierMapping
 {

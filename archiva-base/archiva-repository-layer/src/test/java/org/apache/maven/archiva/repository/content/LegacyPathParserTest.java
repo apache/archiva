@@ -363,6 +363,7 @@ public class LegacyPathParserTest
 
     /**
      * [MRM-594] add some hook in LegacyPathParser to allow exceptions in artifact resolution
+	 * @since 1.1
      */
     public void testCustomExceptionsInArtifactResolution()
         throws LayoutException

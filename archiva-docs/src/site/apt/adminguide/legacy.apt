@@ -18,7 +18,7 @@ Apache Archiva legacy support configuration
   repository, but users may require support for private artifact or for 
   artifacts with classifiers.
   
-  Archiva provides a legacy support configuration to the administrator. It
+  Since version 1.1, archiva provides a legacy support configuration to the administrator. It
   is possible to register some custom legacy path and the expected artifact 
   reference. Archiva will check that the entered artifact reference match
   the legacy path, to avoid corrupted datas in repository :

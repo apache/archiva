@@ -32,6 +32,7 @@ import org.codehaus.plexus.xwork.action.PlexusActionSupport;
  * Delete a LegacyArtifactPath to archiva configuration
  *
  *
+ * @since 1.1
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="deleteLegacyArtifactPathAction"
  */
 public class DeleteLegacyArtifactPathAction

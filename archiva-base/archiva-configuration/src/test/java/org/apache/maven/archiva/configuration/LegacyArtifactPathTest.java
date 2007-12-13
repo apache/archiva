@@ -25,6 +25,7 @@ import org.apache.maven.archiva.model.ArtifactReference;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.
+ * @since 1.1
  */
 public class LegacyArtifactPathTest
     extends TestCase

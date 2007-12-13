@@ -34,7 +34,7 @@ import com.opensymphony.xwork.Preparable;
 /**
  * Add a LegacyArtifactPath to archiva configuration
  *
- *
+ * @since 1.1
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="addLegacyArtifactPathAction"
  */
 public class AddLegacyArtifactPathAction
