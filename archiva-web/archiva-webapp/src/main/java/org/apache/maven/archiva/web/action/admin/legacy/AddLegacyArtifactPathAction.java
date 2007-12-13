@@ -23,10 +23,12 @@ import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
+import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
 
+import com.opensymphony.webwork.components.ActionError;
 import com.opensymphony.xwork.Preparable;
 
 /**
