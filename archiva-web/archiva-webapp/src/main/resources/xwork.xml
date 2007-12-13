@@ -82,7 +82,7 @@
 
     <global-results>
       <!-- The following security-* result names arrive from the plexus-security package -->
-      
+
       <result name="security-login-success" type="redirect-action">index</result>
       <result name="security-login-cancel" type="redirect-action">index</result>
       <result name="security-login-locked" type="redirect-action">
@@ -303,13 +303,13 @@
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="sortDownProxyConnector" class="sortProxyConnectorsAction" method="sortDown">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
-    
+
     <action name="deleteProxyConnector" class="deleteProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteProxyConnector.jsp</result>
       <result name="success" type="redirect-action">proxyConnectors</result>
@@ -399,6 +399,30 @@
         <param name="namespace">/admin</param>
       </result>
     </action>
+
+    <!-- .\ LEGACY SUPPORT \.__________________________________________ -->
+
+    <action name="legacyArtifactPath" class="legacyArtifactPathAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
+      <result name="success" type="redirect-action">
+        <param name="actionName">legacyArtifactPath</param>
+      </result>
+    </action>
+
+    <action name="addLegacyArtifactPath" class="addLegacyArtifactPathAction" method="input">
+      <result name="input">/WEB-INF/jsp/admin/addLegacyArtifactPath.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/addLegacyArtifactPath.jsp</result>
+      <result name="success" type="redirect-action">legacyArtifactPath</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="deleteLegacyArtifactPath" class="deleteLegacyArtifactPathAction" method="delete">
+      <result name="input">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
+      <result name="success" type="redirect-action">legacyArtifactPath</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
   </package>
 
   <package name="report" namespace="/report" extends="base">
