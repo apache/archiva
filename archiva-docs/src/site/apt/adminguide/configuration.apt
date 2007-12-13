@@ -14,6 +14,8 @@ Runtime Configuration of Apache Archiva
 
     * {{{network-proxies.html} Configuring network proxies}}
 
+    * {{{legacy.html} Configuring legacy (maven 1) support}}
+
     * {{{consumers.html} Configuring repository scanning and consumers}}
 
     []

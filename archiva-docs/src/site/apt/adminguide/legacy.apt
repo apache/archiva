@@ -1,0 +1,32 @@
+ ------
+ Apache Archiva legacy support configuration
+ ------
+
+Apache Archiva legacy support configuration
+
+  Archiva supports both maven 1 and maven 2 clients when used as a proxy. The
+  underlying managed repository can use default or legacy layout, archiva will
+  convert the request path to the expected internal format.
+  
+* path to artifact conversion
+  
+  Due to the lack of structure in maven 1 "legacy" artifact request format, 
+  archiva must split the request path to discover artifactId, version and 
+  classifier. There is no fully deterministis way to extract the artifactId
+  and version, and classifiers are simply unsupported. The strategy used
+  by archiva has been tested on many existing artifacts in the public central
+  repository, but users may require support for private artifact or for 
+  artifacts with classifiers.
+  
+  Archiva provides a legacy support configuration to the administrator. It
+  is possible to register some custom legacy path and the expected artifact 
+  reference. Archiva will check that the entered artifact reference match
+  the legacy path, to avoid corrupted datas in repository :
+  
+  path -> custom artifact reference -> path MUST equals
+  
+  Those custom legacy path are stored in the archiva.xml configuration file.
+  By default, jaxen-1.0-FCS-full is registered, as it is used by some core
+  maven 1 plugins.
+  
+
