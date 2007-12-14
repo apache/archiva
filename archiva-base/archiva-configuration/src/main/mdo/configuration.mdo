@@ -47,7 +47,7 @@
  @deprecated use managedRepositories or remoteRepositories instead.
           </description>
           <name>repositories</name>
-          <version>1.0.0</version>
+          <version>1.0.0+</version>
           <association java.generate-add="false"
                        java.generate-remove="false"
                        java.generate-break="false"
@@ -420,7 +420,7 @@
     </class>
     <class>
       <name>V1RepositoryConfiguration</name>
-      <version>1.0.0</version>
+      <version>1.0.0+</version>
       <superClass>ManagedRepositoryConfiguration</superClass>
       <fields>
         <field>
