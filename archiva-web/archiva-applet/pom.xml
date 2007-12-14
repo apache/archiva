@@ -34,11 +34,32 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>keytool-maven-plugin</artifactId>
+        <version>1.0-beta-1</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>clean</goal>
+              <goal>genkey</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+           <keystore>target/keystore</keystore>
+           <dname>cn=Brett Porter, ou=Archiva, L=Sydney, ST=NSW, o=Apache Software Foundation, c=AU</dname>
+           <keypass>password</keypass>
+           <storepass>password</storepass>
+           <validity>10000</validity>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>2.1</version>
         <configuration>
-          <keystore>src/keystore/keystore</keystore>
+          <keystore>target/keystore</keystore>
           <alias>mykey</alias>
           <storepass>password</storepass>
           <keypass>password</keypass>
