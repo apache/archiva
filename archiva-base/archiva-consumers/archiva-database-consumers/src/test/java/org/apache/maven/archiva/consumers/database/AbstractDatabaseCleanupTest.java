@@ -34,7 +34,7 @@ import java.io.File;
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
-public class AbstractDatabaseCleanupTest
+public abstract class AbstractDatabaseCleanupTest
     extends PlexusTestCase
 {
     ArchivaConfiguration archivaConfig;

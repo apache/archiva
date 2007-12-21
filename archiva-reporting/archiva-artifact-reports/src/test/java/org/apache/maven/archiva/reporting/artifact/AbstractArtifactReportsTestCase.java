@@ -40,7 +40,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractArtifactReportsTestCase
+public abstract class AbstractArtifactReportsTestCase
     extends PlexusTestCase
 {
     protected ArchivaDAO dao;
