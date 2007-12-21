@@ -48,7 +48,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
-public class AbstractArchivaDatabaseTestCase
+public abstract class AbstractArchivaDatabaseTestCase
     extends PlexusTestCase
 {
     private static final String TIMESTAMP = "yyyy/MM/dd HH:mm:ss";
