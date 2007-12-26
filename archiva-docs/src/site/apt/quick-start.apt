@@ -50,7 +50,7 @@ Installing Archiva
   You can now browse the web administration of Archiva. There will be a few basic setup tasks to get started.
 
   The first step is to setup your administration user. The password requires a numerical character and must not be
-  longer than 8 chars. You'll then need to log in. User 'admin' as the username and the password you've entered.
+  longer than 8 chars. You'll then need to log in. Use 'admin' as the username and the password you've entered.
 
   At this point, Archiva is fully functional - you can use it with the default repositories and guest user. You might like
   to explore the user and administrator guides to find other functionality.
