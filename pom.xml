@@ -705,6 +705,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <configLocation>config/maven_checks.xml</configLocation>
         </configuration>
