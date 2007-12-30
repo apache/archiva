@@ -45,27 +45,34 @@
   </issueManagement>
   <mailingLists>
     <mailingList>
-      <name>Maven Archiva User List</name>
+      <name>Archiva User List</name>
       <subscribe>archiva-users-subscribe@maven.apache.org</subscribe>
       <unsubscribe>archiva-users-unsubscribe@maven.apache.org</unsubscribe>
       <post>archiva-users@maven.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-users</archive>
     </mailingList>
     <mailingList>
-      <name>Maven Archiva Developer List</name>
+      <name>Archiva Development List</name>
       <subscribe>archiva-dev-subscribe@maven.apache.org</subscribe>
       <unsubscribe>archiva-dev-unsubscribe@maven.apache.org</unsubscribe>
       <post>archiva-dev@maven.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-dev</archive>
     </mailingList>
     <mailingList>
-      <name>Maven Archiva Commits List</name>
+      <name>Archiva Commits List</name>
       <subscribe>archiva-commits-subscribe@maven.apache.org</subscribe>
       <unsubscribe>archiva-commits-unsubscribe@maven.apache.org</unsubscribe>
       <post>archiva-commits@maven.apache.org</post>
       <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-commits</archive>
     </mailingList>
-  </mailingLists>
+    <mailingList>
+      <name>Archiva Issues List</name>
+      <subscribe>archiva-issues-subscribe@maven.apache.org</subscribe>
+      <unsubscribe>archiva-issues-unsubscribe@maven.apache.org</unsubscribe>
+      <post>archiva-issues@maven.apache.org</post>
+      <archive>http://mail-archives.apache.org/mod_mbox/maven-archiva-issues</archive>
+    </mailingList>
+   </mailingLists>
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/parent</connection>
     <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/parent</developerConnection>
