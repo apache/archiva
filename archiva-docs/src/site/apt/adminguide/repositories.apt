@@ -48,7 +48,7 @@ Understanding Repository Configuration of Apache Archiva
   	
   * <type> - the repository layout (maven 2 or maven 1)
   
-  * <cron> - the cron schedule when repository scanning will be executed.
+  * <cron> - the {{{http://quartz.sourceforge.net/javadoc/org/quartz/CronTrigger.html}cron schedule}} when repository scanning will be executed.
   
   * <repository purge by days older> - the first option for repository purge. Archiva will check how old the artifact is
   	 and if it is older than the set number of days in this field, then the artifact will be deleted respecting the retention
