@@ -95,7 +95,7 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
   
   * <name> - the name of the remote repository.
   
-  * <url> - the url of the remote repository.
+  * <url> - the url of the remote repository. It is also possible to use a 'file://' url to proxy a local repository. Be careful that if this local repository is a managed repository of archiva which has some proxies connectors, those ones won't be triggered. 
   
   * <username> - the username (if authentication is needed) to be used to access the repository.
   
