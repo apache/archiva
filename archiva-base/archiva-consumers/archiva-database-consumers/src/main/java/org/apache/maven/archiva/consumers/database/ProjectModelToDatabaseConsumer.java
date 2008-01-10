@@ -166,7 +166,7 @@ public class ProjectModelToDatabaseConsumer
 
             if ( isValidModel( model, repo, artifact ) )
             {
-                getLogger().info( "Adding project model to database - " + Keys.toKey( model ) );                
+                getLogger().debug( "Adding project model to database - " + Keys.toKey( model ) );                
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else

@@ -188,7 +188,7 @@ public class MetadataUpdaterConsumer
             }
 
             metadataTools.updateMetadata( this.repository, projectRef );
-            getLogger().info( "Updated metadata: " + this.metadataTools.toPath( projectRef ) );
+            getLogger().debug( "Updated metadata: " + this.metadataTools.toPath( projectRef ) );
         }
         catch ( LayoutException e )
         {
@@ -234,7 +234,7 @@ public class MetadataUpdaterConsumer
             }
 
             metadataTools.updateMetadata( this.repository, versionRef );
-            getLogger().info( "Updated metadata: " + this.metadataTools.toPath( versionRef ) );
+            getLogger().debug( "Updated metadata: " + this.metadataTools.toPath( versionRef ) );
         }
         catch ( LayoutException e )
         {

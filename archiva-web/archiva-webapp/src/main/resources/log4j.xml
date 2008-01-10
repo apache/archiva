@@ -38,7 +38,7 @@
   </logger>
   
   <logger name="org.apache.maven.archiva.repository.scanner">
-    <level value="debug" />
+    <level value="info" />
   </logger>
 
   <logger name="org.apache.archiva.AuditLog">
