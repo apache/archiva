@@ -2,8 +2,6 @@ package org.apache.maven.archiva.configuration;
 
 import junit.framework.TestCase;
 
-import org.apache.maven.archiva.model.ArtifactReference;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -37,12 +35,11 @@ public class LegacyArtifactPathTest
     {
         legacyArtifactPath.setArtifact( "groupId:artifactId:version:classifier:type" );
 
-        ArtifactReference artifact = legacyArtifactPath.getArtifactReference();
-        assertEquals( "groupId", artifact.getGroupId() );
-        assertEquals( "artifactId", artifact.getArtifactId() );
-        assertEquals( "version", artifact.getVersion() );
-        assertEquals( "classifier", artifact.getClassifier() );
-        assertEquals( "type", artifact.getType() );
+        assertEquals( "groupId", legacyArtifactPath.getGroupId() );
+        assertEquals( "artifactId", legacyArtifactPath.getArtifactId() );
+        assertEquals( "version", legacyArtifactPath.getVersion() );
+        assertEquals( "classifier", legacyArtifactPath.getClassifier() );
+        assertEquals( "type", legacyArtifactPath.getType() );
     }
 
 
@@ -50,11 +47,10 @@ public class LegacyArtifactPathTest
     {
         legacyArtifactPath.setArtifact( "groupId:artifactId:version::type" );
 
-        ArtifactReference artifact = legacyArtifactPath.getArtifactReference();
-        assertEquals( "groupId", artifact.getGroupId() );
-        assertEquals( "artifactId", artifact.getArtifactId() );
-        assertEquals( "version", artifact.getVersion() );
-        assertEquals( null, artifact.getClassifier() );
-        assertEquals( "type", artifact.getType() );
+        assertEquals( "groupId", legacyArtifactPath.getGroupId() );
+        assertEquals( "artifactId", legacyArtifactPath.getArtifactId() );
+        assertEquals( "version", legacyArtifactPath.getVersion() );
+        assertNull( legacyArtifactPath.getClassifier() );
+        assertEquals( "type", legacyArtifactPath.getType() );
     }
 }

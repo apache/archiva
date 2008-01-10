@@ -37,10 +37,6 @@
       <artifactId>archiva-policies</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.archiva</groupId>
-      <artifactId>archiva-model</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-api</artifactId>
     </dependency>

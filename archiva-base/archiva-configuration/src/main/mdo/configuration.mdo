@@ -473,19 +473,30 @@
         return path.equals( this.path );
     }
 
-    public org.apache.maven.archiva.model.ArtifactReference getArtifactReference()
+    public String getGroupId()
     {
-        org.apache.maven.archiva.model.ArtifactReference reference = new org.apache.maven.archiva.model.ArtifactReference();
-        String[] parts = artifact.split( ":" );
-        reference.setGroupId( parts[0] );
-        reference.setArtifactId( parts[1] );
-        reference.setVersion( parts[2] );
-        if ( parts[3].length() > 0 )
-        {
-            reference.setClassifier( parts[3] );
-        }
-        reference.setType( parts[4] );
-        return reference;
+        return artifact.split( ":" )[0];
+	}
+
+    public String getArtifactId()
+    {
+        return artifact.split( ":" )[1];
+	}
+        
+    public String getVersion()
+    {
+        return artifact.split( ":" )[2];
+	}
+    
+    public String getClassifier()
+    {
+		String classifier = artifact.split( ":" )[3];
+        return classifier.length() > 0 ? classifier : null;
+	}
+    
+    public String getType()
+    {
+        return artifact.split( ":" )[4];
     }
        ]]></code>
         </codeSegment>

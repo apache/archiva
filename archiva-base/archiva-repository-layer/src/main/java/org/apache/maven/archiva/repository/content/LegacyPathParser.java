@@ -56,18 +56,23 @@ public class LegacyPathParser
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
+        ArtifactReference artifact = new ArtifactReference();
+
         // First, look if a custom resolution rule has been set for this artifact
         Collection legacy = configuration.getConfiguration().getLegacyArtifactPaths();
         for ( Iterator iterator = legacy.iterator(); iterator.hasNext(); )
         {
             LegacyArtifactPath legacyPath = (LegacyArtifactPath) iterator.next();
             if ( legacyPath.match( path ) )
-            {
-                return legacyPath.getArtifactReference();
+            {			
+			    artifact.setGroupId( legacyPath.getGroupId() );
+			    artifact.setArtifactId( legacyPath.getArtifactId() );
+			    artifact.setClassifier( legacyPath.getClassifier() );
+			    artifact.setVersion( legacyPath.getVersion() );
+			    artifact.setType( legacyPath.getType() );
+                return artifact;
             }
         }
-
-        ArtifactReference artifact = new ArtifactReference();
 
         String normalizedPath = StringUtils.replace( path, "\\", "/" );
 
