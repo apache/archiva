@@ -524,11 +524,6 @@ public class DefaultRepositoryProxyConnectors
             getLogger().info( emsg );
             return null;
         }
-	
-		if ( urlFailureCache.hasFailedBefore( url ) )
-		{
-			throw new NotFoundException( "Url has failed before and cache-failure is enabled on this connector" );
-		}
 			
         Wagon wagon = null;
         try
@@ -552,10 +547,7 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( NotFoundException e )
         {
-			// public repositories may be slow to access, and many request will fail when 
-			// muliple repositories are "merged" by archiva via proxies.
-			// so caching "not found" is usefull here to enhance archiva response-time
-            urlFailureCache.cacheFailure( url );			
+            // Do not cache url here.
             throw e;
         }
         catch ( NotModifiedException e )
