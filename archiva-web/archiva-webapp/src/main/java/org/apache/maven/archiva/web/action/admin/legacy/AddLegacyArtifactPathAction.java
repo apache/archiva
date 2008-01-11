@@ -67,7 +67,14 @@ public class AddLegacyArtifactPathAction
 
     public String commit()
     {
-        ArtifactReference artifact = this.legacyArtifactPath.getArtifactReference();
+        ArtifactReference artifact = new ArtifactReference();
+		
+		artifact.setGroupId( this.legacyArtifactPath.getGroupId() );
+		artifact.setArtifactId( this.legacyArtifactPath.getArtifactId() );
+		artifact.setClassifier( this.legacyArtifactPath.getClassifier() );
+		artifact.setVersion( this.legacyArtifactPath.getVersion() );
+		artifact.setType( this.legacyArtifactPath.getType() );
+		
         String path = repositoryContent.toPath( artifact );
         if ( ! path.equals( this.legacyArtifactPath.getPath() ) )
         {
