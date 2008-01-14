@@ -61,6 +61,7 @@
         <item name="Repositories"            href="/adminguide/repositories.html" />
         <item name="Proxy Connectors"        href="/adminguide/proxy-connectors.html" />
         <item name="Network Proxies"         href="/adminguide/network-proxies.html" />
+        <item name="Legacy (Maven 1) Support"         href="/adminguide/legacy.html" />        
         <item name="Consumers"               href="/adminguide/consumers.html" />
       </item>
       <item name="Configuration Files"       href="/adminguide/configuration-files.html" />

@@ -108,7 +108,7 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
   Repository scan can be executed on schedule or it can be explicitly executed by clicking the 'Scan Repository Now' button in 
   the repositories page. For every artifact found by the repository scanner, processing is done on this artifact by different
   consumers. Examples of the processing done are: indexing, repository purge and database update. Details about consumers are 
-  available in the Consumers page.
+  available in the {{{consumers.html} Consumers}} page.
 
 * Repository Purge
 
@@ -163,4 +163,13 @@ Artifacts in the repository:
   artifact-x-20070113.034619-3.pom, artifact-x-20070203.028902-4.jar and artifact-x-20070203.028902-4.pom will be retained 
   in the repository. The oldest snapshots will be deleted maintaining only a number of snapshots equivalent to the set 
   retention count. 
-	  	
+
+* Scanning a Database
+
+  Another scanning process also occurs in Archiva, the database scanning. Same as with repository scanning,
+  it can also be executed on schedule or explicitly. This can be configured in the 'Database' page, via the 'Database -
+  Unprocessed Artifacts Scanning' section.
+
+  It is essential that the database scan occur after the repo scan as this is where the pom information of the artifacts in
+  the database will be processed by the consumers and in turn, added to the database (as ArchivaProjectModel objects). For
+  more details about the different database consumers, please see the {{{consumers.html} Consumers}} page.
