@@ -31,7 +31,7 @@
   <artifactId>archiva-parent</artifactId>
   <packaging>pom</packaging>
   <name>Archiva Common Parent Project</name>
-  <version>2</version>
+  <version>3-SNAPSHOT</version>
   <inceptionYear>2006</inceptionYear>
   <url>http://maven.apache.org/archiva/</url>
   <description>
@@ -74,9 +74,9 @@
     </mailingList>
    </mailingLists>
   <scm>
-    <connection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-2</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-2</developerConnection>
-    <url>https://svn.apache.org/repos/asf/maven/archiva/tags/archiva-parent-2</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/parent</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/parent</url>
   </scm>
   <properties>
     <siteBaseDeployment>scp://people.apache.org/www/maven.apache.org/archiva</siteBaseDeployment>
