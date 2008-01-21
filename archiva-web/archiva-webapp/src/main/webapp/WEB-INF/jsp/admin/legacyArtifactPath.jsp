@@ -30,7 +30,7 @@
 
 <body>
 
-<h1>Administration - Legacy artifacts path resolution</h1>
+<h1>Administration - Legacy Artifact Path Resolution</h1>
 
 <div id="contentArea">
 
@@ -47,15 +47,15 @@
     </ww:a>
   </redback:ifAuthorized>
 </div>
-<h2>Legacy artifacts path resolution</h2>
+<h2>Path Mappings</h2>
 
 <c:choose>
 <c:when test="${empty(legacyArtifactPaths)}">
-  <%-- No Managed Repositories. --%>
-  <strong>There are no legacy artifact path configured yet.</strong>
+  <%-- No paths. --%>
+  <p><strong>There are no legacy artifact paths configured yet.</strong></p>
 </c:when>
 <c:otherwise>
-<%-- Display the repositories. --%>
+  <%-- Display the paths. --%>
 
 <c:forEach items="${legacyArtifactPaths}" var="legacyArtifactPath" varStatus="i">
 <c:choose>
@@ -80,10 +80,6 @@
       Delete
     </ww:a>
   </redback:ifAnyAuthorized>
-</div>
-
-<div style="float: left">
-  <img src="<c:url value="/images/archiva-splat-32.gif"/>" alt="" width="32" height="32"/>
 </div>
 
 <table class="infoTable">

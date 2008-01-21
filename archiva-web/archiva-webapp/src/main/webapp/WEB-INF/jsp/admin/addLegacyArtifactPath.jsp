@@ -21,15 +21,19 @@
 
 <html>
 <head>
-  <title>Admin: Add Legacy artifact path</title>
+  <title>Admin: Add Legacy Artifact Path</title>
   <ww:head/>
 </head>
 
 <body>
 
-<h1>Admin: Add Legacy artifact path</h1>
+<h1>Admin: Add Legacy Artifact Path</h1>
 
 <div id="contentArea">
+
+  <p>
+    Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary.
+  </p>
 
   <script type="text/javascript">
   function parse( path )
