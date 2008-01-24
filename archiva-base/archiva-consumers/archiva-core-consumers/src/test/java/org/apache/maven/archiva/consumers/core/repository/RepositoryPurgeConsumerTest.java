@@ -26,7 +26,6 @@ import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexFactoryStub;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
-import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
 import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
@@ -52,14 +51,15 @@ public class RepositoryPurgeConsumerTest
     public void testConsumerByRetentionCount()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
-            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
+                                                     "repo-purge-consumer-by-retention-count" );
 
         LuceneRepositoryContentIndexFactoryStub indexFactory = new LuceneRepositoryContentIndexFactoryStub();
         indexFactory.setExpectedRecordsSize( 2 );
-        
-        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory ); 
-              
+
+        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory );
+
         populateDbForRetentionCountTest();
 
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
@@ -121,14 +121,15 @@ public class RepositoryPurgeConsumerTest
     {
         populateDbForDaysOldTest();
 
-        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
-            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
+                                                     "repo-purge-consumer-by-days-old" );
 
         LuceneRepositoryContentIndexFactoryStub indexFactory = new LuceneRepositoryContentIndexFactoryStub();
         indexFactory.setExpectedRecordsSize( 2 );
-        
-        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory ); 
-        
+
+        ( (RepositoryPurgeConsumer) repoPurgeConsumer ).setRepositoryContentIndexFactory( indexFactory );
+
         ManagedRepositoryConfiguration repoConfiguration = getRepoConfiguration();
         repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
         addRepoToConfiguration( "days-old", repoConfiguration );
@@ -142,13 +143,13 @@ public class RepositoryPurgeConsumerTest
 
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.md5" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.sha1" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
-        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
-        
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
+        assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
+
         // shouldn't be deleted because even if older than 30 days (because retention count = 2)
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.jar" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.jar.md5" );
@@ -156,26 +157,26 @@ public class RepositoryPurgeConsumerTest
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.md5" );
         assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20070513.034619-5.pom.sha1" );
-        
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.sha1" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.md5" );
-        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.pom.sha1" );
+
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.jar.sha1" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.md5" );
+        assertExists( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-20061118.060401-2.pom.sha1" );
     }
 
     /**
-     * Test the snapshot clean consumer on a repository set to NOT clean/delete snapshots
-     * based on released versions.
-     *
+     * Test the snapshot clean consumer on a repository set to NOT clean/delete snapshots based on released versions.
+     * 
      * @throws Exception
      */
     public void testReleasedSnapshotsWereNotCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
-            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-retention-count" );
+        KnownRepositoryContentConsumer repoPurgeConsumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
+                                                     "repo-purge-consumer-by-retention-count" );
 
         populateDbForReleasedSnapshotsTest();
 
@@ -216,8 +217,9 @@ public class RepositoryPurgeConsumerTest
     public void testReleasedSnapshotsWereCleaned()
         throws Exception
     {
-        KnownRepositoryContentConsumer repoPurgeConsumer = (KnownRepositoryContentConsumer) lookup(
-            KnownRepositoryContentConsumer.class, "repo-purge-consumer-by-days-old" );
+        KnownRepositoryContentConsumer repoPurgeConsumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class,
+                                                     "repo-purge-consumer-by-days-old" );
 
         populateDbForReleasedSnapshotsTest();
 

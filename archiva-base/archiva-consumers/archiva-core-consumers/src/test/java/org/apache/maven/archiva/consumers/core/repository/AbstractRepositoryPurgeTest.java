@@ -66,6 +66,8 @@ public abstract class AbstractRepositoryPurgeTest
     public static final String PATH_TO_RELEASED_SNAPSHOT = "org/apache/maven/plugins/maven-plugin-plugin/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar";
 
     public static final String PATH_TO_HIGHER_SNAPSHOT_EXISTS = "org/apache/maven/plugins/maven-source-plugin/2.0.3-SNAPSHOT/maven-source-plugin-2.0.3-SNAPSHOT.jar";
+    
+    public static final String PATH_TO_TEST_ORDER_OF_DELETION = "org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070615.105019-3.jar";
 
     private ManagedRepositoryConfiguration config;
 
