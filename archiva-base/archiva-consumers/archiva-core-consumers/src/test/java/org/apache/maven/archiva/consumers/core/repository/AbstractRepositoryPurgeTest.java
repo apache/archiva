@@ -33,6 +33,7 @@ import org.jpox.SchemaTool;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -228,5 +229,16 @@ public abstract class AbstractRepositoryPurgeTest
         FileUtils.copyDirectory( getTestFile( "target/test-classes/test-repo" ), testDir );
         
         return testDir.getAbsolutePath();
+    }
+    
+    protected void populateDbForTestOrderOfDeletion()
+        throws Exception
+    {
+        List<String> versions = new ArrayList<String>();
+        versions.add( "1.1.2-20070427.065136-1" );
+        versions.add( "1.1.2-20070506.163513-2" );
+        versions.add( "1.1.2-20070615.105019-3" );
+    
+        populateDb( "org.apache.maven.plugins", "maven-assembly-plugin", versions );
     }
 }

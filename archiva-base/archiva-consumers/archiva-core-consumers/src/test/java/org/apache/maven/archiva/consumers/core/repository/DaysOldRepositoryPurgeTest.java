@@ -270,16 +270,5 @@ public class DaysOldRepositoryPurgeTest
         versions.add( "2.2-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
-    }
-
-    private void populateDbForTestOrderOfDeletion()
-        throws Exception
-    {
-        List<String> versions = new ArrayList<String>();
-        versions.add( "1.1.2-20070427.065136-1" );
-        versions.add( "1.1.2-20070506.163513-2" );
-        versions.add( "1.1.2-20070615.105019-3" );
-
-        populateDb( "org.apache.maven.plugins", "maven-assembly-plugin", versions );
-    }
+    }    
 }

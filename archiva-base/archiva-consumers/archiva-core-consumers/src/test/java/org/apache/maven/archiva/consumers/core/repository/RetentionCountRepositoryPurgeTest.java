@@ -143,6 +143,41 @@ public class RetentionCountRepositoryPurgeTest
         assertExists( versionRoot + "/castor-anttasks-1.1.2-20070506.163513-2-sources.jar.sha1" );
     }
 
+    public void testOrderOfDeletion()
+        throws Exception
+    {
+        populateDbForTestOrderOfDeletion();
+
+        String repoRoot = prepareTestRepo();
+
+        repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
+
+        String versionRoot = repoRoot + 
+            "/org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT";
+        
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.md5" );
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.pom.sha1" );
+        assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.pom.md5" );
+
+        // the following should not have been deleted
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.jar" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.jar.sha1" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.jar.md5" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.pom" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.pom.sha1" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070506.163513-2.pom.md5" );
+
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.jar" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.jar.sha1" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.jar.md5" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom.sha1" );
+        assertExists( versionRoot + "/maven-assembly-plugin-1.1.2-20070615.105019-3.pom.md5" );
+    }
+    
     public void populateIfJarWasFoundDb()
         throws Exception
     {
