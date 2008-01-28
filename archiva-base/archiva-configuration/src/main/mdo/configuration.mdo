@@ -334,6 +334,15 @@
             The Password for this repository.
           </description>
         </field>
+        <field>
+          <name>timeout</name>
+          <version>1.0.1+</version>
+          <type>int</type>
+          <description>
+            Timeout in seconds for connections to this repository
+          </description>
+          <defaultValue>60</defaultValue>
+        </field>		
       </fields>
     </class>
     <class>

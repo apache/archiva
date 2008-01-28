@@ -436,6 +436,12 @@
         <groupId>org.apache.maven.shared</groupId>
         <artifactId>maven-app-configuration-web</artifactId>
         <version>1.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http-lightweight</artifactId>
+          </exclusion>
+        </exclusions>		
       </dependency>
       <dependency>
         <groupId>org.apache.maven.shared</groupId>
@@ -671,7 +677,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-lightweight</artifactId>
+        <artifactId>wagon-http</artifactId>
         <version>${wagon.version}</version>
       </dependency>
       <dependency>
@@ -873,7 +879,7 @@
   </profiles>
   <properties>
     <maven.version>2.0.5</maven.version>
-    <wagon.version>1.0-beta-2</wagon.version>
+    <wagon.version>1.0-rc1-SNAPSHOT</wagon.version>
     <redback.version>1.0-alpha-4</redback.version>
   </properties>
   <distributionManagement>

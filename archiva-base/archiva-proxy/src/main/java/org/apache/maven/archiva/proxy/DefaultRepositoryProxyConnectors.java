@@ -21,6 +21,7 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -64,6 +65,8 @@ import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -828,6 +831,12 @@ public class DefaultRepositoryProxyConnectors
             {
                 getLogger().debug( "No authentication for remote repository needed" );
             }
+
+            //Convert seconds to milliseconds
+            int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
+            
+            //Set timeout
+            wagon.setTimeout(timeoutInMilliseconds);
 
             Repository wagonRepository = new Repository( remoteRepository.getId(), remoteRepository.getURL().toString() );
             if ( networkProxy != null )

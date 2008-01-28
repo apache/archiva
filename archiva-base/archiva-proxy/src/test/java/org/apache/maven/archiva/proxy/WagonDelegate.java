@@ -96,6 +96,16 @@ public class WagonDelegate
     {
         return delegate.supportsDirectoryCopy();
     }
+	
+     public void setTimeout(int val)
+     {
+	     // ignore
+     }
+ 
+     public int getTimeout()
+     {
+         return 0;
+     }	
 
     public Repository getRepository()
     {
