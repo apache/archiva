@@ -63,31 +63,17 @@
 
       }
   }
-  function computeArtifactReference()
-  {
-      document.getElementById("addLegacyArtifactPath_legacyArtifactPath_artifact").value
-          = document.getElementById("addLegacyArtifactPath_groupId").value
-          + ":"
-          + document.getElementById("addLegacyArtifactPath_artifactId").value
-          + ":"
-          + document.getElementById("addLegacyArtifactPath_version").value
-          + ":"
-          + document.getElementById("addLegacyArtifactPath_classifier").value
-          + ":"
-          + document.getElementById("addLegacyArtifactPath_type").value;
-  }
   </script>
 
   <ww:actionmessage/>
   <ww:actionerror/>
-  <ww:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true" onsubmit="computeArtifactReference()">
+  <ww:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true">
     <ww:textfield name="legacyArtifactPath.path" label="Path" size="50" required="true" onchange="parse( this.value )"/>
-    <ww:textfield name="groupId" label="GroupId" size="20" required="true" disabled="true"/>
+    <ww:textfield name="groupId" label="GroupId" size="20" required="true"/>
     <ww:textfield name="artifactId" label="ArtifactId" size="20" required="true"/>
     <ww:textfield name="version" label="Version" size="20" required="true"/>
     <ww:textfield name="classifier" label="Classifier" size="20" required="false"/>
-    <ww:textfield name="type" label="Type" size="20" required="true" disabled="true"/>
-    <ww:hidden name="legacyArtifactPath.artifact"/>
+    <ww:textfield name="type" label="Type" size="20" required="true"/>
     <ww:submit value="Add Legacy Artifact Path"/>
   </ww:form>
 

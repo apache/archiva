@@ -54,6 +54,16 @@ public class AddLegacyArtifactPathAction
 
     private LegacyArtifactPath legacyArtifactPath;
 
+    private String groupId;
+
+    private String artifactId;
+
+    private String version;
+
+    private String classifier;
+
+    private String type;
+
 
     public void prepare()
     {
@@ -67,14 +77,18 @@ public class AddLegacyArtifactPathAction
 
     public String commit()
     {
+        this.legacyArtifactPath.setArtifact(
+            this.groupId + ":" + this.artifactId + ":" +  this.classifier + ":" +  this.version + ":" + this.type );
+
+        // Check the proposed Artifact macthes the path
         ArtifactReference artifact = new ArtifactReference();
-		
-		artifact.setGroupId( this.legacyArtifactPath.getGroupId() );
-		artifact.setArtifactId( this.legacyArtifactPath.getArtifactId() );
-		artifact.setClassifier( this.legacyArtifactPath.getClassifier() );
-		artifact.setVersion( this.legacyArtifactPath.getVersion() );
-		artifact.setType( this.legacyArtifactPath.getType() );
-		
+
+		artifact.setGroupId( this.groupId );
+		artifact.setArtifactId( this.artifactId );
+		artifact.setClassifier( this.classifier );
+		artifact.setVersion( this.version );
+		artifact.setType( this.type );
+
         String path = repositoryContent.toPath( artifact );
         if ( ! path.equals( this.legacyArtifactPath.getPath() ) )
         {
@@ -116,5 +130,55 @@ public class AddLegacyArtifactPathAction
         }
 
         return SUCCESS;
+    }
+
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public String getVersion()
+    {
+        return version;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public String getClassifier()
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType( String type )
+    {
+        this.type = type;
     }
 }
