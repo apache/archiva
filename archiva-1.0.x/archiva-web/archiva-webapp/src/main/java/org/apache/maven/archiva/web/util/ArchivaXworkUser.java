@@ -56,7 +56,15 @@ public class ArchivaXworkUser
 
     private SecuritySession getSecuritySession()
     {
-    	return (SecuritySession) getContextSession().get( SecuritySession.ROLE );        
+    	SecuritySession securitySession =
+            (SecuritySession) getContextSession().get( SecuritySystemConstants.SECURITY_SESSION_KEY );
+
+        if ( securitySession == null )
+        {
+            securitySession = (SecuritySession) getContextSession().get( SecuritySession.ROLE );
+        }
+
+        return securitySession;        
     }
 
     public String getActivePrincipal()
