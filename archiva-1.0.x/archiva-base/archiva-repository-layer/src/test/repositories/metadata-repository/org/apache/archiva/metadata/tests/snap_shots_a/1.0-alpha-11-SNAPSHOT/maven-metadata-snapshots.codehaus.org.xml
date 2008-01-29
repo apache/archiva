@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><metadata>
+  <groupId>org.apache.archiva.metadata.tests</groupId>
+  <artifactId>snap_shots_a</artifactId>
+  <version>1.0-alpha-11-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20070315.033030</timestamp>
+      <buildNumber>10</buildNumber>
+    </snapshot>
+    <lastUpdated>20070315.033030</lastUpdated>
+  </versioning>
+</metadata>

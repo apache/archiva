@@ -1,0 +1,64 @@
+ ------
+ Understanding Proxy Connector Configuration of Apache Archiva
+ ------
+
+Understanding Proxy Connector Configuration of Apache Archiva
+
+  Archiva uses the terminology "proxy" for two different concepts:
+
+    * The remote repository proxying cache, as configured through proxy connectors between repositories
+
+    * {{{network-proxies.html} Network proxies}}, which are traditional protocol based proxies (primarily for HTTP access to remote repositories over a firewall)
+
+    []
+
+  A proxy connector is used to link a managed repository (stored on the Archiva machine) to a remote repository (accessed via a URL). This will mean that when a request
+  is received by the managed repository, the connector is consulted to decide whether it should request the resource from the remote repository (and potentially cache
+  the result locally for future requests).
+
+  Each managed repository can proxy multiple remote repositories to allow grouping of repositories through a single interface inside the Archiva instance. For instance,
+  it is common to proxy all remote releases through a single repository for Archiva, as well as a single snapshot repository for all remote snapshot repositories.
+
+  A basic proxy connector configuration simply links the remote repository to the managed repository (with an optional network proxy for access through a firewall).
+  However, the behaviour of different types of artifacts and paths can be specifically managed by the proxy connectors to make access to remote repositories more flexibly controlled.
+
+* Configuring policies
+
+  When an artifact is requested from the managed repository and a proxy connector is configured, the policies for the connector are first consulted to decide whether
+  to retrieve and cache the remote artifact or not. Which policies are applied depends on the type of artifact.
+
+  By default, Archiva comes with the following policies:
+
+    * <<<releases>>> - how to behave for released artifact metadata (those not carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
+
+    * <<<snapshots>>> - how to behave for snapshot artifact metadata (those carrying a <<<SNAPSHOT>>> version). This can be set to <<<always>>> (default), <<<hourly>>>, <<<daily>>>, <<<once>>> and <<<never>>>.
+
+    * <<<checksum>>> - how to handle incorrect checksums when downloading an artifact from the remote repository (ie, the checksum of the artifact does not match the corresponding detached checksum file).
+      The options are to fail the request for the remote artifact, fix the checksum on the fly (default), or simply ignore the incorrect checksum
+
+    * <<<cache-failures>>> - whether failures retrieving the remote artifact should be cached (to save network bandwidth for missing or bad artifacts), or uncached (default).
+
+    []
+
+* Configuring whitelists and blacklists
+
+  By default, all artifact requests to the managed repository are proxied to the remote repository via the proxy connector if the policies pass. However, it can be more efficient to
+  configure whitelists and blacklists for a given remote repository that match the expected artifacts to be retrieved.
+
+  If only a whitelist is configured, all requests not matching one of the whitelisted elements will be rejected. Conversely, if only a blacklist is configured, all requests not matching one of
+  the blacklisted elements will be accepted (while those matching will be rejected). If both a whitelist and blacklist are defined, a path must be listed in the whitelist and not in the blacklist
+  to be accepted - all other requests are rejected.
+
+  The path in the whitelist or blacklist is a repository path, and not an artifact path, and matches the request and format of the remote repository. The characters <<<*>>> and <<<**>>> are wildcards,
+  with <<<*>>> matching anything in the current path, while <<<**>>> matches anything in the current path and deeper in the directory hierarchy.
+
+  For instance, to only retrieve artifacts in the Apache group ID from a repository, but no artifacts from the Maven group ID, you would configure the following:
+
+    * White list: <<<org/apache/**>>>
+
+    * Black list: <<<org/apache/maven/**>>>
+
+    []
+
+  ~~TODO: walkthrough configuration
+

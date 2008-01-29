@@ -1,0 +1,37 @@
+ -----
+ Release Notes for Archiva 1.0
+ -----
+
+Release Notes for Archiva 1.0
+
+  The Apache Archiva team would like to announce the release of Archiva 1.0.
+
+  Archiva 1.0 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
+
+  Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
+
+  If you have any questions, please consult:
+
+    * the web site: {{http://maven.apache.org/archiva/}}
+
+    * the archiva-user mailing list: {{http://maven.apache.org/archiva/mail-lists.html}}
+
+* Release Notes
+
+  Archiva 1.0 is the culmination of many months of development and several beta-testing releases. Past issues can be seen in the JIRA instance and the implemented feature set in the {{{tour/index.html} feature tour}}.
+
+  The following describes the changes since the beta-4 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=12113&styleName=Text&projectId=10980} in JIRA}}.
+
+-----
+** Bug
+    * [MRM-545] - Documentation for configuring for Tomcat is invalid
+    * [MRM-586] - entire proxy request fails if a queried remote repository throws a proxyexception
+    * [MRM-595] - regression : server-side relocation fails
+    * [MRM-596] - regression : cannot get java-sources anymore from maven1
+    * [MRM-598] - Validation error on new repository creation
+
+** Task
+    * [MRM-583] - Finalise and publish updated web site
+    * [MRM-587] - further changes to logging needed
+-----
+

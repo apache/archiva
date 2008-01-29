@@ -1,0 +1,195 @@
+<?xml version="1.0" ?>
+<redback-role-model>
+  <version>1.0.0</version>
+  <application>Redback XWork Integration Security Core</application>
+  <resources>
+    <resource>
+      <id>global</id>
+      <name>*</name>
+      <permanent>true</permanent>
+      <description>global resource implies full access for authorization</description>
+    </resource>
+    <resource>
+      <id>username</id>
+      <name>${username}</name>
+      <permanent>true</permanent>
+      <description>replaced with the username of the principal at authorization check time</description>
+    </resource>    
+  </resources>
+  <operations>
+    <operation>
+      <id>configuration-edit</id>
+      <name>configuration-edit</name>
+      <description>edit configuration</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-user-create</id>
+      <name>user-management-user-create</name>
+      <description>create user</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-user-edit</id>
+      <name>user-management-user-edit</name>
+      <description>edit user</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-user-role</id>
+      <name>user-management-user-role</name>
+      <description>user roles</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-user-delete</id>
+      <name>user-management-user-delete</name>
+      <description>delete user</description>
+      <permanent>true</permanent>
+    </operation>    
+    <operation>
+      <id>user-management-user-list</id>
+      <name>user-management-user-list</name>
+      <description>list users</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-role-grant</id>
+      <name>user-management-role-grant</name>
+      <description>grant role</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-role-drop</id>
+      <name>user-management-role-drop</name>
+      <description>drop role</description>
+      <permanent>true</permanent>
+    </operation>
+    <operation>
+      <id>user-management-rbac-admin</id>
+      <name>user-management-rbac-admin</name>
+      <description>administer rbac</description>
+      <permanent>true</permanent>
+    </operation>  
+    <operation>
+      <id>guest-access</id>
+      <name>guest-access</name>
+      <description>access guest</description>
+      <permanent>true</permanent>
+    </operation>        
+  </operations>
+  <roles>
+    <role>
+      <id>system-administrator</id>
+      <name>System Administrator</name>
+      <permanent>true</permanent>
+      <assignable>true</assignable>
+      <permissions>
+        <permission>
+          <id>edit-redback-configuration</id>
+          <name>Edit Redback Configuration</name>
+          <operation>configuration-edit</operation>
+          <resource>global</resource>
+          <permanent>true</permanent> 
+        </permission>
+        <permission>
+          <id>manage-rbac-setup</id>
+          <name>User RBAC Management</name>
+          <operation>user-management-rbac-admin</operation>
+          <resource>global</resource>
+          <permanent>true</permanent> 
+        </permission>             
+      </permissions>
+      <childRoles>
+        <childRole>user-administrator</childRole>
+      </childRoles> 
+    </role>
+    <role>
+      <id>user-administrator</id>
+      <name>User Administrator</name>
+      <permanent>true</permanent>
+      <assignable>true</assignable>
+      <permissions>
+        <permission>
+          <id>drop-roles-for-anyone</id>
+          <name>Drop Roles for Anyone</name>
+          <operation>user-management-role-drop</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+        <permission>
+          <id>grant-roles-for-anyone</id>
+          <name>Grant Roles for Anyone</name>
+          <operation>user-management-role-grant</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+        <permission>
+          <id>user-create</id>
+          <name>Create Users</name>
+          <operation>user-management-user-create</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission> 
+        <permission>
+          <id>user-delete</id>
+          <name>Delete Users</name>
+          <operation>user-management-user-delete</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>                  
+        <permission>
+          <id>user-edit</id>
+          <name>Edit Users</name>
+          <operation>user-management-user-edit</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+        <permission>
+          <id>access-users-roles</id>
+          <name>Access Users Roles</name>
+          <operation>user-management-user-role</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+        <permission>
+          <id>access-user-list</id>
+          <name>Access User List</name>
+          <operation>user-management-user-list</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+      </permissions>
+    </role>
+    <role>
+      <id>registered-user</id>
+      <name>Registered User</name>
+      <permanent>true</permanent>
+      <assignable>true</assignable>
+      <permissions>
+        <permission>
+          <id>edit-user-by-username</id>
+          <name>Edit User Data by Username</name>
+          <operation>user-management-user-edit</operation>
+          <resource>username</resource>
+          <permanent>true</permanent>
+        </permission>
+      </permissions>
+    </role>    
+    <role>
+      <id>guest</id>
+      <name>Guest</name>
+      <permanent>true</permanent>
+      <assignable>true</assignable>
+      <permissions>
+        <permission>
+          <id>guest-permission</id>
+          <name>Guest Permission</name>
+          <operation>guest-access</operation>
+          <resource>global</resource>
+          <permanent>true</permanent>
+        </permission>
+      </permissions>
+    </role>
+  </roles>
+</redback-role-model>
