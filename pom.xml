@@ -888,12 +888,4 @@
       <url>${siteBaseDeployment}/ref/${project.version}</url>
     </site>
   </distributionManagement>
-  <repositories>
-    <repository>
-      <id>jpox.repository</id>
-      <name>JPOX Repository</name>
-      <url>http://www.jpox.org/downloads/maven</url>
-      <layout>legacy</layout>
-    </repository>
-  </repositories>
 </project>
