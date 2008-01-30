@@ -36,9 +36,9 @@
   <packaging>pom</packaging>
   <version>1.0.2-SNAPSHOT</version>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/archiva/branches/archiva-1.0.x</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/archiva/branches/archiva-1.0.x</developerConnection>
+    <url>http://svn.apache.org/viewcvs.cgi/maven/archiva/branches/archiva-1.0.x</url>
   </scm>
 
   <url>http://maven.apache.org/archiva/</url>
