@@ -550,7 +550,7 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( NotFoundException e )
         {
-            // Do not cache url here.
+            urlFailureCache.cacheFailure( url );
             throw e;
         }
         catch ( NotModifiedException e )

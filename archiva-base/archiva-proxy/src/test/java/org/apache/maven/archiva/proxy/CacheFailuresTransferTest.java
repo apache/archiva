@@ -56,7 +56,7 @@ public class CacheFailuresTransferTest
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/anotherrepo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
@@ -71,8 +71,12 @@ public class CacheFailuresTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        // TODO: test failure is cached!
-
+        wagonMockControl.verify();
+		
+		// Second attempt to download same artifact use cache
+        wagonMockControl.reset();
+        wagonMockControl.replay();
+		downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         wagonMockControl.verify();
         
         assertNotDownloaded( downloadedFile );
@@ -92,7 +96,7 @@ public class CacheFailuresTransferTest
 
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
-        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/repo/", "default" );
+        saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/anotherrepo/", "default" );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
@@ -107,10 +111,18 @@ public class CacheFailuresTransferTest
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        // TODO: test failure is not cached!
-
         wagonMockControl.verify();
 
+		// Second attempt to download same artifact DOES NOT use cache
+        wagonMockControl.reset();
+        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
+        wagonMockControl.replay();
+		
+		downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+		
+        wagonMockControl.verify();
+		
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
