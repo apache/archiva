@@ -1,12 +1,12 @@
  -----
- Release Notes for Archiva 1.0
+ Release Notes for Archiva 1.0.1
  -----
 
-Release Notes for Archiva 1.0
+Release Notes for Archiva 1.0.1
 
-  The Apache Archiva team would like to announce the release of Archiva 1.0.
+  The Apache Archiva team would like to announce the release of Archiva 1.0.1
 
-  Archiva 1.0 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
+  Archiva 1.0.1 is {{{http://maven.apache.org/archiva/download.html} available for download from the web site}}.
 
   Archiva is an application for managing one or more remote repositories, including administration, artifact handling, browsing and searching.
 
@@ -18,20 +18,26 @@ Release Notes for Archiva 1.0
 
 * Release Notes
 
-  Archiva 1.0 is the culmination of many months of development and several beta-testing releases. Past issues can be seen in the JIRA instance and the implemented feature set in the {{{tour/index.html} feature tour}}.
+  Archiva 1.0.1 is the culmination of several weeks of development of additional fixes for 1.0. Past issues can be seen in the JIRA instance and the implemented feature set in the {{{tour/index.html} feature tour}}.
 
-  The following describes the changes since the beta-4 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=12113&styleName=Text&projectId=10980} in JIRA}}.
+  The following describes the changes since the 1.0.1 release. The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13925&styleName=Text&projectId=10980} in JIRA}}.
 
 -----
 ** Bug
-    * [MRM-545] - Documentation for configuring for Tomcat is invalid
-    * [MRM-586] - entire proxy request fails if a queried remote repository throws a proxyexception
-    * [MRM-595] - regression : server-side relocation fails
-    * [MRM-596] - regression : cannot get java-sources anymore from maven1
-    * [MRM-598] - Validation error on new repository creation
+  * [MRM-623] - find artifact self signed certificate will expire soon
+  * [MRM-628] - In the audit.log file the userid for each action is guest, even though the deploy was performed by admin
+  * [MRM-630] - http 502 proxy error with browse button after 2 days running
+  * [MRM-633] - Logging is too verbose
+  * [MRM-646] - Documentation for configuring for Tomcat is invalid
+  * [MRM-662] - Repo purge is not deleting artifacts in correct order
+  * [MRM-668] - Repo browse and search isn't working in trunk and in archiva 1.0.1 release candidate
+  * [MRM-670] - legacy artifact mapping form needs better validation
+
+** Improvement
+  * [MRM-594] - add some minimal hook in LegacyPathParser to allow exception management in artifact resolution
+
 
 ** Task
-    * [MRM-583] - Finalise and publish updated web site
-    * [MRM-587] - further changes to logging needed
+  * [MRM-619] - Update docs/site for some corrections
 -----
 
