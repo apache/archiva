@@ -22,9 +22,13 @@ package org.apache.maven.archiva.consumers.database;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
+import org.apache.maven.archiva.database.Constraint;
+import org.apache.maven.archiva.database.RepositoryProblemDAO;
+import org.apache.maven.archiva.database.constraints.RepositoryProblemByArtifactConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.model.RepositoryProblem;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
@@ -61,7 +65,12 @@ public class DatabaseCleanupRemoveArtifactConsumer
      * @plexus.requirement role-hint="jdo"
      */
     private ArtifactDAO artifactDAO;
-    
+
+    /**
+     * @plexus.requirement role-hint="jdo"
+     */
+    private RepositoryProblemDAO repositoryProblemDAO;
+
     /**
      * @plexus.requirement
      */
@@ -80,34 +89,47 @@ public class DatabaseCleanupRemoveArtifactConsumer
 
     public List<String> getIncludedTypes()
     {   
-    	return null;
+        return null;
     }
 
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
-    {	
-    	try
-    	{
-	    	ManagedRepositoryContent repositoryContent = 
-	    		repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
-	 	    	
-	    	File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
-	    		    	
-	    	if( !file.exists() )
-	        {	        	     
-	    		artifactDAO.deleteArtifact( artifact );
-	        }	    	
-    	}
-    	catch ( RepositoryException re )
-    	{
-    		throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
-    				re.getMessage() );
-    	}
-    	catch ( ArchivaDatabaseException e )
+    {
+        try
+        {
+            ManagedRepositoryContent repositoryContent =
+                repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+
+            File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
+
+            if( !file.exists() )
+            {                    
+                artifactDAO.deleteArtifact( artifact );
+
+                // Remove all repository problems related to this artifact
+                Constraint artifactConstraint = new RepositoryProblemByArtifactConstraint( artifact );
+                List<RepositoryProblem> repositoryProblems =
+                    repositoryProblemDAO.queryRepositoryProblems( artifactConstraint );
+
+                if ( repositoryProblems != null )
+                {
+                    for ( RepositoryProblem repositoryProblem : repositoryProblems )
+                    {
+                        repositoryProblemDAO.deleteRepositoryProblem( repositoryProblem );
+                    }
+                }
+            }
+        }
+        catch ( RepositoryException re )
+        {
+            throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
+                                         re.getMessage() );
+        }
+        catch ( ArchivaDatabaseException e )
         {
             throw new ConsumerException( e.getMessage() );
         }
-    }    	
+    }
 
     public String getDescription()
     {
@@ -128,9 +150,14 @@ public class DatabaseCleanupRemoveArtifactConsumer
     {
         this.artifactDAO = artifactDAO;
     }
-    
+
+    public void setRepositoryProblemDAO( RepositoryProblemDAO repositoryProblemDAO )
+    {
+        this.repositoryProblemDAO = repositoryProblemDAO;
+    }
+
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
-    }     
+    }
 }

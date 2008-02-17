@@ -22,10 +22,11 @@ package org.apache.maven.archiva.consumers.database;
 import org.easymock.MockControl;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.database.ArtifactDAO;
+import org.apache.maven.archiva.database.RepositoryProblemDAO;
 
 /**
  * Test for DatabaseCleanupRemoveArtifactConsumerTest
- *
+ * 
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public class DatabaseCleanupRemoveArtifactConsumerTest
@@ -34,6 +35,10 @@ public class DatabaseCleanupRemoveArtifactConsumerTest
     private MockControl artifactDAOControl;
 
     private ArtifactDAO artifactDAOMock;
+
+    private MockControl repositoryProblemDAOControl;
+
+    private RepositoryProblemDAO repositoryProblemDAOMock;
 
     private DatabaseCleanupRemoveArtifactConsumer dbCleanupRemoveArtifactConsumer;
 
@@ -48,8 +53,14 @@ public class DatabaseCleanupRemoveArtifactConsumerTest
 
         artifactDAOMock = (ArtifactDAO) artifactDAOControl.getMock();
 
+        repositoryProblemDAOControl = MockControl.createControl( RepositoryProblemDAO.class );
+
+        repositoryProblemDAOMock = (RepositoryProblemDAO) repositoryProblemDAOControl.getMock();
+
         dbCleanupRemoveArtifactConsumer.setArtifactDAO( artifactDAOMock );
-        
+
+        dbCleanupRemoveArtifactConsumer.setRepositoryProblemDAO( repositoryProblemDAOMock );
+
         dbCleanupRemoveArtifactConsumer.setRepositoryFactory( repositoryFactory );
     }
 
@@ -60,9 +71,13 @@ public class DatabaseCleanupRemoveArtifactConsumerTest
 
         artifactDAOControl.replay();
 
+        repositoryProblemDAOControl.replay();
+
         dbCleanupRemoveArtifactConsumer.processArchivaArtifact( artifact );
 
         artifactDAOControl.verify();
+        
+        repositoryProblemDAOControl.verify();
     }
 
     public void testIfArtifactWasDeleted()
@@ -73,10 +88,10 @@ public class DatabaseCleanupRemoveArtifactConsumerTest
         artifactDAOMock.deleteArtifact( artifact );
 
         artifactDAOControl.replay();
-
+        
         dbCleanupRemoveArtifactConsumer.processArchivaArtifact( artifact );
 
-        artifactDAOControl.verify();
+        artifactDAOControl.verify();        
     }
 
 }
