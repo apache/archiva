@@ -22,7 +22,7 @@ package org.apache.maven.archiva.repository.content;
 import junit.framework.TestCase;
 
 /**
- * FilenameParserTest 
+ * FilenameParserTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -45,7 +45,7 @@ public class FilenameParserTest
         assertEquals( "archiva-1.0-beta-2-bin", parser.getName() );
         assertEquals( "tar.gz", parser.getExtension() );
     }
-    
+
     public void testNameExtensionTarBz2()
     {
         FilenameParser parser = new FilenameParser( "archiva-1.0-SNAPSHOT-src.tar.bz2" );
@@ -68,7 +68,7 @@ public class FilenameParserTest
 
         assertEquals( "maven-test-plugin-1.8.3", parser.getName() );
         assertEquals( "jar", parser.getExtension() );
-        
+
         assertEquals( "maven", parser.next() );
         assertEquals( "test", parser.next() );
         assertEquals( "plugin", parser.next() );
@@ -87,7 +87,7 @@ public class FilenameParserTest
         assertEquals( "1.8.3", parser.expect( "1.8.3" ) );
         assertNull( parser.expect( "jar" ) );
     }
-    
+
     public void testExpectWithRemaining()
     {
         FilenameParser parser = new FilenameParser( "ganymede-ssh2-build250-sources.jar" );
@@ -99,10 +99,10 @@ public class FilenameParserTest
         assertEquals( "build250", parser.expect( "build250" ) );
         assertEquals( '-', parser.seperator() );
         assertEquals( "sources", parser.remaining() );
-        
+
         assertNull( parser.expect( "jar" ) );
     }
-    
+
     public void testExpectWithRemainingDualExtensions()
     {
         FilenameParser parser = new FilenameParser( "example-presentation-3.2.xml.zip" );
@@ -114,31 +114,39 @@ public class FilenameParserTest
         assertEquals( "3.2", parser.expect( "3.2" ) );
         assertEquals( '.', parser.seperator() );
         assertEquals( "xml", parser.remaining() );
-        
-   }
-    
+
+    }
+
     public void testNextNonVersion()
     {
         FilenameParser parser = new FilenameParser( "maven-test-plugin-1.8.3.jar" );
-        
-        assertEquals("maven-test-plugin", parser.nextNonVersion() );
-        assertEquals("1.8.3", parser.remaining() );
+
+        assertEquals( "maven-test-plugin", parser.nextNonVersion() );
+        assertEquals( "1.8.3", parser.remaining() );
     }
-    
+
     public void testNextArbitraryNonVersion()
     {
         FilenameParser parser = new FilenameParser( "maven-jdk-1.4-plugin-1.0-20070828.123456-42.jar" );
-        
-        assertEquals("maven-jdk-1.4-plugin", parser.nextNonVersion() );
-        assertEquals("1.0-20070828.123456-42", parser.remaining() );
+
+        assertEquals( "maven-jdk-1.4-plugin", parser.nextNonVersion() );
+        assertEquals( "1.0-20070828.123456-42", parser.remaining() );
     }
 
     public void testNextJython()
     {
         FilenameParser parser = new FilenameParser( "jython-20020827-no-oro.jar" );
-        
-        assertEquals("jython", parser.nextNonVersion() );
-        assertEquals("20020827", parser.nextVersion() );
-        assertEquals("no-oro", parser.remaining() );
+
+        assertEquals( "jython", parser.nextNonVersion() );
+        assertEquals( "20020827", parser.nextVersion() );
+        assertEquals( "no-oro", parser.remaining() );
+    }
+
+    public void testLongExtension()
+    {
+        FilenameParser parser = new FilenameParser( "libfobs4jmf-0.4.1.4-20080217.211715-4.jnilib" );
+
+        assertEquals( "libfobs4jmf-0.4.1.4-20080217.211715-4", parser.getName() );
+        assertEquals( "jnilib", parser.getExtension() );
     }
 }
