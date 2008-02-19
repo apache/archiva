@@ -40,7 +40,7 @@ public class FilenameParser
 
     private static final Pattern mavenPluginPattern = Pattern.compile( "(maven-.*-plugin)|(.*-maven-plugin)" );
 
-    private static final Pattern extensionPattern = Pattern.compile( "(.tar.gz$)|(.tar.bz2$)|(.[a-z0-9]{1,4}$)",
+    private static final Pattern extensionPattern = Pattern.compile( "(.tar.gz$)|(.tar.bz2$)|(.[a-z0-9]*$)",
                                                                      Pattern.CASE_INSENSITIVE );
 
     private static final Pattern section = Pattern.compile( "([^-]*)" );
