@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
+    <!-- collaborators and configuration for this bean go here -->
+    <constructor-arg ref="urlCache" type="org.codehaus.plexus.cache.Cache"/>
+  </bean>
+  <bean id="urlCache" factory-bean="plexusCacheFactory" factory-method="createInstance"/>
+  <bean id="plexusCacheFactory" class="org.apache.maven.archiva.common.spring.PlexusFactory">
+    <constructor-arg index="0" value="org.codehaus.plexus.cache.Cache"/>
+    <constructor-arg index="1" value="url-failures-cache"/>
+  </bean>
+</beans>

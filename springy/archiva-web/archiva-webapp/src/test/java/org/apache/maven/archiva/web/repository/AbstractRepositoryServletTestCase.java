@@ -22,21 +22,23 @@ package org.apache.maven.archiva.web.repository;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.spring.PlexusFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
-
-import java.io.File;
-import java.io.IOException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * AbstractRepositoryServletTestCase 
@@ -150,6 +152,12 @@ public abstract class AbstractRepositoryServletTestCase
         File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
+
+        BeanFactory factory = new XmlBeanFactory(
+            new ClassPathResource( "/org/apache/maven/archiva/web/repository/spring-context.xml" ) );
+        getContainer().getContext().put( BeanFactory.class, factory );
+        PlexusFactory plexusFactory = (PlexusFactory) factory.getBean( "plexusCacheFactory" );
+        plexusFactory.setContainer( container );
 
         archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );

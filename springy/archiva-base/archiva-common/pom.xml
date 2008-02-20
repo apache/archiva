@@ -50,6 +50,12 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-container-default</artifactId>
     </dependency>
+    <!-- TODO: temporary spring dependencies for migration -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>2.5.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

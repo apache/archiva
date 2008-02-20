@@ -19,14 +19,18 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.maven.archiva.common.spring.PlexusFactory;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.PlexusTestCase;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.util.Properties;
 
 /**
- * CachedFailuresPolicyTest 
+ * CachedFailuresPolicyTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -34,16 +38,12 @@ import java.util.Properties;
 public class CachedFailuresPolicyTest
     extends PlexusTestCase
 {
+    private BeanFactory factory;
+
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
         return (DownloadPolicy) lookup( PreDownloadPolicy.class.getName(), "cache-failures" );
-    }
-
-    private UrlFailureCache lookupUrlFailureCache()
-        throws Exception
-    {
-        return (UrlFailureCache) lookup( UrlFailureCache.class.getName(), "default" );
     }
 
     private File getFile()
@@ -85,14 +85,13 @@ public class CachedFailuresPolicyTest
     public void testPolicyYesInCache()
         throws Exception
     {
-        UrlFailureCache urlFailureCache = lookupUrlFailureCache();
-
         DownloadPolicy policy = lookupPolicy();
         File localFile = getFile();
         Properties request = createRequest();
 
         String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
 
+        UrlFailureCache urlFailureCache = (UrlFailureCache) factory.getBean( "urlFailureCache" );
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );
@@ -106,5 +105,16 @@ public class CachedFailuresPolicyTest
         {
             // expected path.
         }
+    }
+
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+        factory = new XmlBeanFactory(
+            new ClassPathResource( "/org/apache/maven/archiva/policies/CachedFailuresPolicyTest-context.xml" ) );
+        getContainer().getContext().put( BeanFactory.class, factory );
+        PlexusFactory plexusFactory = (PlexusFactory) factory.getBean( "plexusCacheFactory" );
+        plexusFactory.setContainer( container );
     }
 }

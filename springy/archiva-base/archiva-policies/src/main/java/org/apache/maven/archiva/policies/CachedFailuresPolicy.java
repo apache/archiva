@@ -20,8 +20,11 @@ package org.apache.maven.archiva.policies;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.spring.SpringFactory;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,26 +41,28 @@ import java.util.Properties;
  */
 public class CachedFailuresPolicy
     extends AbstractLogEnabled
-    implements PreDownloadPolicy
+    implements PreDownloadPolicy, Initializable
 {
     /**
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
      * All resource requests are allowed thru to the remote repo.
      */
     public static final String NO = "no";
-    
+
     /**
      * The YES policy setting means that the existence of old failures is checked, and will
      * prevent the request from being performed against the remote repo.
      */
     public static final String YES = "yes";
 
-    /**
-     * @plexus.requirement role-hint="default"
-     */
     private UrlFailureCache urlFailureCache;
 
     private List<String> options = new ArrayList<String>();
+
+    /**
+     * @plexus.requirement
+     */
+    private SpringFactory springFactory;
 
     public CachedFailuresPolicy()
     {
@@ -70,9 +75,9 @@ public class CachedFailuresPolicy
     {
         if ( !options.contains( policySetting ) )
         {
-         // Not a valid code. 
-            throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting
-                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+            // Not a valid code.
+            throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting +
+                "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( NO.equals( policySetting ) )
@@ -88,7 +93,8 @@ public class CachedFailuresPolicy
         {
             if ( urlFailureCache.hasFailedBefore( url ) )
             {
-                throw new PolicyViolationException( "NO to fetch, check-failures detected previous failure on url: " + url );
+                throw new PolicyViolationException(
+                    "NO to fetch, check-failures detected previous failure on url: " + url );
             }
         }
 
@@ -108,5 +114,11 @@ public class CachedFailuresPolicy
     public List<String> getOptions()
     {
         return options;
+    }
+
+    public void initialize()
+        throws InitializationException
+    {
+        urlFailureCache = (UrlFailureCache) springFactory.lookup( "urlFailureCache" );
     }
 }

@@ -20,6 +20,7 @@ package org.apache.maven.archiva.proxy;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.spring.PlexusFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
@@ -28,11 +29,13 @@ import org.apache.maven.archiva.policies.CachedFailuresPolicy;
 import org.apache.maven.archiva.policies.ChecksumPolicy;
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.wagon.Wagon;
 import org.codehaus.plexus.PlexusTestCase;
 import org.easymock.MockControl;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,6 +104,8 @@ public abstract class AbstractProxyTestCase
     protected File managedLegacyDir;
 
     protected MockConfiguration config;
+
+    protected BeanFactory factory;
 
     protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception
@@ -259,14 +264,6 @@ public abstract class AbstractProxyTestCase
         return repoContent;
     }
 
-    protected UrlFailureCache lookupUrlFailureCache()
-        throws Exception
-    {
-        UrlFailureCache failurlCache = (UrlFailureCache) lookup( UrlFailureCache.class.getName(), "default" );
-        assertNotNull( "URL Failure Cache cannot be null.", failurlCache );
-        return failurlCache;
-    }
-
     /**
      * Read the first line from the checksum file, and return it (trimmed).
      */
@@ -383,6 +380,12 @@ public abstract class AbstractProxyTestCase
         throws Exception
     {
         super.setUp();
+
+        factory = new XmlBeanFactory(
+            new ClassPathResource( "/org/apache/maven/archiva/proxy/spring-context.xml" ) );
+        getContainer().getContext().put( BeanFactory.class, factory );
+        PlexusFactory plexusFactory = (PlexusFactory) factory.getBean( "plexusCacheFactory" );
+        plexusFactory.setContainer( container );
 
         config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 

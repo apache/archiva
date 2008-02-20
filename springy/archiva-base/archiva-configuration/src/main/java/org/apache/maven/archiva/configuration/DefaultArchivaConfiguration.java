@@ -53,8 +53,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>
@@ -100,11 +100,13 @@ public class DefaultArchivaConfiguration
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     * @todo these don't strictly belong in here
      */
     private Map<String, PreDownloadPolicy> prePolicies;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     * @todo these don't strictly belong in here
      */
     private Map<String, PostDownloadPolicy> postPolicies;
     

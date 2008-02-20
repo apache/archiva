@@ -21,8 +21,8 @@ package org.apache.maven.archiva.proxy;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.spring.SpringFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
@@ -65,8 +65,6 @@ import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLClassLoader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,10 +114,12 @@ public class DefaultRepositoryProxyConnectors
      */
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
-    /**
-     * @plexus.requirement role-hint="default"
-     */
     private UrlFailureCache urlFailureCache;
+
+    /**
+     * @plexus.requirement
+     */
+    private SpringFactory springFactory;
 
     private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
 
@@ -527,10 +527,10 @@ public class DefaultRepositoryProxyConnectors
             getLogger().info( emsg );
             return null;
         }
-			
+
         Wagon wagon = null;
         try
-        {	
+        {
             RepositoryURL repoUrl = remoteRepository.getURL();
             String protocol = repoUrl.getProtocol();
             wagon = (Wagon) wagons.get( protocol );
@@ -834,7 +834,7 @@ public class DefaultRepositoryProxyConnectors
 
             //Convert seconds to milliseconds
             int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
-            
+
             //Set timeout
             wagon.setTimeout(timeoutInMilliseconds);
 
@@ -1026,5 +1026,7 @@ public class DefaultRepositoryProxyConnectors
     {
         initConnectorsAndNetworkProxies();
         archivaConfiguration.addChangeListener( this );
+
+        urlFailureCache = (UrlFailureCache) springFactory.lookup( "urlFailureCache" );
     }
 }

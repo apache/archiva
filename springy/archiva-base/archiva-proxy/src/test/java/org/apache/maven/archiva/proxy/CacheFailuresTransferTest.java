@@ -156,4 +156,12 @@ public class CacheFailuresTransferTest
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
     }
+
+    protected UrlFailureCache lookupUrlFailureCache()
+        throws Exception
+    {
+        UrlFailureCache urlFailureCache = (UrlFailureCache) factory.getBean( "urlFailureCache" );
+        assertNotNull( "URL Failure Cache cannot be null.", urlFailureCache );
+        return urlFailureCache;
+    }
 }

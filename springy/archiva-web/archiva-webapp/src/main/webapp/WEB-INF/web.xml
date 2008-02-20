@@ -59,6 +59,14 @@
     <listener-class>org.codehaus.plexus.xwork.PlexusLifecycleListener</listener-class>
   </listener>
 
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.apache.maven.archiva.web.startup.PlexusSpringListener</listener-class>
+  </listener>
+
   <servlet>
     <servlet-name>RepositoryServlet</servlet-name>
     <servlet-class>org.apache.maven.archiva.web.repository.RepositoryServlet</servlet-class>
@@ -72,22 +80,22 @@
   </servlet-mapping>
 
   <resource-ref>
-     <res-ref-name>jdbc/users</res-ref-name>
-     <res-type>javax.sql.DataSource</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>jdbc/users</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
   <resource-ref>
-     <res-ref-name>jdbc/archiva</res-ref-name>
-     <res-type>javax.sql.DataSource</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>jdbc/archiva</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
   <resource-ref>
-     <res-ref-name>mail/Session</res-ref-name>
-     <res-type>javax.mail.Session</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>mail/Session</res-ref-name>
+    <res-type>javax.mail.Session</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
 
 </web-app>

@@ -1,4 +1,4 @@
-package org.apache.maven.archiva.policies.urlcache;
+package org.apache.maven.archiva.common.spring;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,42 +19,31 @@ package org.apache.maven.archiva.policies.urlcache;
  * under the License.
  */
 
-import org.codehaus.plexus.cache.Cache;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
-import java.util.Date;
-
-/**
- * DefaultUrlFailureCache 
- *
- * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
- * @version $Id$
- */
-public class DefaultUrlFailureCache
-    implements UrlFailureCache
+public class PlexusFactory
 {
-    /**
-     * @todo spring cache instead
-     */
-    private Cache urlCache;
+    private PlexusContainer container;
 
-    public DefaultUrlFailureCache( Cache urlCache )
+    private String role;
+
+    private String roleHint;
+
+    public PlexusFactory( String role, String roleHint )
     {
-        this.urlCache = urlCache;
+        this.role = role;
+        this.roleHint = roleHint;
     }
 
-    public void cacheFailure( String url )
+    public Object createInstance()
+        throws ComponentLookupException
     {
-        urlCache.register( url, new Date() );
+        return container.lookup( role, roleHint );
     }
 
-    public boolean hasFailedBefore( String url )
+    public void setContainer( PlexusContainer container )
     {
-        if ( urlCache.hasKey( url ) )
-        {
-            urlCache.register( url, new Date() );
-            return true;
-        }
-
-        return false;
+        this.container = container;
     }
 }

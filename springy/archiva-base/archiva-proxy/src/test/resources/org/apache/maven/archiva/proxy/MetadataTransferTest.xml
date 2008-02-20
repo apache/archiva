@@ -96,9 +96,8 @@
           <field-name>postDownloadPolicies</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.policies.urlcache.UrlFailureCache</role>
+          <role>org.apache.maven.archiva.common.spring.SpringFactory</role>
           <role-hint>default</role-hint>
-          <field-name>urlFailureCache</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
