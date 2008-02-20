@@ -60,6 +60,8 @@ public class PlexusBeanDefinitionDocumentReader
 
             DOMResult transResult = new DOMResult();
 
+            // FIXME : uses Xalan extension. need either to force Xalan as Transformer or
+            // register a XpathFunctionResolver (how ?)
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer t = tf.newTransformer( xsltSource );
             t.transform( xmlSource, transResult );
