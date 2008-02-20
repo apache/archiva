@@ -1,0 +1,129 @@
+ ------
+ Deploying to Repository
+ ------
+
+Deploying to Repository
+
+* Configuring Maven to deploy to an Archiva repository
+  
+  [[1]] Create a user in Archiva to use for deployment
+
+  [[2]] The deployment user needs the Role 'Repository Manager' for each repository that you want to deploy to
+
+  [[3]] Define the server for deployment inside your 'settings.xml', use the newly created user for authentication
+
++-------------------------------------------------------------------------+
+  <settings>
+    ...
+    <servers>
+      <server>
+        <id>archiva.internal</id>
+        <username>{archiva-deployment-user}</username>
+        <password>{archiva-deployment-pwd}</password>
+      </server>
+      <server>
+        <id>archiva.snapshots</id>
+        <username>{archiva-deployment-user}</username>
+        <password>{archiva-deployment-pwd}</password>
+      </server>
+      ...
+    </servers>
+    ...
+  </settings>
++-------------------------------------------------------------------------+
+
+* Deploying to Archiva using WebDAV
+
+  [[1]] Configure the <<<distributionManagement>>> part of your <<<pom.xml>>> (customising the URLs as needed).
+        The <<<id>>> of the repository in <<<distributionManagement>>> <<must>> match the <<<id>>> of the <<<server>>>
+        element in <<<settings.xml>>>.
+ 
++-------------------------------------------------------------------------+
+  <project>
+    ...
+    <distributionManagement>
+      <repository>
+        <id>archiva.internal</id>
+        <name>Internal Release Repository</name>
+        <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/internal/</url>
+      </repository>
+      <snapshotRepository>
+        <id>archiva.snapshots</id>
+        <name>Internal Snapshot Repository</name>
+        <url>dav:http://reposerver.mycompany.com:8080/archiva/repository/snapshots/</url>
+      </snapshotRepository>
+    </distributionManagement>
+    ...
+  </project>
++-------------------------------------------------------------------------+
+
+  [[2]] Add a build extension to your <<<pom.xml>>>
+
++-------------------------------------------------------------------------+
+  <project>
+    ...
+    <build>
+      <extensions>
+        <extension>
+          <groupId>org.apache.maven.wagon</groupId>
+          <artifactId>wagon-webdav</artifactId>
+          <version>1.0-beta-2</version>
+        </extension>
+      </extensions>
+    </build>
+    ...
+  </project>
++-------------------------------------------------------------------------+
+
+  [[3]] Finally the user that is running archiva (tomcat-user, plexus-user,..) must have write access to the deployment repository.   
+
+* Deploying using other protocols
+
+  You can also deploy to the Archiva server using traditional means such as SCP, FTP, etc. For more information on these deployment
+  techniques, refer to the Maven documentation.
+
+  Note that once the files are deployed into the location of the Archiva managed repository, they will not be detected by Archiva until the
+  next scan takes place, so the interval should be configured to a reasonably frequent setting.
+  
+* Deploying Third-Party Artifacts to Archiva
+
+  [[1]] In the directory from which you intend to execute "<<<mvn
+  deploy:deploy-file>>>", save the following content as <<<pom.xml>>>.
+  
++-------+
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>com.example</groupId>
+   <artifactId>webdav-deploy</artifactId>
+   <packaging>pom</packaging>
+   <version>1</version>
+   <name>Webdav Deployment POM</name>
+   
+   <build>
+      <extensions>
+         <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-webdav</artifactId>
+            <version>1.0-beta-2</version>
+         </extension>
+      </extensions>
+   </build>
+
+</project>
++-------+
+
+  This pom will not be deployed with the artifact, it simply serves to make the
+  wagon-webdav jar available to the build process.
+  
+  Alternately, save this file somewhere else, and use "<<<mvn ... -f
+  /path/to/filename>>>" to force the use of an alternate POM file.
+  
+  [[2]] Deploy the artifact:
+  
++------+
+mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
+    -DrepositoryId=archiva.internal
+    -Durl=dav:http://repo.mycompany.com:8080/repository/internal/
++------+
+
+~~TODO: information for Maven 1, ant tasks, ivy, etc.

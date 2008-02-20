@@ -1,0 +1,6 @@
+<project>
+  <pomVersion>3</pomVersion>
+  <artifactId>incorrectMd5Artifact</artifactId>
+  <groupId>test</groupId>
+  <currentVersion>1.0.0</currentVersion>
+</project>

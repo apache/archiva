@@ -1,0 +1,9 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.jdo.JdoFactory</role>
+      <role-hint>archiva</role-hint>
+      <implementation>org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory</implementation>
+    </component>
+  </components>
+</component-set>
