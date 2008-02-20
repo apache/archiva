@@ -1,0 +1,40 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <description>&lt;p&gt;
+Implementation of configuration holder that retrieves it from the registry.</description>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.registry.Registry</role>
+          <role-hint>commons-configuration</role-hint>
+          <field-name>registry</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
+          <field-name>prePolicies</field-name>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
+          <field-name>postPolicies</field-name>
+        </requirement>
+      </requirements>
+      <configuration>
+        <user-config-filename>${user.home}/.m2/archiva.xml</user-config-filename>
+        <alt-config-filename>${appserver.base}/conf/archiva.xml</alt-config-filename>
+      </configuration>
+    </component>
+    <component>
+      <role>org.apache.maven.archiva.configuration.FileTypes</role>
+      <implementation>org.apache.maven.archiva.configuration.FileTypes</implementation>
+      <description>FileTypes</description>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
+          <field-name>archivaConfiguration</field-name>
+        </requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>

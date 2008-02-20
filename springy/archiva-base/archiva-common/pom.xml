@@ -30,7 +30,7 @@
   <dependencies>
     <!-- TO OTHER DEVELOPERS:
          This module should depend on NO OTHER ARCHIVA MODULES.
-         If you feel tempted to add one, discuss it first in the 
+         If you feel tempted to add one, discuss it first in the
          archiva-dev@maven.apache.org mailing-list.
             joakime@apache.org
       -->
@@ -55,6 +55,11 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
       <version>2.5.1</version>
+    </dependency>
+    <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
     </dependency>
   </dependencies>
   <build>
