@@ -1,39 +1,33 @@
 <component-set>
   <components>
     <component>
-      <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-      <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <role>java.lang.Object</role>
+      <role-hint>default</role-hint>
+      <implementation>java.lang.String</implementation>
       <instanciation-strategy>per-lookup</instanciation-strategy>
-      <description>&lt;p&gt;
-Implementation of configuration holder that retrieves it from the registry.</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.registry.Registry</role>
-          <role-hint>commons-configuration</role-hint>
-          <field-name>registry</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
-          <field-name>prePolicies</field-name>
-        </requirement>
-        <requirement>
-          <role>org.apache.maven.archiva.policies.PostDownloadPolicy</role>
-          <field-name>postPolicies</field-name>
-        </requirement>
-      </requirements>
+      <description></description>
       <configuration>
-        <user-config-filename>${user.home}/.m2/archiva.xml</user-config-filename>
-        <alt-config-filename>${appserver.base}/conf/archiva.xml</alt-config-filename>
+        <user-config-filename>${user.home}</user-config-filename>
+        <alt-config-filename>${java.home}</alt-config-filename>
       </configuration>
     </component>
     <component>
-      <role>org.apache.maven.archiva.configuration.FileTypes</role>
-      <implementation>org.apache.maven.archiva.configuration.FileTypes</implementation>
-      <description>FileTypes</description>
+      <role>org.codehaus.plexus.logging.LoggerManager</role>
+      <implementation>org.codehaus.plexus.logging.console.ConsoleLoggerManager</implementation>
       <requirements>
         <requirement>
-          <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
-          <field-name>archivaConfiguration</field-name>
+          <role>org.codehaus.plexus.digest.Digester</role>
+          <role-hint>sha1</role-hint>
+          <field-name>digestSha1</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.digest.Digester</role>
+          <role-hint>md5</role-hint>
+          <field-name>digestMd5</field-name>
+        </requirement>
+        <requirement>
+          <role>org.codehaus.plexus.digest.ChecksumFile</role>
+          <field-name>checksumFile</field-name>
         </requirement>
       </requirements>
     </component>

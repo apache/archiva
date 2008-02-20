@@ -65,9 +65,9 @@ public class PlexusBeanDefinitionDocumentReaderTest
         PlexusBeanFactory factory = new PlexusBeanFactory( new UrlResource( plexus ) );
         assertEquals( 2, factory.getBeanDefinitionCount() );
 
-        BeanDefinition bd = factory.getBeanDefinition( "org.apache.maven.archiva.configuration.ArchivaConfiguration" );
-        assertEquals( "org.apache.maven.archiva.configuration.DefaultArchivaConfiguration", bd.getBeanClassName() );
+        BeanDefinition bd = factory.getBeanDefinition( "java.lang.Object#default" );
+        assertEquals( "java.lang.String", bd.getBeanClassName() );
         assertEquals( "prototype", bd.getScope() );
-        assertEquals( 5, bd.getPropertyValues().size() );
+        assertEquals( 2, bd.getPropertyValues().size() );
     }
 }

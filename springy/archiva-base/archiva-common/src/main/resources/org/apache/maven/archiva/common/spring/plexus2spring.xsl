@@ -20,9 +20,9 @@
 
 <xsl:stylesheet
     version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:plexus="org.apache.maven.archiva.common.spring.CamelCaseXpathFunction">
+    xmlns:plexus="org.apache.maven.archiva.common.spring.PlexusToSpringUtils">
 <!--
-    use xalan extension mecanism to call static methods
+    FIXME replace xalan extension mecanism to call static methods with XPathFunctions
     @see http://www.ibm.com/developerworks/library/x-xalanextensions.html
  -->
 
@@ -49,9 +49,15 @@
       <xsl:attribute name="class">
         <xsl:value-of select="implementation" />
       </xsl:attribute>
-        <xsl:if test="instanciation-strategy/text() = 'per-lookup'">
-          <xsl:attribute name="scope">prototype</xsl:attribute>
-        </xsl:if>
+      <xsl:if test="instanciation-strategy/text() = 'per-lookup'">
+        <xsl:attribute name="scope">prototype</xsl:attribute>
+      </xsl:if>
+      <xsl:if test="plexus:isInitializable( implementation/text() )">
+        <xsl:attribute name="init-method">initialize</xsl:attribute>
+      </xsl:if>
+      <xsl:if test="plexus:isDisposable( implementation/text() )">
+        <xsl:attribute name="init-method">dispose</xsl:attribute>
+      </xsl:if>
       <xsl:for-each select="requirements/requirement">
         <property>
           <xsl:attribute name="name">

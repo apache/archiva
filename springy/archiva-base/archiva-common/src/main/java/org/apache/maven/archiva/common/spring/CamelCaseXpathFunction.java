@@ -27,6 +27,10 @@ import javax.xml.xpath.XPathFunction;
 import javax.xml.xpath.XPathFunctionException;
 import javax.xml.xpath.XPathFunctionResolver;
 
+import org.apache.commons.lang.ClassUtils;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+
 /**
  * XPathFunction to convert plexus property-name to Spring propertyName.
  *
@@ -62,29 +66,8 @@ public class CamelCaseXpathFunction
     public Object evaluate( List args )
         throws XPathFunctionException
     {
-        return toCamelCase( (String) args.get( 0 ) );
+        return PlexusToSpringUtils.toCamelCase( (String) args.get( 0 ) );
     }
 
-    public static String toCamelCase( String string )
-    {
-        StringBuilder camelCase = new StringBuilder();
-        boolean first = true;
 
-        StringTokenizer tokenizer = new StringTokenizer( string.toLowerCase(), "-" );
-        while ( tokenizer.hasMoreTokens() )
-        {
-            String token = tokenizer.nextToken();
-            if ( first )
-            {
-                camelCase.append( token.charAt( 0 ) );
-                first = false;
-            }
-            else
-            {
-                camelCase.append( Character.toUpperCase( token.charAt( 0 ) ) );
-            }
-            camelCase.append( token.substring( 1, token.length() ) );
-        }
-        return camelCase.toString();
-    }
 }
