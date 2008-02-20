@@ -46,7 +46,7 @@ public class PlexusBeanDefinitionDocumentReader
 
     public void registerBeanDefinitions( Document doc, XmlReaderContext readerContext )
     {
-        convertPlexusDescriptorToSpringBeans( doc );
+        doc = convertPlexusDescriptorToSpringBeans( doc );
         super.registerBeanDefinitions( doc, readerContext );
     }
 

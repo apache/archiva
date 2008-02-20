@@ -3,6 +3,7 @@
     <component>
       <role>org.apache.maven.archiva.configuration.ArchivaConfiguration</role>
       <implementation>org.apache.maven.archiva.configuration.DefaultArchivaConfiguration</implementation>
+      <instanciation-strategy>per-lookup</instanciation-strategy>
       <description>&lt;p&gt;
 Implementation of configuration holder that retrieves it from the registry.</description>
       <requirements>

@@ -19,30 +19,28 @@ package org.apache.maven.archiva.common.spring;
  * under the License.
  */
 
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import junit.framework.TestCase;
+
 import org.dom4j.io.DOMReader;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.core.io.UrlResource;
 import org.w3c.dom.Document;
 
-import junit.framework.TestCase;
-
 /**
- *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusBeanDefinitionDocumentReaderTest
     extends TestCase
 {
-    PlexusBeanDefinitionDocumentReader reader = new PlexusBeanDefinitionDocumentReader();
 
-    public void testConvertPlexusToSpring()
+    public void testXslt()
         throws Exception
     {
         URL plexus = getClass().getResource( "components.xml" );
@@ -50,8 +48,26 @@ public class PlexusBeanDefinitionDocumentReaderTest
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse( plexus.openStream() );
 
+        PlexusBeanDefinitionDocumentReader reader = new PlexusBeanDefinitionDocumentReader();
         doc = reader.convertPlexusDescriptorToSpringBeans( doc );
 
         new XMLWriter( System.out, OutputFormat.createPrettyPrint() ).write( new DOMReader().read( doc ) );
+    }
+
+    /**
+     * Test conversion from a typical Plexus components descriptor to a spring beanFactory
+     * @throws Exception
+     */
+    public void testConvertPlexusToSpring()
+        throws Exception
+    {
+        URL plexus = getClass().getResource( "components.xml" );
+        PlexusBeanFactory factory = new PlexusBeanFactory( new UrlResource( plexus ) );
+        assertEquals( 2, factory.getBeanDefinitionCount() );
+
+        BeanDefinition bd = factory.getBeanDefinition( "org.apache.maven.archiva.configuration.ArchivaConfiguration" );
+        assertEquals( "org.apache.maven.archiva.configuration.DefaultArchivaConfiguration", bd.getBeanClassName() );
+        assertEquals( "prototype", bd.getScope() );
+        assertEquals( 5, bd.getPropertyValues().size() );
     }
 }
