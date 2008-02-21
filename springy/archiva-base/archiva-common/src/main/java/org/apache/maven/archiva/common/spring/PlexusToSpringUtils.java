@@ -34,6 +34,16 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 public class PlexusToSpringUtils
 {
 
+    public static String toSpringId( String string )
+    {
+        int i = string.lastIndexOf( '.' );
+        if (i >= 0 )
+        {
+            return Character.toLowerCase( string.charAt( i + 1 ) ) + string.substring( i + 2 );
+        }
+        return string;
+    }
+
     public static String toCamelCase( String string )
     {
         StringBuilder camelCase = new StringBuilder();

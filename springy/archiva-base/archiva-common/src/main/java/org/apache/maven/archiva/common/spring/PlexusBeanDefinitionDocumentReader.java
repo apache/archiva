@@ -52,6 +52,11 @@ public class PlexusBeanDefinitionDocumentReader
 
     protected Document convertPlexusDescriptorToSpringBeans( Document doc )
     {
+        if ( ! "component-set".equals( doc.getDocumentElement().getNodeName() ) )
+        {
+            return doc;
+        }
+
         try
         {
             Source xmlSource = new DOMSource( doc );

@@ -33,6 +33,7 @@
 <xsl:template match="/component-set">
 <beans>
   <xsl:for-each select="components/component">
+
     <bean>
       <xsl:choose>
         <xsl:when test="role-hint">
@@ -66,12 +67,12 @@
           <xsl:choose>
             <xsl:when test="role-hint">
               <xsl:attribute name="ref">
-                <xsl:value-of select="concat( role, '#', role-hint )" />
+                <xsl:value-of select="concat( plexus:toSpringId( role ), '#', role-hint )" />
               </xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
               <xsl:attribute name="ref">
-                <xsl:value-of select="role" />
+                <xsl:value-of select="plexus:toSpringId( role )" />
               </xsl:attribute>
             </xsl:otherwise>
           </xsl:choose>
@@ -88,6 +89,35 @@
         </property>
       </xsl:for-each>
     </bean>
+
+    <!--
+      Plexus convention is to use interface FQN as bean ID
+      Spring convention is to use interface simpleName as bean ID
+      To allow smooth migration, we define same bean with both IDs using an alias
+    -->
+
+    <alias>
+      <xsl:attribute name="alias">
+        <xsl:choose>
+          <xsl:when test="role-hint">
+            <xsl:value-of select="concat( plexus:toSpringId( role ), '#', role-hint )" />
+          </xsl:when>
+          <xsl:otherwise>
+              <xsl:value-of select="plexus:toSpringId( role )" />
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
+      <xsl:attribute name="name">
+        <xsl:choose>
+          <xsl:when test="role-hint">
+            <xsl:value-of select="concat( role, '#', role-hint )" />
+          </xsl:when>
+          <xsl:otherwise>
+              <xsl:value-of select="role" />
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
+    </alias>
   </xsl:for-each>
 </beans>
 </xsl:template>
