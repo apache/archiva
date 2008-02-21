@@ -19,11 +19,12 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import java.util.List;
+
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
@@ -35,9 +36,10 @@ import java.util.List;
  *                   role-hint="required-roles"
  */
 public class ArchivaStandardRolesCheck
-    extends AbstractLogEnabled
     implements EnvironmentCheck
 {
+    private Logger log = LoggerFactory.getLogger( ArchivaStandardRolesCheck.class );
+    
     /**
      * @plexus.requirement role-hint="cached"
      */
@@ -61,7 +63,7 @@ public class ArchivaStandardRolesCheck
                 ArchivaRoleConstants.REGISTERED_USER_ROLE,
                 ArchivaRoleConstants.USER_ADMINISTRATOR_ROLE };
 
-            getLogger().info( "Checking the existance of required roles." );
+            log.info( "Checking the existance of required roles." );
 
             for ( String roleName : expectedRoles )
             {
@@ -85,7 +87,7 @@ public class ArchivaStandardRolesCheck
                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
                 "archiva-guest" };
 
-            getLogger().info( "Checking the existance of required operations." );
+            log.info( "Checking the existance of required operations." );
 
             for ( String operation : expectedOperations )
             {

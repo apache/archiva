@@ -23,7 +23,8 @@ import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TriggerBeginScanClosure 
@@ -34,14 +35,13 @@ import org.codehaus.plexus.logging.Logger;
 public class TriggerBeginScanClosure
     implements Closure
 {
+    private Logger log = LoggerFactory.getLogger( TriggerBeginScanClosure.class );
+    
     private ManagedRepositoryConfiguration repository;
 
-    private Logger logger;
-
-    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository, Logger logger )
+    public TriggerBeginScanClosure( ManagedRepositoryConfiguration repository )
     {
         this.repository = repository;
-        this.logger = logger;
     }
 
     public void execute( Object input )
@@ -56,7 +56,7 @@ public class TriggerBeginScanClosure
             }
             catch ( ConsumerException e )
             {
-                logger.warn( "Consumer [" + consumer.getId() + "] cannot begin: " + e.getMessage(), e );
+                log.warn( "Consumer [" + consumer.getId() + "] cannot begin: " + e.getMessage(), e );
             }
         }
     }

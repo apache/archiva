@@ -36,12 +36,13 @@ import org.codehaus.plexus.evaluator.DefaultExpressionEvaluator;
 import org.codehaus.plexus.evaluator.EvaluatorException;
 import org.codehaus.plexus.evaluator.ExpressionEvaluator;
 import org.codehaus.plexus.evaluator.sources.SystemPropertyExpressionSource;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -83,9 +84,10 @@ import java.util.Map.Entry;
  * @plexus.component role="org.apache.maven.archiva.configuration.ArchivaConfiguration"
  */
 public class DefaultArchivaConfiguration
-    extends AbstractLogEnabled
     implements ArchivaConfiguration, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger(DefaultArchivaConfiguration.class);
+    
     /**
      * Plexus registry to read the configuration from.
      *
@@ -287,7 +289,7 @@ public class DefaultArchivaConfiguration
                     else
                     {
                         // Policy key doesn't exist. Don't add it to golden version.
-                        getLogger().warn( "Policy [" + policyId + "] does not exist." );
+                        log.warn( "Policy [" + policyId + "] does not exist." );
                     }
                 }
 
@@ -323,13 +325,13 @@ public class DefaultArchivaConfiguration
     {
         if ( MapUtils.isEmpty( prePolicies ) )
         {
-            getLogger().error( "No PreDownloadPolicies found!" );
+            log.error( "No PreDownloadPolicies found!" );
             return null;
         }
 
         if ( MapUtils.isEmpty( postPolicies ) )
         {
-            getLogger().error( "No PostDownloadPolicies found!" );
+            log.error( "No PostDownloadPolicies found!" );
             return null;
         }
 
@@ -354,13 +356,13 @@ public class DefaultArchivaConfiguration
     {
         if ( MapUtils.isEmpty( prePolicies ) )
         {
-            getLogger().error( "No PreDownloadPolicies found!" );
+            log.error( "No PreDownloadPolicies found!" );
             return false;
         }
         
         if ( MapUtils.isEmpty( postPolicies ) )
         {
-            getLogger().error( "No PostDownloadPolicies found!" );
+            log.error( "No PostDownloadPolicies found!" );
             return false;
         }
         
@@ -505,7 +507,7 @@ public class DefaultArchivaConfiguration
         }
         catch ( IOException e )
         {
-            getLogger().error( "Unable to create " + filetype + " file: " + e.getMessage(), e );
+            log.error( "Unable to create " + filetype + " file: " + e.getMessage(), e );
             return false;
         }
     }
@@ -521,7 +523,7 @@ public class DefaultArchivaConfiguration
             }
             catch ( Throwable t )
             {
-                getLogger().warn( "Unable to notify of saved configuration event.", t );
+                log.warn( "Unable to notify of saved configuration event.", t );
             }
         }
     }

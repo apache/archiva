@@ -19,7 +19,8 @@ package org.apache.maven.archiva.repository.audit;
  * under the License.
  */
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AuditLog - Audit Log. 
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
 public class AuditLog
     implements AuditListener
 {
-    public static final Logger logger = Logger.getLogger( "org.apache.archiva.AuditLog" );
+    public static final Logger logger = LoggerFactory.getLogger( "org.apache.archiva.AuditLog" );
     
     private static final char DELIM = ' '; 
 

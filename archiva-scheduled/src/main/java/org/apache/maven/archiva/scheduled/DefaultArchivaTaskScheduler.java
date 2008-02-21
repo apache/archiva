@@ -19,6 +19,9 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
+import java.text.ParseException;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,7 +30,6 @@ import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
@@ -43,9 +45,8 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
-
-import java.text.ParseException;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of a scheduling component for archiva.
@@ -55,9 +56,10 @@ import java.util.List;
  * @plexus.component role="org.apache.maven.archiva.scheduled.ArchivaTaskScheduler" role-hint="default"
  */
 public class DefaultArchivaTaskScheduler
-    extends AbstractLogEnabled
     implements ArchivaTaskScheduler, Startable, RegistryListener
 {
+    private Logger log = LoggerFactory.getLogger( DefaultArchivaTaskScheduler.class );
+    
     /**
      * @plexus.requirement
      */
@@ -134,7 +136,7 @@ public class DefaultArchivaTaskScheduler
     {
         if ( repoConfig.getRefreshCronExpression() == null )
         {
-            getLogger().warn( "Skipping job, no cron expression for " + repoConfig.getId() );
+            log.warn( "Skipping job, no cron expression for " + repoConfig.getId() );
             return;
         }
 
@@ -144,7 +146,7 @@ public class DefaultArchivaTaskScheduler
         CronExpressionValidator cronValidator = new CronExpressionValidator();
         if ( !cronValidator.validate( cronString ) )
         {
-            getLogger().warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId() +
+            log.warn( "Cron expression [" + cronString + "] for repository [" + repoConfig.getId() +
                 "] is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
@@ -168,7 +170,7 @@ public class DefaultArchivaTaskScheduler
         }
         catch ( ParseException e )
         {
-            getLogger().error(
+            log.error(
                 "ParseException in repository scanning cron expression, disabling repository scanning for '" +
                     repoConfig.getId() + "': " + e.getMessage() );
         }
@@ -190,7 +192,7 @@ public class DefaultArchivaTaskScheduler
         CronExpressionValidator cronValidator = new CronExpressionValidator();
         if ( !cronValidator.validate( cronString ) )
         {
-            getLogger().warn(
+            log.warn(
                 "Cron expression [" + cronString + "] for database update is invalid.  Defaulting to hourly." );
             cronString = CRON_HOURLY;
         }
@@ -203,7 +205,7 @@ public class DefaultArchivaTaskScheduler
         }
         catch ( ParseException e )
         {
-            getLogger().error(
+            log.error(
                 "ParseException in database scanning cron expression, disabling database scanning: " + e.getMessage() );
         }
 
@@ -235,7 +237,7 @@ public class DefaultArchivaTaskScheduler
         // cronExpression comes from the database scanning section
         if ( "cronExpression".equals( propertyName ) )
         {
-            getLogger().debug( "Restarting the database scheduled task after property change: " + propertyName );
+            log.debug( "Restarting the database scheduled task after property change: " + propertyName );
 
             try
             {
@@ -245,7 +247,7 @@ public class DefaultArchivaTaskScheduler
             }
             catch ( SchedulerException e )
             {
-                getLogger().error( "Error restarting the database scanning job after property change." );
+                log.error( "Error restarting the database scanning job after property change." );
             }
         }
 
@@ -269,7 +271,7 @@ public class DefaultArchivaTaskScheduler
                     }
                     catch ( SchedulerException e )
                     {
-                        getLogger().error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
                     }
                 }
             }

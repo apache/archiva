@@ -19,6 +19,10 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -31,11 +35,8 @@ import org.apache.maven.wagon.events.SessionListener;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A dummy wagon implementation
@@ -43,9 +44,10 @@ import java.util.List;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class WagonDelegate
-    extends AbstractLogEnabled
     implements Wagon
 {
+    private Logger log = LoggerFactory.getLogger( WagonDelegate.class );
+    
     private Wagon delegate;
 
     private String contentToGet;
@@ -53,7 +55,7 @@ public class WagonDelegate
     public void get( String resourceName, File destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        getLogger().debug( ".get(" + resourceName + ", " + destination + ")" );
+        log.debug( ".get(" + resourceName + ", " + destination + ")" );
         delegate.get( resourceName, destination );
         create( destination );
     }
@@ -61,7 +63,7 @@ public class WagonDelegate
     public boolean getIfNewer( String resourceName, File destination, long timestamp )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        getLogger().info( ".getIfNewer(" + resourceName + ", " + destination + ", " + timestamp + ")" );
+        log.info( ".getIfNewer(" + resourceName + ", " + destination + ", " + timestamp + ")" );
 
         boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
         createIfMissing( destination );

@@ -19,23 +19,25 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.configuration.CombinedConfiguration;
-import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
-import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.configuration.CombinedConfiguration;
+import org.apache.maven.archiva.common.utils.Slf4JPlexusLogger;
+import org.apache.maven.archiva.configuration.functors.FiletypeSelectionPredicate;
+import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryReader;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * FileTypes 
@@ -46,9 +48,10 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.archiva.configuration.FileTypes"
  */
 public class FileTypes
-    extends AbstractLogEnabled
     implements Initializable
 {
+    private Logger log = LoggerFactory.getLogger(FileTypes.class);
+    
     public static final String ARTIFACTS = "artifacts";
 
     public static final String AUTO_REMOVE = "auto-remove";
@@ -122,7 +125,7 @@ public class FileTypes
             Field fld = commonsRegistry.getClass().getDeclaredField( "configuration" );
             fld.setAccessible( true );
             fld.set( commonsRegistry, new CombinedConfiguration() );
-            commonsRegistry.enableLogging( getLogger() );
+            commonsRegistry.enableLogging( new Slf4JPlexusLogger( FileTypes.class ) );
             commonsRegistry.addConfigurationFromResource( "org/apache/maven/archiva/configuration/default-archiva.xml" );
             
             // Read configuration as it was intended.

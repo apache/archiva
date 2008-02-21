@@ -19,6 +19,10 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
@@ -26,12 +30,9 @@ import org.apache.maven.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.archiva.repository.RepositoryException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.DirectoryWalker;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultRepositoryScanner
@@ -41,9 +42,10 @@ import java.util.List;
  * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryScanner"
  */
 public class DefaultRepositoryScanner
-    extends AbstractLogEnabled
     implements RepositoryScanner
 {
+    private Logger log = LoggerFactory.getLogger( DefaultRepositoryScanner.class );
+    
     /**
      * @plexus.requirement
      */
@@ -112,7 +114,7 @@ public class DefaultRepositoryScanner
 
         // Setup the Scan Instance
         RepositoryScannerInstance scannerInstance = new RepositoryScannerInstance( repository, knownContentConsumers,
-                                                                                   invalidContentConsumers, getLogger(), changesSince );
+                                                                                   invalidContentConsumers, changesSince );
 
         dirWalker.addDirectoryWalkListener( scannerInstance );
 

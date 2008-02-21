@@ -19,15 +19,16 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.VersionUtil;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.VersionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AbstractUpdatePolicy 
@@ -36,9 +37,10 @@ import java.util.Properties;
  * @version $Id$
  */
 public abstract class AbstractUpdatePolicy
-    extends AbstractLogEnabled
     implements PreDownloadPolicy
 {
+    private Logger log = LoggerFactory.getLogger( AbstractUpdatePolicy.class );
+    
     /**
      * The ALWAYS policy setting means that the artifact is always uipdated from the remote repo.
      */
@@ -127,20 +129,20 @@ public abstract class AbstractUpdatePolicy
         if ( ALWAYS.equals( policySetting ) )
         {
             // Skip means ok to update.
-            getLogger().debug( "OK to update, " + getUpdateMode() + " policy set to ALWAYS." );
+            log.debug( "OK to update, " + getUpdateMode() + " policy set to ALWAYS." );
             return;
         }
 
         // Test for mismatches.
         if ( !isSnapshotVersion && isSnapshotPolicy() )
         {
-            getLogger().debug( "OK to update, snapshot policy does not apply for non-snapshot versions." );
+            log.debug( "OK to update, snapshot policy does not apply for non-snapshot versions." );
             return;
         }
 
         if ( isSnapshotVersion && !isSnapshotPolicy() )
         {
-            getLogger().debug( "OK to update, release policy does not apply for snapshot versions." );
+            log.debug( "OK to update, release policy does not apply for snapshot versions." );
             return;
         }
 
@@ -153,7 +155,7 @@ public abstract class AbstractUpdatePolicy
         if ( !localFile.exists() )
         {
             // No file means it's ok.
-            getLogger().debug( "OK to update " + getUpdateMode() + ", local file does not exist." );
+            log.debug( "OK to update " + getUpdateMode() + ", local file does not exist." );
             return;
         }
 

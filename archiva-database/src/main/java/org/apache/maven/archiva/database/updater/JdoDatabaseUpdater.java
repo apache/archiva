@@ -19,6 +19,10 @@ package org.apache.maven.archiva.database.updater;
  * under the License.
  */
 
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.collections.Predicate;
@@ -29,11 +33,8 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.functors.UnprocessedArtifactPredicate;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * JdoDatabaseUpdater
@@ -45,9 +46,10 @@ import java.util.List;
  *   role-hint="jdo" 
  */
 public class JdoDatabaseUpdater
-    extends AbstractLogEnabled
     implements DatabaseUpdater
 {
+    private Logger log = LoggerFactory.getLogger( JdoDatabaseUpdater.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -144,7 +146,7 @@ public class JdoDatabaseUpdater
 
         if ( CollectionUtils.isEmpty( consumers ) )
         {
-            getLogger().warn( "There are no selected consumers for unprocessed artifacts." );
+            log.warn( "There are no selected consumers for unprocessed artifacts." );
             return;
         }
         
@@ -162,7 +164,7 @@ public class JdoDatabaseUpdater
 
         if ( CollectionUtils.isEmpty( consumers ) )
         {
-            getLogger().warn( "There are no selected consumers for artifact cleanup." );
+            log.warn( "There are no selected consumers for artifact cleanup." );
             return;
         }
         

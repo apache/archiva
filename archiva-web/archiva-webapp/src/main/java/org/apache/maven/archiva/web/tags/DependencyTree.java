@@ -19,6 +19,12 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
+import javax.servlet.jsp.PageContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.dependency.DependencyGraphFactory;
@@ -34,15 +40,10 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.DependencyScope;
 import org.apache.maven.archiva.model.Keys;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
-import javax.servlet.jsp.PageContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DependencyTree 
@@ -53,9 +54,10 @@ import javax.servlet.jsp.PageContext;
  * @plexus.component role="org.apache.maven.archiva.web.tags.DependencyTree" 
  */
 public class DependencyTree
-    extends AbstractLogEnabled
     implements Initializable
 {
+    private Logger log = LoggerFactory.getLogger( DependencyTree.class );
+    
     /**
      * @plexus.requirement
      *              role="org.apache.maven.archiva.dependency.graph.DependencyGraphBuilder"
@@ -121,7 +123,7 @@ public class DependencyTree
         {
             String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
                 + "]: groupId is blank.";
-            getLogger().error( emsg );
+            log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
@@ -129,7 +131,7 @@ public class DependencyTree
         {
             String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
                 + "]: artifactId is blank.";
-            getLogger().error( emsg );
+            log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
@@ -137,7 +139,7 @@ public class DependencyTree
         {
             String emsg = "Error generating dependency tree [" + Keys.toKey( groupId, artifactId, modelVersion )
                 + "]: version is blank.";
-            getLogger().error( emsg );
+            log.error( emsg );
             throw new ArchivaException( emsg );
         }
 
@@ -249,7 +251,7 @@ public class DependencyTree
         catch ( GraphTaskException e )
         {
             String emsg = "Unable to generate graph for [" + Keys.toKey( projectRef ) + "] : " + e.getMessage();
-            getLogger().warn( emsg, e );
+            log.warn( emsg, e );
             throw new ArchivaException( emsg, e );
         }
     }

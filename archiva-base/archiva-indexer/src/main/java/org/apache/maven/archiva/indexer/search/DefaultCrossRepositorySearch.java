@@ -19,9 +19,10 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
@@ -38,21 +39,17 @@ import org.apache.maven.archiva.indexer.RepositoryIndexException;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.bytecode.BytecodeHandlers;
 import org.apache.maven.archiva.indexer.filecontent.FileContentHandlers;
-import org.apache.maven.archiva.indexer.functors.UserAllowedToSearchRepositoryPredicate;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesHandlers;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesKeys;
 import org.apache.maven.archiva.indexer.lucene.LuceneEntryConverter;
 import org.apache.maven.archiva.indexer.lucene.LuceneQuery;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultCrossRepositorySearch
@@ -62,9 +59,10 @@ import java.util.List;
  * @plexus.component role="org.apache.maven.archiva.indexer.search.CrossRepositorySearch" role-hint="default"
  */
 public class DefaultCrossRepositorySearch
-    extends AbstractLogEnabled
     implements CrossRepositorySearch, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( DefaultCrossRepositorySearch.class );
+    
     /**
      * @plexus.requirement role-hint="lucene"
      */
@@ -93,7 +91,7 @@ public class DefaultCrossRepositorySearch
         }
         catch ( ParseException e )
         {
-            getLogger().warn( "Unable to parse query [" + checksum + "]: " + e.getMessage(), e );
+            log.warn( "Unable to parse query [" + checksum + "]: " + e.getMessage(), e );
         }
 
         // empty results.
@@ -115,7 +113,7 @@ public class DefaultCrossRepositorySearch
         }
         catch ( ParseException e )
         {
-            getLogger().warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
+            log.warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
         }
 
         // empty results.
@@ -137,7 +135,7 @@ public class DefaultCrossRepositorySearch
         }
         catch ( ParseException e )
         {
-            getLogger().warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
+            log.warn( "Unable to parse query [" + term + "]: " + e.getMessage(), e );
         }
 
         // empty results.
@@ -212,7 +210,7 @@ public class DefaultCrossRepositorySearch
                     }
                     catch ( java.text.ParseException e )
                     {
-                        getLogger().warn( "Unable to parse document into record: " + e.getMessage(), e );
+                        log.warn( "Unable to parse document into record: " + e.getMessage(), e );
                     }
                 }
             }
@@ -220,7 +218,7 @@ public class DefaultCrossRepositorySearch
         }
         catch ( IOException e )
         {
-            getLogger().error( "Unable to setup multi-search: " + e.getMessage(), e );
+            log.error( "Unable to setup multi-search: " + e.getMessage(), e );
         }
         finally
         {
@@ -233,7 +231,7 @@ public class DefaultCrossRepositorySearch
             }
             catch ( IOException ie )
             {
-                getLogger().error( "Unable to close index searcher: " + ie.getMessage(), ie );
+                log.error( "Unable to close index searcher: " + ie.getMessage(), ie );
             }
         }
 
@@ -251,7 +249,7 @@ public class DefaultCrossRepositorySearch
             }
             catch ( RepositoryIndexSearchException e )
             {
-                getLogger().warn( "Unable to get searchable for index [" + contentIndex.getId() + "] :"
+                log.warn( "Unable to get searchable for index [" + contentIndex.getId() + "] :"
                                       + e.getMessage(), e );
             }
         }
@@ -329,7 +327,7 @@ public class DefaultCrossRepositorySearch
         }
         catch ( RepositoryIndexException e )
         {
-            getLogger().info(
+            log.info(
                               "Repository Content Index [" + index.getId() + "] for repository ["
                                   + index.getRepository().getId() + "] does not exist yet in ["
                                   + index.getIndexDirectory().getAbsolutePath() + "]." );

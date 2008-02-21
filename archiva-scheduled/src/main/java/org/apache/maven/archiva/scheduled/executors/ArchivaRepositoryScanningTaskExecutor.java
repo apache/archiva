@@ -19,26 +19,26 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.constraints.MostRecentRepositoryScanStatistics;
 import org.apache.maven.archiva.model.RepositoryContentStatistics;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.maven.archiva.repository.scanner.RepositoryScanner;
 import org.apache.maven.archiva.scheduled.tasks.RepositoryTask;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor 
@@ -51,9 +51,10 @@ import java.util.List;
  *   role-hint="repository-scanning"
  */
 public class ArchivaRepositoryScanningTaskExecutor
-    extends AbstractLogEnabled
     implements TaskExecutor, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -74,7 +75,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     public void initialize()
         throws InitializationException
     {
-        getLogger().info( "Initialized " + this.getClass().getName() );
+        log.info( "Initialized " + this.getClass().getName() );
     }
 
     public void executeTask( Task task )
@@ -87,7 +88,7 @@ public class ArchivaRepositoryScanningTaskExecutor
             throw new TaskExecutionException("Unable to execute RepositoryTask with blank repository Id.");
         }
 
-        getLogger().info( "Executing task from queue with job name: " + repoTask.getName() );
+        log.info( "Executing task from queue with job name: " + repoTask.getName() );
         
         try
         {
@@ -105,7 +106,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             RepositoryScanStatistics stats = repoScanner.scan( arepo, sinceWhen );
 
-            getLogger().info( "Finished repository task: " + stats.toDump( arepo ) );
+            log.info( "Finished repository task: " + stats.toDump( arepo ) );
             
             // I hate jpox and modello
             RepositoryContentStatistics dbstats = new RepositoryContentStatistics();

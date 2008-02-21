@@ -28,7 +28,6 @@ import org.apache.maven.archiva.database.SimpleConstraint;
 import org.apache.maven.archiva.database.constraints.AbstractSimpleConstraint;
 import org.apache.maven.archiva.model.CompoundKey;
 import org.codehaus.plexus.jdo.JdoFactory;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 
@@ -60,7 +59,6 @@ import javax.jdo.spi.PersistenceCapable;
  * @plexus.component role="org.apache.maven.archiva.database.jdo.JdoAccess" role-hint="archiva"
  */
 public class JdoAccess
-    extends AbstractLogEnabled
     implements Initializable, InstanceLifecycleListener, StoreLifecycleListener
 {
     /**

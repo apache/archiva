@@ -19,14 +19,15 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.utils.Checksums;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.common.utils.Checksums;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ChecksumPolicy - a policy applied after the download to see if the file has been downloaded
@@ -39,9 +40,10 @@ import java.util.Properties;
  *                   role-hint="checksum"
  */
 public class ChecksumPolicy
-    extends AbstractLogEnabled
     implements PostDownloadPolicy
 {
+    private Logger log = LoggerFactory.getLogger( ChecksumPolicy.class );
+    
     /**
      * The IGNORE policy indicates that if the checksum policy is ignored, and
      * the state of, contents of, or validity of the checksum files are not
@@ -90,7 +92,7 @@ public class ChecksumPolicy
         if ( IGNORE.equals( policySetting ) )
         {
             // Ignore.
-            getLogger().debug( "Checksum policy set to IGNORE." );
+            log.debug( "Checksum policy set to IGNORE." );
             return;
         }
 
@@ -131,7 +133,7 @@ public class ChecksumPolicy
         {
             if( checksums.update( localFile ) )
             {
-                getLogger().debug( "Checksum policy set to FIX, checksum files have been updated." );
+                log.debug( "Checksum policy set to FIX, checksum files have been updated." );
                 return;
             }
             else

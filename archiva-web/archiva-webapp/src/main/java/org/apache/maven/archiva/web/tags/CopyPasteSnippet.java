@@ -19,15 +19,17 @@ package org.apache.maven.archiva.web.tags;
  * under the License.
  */
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.web.util.ContextUtils;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
-import java.io.IOException;
+
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.web.util.ContextUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CopyPasteSnippet
@@ -37,8 +39,9 @@ import java.io.IOException;
  * @plexus.component role="org.apache.maven.archiva.web.tags.CopyPasteSnippet"
  */
 public class CopyPasteSnippet
-    extends AbstractLogEnabled
 {
+    private Logger log = LoggerFactory.getLogger( CopyPasteSnippet.class );
+    
     public static final String PRE = "pre";
     
     public static final String TOGGLE = "toggle";
@@ -53,7 +56,7 @@ public class CopyPasteSnippet
         if ( o == null )
         {
             buf.append( "Error generating snippet." );
-            getLogger().error( "Unable to generate snippet for null object." );
+            log.error( "Unable to generate snippet for null object." );
         }
         else if ( o instanceof ManagedRepositoryConfiguration )
         {

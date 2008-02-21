@@ -23,7 +23,6 @@ import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.database.project.ProjectModelToDatabaseListener;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.ProjectModelResolverFactory;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * ResolverFactoryInit - Initialize the Resolver Factory, and hook it up to
@@ -37,7 +36,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  *              role-hint="default"
  */
 public class ResolverFactoryInit
-    extends AbstractLogEnabled
 {
     /**
      * @plexus.requirement role-hint="database"

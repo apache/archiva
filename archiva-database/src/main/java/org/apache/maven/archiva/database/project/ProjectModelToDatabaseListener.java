@@ -19,6 +19,8 @@ package org.apache.maven.archiva.database.project;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ObjectNotFoundException;
@@ -28,9 +30,8 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelResolver;
 import org.apache.maven.archiva.repository.project.resolvers.FilesystemBasedResolver;
 import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolutionListener;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Just in Time save of project models to the database, implemented as a listener
@@ -44,9 +45,10 @@ import java.util.List;
  *              role-hint="model-to-db"
  */
 public class ProjectModelToDatabaseListener
-    extends AbstractLogEnabled
     implements ProjectModelResolutionListener
 {
+    private Logger log = LoggerFactory.getLogger( ProjectModelToDatabaseListener.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -147,7 +149,7 @@ public class ProjectModelToDatabaseListener
         }
         catch ( ProjectModelException e )
         {
-            getLogger().warn( e.getMessage(), e );
+            log.warn( e.getMessage(), e );
         }
     }
 }

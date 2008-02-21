@@ -19,9 +19,18 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -56,24 +65,13 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.SelectorUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -83,9 +81,10 @@ import java.util.Properties;
  * @plexus.component role-hint="default"
  */
 public class DefaultRepositoryProxyConnectors
-    extends AbstractLogEnabled
     implements RepositoryProxyConnectors, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyConnectors.class );
+    
     /**
      * @plexus.requirement
      */
@@ -160,29 +159,29 @@ public class DefaultRepositoryProxyConnectors
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    getLogger().debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
+                    log.debug( "Successfully transferred: " + downloadedFile.getAbsolutePath() );
                     return downloadedFile;
                 }
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \""
+                log.debug( "Artifact " + Keys.toKey( artifact ) + " not found on repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
+                log.debug( "Artifact " + Keys.toKey( artifact ) + " not updated on repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
-                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
                     "\" for artifact " + Keys.toKey( artifact ) + ", continuing to next repository. Error message: " +
                     e.getMessage() );
-                getLogger().debug( "Full stack trace", e );
+                log.debug( "Full stack trace", e );
             }
         }
-        getLogger().debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
+        log.debug( "Exhausted all target repositories, artifact " + Keys.toKey( artifact ) + " not found." );
 
         return null;
     }
@@ -221,22 +220,22 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
+                log.debug( "Versioned Metadata " + Keys.toKey( metadata )
                                        + " not found on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Versioned Metadata " + Keys.toKey( metadata )
+                log.debug( "Versioned Metadata " + Keys.toKey( metadata )
                                        + " not updated on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
-                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
                     "\" for versioned Metadata " + Keys.toKey( metadata ) +
                     ", continuing to next repository. Error message: " + e.getMessage() );
-                getLogger().debug( "Full stack trace", e );
+                log.debug( "Full stack trace", e );
             }
         }
 
@@ -253,24 +252,24 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( LayoutException e )
             {
-                getLogger().warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
+                log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
                 // TODO: add into repository report?
             }
             catch ( RepositoryMetadataException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
             catch ( IOException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
             catch ( ContentNotFoundException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
@@ -339,21 +338,21 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( NotFoundException e )
             {
-                getLogger().debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \""
+                log.debug( "Project Metadata " + Keys.toKey( metadata ) + " not found on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( NotModifiedException e )
             {
-                getLogger().debug( "Project Metadata " + Keys.toKey( metadata )
+                log.debug( "Project Metadata " + Keys.toKey( metadata )
                                        + " not updated on remote repository \""
                                        + targetRepository.getRepository().getId() + "\"." );
             }
             catch ( ProxyException e )
             {
-                getLogger().warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
+                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId() +
                     "\" for project metadata " + Keys.toKey( metadata ) +
                     ", continuing to next repository. Error message: " + e.getMessage() );
-                getLogger().debug( "Full stack trace", e );
+                log.debug( "Full stack trace", e );
             }
 
         }
@@ -371,24 +370,24 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( LayoutException e )
             {
-                getLogger().warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
+                log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage() );
                 // TODO: add into repository report?
             }
             catch ( RepositoryMetadataException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
             catch ( IOException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
             catch ( ContentNotFoundException e )
             {
-                getLogger()
+                log
                     .warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
                 // TODO: add into repository report?
             }
@@ -495,7 +494,7 @@ public class DefaultRepositoryProxyConnectors
             // Path must belong to whitelist.
             if ( !matchesPattern( remotePath, connector.getWhitelist() ) )
             {
-                getLogger().debug( "Path [" + remotePath +
+                log.debug( "Path [" + remotePath +
                     "] is not part of defined whitelist (skipping transfer from repository [" +
                     remoteRepository.getRepository().getName() + "])." );
                 return null;
@@ -505,7 +504,7 @@ public class DefaultRepositoryProxyConnectors
         // Is target path part of blacklist?
         if ( matchesPattern( remotePath, connector.getBlacklist() ) )
         {
-            getLogger().debug( "Path [" + remotePath + "] is part of blacklist (skipping transfer from repository [" +
+            log.debug( "Path [" + remotePath + "] is part of blacklist (skipping transfer from repository [" +
                 remoteRepository.getRepository().getName() + "])." );
             return null;
         }
@@ -520,11 +519,11 @@ public class DefaultRepositoryProxyConnectors
             String emsg = "Transfer not attempted on " + url + " : " + e.getMessage();
             if ( fileExists( localFile ) )
             {
-                getLogger().info( emsg + ": using already present local file." );
+                log.info( emsg + ": using already present local file." );
                 return localFile;
             }
 
-            getLogger().info( emsg );
+            log.info( emsg );
             return null;
         }
 			
@@ -573,7 +572,7 @@ public class DefaultRepositoryProxyConnectors
                 }
                 catch ( ConnectionException e )
                 {
-                    getLogger().warn( "Unable to disconnect wagon.", e );
+                    log.warn( "Unable to disconnect wagon.", e );
                 }
             }
         }
@@ -585,7 +584,7 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( PolicyViolationException e )
         {
-            getLogger().info( "Transfer invalidated from " + url + " : " + e.getMessage() );
+            log.info( "Transfer invalidated from " + url + " : " + e.getMessage() );
             if ( fileExists( localFile ) )
             {
                 return localFile;
@@ -629,22 +628,22 @@ public class DefaultRepositoryProxyConnectors
         {
             File hashFile = new File( localFile.getAbsolutePath() + type );
             transferSimpleFile( wagon, remoteRepository, remotePath + type, hashFile );
-            getLogger().debug( "Checksum" + type + " Downloaded: " + hashFile );
+            log.debug( "Checksum" + type + " Downloaded: " + hashFile );
         }
         catch ( NotFoundException e )
         {
-            getLogger().debug( "Transfer failed, checksum not found: " + url );
+            log.debug( "Transfer failed, checksum not found: " + url );
             // Consume it, do not pass this on.
         }
         catch ( NotModifiedException e )
         {
-            getLogger().debug( "Transfer skipped, checksum not modified: " + url );
+            log.debug( "Transfer skipped, checksum not modified: " + url );
             // Consume it, do not pass this on.
         }
         catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url + type );
-            getLogger().warn( "Transfer failed on checksum: " + url + " : " + e.getMessage(), e );
+            log.warn( "Transfer failed on checksum: " + url + " : " + e.getMessage(), e );
             // Critical issue, pass it on.
             throw e;
         }
@@ -678,7 +677,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( !localFile.exists() )
             {
-                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName() );
+                log.debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName() );
                 wagon.get( remotePath, temp );
                 success = true;
 
@@ -688,11 +687,11 @@ public class DefaultRepositoryProxyConnectors
                 }
 
                 // You wouldn't get here on failure, a WagonException would have been thrown.
-                getLogger().debug( "Downloaded successfully." );
+                log.debug( "Downloaded successfully." );
             }
             else
             {
-                getLogger().debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
+                log.debug( "Retrieving " + remotePath + " from " + remoteRepository.getRepository().getName()
                                        + " if updated" );
                 success = wagon.getIfNewer( remotePath, temp, localFile.lastModified() );
                 if ( !success )
@@ -703,7 +702,7 @@ public class DefaultRepositoryProxyConnectors
 
                 if ( temp.exists() )
                 {
-                    getLogger().debug( "Downloaded successfully." );
+                    log.debug( "Downloaded successfully." );
                     moveTempToTarget( temp, localFile );
                 }
             }
@@ -748,14 +747,14 @@ public class DefaultRepositoryProxyConnectors
             String defaultSetting = policy.getDefaultOption();
             String setting = StringUtils.defaultString( (String) settings.get( key ), defaultSetting );
 
-            getLogger().debug( "Applying [" + key + "] policy with [" + setting + "]" );
+            log.debug( "Applying [" + key + "] policy with [" + setting + "]" );
             try
             {
                 policy.applyPolicy( setting, request, localFile );
             }
             catch ( PolicyConfigurationException e )
             {
-                getLogger().error( e.getMessage(), e );
+                log.error( e.getMessage(), e );
             }
         }
     }
@@ -778,7 +777,7 @@ public class DefaultRepositoryProxyConnectors
 
         if ( !temp.renameTo( target ) )
         {
-            getLogger().warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+            log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
 
             try
             {
@@ -821,7 +820,7 @@ public class DefaultRepositoryProxyConnectors
 
             if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
             {
-                getLogger().debug( "Using username " + username + " to connect to remote repository "
+                log.debug( "Using username " + username + " to connect to remote repository "
                                        + remoteRepository.getURL() );
                 authInfo = new AuthenticationInfo();
                 authInfo.setUserName( username );
@@ -829,7 +828,7 @@ public class DefaultRepositoryProxyConnectors
             }
             else
             {
-                getLogger().debug( "No authentication for remote repository needed" );
+                log.debug( "No authentication for remote repository needed" );
             }
 
             //Convert seconds to milliseconds
@@ -851,14 +850,14 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ConnectionException e )
         {
-            getLogger().warn(
+            log.warn(
                               "Could not connect to " + remoteRepository.getRepository().getName() + ": "
                                   + e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            getLogger().warn(
+            log.warn(
                               "Could not connect to " + remoteRepository.getRepository().getName() + ": "
                                   + e.getMessage() );
             connected = false;
@@ -925,6 +924,16 @@ public class DefaultRepositoryProxyConnectors
     {
         /* do nothing */
     }
+    
+    private void logProcess( String managedRepoId, String resource, String event )
+    {
+        
+    }
+    
+    private void logRejection( String managedRepoId, String remoteRepoId, String resource, String reason )
+    {
+        
+    }
 
     private void initConnectorsAndNetworkProxies()
     {
@@ -988,11 +997,11 @@ public class DefaultRepositoryProxyConnectors
                 }
                 catch ( RepositoryNotFoundException e )
                 {
-                    getLogger().warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                    log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
                 }
                 catch ( RepositoryException e )
                 {
-                    getLogger().warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                    log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
                 }
             }
 

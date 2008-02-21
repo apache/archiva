@@ -19,23 +19,24 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SecurityStartup 
@@ -46,9 +47,10 @@ import java.util.Map.Entry;
  * @plexus.component role="org.apache.maven.archiva.security.SecurityStartup"
  */
 public class SecurityStartup
-    extends AbstractLogEnabled
     implements RegistryListener
 {
+    private Logger log = LoggerFactory.getLogger( SecurityStartup.class );
+    
     /**
      * @plexus.requirement
      */
@@ -104,7 +106,7 @@ public class SecurityStartup
             }
             catch ( RbacManagerException e )
             {
-                getLogger().warn(
+                log.warn(
                                   "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
                                       + "] to " + principal + " user.", e );
             }
@@ -129,7 +131,7 @@ public class SecurityStartup
             }
             catch ( ArchivaSecurityException e )
             {
-                getLogger().warn( e.getMessage(), e );
+                log.warn( e.getMessage(), e );
             }
         }
     }
@@ -145,7 +147,7 @@ public class SecurityStartup
             }
             catch ( ArchivaSecurityException e )
             {
-                getLogger().warn( e.getMessage(), e );
+                log.warn( e.getMessage(), e );
             }
         }
     }
@@ -164,7 +166,7 @@ public class SecurityStartup
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
         {
             EnvironmentCheck check = entry.getValue();
-            getLogger().info( "Running Environment Check: " + entry.getKey() );
+            log.info( "Running Environment Check: " + entry.getKey() );
             check.validateEnvironment( violations );
         }
 
@@ -183,7 +185,7 @@ public class SecurityStartup
 
             msg.append( "\n" );
             msg.append( "======================================================================" );
-            getLogger().fatalError( msg.toString() );
+            log.error( msg.toString() );
 
             throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
                 + "] violation(s) encountered, See log for details." );

@@ -22,7 +22,8 @@ package org.apache.maven.archiva.indexer.functors;
 import org.apache.commons.collections.Predicate;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryIndexException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test the {@link RepositoryContentIndex} object for the existance of an index. 
@@ -35,9 +36,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  *      role-hint="index-exists"
  */
 public class IndexExistsPredicate
-    extends AbstractLogEnabled
     implements Predicate
 {
+    private Logger log = LoggerFactory.getLogger( IndexExistsPredicate.class );
+    
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;
@@ -51,7 +53,7 @@ public class IndexExistsPredicate
             }
             catch ( RepositoryIndexException e )
             {
-                getLogger().info(
+                log.info(
                                   "Repository Content Index [" + index.getId() + "] for repository ["
                                       + index.getRepository().getId() + "] does not exist yet in ["
                                       + index.getIndexDirectory().getAbsolutePath() + "]." );

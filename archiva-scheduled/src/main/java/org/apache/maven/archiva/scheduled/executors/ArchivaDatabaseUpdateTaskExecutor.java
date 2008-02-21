@@ -22,12 +22,13 @@ package org.apache.maven.archiva.scheduled.executors;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.updater.DatabaseUpdater;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.taskqueue.Task;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ArchivaDatabaseTaskExecutor 
@@ -40,9 +41,10 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
  *   role-hint="database-update"
  */
 public class ArchivaDatabaseUpdateTaskExecutor
-    extends AbstractLogEnabled
     implements TaskExecutor, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( ArchivaDatabaseUpdateTaskExecutor.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -51,7 +53,7 @@ public class ArchivaDatabaseUpdateTaskExecutor
     public void initialize()
         throws InitializationException
     {
-        getLogger().info( "Initialized " + this.getClass().getName() );
+        log.info( "Initialized " + this.getClass().getName() );
     }
 
     public void executeTask( Task task )
@@ -59,12 +61,12 @@ public class ArchivaDatabaseUpdateTaskExecutor
     {
         DatabaseTask dbtask = (DatabaseTask) task;
 
-        getLogger().info( "Executing task from queue with job name: " + dbtask.getName() );
+        log.info( "Executing task from queue with job name: " + dbtask.getName() );
         long time = System.currentTimeMillis();
 
         try
         {
-            getLogger().info( "Task: Updating unprocessed artifacts" );
+            log.info( "Task: Updating unprocessed artifacts" );
             databaseUpdater.updateAllUnprocessed();
         }
         catch ( ArchivaDatabaseException e )
@@ -74,7 +76,7 @@ public class ArchivaDatabaseUpdateTaskExecutor
 
         try
         {
-            getLogger().info( "Task: Updating processed artifacts" );
+            log.info( "Task: Updating processed artifacts" );
             databaseUpdater.updateAllProcessed();
         }
         catch ( ArchivaDatabaseException e )
@@ -84,6 +86,6 @@ public class ArchivaDatabaseUpdateTaskExecutor
 
         time = System.currentTimeMillis() - time;
 
-        getLogger().info( "Finished database task in " + time + "ms." );
+        log.info( "Finished database task in " + time + "ms." );
     }
 }

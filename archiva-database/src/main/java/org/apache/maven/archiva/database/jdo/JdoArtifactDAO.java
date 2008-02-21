@@ -26,7 +26,6 @@ import org.apache.maven.archiva.database.ObjectNotFoundException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.jpox.ArchivaArtifactModelKey;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,7 +40,6 @@ import java.util.List;
  * @plexus.component role-hint="jdo"
  */
 public class JdoArtifactDAO
-    extends AbstractLogEnabled
     implements ArtifactDAO
 {
     /**

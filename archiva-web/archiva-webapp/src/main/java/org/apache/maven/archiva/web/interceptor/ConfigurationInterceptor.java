@@ -23,7 +23,6 @@ import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import javax.servlet.ServletContext;
 
@@ -35,7 +34,6 @@ import javax.servlet.ServletContext;
  * role-hint="configurationInterceptor"
  */
 public class ConfigurationInterceptor
-    extends AbstractLogEnabled
     implements Interceptor
 {
     /**

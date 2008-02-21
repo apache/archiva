@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Checksums
 {
-    private static final Logger LOG = LoggerFactory.getLogger(Checksums.class);
+    private Logger log = LoggerFactory.getLogger(Checksums.class);
     
     /**
      * @plexus.requirement role-hint="sha1"
@@ -66,7 +66,7 @@ public class Checksums
         // Both files missing is a failure.
         if ( !sha1File.exists() && !md5File.exists() )
         {
-            LOG.error( "File " + file.getPath() + " has no checksum files (sha1 or md5)." );
+            log.error( "File " + file.getPath() + " has no checksum files (sha1 or md5)." );
             checksPass = false;
         }
 
@@ -75,7 +75,7 @@ public class Checksums
             // Bad sha1 checksum is a failure.
             if ( !validateChecksum( sha1File, "sha1" ) )
             {
-                LOG.warn( "SHA1 is incorrect for " + file.getPath() );
+                log.warn( "SHA1 is incorrect for " + file.getPath() );
                 checksPass = false;
             }
         }
@@ -85,7 +85,7 @@ public class Checksums
             // Bad md5 checksum is a failure.
             if ( !validateChecksum( md5File, "md5" ) )
             {
-                LOG.warn( "MD5 is incorrect for " + file.getPath() );
+                log.warn( "MD5 is incorrect for " + file.getPath() );
                 checksPass = false;
             }
         }
@@ -139,12 +139,12 @@ public class Checksums
         }
         catch ( DigesterException e )
         {
-            LOG.warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
+            log.warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
             return false;
         }
         catch ( IOException e )
         {
-            LOG.warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
+            log.warn( "Unable to create " + digester.getFilenameExtension() + " file: " + e.getMessage(), e );
             return false;
         }
     }
@@ -169,28 +169,28 @@ public class Checksums
         {
             if ( checksumFile.isValidChecksum( hashFile ) )
             {
-                LOG.debug( "Valid checksum: " + hashFile.getPath() );
+                log.debug( "Valid checksum: " + hashFile.getPath() );
                 return true;
             }
             else
             {
-                LOG.debug( "Not valid checksum: " + hashFile.getPath() );
+                log.debug( "Not valid checksum: " + hashFile.getPath() );
                 return createChecksum( localFile, digester );
             }
         }
         catch ( FileNotFoundException e )
         {
-            LOG.warn( "Unable to find " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to find " + ext + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
         catch ( DigesterException e )
         {
-            LOG.warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
         catch ( IOException e )
         {
-            LOG.warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to process " + ext + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
     }
@@ -213,27 +213,27 @@ public class Checksums
             boolean validity = checksumFile.isValidChecksum( hashFile );
             if ( validity )
             {
-                LOG.debug( "Valid checksum: " + hashFile.getPath() );
+                log.debug( "Valid checksum: " + hashFile.getPath() );
             }
             else
             {
-                LOG.debug( "Not valid checksum: " + hashFile.getPath() );
+                log.debug( "Not valid checksum: " + hashFile.getPath() );
             }
             return validity;
         }
         catch ( FileNotFoundException e )
         {
-            LOG.warn( "Unable to find " + type + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to find " + type + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
         catch ( DigesterException e )
         {
-            LOG.warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
         catch ( IOException e )
         {
-            LOG.warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
+            log.warn( "Unable to process " + type + " file: " + hashFile.getAbsolutePath(), e );
             return false;
         }
     }

@@ -19,6 +19,8 @@ package org.apache.maven.archiva.repository.project;
  * under the License.
  */
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -29,13 +31,12 @@ import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.project.resolvers.ManagedRepositoryProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.NopProjectResolver;
 import org.apache.maven.archiva.repository.project.resolvers.ProjectModelResolverStack;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory for ProjectModelResolver objects
@@ -45,9 +46,10 @@ import java.util.List;
  * @plexus.component role="org.apache.maven.archiva.repository.project.ProjectModelResolverFactory"
  */
 public class ProjectModelResolverFactory
-    extends AbstractLogEnabled
     implements RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( ProjectModelResolverFactory.class );
+    
     /**
      * @plexus.requirement
      */
@@ -128,7 +130,7 @@ public class ProjectModelResolverFactory
                 }
                 catch ( RepositoryException e )
                 {
-                    getLogger().warn( e.getMessage(), e );
+                    log.warn( e.getMessage(), e );
                 }
             }
 

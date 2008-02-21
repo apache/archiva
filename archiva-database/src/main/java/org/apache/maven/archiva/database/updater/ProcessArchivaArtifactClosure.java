@@ -23,7 +23,8 @@ import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.consumers.ArchivaArtifactConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ProcessArchivaArtifactClosure 
@@ -36,9 +37,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  *                   instantiation-strategy="per-lookup"
  */
 class ProcessArchivaArtifactClosure
-    extends AbstractLogEnabled
     implements Closure
 {
+    private Logger log = LoggerFactory.getLogger( ProcessArchivaArtifactClosure.class );
+    
     private ArchivaArtifact artifact;
 
     public void execute( Object input )
@@ -53,9 +55,7 @@ class ProcessArchivaArtifactClosure
             }
             catch ( ConsumerException e )
             {
-                getLogger().warn(
-                                  "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId()
-                                      + "]" );
+                log.warn( "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId() + "]" );
             }
         }
 

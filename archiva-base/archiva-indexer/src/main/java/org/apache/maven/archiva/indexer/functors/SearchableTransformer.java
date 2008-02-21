@@ -22,7 +22,8 @@ package org.apache.maven.archiva.indexer.functors;
 import org.apache.commons.collections.Transformer;
 import org.apache.maven.archiva.indexer.RepositoryIndexSearchException;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentIndex;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SearchableTransformer 
@@ -33,9 +34,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @plexus.component role="org.apache.commons.collections.Transformer" role-hint="searchable"
  */
 public class SearchableTransformer
-    extends AbstractLogEnabled
     implements Transformer
 {
+    private Logger log = LoggerFactory.getLogger( SearchableTransformer.class );
+    
     public Object transform( Object input )
     {
         if ( input instanceof LuceneRepositoryContentIndex )
@@ -47,7 +49,7 @@ public class SearchableTransformer
             }
             catch ( RepositoryIndexSearchException e )
             {
-                getLogger().warn("Unable to get searchable for index:" + e.getMessage(), e);
+                log.warn("Unable to get searchable for index:" + e.getMessage(), e);
             }
         }
         

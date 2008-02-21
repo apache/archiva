@@ -19,13 +19,17 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.redback.rbac.RBACManager;
 import org.codehaus.plexus.redback.rbac.RbacManagerException;
 import org.codehaus.plexus.redback.rbac.UserAssignment;
@@ -34,11 +38,8 @@ import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.system.check.EnvironmentCheck;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ConfigurationSynchronization
@@ -50,9 +51,10 @@ import java.util.Map.Entry;
  * role-hint="default"
  */
 public class SecuritySynchronization
-    extends AbstractLogEnabled
     implements RegistryListener
 {
+    private Logger log = LoggerFactory.getLogger( SecuritySynchronization.class );
+    
     /**
      * @plexus.requirement role-hint="default"
      */
@@ -112,7 +114,7 @@ public class SecuritySynchronization
             catch ( RoleManagerException e )
             {
                 // Log error.
-                getLogger().error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
+                log.error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
             }
         }
     }
@@ -145,7 +147,7 @@ public class SecuritySynchronization
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
         {
             EnvironmentCheck check = entry.getValue();
-            getLogger().info( "Running Environment Check: " + entry.getKey() );
+            log.info( "Running Environment Check: " + entry.getKey() );
             check.validateEnvironment( violations );
         }
 
@@ -164,7 +166,7 @@ public class SecuritySynchronization
 
             msg.append( "\n" );
             msg.append( "======================================================================" );
-            getLogger().fatalError( msg.toString() );
+            log.error( msg.toString() );
 
             throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
                 + "] violation(s) encountered, See log for details." );
@@ -198,7 +200,7 @@ public class SecuritySynchronization
             }
             catch ( RbacManagerException e )
             {
-                getLogger().warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
+                log.warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId )
                                       + "] to " + principal + " user.", e );
             }
         }

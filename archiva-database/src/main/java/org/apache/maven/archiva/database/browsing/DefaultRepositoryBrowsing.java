@@ -19,6 +19,12 @@ package org.apache.maven.archiva.database.browsing;
  * under the License.
  */
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.collections.functors.NotPredicate;
@@ -35,13 +41,8 @@ import org.apache.maven.archiva.database.updater.DatabaseUpdater;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.model.Keys;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DefaultRepositoryBrowsing
@@ -51,9 +52,10 @@ import java.util.Map.Entry;
  * @plexus.component role="org.apache.maven.archiva.database.browsing.RepositoryBrowsing"
  */
 public class DefaultRepositoryBrowsing
-    extends AbstractLogEnabled
     implements RepositoryBrowsing
 {
+    private Logger log = LoggerFactory.getLogger( DefaultRepositoryBrowsing.class );
+    
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -201,7 +203,7 @@ public class DefaultRepositoryBrowsing
     {
         Map<String, String> snapshots = new HashMap<String, String>();
 
-        getLogger().info( "Processing snapshots." );
+        log.info( "Processing snapshots." );
 
         for ( String version : versions )
         {
@@ -253,7 +255,7 @@ public class DefaultRepositoryBrowsing
             {
                 if ( VersionUtil.getBaseVersion( uniqueVersion ).equals( version ) )
                 {
-                    getLogger().info( "Retrieving artifact with version " + uniqueVersion );
+                    log.info( "Retrieving artifact with version " + uniqueVersion );
                     pomArtifact = dao.getArtifactDAO().getArtifact( groupId, artifactId, uniqueVersion, null, "pom" );
 
                     return pomArtifact;

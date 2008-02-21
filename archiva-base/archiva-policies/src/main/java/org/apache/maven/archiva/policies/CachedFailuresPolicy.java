@@ -19,14 +19,15 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link PreDownloadPolicy} to check if the requested url has failed before.
@@ -37,9 +38,10 @@ import java.util.Properties;
  * role-hint="cache-failures"
  */
 public class CachedFailuresPolicy
-    extends AbstractLogEnabled
     implements PreDownloadPolicy
 {
+    private Logger log = LoggerFactory.getLogger( CachedFailuresPolicy.class );
+    
     /**
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
      * All resource requests are allowed thru to the remote repo.
@@ -78,7 +80,7 @@ public class CachedFailuresPolicy
         if ( NO.equals( policySetting ) )
         {
             // Skip.
-            getLogger().debug( "OK to fetch, check-failures policy set to NO." );
+            log.debug( "OK to fetch, check-failures policy set to NO." );
             return;
         }
 
@@ -92,7 +94,7 @@ public class CachedFailuresPolicy
             }
         }
 
-        getLogger().debug( "OK to fetch, check-failures detected no issues." );
+        log.debug( "OK to fetch, check-failures detected no issues." );
     }
 
     public String getDefaultOption()

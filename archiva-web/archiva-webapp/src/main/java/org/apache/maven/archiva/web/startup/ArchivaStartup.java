@@ -21,9 +21,10 @@ package org.apache.maven.archiva.web.startup;
 
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order. 
@@ -36,7 +37,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
  *              role-hint="default"
  */
 public class ArchivaStartup
-    extends AbstractLogEnabled
     implements Initializable
 {
     /**
@@ -57,7 +57,7 @@ public class ArchivaStartup
     public void initialize()
         throws InitializationException
     {
-        Banner.display( getLogger(), ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
+        Banner.display( ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
 
         try
         {

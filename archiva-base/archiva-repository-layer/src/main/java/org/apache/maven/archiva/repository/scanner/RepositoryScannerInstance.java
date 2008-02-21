@@ -19,6 +19,9 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -30,12 +33,9 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
-import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.util.DirectoryWalkListener;
-
-import java.io.File;
-import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * RepositoryScannerInstance 
  *
@@ -45,6 +45,8 @@ import java.util.List;
 public class RepositoryScannerInstance
     implements DirectoryWalkListener
 {
+    private Logger log = LoggerFactory.getLogger( RepositoryScannerInstance.class );
+    
     /**
      * Consumers that process known content.
      */
@@ -65,24 +67,21 @@ public class RepositoryScannerInstance
 
     private ConsumerWantsFilePredicate consumerWantsFile;
 
-    private Logger logger;
-
     public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
                                       List<KnownRepositoryContentConsumer> knownConsumerList,
-                                      List<InvalidRepositoryContentConsumer> invalidConsumerList, Logger logger )
+                                      List<InvalidRepositoryContentConsumer> invalidConsumerList )
     {
         this.repository = repository;
         this.knownConsumers = knownConsumerList;
         this.invalidConsumers = invalidConsumerList;
-        this.logger = logger;
 
-        this.consumerProcessFile = new ConsumerProcessFileClosure( logger );
+        this.consumerProcessFile = new ConsumerProcessFileClosure();
         this.consumerWantsFile = new ConsumerWantsFilePredicate();
 
         stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
 
-        Closure triggerBeginScan = new TriggerBeginScanClosure( repository, logger );
+        Closure triggerBeginScan = new TriggerBeginScanClosure( repository );
 
         CollectionUtils.forAllDo( knownConsumerList, triggerBeginScan );
         CollectionUtils.forAllDo( invalidConsumerList, triggerBeginScan );
@@ -95,10 +94,9 @@ public class RepositoryScannerInstance
 
     public RepositoryScannerInstance( ManagedRepositoryConfiguration repository,
                                       List<KnownRepositoryContentConsumer> knownContentConsumers,
-                                      List<InvalidRepositoryContentConsumer> invalidContentConsumers, Logger logger,
-                                      long changesSince )
+                                      List<InvalidRepositoryContentConsumer> invalidContentConsumers, long changesSince )
     {
-        this( repository, knownContentConsumers, invalidContentConsumers, logger );
+        this( repository, knownContentConsumers, invalidContentConsumers );
 
         consumerWantsFile.setChangesSince( changesSince );
 
@@ -112,13 +110,13 @@ public class RepositoryScannerInstance
 
     public void directoryWalkStarting( File basedir )
     {
-        logger.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getLocation() );
+        log.info( "Walk Started: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerStart();
     }
 
     public void directoryWalkStep( int percentage, File file )
     {
-        logger.debug( "Walk Step: " + percentage + ", " + file );
+        log.debug( "Walk Step: " + percentage + ", " + file );
 
         stats.increaseFileCount();
 
@@ -146,7 +144,7 @@ public class RepositoryScannerInstance
 
     public void directoryWalkFinished()
     {
-        logger.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
+        log.info( "Walk Finished: [" + this.repository.getId() + "] " + this.repository.getLocation() );
         stats.triggerFinished();
     }
 
@@ -155,6 +153,6 @@ public class RepositoryScannerInstance
      */
     public void debug( String message )
     {
-        logger.debug( "Repository Scanner: " + message );
+        log.debug( "Repository Scanner: " + message );
     }
 }

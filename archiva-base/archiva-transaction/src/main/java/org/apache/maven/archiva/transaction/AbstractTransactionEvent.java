@@ -21,7 +21,6 @@ package org.apache.maven.archiva.transaction;
 
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
@@ -43,7 +42,6 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class AbstractTransactionEvent
-    extends AbstractLogEnabled
     implements TransactionEvent
 {
     private Map backups = new HashMap();

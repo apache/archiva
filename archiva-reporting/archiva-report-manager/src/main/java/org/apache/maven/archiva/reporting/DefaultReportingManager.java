@@ -19,8 +19,6 @@ package org.apache.maven.archiva.reporting;
  * under the License.
  */
 
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.util.Map;
 
 /**
@@ -33,7 +31,6 @@ import java.util.Map;
  *                   role-hint="default"
  */
 public class DefaultReportingManager
-    extends AbstractLogEnabled
     implements ReportingManager
 {
     /**
