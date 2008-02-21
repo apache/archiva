@@ -20,7 +20,6 @@ package org.apache.maven.archiva.policies;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.spring.SpringFactory;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
@@ -41,7 +40,7 @@ import java.util.Properties;
  */
 public class CachedFailuresPolicy
     extends AbstractLogEnabled
-    implements PreDownloadPolicy, Initializable
+    implements PreDownloadPolicy
 {
     /**
      * The NO policy setting means that the the existence of old failures is <strong>not</strong> checked.
@@ -55,14 +54,12 @@ public class CachedFailuresPolicy
      */
     public static final String YES = "yes";
 
-    private UrlFailureCache urlFailureCache;
-
-    private List<String> options = new ArrayList<String>();
-
     /**
      * @plexus.requirement
      */
-    private SpringFactory springFactory;
+    private UrlFailureCache urlFailureCache;
+
+    private List<String> options = new ArrayList<String>();
 
     public CachedFailuresPolicy()
     {
@@ -114,11 +111,5 @@ public class CachedFailuresPolicy
     public List<String> getOptions()
     {
         return options;
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        urlFailureCache = (UrlFailureCache) springFactory.lookup( "urlFailureCache" );
     }
 }

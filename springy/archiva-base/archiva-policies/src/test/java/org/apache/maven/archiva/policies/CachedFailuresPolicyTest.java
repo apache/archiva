@@ -19,15 +19,13 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.maven.archiva.common.spring.PlexusFactory;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.codehaus.plexus.PlexusTestCase;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.File;
 import java.util.Properties;
+
+import org.apache.maven.archiva.common.spring.PlexusClassPathXmlApplicationContext;
+import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.codehaus.plexus.PlexusTestCase;
+import org.springframework.context.ApplicationContext;
 
 /**
  * CachedFailuresPolicyTest
@@ -38,12 +36,12 @@ import java.util.Properties;
 public class CachedFailuresPolicyTest
     extends PlexusTestCase
 {
-    private BeanFactory factory;
+    private ApplicationContext factory;
 
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
-        return (DownloadPolicy) lookup( PreDownloadPolicy.class.getName(), "cache-failures" );
+        return (DownloadPolicy) factory.getBean( PreDownloadPolicy.class.getName() + "#cache-failures" );
     }
 
     private File getFile()
@@ -111,10 +109,11 @@ public class CachedFailuresPolicyTest
         throws Exception
     {
         super.setUp();
-        factory = new XmlBeanFactory(
-            new ClassPathResource( "/org/apache/maven/archiva/policies/CachedFailuresPolicyTest-context.xml" ) );
-        getContainer().getContext().put( BeanFactory.class, factory );
-        PlexusFactory plexusFactory = (PlexusFactory) factory.getBean( "plexusCacheFactory" );
-        plexusFactory.setContainer( container );
+
+        factory = new PlexusClassPathXmlApplicationContext(
+            new String[] {
+                "classpath*:META-INF/plexus/components.xml",
+                "classpath*:META-INF/plexus/components-fragment.xml",
+                "/org/apache/maven/archiva/policies/CachedFailuresPolicyTest-context.xml" } );
     }
 }

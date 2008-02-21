@@ -6,11 +6,6 @@
 
   <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
     <!-- collaborators and configuration for this bean go here -->
-    <constructor-arg ref="urlCache" type="org.codehaus.plexus.cache.Cache"/>
-  </bean>
-  <bean id="urlCache" factory-bean="plexusCacheFactory" factory-method="createInstance"/>
-  <bean id="plexusCacheFactory" class="org.apache.maven.archiva.common.spring.PlexusFactory">
-    <constructor-arg index="0" value="org.codehaus.plexus.cache.Cache"/>
-    <constructor-arg index="1" value="url-failures-cache"/>
+    <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
   </bean>
 </beans>
