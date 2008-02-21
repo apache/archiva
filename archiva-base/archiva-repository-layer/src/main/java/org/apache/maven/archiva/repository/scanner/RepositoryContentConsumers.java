@@ -19,6 +19,12 @@ package org.apache.maven.archiva.repository.scanner;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
@@ -31,13 +37,8 @@ import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.apache.maven.archiva.repository.scanner.functors.TriggerBeginScanClosure;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RepositoryContentConsumerUtil 
@@ -48,8 +49,9 @@ import java.util.Map;
  * @plexus.component role="org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers"
  */
 public class RepositoryContentConsumers
-    extends AbstractLogEnabled
 {
+    private Logger log = LoggerFactory.getLogger( RepositoryContentConsumers.class );
+    
     /**
      * @plexus.requirement
      */
@@ -261,7 +263,7 @@ public class RepositoryContentConsumers
         // Run the repository consumers
         try
         {
-            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getLogger() );
+            Closure triggerBeginScan = new TriggerBeginScanClosure( repository );
 
             List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
             List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();
@@ -273,7 +275,7 @@ public class RepositoryContentConsumers
             BaseFile baseFile = new BaseFile( repository.getLocation(), localFile );
             ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
             predicate.setBasefile( baseFile );
-            ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure( getLogger() );
+            ConsumerProcessFileClosure closure = new ConsumerProcessFileClosure();
             closure.setBasefile( baseFile );
             predicate.setCaseSensitive( false );
             Closure processIfWanted = IfClosure.getInstance( predicate, closure );

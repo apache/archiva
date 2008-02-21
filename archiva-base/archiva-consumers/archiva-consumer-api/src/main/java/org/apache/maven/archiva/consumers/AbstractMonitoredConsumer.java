@@ -19,8 +19,6 @@ package org.apache.maven.archiva.consumers;
  * under the License.
  */
 
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -32,7 +30,6 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractMonitoredConsumer
-    extends AbstractLogEnabled
     implements BaseConsumer
 {
     private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();

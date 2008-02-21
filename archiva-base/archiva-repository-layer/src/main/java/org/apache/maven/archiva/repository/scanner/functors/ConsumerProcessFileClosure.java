@@ -22,7 +22,8 @@ package org.apache.maven.archiva.repository.scanner.functors;
 import org.apache.commons.collections.Closure;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ConsumerProcessFileClosure 
@@ -33,16 +34,9 @@ import org.codehaus.plexus.logging.Logger;
 public class ConsumerProcessFileClosure
     implements Closure
 {
+    private Logger log = LoggerFactory.getLogger( ConsumerProcessFileClosure.class );
+    
     private BaseFile basefile;
-
-    private Logger logger;
-
-    public ConsumerProcessFileClosure( Logger logger )
-    {
-        // Lame. I know, but seeing as plexus doesn't like to cleanup after 
-        // application loaded/lookup'd components, this is the best I can do.
-        this.logger = logger;
-    }
 
     public void execute( Object input )
     {
@@ -52,7 +46,7 @@ public class ConsumerProcessFileClosure
 
             try
             {
-                logger.debug( "Sending to consumer: " + consumer.getId() );
+                log.debug( "Sending to consumer: " + consumer.getId() );
 
                 consumer.processFile( basefile.getRelativePath() );
             }
@@ -61,7 +55,7 @@ public class ConsumerProcessFileClosure
                 /* Intentionally Catch all exceptions.
                  * So that the discoverer processing can continue.
                  */
-                logger.error( "Consumer [" + consumer.getId() + "] had an error when processing file ["
+                log.error( "Consumer [" + consumer.getId() + "] had an error when processing file ["
                     + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
             }
         }
@@ -79,11 +73,11 @@ public class ConsumerProcessFileClosure
 
     public Logger getLogger()
     {
-        return logger;
+        return log;
     }
 
     public void setLogger( Logger logger )
     {
-        this.logger = logger;
+        this.log = logger;
     }
 }

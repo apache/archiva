@@ -19,6 +19,9 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
@@ -32,9 +35,8 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * LegacyConverterArtifactConsumer - convert artifacts as they are found
@@ -51,6 +53,8 @@ public class LegacyConverterArtifactConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
+    private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
+    
     /**
      * @plexus.requirement role-hint="legacy-to-default"
      */
@@ -112,11 +116,11 @@ public class LegacyConverterArtifactConsumer
         }
         catch ( LayoutException e )
         {
-            getLogger().warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
         }
         catch ( ArtifactConversionException e )
         {
-            getLogger().warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
         }
     }
 

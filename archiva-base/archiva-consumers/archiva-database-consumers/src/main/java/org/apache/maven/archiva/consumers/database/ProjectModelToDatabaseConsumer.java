@@ -19,6 +19,10 @@ package org.apache.maven.archiva.consumers.database;
  * under the License.
  */
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
@@ -40,10 +44,8 @@ import org.apache.maven.archiva.repository.project.ProjectModelException;
 import org.apache.maven.archiva.repository.project.ProjectModelFilter;
 import org.apache.maven.archiva.repository.project.ProjectModelReader;
 import org.apache.maven.archiva.repository.project.filters.EffectiveProjectModelFilter;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ProjectModelToDatabaseConsumer
@@ -58,6 +60,8 @@ public class ProjectModelToDatabaseConsumer
     extends AbstractMonitoredConsumer
     implements DatabaseUnprocessedArtifactConsumer
 {
+    private Logger log = LoggerFactory.getLogger( ProjectModelToDatabaseConsumer.class );
+    
     /**
      * @plexus.configuration default-value="update-db-project"
      */
@@ -166,31 +170,31 @@ public class ProjectModelToDatabaseConsumer
 
             if ( isValidModel( model, repo, artifact ) )
             {
-                getLogger().debug( "Adding project model to database - " + Keys.toKey( model ) );                
+                log.debug( "Adding project model to database - " + Keys.toKey( model ) );                
                 dao.getProjectModelDAO().saveProjectModel( model );
             }
             else
             {
-                getLogger().warn(
+                log.warn(
                     "Invalid or corrupt pom. Project model not added to database - " + Keys.toKey( model ) );
             }
 
         }
         catch ( ProjectModelException e )
         {
-            getLogger().warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
+            log.warn( "Unable to read project model " + artifactFile + " : " + e.getMessage(), e );
 
             addProblem( artifact, "Unable to read project model " + artifactFile + " : " + e.getMessage() );
         }
         catch ( ArchivaDatabaseException e )
         {
-            getLogger().warn( "Unable to save project model " + artifactFile + " to the database : " + e.getMessage(),
+            log.warn( "Unable to save project model " + artifactFile + " to the database : " + e.getMessage(),
                               e );
         }
         catch ( Throwable t )
         {
             // Catch the other errors in the process to allow the rest of the process to complete.
-            getLogger().error( "Unable to process model " + artifactFile + " due to : " + t.getClass().getName() +
+            log.error( "Unable to process model " + artifactFile + " due to : " + t.getClass().getName() +
                 " : " + t.getMessage(), t );
         }
     }
@@ -256,7 +260,7 @@ public class ProjectModelToDatabaseConsumer
             emsg.append( "]: The model artifactId [" ).append( model.getArtifactId() );
             emsg.append( "] does not match the artifactId portion of the filename: " ).append( artifact.getArtifactId() );
             
-            getLogger().warn(emsg.toString() );
+            log.warn(emsg.toString() );
             addProblem( artifact, emsg.toString() );
 
             return false;
@@ -272,7 +276,7 @@ public class ProjectModelToDatabaseConsumer
             emsg.append( "]; The model version [" ).append( model.getVersion() );
             emsg.append( "] does not match the version portion of the filename: " ).append( artifact.getVersion() );
             
-            getLogger().warn(emsg.toString() );
+            log.warn(emsg.toString() );
             addProblem( artifact, emsg.toString() );
 
             return false;
@@ -311,7 +315,7 @@ public class ProjectModelToDatabaseConsumer
         catch ( ArchivaDatabaseException e )
         {
             String emsg = "Unable to save problem with artifact location to DB: " + e.getMessage();
-            getLogger().warn( emsg, e );
+            log.warn( emsg, e );
             throw new ConsumerException( emsg, e );
         }
     }

@@ -19,13 +19,15 @@ package org.apache.maven.archiva.database.updater;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.DatabaseUnprocessedArtifactConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TestDatabaseUnprocessedConsumer 
@@ -37,6 +39,8 @@ public class TestDatabaseUnprocessedConsumer
     extends AbstractMonitoredConsumer
     implements DatabaseUnprocessedArtifactConsumer
 {
+    private Logger log = LoggerFactory.getLogger( TestDatabaseUnprocessedConsumer.class );
+    
     private int countBegin = 0;
 
     private int countComplete = 0;
@@ -71,7 +75,7 @@ public class TestDatabaseUnprocessedConsumer
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
     {
-        getLogger().info( "Processing Artifact: " + artifact );
+        log.info( "Processing Artifact: " + artifact );
         countProcessed++;
     }
 

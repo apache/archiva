@@ -19,6 +19,16 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -40,16 +50,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.SelectorUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Validate the location of the artifact based on the values indicated
@@ -65,6 +67,8 @@ public class LocationArtifactsConsumer
     extends AbstractMonitoredConsumer
     implements ArchivaArtifactConsumer, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( LocationArtifactsConsumer.class );
+    
     /**
      * @plexus.configuration default-value="duplicate-artifacts"
      */
@@ -256,7 +260,7 @@ public class LocationArtifactsConsumer
         catch ( ArchivaDatabaseException e )
         {
             String emsg = "Unable to save problem with artifact location to DB: " + e.getMessage();
-            getLogger().warn( emsg, e );
+            log.warn( emsg, e );
             throw new ConsumerException( emsg, e );
         }
     }
@@ -300,7 +304,7 @@ public class LocationArtifactsConsumer
         }
         catch ( RepositoryException e )
         {
-            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
+            log.warn( "Unable to calculate path for artifact: " + artifact );
             return "";
         }
     }

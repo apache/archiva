@@ -19,6 +19,9 @@ package org.apache.maven.archiva.reporting.artifact;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -39,9 +42,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Search the database of known SHA1 Checksums for potential duplicate artifacts.
@@ -56,6 +58,8 @@ public class DuplicateArtifactsConsumer
     extends AbstractMonitoredConsumer
     implements ArchivaArtifactConsumer, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( DuplicateArtifactsConsumer.class );
+    
     /**
      * @plexus.configuration default-value="duplicate-artifacts"
      */
@@ -131,12 +135,12 @@ public class DuplicateArtifactsConsumer
         }
         catch ( ObjectNotFoundException e )
         {
-            getLogger().debug( "No duplicates for artifact: " + artifact );
+            log.debug( "No duplicates for artifact: " + artifact );
             return;
         }
         catch ( ArchivaDatabaseException e )
         {
-            getLogger().warn( "Unable to query DB for potential duplicates with : " + artifact );
+            log.warn( "Unable to query DB for potential duplicates with : " + artifact );
             return;
         }
 
@@ -145,7 +149,7 @@ public class DuplicateArtifactsConsumer
             if ( results.size() <= 1 )
             {
                 // No duplicates detected.
-                getLogger().debug( "Found no duplicate artifact results on: " + artifact );
+                log.debug( "Found no duplicate artifact results on: " + artifact );
                 return;
             }
 
@@ -169,13 +173,13 @@ public class DuplicateArtifactsConsumer
 
                 try
                 {
-                    getLogger().debug( "Found duplicate artifact: " + problem );
+                    log.debug( "Found duplicate artifact: " + problem );
                     dao.getRepositoryProblemDAO().saveRepositoryProblem( problem );
                 }
                 catch ( ArchivaDatabaseException e )
                 {
                     String emsg = "Unable to save problem with duplicate artifact to DB: " + e.getMessage();
-                    getLogger().warn( emsg, e );
+                    log.warn( emsg, e );
                     throw new ConsumerException( emsg, e );
                 }
             }
@@ -192,7 +196,7 @@ public class DuplicateArtifactsConsumer
         }
         catch ( RepositoryException e )
         {
-            getLogger().warn( "Unable to calculate path for artifact: " + artifact );
+            log.warn( "Unable to calculate path for artifact: " + artifact );
             return "";
         }
     }

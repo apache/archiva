@@ -19,6 +19,11 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.FileTypes;
@@ -41,11 +46,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
@@ -60,6 +62,8 @@ public class MetadataUpdaterConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( MetadataUpdaterConsumer.class );
+    
     /**
      * @plexus.configuration default-value="metadata-updater"
      */
@@ -183,12 +187,12 @@ public class MetadataUpdaterConsumer
             if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                getLogger().debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( projectRef ) );
+                log.debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( projectRef ) );
                 return;
             }
 
             metadataTools.updateMetadata( this.repository, projectRef );
-            getLogger().debug( "Updated metadata: " + this.metadataTools.toPath( projectRef ) );
+            log.debug( "Updated metadata: " + this.metadataTools.toPath( projectRef ) );
         }
         catch ( LayoutException e )
         {
@@ -229,12 +233,12 @@ public class MetadataUpdaterConsumer
             if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
-                getLogger().debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( versionRef ) );
+                log.debug( "Skipping uptodate metadata: " + this.metadataTools.toPath( versionRef ) );
                 return;
             }
 
             metadataTools.updateMetadata( this.repository, versionRef );
-            getLogger().debug( "Updated metadata: " + this.metadataTools.toPath( versionRef ) );
+            log.debug( "Updated metadata: " + this.metadataTools.toPath( versionRef ) );
         }
         catch ( LayoutException e )
         {

@@ -19,6 +19,11 @@ package org.apache.maven.archiva.consumers.lucene;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
@@ -38,11 +43,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * IndexArtifactConsumer
@@ -57,6 +59,8 @@ public class IndexArtifactConsumer
     extends AbstractMonitoredConsumer
     implements DatabaseUnprocessedArtifactConsumer, RegistryListener, Initializable
 {
+    private Logger log = LoggerFactory.getLogger( IndexArtifactConsumer.class );
+    
     private static final String INDEX_ERROR = "indexing_error";
 
     /**
@@ -198,7 +202,7 @@ public class IndexArtifactConsumer
                 }
                 catch ( RepositoryException e )
                 {
-                    getLogger().error( "Unable to load repository content object: " + e.getMessage(), e );
+                    log.error( "Unable to load repository content object: " + e.getMessage(), e );
                 }
             }
         }
