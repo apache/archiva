@@ -23,12 +23,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
- * XPathFunction to convert plexus property-name to Spring propertyName.
+ * A FactoryBean to port to Spring the plexus "get all components with role ..." feature.
+ * <p>
+ * Plexus allows to define a requirement this way :
+ * <pre>
+ *   \/**
+ *    * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+ *    *\/
+ *   private Map<String, PreDownloadPolicy> prePolicies;
+ * </pre>
+ * This FactoryBean generates the expected Map from a ListableBeanFactory, based on the role
+ * to be the FQCN of the component interface.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @since 1.1
@@ -50,6 +61,12 @@ public class BeansOfTypeFactoryBean
         throws Exception
     {
         beansOfType = new HashMap<String, Object>();
+        if ( !( getBeanFactory() instanceof ListableBeanFactory ) )
+        {
+            String error = "A ListableBeanFactory bean factory is required to create a bean-of-types Map";
+            logger.error( error );
+            throw new BeanInitializationException( error );
+        }
         Map beans = ((ListableBeanFactory) getBeanFactory()).getBeansOfType( type );
         for ( Iterator iterator = beans.entrySet().iterator(); iterator.hasNext(); )
         {
