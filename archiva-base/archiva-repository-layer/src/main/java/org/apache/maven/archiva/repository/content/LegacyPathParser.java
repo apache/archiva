@@ -204,13 +204,6 @@ public class LegacyPathParser
                     + "] and layout specified type [" + expectedType + "] (which maps to extension: ["
                     + expectedExtension + "]) on path [" + path + "]" );
             }
-
-//            if ( classifier != null && !filename.endsWith( "-" + classifier + "." + extension ) )
-//            {
-//                throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on filename [" + filename
-//                    + "] and layout specified type [" + expectedType + "] (which maps to classifier: ["
-//                    + classifier + "]) on path [" + path + "]" );
-//            }
         }
 
         return artifact;
