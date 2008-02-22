@@ -239,17 +239,9 @@ public class LegacyPathParserTest
     public void testBadClassifierFooLibSources()
         throws LayoutException
     {
-        String path = "com.foo.lib/java-sources/foo-lib-2.1-alpha-1.jar";
-
-        try
-        {
-            parser.toArtifactReference( path );
-            fail( "Expected an exception" );
-        }
-        catch ( LayoutException e )
-        {
-            assertTrue( true );
-        }
+        assertBadPath( "com.foo.lib/java-sources/foo-lib-2.1-alpha-1.jar", "missing required classifier" );
+        assertBadPath( "com.foo.lib/java-sources/foo-lib-2.1-alpha-1-javadoc.jar", "incorrect classifier" );
+        assertBadPath( "com.foo.lib/java-sources/foo-lib-2.1-alpha-1-other.jar", "incorrect classifier" );
     }
 
     /**
