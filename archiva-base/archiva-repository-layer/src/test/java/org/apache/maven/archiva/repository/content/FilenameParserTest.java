@@ -149,4 +149,34 @@ public class FilenameParserTest
         assertEquals( "libfobs4jmf-0.4.1.4-20080217.211715-4", parser.getName() );
         assertEquals( "jnilib", parser.getExtension() );
     }
+
+    public void testInterveningVersion()
+    {
+        FilenameParser parser = new FilenameParser( "artifact-id-1.0-abc-1.1-20080221.062205-9.pom" );
+
+        assertEquals( "artifact-id", parser.nextNonVersion() );
+        assertEquals( "1.0-abc-1.1-20080221.062205-9", parser.expect( "1.0-abc-1.1-SNAPSHOT" ) );
+        assertNull( null, parser.remaining() );
+        assertEquals( "artifact-id-1.0-abc-1.1-20080221.062205-9", parser.getName() );
+        assertEquals( "pom", parser.getExtension() );
+    }
+
+    public void testExpectWrongSnapshot()
+    {
+        FilenameParser parser = new FilenameParser( "artifact-id-1.0-20080221.062205-9.pom" );
+
+        assertEquals( "artifact-id", parser.nextNonVersion() );
+        assertNull( parser.expect( "2.0-SNAPSHOT" ) );
+    }
+
+    public void testClassifier()
+    {
+        FilenameParser parser = new FilenameParser( "artifact-id-1.0-20070219.171202-34-test-sources.jar" );
+
+        assertEquals( "artifact-id", parser.nextNonVersion() );
+        assertEquals( "1.0-20070219.171202-34", parser.nextVersion() );
+        assertEquals( "test-sources", parser.remaining() );
+        assertEquals( "artifact-id-1.0-20070219.171202-34-test-sources", parser.getName() );
+        assertEquals( "jar", parser.getExtension() );
+    }
 }

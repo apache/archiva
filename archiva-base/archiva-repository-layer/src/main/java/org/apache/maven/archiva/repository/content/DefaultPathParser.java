@@ -147,7 +147,7 @@ public class DefaultPathParser implements PathParser
                     artifact.setClassifier( parser.remaining() );
 
                     // Set the type.
-                    artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+                    artifact.setType( ArtifactExtensionMapping.mapExtensionAndClassifierToType( artifact.getClassifier(), parser.getExtension() ) );
                     break;
                 case '.':
                     // We have an dual extension possibility.
@@ -156,7 +156,7 @@ public class DefaultPathParser implements PathParser
                     break;
                 case 0:
                     // End of the filename, only a simple extension left. - Set the type.
-                    artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+                    artifact.setType( ArtifactExtensionMapping.mapExtensionToType( parser.getExtension() ) );
                     break;
             }
 

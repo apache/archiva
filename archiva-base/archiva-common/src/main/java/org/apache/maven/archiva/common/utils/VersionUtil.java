@@ -44,7 +44,7 @@ public class VersionUtil
         "(alpha[_.0-9]*)",
         "(beta[_.0-9]*)",
         "(rc[_.0-9]*)",
-        "(test[_.0-9]*)",
+//        "(test[_.0-9]*)", -- omitted for MRM-681, can be reinstated as part of MRM-712
         "(debug[_.0-9]*)",
         "(unofficial[_.0-9]*)",
         "(current)",
@@ -57,8 +57,6 @@ public class VersionUtil
         "(incubator)",
         "([ab][_.0-9]+)" };
 
-    private static final String VersionMegaPattern = StringUtils.join( versionPatterns, '|' );
-
     public static final String SNAPSHOT = "SNAPSHOT";
 
     public static final Pattern UNIQUE_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}\\.[0-9]{6})-([0-9]+)$" );
@@ -66,7 +64,9 @@ public class VersionUtil
     public static final Pattern TIMESTAMP_PATTERN = Pattern.compile( "^([0-9]{8})\\.([0-9]{6})$" );
 
     public static final Pattern GENERIC_SNAPSHOT_PATTERN = Pattern.compile( "^(.*)-" + SNAPSHOT );
-    
+
+    private static final Pattern VERSION_MEGA_PATTERN = Pattern.compile( StringUtils.join( versionPatterns, '|' ), Pattern.CASE_INSENSITIVE );
+
     /**
      * <p>
      * Tests if the unknown string contains elements that identify it as a version string (or not).
@@ -85,7 +85,6 @@ public class VersionUtil
     {
         String versionParts[] = StringUtils.split( unknown, '-' );
 
-        Pattern pat = Pattern.compile( VersionMegaPattern, Pattern.CASE_INSENSITIVE );
         Matcher mat;
 
         int countValidParts = 0;
@@ -93,7 +92,7 @@ public class VersionUtil
         for ( int i = 0; i < versionParts.length; i++ )
         {
             String part = versionParts[i];
-            mat = pat.matcher( part );
+            mat = VERSION_MEGA_PATTERN.matcher( part );
 
             if ( mat.matches() )
             {
@@ -124,8 +123,7 @@ public class VersionUtil
      */
     public static boolean isSimpleVersionKeyword( String identifier )
     {
-        Pattern pat = Pattern.compile( VersionMegaPattern, Pattern.CASE_INSENSITIVE );
-        Matcher mat = pat.matcher( identifier );
+        Matcher mat = VERSION_MEGA_PATTERN.matcher( identifier );
 
         return mat.matches();
     }
