@@ -260,6 +260,40 @@ public class DefaultPathParserTest
     }
 
     /**
+     * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     * @throws LayoutException
+     */
+    public void testGoodLongSnapshotMavenTest()
+        throws LayoutException
+    {
+        String groupId = "a.group.id";
+        String artifactId = "artifact-id";
+        String version = "1.0-abc-1.1-20080221.062205-9";
+        String classifier = null;
+        String type = "pom";
+        String path = "a/group/id/artifact-id/1.0-abc-1.1-SNAPSHOT/artifact-id-1.0-abc-1.1-20080221.062205-9.pom";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
+     * @throws LayoutException
+     */
+    public void testClassifiedSnapshotMavenTest()
+        throws LayoutException
+    {
+        String groupId = "a.group.id";
+        String artifactId = "artifact-id";
+        String version = "1.0-20070219.171202-34";
+        String classifier = "test-sources";
+        String type = "jar";
+        String path = "a/group/id/artifact-id/1.0-SNAPSHOT/artifact-id-1.0-20070219.171202-34-test-sources.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
      * [MRM-519] version identifiers within filename cause misidentification of version.
      * Example uses "test" in artifact Id, which is also part of the versionKeyword list.
      */

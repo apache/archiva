@@ -21,7 +21,6 @@ package org.apache.maven.archiva.repository.content;
 
 
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.DefaultArchivaConfiguration;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.AbstractRepositoryLayerTestCase;
@@ -212,6 +211,8 @@ public class LegacyPathParserTest
         String path = "com.foo.lib/javadoc.jars/foo-lib-2.1-alpha-1-javadoc.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
+
+        assertLayout( "com.foo.lib/javadocs/foo-lib-2.1-alpha-1-javadoc.jar", "com.foo.lib", "foo-lib", "2.1-alpha-1", "javadoc", "javadoc" );
     }
 
     /**
@@ -227,6 +228,43 @@ public class LegacyPathParserTest
         String type = "java-source"; // oddball type-spec (should result in jar extension)
         String classifier= "sources";
         String path = "com.foo.lib/java-sources/foo-lib-2.1-alpha-1-sources.jar";
+
+        assertLayout( path, groupId, artifactId, version, classifier, type );
+    }
+
+    /**
+     * Test the classifier, and java-source type spec.
+     * @throws LayoutException
+     */
+    public void testBadClassifierFooLibSources()
+        throws LayoutException
+    {
+        String path = "com.foo.lib/java-sources/foo-lib-2.1-alpha-1.jar";
+
+        try
+        {
+            parser.toArtifactReference( path );
+            fail( "Expected an exception" );
+        }
+        catch ( LayoutException e )
+        {
+            assertTrue( true );
+        }
+    }
+
+    /**
+     * Test the classifier, and java-source type spec.
+     * @throws LayoutException
+     */
+    public void testGoodFooLibTestSources()
+        throws LayoutException
+    {
+        String groupId = "com.foo.lib";
+        String artifactId = "foo-lib";
+        String version = "2.1-alpha-1-test-sources";
+        String type = "jar";
+        String classifier = null; // we can't parse this type of classifier in legacy format
+        String path = "com.foo.lib/jars/foo-lib-2.1-alpha-1-test-sources.jar";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );
     }
