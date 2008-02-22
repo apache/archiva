@@ -19,10 +19,19 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.common.spring.SpringFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ConfigurationNames;
 import org.apache.maven.archiva.configuration.NetworkProxyConfiguration;
@@ -62,16 +71,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.util.SelectorUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -114,12 +113,10 @@ public class DefaultRepositoryProxyConnectors
      */
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
-    private UrlFailureCache urlFailureCache;
-
     /**
      * @plexus.requirement
      */
-    private SpringFactory springFactory;
+    private UrlFailureCache urlFailureCache;
 
     private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
 
@@ -619,7 +616,7 @@ public class DefaultRepositoryProxyConnectors
     {
         String url = remoteRepository.getURL().getUrl() + remotePath;
 
-        // Transfer checksum does not use the policy. 
+        // Transfer checksum does not use the policy.
         if ( urlFailureCache.hasFailedBefore( url + type ) )
         {
             return;
@@ -1026,7 +1023,5 @@ public class DefaultRepositoryProxyConnectors
     {
         initConnectorsAndNetworkProxies();
         archivaConfiguration.addChangeListener( this );
-
-        urlFailureCache = (UrlFailureCache) springFactory.lookup( "urlFailureCache" );
     }
 }
