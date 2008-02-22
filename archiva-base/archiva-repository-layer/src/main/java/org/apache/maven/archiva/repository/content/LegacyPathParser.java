@@ -19,15 +19,14 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Properties;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.LegacyArtifactPath;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.layout.LayoutException;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * LegacyPathParser is a parser for maven 1 (legacy layout) paths to
@@ -163,8 +162,23 @@ public class LegacyPathParser
             }
         }
 
+        String classifier = ArtifactClassifierMapping.getClassifier( expectedType );
+        if ( classifier != null )
+        {
+            String version = artifact.getVersion();
+            if ( ! version.endsWith( "-" + classifier ) )
+            {
+                throw new LayoutException( INVALID_ARTIFACT_PATH + expectedType + " artifacts must use the classifier " + classifier );
+            }
+            version = version.substring( 0, version.length() - classifier.length() - 1 );
+            artifact.setVersion( version );
+            artifact.setClassifier( classifier );
+        }
+
+        String extension = parser.getExtension();
+
         // Set Type
-        artifact.setType( ArtifactExtensionMapping.guessTypeFromFilename( filename ) );
+        artifact.setType( ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension ) );
 
         // Sanity Check: does it have an extension?
         if ( StringUtils.isEmpty( artifact.getType() ) )
@@ -183,27 +197,13 @@ public class LegacyPathParser
             String trimPathType = expectedType.substring( 0, expectedType.length() - 1 );
 
             String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
-            String actualExtension = parser.getExtension();
 
-            if ( !expectedExtension.equals( actualExtension ) )
+            if ( !expectedExtension.equals( extension ) )
             {
-                throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + actualExtension
+                throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + extension
                     + "] and layout specified type [" + expectedType + "] (which maps to extension: ["
                     + expectedExtension + "]) on path [" + path + "]" );
             }
-        }
-
-        String classifier = ArtifactClassifierMapping.getClassifier( artifact.getType() );
-        if ( classifier != null )
-        {
-            String version = artifact.getVersion();
-            if ( ! version.endsWith( "-" + classifier ) )
-            {
-                throw new LayoutException( INVALID_ARTIFACT_PATH + expectedType + " artifacts must use the classifier " + classifier );
-            }
-            version = version.substring( 0, version.length() - classifier.length() - 1 );
-            artifact.setVersion( version );
-            artifact.setClassifier( classifier );
         }
 
         return artifact;

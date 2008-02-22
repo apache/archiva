@@ -19,9 +19,6 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -70,52 +67,6 @@ public class ArtifactExtensionMapping
         return type.replace( '-', '.' );
     }
 
-    public static String guessTypeFromFilename( File file )
-    {
-        return guessTypeFromFilename( file.getName() );
-    }
-
-    public static String guessTypeFromFilename( String filename )
-    {
-        if ( StringUtils.isBlank( filename ) )
-        {
-            return null;
-        }
-
-        String normalizedName = filename.toLowerCase().trim();
-        int idx = normalizedName.lastIndexOf( '.' );
-
-        if ( idx == ( -1 ) )
-        {
-            return null;
-        }
-
-        if ( normalizedName.endsWith( ".tar.gz" ) )
-        {
-            return "distribution-tgz";
-        }
-        if ( normalizedName.endsWith( ".tar.bz2" ) )
-        {
-            return "distribution-bzip";
-        }
-        else if ( normalizedName.endsWith( ".zip" ) )
-        {
-            return "distribution-zip";
-        }
-        else if ( normalizedName.endsWith( "-sources.jar" ) )
-        {
-            return "java-source";
-        }
-        else if ( normalizedName.endsWith( "-javadoc.jar" ) )
-        {
-            return "javadoc";
-        }
-        else
-        {
-            return normalizedName.substring( idx + 1 );
-        }
-    }
-
     /**
      * Determine if a given artifact Id conforms to the naming scheme for a maven plugin.
      *
@@ -125,5 +76,35 @@ public class ArtifactExtensionMapping
     public static boolean isMavenPlugin( String artifactId )
     {
         return mavenPluginPattern.matcher( artifactId ).matches();
+    }
+
+    public static String mapExtensionAndClassifierToType( String classifier, String extension )
+    {
+        if ( "sources".equals( classifier ) )
+        {
+            return "java-source";
+        }
+        else if ( "javadoc".equals( classifier ) )
+        {
+            return "javadoc";
+        }
+        return mapExtensionToType( extension );
+    }
+
+    public static String mapExtensionToType( String extension )
+    {
+        if ( extension.equals( "tar.gz" ) )
+        {
+            return "distribution-tgz";
+        }
+        else  if ( extension.equals( "tar.bz2" ) )
+        {
+            return "distribution-bzip";
+        }
+        else  if ( extension.equals( "zip" ) )
+        {
+            return "distribution-zip";
+        }
+        return extension;
     }
 }

@@ -40,8 +40,10 @@ public class FilenameParser
 
     private static final Pattern mavenPluginPattern = Pattern.compile( "(maven-.*-plugin)|(.*-maven-plugin)" );
 
-    private static final Pattern extensionPattern = Pattern.compile( "(.tar.gz$)|(.tar.bz2$)|(.[a-z0-9]*$)",
-                                                                     Pattern.CASE_INSENSITIVE );
+    private static final Pattern extensionPattern =
+        Pattern.compile( "(.tar.gz$)|(.tar.bz2$)|(.[a-z0-9]*$)", Pattern.CASE_INSENSITIVE );
+
+    private static final Pattern SNAPSHOT_PATTERN = Pattern.compile( "^([0-9]{8}\\.[0-9]{6}-[0-9]+)(.*)$" );
 
     private static final Pattern section = Pattern.compile( "([^-]*)" );
 
@@ -90,16 +92,39 @@ public class FilenameParser
 
     protected String expect( String expected )
     {
+        String value = null;
+
         if ( name.startsWith( expected, offset ) )
         {
+            value = expected;
+        }
+        else if ( VersionUtil.isGenericSnapshot( expected ) )
+        {
+            String version = name.substring( offset );
+
+            // check it starts with the same version up to the snapshot part
+            int leadingLength = expected.length() - 9;
+            if ( version.startsWith( expected.substring( 0, leadingLength ) ) && version.length() > leadingLength )
+            {
+                // If we expect a non-generic snapshot - look for the timestamp
+                Matcher m = SNAPSHOT_PATTERN.matcher( version.substring( leadingLength + 1 ) );
+                if ( m.matches() )
+                {
+                    value = version.substring( 0, leadingLength + 1 ) + m.group( 1 );
+                }
+            }
+        }
+
+        if ( value != null )
+        {
             // Potential hit. check for '.' or '-' at end of expected.
-            int seperatorOffset = offset + expected.length();
+            int seperatorOffset = offset + value.length();
 
             // Test for "out of bounds" first. 
             if ( seperatorOffset >= name.length() )
             {
                 offset = name.length();
-                return expected;
+                return value;
             }
 
             // Test for seperator char.
@@ -107,16 +132,16 @@ public class FilenameParser
             if ( ( seperatorChar == '-' ) || ( seperatorChar == '.' ) )
             {
                 offset = seperatorOffset + 1;
-                return expected;
+                return value;
             }
         }
 
         return null;
     }
-    
+
     /**
      * Get the current seperator character.
-     * 
+     *
      * @return the seperator character (either '.' or '-'), or 0 if no seperator character available.
      */
     protected char seperator()
@@ -230,5 +255,5 @@ public class FilenameParser
         return ver.toString();
     }
 
-    
+
 }

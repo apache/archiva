@@ -19,12 +19,8 @@ package org.apache.maven.archiva.repository.content;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * ArtifactExtensionMapping
@@ -38,9 +34,9 @@ public class ArtifactClassifierMapping
     static
     {
         typeToClassifierMap = new HashMap<String, String>();
-        typeToClassifierMap.put( "java-source", "sources" );
-        typeToClassifierMap.put( "javadoc.jar", "javadoc" );
-        typeToClassifierMap.put( "javadoc", "javadoc" );
+        typeToClassifierMap.put( "java-sources", "sources" );
+        typeToClassifierMap.put( "javadoc.jars", "javadoc" );
+        typeToClassifierMap.put( "javadocs", "javadoc" );
     }
 
     public static String getClassifier( String type )
