@@ -57,7 +57,7 @@
         <xsl:attribute name="init-method">initialize</xsl:attribute>
       </xsl:if>
       <xsl:if test="plexus:isDisposable( implementation/text() )">
-        <xsl:attribute name="init-method">dispose</xsl:attribute>
+        <xsl:attribute name="destroy-method">dispose</xsl:attribute>
       </xsl:if>
       <xsl:for-each select="requirements/requirement">
         <property>
@@ -91,6 +91,25 @@
     </bean>
 
     <!--
+      Plexus can inject all implementations of an interface as a Map
+
+     -->
+    <xsl:for-each select="requirements/requirement">
+      <xsl:if test="plexus:isMap( ../../implementation, field-name  )">
+        <bean class="org.apache.maven.archiva.common.spring.BeansOfTypeFactoryBean">
+          <xsl:attribute name="id">
+            <xsl:value-of select="plexus:toSpringId( role )" />
+          </xsl:attribute>
+          <property name="type">
+            <xsl:attribute name="value">
+              <xsl:value-of select="role" />
+            </xsl:attribute>
+          </property>
+        </bean>
+      </xsl:if>
+    </xsl:for-each>
+
+    <!--
       Plexus convention is to use interface FQN as bean ID
       Spring convention is to use interface simpleName as bean ID
       To allow smooth migration, we define same bean with both IDs using an alias
@@ -118,7 +137,23 @@
         </xsl:choose>
       </xsl:attribute>
     </alias>
+
+    <!--
+      Plexus "default" role-hint is used to get the component when no hint is specified.
+      This translates to spring context to a bean alias without '#role-hint' suffix
+    -->
+    <xsl:if test="role-hint/text() = 'default'">
+      <alias>
+        <xsl:attribute name="alias">
+           <xsl:value-of select="plexus:toSpringId( role )" />
+        </xsl:attribute>
+        <xsl:attribute name="name">
+           <xsl:value-of select="concat( role, '#', role-hint )" />
+        </xsl:attribute>
+      </alias>
+    </xsl:if>
   </xsl:for-each>
+
 </beans>
 </xsl:template>
 

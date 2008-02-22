@@ -19,9 +19,12 @@ package org.apache.maven.archiva.common.spring;
  * under the License.
  */
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.ClassUtils;
+import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 
@@ -81,6 +84,20 @@ public class PlexusToSpringUtils
         return initializable;
     }
 
+    public static boolean isLogEnabled( String className )
+    {
+        boolean logEnabled = false;
+        try
+        {
+            logEnabled = LogEnabled.class.isAssignableFrom( ClassUtils.getClass( className ) );
+        }
+        catch ( ClassNotFoundException e )
+        {
+            // ignored
+        }
+        return logEnabled;
+    }
+
     public static boolean isDisposable( String className )
     {
         boolean disposable = false;
@@ -93,4 +110,22 @@ public class PlexusToSpringUtils
             // ignored
         }
         return disposable;
-    }}
+    }
+
+    public static boolean isMap( String className, String property )
+    {
+        boolean map = false;
+        try
+        {
+            Class clazz = ClassUtils.getClass( className );
+            Field f = clazz.getDeclaredField( property );
+            map = Map.class.isAssignableFrom( f.getType() );
+        }
+        catch ( Exception e )
+        {
+            // ignored
+        }
+        return map;
+    }
+
+}

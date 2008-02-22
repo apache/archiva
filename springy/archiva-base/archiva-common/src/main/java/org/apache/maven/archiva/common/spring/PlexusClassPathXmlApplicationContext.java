@@ -22,6 +22,7 @@ package org.apache.maven.archiva.common.spring;
 import java.io.IOException;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -85,9 +86,13 @@ public class PlexusClassPathXmlApplicationContext
         super( configLocations );
     }
 
-
     /**
-     * {@inheritDoc}
+     * Register a custom BeanDefinitionDocumentReader to convert plexus
+     * descriptors to spring bean context format.
+     * <p>
+     * Implementation note : validation must be disabled as plexus descriptors
+     * don't use DTD / XML schemas {@inheritDoc}
+     *
      * @see org.springframework.context.support.AbstractXmlApplicationContext#loadBeanDefinitions(org.springframework.beans.factory.xml.XmlBeanDefinitionReader)
      */
     @Override
@@ -97,6 +102,36 @@ public class PlexusClassPathXmlApplicationContext
         reader.setDocumentReaderClass( PlexusBeanDefinitionDocumentReader.class );
         reader.setValidationMode( XmlBeanDefinitionReader.VALIDATION_NONE );
         super.loadBeanDefinitions( reader );
+
+    }
+
+    /**
+     * Post-process the beanFactory to adapt plexus concepts to spring :
+     * <ul>
+     * <li>register a beanPostPorcessor to support LogEnabled interface in
+     * spring context
+     * </ul>
+     * {@inheritDoc}
+     *
+     * @see org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+     */
+    @Override
+    protected void prepareBeanFactory( ConfigurableListableBeanFactory beanFactory )
+    {
+        super.prepareBeanFactory( beanFactory );
+
+        if ( logger.isDebugEnabled() )
+        {
+            String[] beans = getBeanFactory().getBeanDefinitionNames();
+            logger.debug( "registered beans :" );
+            for ( int i = 0; i < beans.length; i++ )
+            {
+                logger.debug( beans[i] );
+            }
+        }
+
+        // Register a bean post-processor to handle plexus Logger injection
+        getBeanFactory().addBeanPostProcessor( new PlexusLogEnabledBeanPostProcessor() );
     }
 
 }

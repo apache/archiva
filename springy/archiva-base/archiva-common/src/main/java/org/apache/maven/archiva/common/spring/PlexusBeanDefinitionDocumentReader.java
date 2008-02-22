@@ -50,7 +50,7 @@ public class PlexusBeanDefinitionDocumentReader
         super.registerBeanDefinitions( doc, readerContext );
     }
 
-    protected Document convertPlexusDescriptorToSpringBeans( Document doc )
+    public Document convertPlexusDescriptorToSpringBeans( Document doc )
     {
         if ( ! "component-set".equals( doc.getDocumentElement().getNodeName() ) )
         {
