@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -27,7 +28,6 @@ import org.apache.maven.archiva.indexer.lucene.LuceneIndexHandlers;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

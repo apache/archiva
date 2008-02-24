@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
@@ -32,7 +33,6 @@ import org.apache.maven.archiva.indexer.bytecode.BytecodeRecord;
 import org.apache.maven.archiva.indexer.filecontent.FileContentRecord;
 import org.apache.maven.archiva.indexer.hashcodes.HashcodesRecord;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;

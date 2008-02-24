@@ -19,6 +19,7 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.maven.archiva.converter.artifact.ArtifactConverter;
 import org.apache.maven.archiva.converter.artifact.Messages;
@@ -31,7 +32,6 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
