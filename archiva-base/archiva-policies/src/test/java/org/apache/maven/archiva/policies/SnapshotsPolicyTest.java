@@ -19,8 +19,8 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.Properties;
@@ -306,7 +306,7 @@ public class SnapshotsPolicyTest
         if ( createLocalFile )
         {
             localFile.getParentFile().mkdirs();
-            FileUtils.fileWrite( localFile.getAbsolutePath(), "random-junk" );
+            FileUtils.writeStringToFile( localFile, "random-junk" );
             localFile.setLastModified( localFile.lastModified() - generatedLocalFileUpdateDelta );
         }
 
