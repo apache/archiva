@@ -19,11 +19,11 @@ package org.apache.maven.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.maven.archiva.consumers.ConsumerException;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -128,7 +128,8 @@ public class AutoRenameConsumer
                     File to = new File( this.repositoryDir, correctedPath );
                     try
                     {
-                        FileUtils.rename( file, to );
+                        // Rename the file.
+                        FileUtils.moveFile( file, to );
                     }
                     catch ( IOException e )
                     {
