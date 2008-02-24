@@ -22,7 +22,7 @@ package org.apache.maven.archiva.policies;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.maven.archiva.common.spring.PlexusClassPathXmlApplicationContext;
+import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.PlexusTestCase;
 import org.springframework.context.ApplicationContext;
@@ -41,7 +41,7 @@ public class CachedFailuresPolicyTest
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
-        return (DownloadPolicy) factory.getBean( PreDownloadPolicy.class.getName() + "#cache-failures" );
+        return (DownloadPolicy) factory.getBean( "preDownloadPolicy#cache-failures" );
     }
 
     private File getFile()
