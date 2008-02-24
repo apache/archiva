@@ -193,7 +193,7 @@ public class LegacyToDefaultConverter
                 }
 
                 // Even if the checksums for the POM are invalid we should still convert the POM
-                contents = AsciiFileUtil.readFile( file );
+                contents = FileUtils.readFileToString( file, null );
             }
             catch ( IOException e )
             {
@@ -209,7 +209,7 @@ public class LegacyToDefaultConverter
                     boolean matching = false;
                     if ( !force && targetFile.exists() )
                     {
-                        String targetContents = AsciiFileUtil.readFile( targetFile );
+                        String targetContents = FileUtils.readFileToString( targetFile, null );
                         matching = targetContents.equals( contents );
                     }
                     if ( force || !matching )
@@ -308,7 +308,7 @@ public class LegacyToDefaultConverter
         File checksumFile = new File( file.getParentFile(), fileName );
         if ( checksumFile.exists() )
         {
-            String checksum = AsciiFileUtil.readFile( checksumFile );
+            String checksum = FileUtils.readFileToString( checksumFile, null );
             try
             {
                 digester.verify( file, checksum );

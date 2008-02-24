@@ -21,7 +21,6 @@ package org.apache.maven.archiva.converter.artifact;
 
 import org.apache.maven.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.maven.archiva.converter.artifact.ArtifactConverter;
-import org.apache.maven.archiva.converter.artifact.AsciiFileUtil;
 import org.apache.maven.archiva.converter.artifact.Messages;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
@@ -934,8 +933,8 @@ public class LegacyToDefaultConverterTest
     private static void compareFiles( File expectedPomFile, File pomFile )
         throws IOException
     {
-        String expectedContent = normalizeString( AsciiFileUtil.readFile( expectedPomFile ) );
-        String targetContent = normalizeString( AsciiFileUtil.readFile( pomFile ) );
+        String expectedContent = normalizeString( org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, null ) );
+        String targetContent = normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, null ) );
         assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent, targetContent );
     }
 
