@@ -2,6 +2,7 @@
   <components>
     <component>
       <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <role-hint>default</role-hint>
       <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
       <requirements>
       	<requirement>
@@ -13,5 +14,29 @@
         <message>expected</message>
       </configuration>
     </component>
+    <component>
+      <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <role-hint>another</role-hint>
+      <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
+      <requirements>
+      	<requirement>
+      		<field-name>bean</field-name>
+      		<role>springBean</role>
+      	</requirement>
+      </requirements>
+      <configuration>
+        <message>another</message>
+      </configuration>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.spring.ComplexPlexusBean</role>
+      <implementation>org.codehaus.plexus.spring.ComplexPlexusBean</implementation>
+      <requirements>
+      	<requirement>
+      		<field-name>plexusBeans</field-name>
+      		<role>org.codehaus.plexus.spring.PlexusBean</role>
+      	</requirement>
+      </requirements>
+    </component>    
   </components>
 </component-set>

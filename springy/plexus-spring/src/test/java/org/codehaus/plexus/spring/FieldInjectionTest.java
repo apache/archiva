@@ -37,5 +37,13 @@ public class FieldInjectionTest
         assertEquals( PlexusBean.DISPOSED, plexusBean.getState() );
         
     }
+    
+    public void testIbjectMapForRole()
+        throws Exception
+    {
+        ConfigurableApplicationContext applicationContext = new PlexusClassPathXmlApplicationContext( new String[] { "components.xml", "applicationContext.xml" } );       
+        ComplexPlexusBean plexusBean = (ComplexPlexusBean) applicationContext.getBean( "complexPlexusBean" );
+        assertEquals( "2 components for role org.codehaus.plexus.spring.PlexusBean", plexusBean.toString() );
+    }
 
 }

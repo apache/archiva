@@ -20,6 +20,7 @@ package org.codehaus.plexus.spring;
  */
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,8 +30,6 @@ import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -40,17 +39,17 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.context.Lifecycle;
 import org.springframework.util.ReflectionUtils;
 
 /**
  * A FactoryBean dedicated to building plexus components. This includes :
  * <ul>
- *   <li>Support for direct field injection or "requirements"</li>
- *   <li>Support for LogEnabled, Initializable and Disposable plexus interfaces</li>
+ * <li>Support for direct field injection or "requirements"</li>
+ * <li>Support for LogEnabled, Initializable and Disposable plexus interfaces</li>
+ * <li>Support for plexus.requirement to get a Map<role-hint, component> for a role
  * </ul>
- * If not set, the beanFActory will auto-detect the loggerManager to use by searching for the
- * adequate bean in the spring context.
+ * If not set, the beanFActory will auto-detect the loggerManager to use by searching for the adequate bean in the
+ * spring context.
  * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -70,7 +69,7 @@ public class PlexusComponentFactoryBean
     private LoggerManager loggerManager;
 
     private List instances = new LinkedList();
-    
+
     public void afterPropertiesSet()
         throws Exception
     {
@@ -92,7 +91,7 @@ public class PlexusComponentFactoryBean
             }
         }
     }
-    
+
     public void destroy()
         throws Exception
     {
@@ -103,13 +102,13 @@ public class PlexusComponentFactoryBean
                 Object component = (Object) iterator.next();
                 if ( component instanceof Disposable )
                 {
-                    ((Disposable) component).dispose();
-                    
+                    ( (Disposable) component ).dispose();
+
                 }
             }
-        }        
+        }
     }
-    
+
     public Object getObject()
         throws Exception
     {
@@ -128,7 +127,31 @@ public class PlexusComponentFactoryBean
                     Object dependency = requirements.get( field.getName() );
                     if ( dependency instanceof RuntimeBeanReference )
                     {
-                        dependency = beanFactory.getBean( ((RuntimeBeanReference) dependency).getBeanName() );                        
+                        String beanName = ( (RuntimeBeanReference) dependency ).getBeanName();
+                        if ( Map.class.isAssignableFrom( field.getType() ) )
+                        {
+                            // component ask plexus for a Map of all available components for the role
+                            Map map = new HashMap();
+                            String mask = beanName + '#';
+                            String[] beans = beanFactory.getBeanDefinitionNames();
+                            for ( int i = 0; i < beans.length; i++ )
+                            {
+                                String name = beans[i];
+                                if ( name.startsWith( mask ) )
+                                {
+                                    map.put( name.substring( mask.length() ), beanFactory.getBean( name ) );
+                                }
+                            }
+                            if ( beanFactory.containsBean( beanName ) )
+                            {
+                                map.put( "default", beanFactory.getBean( beanName ) );
+                            }
+                            dependency = map;
+                        }
+                        else
+                        {
+                            dependency = beanFactory.getBean( beanName );
+                        }
                     }
                     if ( dependency != null )
                     {

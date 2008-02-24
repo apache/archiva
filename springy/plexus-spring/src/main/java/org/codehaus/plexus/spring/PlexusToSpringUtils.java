@@ -1,6 +1,5 @@
 package org.codehaus.plexus.spring;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -28,7 +27,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 
 /**
  * Utility method to convert plexus descriptors to spring bean context.
- *
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @since 1.1
  */
@@ -38,7 +37,7 @@ public class PlexusToSpringUtils
     public static String toSpringId( String string )
     {
         int i = string.lastIndexOf( '.' );
-        if (i >= 0 )
+        if ( i >= 0 )
         {
             return Character.toLowerCase( string.charAt( i + 1 ) ) + string.substring( i + 2 );
         }
@@ -104,5 +103,6 @@ public class PlexusToSpringUtils
             i = 0;
         }
         String id = Character.toLowerCase( role.charAt( i ) ) + role.substring( i + 1 );
-        return roleHint.length() == 0 ? id : id + '#' + roleHint;
-    }}
+        return ( roleHint.length() == 0 || "default".equals( roleHint ) ) ? id : id + '#' + roleHint;
+    }
+}

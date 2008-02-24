@@ -19,7 +19,6 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -90,14 +88,6 @@ public class PlexusNamespaceHandler
                 String role = child.getAttribute( "role" );
                 String roleHint = child.getAttribute( "role-hint" );
                 String ref = PlexusToSpringUtils.buildSpringId( role, roleHint );
-                if ( roleHint == null )
-                {
-//                    Field f = ClassUtils.forName( implementation ).getField( name );
-//                    if ( Map.class.isAssignableFrom( f.getType() ) )
-//                    {
-//                        // TODO add add support for plexus role --> Map<role-hint, component>
-//                    }
-                }
                 dependencies.put( name, new RuntimeBeanReference( ref ) );
 
             }
@@ -113,7 +103,7 @@ public class PlexusNamespaceHandler
 
             builder.addPropertyValue( "requirements", dependencies );
         }
-        
+
         protected String resolveId( Element element, AbstractBeanDefinition definition, ParserContext parserContext )
             throws BeanDefinitionStoreException
         {
