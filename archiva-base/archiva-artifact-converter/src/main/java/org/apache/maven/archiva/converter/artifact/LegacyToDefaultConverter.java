@@ -19,6 +19,8 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.transaction.FileTransaction;
 import org.apache.maven.archiva.transaction.TransactionException;
 import org.apache.maven.artifact.Artifact;
@@ -41,8 +43,6 @@ import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 import java.io.File;
@@ -275,7 +275,7 @@ public class LegacyToDefaultConverter
                 }
                 finally
                 {
-                    IOUtil.close( writer );
+                    IOUtils.closeQuietly( writer );
                 }
             }
         }
@@ -411,7 +411,7 @@ public class LegacyToDefaultConverter
         }
         finally
         {
-            IOUtil.close( fileReader );
+            IOUtils.closeQuietly( fileReader );
         }
         return metadata;
     }
@@ -583,7 +583,7 @@ public class LegacyToDefaultConverter
             }
             finally
             {
-                IOUtil.close( writer );
+                IOUtils.closeQuietly( writer );
             }
         }
     }

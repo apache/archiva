@@ -19,12 +19,10 @@ package org.apache.maven.archiva.converter.artifact;
  * under the License.
  */
 
-import org.codehaus.plexus.util.IOUtil;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * AsciiFileUtil - conveinence utility for reading / writing ascii files.
@@ -45,16 +43,7 @@ public class AsciiFileUtil
     public static String readFile( File file )
         throws IOException
     {
-        FileInputStream in = null;
-        try
-        {
-            in = new FileInputStream( file );
-            return IOUtil.toString( in );
-        }
-        finally
-        {
-            IOUtil.close( in );
-        }
+        return FileUtils.readFileToString( file, null );
     }
 
     /**
@@ -67,15 +56,6 @@ public class AsciiFileUtil
     public static void writeFile( File file, String content )
         throws IOException
     {
-        FileOutputStream out = null;
-        try
-        {
-            out = new FileOutputStream( file );
-            IOUtil.copy( content, out );
-        }
-        finally
-        {
-            IOUtil.close( out );
-        }
+        FileUtils.writeStringToFile( file, content, null );
     }
 }
