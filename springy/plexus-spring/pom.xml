@@ -20,16 +20,15 @@
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.maven.archiva</groupId>
-	<artifactId>filed-injection</artifactId>
-	<version>1</version>
+	<groupId>org.codehaus.plexus</groupId>
+	<artifactId>plexus-spring</artifactId>
+	<version>1.0-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.2</version>
-			<scope>test</scope>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>2.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -41,20 +40,18 @@
 			<artifactId>plexus-component-api</artifactId>
 			<version>1.0-alpha-33</version>
 		</dependency>
+
 		<dependency>
-			<groupId>org.codehaus.plexus</groupId>
-			<artifactId>plexus-component-api</artifactId>
-			<version>1.0-alpha-33</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.2</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-log4j-logging</artifactId>
 			<version>1.1-alpha-3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>2.5.1</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
