@@ -1,0 +1,17 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
+      <requirements>
+      	<requirement>
+      		<field-name>bean</field-name>
+      		<role>springBean</role>
+      	</requirement>
+      </requirements>
+      <configuration>
+        <message>expected</message>
+      </configuration>
+    </component>
+  </components>
+</component-set>

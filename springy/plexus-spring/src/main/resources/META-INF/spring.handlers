@@ -1,0 +1,3 @@
+# register a NamespaceHandler for the custom <plexus: namespace
+http\://plexus.codehaus.org/spring = org.codehaus.plexus.spring.PlexusNamespaceHandler
+ 
