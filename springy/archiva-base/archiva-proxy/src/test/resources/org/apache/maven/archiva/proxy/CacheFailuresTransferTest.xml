@@ -78,6 +78,10 @@
           <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
           <field-name>consumers</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.urlcache.UrlFailureCache</role>
+          <field-name>urlFailureCache</field-name>
+        </requirement>
       </requirements>
     </component>
 
