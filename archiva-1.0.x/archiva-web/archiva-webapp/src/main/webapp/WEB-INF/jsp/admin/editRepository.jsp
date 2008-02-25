@@ -36,6 +36,7 @@
   <ww:actionmessage/>
   <ww:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
     <ww:hidden name="repository.id"/>
+    <ww:label label="ID" name="repository.id" />
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>
     <ww:submit value="Update Repository"/>
   </ww:form>
