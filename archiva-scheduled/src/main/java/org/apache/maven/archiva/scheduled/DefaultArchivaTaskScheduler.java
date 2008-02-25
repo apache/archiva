@@ -19,12 +19,11 @@ package org.apache.maven.archiva.scheduled;
  * under the License.
  */
 
-import java.text.ParseException;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ConfigurationEvent;
+import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.scheduled.tasks.ArchivaTask;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
@@ -33,8 +32,6 @@ import org.apache.maven.archiva.scheduled.tasks.RepositoryTaskSelectionPredicate
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StartingException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.StoppingException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.scheduler.CronExpressionValidator;
 import org.codehaus.plexus.scheduler.Scheduler;
 import org.codehaus.plexus.taskqueue.Task;
@@ -48,6 +45,11 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Default implementation of a scheduling component for archiva.
  *
@@ -56,7 +58,7 @@ import org.slf4j.LoggerFactory;
  * @plexus.component role="org.apache.maven.archiva.scheduled.ArchivaTaskScheduler" role-hint="default"
  */
 public class DefaultArchivaTaskScheduler
-    implements ArchivaTaskScheduler, Startable, RegistryListener
+    implements ArchivaTaskScheduler, Startable, ConfigurationListener
 {
     private Logger log = LoggerFactory.getLogger( DefaultArchivaTaskScheduler.class );
     
@@ -94,9 +96,13 @@ public class DefaultArchivaTaskScheduler
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
+    private Set<String> jobs = new HashSet<String>();
+
     public void startup()
         throws ArchivaException
     {
+        archivaConfiguration.addListener( this );
+
         try
         {
             start();
@@ -131,7 +137,7 @@ public class DefaultArchivaTaskScheduler
         }
     }
 
-    private void scheduleRepositoryJobs( ManagedRepositoryConfiguration repoConfig )
+    private synchronized void scheduleRepositoryJobs( ManagedRepositoryConfiguration repoConfig )
         throws SchedulerException
     {
         if ( repoConfig.getRefreshCronExpression() == null )
@@ -166,6 +172,7 @@ public class DefaultArchivaTaskScheduler
             CronTrigger trigger =
                 new CronTrigger( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP, cronString );
 
+            jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );
         }
         catch ( ParseException e )
@@ -177,7 +184,7 @@ public class DefaultArchivaTaskScheduler
 
     }
 
-    private void scheduleDatabaseJobs()
+    private synchronized void scheduleDatabaseJobs()
         throws SchedulerException
     {
         String cronString = archivaConfiguration.getConfiguration().getDatabaseScanning().getCronExpression();
@@ -217,64 +224,16 @@ public class DefaultArchivaTaskScheduler
         try
         {
             scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
+
+            for ( String job : jobs )
+            {
+                scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
+            }
+            jobs.clear();
         }
         catch ( SchedulerException e )
         {
             throw new StoppingException( "Unable to unschedule tasks", e );
-        }
-    }
-
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        // nothing to do
-    }
-
-    /**
-     *
-     */
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        // cronExpression comes from the database scanning section
-        if ( "cronExpression".equals( propertyName ) )
-        {
-            log.debug( "Restarting the database scheduled task after property change: " + propertyName );
-
-            try
-            {
-                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
-
-                scheduleDatabaseJobs();
-            }
-            catch ( SchedulerException e )
-            {
-                log.error( "Error restarting the database scanning job after property change." );
-            }
-        }
-
-        // refreshCronExpression comes from the repositories section
-        // 
-        // currently we have to reschedule all repo jobs because we don't know where the changed one came from
-        if ( "refreshCronExpression".equals( propertyName ) )
-        {
-            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
-            .getManagedRepositories();
-
-            for ( ManagedRepositoryConfiguration repoConfig : repositories )
-            {
-                if ( repoConfig.getRefreshCronExpression() != null )
-                {
-                    try
-                    {
-                        // unschedule handles jobs that might not exist
-                        scheduler.unscheduleJob( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP );
-                        scheduleRepositoryJobs( repoConfig );
-                    }
-                    catch ( SchedulerException e )
-                    {
-                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
-                    }
-                }
-            }
         }
     }
 
@@ -353,5 +312,53 @@ public class DefaultArchivaTaskScheduler
         throws TaskQueueException
     {
         databaseUpdateQueue.put( task );
+    }
+
+    public void configurationEvent( ConfigurationEvent event )
+    {
+        if ( event.getType() == ConfigurationEvent.SAVED )
+        {
+            try
+            {
+                scheduler.unscheduleJob( DATABASE_JOB, DATABASE_SCAN_GROUP );
+
+                scheduleDatabaseJobs();
+            }
+            catch ( SchedulerException e )
+            {
+                log.error( "Error restarting the database scanning job after property change." );
+            }
+
+            for ( String job : jobs )
+            {
+                try
+                {
+                    scheduler.unscheduleJob( job, REPOSITORY_SCAN_GROUP );
+                }
+                catch ( SchedulerException e )
+                {
+                    log.error( "Error restarting the repository scanning job after property change." );
+                }
+            }
+            jobs.clear();
+
+            List<ManagedRepositoryConfiguration> repositories = archivaConfiguration.getConfiguration()
+            .getManagedRepositories();
+
+            for ( ManagedRepositoryConfiguration repoConfig : repositories )
+            {
+                if ( repoConfig.getRefreshCronExpression() != null )
+                {
+                    try
+                    {
+                        scheduleRepositoryJobs( repoConfig );
+                    }
+                    catch ( SchedulerException e )
+                    {
+                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                    }
+                }
+            }
+        }
     }
 }
