@@ -22,10 +22,11 @@ package org.apache.maven.archiva.policies;
 import java.io.File;
 import java.util.Properties;
 
-import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
 import org.codehaus.plexus.PlexusTestCase;
-import org.springframework.context.ApplicationContext;
+import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * CachedFailuresPolicyTest
@@ -34,14 +35,12 @@ import org.springframework.context.ApplicationContext;
  * @version $Id$
  */
 public class CachedFailuresPolicyTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
-    private ApplicationContext factory;
-
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
-        return (DownloadPolicy) factory.getBean( "preDownloadPolicy#cache-failures" );
+        return (DownloadPolicy) lookup( PreDownloadPolicy.class, "cache-failures" );
     }
 
     private File getFile()
@@ -89,7 +88,7 @@ public class CachedFailuresPolicyTest
 
         String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
 
-        UrlFailureCache urlFailureCache = (UrlFailureCache) factory.getBean( "urlFailureCache" );
+        UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );
@@ -103,17 +102,5 @@ public class CachedFailuresPolicyTest
         {
             // expected path.
         }
-    }
-
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        factory = new PlexusClassPathXmlApplicationContext(
-            new String[] {
-                "classpath*:META-INF/plexus/components.xml",
-                "classpath*:META-INF/plexus/components-fragment.xml",
-                "/org/apache/maven/archiva/policies/CachedFailuresPolicyTest-context.xml" } );
     }
 }

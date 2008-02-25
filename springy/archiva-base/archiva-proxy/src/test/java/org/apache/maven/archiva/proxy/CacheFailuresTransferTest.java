@@ -49,9 +49,9 @@ public class CacheFailuresTransferTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
         setupTestableManagedRepository( path );
-        
+
         assertNotExistsInManagedDefaultRepo( expectedFile );
-        
+
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
@@ -72,13 +72,13 @@ public class CacheFailuresTransferTest
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
-		
+
 		// Second attempt to download same artifact use cache
         wagonMockControl.reset();
         wagonMockControl.replay();
 		downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         wagonMockControl.verify();
-        
+
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -91,7 +91,7 @@ public class CacheFailuresTransferTest
         setupTestableManagedRepository( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
-        
+
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Repository (usually done within archiva.xml configuration)
@@ -118,11 +118,11 @@ public class CacheFailuresTransferTest
         wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
         wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
         wagonMockControl.replay();
-		
+
 		downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-		
+
         wagonMockControl.verify();
-		
+
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -160,7 +160,7 @@ public class CacheFailuresTransferTest
     protected UrlFailureCache lookupUrlFailureCache()
         throws Exception
     {
-        UrlFailureCache urlFailureCache = (UrlFailureCache) factory.getBean( "urlFailureCache" );
+        UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
         assertNotNull( "URL Failure Cache cannot be null.", urlFailureCache );
         return urlFailureCache;
     }

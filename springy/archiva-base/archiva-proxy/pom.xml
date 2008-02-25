@@ -29,6 +29,11 @@
   <name>Archiva Base :: Proxy</name>
   <dependencies>
     <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-spring</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
     </dependency>

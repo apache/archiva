@@ -20,6 +20,7 @@ package org.codehaus.plexus.spring;
  */
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,6 +32,8 @@ import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.SimpleTypeConverter;
+import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -50,11 +53,11 @@ import org.springframework.util.ReflectionUtils;
  * </ul>
  * If not set, the beanFActory will auto-detect the loggerManager to use by searching for the adequate bean in the
  * spring context.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusComponentFactoryBean
-    implements FactoryBean, BeanFactoryAware, InitializingBean, DisposableBean
+    implements FactoryBean, BeanFactoryAware, DisposableBean
 {
     private Class role;
 
@@ -68,29 +71,9 @@ public class PlexusComponentFactoryBean
 
     private LoggerManager loggerManager;
 
-    private List instances = new LinkedList();
+    private TypeConverter typeConverter = new SimpleTypeConverter();
 
-    public void afterPropertiesSet()
-        throws Exception
-    {
-        if ( loggerManager == null )
-        {
-            if ( beanFactory.containsBean( "loggerManager" ) )
-            {
-                loggerManager = (LoggerManager) beanFactory.getBean( "loggerManager" );
-            }
-            Map loggers = beanFactory.getBeansOfType( LoggerManager.class );
-            if ( loggers.size() == 1 )
-            {
-                loggerManager = (LoggerManager) loggers.values().iterator().next();
-            }
-            else
-            {
-                throw new BeanInitializationException(
-                                                       "You must explicitly set a LoggerManager or define a unique one in bean context" );
-            }
-        }
-    }
+    private List instances = new LinkedList();
 
     public void destroy()
         throws Exception
@@ -148,6 +131,25 @@ public class PlexusComponentFactoryBean
                             }
                             dependency = map;
                         }
+                        else if ( Collection.class.isAssignableFrom( field.getType() ) )
+                        {
+                            List list = new LinkedList();
+                            String mask = beanName + '#';
+                            String[] beans = beanFactory.getBeanDefinitionNames();
+                            for ( int i = 0; i < beans.length; i++ )
+                            {
+                                String name = beans[i];
+                                if ( name.startsWith( mask ) )
+                                {
+                                    list.add( beanFactory.getBean( name ) );
+                                }
+                            }
+                            if ( beanFactory.containsBean( beanName ) )
+                            {
+                                list.add( beanFactory.getBean( beanName ) );
+                            }
+                            dependency = list;
+                        }
                         else
                         {
                             dependency = beanFactory.getBean( beanName );
@@ -155,6 +157,7 @@ public class PlexusComponentFactoryBean
                     }
                     if ( dependency != null )
                     {
+                        dependency = typeConverter.convertIfNecessary( dependency, field.getType() );
                         ReflectionUtils.makeAccessible( field );
                         ReflectionUtils.setField( field, component, dependency );
                     }
@@ -162,17 +165,18 @@ public class PlexusComponentFactoryBean
             }, ReflectionUtils.COPYABLE_FIELDS );
         }
 
+
+        if ( component instanceof LogEnabled )
+        {
+            ( (LogEnabled) component ).enableLogging( getLoggerManager().getLoggerForComponent( role.getName() ) );
+        }
+
         if ( component instanceof Initializable )
         {
             ( (Initializable) component ).initialize();
         }
 
-        // TODO handle Initializable, Startable, Stopable, Disposable
-
-        if ( component instanceof LogEnabled )
-        {
-            ( (LogEnabled) component ).enableLogging( loggerManager.getLoggerForComponent( role.getName() ) );
-        }
+        // TODO add support for Startable, Stopable -> LifeCycle ?
 
         return component;
     }
@@ -185,6 +189,28 @@ public class PlexusComponentFactoryBean
     public boolean isSingleton()
     {
         return "per-lookup".equals( instanciationStrategy );
+    }
+
+    private LoggerManager getLoggerManager()
+    {
+        if ( loggerManager == null )
+        {
+            if ( beanFactory.containsBean( "loggerManager" ) )
+            {
+                loggerManager = (LoggerManager) beanFactory.getBean( "loggerManager" );
+            }
+            Map loggers = beanFactory.getBeansOfType( LoggerManager.class );
+            if ( loggers.size() == 1 )
+            {
+                loggerManager = (LoggerManager) loggers.values().iterator().next();
+            }
+            else
+            {
+                throw new BeanInitializationException(
+                                                       "You must explicitly set a LoggerManager or define a unique one in bean context" );
+            }
+        }
+        return loggerManager;
     }
 
     public void setBeanFactory( BeanFactory beanFactory )
@@ -231,6 +257,11 @@ public class PlexusComponentFactoryBean
     public void setRequirements( Map requirements )
     {
         this.requirements = requirements;
+    }
+
+    protected void setTypeConverter( TypeConverter typeConverter )
+    {
+        this.typeConverter = typeConverter;
     }
 
 }

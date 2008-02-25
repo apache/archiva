@@ -19,25 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.spring.PlexusClassPathXmlApplicationContext;
-import org.apache.maven.archiva.common.spring.PlexusFactory;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.policies.CachedFailuresPolicy;
-import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.PlexusTestCase;
-import org.easymock.MockControl;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -49,6 +30,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.policies.CachedFailuresPolicy;
+import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.wagon.Wagon;
+import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
+import org.springframework.beans.factory.BeanFactory;
+
 /**
  * AbstractProxyTestCase
  *
@@ -56,7 +53,7 @@ import java.util.Locale;
  * @version $Id$
  */
 public abstract class AbstractProxyTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
 
@@ -105,8 +102,6 @@ public abstract class AbstractProxyTestCase
     protected File managedLegacyDir;
 
     protected MockConfiguration config;
-
-    protected BeanFactory factory;
 
     protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception
@@ -376,18 +371,22 @@ public abstract class AbstractProxyTestCase
         return repoLocation;
     }
 
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getConfigLocation()
+     */
+    @Override
+    protected String getSpringConfigLocation()
+        throws Exception
+    {
+        return "org/apache/maven/archiva/proxy/spring-context.xml";
+    }
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
-
-        factory = new PlexusClassPathXmlApplicationContext(
-            new String[] {
-                "classpath*:META-INF/plexus/components.xml",
-                "classpath*:META-INF/plexus/components-fragment.xml",
-                "classpath*:META-INF/spring/applicationContext.xml",
-                "classpath:/org/apache/maven/archiva/proxy/spring-context.xml" } );
 
         config = (MockConfiguration) lookup( ArchivaConfiguration.class.getName(), "mock" );
 

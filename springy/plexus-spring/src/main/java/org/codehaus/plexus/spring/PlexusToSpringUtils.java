@@ -27,7 +27,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 
 /**
  * Utility method to convert plexus descriptors to spring bean context.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @since 1.1
  */
@@ -103,6 +103,11 @@ public class PlexusToSpringUtils
             i = 0;
         }
         String id = Character.toLowerCase( role.charAt( i ) ) + role.substring( i + 1 );
-        return ( roleHint.length() == 0 || "default".equals( roleHint ) ) ? id : id + '#' + roleHint;
+        return isDefaultHint( roleHint ) ? id : id + '#' + roleHint;
+    }
+
+    private static boolean isDefaultHint( String roleHint )
+    {
+        return roleHint == null || roleHint.length() == 0 || "default".equals( roleHint );
     }
 }
