@@ -38,7 +38,7 @@ import org.w3c.dom.Element;
 /**
  * A spring namespace handler to support plexus components creation and direct field-injection in a spring
  * XmlApplicationContext.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @since 1.1
  */
@@ -77,6 +77,7 @@ public class PlexusNamespaceHandler
             builder.addPropertyValue( "role", element.getAttribute( "role" ) );
             String implementation = element.getAttribute( "implementation" );
             builder.addPropertyValue( "implementation", implementation );
+            builder.addPropertyValue( "instanciationStrategy", element.getAttribute( "instantiation-strategy" ) );
 
             Map dependencies = new HashMap();
 

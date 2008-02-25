@@ -1,11 +1,9 @@
 package org.codehaus.plexus.spring;
 
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.LogEnablePhase;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,7 +26,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.LogEnablePhase;
 
 /**
  * A typical plexus component implementation
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusBeanImpl
@@ -36,7 +34,7 @@ public class PlexusBeanImpl
     implements PlexusBean, Initializable, Disposable
 {
     private String message;
-    
+
     private String state = "undefined";
 
     /**
@@ -52,9 +50,9 @@ public class PlexusBeanImpl
 
     public void dispose()
     {
-        state = DISPOSED;        
+        state = DISPOSED;
     }
-    
+
     /**
      * @see org.codehaus.plexus.spring.PlexusBean#toString()
      */

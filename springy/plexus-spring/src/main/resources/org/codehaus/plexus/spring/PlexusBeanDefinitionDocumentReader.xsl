@@ -24,9 +24,9 @@
 
 <xsl:output method="xml"/>
 
-<!-- 
+<!--
   Convert a plexus descriptor to a spring XML context with help of the custom <plexus: namespace
-  to handle IoC containers incompatibilities. 
+  to handle IoC containers incompatibilities.
  -->
 
 <xsl:template match="/component-set">
@@ -49,9 +49,9 @@
       <xsl:attribute name="implementation">
         <xsl:value-of select="implementation" />
       </xsl:attribute>
-      <xsl:if test="instanciation-strategy">
-        <xsl:attribute name="instanciation-strategy">
-          <xsl:value-of select="instanciation-strategy" />
+      <xsl:if test="instantiation-strategy">
+        <xsl:attribute name="instantiation-strategy">
+          <xsl:value-of select="instantiation-strategy" />
         </xsl:attribute>
       </xsl:if>
       <xsl:for-each select="requirements/requirement">
