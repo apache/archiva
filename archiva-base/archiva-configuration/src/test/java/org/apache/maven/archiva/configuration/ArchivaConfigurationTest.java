@@ -652,7 +652,7 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ), baseFile );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", null );
+        FileUtils.fileWrite( userFile.getAbsolutePath(), "<configuration/>" );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-remove-central" );
