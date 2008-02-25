@@ -37,11 +37,10 @@ import java.util.List;
 public class MavenProjectInfoReportsPluginDependencyGraphTest
    extends AbstractDependencyGraphFactoryTestCase
 {
-
-/* TODO: Can't test a snapshot dependency from the repository
    public void testResolvedDepsToNodes()
         throws GraphTaskException
    {
+/* TODO: Can't test a snapshot dependency from the repository
       MemoryRepositoryDependencyGraphBuilder graphBuilder = 
                      new MemoryRepositoryDependencyGraphBuilder();
       MemoryRepository repository = new MavenProjectInfoReportsPluginMemoryRepository();
@@ -136,7 +135,7 @@ public class MavenProjectInfoReportsPluginDependencyGraphTest
       expectedNodes.add( "xml-apis:xml-apis:1.0.b2::jar" );
 
       assertGraph( graph, expectedRootRef, expectedNodes );
-   }
 */
+   }
 
 }
