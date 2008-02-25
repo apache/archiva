@@ -60,9 +60,11 @@
         <requirement>
           <role>org.apache.maven.archiva.repository.RepositoryContentFactory</role>
           <role-hint>mocked</role-hint>
+          <field-name>repositoryFactory</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.repository.metadata.MetadataTools</role>
+          <field-name>metadataTools</field-name>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.policies.PreDownloadPolicy</role>
@@ -78,7 +80,7 @@
         </requirement>
       </requirements>
     </component>
-    
+
     <component>
       <role>org.codehaus.plexus.cache.Cache</role>
       <role-hint>url-failures-cache</role-hint>
@@ -98,8 +100,8 @@
         <!-- 30 minutes = 1800 seconds  -->
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
-    </component>    
-    
+    </component>
+
     <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>
