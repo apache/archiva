@@ -19,6 +19,7 @@ package org.apache.maven.archiva.indexer.bytecode;
  * under the License.
  */
 
+import junit.framework.AssertionFailedError;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactJavaDetails;
 import org.apache.maven.archiva.model.platform.JavaArtifactHelper;
@@ -29,10 +30,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import junit.framework.AssertionFailedError;
 
 /**
  * BytecodeRecordLoader - Utility method for loading dump files into BytecordRecords. 
@@ -42,15 +39,16 @@ import junit.framework.AssertionFailedError;
  */
 public class BytecodeRecordLoader
 {
-    private static Map cache = new HashMap();
+//    private static Map cache = new HashMap();
 
     public static BytecodeRecord loadRecord( File dumpFile, ArchivaArtifact artifact )
     {
-        BytecodeRecord record = (BytecodeRecord) cache.get( artifact );
-        if ( record != null )
-        {
-            return record;
-        }
+        BytecodeRecord record;
+//        record = (BytecodeRecord) cache.get( artifact );
+//        if ( record != null )
+//        {
+//            return record;
+//        }
 
         record = new BytecodeRecord();
         record.setArtifact( artifact );
@@ -131,7 +129,7 @@ public class BytecodeRecordLoader
             IOUtil.close( freader );
         }
 
-        cache.put( artifact, record );
+//        cache.put( artifact, record );
 
         return record;
     }
