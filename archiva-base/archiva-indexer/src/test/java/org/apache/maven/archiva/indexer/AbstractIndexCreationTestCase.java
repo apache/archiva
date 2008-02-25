@@ -80,9 +80,10 @@ public abstract class AbstractIndexCreationTestCase extends AbstractIndexerTestC
         IndexReader reader = IndexReader.open( index.getIndexDirectory() );
         try
         {
+            assertEquals( "Check index size", 1, reader.numDocs() );
+
             Document document = reader.document( 0 );
             assertRecord( record, document );
-            assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
         {
@@ -101,9 +102,10 @@ public abstract class AbstractIndexCreationTestCase extends AbstractIndexerTestC
         IndexReader reader = IndexReader.open( index.getIndexDirectory() );
         try
         {
+            assertEquals( "Check index size", 1, reader.numDocs() );
+
             Document document = reader.document( 0 );
             assertRecord( record, document );
-            assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
         {
@@ -127,9 +129,10 @@ public abstract class AbstractIndexCreationTestCase extends AbstractIndexerTestC
         IndexReader reader = IndexReader.open( index.getIndexDirectory() );
         try
         {
+            assertEquals( "Check index size", 1, reader.numDocs() );
+
             Document document = reader.document( 0 );
             assertRecord( record, document );
-            assertEquals( "Check index size", 1, reader.numDocs() );
         }
         finally
         {
