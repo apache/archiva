@@ -179,4 +179,10 @@ public class FilenameParserTest
         assertEquals( "artifact-id-1.0-20070219.171202-34-test-sources", parser.getName() );
         assertEquals( "jar", parser.getExtension() );
     }
+
+    public void testNoExtension()
+    {
+        FilenameParser parser = new FilenameParser( "foo_bar" );
+        assertNull( parser.getExtension() );
+    }
 }
