@@ -29,19 +29,19 @@ public class FieldInjectionTest
     public void testFieldInjectionInSpringContext()
         throws Exception
     {
-        ConfigurableApplicationContext applicationContext = new PlexusClassPathXmlApplicationContext( new String[] { "components.xml", "applicationContext.xml" } );       
+        ConfigurableApplicationContext applicationContext = new PlexusClassPathXmlApplicationContext( new String[] { "components.xml", "applicationContext.xml" } );
         PlexusBean plexusBean = (PlexusBean) applicationContext.getBean( "plexusBean" );
         assertEquals( PlexusBean.INITIALIZED, plexusBean.getState() );
         assertEquals( "field injection failed", "expected SpringBean", plexusBean.toString() );
         applicationContext.close();
         assertEquals( PlexusBean.DISPOSED, plexusBean.getState() );
-        
+
     }
-    
-    public void testIbjectMapForRole()
+
+    public void testInjectMapForRole()
         throws Exception
     {
-        ConfigurableApplicationContext applicationContext = new PlexusClassPathXmlApplicationContext( new String[] { "components.xml", "applicationContext.xml" } );       
+        ConfigurableApplicationContext applicationContext = new PlexusClassPathXmlApplicationContext( new String[] { "components.xml", "applicationContext.xml" } );
         ComplexPlexusBean plexusBean = (ComplexPlexusBean) applicationContext.getBean( "complexPlexusBean" );
         assertEquals( "2 components for role org.codehaus.plexus.spring.PlexusBean", plexusBean.toString() );
     }

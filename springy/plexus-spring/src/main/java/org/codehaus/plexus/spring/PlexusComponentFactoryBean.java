@@ -20,6 +20,7 @@ package org.codehaus.plexus.spring;
  */
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,8 +29,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.springframework.beans.BeansException;
@@ -50,17 +53,17 @@ import org.springframework.util.ReflectionUtils;
  * <ul>
  * <li>Support for direct field injection or "requirements"</li>
  * <li>Support for LogEnabled, Initializable and Disposable plexus interfaces</li>
- * <li>Support for plexus.requirement to get a Map<role-hint, component> for a role
+ * <li>Support for plexus.requirement to get a Map<role-hint, component> for a
+ * role
  * </ul>
- * If not set, the beanFActory will auto-detect the loggerManager to use by searching for the adequate bean in the
- * spring context.
+ * If not set, the beanFActory will auto-detect the loggerManager to use by
+ * searching for the adequate bean in the spring context.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusComponentFactoryBean
     implements FactoryBean, BeanFactoryAware, DisposableBean
 {
-
     private static final char HINT = '#';
 
     private Class role;
@@ -72,6 +75,8 @@ public class PlexusComponentFactoryBean
     private Map requirements;
 
     private ListableBeanFactory beanFactory;
+
+    private Context contextWrapper;
 
     private LoggerManager loggerManager;
 
@@ -104,6 +109,9 @@ public class PlexusComponentFactoryBean
             throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
         }
 
+        // Spring MAY cache the object built by this factory if getSingleton()
+        // returns true,
+        // but can also requires us to ensure unicity.
         if ( "singleton".equals( instanciationStrategy ) && !instances.isEmpty() )
         {
             return instances.get( 0 );
@@ -121,57 +129,9 @@ public class PlexusComponentFactoryBean
                 public void doWith( Field field )
                     throws IllegalArgumentException, IllegalAccessException
                 {
-                    Object dependency = requirements.get( field.getName() );
-                    if ( dependency instanceof RuntimeBeanReference )
-                    {
-                        String beanName = ( (RuntimeBeanReference) dependency ).getBeanName();
-                        if ( Map.class.isAssignableFrom( field.getType() ) )
-                        {
-                            // component ask plexus for a Map of all available components for the role
-                            Map map = new HashMap();
-                            String mask = beanName + HINT;
-                            String[] beans = beanFactory.getBeanDefinitionNames();
-                            for ( int i = 0; i < beans.length; i++ )
-                            {
-                                String name = beans[i];
-                                if ( name.startsWith( mask ) )
-                                {
-                                    map.put( name.substring( mask.length() ), beanFactory.getBean( name ) );
-                                }
-                            }
-                            if ( beanFactory.containsBean( beanName ) )
-                            {
-                                map.put( PlexusConstants.PLEXUS_DEFAULT_HINT, beanFactory.getBean( beanName ) );
-                            }
-                            dependency = map;
-                        }
-                        else if ( Collection.class.isAssignableFrom( field.getType() ) )
-                        {
-                            List list = new LinkedList();
-                            String mask = beanName + HINT;
-                            String[] beans = beanFactory.getBeanDefinitionNames();
-                            for ( int i = 0; i < beans.length; i++ )
-                            {
-                                String name = beans[i];
-                                if ( name.startsWith( mask ) )
-                                {
-                                    list.add( beanFactory.getBean( name ) );
-                                }
-                            }
-                            if ( beanFactory.containsBean( beanName ) )
-                            {
-                                list.add( beanFactory.getBean( beanName ) );
-                            }
-                            dependency = list;
-                        }
-                        else
-                        {
-                             dependency = beanFactory.getBean( beanName );
-                        }
-                    }
+                    Object dependency = resolveRequirement( field );
                     if ( dependency != null )
                     {
-                        dependency = typeConverter.convertIfNecessary( dependency, field.getType() );
                         ReflectionUtils.makeAccessible( field );
                         ReflectionUtils.setField( field, component, dependency );
                     }
@@ -179,10 +139,14 @@ public class PlexusComponentFactoryBean
             }, ReflectionUtils.COPYABLE_FIELDS );
         }
 
-
         if ( component instanceof LogEnabled )
         {
             ( (LogEnabled) component ).enableLogging( getLoggerManager().getLoggerForComponent( role.getName() ) );
+        }
+
+        if (component instanceof Contextualizable )
+        {
+            ((Contextualizable) component).contextualize( contextWrapper );
         }
 
         if ( component instanceof Initializable )
@@ -205,7 +169,11 @@ public class PlexusComponentFactoryBean
         return "per-lookup".equals( instanciationStrategy );
     }
 
-    private LoggerManager getLoggerManager()
+    /**
+     * Retrieve the loggerManager instance to be used for LogEnabled components
+     * @return
+     */
+    protected LoggerManager getLoggerManager()
     {
         if ( loggerManager == null )
         {
@@ -221,7 +189,7 @@ public class PlexusComponentFactoryBean
             else
             {
                 throw new BeanInitializationException(
-                                                       "You must explicitly set a LoggerManager or define a unique one in bean context" );
+                    "You must explicitly set a LoggerManager or define a unique one in bean context" );
             }
         }
         return loggerManager;
@@ -262,7 +230,7 @@ public class PlexusComponentFactoryBean
      */
     public void setInstanciationStrategy( String instanciationStrategy )
     {
-        if (instanciationStrategy.length() == 0)
+        if ( instanciationStrategy.length() == 0 )
         {
             instanciationStrategy = "singleton";
         }
@@ -280,6 +248,66 @@ public class PlexusComponentFactoryBean
     protected void setTypeConverter( TypeConverter typeConverter )
     {
         this.typeConverter = typeConverter;
+    }
+
+    /**
+     * Create a Map of all available implementation of the expected role
+     * @param beanName
+     * @return Map<role-hint, component>
+     */
+    protected Map getRoleMap( String beanName )
+    {
+        Map map = new HashMap();
+        String mask = beanName + HINT;
+        String[] beans = beanFactory.getBeanDefinitionNames();
+        for ( int i = 0; i < beans.length; i++ )
+        {
+            String name = beans[i];
+            if ( name.startsWith( mask ) )
+            {
+                map.put( name.substring( mask.length() ), beanFactory.getBean( name ) );
+            }
+        }
+        if ( beanFactory.containsBean( beanName ) )
+        {
+            map.put( PlexusConstants.PLEXUS_DEFAULT_HINT, beanFactory.getBean( beanName ) );
+        }
+        return map;
+    }
+
+
+    /**
+     * Resolve the requirement that this field exposes in the component
+     * @param field
+     * @return
+     */
+    protected Object resolveRequirement( Field field )
+    {
+        Object dependency =  requirements.get( field.getName() );
+        if ( dependency instanceof RuntimeBeanReference )
+        {
+            String beanName = ( (RuntimeBeanReference) dependency ).getBeanName();
+            if ( Map.class.isAssignableFrom( field.getType() ) )
+            {
+                // component ask plexus for a Map of all available
+                // components for the role
+                dependency = getRoleMap( beanName );
+            }
+            else if ( Collection.class.isAssignableFrom( field.getType() ) )
+            {
+                dependency = new ArrayList( getRoleMap( beanName ).values() );
+            }
+            else
+            {
+                dependency = beanFactory.getBean( beanName );
+            }
+        }
+        if (dependency != null)
+        {
+            dependency = typeConverter.convertIfNecessary( dependency, field.getType() );
+        }
+        return dependency;
+
     }
 
 }

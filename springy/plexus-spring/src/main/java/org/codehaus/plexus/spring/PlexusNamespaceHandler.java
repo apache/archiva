@@ -32,6 +32,7 @@ import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
@@ -48,10 +49,11 @@ public class PlexusNamespaceHandler
     public void init()
     {
         registerBeanDefinitionParser( "component", new PlexusComponentBeanDefinitionParser() );
-        registerBeanDefinitionParser( "requirement", new PlexusPropertyBeanDefinitionParser() );
+        registerBeanDefinitionParser( "requirement", new NopBeanDefinitionParser() );
+        registerBeanDefinitionParser( "configuration", new NopBeanDefinitionParser() );
     }
 
-    private class PlexusPropertyBeanDefinitionParser
+    private class NopBeanDefinitionParser
         extends AbstractBeanDefinitionParser
     {
         protected AbstractBeanDefinition parseInternal( Element element, ParserContext parserContext )
@@ -86,6 +88,10 @@ public class PlexusNamespaceHandler
             {
                 Element child = (Element) iterator.next();
                 String name = child.getAttribute( "name" );
+                if (name.length() == 0)
+                {
+                    throw new ApplicationContextException( "No field name for plexus requirement on " + implementation );
+                }
                 String role = child.getAttribute( "role" );
                 String roleHint = child.getAttribute( "role-hint" );
                 String ref = PlexusToSpringUtils.buildSpringId( role, roleHint );

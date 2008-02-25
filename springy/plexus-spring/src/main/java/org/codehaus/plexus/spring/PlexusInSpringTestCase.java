@@ -47,7 +47,6 @@ public class PlexusInSpringTestCase
         applicationContext =
             new PlexusClassPathXmlApplicationContext( new String[] {
                 "classpath*:META-INF/plexus/components.xml",
-                "classpath*:META-INF/plexus/components-fragment.xml",
                 "classpath*:" + getPlexusConfigLocation(),
                 "classpath*:" + getSpringConfigLocation()} );
     }

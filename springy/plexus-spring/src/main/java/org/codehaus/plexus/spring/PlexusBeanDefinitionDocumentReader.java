@@ -1,6 +1,5 @@
 package org.codehaus.plexus.spring;
 
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -29,6 +28,9 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.dom4j.io.DOMReader;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.xml.BeanDefinitionDocumentReader;
 import org.springframework.beans.factory.xml.DefaultBeanDefinitionDocumentReader;
@@ -47,12 +49,25 @@ public class PlexusBeanDefinitionDocumentReader
     public void registerBeanDefinitions( Document doc, XmlReaderContext readerContext )
     {
         doc = convertPlexusDescriptorToSpringBeans( doc );
+        if ( Boolean.getBoolean( "spring-plexus.debug" ) )
+        {
+            try
+            {
+                XMLWriter writer = new XMLWriter( System.out, OutputFormat.createPrettyPrint() );
+                writer.write( new DOMReader().read( doc ) );
+            }
+            catch ( Exception e )
+            {
+                // ignored
+            }
+        }
+
         super.registerBeanDefinitions( doc, readerContext );
     }
 
     protected Document convertPlexusDescriptorToSpringBeans( Document doc )
     {
-        if ( ! "component-set".equals( doc.getDocumentElement().getNodeName() ) )
+        if ( !"component-set".equals( doc.getDocumentElement().getNodeName() ) )
         {
             return doc;
         }
@@ -73,7 +88,8 @@ public class PlexusBeanDefinitionDocumentReader
         }
         catch ( Exception e )
         {
-            throw new BeanDefinitionStoreException( "Failed to translate plexus component descriptor to Spring XML context", e );
+            throw new BeanDefinitionStoreException(
+                "Failed to translate plexus component descriptor to Spring XML context", e );
         }
     }
 }
