@@ -19,11 +19,17 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.ClassUtils;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 /**
  * Utility method to convert plexus descriptors to spring bean context.
@@ -109,5 +115,30 @@ public class PlexusToSpringUtils
     private static boolean isDefaultHint( String roleHint )
     {
         return roleHint == null || roleHint.length() == 0 || "default".equals( roleHint );
+    }
+
+    public static Map lookupMap( String role, ListableBeanFactory beanFactory )
+    {
+        Map map = new HashMap();
+        String mask = role + '#';
+        String[] beans = beanFactory.getBeanDefinitionNames();
+        for ( int i = 0; i < beans.length; i++ )
+        {
+            String name = beans[i];
+            if ( name.startsWith( mask ) )
+            {
+                map.put( name.substring( mask.length() ), beanFactory.getBean( name ) );
+            }
+        }
+        if ( beanFactory.containsBean( role ) )
+        {
+            map.put( PlexusConstants.PLEXUS_DEFAULT_HINT, beanFactory.getBean( role ) );
+        }
+        return map;
+    }
+
+    public static List LookupList( String role, ListableBeanFactory beanFactory )
+    {
+        return new ArrayList( PlexusToSpringUtils.lookupMap( role, beanFactory ).values() );
     }
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
@@ -76,13 +77,13 @@ public class PlexusComponentFactoryBean
 
     private ListableBeanFactory beanFactory;
 
-    private Context contextWrapper;
-
     private LoggerManager loggerManager;
 
     private TypeConverter typeConverter = new SimpleTypeConverter();
 
     private List instances = new LinkedList();
+
+    private Context context;
 
     public void destroy()
         throws Exception
@@ -146,7 +147,7 @@ public class PlexusComponentFactoryBean
 
         if (component instanceof Contextualizable )
         {
-            ((Contextualizable) component).contextualize( contextWrapper );
+            ((Contextualizable) component).contextualize( getContext() );
         }
 
         if ( component instanceof Initializable )
@@ -167,6 +168,19 @@ public class PlexusComponentFactoryBean
     public boolean isSingleton()
     {
         return "per-lookup".equals( instanciationStrategy );
+    }
+
+    /**
+     * @return
+     */
+    protected Context getContext()
+    {
+        if (context == null)
+        {
+            PlexusContainer container = (PlexusContainer) beanFactory.getBean( "plexusContainer" );
+            context = container.getContext();
+        }
+        return context;
     }
 
     /**
@@ -250,31 +264,6 @@ public class PlexusComponentFactoryBean
         this.typeConverter = typeConverter;
     }
 
-    /**
-     * Create a Map of all available implementation of the expected role
-     * @param beanName
-     * @return Map<role-hint, component>
-     */
-    protected Map getRoleMap( String beanName )
-    {
-        Map map = new HashMap();
-        String mask = beanName + HINT;
-        String[] beans = beanFactory.getBeanDefinitionNames();
-        for ( int i = 0; i < beans.length; i++ )
-        {
-            String name = beans[i];
-            if ( name.startsWith( mask ) )
-            {
-                map.put( name.substring( mask.length() ), beanFactory.getBean( name ) );
-            }
-        }
-        if ( beanFactory.containsBean( beanName ) )
-        {
-            map.put( PlexusConstants.PLEXUS_DEFAULT_HINT, beanFactory.getBean( beanName ) );
-        }
-        return map;
-    }
-
 
     /**
      * Resolve the requirement that this field exposes in the component
@@ -291,11 +280,11 @@ public class PlexusComponentFactoryBean
             {
                 // component ask plexus for a Map of all available
                 // components for the role
-                dependency = getRoleMap( beanName );
+                dependency = PlexusToSpringUtils.lookupMap( beanName, beanFactory );
             }
             else if ( Collection.class.isAssignableFrom( field.getType() ) )
             {
-                dependency = new ArrayList( getRoleMap( beanName ).values() );
+                dependency = PlexusToSpringUtils.LookupList( beanName, beanFactory );
             }
             else
             {
@@ -308,6 +297,11 @@ public class PlexusComponentFactoryBean
         }
         return dependency;
 
+    }
+
+    protected void setContext( Context context )
+    {
+        this.context = context;
     }
 
 }
