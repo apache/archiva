@@ -111,10 +111,15 @@ public class EffectiveProjectModelFilter
         // Resolve dependency versions from dependency management.
         applyDependencyManagement( effectiveProject );
 
-        synchronized ( effectiveProjectCache )
+        // Do not add project into cache if it contains no groupId and
+        // version information
+        if ( project.getGroupId() != null && project.getVersion() != null )
         {
-            DEBUG( "Putting (to cache/projectKey): " + projectKey );
-            effectiveProjectCache.put( projectKey, effectiveProject );
+            synchronized ( effectiveProjectCache )
+            {
+                DEBUG( "Putting (to cache/projectKey): " + projectKey );
+                effectiveProjectCache.put( projectKey, effectiveProject );
+            }
         }
 
         // Return what we got.
