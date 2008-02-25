@@ -324,7 +324,7 @@ public class DefaultArchivaTaskScheduler
             }
             catch ( SchedulerException e )
             {
-                log.error( "Error restarting the database scanning job after property change." );
+                getLogger().error( "Error restarting the database scanning job after property change." );
             }
 
             for ( String job : jobs )
@@ -335,7 +335,7 @@ public class DefaultArchivaTaskScheduler
                 }
                 catch ( SchedulerException e )
                 {
-                    log.error( "Error restarting the repository scanning job after property change." );
+                    getLogger().error( "Error restarting the repository scanning job after property change." );
                 }
             }
             jobs.clear();
@@ -353,7 +353,7 @@ public class DefaultArchivaTaskScheduler
                     }
                     catch ( SchedulerException e )
                     {
-                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                        getLogger().error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
                     }
                 }
             }
