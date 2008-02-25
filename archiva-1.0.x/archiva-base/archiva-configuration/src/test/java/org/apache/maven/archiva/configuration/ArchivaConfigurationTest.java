@@ -637,6 +637,93 @@ public class ArchivaConfigurationTest
         assertEquals( "check cron expression", "0 0,20 0 * * ?", repository.getRefreshCronExpression() );
     }
 
+    public void testRemoveLastElements()
+        throws Exception
+    {
+        File baseFile = getTestFile( "target/test/test-file.xml" );
+        baseFile.delete();
+        assertFalse( baseFile.exists() );
+
+        File userFile = getTestFile( "target/test/test-file-user.xml" );
+        userFile.delete();
+        assertFalse( userFile.exists() );
+
+        baseFile.getParentFile().mkdirs();
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ), baseFile );
+
+        userFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( userFile, "<configuration/>", null );
+
+        ArchivaConfiguration archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-remove-central" );
+
+        Configuration configuration = archivaConfiguration.getConfiguration();
+
+        RemoteRepositoryConfiguration repository = configuration.getRemoteRepositoriesAsMap().get( "central" );
+        assertNotNull( repository );
+        configuration.removeRemoteRepository( repository );
+        assertTrue( configuration.getRemoteRepositories().isEmpty() );
+
+        ManagedRepositoryConfiguration managedRepository =
+            configuration.getManagedRepositoriesAsMap().get( "snapshots" );
+        assertNotNull( managedRepository );
+        configuration.removeManagedRepository( managedRepository );
+        assertTrue( configuration.getManagedRepositories().isEmpty() );
+
+        ProxyConnectorConfiguration proxyConnector =
+            (ProxyConnectorConfiguration) configuration.getProxyConnectors().get( 0 );
+        assertNotNull( proxyConnector );
+        configuration.removeProxyConnector( proxyConnector );
+        assertTrue( configuration.getProxyConnectors().isEmpty() );
+
+        NetworkProxyConfiguration networkProxy = configuration.getNetworkProxiesAsMap().get( "proxy" );
+        assertNotNull( networkProxy );
+        configuration.removeNetworkProxy( networkProxy );
+        assertTrue( configuration.getNetworkProxies().isEmpty() );
+
+        LegacyArtifactPath path = (LegacyArtifactPath) configuration.getLegacyArtifactPaths().get( 0 );
+        assertNotNull( path );
+        configuration.removeLegacyArtifactPath( path );
+        assertTrue( configuration.getLegacyArtifactPaths().isEmpty() );
+
+        RepositoryScanningConfiguration scanning = configuration.getRepositoryScanning();
+        String consumer = (String) scanning.getKnownContentConsumers().get( 0 );
+        assertNotNull( consumer );
+        scanning.removeKnownContentConsumer( consumer );
+        assertTrue( scanning.getKnownContentConsumers().isEmpty() );
+        consumer = (String) scanning.getInvalidContentConsumers().get( 0 );
+        assertNotNull( consumer );
+        scanning.removeInvalidContentConsumer( consumer );
+        assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
+
+        DatabaseScanningConfiguration databaseScanning = configuration.getDatabaseScanning();
+        consumer = (String) databaseScanning.getCleanupConsumers().get( 0 );
+        assertNotNull( consumer );
+        databaseScanning.removeCleanupConsumer( consumer );
+        assertTrue( databaseScanning.getCleanupConsumers().isEmpty() );
+        consumer = (String) databaseScanning.getUnprocessedConsumers().get( 0 );
+        assertNotNull( consumer );
+        databaseScanning.removeUnprocessedConsumer( consumer );
+        assertTrue( databaseScanning.getUnprocessedConsumers().isEmpty() );
+
+        archivaConfiguration.save( configuration );
+
+        archivaConfiguration =
+            (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-read-saved" );
+        configuration = archivaConfiguration.getConfiguration();
+        assertNull( configuration.getRemoteRepositoriesAsMap().get( "central" ) );
+        assertNull( configuration.getManagedRepositoriesAsMap().get( "snapshots" ) );
+        assertTrue( configuration.getProxyConnectors().isEmpty() );
+        assertNull( configuration.getNetworkProxiesAsMap().get( "proxy" ) );
+        assertTrue( configuration.getLegacyArtifactPaths().isEmpty() );
+        scanning = configuration.getRepositoryScanning();
+        assertTrue( scanning.getKnownContentConsumers().isEmpty() );
+        assertTrue( scanning.getInvalidContentConsumers().isEmpty() );
+        databaseScanning = configuration.getDatabaseScanning();
+        assertTrue( databaseScanning.getCleanupConsumers().isEmpty() );
+        assertTrue( databaseScanning.getUnprocessedConsumers().isEmpty() );
+    }
+
     /**
      * [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
      */

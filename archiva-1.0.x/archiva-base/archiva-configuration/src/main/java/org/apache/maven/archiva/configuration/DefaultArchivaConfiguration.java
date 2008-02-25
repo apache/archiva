@@ -53,8 +53,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>
@@ -440,6 +440,50 @@ public class DefaultArchivaConfiguration
             configuration.getDatabaseScanning().setCronExpression(
                                                                    escapeCronExpression( configuration
                                                                        .getDatabaseScanning().getCronExpression() ) );
+        }
+
+        // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
+        if ( configuration.getManagedRepositories().isEmpty() )
+        {
+            section.removeSubset( "managedRepositories" );
+        }
+        if ( configuration.getRemoteRepositories().isEmpty() )
+        {
+            section.removeSubset( "remoteRepositories" );
+        }
+        if ( configuration.getProxyConnectors().isEmpty() )
+        {
+            section.removeSubset( "proxyConnectors" );
+        }
+        if ( configuration.getNetworkProxies().isEmpty() )
+        {
+            section.removeSubset( "networkProxies" );
+        }
+        if ( configuration.getLegacyArtifactPaths().isEmpty() )
+        {
+            section.removeSubset( "legacyArtifactPaths" );
+        }
+        if ( configuration.getRepositoryScanning() != null )
+        {
+            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() )
+            {
+                section.removeSubset( "repositoryScanning.knownContentConsumers" );
+            }
+            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() )
+            {
+                section.removeSubset( "repositoryScanning.invalidContentConsumers" );
+            }
+        }
+        if ( configuration.getDatabaseScanning() != null )
+        {
+            if ( configuration.getDatabaseScanning().getCleanupConsumers().isEmpty() )
+            {
+                section.removeSubset( "databaseScanning.cleanupConsumers" );
+            }
+            if ( configuration.getDatabaseScanning().getUnprocessedConsumers().isEmpty() )
+            {
+                section.removeSubset( "databaseScanning.unprocessedConsumers" );
+            }
         }
 
         new ConfigurationRegistryWriter().write( configuration, section );
