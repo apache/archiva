@@ -19,8 +19,6 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -39,6 +37,8 @@ import org.codehaus.plexus.taskqueue.execution.TaskExecutionException;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * ArchivaRepositoryScanningTaskExecutor 
@@ -93,6 +93,10 @@ public class ArchivaRepositoryScanningTaskExecutor
         try
         {
             ManagedRepositoryConfiguration arepo = archivaConfiguration.getConfiguration().findManagedRepositoryById( repoTask.getRepositoryId() );
+            if ( arepo == null )
+            {
+                throw new TaskExecutionException( "Unable to execute RepositoryTask with invalid repository id: " + repoTask.getRepositoryId() );
+            }
 
             long sinceWhen = RepositoryScanner.FRESH_SCAN;
 
