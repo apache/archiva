@@ -20,15 +20,12 @@ package org.codehaus.plexus.spring;
  */
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.logging.LogEnabled;
@@ -65,13 +62,16 @@ import org.springframework.util.ReflectionUtils;
 public class PlexusComponentFactoryBean
     implements FactoryBean, BeanFactoryAware, DisposableBean
 {
-    private static final char HINT = '#';
+    /**
+     * @todo isn't there a constant for this in plexus ?
+     */
+    private static final String SINGLETON = "singleton";
 
     private Class role;
 
     private Class implementation;
 
-    private String instanciationStrategy;
+    private String instanciationStrategy = SINGLETON;
 
     private Map requirements;
 
@@ -105,15 +105,9 @@ public class PlexusComponentFactoryBean
     public Object getObject()
         throws Exception
     {
-        if ( "poolable".equals( instanciationStrategy ) )
-        {
-            throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
-        }
-
         // Spring MAY cache the object built by this factory if getSingleton()
-        // returns true,
-        // but can also requires us to ensure unicity.
-        if ( "singleton".equals( instanciationStrategy ) && !instances.isEmpty() )
+        // returns true, but can also requires us to ensure unicity.
+        if ( SINGLETON.equals( instanciationStrategy ) && !instances.isEmpty() )
         {
             return instances.get( 0 );
         }
@@ -147,6 +141,7 @@ public class PlexusComponentFactoryBean
 
         if (component instanceof Contextualizable )
         {
+            // VERRY limiter support for Contextualizable
             ((Contextualizable) component).contextualize( getContext() );
         }
 
@@ -167,7 +162,7 @@ public class PlexusComponentFactoryBean
 
     public boolean isSingleton()
     {
-        return "per-lookup".equals( instanciationStrategy );
+        return SINGLETON.equals( instanciationStrategy );
     }
 
     /**
@@ -246,7 +241,11 @@ public class PlexusComponentFactoryBean
     {
         if ( instanciationStrategy.length() == 0 )
         {
-            instanciationStrategy = "singleton";
+            instanciationStrategy = SINGLETON;
+        }
+        if ( "poolable".equals( instanciationStrategy ) )
+        {
+            throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
         }
         this.instanciationStrategy = instanciationStrategy;
     }

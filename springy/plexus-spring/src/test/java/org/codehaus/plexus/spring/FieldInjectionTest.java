@@ -26,6 +26,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class FieldInjectionTest
     extends TestCase
 {
+    /**
+     * {@inheritDoc}
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp()
+        throws Exception
+    {
+        System.setProperty( "plexus-spring.debug", "true" );
+    }
+
     public void testFieldInjectionInSpringContext()
         throws Exception
     {
