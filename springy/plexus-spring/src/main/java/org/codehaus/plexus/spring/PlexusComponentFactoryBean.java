@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
@@ -34,6 +35,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -58,6 +60,9 @@ import org.springframework.util.ReflectionUtils;
 public class PlexusComponentFactoryBean
     implements FactoryBean, BeanFactoryAware, DisposableBean
 {
+
+    private static final char HINT = '#';
+
     private Class role;
 
     private Class implementation;
@@ -94,6 +99,16 @@ public class PlexusComponentFactoryBean
     public Object getObject()
         throws Exception
     {
+        if ( "poolable".equals( instanciationStrategy ) )
+        {
+            throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
+        }
+
+        if ( "singleton".equals( instanciationStrategy ) && !instances.isEmpty() )
+        {
+            return instances.get( 0 );
+        }
+
         final Object component = implementation.newInstance();
         synchronized ( instances )
         {
@@ -114,7 +129,7 @@ public class PlexusComponentFactoryBean
                         {
                             // component ask plexus for a Map of all available components for the role
                             Map map = new HashMap();
-                            String mask = beanName + '#';
+                            String mask = beanName + HINT;
                             String[] beans = beanFactory.getBeanDefinitionNames();
                             for ( int i = 0; i < beans.length; i++ )
                             {
@@ -126,14 +141,14 @@ public class PlexusComponentFactoryBean
                             }
                             if ( beanFactory.containsBean( beanName ) )
                             {
-                                map.put( "default", beanFactory.getBean( beanName ) );
+                                map.put( PlexusConstants.PLEXUS_DEFAULT_HINT, beanFactory.getBean( beanName ) );
                             }
                             dependency = map;
                         }
                         else if ( Collection.class.isAssignableFrom( field.getType() ) )
                         {
                             List list = new LinkedList();
-                            String mask = beanName + '#';
+                            String mask = beanName + HINT;
                             String[] beans = beanFactory.getBeanDefinitionNames();
                             for ( int i = 0; i < beans.length; i++ )
                             {
@@ -151,7 +166,7 @@ public class PlexusComponentFactoryBean
                         }
                         else
                         {
-                            dependency = beanFactory.getBean( beanName );
+                             dependency = beanFactory.getBean( beanName );
                         }
                     }
                     if ( dependency != null )
@@ -247,6 +262,10 @@ public class PlexusComponentFactoryBean
      */
     public void setInstanciationStrategy( String instanciationStrategy )
     {
+        if (instanciationStrategy.length() == 0)
+        {
+            instanciationStrategy = "singleton";
+        }
         this.instanciationStrategy = instanciationStrategy;
     }
 

@@ -45,7 +45,8 @@ public class PlexusInSpringTestCase
     {
         basedir = getBasedir();
         applicationContext =
-            new PlexusClassPathXmlApplicationContext( new String[] { "classpath*:META-INF/plexus/components.xml",
+            new PlexusClassPathXmlApplicationContext( new String[] {
+                "classpath*:META-INF/plexus/components.xml",
                 "classpath*:META-INF/plexus/components-fragment.xml",
                 "classpath*:" + getPlexusConfigLocation(),
                 "classpath*:" + getSpringConfigLocation()} );
@@ -153,5 +154,10 @@ public class PlexusInSpringTestCase
                                       String path )
     {
         return getTestFile( basedir, path ).getAbsolutePath();
+    }
+
+    protected ConfigurableApplicationContext getApplicationContext()
+    {
+        return applicationContext;
     }
 }
