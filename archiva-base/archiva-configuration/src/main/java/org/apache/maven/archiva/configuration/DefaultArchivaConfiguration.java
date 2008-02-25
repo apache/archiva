@@ -19,6 +19,19 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
@@ -43,19 +56,6 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 /**
  * <p>
@@ -86,8 +86,8 @@ import java.util.Map.Entry;
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener, Initializable
 {
-    private Logger log = LoggerFactory.getLogger(DefaultArchivaConfiguration.class);
-    
+    private Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
+
     /**
      * Plexus registry to read the configuration from.
      *
@@ -109,7 +109,7 @@ public class DefaultArchivaConfiguration
      * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
      */
     private Map<String, PostDownloadPolicy> postPolicies;
-    
+
     /**
      * @plexus.configuration default-value="${user.home}/.m2/archiva.xml"
      */
@@ -129,7 +129,7 @@ public class DefaultArchivaConfiguration
      * Registry Listeners we've registered.
      */
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
-    
+
     /**
      * Boolean to help determine if the configuration exists as a result of pulling in
      * the default-archiva.xml
@@ -198,19 +198,19 @@ public class DefaultArchivaConfiguration
 
             registry.removeSubset( KEY + ".repositories" );
         }
-        
+
         if ( !CollectionUtils.isEmpty( config.getRemoteRepositories() ) )
         {
             List<RemoteRepositoryConfiguration> remoteRepos = config.getRemoteRepositories();
             for ( RemoteRepositoryConfiguration repo : remoteRepos )
             {
                 // [MRM-582] Remote Repositories with empty <username> and <password> fields shouldn't be created in configuration.
-                if( StringUtils.isBlank( repo.getUsername() ) )
+                if ( StringUtils.isBlank( repo.getUsername() ) )
                 {
                     repo.setUsername( null );
                 }
-                
-                if( StringUtils.isBlank( repo.getPassword() ) )
+
+                if ( StringUtils.isBlank( repo.getPassword() ) )
                 {
                     repo.setPassword( null );
                 }
@@ -359,13 +359,13 @@ public class DefaultArchivaConfiguration
             log.error( "No PreDownloadPolicies found!" );
             return false;
         }
-        
+
         if ( MapUtils.isEmpty( postPolicies ) )
         {
             log.error( "No PostDownloadPolicies found!" );
             return false;
         }
-        
+
         return ( prePolicies.containsKey( policyId ) || postPolicies.containsKey( policyId ) );
     }
 
@@ -491,6 +491,8 @@ public class DefaultArchivaConfiguration
     /**
      * Attempts to write the contents to a file, if an IOException occurs, return false.
      * 
+     * The file will be created if the directory to the file exists, otherwise this will return false.
+     * 
      * @param filetype the filetype (freeform text) to use in logging messages when failure to write.
      * @param path the path to write to.
      * @param contents the contents to write.
@@ -502,6 +504,17 @@ public class DefaultArchivaConfiguration
 
         try
         {
+            // Check parent directory (if it is declared)
+            if ( file.getParentFile() != null )
+            {
+                // Check that directory exists
+                if ( ( file.getParentFile().exists() == false ) || ( file.getParentFile().isDirectory() == false ) )
+                {
+                    // Directory to file must exist for file to be created
+                    return false;
+                }
+            }
+
             FileUtils.writeStringToFile( file, contents, "UTF-8" );
             return true;
         }
