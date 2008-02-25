@@ -156,7 +156,12 @@ public class DefaultPathParser implements PathParser
                     break;
                 case 0:
                     // End of the filename, only a simple extension left. - Set the type.
-                    artifact.setType( ArtifactExtensionMapping.mapExtensionToType( parser.getExtension() ) );
+                    String type = ArtifactExtensionMapping.mapExtensionToType( parser.getExtension() );
+                    if ( type == null )
+                    {
+                        throw new LayoutException( "Invalid artifact: no type was specified" );
+                    }
+                    artifact.setType( type );
                     break;
             }
 

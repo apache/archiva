@@ -93,15 +93,15 @@ public class ArtifactExtensionMapping
 
     public static String mapExtensionToType( String extension )
     {
-        if ( extension.equals( "tar.gz" ) )
+        if ( "tar.gz".equals( extension ) )
         {
             return "distribution-tgz";
         }
-        else  if ( extension.equals( "tar.bz2" ) )
+        else  if ( "tar.bz2".equals( extension ) )
         {
             return "distribution-bzip";
         }
-        else  if ( extension.equals( "zip" ) )
+        else  if ( "zip".equals( extension ) )
         {
             return "distribution-zip";
         }
