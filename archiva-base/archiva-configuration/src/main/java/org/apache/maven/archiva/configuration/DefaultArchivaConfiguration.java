@@ -19,19 +19,6 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FileUtils;
@@ -56,6 +43,19 @@ import org.codehaus.plexus.registry.RegistryException;
 import org.codehaus.plexus.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * <p>
@@ -442,6 +442,50 @@ public class DefaultArchivaConfiguration
             configuration.getDatabaseScanning().setCronExpression(
                                                                    escapeCronExpression( configuration
                                                                        .getDatabaseScanning().getCronExpression() ) );
+        }
+
+        // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
+        if ( configuration.getManagedRepositories().isEmpty() )
+        {
+            section.removeSubset( "managedRepositories" );
+        }
+        if ( configuration.getRemoteRepositories().isEmpty() )
+        {
+            section.removeSubset( "remoteRepositories" );
+        }
+        if ( configuration.getProxyConnectors().isEmpty() )
+        {
+            section.removeSubset( "proxyConnectors" );
+        }
+        if ( configuration.getNetworkProxies().isEmpty() )
+        {
+            section.removeSubset( "networkProxies" );
+        }
+        if ( configuration.getLegacyArtifactPaths().isEmpty() )
+        {
+            section.removeSubset( "legacyArtifactPaths" );
+        }
+        if ( configuration.getRepositoryScanning() != null )
+        {
+            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() )
+            {
+                section.removeSubset( "repositoryScanning.knownContentConsumers" );
+            }
+            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() )
+            {
+                section.removeSubset( "repositoryScanning.invalidContentConsumers" );
+            }
+        }
+        if ( configuration.getDatabaseScanning() != null )
+        {
+            if ( configuration.getDatabaseScanning().getCleanupConsumers().isEmpty() )
+            {
+                section.removeSubset( "databaseScanning.cleanupConsumers" );
+            }
+            if ( configuration.getDatabaseScanning().getUnprocessedConsumers().isEmpty() )
+            {
+                section.removeSubset( "databaseScanning.unprocessedConsumers" );
+            }
         }
 
         new ConfigurationRegistryWriter().write( configuration, section );
