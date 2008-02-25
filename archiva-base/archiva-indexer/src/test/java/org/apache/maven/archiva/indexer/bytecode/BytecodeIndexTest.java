@@ -59,6 +59,8 @@ public class BytecodeIndexTest extends AbstractIndexCreationTestCase
         ArchivaArtifact artifact = (ArchivaArtifact) dumps.get( "archiva-common" );
         
         File dumpFile = getDumpFile( artifact );
-        return BytecodeRecordLoader.loadRecord( dumpFile, artifact );
+        BytecodeRecord record = BytecodeRecordLoader.loadRecord( dumpFile, artifact );
+        record.setRepositoryId( "test-repo" );
+        return record;
     }
 }
