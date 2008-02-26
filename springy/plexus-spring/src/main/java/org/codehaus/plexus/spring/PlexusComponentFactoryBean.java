@@ -185,17 +185,8 @@ public class PlexusComponentFactoryBean
                 else
                 {
                     // explicit field injection
-                    Field field;
-                    try
-                    {
-                        fieldName = PlexusToSpringUtils.toCamelCase( fieldName );
-                        field = implementation.getDeclaredField( fieldName );
-                    }
-                    catch ( NoSuchFieldException e )
-                    {
-                        logger.warn( "No field " + fieldName + " on implementation class " + implementation );
-                        continue;
-                    }
+                    fieldName = PlexusToSpringUtils.toCamelCase( fieldName );
+                    Field field = findField( fieldName );
                     Object dependency = resolveRequirement( field, requirement.getValue() );
                     if ( logger.isTraceEnabled() )
                     {
@@ -210,6 +201,25 @@ public class PlexusComponentFactoryBean
         handlePlexusLifecycle( component );
 
         return component;
+    }
+
+    private Field findField( String fieldName )
+    {
+        Class clazz = implementation;
+        while (clazz != Object.class)
+        {
+            try
+            {
+                return clazz.getDeclaredField( fieldName );
+            }
+            catch (NoSuchFieldException e)
+            {
+                clazz = clazz.getSuperclass();
+            }
+        }
+        String error = "No field " + fieldName + " on implementation class " + implementation;
+        logger.error( error );
+        throw new BeanInitializationException( error );
     }
 
     private void handlePlexusLifecycle( final Object component )
