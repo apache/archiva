@@ -37,8 +37,8 @@ import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
 /**
- * A spring namespace handler to support plexus components creation and direct field-injection in a spring
- * XmlApplicationContext.
+ * A spring namespace handler to support plexus components creation and direct
+ * field-injection in a spring XmlApplicationContext.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @since 1.1
@@ -64,15 +64,17 @@ public class PlexusNamespaceHandler
     }
 
     /**
-     * BeanDefinitionParser for &lt;plexus:component&gt;. Register a bean definition for a PlexusComponentFactoryBean
-     * with all nested requirement / configuration injected using direct field injection.
+     * BeanDefinitionParser for &lt;plexus:component&gt;. Register a bean
+     * definition for a PlexusComponentFactoryBean with all nested requirement /
+     * configuration injected using direct field injection.
      * <p>
-     * Also register an alias for the Plexus component using spring conventions (interface class simple name + "#"
-     * role-hint)
+     * Also register an alias for the Plexus component using spring conventions
+     * (interface class simple name + "#" role-hint)
      */
     private class PlexusComponentBeanDefinitionParser
         extends AbstractSingleBeanDefinitionParser
     {
+        private int count;
 
         protected void doParse( Element element, BeanDefinitionBuilder builder )
         {
@@ -87,10 +89,12 @@ public class PlexusNamespaceHandler
             for ( Iterator iterator = requirements.iterator(); iterator.hasNext(); )
             {
                 Element child = (Element) iterator.next();
-                String name = child.getAttribute( "name" );
-                if (name.length() == 0)
+                String name = child.getAttribute( "field-name" );
+                if ( name.length() == 0 )
                 {
-                    throw new ApplicationContextException( "No field name for plexus requirement on " + implementation );
+                    // Plexus doesn't require to specify the field-name if only
+                    // one field matches the injected type
+                    name = "#" + count++;
                 }
                 String role = child.getAttribute( "role" );
                 String roleHint = child.getAttribute( "role-hint" );

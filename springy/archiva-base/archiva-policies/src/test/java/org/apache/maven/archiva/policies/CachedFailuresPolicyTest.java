@@ -23,10 +23,7 @@ import java.io.File;
 import java.util.Properties;
 
 import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * CachedFailuresPolicyTest

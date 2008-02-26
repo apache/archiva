@@ -34,7 +34,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLifecycleExce
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.component.repository.exception.ComponentRepositoryException;
 import org.codehaus.plexus.context.Context;
-import org.codehaus.plexus.context.DefaultContext;
+import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.springframework.beans.BeansException;
@@ -50,7 +50,7 @@ import org.springframework.context.ApplicationContextAware;
 public class PlexusContainerAdapter
     implements PlexusContainer, ApplicationContextAware, InitializingBean
 {
-    private Context context = new DefaultContext();
+    private Context context = new SimpleContext();
 
     private ApplicationContext applicationContext;
 
@@ -62,7 +62,7 @@ public class PlexusContainerAdapter
     public void afterPropertiesSet()
         throws Exception
     {
-        context.put( "plexus", this );
+        context = new SimpleContext();
     }
 
     /**
@@ -653,5 +653,67 @@ public class PlexusContainerAdapter
         this.applicationContext = applicationContext;
     }
 
+    private class SimpleContext implements Context
+    {
+        /** the plexus container key in the context */
+        private static final String PLEXUS = "plexus";
 
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#contains(java.lang.Object)
+         */
+        public boolean contains( Object key )
+        {
+            return PLEXUS.equals( key );
+        }
+
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#get(java.lang.Object)
+         */
+        public Object get( Object key )
+            throws ContextException
+        {
+            return PLEXUS.equals( key ) ? PlexusContainerAdapter.this : null;
+        }
+
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#getContextData()
+         */
+        public Map getContextData()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#hide(java.lang.Object)
+         */
+        public void hide( Object key )
+            throws IllegalStateException
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#makeReadOnly()
+         */
+        public void makeReadOnly()
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * {@inheritDoc}
+         * @see org.codehaus.plexus.context.Context#put(java.lang.Object, java.lang.Object)
+         */
+        public void put( Object key, Object value )
+            throws IllegalStateException
+        {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }

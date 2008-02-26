@@ -30,16 +30,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * A custom ClassPathXmlApplicationContext to support plexus
  * <tr>components.xml</tt> descriptors in Spring, with no changes required
  * to neither plexus nor spring beans.
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusClassPathXmlApplicationContext
     extends ClassPathXmlApplicationContext
 {
-
-    // TODO enable Field injection...
-    // @see http://forum.springframework.org/showthread.php?t=50181
-
     public PlexusClassPathXmlApplicationContext( String path, Class clazz )
         throws BeansException
     {
@@ -90,12 +86,13 @@ public class PlexusClassPathXmlApplicationContext
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.springframework.context.support.AbstractXmlApplicationContext#loadBeanDefinitions(org.springframework.beans.factory.xml.XmlBeanDefinitionReader)
      */
     protected void loadBeanDefinitions( XmlBeanDefinitionReader reader )
         throws BeansException, IOException
     {
+        logger.info( "Registering plexus to spring XML translation" );
         reader.setDocumentReaderClass( PlexusBeanDefinitionDocumentReader.class );
         reader.setValidationMode( XmlBeanDefinitionReader.VALIDATION_NONE );
         super.loadBeanDefinitions( reader );

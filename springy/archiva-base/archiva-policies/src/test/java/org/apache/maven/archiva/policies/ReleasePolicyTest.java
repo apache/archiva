@@ -20,19 +20,20 @@ package org.apache.maven.archiva.policies;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.Properties;
 
 /**
- * ReleasePolicyTest 
+ * ReleasePolicyTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ReleasePolicyTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String PATH_VERSION_METADATA = "org/apache/archiva/archiva-testable/1.0-SNAPSHOT/maven-metadata.xml";
 

@@ -34,7 +34,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:plexus="http://plexus.codehaus.org/spring"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-                           http://plexus.codehaus.org/spring http://plexus.codehaus.org/schemas/spring-1.0.xsd">
+                           http://plexus.codehaus.org/spring http://plexus.codehaus.org/schemas/spring-1.0.xsd"
+       default-lazy-init="true">
   <xsl:for-each select="components/component">
 
     <plexus:component>
@@ -56,7 +57,7 @@
       </xsl:if>
       <xsl:for-each select="requirements/requirement">
         <plexus:requirement>
-          <xsl:attribute name="name">
+          <xsl:attribute name="field-name">
             <xsl:value-of select="field-name" />
           </xsl:attribute>
           <xsl:attribute name="role">

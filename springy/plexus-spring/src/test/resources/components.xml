@@ -6,7 +6,6 @@
       <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
       <requirements>
       	<requirement>
-      		<field-name>bean</field-name>
       		<role>springBean</role>
       	</requirement>
       </requirements>
@@ -37,6 +36,6 @@
       		<role>org.codehaus.plexus.spring.PlexusBean</role>
       	</requirement>
       </requirements>
-    </component>    
+    </component>
   </components>
 </component-set>

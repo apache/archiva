@@ -26,13 +26,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
@@ -42,7 +46,10 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.util.ReflectionUtils;
 
@@ -56,35 +63,50 @@ import org.springframework.util.ReflectionUtils;
  * </ul>
  * If not set, the beanFActory will auto-detect the loggerManager to use by
  * searching for the adequate bean in the spring context.
+ * <p>
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusComponentFactoryBean
     implements FactoryBean, BeanFactoryAware, DisposableBean
 {
+    /** Logger available to subclasses */
+    protected final Log logger = LogFactory.getLog( getClass() );
+
+    /** The beanFactory */
+    private BeanFactory beanFactory;
+
     /**
      * @todo isn't there a constant for this in plexus ?
      */
     private static final String SINGLETON = "singleton";
 
+    /** The plexus component role */
     private Class role;
 
+    /** The plexus component implementation class */
     private Class implementation;
 
-    private String instanciationStrategy = SINGLETON;
+    /** The plexus component instantiation strategy */
+    private String instantiationStrategy = SINGLETON;
 
+    /** The plexus component requirements and configurations */
     private Map requirements;
 
-    private ListableBeanFactory beanFactory;
-
-    private LoggerManager loggerManager;
-
-    private TypeConverter typeConverter = new SimpleTypeConverter();
-
+    /** The plexus component created by this FactoryBean */
     private List instances = new LinkedList();
 
-    private Context context;
+    /** Optional plexus loggerManager */
+    private static LoggerManager loggerManager;
 
+    /** Optional plexus context */
+    private static Context context;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.springframework.beans.factory.config.AbstractFactoryBean#destroy()
+     */
     public void destroy()
         throws Exception
     {
@@ -92,26 +114,37 @@ public class PlexusComponentFactoryBean
         {
             for ( Iterator iterator = instances.iterator(); iterator.hasNext(); )
             {
-                Object component = (Object) iterator.next();
-                if ( component instanceof Disposable )
+                Object isntance = iterator.next();
+                if ( isntance instanceof Disposable )
                 {
-                    ( (Disposable) component ).dispose();
-
+                    ( (Disposable) isntance ).dispose();
                 }
             }
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @see org.springframework.beans.factory.FactoryBean#getObject()
+     */
     public Object getObject()
         throws Exception
     {
-        // Spring MAY cache the object built by this factory if getSingleton()
-        // returns true, but can also requires us to ensure unicity.
-        if ( SINGLETON.equals( instanciationStrategy ) && !instances.isEmpty() )
+        if ( isSingleton() && !instances.isEmpty())
         {
             return instances.get( 0 );
         }
+        return createInstance();
+    }
 
+    /**
+     * Create the plexus component instance. Inject dependencies declared as
+     * requirements using direct field injection
+     */
+    public Object createInstance()
+        throws Exception
+    {
+        logger.debug( "Creating plexus component " + implementation );
         final Object component = implementation.newInstance();
         synchronized ( instances )
         {
@@ -119,40 +152,120 @@ public class PlexusComponentFactoryBean
         }
         if ( requirements != null )
         {
-            ReflectionUtils.doWithFields( implementation, new ReflectionUtils.FieldCallback()
+            for ( Iterator iterator = requirements.entrySet().iterator(); iterator.hasNext(); )
             {
-                public void doWith( Field field )
-                    throws IllegalArgumentException, IllegalAccessException
+                Map.Entry requirement = (Map.Entry) iterator.next();
+                String fieldName = (String) requirement.getKey();
+
+                if ( fieldName.startsWith( "#" ) )
                 {
-                    Object dependency = resolveRequirement( field );
-                    if ( dependency != null )
+                    // implicit field injection : the field name was no
+                    // specified in the plexus descriptor as only one filed
+                    // matches Dependency type
+
+                    RuntimeBeanReference ref = (RuntimeBeanReference) requirement.getValue();
+                    Object dependency = beanFactory.getBean( ref.getBeanName() );
+
+                    Field[] fields = implementation.getDeclaredFields();
+                    for ( int i = 0; i < fields.length; i++ )
                     {
-                        ReflectionUtils.makeAccessible( field );
-                        ReflectionUtils.setField( field, component, dependency );
+                        Field field = fields[i];
+                        if ( ReflectionUtils.COPYABLE_FIELDS.matches( field )
+                            && field.getType().isAssignableFrom( dependency.getClass() ) )
+                        {
+                            if ( logger.isTraceEnabled() )
+                            {
+                                logger.trace( "Injecting dependency " + dependency + " into field " + field.getName() );
+                            }
+                            ReflectionUtils.makeAccessible( field );
+                            ReflectionUtils.setField( field, component, dependency );
+                        }
                     }
                 }
-            }, ReflectionUtils.COPYABLE_FIELDS );
+                else
+                {
+                    // explicit field injection
+                    Field field;
+                    try
+                    {
+                        fieldName = PlexusToSpringUtils.toCamelCase( fieldName );
+                        field = implementation.getDeclaredField( fieldName );
+                    }
+                    catch ( NoSuchFieldException e )
+                    {
+                        logger.warn( "No field " + fieldName + " on implementation class " + implementation );
+                        continue;
+                    }
+                    Object dependency = resolveRequirement( field, requirement.getValue() );
+                    if ( logger.isTraceEnabled() )
+                    {
+                        logger.trace( "Injecting dependency " + dependency + " into field " + field.getName() );
+                    }
+                    ReflectionUtils.makeAccessible( field );
+                    ReflectionUtils.setField( field, component, dependency );
+                }
+            }
         }
 
+        handlePlexusLifecycle( component );
+
+        return component;
+    }
+
+    private void handlePlexusLifecycle( final Object component )
+        throws ContextException, InitializationException
+    {
         if ( component instanceof LogEnabled )
         {
             ( (LogEnabled) component ).enableLogging( getLoggerManager().getLoggerForComponent( role.getName() ) );
         }
 
-        if (component instanceof Contextualizable )
+        if ( component instanceof Contextualizable )
         {
-            // VERRY limiter support for Contextualizable
-            ((Contextualizable) component).contextualize( getContext() );
+            // VERRY limited support for Contextualizable
+            ( (Contextualizable) component ).contextualize( getContext() );
         }
+
+        // TODO add support for Startable, Stopable -> LifeCycle ?
 
         if ( component instanceof Initializable )
         {
             ( (Initializable) component ).initialize();
         }
+    }
 
-        // TODO add support for Startable, Stopable -> LifeCycle ?
+    /**
+     * Resolve the requirement that this field exposes in the component
+     *
+     * @param field
+     * @return
+     */
+    protected Object resolveRequirement( Field field, Object requirement )
+    {
+        if ( requirement instanceof RuntimeBeanReference )
+        {
+            String beanName = ( (RuntimeBeanReference) requirement ).getBeanName();
+            if ( Map.class.isAssignableFrom( field.getType() ) )
+            {
+                // component ask plexus for a Map of all available
+                // components for the role
+                requirement = PlexusToSpringUtils.lookupMap( beanName, getListableBeanFactory() );
+            }
+            else if ( Collection.class.isAssignableFrom( field.getType() ) )
+            {
+                requirement = PlexusToSpringUtils.LookupList( beanName, getListableBeanFactory() );
+            }
+            else
+            {
+                requirement = beanFactory.getBean( beanName );
+            }
+        }
+        if ( requirement != null )
+        {
+            requirement = getBeanTypeConverter().convertIfNecessary( requirement, field.getType() );
+        }
+        return requirement;
 
-        return component;
     }
 
     public Class getObjectType()
@@ -162,7 +275,7 @@ public class PlexusComponentFactoryBean
 
     public boolean isSingleton()
     {
-        return SINGLETON.equals( instanciationStrategy );
+        return SINGLETON.equals( instantiationStrategy );
     }
 
     /**
@@ -170,7 +283,7 @@ public class PlexusComponentFactoryBean
      */
     protected Context getContext()
     {
-        if (context == null)
+        if ( context == null )
         {
             PlexusContainer container = (PlexusContainer) beanFactory.getBean( "plexusContainer" );
             context = container.getContext();
@@ -178,8 +291,21 @@ public class PlexusComponentFactoryBean
         return context;
     }
 
+    protected TypeConverter getBeanTypeConverter()
+    {
+        if ( beanFactory instanceof ConfigurableBeanFactory )
+        {
+            return ( (ConfigurableBeanFactory) beanFactory ).getTypeConverter();
+        }
+        else
+        {
+            return new SimpleTypeConverter();
+        }
+    }
+
     /**
      * Retrieve the loggerManager instance to be used for LogEnabled components
+     *
      * @return
      */
     protected LoggerManager getLoggerManager()
@@ -190,24 +316,29 @@ public class PlexusComponentFactoryBean
             {
                 loggerManager = (LoggerManager) beanFactory.getBean( "loggerManager" );
             }
-            Map loggers = beanFactory.getBeansOfType( LoggerManager.class );
-            if ( loggers.size() == 1 )
-            {
-                loggerManager = (LoggerManager) loggers.values().iterator().next();
-            }
             else
             {
-                throw new BeanInitializationException(
-                    "You must explicitly set a LoggerManager or define a unique one in bean context" );
+                Map loggers = getListableBeanFactory().getBeansOfType( LoggerManager.class );
+                if ( loggers.size() == 1 )
+                {
+                    loggerManager = (LoggerManager) loggers.values().iterator().next();
+                }
             }
+        }
+        if ( loggerManager == null )
+        {
+            throw new BeanCreationException( "A LoggerManager instance must be set in the applicationContext" );
         }
         return loggerManager;
     }
 
-    public void setBeanFactory( BeanFactory beanFactory )
-        throws BeansException
+    private ListableBeanFactory getListableBeanFactory()
     {
-        this.beanFactory = (ListableBeanFactory) beanFactory;
+        if ( beanFactory instanceof ListableBeanFactory )
+        {
+            return (ListableBeanFactory) beanFactory;
+        }
+        throw new BeanInitializationException( "A ListableBeanFactory is required by the PlexusComponentFactoryBean" );
     }
 
     /**
@@ -215,7 +346,7 @@ public class PlexusComponentFactoryBean
      */
     public void setLoggerManager( LoggerManager loggerManager )
     {
-        this.loggerManager = loggerManager;
+        PlexusComponentFactoryBean.loggerManager = loggerManager;
     }
 
     /**
@@ -247,7 +378,7 @@ public class PlexusComponentFactoryBean
         {
             throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
         }
-        this.instanciationStrategy = instanciationStrategy;
+        this.instantiationStrategy = instanciationStrategy;
     }
 
     /**
@@ -258,49 +389,14 @@ public class PlexusComponentFactoryBean
         this.requirements = requirements;
     }
 
-    protected void setTypeConverter( TypeConverter typeConverter )
+    public void setContext( Context context )
     {
-        this.typeConverter = typeConverter;
+        PlexusComponentFactoryBean.context = context;
     }
 
-
-    /**
-     * Resolve the requirement that this field exposes in the component
-     * @param field
-     * @return
-     */
-    protected Object resolveRequirement( Field field )
+    public void setBeanFactory( BeanFactory beanFactory )
     {
-        Object dependency =  requirements.get( field.getName() );
-        if ( dependency instanceof RuntimeBeanReference )
-        {
-            String beanName = ( (RuntimeBeanReference) dependency ).getBeanName();
-            if ( Map.class.isAssignableFrom( field.getType() ) )
-            {
-                // component ask plexus for a Map of all available
-                // components for the role
-                dependency = PlexusToSpringUtils.lookupMap( beanName, beanFactory );
-            }
-            else if ( Collection.class.isAssignableFrom( field.getType() ) )
-            {
-                dependency = PlexusToSpringUtils.LookupList( beanName, beanFactory );
-            }
-            else
-            {
-                dependency = beanFactory.getBean( beanName );
-            }
-        }
-        if (dependency != null)
-        {
-            dependency = typeConverter.convertIfNecessary( dependency, field.getType() );
-        }
-        return dependency;
-
-    }
-
-    protected void setContext( Context context )
-    {
-        this.context = context;
+        this.beanFactory = beanFactory;
     }
 
 }

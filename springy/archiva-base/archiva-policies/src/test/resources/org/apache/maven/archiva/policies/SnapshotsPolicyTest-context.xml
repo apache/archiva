@@ -13,5 +13,4 @@
     <!-- collaborators and configuration for this bean go here -->
     <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
   </bean>
-
 </beans>

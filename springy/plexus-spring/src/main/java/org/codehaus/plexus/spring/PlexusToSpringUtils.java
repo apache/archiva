@@ -55,7 +55,7 @@ public class PlexusToSpringUtils
         StringBuilder camelCase = new StringBuilder();
         boolean first = true;
 
-        StringTokenizer tokenizer = new StringTokenizer( string.toLowerCase(), "-" );
+        StringTokenizer tokenizer = new StringTokenizer( string, "-" );
         while ( tokenizer.hasMoreTokens() )
         {
             String token = tokenizer.nextToken();
