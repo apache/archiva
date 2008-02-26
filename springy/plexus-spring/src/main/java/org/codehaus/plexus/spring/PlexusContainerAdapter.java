@@ -55,6 +55,11 @@ public class PlexusContainerAdapter
     private ApplicationContext applicationContext;
 
 
+    public PlexusContainerAdapter()
+    {
+        super();
+    }
+
     /**
      * {@inheritDoc}
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()

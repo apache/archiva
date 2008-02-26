@@ -4,10 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="plexusContainer" class="org.codehaus.plexus.spring.PlexusContainerAdapter"/>
-
-  <bean id="loggerManager" class="org.codehaus.plexus.logging.console.ConsoleLoggerManager" init-method="initialize"/>
-
   <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
     <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
   </bean>

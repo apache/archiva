@@ -43,6 +43,12 @@
       <version>1.0-alpha-22</version>
     </dependency>
     <dependency>
+      <!-- only required for ConsoleLogger -->
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-container-default</artifactId>
+      <version>1.0-alpha-22</version>
+    </dependency>
+    <dependency>
       <!-- only required to debug XSLT result -->
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>

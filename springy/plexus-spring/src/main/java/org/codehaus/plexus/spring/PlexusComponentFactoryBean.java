@@ -88,19 +88,13 @@ public class PlexusComponentFactoryBean
     private Class implementation;
 
     /** The plexus component instantiation strategy */
-    private String instantiationStrategy = SINGLETON;
+    private String instantiationStrategy;
 
     /** The plexus component requirements and configurations */
     private Map requirements;
 
     /** The plexus component created by this FactoryBean */
     private List instances = new LinkedList();
-
-    /** Optional plexus loggerManager */
-    private static LoggerManager loggerManager;
-
-    /** Optional plexus context */
-    private static Context context;
 
     /**
      * {@inheritDoc}
@@ -114,10 +108,11 @@ public class PlexusComponentFactoryBean
         {
             for ( Iterator iterator = instances.iterator(); iterator.hasNext(); )
             {
-                Object isntance = iterator.next();
-                if ( isntance instanceof Disposable )
+                Object instance = iterator.next();
+                if ( instance instanceof Disposable )
                 {
-                    ( (Disposable) isntance ).dispose();
+                    logger.trace( "Dispose plexus bean " + role );
+                    ( (Disposable) instance ).dispose();
                 }
             }
         }
@@ -125,14 +120,22 @@ public class PlexusComponentFactoryBean
 
     /**
      * {@inheritDoc}
+     *
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
     public Object getObject()
         throws Exception
     {
-        if ( isSingleton() && !instances.isEmpty())
+        if ( isSingleton() )
         {
-            return instances.get( 0 );
+            synchronized ( instances )
+            {
+                if ( !instances.isEmpty() )
+                {
+                    return instances.get( 0 );
+                }
+                return createInstance();
+            }
         }
         return createInstance();
     }
@@ -197,22 +200,19 @@ public class PlexusComponentFactoryBean
                 }
             }
         }
-
-        handlePlexusLifecycle( component );
-
         return component;
     }
 
     private Field findField( String fieldName )
     {
         Class clazz = implementation;
-        while (clazz != Object.class)
+        while ( clazz != Object.class )
         {
             try
             {
                 return clazz.getDeclaredField( fieldName );
             }
-            catch (NoSuchFieldException e)
+            catch ( NoSuchFieldException e )
             {
                 clazz = clazz.getSuperclass();
             }
@@ -220,28 +220,6 @@ public class PlexusComponentFactoryBean
         String error = "No field " + fieldName + " on implementation class " + implementation;
         logger.error( error );
         throw new BeanInitializationException( error );
-    }
-
-    private void handlePlexusLifecycle( final Object component )
-        throws ContextException, InitializationException
-    {
-        if ( component instanceof LogEnabled )
-        {
-            ( (LogEnabled) component ).enableLogging( getLoggerManager().getLoggerForComponent( role.getName() ) );
-        }
-
-        if ( component instanceof Contextualizable )
-        {
-            // VERRY limited support for Contextualizable
-            ( (Contextualizable) component ).contextualize( getContext() );
-        }
-
-        // TODO add support for Startable, Stopable -> LifeCycle ?
-
-        if ( component instanceof Initializable )
-        {
-            ( (Initializable) component ).initialize();
-        }
     }
 
     /**
@@ -288,19 +266,6 @@ public class PlexusComponentFactoryBean
         return SINGLETON.equals( instantiationStrategy );
     }
 
-    /**
-     * @return
-     */
-    protected Context getContext()
-    {
-        if ( context == null )
-        {
-            PlexusContainer container = (PlexusContainer) beanFactory.getBean( "plexusContainer" );
-            context = container.getContext();
-        }
-        return context;
-    }
-
     protected TypeConverter getBeanTypeConverter()
     {
         if ( beanFactory instanceof ConfigurableBeanFactory )
@@ -313,35 +278,6 @@ public class PlexusComponentFactoryBean
         }
     }
 
-    /**
-     * Retrieve the loggerManager instance to be used for LogEnabled components
-     *
-     * @return
-     */
-    protected LoggerManager getLoggerManager()
-    {
-        if ( loggerManager == null )
-        {
-            if ( beanFactory.containsBean( "loggerManager" ) )
-            {
-                loggerManager = (LoggerManager) beanFactory.getBean( "loggerManager" );
-            }
-            else
-            {
-                Map loggers = getListableBeanFactory().getBeansOfType( LoggerManager.class );
-                if ( loggers.size() == 1 )
-                {
-                    loggerManager = (LoggerManager) loggers.values().iterator().next();
-                }
-            }
-        }
-        if ( loggerManager == null )
-        {
-            throw new BeanCreationException( "A LoggerManager instance must be set in the applicationContext" );
-        }
-        return loggerManager;
-    }
-
     private ListableBeanFactory getListableBeanFactory()
     {
         if ( beanFactory instanceof ListableBeanFactory )
@@ -349,14 +285,6 @@ public class PlexusComponentFactoryBean
             return (ListableBeanFactory) beanFactory;
         }
         throw new BeanInitializationException( "A ListableBeanFactory is required by the PlexusComponentFactoryBean" );
-    }
-
-    /**
-     * @param loggerManager the loggerManager to set
-     */
-    public void setLoggerManager( LoggerManager loggerManager )
-    {
-        PlexusComponentFactoryBean.loggerManager = loggerManager;
     }
 
     /**
@@ -397,11 +325,6 @@ public class PlexusComponentFactoryBean
     public void setRequirements( Map requirements )
     {
         this.requirements = requirements;
-    }
-
-    public void setContext( Context context )
-    {
-        PlexusComponentFactoryBean.context = context;
     }
 
     public void setBeanFactory( BeanFactory beanFactory )

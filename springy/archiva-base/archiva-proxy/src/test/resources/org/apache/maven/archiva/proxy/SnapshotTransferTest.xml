@@ -73,16 +73,16 @@
           <field-name>postDownloadPolicies</field-name>
         </requirement>
         <requirement>
-          <role>org.apache.maven.archiva.common.spring.SpringFactory</role>
-          <role-hint>default</role-hint>
-        </requirement>
-        <requirement>
           <role>org.apache.maven.archiva.repository.scanner.RepositoryContentConsumers</role>
           <field-name>consumers</field-name>
         </requirement>
+        <requirement>
+          <role>org.apache.maven.archiva.policies.urlcache.UrlFailureCache</role>
+          <field-name>urlFailureCache</field-name>
+        </requirement>
       </requirements>
     </component>
-    
+
     <component>
       <role>org.codehaus.plexus.cache.Cache</role>
       <role-hint>url-failures-cache</role-hint>
@@ -103,7 +103,7 @@
         <time-to-live-seconds>1800</time-to-live-seconds>
       </configuration>
     </component>
-        
+
     <component>
       <role>org.codehaus.plexus.logging.LoggerManager</role>
       <implementation>org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager</implementation>

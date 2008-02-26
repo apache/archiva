@@ -22,6 +22,7 @@ package org.codehaus.plexus.spring;
 import java.io.IOException;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -96,6 +97,21 @@ public class PlexusClassPathXmlApplicationContext
         reader.setDocumentReaderClass( PlexusBeanDefinitionDocumentReader.class );
         reader.setValidationMode( XmlBeanDefinitionReader.VALIDATION_NONE );
         super.loadBeanDefinitions( reader );
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.springframework.context.support.AbstractApplicationContext#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+     */
+    protected void postProcessBeanFactory( ConfigurableListableBeanFactory beanFactory )
+    {
+        PlexusContainerAdapter plexus = new PlexusContainerAdapter();
+        plexus.setApplicationContext( this );
+        beanFactory.registerSingleton( "plexusContainer", plexus );
+
+        PlexusLifecycleBeanPostProcessor lifecycle = new PlexusLifecycleBeanPostProcessor();
+        lifecycle.setBeanFactory( this );
+        beanFactory.addBeanPostProcessor( lifecycle );
     }
 
 }
