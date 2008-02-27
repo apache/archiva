@@ -35,7 +35,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  *                   role-hint="process-artifact"
  *                   instantiation-strategy="per-lookup"
  */
-class ProcessArchivaArtifactClosure
+public class ProcessArchivaArtifactClosure
     extends AbstractLogEnabled
     implements Closure
 {
