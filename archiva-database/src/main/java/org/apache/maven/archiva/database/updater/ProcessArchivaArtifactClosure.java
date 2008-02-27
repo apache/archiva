@@ -31,10 +31,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.commons.collections.Closure" 
- *                   role-hint="process-artifact"
- *                   instantiation-strategy="per-lookup"
  */
 class ProcessArchivaArtifactClosure
     implements Closure
@@ -55,7 +51,7 @@ class ProcessArchivaArtifactClosure
             }
             catch ( ConsumerException e )
             {
-                log.warn( "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId() + "]" );
+                log.warn( "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId() + "]", e );
             }
         }
 
