@@ -68,7 +68,7 @@ import org.springframework.util.ReflectionUtils;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusComponentFactoryBean
-    implements FactoryBean, BeanFactoryAware, DisposableBean
+    implements FactoryBean, BeanFactoryAware
 {
     /** Logger available to subclasses */
     protected final Log logger = LogFactory.getLog( getClass() );
@@ -93,30 +93,7 @@ public class PlexusComponentFactoryBean
     /** The plexus component requirements and configurations */
     private Map requirements;
 
-    /** The plexus component created by this FactoryBean */
-    private List instances = new LinkedList();
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.springframework.beans.factory.config.AbstractFactoryBean#destroy()
-     */
-    public void destroy()
-        throws Exception
-    {
-        synchronized ( instances )
-        {
-            for ( Iterator iterator = instances.iterator(); iterator.hasNext(); )
-            {
-                Object instance = iterator.next();
-                if ( instance instanceof Disposable )
-                {
-                    logger.trace( "Dispose plexus bean " + role );
-                    ( (Disposable) instance ).dispose();
-                }
-            }
-        }
-    }
+    private Object singletonInstance;
 
     /**
      * {@inheritDoc}
@@ -128,13 +105,14 @@ public class PlexusComponentFactoryBean
     {
         if ( isSingleton() )
         {
-            synchronized ( instances )
+            synchronized ( this )
             {
-                if ( !instances.isEmpty() )
+                if ( singletonInstance != null )
                 {
-                    return instances.get( 0 );
+                    return singletonInstance;
                 }
-                return createInstance();
+                this.singletonInstance = createInstance();
+                return singletonInstance;
             }
         }
         return createInstance();
@@ -149,10 +127,6 @@ public class PlexusComponentFactoryBean
     {
         logger.debug( "Creating plexus component " + implementation );
         final Object component = implementation.newInstance();
-        synchronized ( instances )
-        {
-            instances.add( component );
-        }
         if ( requirements != null )
         {
             for ( Iterator iterator = requirements.entrySet().iterator(); iterator.hasNext(); )

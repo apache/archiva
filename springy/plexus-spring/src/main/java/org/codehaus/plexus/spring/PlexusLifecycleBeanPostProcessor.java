@@ -19,6 +19,8 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -30,21 +32,22 @@ import org.codehaus.plexus.logging.LogEnabled;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.logging.console.ConsoleLoggerManager;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusLifecycleBeanPostProcessor
-    implements BeanPostProcessor, BeanFactoryAware
+    implements BeanPostProcessor, BeanFactoryAware, DisposableBean
 {
     /** Logger available to subclasses */
     protected final Log logger = LogFactory.getLog( getClass() );
@@ -54,6 +57,9 @@ public class PlexusLifecycleBeanPostProcessor
     private Context context;
 
     private LoggerManager loggerManager;
+
+    /** The plexus Disposable components */
+    private Map disposables = new HashMap();
 
     protected Context getContext()
     {
@@ -91,7 +97,9 @@ public class PlexusLifecycleBeanPostProcessor
 
     /**
      * {@inheritDoc}
-     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object, java.lang.String)
+     *
+     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessBeforeInitialization(java.lang.Object,
+     * java.lang.String)
      */
     public Object postProcessBeforeInitialization( Object bean, String beanName )
         throws BeansException
@@ -99,10 +107,11 @@ public class PlexusLifecycleBeanPostProcessor
         return bean;
     }
 
-
     /**
      * {@inheritDoc}
-     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object, java.lang.String)
+     *
+     * @see org.springframework.beans.factory.config.BeanPostProcessor#postProcessAfterInitialization(java.lang.Object,
+     * java.lang.String)
      */
     public Object postProcessAfterInitialization( Object bean, String beanName )
         throws BeansException
@@ -144,7 +153,16 @@ public class PlexusLifecycleBeanPostProcessor
             }
             catch ( InitializationException e )
             {
-                throw new BeanInitializationException( "Failed to invoke plexus lifecycle Initializable.initialize on " + beanName, e );
+                throw new BeanInitializationException( "Failed to invoke plexus lifecycle Initializable.initialize on "
+                    + beanName, e );
+            }
+        }
+
+        if ( bean instanceof Disposable )
+        {
+            synchronized ( disposables )
+            {
+                disposables.put( beanName, bean );
             }
         }
         return bean;
@@ -155,5 +173,23 @@ public class PlexusLifecycleBeanPostProcessor
         this.beanFactory = beanFactory;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.springframework.beans.factory.config.AbstractFactoryBean#destroy()
+     */
+    public void destroy()
+        throws Exception
+    {
+        synchronized ( disposables )
+        {
+            for ( Iterator iterator = disposables.entrySet().iterator(); iterator.hasNext(); )
+            {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                logger.debug( "Dispose plexus component " + entry.getKey() );
+                ( (Disposable) entry.getValue() ).dispose();
+            }
+        }
+    }
 
 }

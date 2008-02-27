@@ -29,14 +29,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * A custom ClassPathXmlApplicationContext to support plexus
- * <tr>components.xml</tt> descriptors in Spring, with no changes required
- * to neither plexus nor spring beans.
+ * <tr>components.xml</tt> descriptors in Spring, with no changes required to
+ * neither plexus nor spring beans.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusClassPathXmlApplicationContext
     extends ClassPathXmlApplicationContext
 {
+    private PlexusLifecycleBeanPostProcessor lifecycleBeanPostProcessor;
+
     public PlexusClassPathXmlApplicationContext( String path, Class clazz )
         throws BeansException
     {
@@ -101,6 +103,7 @@ public class PlexusClassPathXmlApplicationContext
 
     /**
      * {@inheritDoc}
+     *
      * @see org.springframework.context.support.AbstractApplicationContext#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
      */
     protected void postProcessBeanFactory( ConfigurableListableBeanFactory beanFactory )
@@ -109,9 +112,27 @@ public class PlexusClassPathXmlApplicationContext
         plexus.setApplicationContext( this );
         beanFactory.registerSingleton( "plexusContainer", plexus );
 
-        PlexusLifecycleBeanPostProcessor lifecycle = new PlexusLifecycleBeanPostProcessor();
-        lifecycle.setBeanFactory( this );
-        beanFactory.addBeanPostProcessor( lifecycle );
+        lifecycleBeanPostProcessor = new PlexusLifecycleBeanPostProcessor();
+        lifecycleBeanPostProcessor.setBeanFactory( this );
+        beanFactory.addBeanPostProcessor( lifecycleBeanPostProcessor );
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @see org.springframework.context.support.AbstractApplicationContext#doClose()
+     */
+    protected void doClose()
+    {
+        try
+        {
+            lifecycleBeanPostProcessor.destroy();
+        }
+        catch ( Throwable ex )
+        {
+            logger.error( "Exception thrown from PlexusLifecycleBeanPostProcessor handling ContextClosedEvent", ex );
+        }
+        super.doClose();
     }
 
 }

@@ -1,0 +1,19 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <role-hint>plexus</role-hint>
+      <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.spring.ComplexPlexusBean</role>
+      <implementation>org.codehaus.plexus.spring.ComplexPlexusBean</implementation>
+      <requirements>
+      	<requirement>
+      		<field-name>plexusBeans</field-name>
+      		<role>org.codehaus.plexus.spring.PlexusBean</role>
+      	</requirement>
+      </requirements>
+    </component>
+  </components>
+</component-set>

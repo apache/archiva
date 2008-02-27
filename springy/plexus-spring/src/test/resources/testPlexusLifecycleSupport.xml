@@ -1,0 +1,9 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <role-hint>default</role-hint>
+      <implementation>org.codehaus.plexus.spring.PlexusBeanImpl</implementation>
+    </component>
+  </components>
+</component-set>

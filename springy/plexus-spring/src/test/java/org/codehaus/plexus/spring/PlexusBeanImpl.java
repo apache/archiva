@@ -1,6 +1,10 @@
 package org.codehaus.plexus.spring;
 
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -31,7 +35,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
  */
 public class PlexusBeanImpl
     extends AbstractLogEnabled
-    implements PlexusBean, Initializable, Disposable
+    implements PlexusBean, Initializable, Disposable, Contextualizable
 {
     private String message;
 
@@ -41,6 +45,8 @@ public class PlexusBeanImpl
      * @plexus.requirement
      */
     private SpringBean bean;
+
+    private Context context;
 
     public void initialize()
         throws InitializationException
@@ -53,10 +59,7 @@ public class PlexusBeanImpl
         state = DISPOSED;
     }
 
-    /**
-     * @see org.codehaus.plexus.spring.PlexusBean#toString()
-     */
-    public String toString()
+    public String describe()
     {
         getLogger().info( "Logger has been set" );
         return message + " " + bean.toString();
@@ -70,4 +73,23 @@ public class PlexusBeanImpl
         return state;
     }
 
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable#contextualize(org.codehaus.plexus.context.Context)
+     */
+    public void contextualize( Context context )
+        throws ContextException
+    {
+        this.context = context;
+    }
+
+    public Context getContext()
+    {
+        return context;
+    }
+
+    public Logger getLogger()
+    {
+        return super.getLogger();
+    }
 }

@@ -1,5 +1,7 @@
 package org.codehaus.plexus.spring;
 
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.logging.Logger;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,16 +24,22 @@ package org.codehaus.plexus.spring;
 
 /**
  * A plexus component interface
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public interface PlexusBean
 {
     public static final String DISPOSED = "disposed";
+
     public static final String INITIALIZED = "initialized";
+
     String ROLE = PlexusBean.class.getName();
-    
-    String toString();
+
+    String describe();
 
     String getState();
 
+    Context getContext();
+
+    Logger getLogger();
 }

@@ -1,5 +1,6 @@
 package org.codehaus.plexus.spring;
 
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -23,7 +24,7 @@ import java.util.Map;
 
 /**
  * A typical plexus component implementation
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class ComplexPlexusBean
@@ -34,10 +35,25 @@ public class ComplexPlexusBean
     private Map plexusBeans;
 
     /**
+     * @plexus.requirement role="org.codehaus.plexus.spring.PlexusBean"
+     */
+    private List beansList;
+
+    /**
      * @see org.codehaus.plexus.spring.PlexusBean#toString()
      */
     public String toString()
     {
         return plexusBeans.size() + " components for role org.codehaus.plexus.spring.PlexusBean";
+    }
+
+    public Map getBeans()
+    {
+        return plexusBeans;
+    }
+
+    public List getBeansList()
+    {
+        return beansList;
     }
 }
