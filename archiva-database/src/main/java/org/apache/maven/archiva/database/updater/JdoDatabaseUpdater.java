@@ -40,9 +40,8 @@ import java.util.List;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUpdater" 
- *   role-hint="jdo" 
+ * @plexus.component role="org.apache.maven.archiva.database.updater.DatabaseUpdater"
+ * role-hint="jdo"
  */
 public class JdoDatabaseUpdater
     extends AbstractLogEnabled
@@ -58,7 +57,10 @@ public class JdoDatabaseUpdater
      */
     private DatabaseConsumers dbConsumers;
 
-    private ProcessArchivaArtifactClosure processArtifactClosure = new ProcessArchivaArtifactClosure();
+    /**
+     * @plexus.requirement
+     */
+    private ProcessArchivaArtifactClosure processArtifactClosure;
 
     public void update()
         throws ArchivaDatabaseException
@@ -147,7 +149,7 @@ public class JdoDatabaseUpdater
             getLogger().warn( "There are no selected consumers for unprocessed artifacts." );
             return;
         }
-        
+
         this.processArtifactClosure.setArtifact( artifact );
         CollectionUtils.forAllDo( consumers, this.processArtifactClosure );
 
@@ -165,7 +167,7 @@ public class JdoDatabaseUpdater
             getLogger().warn( "There are no selected consumers for artifact cleanup." );
             return;
         }
-        
+
         this.processArtifactClosure.setArtifact( artifact );
         CollectionUtils.forAllDo( consumers, this.processArtifactClosure );
     }
