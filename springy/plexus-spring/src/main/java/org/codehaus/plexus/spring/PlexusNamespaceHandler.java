@@ -19,13 +19,26 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.dom4j.io.DOMReader;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
+import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
@@ -108,8 +121,14 @@ public class PlexusNamespaceHandler
             {
                 Element child = (Element) iterator.next();
                 String name = child.getAttribute( "name" );
-                String value = child.getAttribute( "value" );
-                dependencies.put( name, value );
+                if ( child.getChildNodes().getLength() == 1 )
+                {
+                    dependencies.put( name, child.getTextContent() );
+                }
+                else
+                {
+                    dependencies.put( name, new DomPlexusConfiguration( name, child ) );
+                }
             }
 
             builder.addPropertyValue( "requirements", dependencies );

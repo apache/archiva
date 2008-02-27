@@ -45,6 +45,9 @@ public class PlexusClassPathXmlApplicationContext
         super( path, clazz );
     }
 
+
+
+
     public PlexusClassPathXmlApplicationContext( String configLocation )
         throws BeansException
     {

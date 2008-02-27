@@ -22,23 +22,23 @@
     version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:plexus="http://plexus.codehaus.org/spring">
 
-<xsl:output method="xml"/>
+<xsl:output method="xml" cdata-section-elements="configuration"/>
 
 <!--
   Convert a plexus descriptor to a spring XML context with help of the custom <plexus: namespace
   to handle IoC containers incompatibilities.
  -->
 
-<xsl:template match="/component-set">
-<beans xmlns="http://www.springframework.org/schema/beans"
+<xsl:template match="/component-set" >
+<spring:beans xmlns:spring="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:plexus="http://plexus.codehaus.org/spring"
+       xmlns="http://plexus.codehaus.org/spring"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                            http://plexus.codehaus.org/spring http://plexus.codehaus.org/schemas/spring-1.0.xsd"
        default-lazy-init="true">
   <xsl:for-each select="components/component">
 
-    <plexus:component>
+    <component>
       <xsl:attribute name="role">
         <xsl:value-of select="role" />
       </xsl:attribute>
@@ -56,7 +56,7 @@
         </xsl:attribute>
       </xsl:if>
       <xsl:for-each select="requirements/requirement">
-        <plexus:requirement>
+        <requirement>
           <xsl:attribute name="field-name">
             <xsl:value-of select="field-name" />
           </xsl:attribute>
@@ -68,22 +68,20 @@
               <xsl:value-of select="role-hint" />
             </xsl:attribute>
           </xsl:if>
-        </plexus:requirement>
+        </requirement>
       </xsl:for-each>
       <xsl:for-each select="configuration/*">
-        <plexus:configuration>
+        <configuration>
           <xsl:attribute name="name">
             <xsl:value-of select="name(.)" />
           </xsl:attribute>
-          <xsl:attribute name="value">
-            <xsl:value-of select="." />
-          </xsl:attribute>
-        </plexus:configuration>
+          <xsl:copy-of select="child::node()" />
+        </configuration>
       </xsl:for-each>
-    </plexus:component>
+    </component>
 
   </xsl:for-each>
-</beans>
+</spring:beans>
 </xsl:template>
 
 </xsl:stylesheet>
