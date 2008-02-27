@@ -58,7 +58,7 @@ public class JdoDatabaseUpdater
     private DatabaseConsumers dbConsumers;
 
     /**
-     * @plexus.requirement
+     * @plexus.requirement role="org.apache.commons.collections.Closure" role-hint="process-artifact"
      */
     private ProcessArchivaArtifactClosure processArtifactClosure;
 
