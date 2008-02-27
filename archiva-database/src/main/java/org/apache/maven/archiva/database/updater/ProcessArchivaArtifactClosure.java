@@ -54,8 +54,7 @@ class ProcessArchivaArtifactClosure
             catch ( ConsumerException e )
             {
                 getLogger().warn(
-                                  "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId()
-                                      + "]" );
+                    "Unable to process artifact [" + artifact + "] with consumer [" + consumer.getId() + "]", e );
             }
         }
 
