@@ -35,6 +35,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.dom4j.io.DOMReader;
 import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
@@ -126,16 +127,21 @@ public class PlexusNamespaceHandler
             {
                 Element child = (Element) iterator.next();
                 String name = child.getAttribute( "name" );
+                String value;
                 if ( child.getChildNodes().getLength() == 1 )
                 {
-                    dependencies.put( name, child.getTextContent() );
+                    value = child.getTextContent();
                 }
                 else
                 {
                     StringWriter xml = new StringWriter();
-                    flatten( child, new PrintWriter( xml ) );
-                    dependencies.put( name, xml.toString() );
+                    xml.write( '<' + name + '>' );
+                    flatten( child.getChildNodes(), new PrintWriter( xml ) );
+                    xml.write( "</" + name + '>' );
+                    value = xml.toString();
                 }
+                value = StringUtils.replace( value, "${basedir}", PlexusToSpringUtils.getBasedir() );
+                dependencies.put( name, value );
             }
 
             builder.addPropertyValue( "requirements", dependencies );
@@ -187,6 +193,11 @@ public class PlexusNamespaceHandler
             out.print( "=\"" );
             out.print( attribute.getTextContent() );
             out.print( "\"" );
+        }
+        if (el.getChildNodes().getLength() == 0)
+        {
+            out.print( "/>" );
+            return;
         }
         out.print( '>' );
         flatten( el.getChildNodes(), out );

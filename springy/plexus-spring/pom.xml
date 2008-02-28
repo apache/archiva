@@ -50,11 +50,9 @@
       <version>1.0-alpha-22</version>
     </dependency>
     <dependency>
-      <!-- only required to debug XSLT result -->
       <groupId>dom4j</groupId>
       <artifactId>dom4j</artifactId>
       <version>1.6.1</version>
-      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

@@ -36,14 +36,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class PlexusInSpringTestCase
     extends TestCase
 {
-    private static String basedir;
-
     private ConfigurableApplicationContext applicationContext;
 
     protected void setUp()
         throws Exception
     {
-        basedir = getBasedir();
         applicationContext =
             new PlexusClassPathXmlApplicationContext( new String[] {
                 "classpath*:META-INF/plexus/components.xml",
@@ -79,18 +76,7 @@ public class PlexusInSpringTestCase
 
     public static String getBasedir()
     {
-        if ( basedir != null )
-        {
-            return basedir;
-        }
-
-        basedir = System.getProperty( "basedir" );
-        if ( basedir == null )
-        {
-            basedir = new File( "" ).getAbsolutePath();
-        }
-
-        return basedir;
+        return PlexusToSpringUtils.getBasedir();
     }
 
     public String getTestConfiguration()
@@ -128,7 +114,7 @@ public class PlexusInSpringTestCase
 
     public static File getTestFile( String path )
     {
-        return new File( getBasedir(), path );
+        return new File( PlexusToSpringUtils.getBasedir(), path );
     }
 
     public static File getTestFile( String basedir,

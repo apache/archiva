@@ -88,4 +88,14 @@ public class PlexusClassPathXmlApplicationContextTest
         assertEquals( 2, plexusBean.getBeansList().size() );
     }
 
+    public void testInjectPlexusConfiguration()
+        throws Exception
+    {
+        ConfigurableApplicationContext applicationContext =
+            new PlexusClassPathXmlApplicationContext( new String[] {
+                "testInjectPlexusConfiguration.xml" } );
+        ConfigPlexusBean plexusBean = (ConfigPlexusBean) applicationContext.getBean( "plexusBean" );
+        assertEquals( "expected", plexusBean.getConfig().getChild( "xml" ).getAttribute( "test" ) );
+    }
+
 }

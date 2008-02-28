@@ -19,6 +19,7 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,5 +141,23 @@ public class PlexusToSpringUtils
     public static List LookupList( String role, ListableBeanFactory beanFactory )
     {
         return new ArrayList( PlexusToSpringUtils.lookupMap( role, beanFactory ).values() );
+    }
+
+    private static String basedir;
+
+    public static String getBasedir()
+    {
+        if ( basedir != null )
+        {
+            return basedir;
+        }
+
+        basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = new File( "" ).getAbsolutePath();
+        }
+
+        return basedir;
     }
 }
