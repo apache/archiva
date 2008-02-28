@@ -49,7 +49,7 @@ public class PlexusBeanDefinitionDocumentReader
     public void registerBeanDefinitions( Document doc, XmlReaderContext readerContext )
     {
         doc = convertPlexusDescriptorToSpringBeans( doc );
-        if ( true )
+        if ( Boolean.getBoolean( "plexus-spring.debug" ) )
         {
             try
             {
