@@ -111,13 +111,19 @@ public class PlexusClassPathXmlApplicationContext
      */
     protected void postProcessBeanFactory( ConfigurableListableBeanFactory beanFactory )
     {
+        // Register a PlexusContainerAdapter bean to allow context lookups using plexus API
         PlexusContainerAdapter plexus = new PlexusContainerAdapter();
         plexus.setApplicationContext( this );
         beanFactory.registerSingleton( "plexusContainer", plexus );
 
+        // Register a beanPostProcessor to handle plexus interface-based lifecycle management
         lifecycleBeanPostProcessor = new PlexusLifecycleBeanPostProcessor();
         lifecycleBeanPostProcessor.setBeanFactory( this );
         beanFactory.addBeanPostProcessor( lifecycleBeanPostProcessor );
+
+        // Register a PorpertyEditor to support plexus XML <configuration> set as CDATA in
+        // a spring context XML file.
+        beanFactory.addPropertyEditorRegistrar( new PlexusConfigurationPropertyEditor() );
     }
 
     /**

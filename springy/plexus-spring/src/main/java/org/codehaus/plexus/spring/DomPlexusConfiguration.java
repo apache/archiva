@@ -19,9 +19,19 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.smartcardio.ATR;
+
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.configuration.PlexusConfigurationException;
+import org.springframework.util.xml.DomUtils;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -31,14 +41,11 @@ public class DomPlexusConfiguration
 {
     private Element root;
 
-    private String name;
-
     /**
      *
      */
-    public DomPlexusConfiguration( String name, Element root )
+    public DomPlexusConfiguration( Element root )
     {
-        this.name = name;
         this.root = root;
     }
 
@@ -59,8 +66,7 @@ public class DomPlexusConfiguration
     public String getAttribute( String paramName )
         throws PlexusConfigurationException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return root.getAttribute( paramName );
     }
 
     /**
@@ -69,8 +75,12 @@ public class DomPlexusConfiguration
      */
     public String getAttribute( String name, String defaultValue )
     {
-        // TODO Auto-generated method stub
-        return null;
+        String attribute = root.getAttribute( name );
+        if ( attribute == null )
+        {
+            attribute = defaultValue;
+        }
+        return attribute;
     }
 
     /**
@@ -79,8 +89,13 @@ public class DomPlexusConfiguration
      */
     public String[] getAttributeNames()
     {
-        // TODO Auto-generated method stub
-        return null;
+        NamedNodeMap attributes = root.getAttributes();
+        String[] names = new String[attributes.getLength()];
+        for ( int i = 0; i < names.length; i++ )
+        {
+            names[i] = attributes.item( i ).getLocalName();
+        }
+        return names;
     }
 
     /**
@@ -89,7 +104,11 @@ public class DomPlexusConfiguration
      */
     public PlexusConfiguration getChild( String child )
     {
-        // TODO Auto-generated method stub
+        Element e = DomUtils.getChildElementByTagName( root, child );
+        if (e != null)
+        {
+            return new DomPlexusConfiguration( e );
+        }
         return null;
     }
 
@@ -99,7 +118,18 @@ public class DomPlexusConfiguration
      */
     public PlexusConfiguration getChild( int i )
     {
-        // TODO Auto-generated method stub
+        NodeList childs = root.getChildNodes();
+        for ( int j = 0; j < childs.getLength(); j++ )
+        {
+            Node child = childs.item( j );
+            if ( child.getNodeType() == Node.ELEMENT_NODE )
+            {
+                if (i-- == 0)
+                {
+                    return new DomPlexusConfiguration( (Element) child );
+                }
+            }
+        }
         return null;
     }
 
@@ -109,8 +139,13 @@ public class DomPlexusConfiguration
      */
     public PlexusConfiguration getChild( String child, boolean createChild )
     {
-        // TODO Auto-generated method stub
-        return null;
+        PlexusConfiguration config = getChild( child );
+        if (config == null && createChild )
+        {
+            // Creating a new child requires a Document
+            throw new UnsupportedOperationException( "Not implemented" );
+        }
+        return config;
     }
 
     /**
@@ -119,8 +154,17 @@ public class DomPlexusConfiguration
      */
     public int getChildCount()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        int count = 0;
+        NodeList childs = root.getChildNodes();
+        for ( int i = 0; i < childs.getLength(); i++ )
+        {
+            Node child = childs.item( i );
+            if ( child.getNodeType() == Node.ELEMENT_NODE )
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     /**
@@ -129,8 +173,13 @@ public class DomPlexusConfiguration
      */
     public PlexusConfiguration[] getChildren()
     {
-        // TODO Auto-generated method stub
-        return null;
+        int count = getChildCount();
+        PlexusConfiguration[] children = new PlexusConfiguration[count];
+        for ( int i = 0; i < children.length; i++ )
+        {
+            children[i] = getChild( i );
+        }
+        return children;
     }
 
     /**
@@ -139,8 +188,7 @@ public class DomPlexusConfiguration
      */
     public PlexusConfiguration[] getChildren( String name )
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "Not implemented" );
     }
 
     /**
@@ -149,8 +197,7 @@ public class DomPlexusConfiguration
      */
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return root.getNodeName();
     }
 
     /**
@@ -160,8 +207,7 @@ public class DomPlexusConfiguration
     public String getValue()
         throws PlexusConfigurationException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return root.getNodeValue();
     }
 
     /**
@@ -170,7 +216,11 @@ public class DomPlexusConfiguration
      */
     public String getValue( String defaultValue )
     {
-        // TODO Auto-generated method stub
-        return null;
+        String value = root.getTextContent();
+        if ( value == null )
+        {
+            value = defaultValue;
+        }
+        return value;
     }
 }

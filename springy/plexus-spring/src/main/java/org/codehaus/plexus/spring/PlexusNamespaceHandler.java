@@ -127,7 +127,7 @@ public class PlexusNamespaceHandler
                 }
                 else
                 {
-                    dependencies.put( name, new DomPlexusConfiguration( name, child ) );
+                    dependencies.put( name, new DomPlexusConfiguration( child ) );
                 }
             }
 
