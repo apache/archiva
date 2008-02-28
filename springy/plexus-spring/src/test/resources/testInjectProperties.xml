@@ -1,0 +1,20 @@
+<component-set>
+  <components>
+    <component>
+      <role>org.codehaus.plexus.spring.PlexusBean</role>
+      <implementation>org.codehaus.plexus.spring.PropertiesPlexusBean</implementation>
+      <configuration>
+        <properties>
+            <property>
+                <name>test</name>
+                <value>expected</value>
+            </property>
+            <property>
+                <name>other</name>
+                <value>value</value>
+            </property>
+        </properties>
+      </configuration>
+    </component>
+  </components>
+</component-set>

@@ -170,7 +170,11 @@ public class PlexusNamespaceHandler
         for ( int i = 0; i < childNodes.getLength(); i++ )
         {
             Node node = childNodes.item( i );
-            if (node.getNodeType() == Node.ELEMENT_NODE )
+            if (node.getNodeType() == Node.TEXT_NODE )
+            {
+                out.print( node.getTextContent() );
+            }
+            else if (node.getNodeType() == Node.ELEMENT_NODE )
             {
                 flatten( (Element) node, out );
             }
