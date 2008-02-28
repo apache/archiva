@@ -1,4 +1,7 @@
-<component-set>
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plexus>
+
   <components>
     <component>
       <role>org.codehaus.plexus.spring.PlexusBean</role>
@@ -16,4 +19,5 @@
       </requirements>
     </component>
   </components>
-</component-set>
+
+</plexus>

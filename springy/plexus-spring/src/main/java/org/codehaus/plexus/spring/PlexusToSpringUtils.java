@@ -36,7 +36,6 @@ import org.springframework.beans.factory.ListableBeanFactory;
  * Utility method to convert plexus descriptors to spring bean context.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- * @since 1.1
  */
 public class PlexusToSpringUtils
 {

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
@@ -67,11 +68,21 @@ public class PlexusBeanDefinitionDocumentReader
 
     protected Document convertPlexusDescriptorToSpringBeans( Document doc )
     {
-        if ( !"component-set".equals( doc.getDocumentElement().getNodeName() ) )
+        if ( "component-set".equals( doc.getDocumentElement().getNodeName() ) )
         {
-            return doc;
+            return translatePlexusDescriptor( doc );
+        }
+        if ( "plexus".equals( doc.getDocumentElement().getNodeName() ) )
+        {
+            return translatePlexusDescriptor( doc );
         }
 
+        return doc;
+    }
+
+    private Document translatePlexusDescriptor( Document doc )
+        throws TransformerFactoryConfigurationError
+    {
         try
         {
             Source xmlSource = new DOMSource( doc );

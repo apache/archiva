@@ -29,14 +29,14 @@
   to handle IoC containers incompatibilities.
  -->
 
-<xsl:template match="/component-set" >
+<xsl:template match="/" >
 <spring:beans xmlns:spring="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://plexus.codehaus.org/spring"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
                            http://plexus.codehaus.org/spring http://plexus.codehaus.org/schemas/spring-1.0.xsd"
        default-lazy-init="true">
-  <xsl:for-each select="components/component">
+  <xsl:for-each select="//component">
 
     <component>
       <xsl:attribute name="role">

@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
@@ -48,7 +49,7 @@ import org.springframework.context.ApplicationContextAware;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class PlexusContainerAdapter
-    implements PlexusContainer, ApplicationContextAware, InitializingBean
+    implements PlexusContainer, ApplicationContextAware
 {
     private Context context = new SimpleContext();
 
@@ -58,16 +59,6 @@ public class PlexusContainerAdapter
     public PlexusContainerAdapter()
     {
         super();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    public void afterPropertiesSet()
-        throws Exception
-    {
-        context = new SimpleContext();
     }
 
     /**
@@ -660,8 +651,6 @@ public class PlexusContainerAdapter
 
     private class SimpleContext implements Context
     {
-        /** the plexus container key in the context */
-        private static final String PLEXUS = "plexus";
 
         /**
          * {@inheritDoc}
@@ -669,7 +658,7 @@ public class PlexusContainerAdapter
          */
         public boolean contains( Object key )
         {
-            return PLEXUS.equals( key );
+            return PlexusConstants.PLEXUS_KEY.equals( key );
         }
 
         /**
@@ -679,7 +668,7 @@ public class PlexusContainerAdapter
         public Object get( Object key )
             throws ContextException
         {
-            return PLEXUS.equals( key ) ? PlexusContainerAdapter.this : null;
+            return PlexusConstants.PLEXUS_KEY.equals( key ) ? PlexusContainerAdapter.this : null;
         }
 
         /**

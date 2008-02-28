@@ -25,8 +25,6 @@ import junit.framework.TestCase;
 
 import org.springframework.context.ConfigurableApplicationContext;
 
-;
-
 /**
  * Mimic org.codehaus.plexus.PlexusTestCase as simple replacement for test
  * cases.

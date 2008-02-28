@@ -37,16 +37,13 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class PlexusClassPathXmlApplicationContext
     extends ClassPathXmlApplicationContext
 {
-    private PlexusLifecycleBeanPostProcessor lifecycleBeanPostProcessor;
+    private static PlexusApplicationContextDelegate delegate = new PlexusApplicationContextDelegate();
 
     public PlexusClassPathXmlApplicationContext( String path, Class clazz )
         throws BeansException
     {
         super( path, clazz );
     }
-
-
-
 
     public PlexusClassPathXmlApplicationContext( String configLocation )
         throws BeansException
@@ -98,9 +95,7 @@ public class PlexusClassPathXmlApplicationContext
     protected void loadBeanDefinitions( XmlBeanDefinitionReader reader )
         throws BeansException, IOException
     {
-        logger.info( "Registering plexus to spring XML translation" );
-        reader.setDocumentReaderClass( PlexusBeanDefinitionDocumentReader.class );
-        reader.setValidationMode( XmlBeanDefinitionReader.VALIDATION_NONE );
+        delegate.loadBeanDefinitions( reader );
         super.loadBeanDefinitions( reader );
     }
 
@@ -111,19 +106,7 @@ public class PlexusClassPathXmlApplicationContext
      */
     protected void postProcessBeanFactory( ConfigurableListableBeanFactory beanFactory )
     {
-        // Register a PlexusContainerAdapter bean to allow context lookups using plexus API
-        PlexusContainerAdapter plexus = new PlexusContainerAdapter();
-        plexus.setApplicationContext( this );
-        beanFactory.registerSingleton( "plexusContainer", plexus );
-
-        // Register a beanPostProcessor to handle plexus interface-based lifecycle management
-        lifecycleBeanPostProcessor = new PlexusLifecycleBeanPostProcessor();
-        lifecycleBeanPostProcessor.setBeanFactory( this );
-        beanFactory.addBeanPostProcessor( lifecycleBeanPostProcessor );
-
-        // Register a PorpertyEditor to support plexus XML <configuration> set as CDATA in
-        // a spring context XML file.
-        beanFactory.addPropertyEditorRegistrar( new PlexusConfigurationPropertyEditor() );
+        delegate.postProcessBeanFactory( beanFactory, this );
     }
 
     /**
@@ -133,14 +116,7 @@ public class PlexusClassPathXmlApplicationContext
      */
     protected void doClose()
     {
-        try
-        {
-            lifecycleBeanPostProcessor.destroy();
-        }
-        catch ( Throwable ex )
-        {
-            logger.error( "Exception thrown from PlexusLifecycleBeanPostProcessor handling ContextClosedEvent", ex );
-        }
+        delegate.doClose();
         super.doClose();
     }
 
