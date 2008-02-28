@@ -19,7 +19,9 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
+import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,6 +50,9 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * A spring namespace handler to support plexus components creation and direct
@@ -127,7 +132,9 @@ public class PlexusNamespaceHandler
                 }
                 else
                 {
-                    dependencies.put( name, new DomPlexusConfiguration( child ) );
+                    StringWriter xml = new StringWriter();
+                    flatten( child, new PrintWriter( xml ) );
+                    dependencies.put( name, xml.toString() );
                 }
             }
 
@@ -148,9 +155,43 @@ public class PlexusNamespaceHandler
         }
 
     }
-
-    public static String buildSpringId( String role, String roleHint )
+    /**
+     * @param childNodes
+     * @return
+     */
+    private void flatten( NodeList childNodes, PrintWriter out )
     {
-        return PlexusToSpringUtils.buildSpringId( role, roleHint );
+        for ( int i = 0; i < childNodes.getLength(); i++ )
+        {
+            Node node = childNodes.item( i );
+            if (node.getNodeType() == Node.ELEMENT_NODE )
+            {
+                flatten( (Element) node, out );
+            }
+        }
+    }
+    /**
+     * @param item
+     * @param out
+     */
+    private void flatten( Element el, PrintWriter out )
+    {
+        out.print( '<' );
+        out.print( el.getTagName() );
+        NamedNodeMap attributes = el.getAttributes();
+        for ( int i = 0; i < attributes.getLength(); i++ )
+        {
+            Node attribute = attributes.item( i );
+            out.print( " ");
+            out.print( attribute.getLocalName() );
+            out.print( "=\"" );
+            out.print( attribute.getTextContent() );
+            out.print( "\"" );
+        }
+        out.print( '>' );
+        flatten( el.getChildNodes(), out );
+        out.print( "</" );
+        out.print( el.getTagName() );
+        out.print( '>' );
     }
 }
