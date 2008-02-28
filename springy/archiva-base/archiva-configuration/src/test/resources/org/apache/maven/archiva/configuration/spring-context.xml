@@ -4,20 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
-  <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
-    init-method="initialize"/>
-
   <bean id="urlFailureCache" class="org.apache.maven.archiva.policies.urlcache.DefaultUrlFailureCache">
     <constructor-arg ref="cache#url-failures-cache" type="org.codehaus.plexus.cache.Cache"/>
   </bean>
-
-  <bean class="org.springframework.web.context.support.ServletContextAttributeExporter"
-        lazy-init="false" >
-    <property name="attributes">
-        <map>
-            <entry key="webwork.plexus.container" value-ref="plexusContainer"/>
-        </map>
-    </property>
-  </bean>
-
 </beans>

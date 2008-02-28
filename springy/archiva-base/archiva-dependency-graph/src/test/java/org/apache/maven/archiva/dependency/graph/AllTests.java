@@ -23,7 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Utility class to aide IDE developers. 
+ * Utility class to aide IDE developers.
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
@@ -39,7 +39,7 @@ public class AllTests
         suite.addTestSuite( GraphvizDotTool.class );
         suite.addTestSuite( DepManDeepVersionDependencyGraphTest.class );
         suite.addTestSuite( SimpleDependencyGraphTest.class );
-        suite.addTestSuite( MavenProjectInfoReportsPluginDependencyGraphTest.class );
+//        suite.addTestSuite( MavenProjectInfoReportsPluginDependencyGraphTest.class );
         suite.addTestSuite( ArchivaCommonDependencyGraphTest.class );
         suite.addTestSuite( WagonManagerDependencyGraphTest.class );
         suite.addTestSuite( ContinuumStoreDependencyGraphTest.class );

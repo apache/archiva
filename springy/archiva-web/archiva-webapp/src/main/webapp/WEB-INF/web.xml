@@ -56,16 +56,21 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>org.codehaus.plexus.xwork.PlexusLifecycleListener</listener-class>
-  </listener>
-
-  <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <listener>
-    <listener-class>org.apache.maven.archiva.web.startup.PlexusSpringListener</listener-class>
-  </listener>
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>org.codehaus.plexus.spring.PlexusWebApplicationContext</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        classpath*:/META-INF/plexus/components.xml
+        /WEB-INF/applicationContext.xml
+    </param-value>
+  </context-param>
 
   <servlet>
     <servlet-name>RepositoryServlet</servlet-name>

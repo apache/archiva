@@ -22,26 +22,27 @@ package org.apache.maven.archiva.model;
 import java.util.Date;
 
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
- * ArchivaModelClonerTest 
+ * ArchivaModelClonerTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id: ArchivaModelClonerTest.java 525951 2007-04-05 20:11:19Z joakime $
  */
 public class ArchivaArtifactTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public void testArtifactModelProcessed()
     {
         ArchivaArtifactModel model = new ArchivaArtifactModel();
-        
+
         assertNull( "whenProcessed", model.getWhenProcessed() );
         assertFalse( "isProcessed", model.isProcessed() );
-        
+
         model.setWhenProcessed( new Date() );
-        
+
         assertTrue( "isProcessed", model.isProcessed() );
     }
-    
+
 }

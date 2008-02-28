@@ -19,15 +19,15 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.registry.RegistryException;
-import org.codehaus.plexus.util.FileUtils;
-import org.custommonkey.xmlunit.XMLAssert;
-import org.easymock.MockControl;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.codehaus.plexus.util.FileUtils;
+import org.custommonkey.xmlunit.XMLAssert;
+import org.easymock.MockControl;
 
 /**
  * Test the configuration store.
@@ -35,8 +35,18 @@ import java.util.Map;
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
 public class ArchivaConfigurationTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
+     */
+    protected String getSpringConfigLocation()
+        throws Exception
+    {
+        return "org/apache/maven/archiva/configuration/spring-context.xml";
+    }
+
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
     {
@@ -474,7 +484,7 @@ public class ArchivaConfigurationTest
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName(), "test-not-allowed-to-write-to-user" );
         Configuration config = archivaConfiguration.getConfiguration();
         archivaConfiguration.save( config );
-        // No Exception == test passes. 
+        // No Exception == test passes.
         // Expected Path is: Should not have thrown an exception.
     }
 
@@ -538,7 +548,7 @@ public class ArchivaConfigurationTest
         archivaConfiguration.save( configuration );
 
         // Release existing
-        release( archivaConfiguration );
+//      FIXME spring equivalent ?  release( archivaConfiguration );
 
         // Reload.
         archivaConfiguration =
