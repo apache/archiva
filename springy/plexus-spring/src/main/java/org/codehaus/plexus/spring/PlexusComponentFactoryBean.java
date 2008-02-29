@@ -22,33 +22,18 @@ package org.codehaus.plexus.spring;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.context.Context;
-import org.codehaus.plexus.context.ContextException;
-import org.codehaus.plexus.logging.LogEnabled;
-import org.codehaus.plexus.logging.LoggerManager;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanInitializationException;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.util.ReflectionUtils;
@@ -278,19 +263,19 @@ public class PlexusComponentFactoryBean
     }
 
     /**
-     * @param instanciationStrategy the instanciationStrategy to set
+     * @param instantiationStrategy the instantiationStrategy to set
      */
-    public void setInstanciationStrategy( String instanciationStrategy )
+    public void setInstantiationStrategy( String instantiationStrategy )
     {
-        if ( instanciationStrategy.length() == 0 )
+        if ( instantiationStrategy.length() == 0 )
         {
-            instanciationStrategy = SINGLETON;
+            instantiationStrategy = SINGLETON;
         }
-        if ( "poolable".equals( instanciationStrategy ) )
+        if ( "poolable".equals( instantiationStrategy ) )
         {
-            throw new BeanCreationException( "Plexus poolable instanciation-strategy is not supported" );
+            throw new BeanCreationException( "Plexus poolable instantiation-strategy is not supported" );
         }
-        this.instantiationStrategy = instanciationStrategy;
+        this.instantiationStrategy = instantiationStrategy;
     }
 
     /**

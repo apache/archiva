@@ -21,34 +21,20 @@ package org.codehaus.plexus.spring;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.io.DOMReader;
-import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.parsing.BeanDefinitionParsingException;
-import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -100,7 +86,7 @@ public class PlexusNamespaceHandler
             builder.addPropertyValue( "role", element.getAttribute( "role" ) );
             String implementation = element.getAttribute( "implementation" );
             builder.addPropertyValue( "implementation", implementation );
-            builder.addPropertyValue( "instanciationStrategy", element.getAttribute( "instantiation-strategy" ) );
+            builder.addPropertyValue( "instantiationStrategy", element.getAttribute( "instantiation-strategy" ) );
 
             Map dependencies = new HashMap();
 
