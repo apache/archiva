@@ -58,6 +58,7 @@ public class PlexusWebApplicationContext
     protected void postProcessBeanFactory( ConfigurableListableBeanFactory beanFactory )
     {
         delegate.postProcessBeanFactory( beanFactory, this );
+        getServletContext().setAttribute( "webwork.plexus.container", beanFactory.getBean( "plexusContainer" ) );
         super.postProcessBeanFactory( beanFactory );
     }
 

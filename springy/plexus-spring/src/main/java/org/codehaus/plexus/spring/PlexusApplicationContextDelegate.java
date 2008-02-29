@@ -19,22 +19,11 @@ package org.codehaus.plexus.spring;
  * under the License.
  */
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Disposable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;

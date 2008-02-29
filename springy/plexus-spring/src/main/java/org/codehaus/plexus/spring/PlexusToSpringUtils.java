@@ -101,6 +101,11 @@ public class PlexusToSpringUtils
         return disposable;
     }
 
+    public static String buildSpringId( Class role, String roleHint )
+    {
+        return buildSpringId( role.getName(), roleHint );
+    }
+
     public static String buildSpringId( String role, String roleHint )
     {
         int i = role.lastIndexOf( '.' ) + 1;
