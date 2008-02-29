@@ -30,8 +30,8 @@ import com.opensymphony.xwork.Result;
 import com.opensymphony.xwork.interceptor.Interceptor;
 
 /**
- * Replacement for WebWorkSpringObjectFactory ("webwork.objectFactory = spring") to support
- * plexus components lookup as expected by plexus-xwork integration.
+ * Replacement for WebWorkSpringObjectFactory ("webwork.objectFactory = spring")
+ * to support plexus components lookup as expected by plexus-xwork integration.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
@@ -66,5 +66,28 @@ public class WebWorkPlexusInSpringObjectFactory
             return super.buildBean( id, map );
         }
         return super.buildBean( name, map );
+    }
+
+    public Class getClassInstance( String className )
+        throws ClassNotFoundException
+    {
+        String id = PlexusToSpringUtils.buildSpringId( Action.class, className );
+        if ( appContext.containsBean( id ) )
+        {
+            return appContext.getType( id );
+        }
+
+        id = PlexusToSpringUtils.buildSpringId( Result.class, className );
+        if ( appContext.containsBean( id ) )
+        {
+            return appContext.getType( id );
+        }
+
+        id = PlexusToSpringUtils.buildSpringId( Interceptor.class, className );
+        if ( appContext.containsBean( id ) )
+        {
+            return appContext.getType( id );
+        }
+        return super.getClassInstance( className );
     }
 }
