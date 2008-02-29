@@ -24,7 +24,7 @@
     <format>zip</format>
   </formats>
   <fileSets>
-  	<fileSet>      
+    <fileSet>      
       <directory>target/generated-resources/appassembler/jsw/archiva/apps</directory>
       <outputDirectory>apps</outputDirectory>
     </fileSet>
@@ -54,40 +54,54 @@
       <directory>target/generated-resources/appassembler/jsw/archiva/etc</directory>
       <outputDirectory>etc</outputDirectory>
       <includes>
-        <include>**/jetty.xml</include>
-        <include>**/jetty-logging.xml</include>
-        <include>**/webdefault.xml</include>
-        <include>**/realm.properties</include>
+        <include>jetty.xml</include>
+        <include>jetty-logging.xml</include>
+        <include>webdefault.xml</include>
+        <include>realm.properties</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
-        <include>*/wrapper.conf</include>
+        <include>wrapper.conf</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>   
-         <include>**/archiva</include>           
-         <include>**/wrapper-linux-x86-32</include>
-         <include>**/wrapper-macosx-universal-32</include>
-         <include>**/wrapper-solaris-x86-32</include>
+         <include>archiva</include>           
       </includes>
       <fileMode>0755</fileMode>
-      <lineEnding>unix</lineEnding> 
+      <lineEnding>unix</lineEnding>
+    </fileSet>
+    <fileSet>
+      <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <includes>   
+         <include>wrapper-linux-x86-32</include>
+         <include>wrapper-macosx-universal-32</include>
+         <include>wrapper-solaris-x86-32</include>
+      </includes>
+      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>        
-        <include>**/*.bat</include>
-        <include>**/wrapper-windows-x86-32.exe</include>
+        <include>archiva.bat</include>
       </includes>
       <fileMode>0755</fileMode>
       <lineEnding>dos</lineEnding>
+    </fileSet>
+    <fileSet>
+      <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <includes>   
+        <include>wrapper-windows-x86-32.exe</include>
+      </includes>
+      <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>target/maven-shared-archive-resources/META-INF/</directory>
