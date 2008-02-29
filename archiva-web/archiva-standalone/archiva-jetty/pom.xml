@@ -6,11 +6,11 @@
     <artifactId>archiva-web-standalone</artifactId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <artifactId>archiva-jetty-archetype</artifactId>
+  <artifactId>archiva-jetty</artifactId>
 <!-- Bug in appassembler prevents using a purely attached assembly
   <packaging>pom</packaging>
 -->
-  <name>Archiva Web ::  Jetty Archetype</name>
+  <name>Archiva Web ::  Jetty</name>
   <dependencies>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
