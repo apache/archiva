@@ -21,7 +21,6 @@ package org.apache.maven.archiva.indexer.lucene;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
@@ -86,11 +85,11 @@ public class LuceneRepositoryContentIndex
     {
         synchronized( repository )
         {
-            IndexModifier indexModifier = null;
+            IndexWriter indexWriter = null;
             try
             {
-                indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
-                indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
+                indexWriter = new IndexWriter( indexLocation, indexHandlers.getAnalyzer(), !exists() );
+                indexWriter.setMaxFieldLength( MAX_FIELD_LENGTH );
     
                 for ( Iterator i = records.iterator(); i.hasNext(); )
                 {
@@ -100,14 +99,14 @@ public class LuceneRepositoryContentIndex
                     {
                         Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
     
-                        indexModifier.deleteDocuments( term );
+                        indexWriter.deleteDocuments( term );
     
                         Document document = indexHandlers.getConverter().convert( record );
     
-                        indexModifier.addDocument( document );
+                        indexWriter.addDocument( document );
                     }
                 }
-                indexModifier.optimize();
+                indexWriter.optimize();
             }
             catch ( IOException e )
             {
@@ -115,7 +114,7 @@ public class LuceneRepositoryContentIndex
             }
             finally
             {
-                closeQuietly( indexModifier );
+                closeQuietly( indexWriter );
             }
         }
     }
@@ -125,23 +124,23 @@ public class LuceneRepositoryContentIndex
     {
         synchronized( repository )
         {
-            IndexModifier indexModifier = null;
+            IndexWriter indexWriter = null;
             try
             {
-                indexModifier = new IndexModifier( indexLocation, indexHandlers.getAnalyzer(), !exists() );
-                indexModifier.setMaxFieldLength( MAX_FIELD_LENGTH );
+                indexWriter = new IndexWriter( indexLocation, indexHandlers.getAnalyzer(), !exists() );
+                indexWriter.setMaxFieldLength( MAX_FIELD_LENGTH );
     
                 if ( record != null )
                 {
                     Term term = new Term( LuceneDocumentMaker.PRIMARY_KEY, record.getPrimaryKey() );
     
-                    indexModifier.deleteDocuments( term );
+                    indexWriter.deleteDocuments( term );
     
                     Document document = indexHandlers.getConverter().convert( record );
     
-                    indexModifier.addDocument( document );
+                    indexWriter.addDocument( document );
                 }
-                indexModifier.optimize();
+                indexWriter.optimize();
             }
             catch ( IOException e )
             {
@@ -149,7 +148,7 @@ public class LuceneRepositoryContentIndex
             }
             finally
             {
-                closeQuietly( indexModifier );
+                closeQuietly( indexWriter );
             }
         }
     }
@@ -404,21 +403,6 @@ public class LuceneRepositoryContentIndex
         {
             // write should compain if it can't be closed, data probably not persisted
             throw new RepositoryIndexException( e.getMessage(), e );
-        }
-    }
-
-    private static void closeQuietly( IndexModifier indexModifier )
-    {
-        if ( indexModifier != null )
-        {
-            try
-            {
-                indexModifier.close();
-            }
-            catch ( IOException e )
-            {
-                // ignore
-            }
         }
     }
 
