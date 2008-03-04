@@ -114,7 +114,7 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
-      <unpack>false</unpack>
+      <unpack>true</unpack>
       <outputDirectory>apps/archiva</outputDirectory>
       <includes>
         <include>org.apache.maven.archiva:archiva-webapp</include>
