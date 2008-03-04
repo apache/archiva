@@ -144,7 +144,7 @@
               </commandLineArguments>
               <platforms>
                 <platform>jsw</platform>
-              </platforms>
+              </platforms>              
               <generatorConfigurations>
                 <generatorConfiguration>
                   <generator>jsw</generator>
@@ -153,11 +153,20 @@
                       <name>wrapper.console.loglevel</name>
                       <value>INFO</value>
                     </property>
+                    <property>
+                      <name>wrapper.java.additional.1.stripquotes</name>
+                      <value>TRUE</value>
+                    </property>
                   </configuration>
                 </generatorConfiguration>
-              </generatorConfigurations> 
+              </generatorConfigurations>
+			  <jvmSettings>
+				<systemProperties>
+				  <systemProperty>appserver.base="."</systemProperty>
+				</systemProperties>
+			  </jvmSettings> 
             </daemon>
-          </daemons>
+          </daemons>          
 <!-- TODO:
 <repoPath>lib</repoPath>
 -->
