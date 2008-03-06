@@ -102,7 +102,8 @@
 		<prj.confluence.path>TEST/Archiva</prj.confluence.path>
 	</properties>
 
-	<url>${kb.site.url}/${prj.url.relative}</url>
+	<!-- MRM-731 : variable in url pom are not replaced. -->
+	<url>http://j.random.server.com/docs/${project.groupId}/${project.artifactId}/${project.version}</url>
 
 	<scm>
 		<connection>scm:svn:${prj.svn}/${prj.svn.branch}</connection>
