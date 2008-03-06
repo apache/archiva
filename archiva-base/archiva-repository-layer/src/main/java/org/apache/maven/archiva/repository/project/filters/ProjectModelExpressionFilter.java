@@ -104,11 +104,23 @@ public class ProjectModelExpressionFilter
             try
             {
                 // Setup some common properties.
-                props.setProperty( "pom.groupId", StringUtils.defaultString( evaluator.expand( model.getGroupId() ) ) );
-                props.setProperty( "pom.artifactId", StringUtils.defaultString( evaluator
-                    .expand( model.getArtifactId() ) ) );
-                props.setProperty( "pom.version", StringUtils.defaultString( evaluator.expand( model.getVersion() ) ) );
-                props.setProperty( "pom.name", StringUtils.defaultString( evaluator.expand( model.getName() ) ) );
+                String groupId = StringUtils.defaultString( evaluator.expand( model.getGroupId() ) );
+                String artifactId = StringUtils.defaultString( evaluator.expand( model.getArtifactId() ) );
+                String version = StringUtils.defaultString( evaluator.expand( model.getVersion() ) );
+                String name = StringUtils.defaultString( evaluator.expand( model.getName() ) );
+                
+                /* Archiva doesn't need to handle a full expression language with object tree walking
+                 * as the requirements within Archiva are much smaller, a quick replacement of the
+                 * important fields (groupId, artifactId, version, name) are handled specifically. 
+                 */
+                props.setProperty( "pom.groupId",  groupId );
+                props.setProperty( "pom.artifactId", artifactId );
+                props.setProperty( "pom.version", version );
+                props.setProperty( "pom.name", name );
+                props.setProperty( "project.groupId",  groupId );
+                props.setProperty( "project.artifactId", artifactId );
+                props.setProperty( "project.version", version );
+                props.setProperty( "project.name", name );
 
                 // Evaluate everything.
                 ret.setVersion( evaluator.expand( ret.getVersion() ) );
