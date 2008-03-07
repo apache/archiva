@@ -22,11 +22,9 @@
       <artifactId>start</artifactId>
       <version>6.1.6</version>
     </dependency>
-<!-- Include a webapp you want to bundle -->
     <dependency>
       <groupId>org.apache.maven.archiva</groupId>
       <artifactId>archiva-webapp</artifactId>
-      <!-- <version>1.1-SNAPSHOT</version>  -->
       <type>war</type>
     </dependency>
     <dependency>
@@ -35,7 +33,7 @@
       <type>zip</type>
       <classifier>docs</classifier>
     </dependency>
- <!-- Runtime dependencies that need to be included in the generated binaries -->
+    <!-- Runtime dependencies that need to be included in the generated binaries -->
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-naming</artifactId>
@@ -224,4 +222,10 @@
       </plugin>
     </plugins>
   </build>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus.org</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
