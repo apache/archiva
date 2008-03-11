@@ -91,7 +91,7 @@ public class ProjectModelExpressionExpanderTest
             assertEquals( "Dependency [" + dep.getArtifactId() + "] Version", "1.0-SNAPSHOT", dep.getVersion() );
         }
     }
-
+    
     /**
      * [MRM-487] pom version is not resolved
      * [MRM-488] properties in pom are not resolved (at least while browsing)
@@ -112,10 +112,16 @@ public class ProjectModelExpressionExpanderTest
         String evaluatedModelText = toModelText( filteredModel );
 
         // Test xml buffer for the existance of an unevaluated expression.
+        boolean foundUnevaluated = false;
         if ( evaluatedModelText.indexOf( "${" ) != ( -1 ) )
         {
             System.err.println( "Found Expression:\n" + evaluatedModelText );
-            fail( "Found Unevaluated Expression. (see System.err)" );
+            foundUnevaluated = true;
+        }
+        
+        if ( foundUnevaluated )
+        {
+            fail( "Found Unevaluated Expression. (see System.err for details)" );
         }
     }
 
