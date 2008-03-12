@@ -49,4 +49,17 @@ public interface UserRepositories
      */
     public void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException;
+    
+    /**
+     * Check if user is authorized to upload artifacts in the repository.
+     * 
+     * @param principal
+     * @param repoId
+     * @return
+     * @throws PrincipalNotFoundException
+     * @throws ArchivaSecurityException
+     */
+    public boolean isAuthorizedToUploadArtifacts( String principal, String repoId)
+        throws PrincipalNotFoundException, ArchivaSecurityException;
+    
 }

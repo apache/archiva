@@ -20,14 +20,24 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
-import org.apache.maven.archiva.configuration.Configuration; 
-// import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-// import org.apache.maven.archiva.configuration.RepositoryConfiguration;
-// import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayoutFactory;
-// import org.apache.maven.archiva.repository.layout.BidirectionalRepositoryLayout;
-// import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.apache.maven.archiva.model.ArchivaArtifact;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.apache.maven.archiva.repository.RepositoryException;
+import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.security.ArchivaSecurityException;
+import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.security.PrincipalNotFoundException;
+import org.apache.maven.archiva.security.UserRepositories;
+
+import com.opensymphony.xwork.Validateable;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Upload an artifact.
@@ -37,8 +47,8 @@ import java.io.File;
  */
 public class UploadAction
     extends PlexusActionSupport
+    implements Validateable
 {
-
     private String groupId;
 
     private String artifactId;
@@ -58,13 +68,25 @@ public class UploadAction
     private String repositoryId;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement role-hint="xwork"
      */
-    // private ArchivaConfiguration configuration;
+    private ArchivaUser archivaUser;
+
+    /**
+     * @plexus.requirement
+     */
+    private UserRepositories userRepositories;
+
     /**
      * @plexus.requirement role-hint="default"
      */
-    // private BidirectionalRepositoryLayoutFactory layoutFactory;
+    private ArchivaConfiguration configuration;
+
+    /**
+     * @plexus.requirement
+     */
+    private RepositoryContentFactory repositoryFactory;
+
     public void setUpload( File file )
     {
         this.file = file;
@@ -142,25 +164,124 @@ public class UploadAction
 
     public String upload()
     {
+        // TODO populate repository id field
+        // TODO form validation
+
         getLogger().debug( "upload" );
-        return SUCCESS;
+        return INPUT;
     }
 
     public String doUpload()
-    // throws LayoutException
     {
-        // TODO: adapt to changes in RepositoryConfiguration from the MRM-462 branch
-        // RepositoryConfiguration rc = configuration.getConfiguration().findRepositoryById( repositoryId );
-        // String layout = rc.getLayout();
-        // String url = rc.getUrl();
-        // ArchivaArtifact artifact = new ArchivaArtifact( groupId, artifactId, version, classifier, packaging );
-        // BidirectionalRepositoryLayout repositoryLayout = layoutFactory.getLayout( layout );
+        try
+        {
+            ManagedRepositoryConfiguration repoConfig =
+                configuration.getConfiguration().findManagedRepositoryById( repositoryId );
 
-        // output from getLogger().debug(...) not appearing in logs, so...
-        // System.out.println( "doUpload, file: " + file.getAbsolutePath() );
-        // System.out.println( "doUpload, path: " + repositoryLayout.toPath( artifact ) );
+            ArtifactReference artifactReference = new ArtifactReference();
+            artifactReference.setArtifactId( artifactId );
+            artifactReference.setGroupId( groupId );
+            artifactReference.setVersion( version );
+            artifactReference.setClassifier( classifier );
+            artifactReference.setType( packaging );
 
-        return SUCCESS;
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+
+            String artifactPath = repository.toPath( artifactReference );
+
+            int lastIndex = artifactPath.lastIndexOf( '/' );
+
+            File targetPath = new File( repoConfig.getLocation(), artifactPath.substring( 0, lastIndex ) );
+
+            if ( !targetPath.exists() )
+            {
+                targetPath.mkdirs();
+            }
+
+            copyFile( targetPath, artifactPath.substring( lastIndex + 1 ) );
+
+            // 1. check if user has permission to deploy to the repository
+            // - get writable user repositories (need to add new method
+            // for this in DefaultUserRepositories)
+
+            // 2. if user has write permission:
+            // - get repository path (consider the layout -- default or legacy)
+            // - if the artifact is not a pom, create pom file (use ProjectModel400Writer in archiva-repository-layer)
+            // - create directories in the repository (groupId, artifactId, version)
+            // - re-write uploaded jar file
+            // - write generated pom
+            // - update metadata
+
+            // TODO delete temporary file (upload)
+            // TODO improve action error messages below
+
+            return SUCCESS;
+        }
+        catch ( IOException ie )
+        {
+            addActionError( "Error encountered while uploading file: " + ie.getMessage() );
+            return ERROR;
+        }
+        catch ( RepositoryNotFoundException re )
+        {
+            addActionError( "Target repository cannot be found: " + re.getMessage() );
+            return ERROR;
+        }
+        catch ( RepositoryException rep )
+        {
+            addActionError( "Repository exception: " + rep.getMessage() );
+            return ERROR;
+        }
     }
-    
+
+    private String getPrincipal()
+    {
+        return archivaUser.getActivePrincipal();
+    }
+
+    private void copyFile( File targetPath, String artifactFilename )
+        throws IOException
+    {
+        FileOutputStream out = new FileOutputStream( new File( targetPath, artifactFilename ) );
+
+        try
+        {
+            FileInputStream input = new FileInputStream( file );
+            int i = 0;
+            while ( ( i = input.read() ) != -1 )
+            {
+                out.write( i );
+            }
+            out.flush();
+        }
+        finally
+        {
+            out.close();
+        }
+    }
+
+    private void generatePom()
+    {
+        // TODO: use ProjectModel400Writer
+    }
+
+    public void validate()
+    {
+        try
+        {
+            // is this enough check for the repository permission?
+            if ( !userRepositories.isAuthorizedToUploadArtifacts( getPrincipal(), repositoryId ) )
+            {
+                addActionError( "User is not authorized to upload in repository " + repositoryId );
+            }
+        }
+        catch ( PrincipalNotFoundException pe )
+        {
+            addActionError( pe.getMessage() );
+        }
+        catch ( ArchivaSecurityException ae )
+        {
+            addActionError( ae.getMessage() );
+        }
+    }
 }

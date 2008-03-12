@@ -165,12 +165,9 @@
     </action>
 
     <action name="upload" class="uploadAction" method="upload">
-      <result>/WEB-INF/jsp/upload.jsp</result>
-    </action>
-
-    <action name="doUpload" class="uploadAction" method="doUpload">
       <interceptor-ref name="fileUpload"/>
       <interceptor-ref name="basicStack"/>
+      <result name="input">/WEB-INF/jsp/upload.jsp</result>
       <result name="success">/WEB-INF/jsp/upload.jsp</result>
     </action>
 

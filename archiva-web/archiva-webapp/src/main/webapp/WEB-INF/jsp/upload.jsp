@@ -32,7 +32,7 @@
 
 <h1>Upload Artifact</h1>
 <div id="contentArea">
-  <ww:form action="doUpload" method="post" enctype="multipart/form-data">
+  <ww:form action="upload!doUpload" method="post" enctype="multipart/form-data">
     <%@ include file="/WEB-INF/jsp/include/uploadForm.jspf" %>
     <ww:submit/>
   </ww:form>

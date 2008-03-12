@@ -36,13 +36,11 @@ import org.codehaus.plexus.redback.users.User;
 import org.codehaus.plexus.redback.users.UserNotFoundException;
 
 /**
- * DefaultUserRepositories 
- *
+ * DefaultUserRepositories
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.security.UserRepositories"
- *                   role-hint="default"
+ * @plexus.component role="org.apache.maven.archiva.security.UserRepositories" role-hint="default"
  */
 public class DefaultUserRepositories
     implements UserRepositories
@@ -61,12 +59,12 @@ public class DefaultUserRepositories
      * @plexus.requirement role-hint="default"
      */
     private RoleManager roleManager;
-    
+
     /**
      * @plexus.requirement
      */
     private ArchivaConfiguration archivaConfiguration;
-    
+
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
@@ -79,20 +77,22 @@ public class DefaultUserRepositories
             {
                 throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
             }
-            
+
             AuthenticationResult authn = new AuthenticationResult( true, principal, null );
             SecuritySession securitySession = new DefaultSecuritySession( authn, user );
-            
+
             List<String> repoIds = new ArrayList<String>();
 
-            List<ManagedRepositoryConfiguration> repos = archivaConfiguration.getConfiguration().getManagedRepositories();
-            
+            List<ManagedRepositoryConfiguration> repos =
+                archivaConfiguration.getConfiguration().getManagedRepositories();
+
             for ( ManagedRepositoryConfiguration repo : repos )
             {
                 try
                 {
                     String repoId = repo.getId();
-                    if ( securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
+                    if ( securitySystem.isAuthorized( securitySession,
+                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, repoId ) )
                     {
                         repoIds.add( repoId );
                     }
@@ -102,7 +102,7 @@ public class DefaultUserRepositories
                     // swallow.
                 }
             }
-            
+
             return repoIds;
         }
         catch ( UserNotFoundException e )
@@ -128,8 +128,38 @@ public class DefaultUserRepositories
         }
         catch ( RoleManagerException e )
         {
-            throw new ArchivaSecurityException( "Unable to create roles for configured repositories: " + e.getMessage(),
+            throw new ArchivaSecurityException(
+                                                "Unable to create roles for configured repositories: " + e.getMessage(),
                                                 e );
+        }
+    }
+
+    public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )
+        throws PrincipalNotFoundException, ArchivaSecurityException
+    {
+        try
+        {
+            User user = securitySystem.getUserManager().findUser( principal );
+
+            if ( user.isLocked() )
+            {
+                throw new AccessDeniedException( "User " + principal + "(" + user.getFullName() + ") is locked." );
+            }
+
+            AuthenticationResult authn = new AuthenticationResult( true, principal, null );
+            SecuritySession securitySession = new DefaultSecuritySession( authn, user );
+
+            return securitySystem.isAuthorized( securitySession, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
+                                                repoId );
+
+        }
+        catch ( UserNotFoundException e )
+        {
+            throw new PrincipalNotFoundException( "Unable to find principal " + principal + "" );
+        }
+        catch ( AuthorizationException e )
+        {
+            throw new ArchivaSecurityException( e.getMessage() );
         }
     }
 }
