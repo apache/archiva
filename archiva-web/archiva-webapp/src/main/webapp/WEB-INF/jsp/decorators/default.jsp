@@ -95,6 +95,10 @@
       <li class="none">
         <my:currentWWUrl action="browse" namespace="/">Browse</my:currentWWUrl>
       </li>
+      
+      <li class="none">
+        <my:currentWWUrl action="upload" namespace="/">Upload Artifact</my:currentWWUrl>
+      </li>
     </ul>
 
     <redback:ifAnyAuthorized permissions="archiva-manage-users,archiva-access-reports,archiva-manage-configuration">
