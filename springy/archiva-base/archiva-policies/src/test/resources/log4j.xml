@@ -39,8 +39,12 @@
     <level value="error"/>
   </logger>
 
+  <logger name="org.codehaus.plexus.spring">
+    <level value="warn"/>
+  </logger>
+
   <logger name="org.springframework">
-    <level value="DEBUG"/>
+    <level value="warn"/>
   </logger>
 
   <root>

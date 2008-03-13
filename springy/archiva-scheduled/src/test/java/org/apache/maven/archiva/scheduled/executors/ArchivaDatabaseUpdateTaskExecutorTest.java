@@ -26,9 +26,9 @@ import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.database.constraints.ArtifactsProcessedConstraint;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.scheduled.tasks.DatabaseTask;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.codehaus.plexus.taskqueue.execution.TaskExecutor;
 import org.jpox.SchemaTool;
 
@@ -51,7 +51,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @version $Id:$
  */
 public class ArchivaDatabaseUpdateTaskExecutorTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private TaskExecutor taskExecutor;
 

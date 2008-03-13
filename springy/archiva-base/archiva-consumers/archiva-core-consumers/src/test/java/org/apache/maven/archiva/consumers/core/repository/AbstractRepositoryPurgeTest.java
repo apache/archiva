@@ -25,9 +25,9 @@ import org.apache.maven.archiva.database.ArchivaDatabaseException;
 import org.apache.maven.archiva.database.ArtifactDAO;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.jpox.SchemaTool;
 
 import java.io.File;
@@ -46,7 +46,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractRepositoryPurgeTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public static final String TEST_REPO_ID = "test-repo";
 

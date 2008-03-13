@@ -23,13 +23,12 @@ import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.common.spring.PlexusFactory;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
 import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -47,7 +46,7 @@ import java.io.IOException;
  * @version $Id$
  */
 public abstract class AbstractRepositoryServletTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
@@ -145,48 +144,44 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
         super.setUp();
-        
-        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
-        System.setProperty( "appserver.base", appserverBase );
 
-        File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
-        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
-        FileUtils.copyFile( testConf, testConfDest );
+        try
+        {
+            String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
+            System.setProperty( "appserver.base", appserverBase );
 
-        BeanFactory factory = new XmlBeanFactory(
-            new ClassPathResource( "/org/apache/maven/archiva/web/repository/spring-context.xml" ) );
-        getContainer().getContext().put( BeanFactory.class, factory );
-        PlexusFactory plexusFactory = (PlexusFactory) factory.getBean( "plexusCacheFactory" );
-        plexusFactory.setContainer( container );
+            File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
+            File testConfDest = new File( appserverBase, "conf/archiva.xml" );
+            FileUtils.copyFile( testConf, testConfDest );
 
-        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
-        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
-        Configuration config = archivaConfiguration.getConfiguration();
+            archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+            repoRootInternal = new File( appserverBase, "data/repositories/internal" );
+            Configuration config = archivaConfiguration.getConfiguration();
 
-        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
-        saveConfiguration();
+            config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+            saveConfiguration();
 
-        sr = new ServletRunner();
-        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
-        sc = sr.newClient();
-        HttpSession session = sc.getSession( true );
-        ServletContext servletContext = session.getServletContext();
-        servletContext.setAttribute( PlexusConstants.PLEXUS_KEY, getContainer() );
+            sr = new ServletRunner();
+            sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
+            sc = sr.newClient();
+        }
+        finally
+        {
+            tearDown();
+        }
     }
-    
+
     @Override
-    protected String getConfigurationName( String subname )
+    protected String getPlexusConfigLocation()
         throws Exception
     {
         return "org/apache/maven/archiva/web/repository/RepositoryServletTest.xml";
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
     {
-        release( archivaConfiguration );
-        
         if ( sc != null )
         {
             sc.clearContents();

@@ -19,7 +19,7 @@ package org.apache.maven.archiva.security;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * SecurityStartupTest 
@@ -28,7 +28,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @version $Id$
  */
 public class SecurityStartupTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private SecurityStartup secStart;
 

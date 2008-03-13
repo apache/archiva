@@ -20,7 +20,7 @@ package org.apache.maven.archiva.database.updater;
  */
 
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @version $Id$
  */
 public class DatabaseConsumersTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private DatabaseConsumers lookupDbConsumers()
         throws Exception
