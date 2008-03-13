@@ -20,52 +20,108 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.archiva.common.utils.VersionComparator;
+import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.repository.RepositoryNotFoundException;
+import org.apache.maven.archiva.repository.metadata.MetadataTools;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataReader;
+import org.apache.maven.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.maven.archiva.repository.project.ProjectModelException;
+import org.apache.maven.archiva.repository.project.ProjectModelWriter;
 import org.apache.maven.archiva.security.ArchivaSecurityException;
 import org.apache.maven.archiva.security.ArchivaUser;
 import org.apache.maven.archiva.security.PrincipalNotFoundException;
 import org.apache.maven.archiva.security.UserRepositories;
 
+import com.opensymphony.xwork.Preparable;
 import com.opensymphony.xwork.Validateable;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Upload an artifact.
+ * Upload an artifact using Jakarta file upload in webwork. If set by the user
+ * a pom will also be generated. Metadata will also be updated if one exists, 
+ * otherwise it would be created.
  * 
- * @author Wendy Smoak
+ * @author <a href="mailto:wsmoak@apache.org">Wendy Smoak</a>
+ * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
+ * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="uploadAction"
  */
 public class UploadAction
     extends PlexusActionSupport
-    implements Validateable
+    implements Validateable, Preparable
 {
+    /**
+     * The groupId of the artifact to be deployed.
+     */
     private String groupId;
 
+    /**
+     * The artifactId of the artifact to be deployed.
+     */
     private String artifactId;
 
+    /**
+     * The version of the artifact to be deployed.
+     */
     private String version;
 
+    /**
+     * The packaging of the artifact to be deployed.
+     */
     private String packaging;
 
+    /**
+     * The classifier of the artifact to be deployed.
+     */
     private String classifier;
 
+    /**
+     * The artifact to be deployed.
+     */
     private File file;
 
+    /**
+     * The content type of the artifact to be deployed.
+     */
     private String contentType;
 
+    /**
+     * The temporary filename of the artifact to be deployed.
+     */
     private String filename;
 
+    /**
+     * The repository where the artifact is to be deployed.
+     */
     private String repositoryId;
+
+    /**
+     * Flag whether to generate a pom for the artifact or not.
+     */
+    private boolean generatePom;
+    
+    /**
+     * List of managed repositories to deploy to.
+     */
+    private List<String> managedRepoIdList;
 
     /**
      * @plexus.requirement role-hint="xwork"
@@ -86,6 +142,11 @@ public class UploadAction
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+
+    /**
+     * @plexus.requirement role-hint="model400"
+     */
+    private ProjectModelWriter pomWriter;
 
     public void setUpload( File file )
     {
@@ -162,12 +223,35 @@ public class UploadAction
         this.repositoryId = repositoryId;
     }
 
+    public boolean isGeneratePom()
+    {
+        return generatePom;
+    }
+
+    public void setGeneratePom( boolean generatePom )
+    {
+        this.generatePom = generatePom;
+    }
+
+    public List<String> getManagedRepoIdList()
+    {
+        return managedRepoIdList;
+    }
+
+    public void setManagedRepoIdList( List<String> managedRepoIdList )
+    {
+        this.managedRepoIdList = managedRepoIdList;
+    }
+
+    public void prepare()
+    {
+        managedRepoIdList =
+            new ArrayList<String>( configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() );
+    }
+
     public String upload()
     {
-        // TODO populate repository id field
         // TODO form validation
-
-        getLogger().debug( "upload" );
         return INPUT;
     }
 
@@ -198,29 +282,37 @@ public class UploadAction
                 targetPath.mkdirs();
             }
 
-            copyFile( targetPath, artifactPath.substring( lastIndex + 1 ) );
+            try
+            {
+                copyFile( targetPath, artifactPath.substring( lastIndex + 1 ) );
+            }
+            catch ( IOException ie )
+            {
+                addActionError( "Error encountered while uploading file: " + ie.getMessage() );
+                return ERROR;
+            }
 
-            // 1. check if user has permission to deploy to the repository
-            // - get writable user repositories (need to add new method
-            // for this in DefaultUserRepositories)
+            if ( generatePom )
+            {
+                try
+                {
+                    createPom( targetPath, artifactPath.substring( lastIndex + 1 ) );
+                }
+                catch ( IOException ie )
+                {
+                    addActionError( "Error encountered while writing pom file: " + ie.getMessage() );
+                    return ERROR;
+                }
+                catch ( ProjectModelException pe )
+                {
+                    addActionError( "Error encountered while generating pom file: " + pe.getMessage() );
+                    return ERROR;
+                }
+            }
 
-            // 2. if user has write permission:
-            // - get repository path (consider the layout -- default or legacy)
-            // - if the artifact is not a pom, create pom file (use ProjectModel400Writer in archiva-repository-layer)
-            // - create directories in the repository (groupId, artifactId, version)
-            // - re-write uploaded jar file
-            // - write generated pom
-            // - update metadata
-
-            // TODO delete temporary file (upload)
-            // TODO improve action error messages below
-
+            updateMetadata( getMetadata( targetPath.getAbsolutePath() ) );
+           
             return SUCCESS;
-        }
-        catch ( IOException ie )
-        {
-            addActionError( "Error encountered while uploading file: " + ie.getMessage() );
-            return ERROR;
         }
         catch ( RepositoryNotFoundException re )
         {
@@ -260,11 +352,82 @@ public class UploadAction
         }
     }
 
-    private void generatePom()
+    private void createPom( File targetPath, String filename )
+        throws IOException, ProjectModelException
     {
-        // TODO: use ProjectModel400Writer
+        ArchivaProjectModel projectModel = new ArchivaProjectModel();
+        projectModel.setGroupId( groupId );
+        projectModel.setArtifactId( artifactId );
+        projectModel.setVersion( version );
+        projectModel.setPackaging( packaging );
+
+        File pomFile = new File( targetPath, filename.replaceAll( packaging, "pom" ) );
+
+        pomWriter.write( projectModel, pomFile );
     }
 
+    private File getMetadata( String targetPath )
+    {
+        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( '/' ) );
+
+        return new File( artifactPath, MetadataTools.MAVEN_METADATA );
+    }
+
+    /**
+     * Update artifact level metadata. If it does not exist, create the metadata.
+     * 
+     * @param targetPath
+     */
+    private void updateMetadata( File metadataFile )
+        throws RepositoryMetadataException
+    {
+        List<String> availableVersions = new ArrayList<String>();
+        ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
+
+        if ( metadataFile.exists() )
+        {
+            metadata = RepositoryMetadataReader.read( metadataFile );
+            availableVersions = metadata.getAvailableVersions();
+
+            Collections.sort( availableVersions, VersionComparator.getInstance() );
+
+            if ( !availableVersions.contains( version ) )
+            {
+                availableVersions.add( version );
+            }
+            
+            String latestVersion = availableVersions.get( availableVersions.size() - 1 );
+            metadata.setLatestVersion( latestVersion );
+            metadata.setAvailableVersions( availableVersions );
+            metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
+            
+            if( !VersionUtil.isSnapshot( version ) )
+            {
+                metadata.setReleasedVersion( latestVersion );
+            }  
+            // TODO:
+            // what about the metadata checksums? re-calculate or 
+            //      just leave it to the consumers to fix it?
+        }
+        else
+        {
+            availableVersions.add( version );
+
+            metadata.setGroupId( groupId );
+            metadata.setArtifactId( artifactId );
+            metadata.setLatestVersion( version );
+            metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
+            metadata.setAvailableVersions( availableVersions );
+            
+            if( !VersionUtil.isSnapshot( version ) )
+            {
+                metadata.setReleasedVersion( version );
+            }
+        }         
+        
+        RepositoryMetadataWriter.write( metadata, metadataFile );
+    }
+    
     public void validate()
     {
         try
@@ -274,6 +437,19 @@ public class UploadAction
             {
                 addActionError( "User is not authorized to upload in repository " + repositoryId );
             }
+
+            // TODO fix validation
+            /*
+            if ( file == null || file.length() == 0 )
+            {
+                addActionError( "Please add a file to upload." );
+            }
+
+            if ( !VersionUtil.isVersion( version ) )
+            {
+                addActionError( "Invalid version." );
+            }
+            */
         }
         catch ( PrincipalNotFoundException pe )
         {

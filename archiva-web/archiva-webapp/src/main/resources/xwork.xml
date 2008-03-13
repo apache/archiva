@@ -74,7 +74,6 @@
         <interceptor-ref name="params"/>
         <interceptor-ref name="configuredArchivaStack"/>
       </interceptor-stack>
-
     </interceptors>
 
     <!-- Default interceptor stack. -->
@@ -130,7 +129,7 @@
       <result name="access_to_no_repos">/WEB-INF/jsp/accessToNoRepos.jsp</result>
     </global-results>
   </package>
-
+  
   <!-- Configuration for the default package. -->
   <package name="default" extends="base" namespace="/">
 
@@ -144,7 +143,7 @@
     <action name="index" class="searchAction" method="input">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
     </action>
-
+	
     <action name="quickSearch" class="searchAction" method="quickSearch">
       <result name="input">/WEB-INF/jsp/quickSearch.jsp</result>
       <result>/WEB-INF/jsp/results.jsp</result>
@@ -155,6 +154,13 @@
       <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
     </action>
 
+	<action name="upload" class="uploadAction" method="upload">      
+      <result name="input">/WEB-INF/jsp/upload.jsp</result>
+      <result name="success">/WEB-INF/jsp/upload.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+      <interceptor-ref name="fileUpload"/>
+    </action>
+
     <action name="checksumSearch" class="searchAction" method="findArtifact">
       <result name="input">/WEB-INF/jsp/findArtifact.jsp</result>
       <result name="results">/WEB-INF/jsp/results.jsp</result>
@@ -162,14 +168,7 @@
       <result name="artifact" type="redirect">
         /browse/${databaseResults.get(0).getGroupId()}/${databaseResults.get(0).getArtifactId()}/${databaseResults.get(0).getVersion()}
       </result>
-    </action>
-
-    <action name="upload" class="uploadAction" method="upload">
-      <interceptor-ref name="fileUpload"/>
-      <interceptor-ref name="basicStack"/>
-      <result name="input">/WEB-INF/jsp/upload.jsp</result>
-      <result name="success">/WEB-INF/jsp/upload.jsp</result>
-    </action>
+    </action>    
 
     <action name="browse" class="browseAction" method="browse">
       <result>/WEB-INF/jsp/browse.jsp</result>
@@ -234,7 +233,7 @@
     <action name="indexRepository" class="schedulerAction" method="scanRepository">
       <result type="redirect-action">repositories</result>
     </action>
-
+    
     <action name="addRepository" class="addManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRepository.jsp</result>

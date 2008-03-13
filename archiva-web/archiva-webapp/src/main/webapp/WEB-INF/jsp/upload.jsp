@@ -29,10 +29,10 @@
 </head>
 
 <body>
-
 <h1>Upload Artifact</h1>
+
 <div id="contentArea">
-  <ww:form action="upload!doUpload" method="post" enctype="multipart/form-data">
+  <ww:form action="upload!doUpload" method="post" enctype="multipart/form-data" validate="false">    
     <%@ include file="/WEB-INF/jsp/include/uploadForm.jspf" %>
     <ww:submit/>
   </ww:form>

@@ -27,7 +27,9 @@
 <ww:textfield name="version" label="Version" size="50" required="true"/>
 <ww:textfield name="packaging" label="Packaging" size="50" required="true"/>
 <ww:textfield name="classifier" label="Classifier" size="50" required="false"/>
-<ww:select list="#@java.util.LinkedHashMap@{'internal' : 'internal'}"
-          name="repositoryId" label="Repository Id"/>
+<ww:select name="repositoryId" list="managedRepoIdList" label="Repository Id"/>
 <ww:file name="upload" label="File"/>
+<ww:checkbox name="generatePom" value="generatePom" 
+	label="Generate Pom (Currently, only Maven 2 poms can be generated)"/> 
+
     
