@@ -180,8 +180,8 @@
     </dependency>
     <!-- Other dependencies -->
     <dependency>
-      <groupId>org.codehaus.plexus.webdav</groupId>
-      <artifactId>plexus-webdav-simple</artifactId>
+      <groupId>org.apache.maven.archiva</groupId>
+      <artifactId>archiva-webdav</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -223,6 +223,14 @@
     <dependency>
       <groupId>xmlunit</groupId>
       <artifactId>xmlunit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-quartz</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-taskqueue</artifactId>
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus.redback</groupId>

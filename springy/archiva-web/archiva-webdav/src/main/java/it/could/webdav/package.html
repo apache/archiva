@@ -1,0 +1,134 @@
+<html>
+  <head>
+    <title>Could.IT WebDAV Servlet</title>
+  </head>
+  <body>
+    <p>
+      This package contains a minimal
+      <a href="http://java.sun.com/products/servlet/">Servlet</a>
+      based implementation of the
+      <a href="http://www.rfc-editor.org/rfc/rfc2518.txt">WebDAV</a>
+      specification. 
+    </p>
+    <p>
+      This implementation does not in any way try to replace or extend the
+      <a href="http://jakarta.apache.org/slide/">Apache Slide</a>
+      <a href="http://www.rfc-editor.org/rfc/rfc2518.txt">WebDAV</a>
+      implementation, but tries to provide a <i>very light</i> and <i>extremely
+      minimal</i> alternative to be used in those scenarios where space is
+      a constraint (the <code>.jar</code> file is less than 100 kylobites),
+      and advanced features are not required.
+    </p>
+    <p>
+      The most visible limitations of this approach is that this
+      implementation does not offer any support for the <code>LOCK</code>
+      method (it is therefore not <i>DAV Level 2</i> compliant), and that
+      there limited support for properties:
+    </p>
+    <ul>
+      <li>
+        The <code>PROPFIND</code> will only return the <i>read-only</i>
+        <code>getcontenttype</code>, <code>getlastmodified</code>,
+        <code>getcontentlength</code>, <code>getetag</code> and
+        <code>resourcetype</code> properties.
+      </li>
+      <li>
+        The <code>PROPPATCH</code> will <i>always</i> fail with a
+        <code>403</code> <i>Not Found</i> error.
+      </li>
+    </ul>
+    <p>
+      Another important limitation is that this implementation will only and
+      exclusively provide access to a {@link java.io.File} based backend.
+      If you want to deploy your repository on another kind of backend (such
+      as SQL databases) please look at the WebDAV implementation provided by
+      <a href="http://jakarta.apache.org/slide/">Apache Slide</a>.
+    </p>
+
+    <h2>Configuration</h2>
+    <p>
+      The main entry point of this implementation is defined in the
+      {@link it.could.webdav.DAVServlet} class, which will handle all
+      <a href="http://www.rfc-editor.org/rfc/rfc2616.txt">HTTP</a> and
+      <a href="http://www.rfc-editor.org/rfc/rfc2518.txt">WebDAV</a> requests
+      for the URI path it is configured to handle.
+    </p>
+    <p>
+      To operate properly the {@link it.could.webdav.DAVServlet} class
+      must be configured in the web-application's <code>web.xml</code>
+      deployment descriptor. The relevant parts of a snippet of an example
+      configuration deployment descriptor might look like the following:
+    </p>
+    <pre>
+&lt;servlet&gt;
+  &lt;servlet-name&gt;dav&lt;/servlet-name&gt;
+  &lt;servlet-class&gt;it.could.webdav.DAVServlet&lt;/servlet-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;rootPath&lt;/param-name&gt;
+    &lt;param-value&gt;dav&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;xmlOnly&lt;/param-name&gt;
+    &lt;param-value&gt;false&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;debugEnabled&lt;/param-name&gt;
+    &lt;param-value&gt;false&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;load-on-startup&gt;1&lt;/load-on-startup&gt;
+&lt;/servlet&gt;
+
+...
+
+&lt;servlet-mapping&gt;
+  &lt;servlet-name&gt;dav&lt;/servlet-name&gt;
+  &lt;url-pattern&gt;/dav/*&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;
+    </pre>
+    <p>
+      In this example the {@link it.could.webdav.DAVServlet} servlet
+      is configured with all parameters its parameters:
+    </p>
+    <dl>
+      <dt>rootPath</dt>
+      <dd>
+        <i>[required]</i> This parameter indicates the path of the root of the
+        repository.<br />
+        If the specified parameter represents a relative path, it will be
+        treated as a {@link javax.servlet.ServletContext#getResource(String)
+        ServletContext resource}.<br />
+        Note that if you choose to distribute your web application in a
+        <code>.war</code> archive, your container will have to expand it
+        before intializing the {@link javax.servlet.ServletContext} as this
+        this implementation <i>requires</i> a {@link java.io.File} based
+        repository.
+      </dd>
+      <dt>xmlOnly</dt>
+      <dd>
+        <i>[optional, default=&quot;<code>false</code>&quot;]</i> This parameter
+        will instruct the {@link it.could.webdav.DAVServlet} to create
+        a very specialized version of the repository accepting only
+        <a href="http://www.w3.org/TR/REC-xml/#sec-well-formed">well-formed
+        XML</a> resources and collections.<br />
+        Note that when set to <code>true</code> this implementation will rely
+        on the <a href="http://java.sun.com/xml/jaxp/">JAXP</a> specification
+        to access a XML parser used to verify the <code>PUT</code> content.
+      </dd>
+      <dt>debugEnabled</dt>
+      <dd>
+        <i>[optional, default=&quot;<code>false</code>&quot;]</i> This parameter
+        will instruct the {@link it.could.webdav.DAVServlet} to log
+        unimportant debugging information (such as the methods called by the
+        client) in the {@link javax.servlet.ServletContext#log(String) context
+        log}.
+      </dd>
+    </dl>
+    <p>
+      The configured {@link it.could.webdav.DAVServlet} will then have
+      to be mapped to a path, and in the example above, every request for 
+      any URL beginning in <code>/dav/</code> will be handled by this
+      implementation, with a repository rooted in the <code>/dav/</code>
+      directory of the web application.
+    </p>
+  </body>
+</html>

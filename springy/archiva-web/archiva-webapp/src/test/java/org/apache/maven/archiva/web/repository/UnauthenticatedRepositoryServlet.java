@@ -19,7 +19,7 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import org.codehaus.plexus.webdav.servlet.DavServerRequest;
+import org.apache.maven.archiva.webdav.servlet.DavServerRequest;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;

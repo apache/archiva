@@ -24,6 +24,11 @@ import org.apache.maven.archiva.configuration.ConfigurationEvent;
 import org.apache.maven.archiva.configuration.ConfigurationListener;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
+import org.apache.maven.archiva.webdav.DavServerComponent;
+import org.apache.maven.archiva.webdav.DavServerException;
+import org.apache.maven.archiva.webdav.servlet.DavServerRequest;
+import org.apache.maven.archiva.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.codehaus.plexus.redback.authentication.AuthenticationException;
 import org.codehaus.plexus.redback.authentication.AuthenticationResult;
 import org.codehaus.plexus.redback.authorization.AuthorizationException;
@@ -33,21 +38,17 @@ import org.codehaus.plexus.redback.policy.MustChangePasswordException;
 import org.codehaus.plexus.redback.system.SecuritySession;
 import org.codehaus.plexus.redback.system.SecuritySystem;
 import org.codehaus.plexus.redback.xwork.filter.authentication.HttpAuthenticator;
-import org.codehaus.plexus.webdav.DavServerComponent;
-import org.codehaus.plexus.webdav.DavServerException;
-import org.codehaus.plexus.webdav.DavServerManager;
-import org.codehaus.plexus.webdav.servlet.DavServerRequest;
-import org.codehaus.plexus.webdav.servlet.multiplexed.MultiplexedWebDavServlet;
-import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * RepositoryServlet
@@ -69,25 +70,24 @@ public class RepositoryServlet
     
     private ArchivaMimeTypeLoader mimeTypeLoader;
 
-    public synchronized void initComponents()
-        throws ServletException
-    {
-        super.initComponents();
-        
-        mimeTypeLoader = (ArchivaMimeTypeLoader) lookup( ArchivaMimeTypeLoader.class.getName() );
-        
-        securitySystem = (SecuritySystem) lookup( SecuritySystem.ROLE );
-        httpAuth = (HttpAuthenticator) lookup( HttpAuthenticator.ROLE, "basic" );
-
-        configuration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class.getName() );
-        configuration.addListener( this );
-
-        repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
-    }
-
     public synchronized void initServers( ServletConfig servletConfig )
         throws DavServerException
     {
+        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
+
+        mimeTypeLoader = (ArchivaMimeTypeLoader) wac.getBean(
+            PlexusToSpringUtils.buildSpringId( ArchivaMimeTypeLoader.class.getName() ) );
+
+        securitySystem = (SecuritySystem) wac.getBean( PlexusToSpringUtils.buildSpringId( SecuritySystem.ROLE ) );
+        httpAuth =
+            (HttpAuthenticator) wac.getBean( PlexusToSpringUtils.buildSpringId( HttpAuthenticator.ROLE, "basic" ) );
+
+        configuration = (ArchivaConfiguration) wac.getBean(
+            PlexusToSpringUtils.buildSpringId( ArchivaConfiguration.class.getName() ) );
+        configuration.addListener( this );
+
+        repositoryMap = configuration.getConfiguration().getManagedRepositoriesAsMap();
+
         for ( ManagedRepositoryConfiguration repo : repositoryMap.values() )
         {
             File repoDir = new File( repo.getLocation() );
@@ -106,45 +106,6 @@ public class RepositoryServlet
 
             server.setUseIndexHtml( true );
         }
-    }
-    
-    @Override
-    public void destroy()
-    {
-        try
-        {
-            release( securitySystem );
-        }
-        catch ( ServletException e )
-        {
-            log( "Unable to release SecuritySystem : " + e.getMessage(), e );
-        }
-        try
-        {
-            release( httpAuth );
-        }
-        catch ( ServletException e )
-        {
-            log( "Unable to release HttpAuth : " + e.getMessage(), e );
-        }
-        try
-        {
-            release( configuration );
-        }
-        catch ( ServletException e )
-        {
-            log( "Unable to release ArchivaConfiguration : " + e.getMessage(), e );
-        }
-        try
-        {
-            release( mimeTypeLoader );
-        }
-        catch ( ServletException e )
-        {
-            log( "Unable to release ArchivaMimeTypeLoader : " + e.getMessage(), e );
-        }
-
-        super.destroy();
     }
     
     @Override
@@ -271,14 +232,12 @@ public class RepositoryServlet
             repositoryMap.clear();
             repositoryMap.putAll( configuration.getConfiguration().getManagedRepositoriesAsMap() );
         }
-        
-        DavServerManager davManager = getDavManager();
-        
+
         synchronized ( davManager )
         {
             // Clear out the old servers.
             davManager.removeAllServers();
-            
+
             // Create new servers.
             try
             {
@@ -289,5 +248,10 @@ public class RepositoryServlet
                 log( "Unable to init servers: " + e.getMessage(), e );
             }
         }
+    }
+
+    ArchivaConfiguration getConfiguration()
+    {
+        return configuration;
     }
 }

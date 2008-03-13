@@ -19,8 +19,8 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.webdav.util.MimeTypes;
 
 /**
  * ArchivaMimeTypesTest 

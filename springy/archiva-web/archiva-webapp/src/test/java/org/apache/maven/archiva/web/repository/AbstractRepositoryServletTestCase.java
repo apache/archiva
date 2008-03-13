@@ -22,20 +22,15 @@ package org.apache.maven.archiva.web.repository;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
+import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
@@ -52,11 +47,17 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected ServletUnitClient sc;
 
-    protected ArchivaConfiguration archivaConfiguration;
-
     protected File repoRootInternal;
     
     private ServletRunner sr;
+
+    protected ArchivaConfiguration archivaConfiguration;
+
+    protected void saveConfiguration()
+        throws Exception
+    {
+        saveConfiguration( archivaConfiguration );
+    }
 
     protected void assertFileContents( String expectedContents, File repoRoot, String path )
         throws IOException
@@ -134,7 +135,7 @@ public abstract class AbstractRepositoryServletTestCase
         }
     }
 
-    protected void saveConfiguration()
+    protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
@@ -145,30 +146,25 @@ public abstract class AbstractRepositoryServletTestCase
     {
         super.setUp();
 
-        try
-        {
-            String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
-            System.setProperty( "appserver.base", appserverBase );
+        String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
+        System.setProperty( "appserver.base", appserverBase );
 
-            File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
-            File testConfDest = new File( appserverBase, "conf/archiva.xml" );
-            FileUtils.copyFile( testConf, testConfDest );
+        File testConf = getTestFile( "src/test/resources/repository-archiva.xml" );
+        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
+        FileUtils.copyFile( testConf, testConfDest );
 
-            archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
-            repoRootInternal = new File( appserverBase, "data/repositories/internal" );
-            Configuration config = archivaConfiguration.getConfiguration();
+        archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.class );
+        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
+        Configuration config = archivaConfiguration.getConfiguration();
 
-            config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
-            saveConfiguration();
+        config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+        saveConfiguration( archivaConfiguration );
 
-            sr = new ServletRunner();
-            sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
-            sc = sr.newClient();
-        }
-        finally
-        {
-            tearDown();
-        }
+        CacheManager.getInstance().removeCache( "url-failures-cache" );
+
+        sr = new ServletRunner( getTestFile( "src/test/webapp/WEB-INF/web.xml" ) );
+        sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
+        sc = sr.newClient();
     }
 
     @Override

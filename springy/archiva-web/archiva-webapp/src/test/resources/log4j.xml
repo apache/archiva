@@ -23,8 +23,12 @@
     <level value="info"/>
   </logger>
 
-  <logger name="org.codehaus.plexus.PlexusContainer">
-    <level value="info"/>
+  <logger name="org.springframework">
+    <level value="error"/>
+  </logger>
+
+  <logger name="org.codehaus.plexus.spring">
+    <level value="error"/>
   </logger>
 
   <logger name="JPOX">

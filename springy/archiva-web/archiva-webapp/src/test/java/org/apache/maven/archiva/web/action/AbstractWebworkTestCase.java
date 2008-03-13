@@ -20,9 +20,8 @@ package org.apache.maven.archiva.web.action;
  */
 
 import com.opensymphony.xwork.ActionSupport;
-
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -35,7 +34,7 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractWebworkTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     /**
      * This is a conveinence method for mimicking how the webwork interceptors

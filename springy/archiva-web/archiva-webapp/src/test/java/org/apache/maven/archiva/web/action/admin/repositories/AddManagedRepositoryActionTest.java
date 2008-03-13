@@ -20,16 +20,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Action;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -42,7 +41,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class AddManagedRepositoryActionTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private AddManagedRepositoryAction action;
 
@@ -59,7 +58,7 @@ public class AddManagedRepositoryActionTest
     private File location;
     
     @Override
-    protected String getCustomConfigurationName()
+    protected String getPlexusConfigLocation()
     {
         return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
     }

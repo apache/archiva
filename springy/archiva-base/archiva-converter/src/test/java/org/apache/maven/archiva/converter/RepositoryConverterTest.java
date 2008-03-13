@@ -26,8 +26,8 @@ import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.i18n.I18N;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +44,7 @@ import java.util.List;
  * @todo group metadata
  */
 public class RepositoryConverterTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private ArtifactRepository sourceRepository;
 

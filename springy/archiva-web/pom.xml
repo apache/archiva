@@ -33,6 +33,7 @@
     <module>archiva-applet</module>
     <module>archiva-security</module>
     <module>archiva-webapp</module>
+    <module>archiva-webdav</module>
     <module>archiva-standalone</module>
   </modules>
 

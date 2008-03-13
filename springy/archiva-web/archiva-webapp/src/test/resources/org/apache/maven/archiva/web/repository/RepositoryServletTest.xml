@@ -64,13 +64,16 @@
     </component>
     
     <component>
-      <role>org.codehaus.plexus.webdav.DavServerManager</role>
+      <role>org.apache.maven.archiva.webdav.DavServerManager</role>
       <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.webdav.DefaultDavServerManager</implementation>
+      <implementation>org.apache.maven.archiva.webdav.DefaultDavServerManager</implementation>
       <description>DefaultDavServerManager</description>
-      <configuration>
-        <provider-hint>proxied</provider-hint>
-      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.webdav.DavServerComponent</role>
+          <role-hint>proxied</role-hint>
+        </requirement>
+      </requirements>
     </component>
     
     <component>

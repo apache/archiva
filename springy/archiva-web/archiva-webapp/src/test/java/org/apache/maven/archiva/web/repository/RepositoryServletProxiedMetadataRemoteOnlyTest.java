@@ -58,7 +58,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         // --- Verification
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
-    
+
     public void testGetProxiedPluginSnapshotVersionMetadataRemoteOnly()
         throws Exception
     {
