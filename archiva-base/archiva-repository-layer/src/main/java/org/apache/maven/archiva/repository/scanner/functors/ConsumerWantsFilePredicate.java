@@ -20,10 +20,10 @@ package org.apache.maven.archiva.repository.scanner.functors;
  */
 
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.consumers.RepositoryContentConsumer;
 import org.codehaus.plexus.util.SelectorUtils;
-import org.codehaus.plexus.util.StringUtils;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class ConsumerWantsFilePredicate
         if ( object instanceof RepositoryContentConsumer )
         {
             RepositoryContentConsumer consumer = (RepositoryContentConsumer) object;
-            if ( wantsFile( consumer, StringUtils.replace( basefile.getRelativePath(), "\\", "/" ) ) )
+            if ( wantsFile( consumer, FilenameUtils.separatorsToUnix( basefile.getRelativePath() ) ) )
             {
                 satisfies = true;
                 
