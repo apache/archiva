@@ -189,6 +189,7 @@ public class ArtifactUpdateDatabaseConsumer
             artifact.getModel().setLastModified( new Date( artifactFile.lastModified() ) );
             artifact.getModel().setSize( artifactFile.length() );
             artifact.getModel().setOrigin( "FileSystem" );
+            artifact.getModel().setWhenProcessed( null );
 
             dao.getArtifactDAO().saveArtifact( artifact );
         }
