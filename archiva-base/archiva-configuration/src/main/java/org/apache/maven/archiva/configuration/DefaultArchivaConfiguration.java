@@ -102,11 +102,13 @@ public class DefaultArchivaConfiguration
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.policies.PreDownloadPolicy"
+     * @todo these don't strictly belong in here
      */
     private Map<String, PreDownloadPolicy> prePolicies;
 
     /**
      * @plexus.requirement role="org.apache.maven.archiva.policies.PostDownloadPolicy"
+     * @todo these don't strictly belong in here
      */
     private Map<String, PostDownloadPolicy> postPolicies;
 

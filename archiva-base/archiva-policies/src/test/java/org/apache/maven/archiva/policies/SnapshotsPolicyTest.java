@@ -19,11 +19,11 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
-
 import java.io.File;
 import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * SnapshotsPolicyTest 
@@ -32,7 +32,7 @@ import java.util.Properties;
  * @version $Id$
  */
 public class SnapshotsPolicyTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String PATH_VERSION_METADATA = "org/apache/archiva/archiva-testable/1.0-SNAPSHOT/maven-metadata.xml";
 

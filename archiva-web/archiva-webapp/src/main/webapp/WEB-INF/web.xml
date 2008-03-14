@@ -56,8 +56,28 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>org.codehaus.plexus.xwork.PlexusLifecycleListener</listener-class>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  <listener>
+    <!-- TODO: some Spring technique for this? -->
+  	<listener-class>org.apache.maven.archiva.web.startup.ArchivaStartup</listener-class>
+  </listener>
+
+  <context-param>
+    <param-name>contextClass</param-name>
+    <param-value>org.codehaus.plexus.spring.PlexusWebApplicationContext</param-value>
+  </context-param>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        classpath*:/META-INF/plexus/components.xml
+        classpath*:/META-INF/spring-context.xml
+        /WEB-INF/classes/META-INF/plexus/application.xml
+        /WEB-INF/classes/META-INF/plexus/components.xml
+        /WEB-INF/applicationContext.xml
+    </param-value>
+  </context-param>
 
   <servlet>
     <servlet-name>RepositoryServlet</servlet-name>
@@ -72,22 +92,22 @@
   </servlet-mapping>
 
   <resource-ref>
-     <res-ref-name>jdbc/users</res-ref-name>
-     <res-type>javax.sql.DataSource</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>jdbc/users</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
   <resource-ref>
-     <res-ref-name>jdbc/archiva</res-ref-name>
-     <res-type>javax.sql.DataSource</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>jdbc/archiva</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
   <resource-ref>
-     <res-ref-name>mail/Session</res-ref-name>
-     <res-type>javax.mail.Session</res-type>
-     <res-auth>Container</res-auth>
-     <res-sharing-scope>Shareable</res-sharing-scope>
+    <res-ref-name>mail/Session</res-ref-name>
+    <res-type>javax.mail.Session</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
   </resource-ref>
 
 </web-app>

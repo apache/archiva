@@ -116,7 +116,7 @@ public class DefaultRepositoryProxyConnectors
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
     private UrlFailureCache urlFailureCache;
 
@@ -526,10 +526,10 @@ public class DefaultRepositoryProxyConnectors
             log.info( emsg );
             return null;
         }
-			
+
         Wagon wagon = null;
         try
-        {	
+        {
             RepositoryURL repoUrl = remoteRepository.getURL();
             String protocol = repoUrl.getProtocol();
             wagon = (Wagon) wagons.get( protocol );
@@ -618,7 +618,7 @@ public class DefaultRepositoryProxyConnectors
     {
         String url = remoteRepository.getURL().getUrl() + remotePath;
 
-        // Transfer checksum does not use the policy. 
+        // Transfer checksum does not use the policy.
         if ( urlFailureCache.hasFailedBefore( url + type ) )
         {
             return;
@@ -833,7 +833,7 @@ public class DefaultRepositoryProxyConnectors
 
             //Convert seconds to milliseconds
             int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
-            
+
             //Set timeout
             wagon.setTimeout(timeoutInMilliseconds);
 

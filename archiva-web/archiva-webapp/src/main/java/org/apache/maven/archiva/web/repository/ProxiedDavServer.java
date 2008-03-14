@@ -19,18 +19,6 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.ProjectReference;
@@ -49,24 +37,35 @@ import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
 import org.apache.maven.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.maven.archiva.security.ArchivaUser;
+import org.apache.maven.archiva.webdav.AbstractDavServerComponent;
+import org.apache.maven.archiva.webdav.DavServerComponent;
+import org.apache.maven.archiva.webdav.DavServerException;
+import org.apache.maven.archiva.webdav.DavServerListener;
+import org.apache.maven.archiva.webdav.servlet.DavServerRequest;
+import org.apache.maven.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.maven.model.DistributionManagement;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.codehaus.plexus.webdav.AbstractDavServerComponent;
-import org.codehaus.plexus.webdav.DavServerComponent;
-import org.codehaus.plexus.webdav.DavServerException;
-import org.codehaus.plexus.webdav.DavServerListener;
-import org.codehaus.plexus.webdav.servlet.DavServerRequest;
-import org.codehaus.plexus.webdav.util.WebdavMethodUtil;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ProxiedDavServer
  * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * @plexus.component role="org.codehaus.plexus.webdav.DavServerComponent"
+ * @plexus.component role="org.apache.maven.archiva.webdav.DavServerComponent"
  * role-hint="proxied" instantiation-strategy="per-lookup"
  */
 public class ProxiedDavServer

@@ -19,31 +19,25 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.codehaus.plexus.PlexusTestCase;
-
 import java.io.File;
 import java.util.Properties;
 
+import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
 /**
- * CachedFailuresPolicyTest 
+ * CachedFailuresPolicyTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class CachedFailuresPolicyTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private DownloadPolicy lookupPolicy()
         throws Exception
     {
-        return (DownloadPolicy) lookup( PreDownloadPolicy.class.getName(), "cache-failures" );
-    }
-
-    private UrlFailureCache lookupUrlFailureCache()
-        throws Exception
-    {
-        return (UrlFailureCache) lookup( UrlFailureCache.class.getName(), "default" );
+        return (DownloadPolicy) lookup( PreDownloadPolicy.class, "cache-failures" );
     }
 
     private File getFile()
@@ -85,14 +79,13 @@ public class CachedFailuresPolicyTest
     public void testPolicyYesInCache()
         throws Exception
     {
-        UrlFailureCache urlFailureCache = lookupUrlFailureCache();
-
         DownloadPolicy policy = lookupPolicy();
         File localFile = getFile();
         Properties request = createRequest();
 
         String url = "http://a.bad.hostname.maven.org/path/to/resource.txt";
 
+        UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
         urlFailureCache.cacheFailure( url );
 
         request.setProperty( "url", url );

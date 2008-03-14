@@ -22,8 +22,8 @@
   <components>
     <!-- Components that are common for all test cases -->
     <component>
-      <role>org.codehaus.plexus.webdav.util.MimeTypes</role>
-      <implementation>org.codehaus.plexus.webdav.util.MimeTypes</implementation>
+      <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
+      <implementation>org.apache.maven.archiva.webdav.util.MimeTypes</implementation>
       <description>MimeTypes</description>
       <configuration>
         <resource>archiva-mime-types.txt</resource>

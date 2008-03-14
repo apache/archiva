@@ -47,7 +47,7 @@ public class CachedFailuresPolicy
      * All resource requests are allowed thru to the remote repo.
      */
     public static final String NO = "no";
-    
+
     /**
      * The YES policy setting means that the existence of old failures is checked, and will
      * prevent the request from being performed against the remote repo.
@@ -55,7 +55,7 @@ public class CachedFailuresPolicy
     public static final String YES = "yes";
 
     /**
-     * @plexus.requirement role-hint="default"
+     * @plexus.requirement
      */
     private UrlFailureCache urlFailureCache;
 
@@ -72,9 +72,9 @@ public class CachedFailuresPolicy
     {
         if ( !options.contains( policySetting ) )
         {
-         // Not a valid code. 
-            throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting
-                + "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
+            // Not a valid code.
+            throw new PolicyConfigurationException( "Unknown cache-failues policy setting [" + policySetting +
+                "], valid settings are [" + StringUtils.join( options.iterator(), "," ) + "]" );
         }
 
         if ( NO.equals( policySetting ) )
@@ -90,7 +90,8 @@ public class CachedFailuresPolicy
         {
             if ( urlFailureCache.hasFailedBefore( url ) )
             {
-                throw new PolicyViolationException( "NO to fetch, check-failures detected previous failure on url: " + url );
+                throw new PolicyViolationException(
+                    "NO to fetch, check-failures detected previous failure on url: " + url );
             }
         }
 

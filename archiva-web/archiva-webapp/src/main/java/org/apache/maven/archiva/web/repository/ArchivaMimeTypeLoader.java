@@ -19,9 +19,9 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.maven.archiva.webdav.util.MimeTypes;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.webdav.util.MimeTypes;
 
 import java.io.IOException;
 import java.net.URL;

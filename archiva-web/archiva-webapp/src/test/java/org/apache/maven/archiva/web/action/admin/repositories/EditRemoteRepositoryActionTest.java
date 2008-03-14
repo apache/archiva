@@ -20,13 +20,12 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Action;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.util.Collections;
@@ -38,7 +37,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class EditRemoteRepositoryActionTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String REPO_ID = "remote-repo-ident";
 

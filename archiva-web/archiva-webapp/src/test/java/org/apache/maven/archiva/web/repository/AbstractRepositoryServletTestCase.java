@@ -22,21 +22,17 @@ package org.apache.maven.archiva.web.repository;
 import com.meterware.httpunit.WebResponse;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
-
+import net.sf.ehcache.CacheManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * AbstractRepositoryServletTestCase 
@@ -45,17 +41,23 @@ import javax.servlet.http.HttpSession;
  * @version $Id$
  */
 public abstract class AbstractRepositoryServletTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
     protected ServletUnitClient sc;
 
-    protected ArchivaConfiguration archivaConfiguration;
-
     protected File repoRootInternal;
     
     private ServletRunner sr;
+
+    protected ArchivaConfiguration archivaConfiguration;
+
+    protected void saveConfiguration()
+        throws Exception
+    {
+        saveConfiguration( archivaConfiguration );
+    }
 
     protected void assertFileContents( String expectedContents, File repoRoot, String path )
         throws IOException
@@ -133,7 +135,7 @@ public abstract class AbstractRepositoryServletTestCase
         }
     }
 
-    protected void saveConfiguration()
+    protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
@@ -143,7 +145,7 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
         super.setUp();
-        
+
         String appserverBase = getTestFile( "target/appserver-base" ).getAbsolutePath();
         System.setProperty( "appserver.base", appserverBase );
 
@@ -156,29 +158,26 @@ public abstract class AbstractRepositoryServletTestCase
         Configuration config = archivaConfiguration.getConfiguration();
 
         config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
-        saveConfiguration();
+        saveConfiguration( archivaConfiguration );
 
-        sr = new ServletRunner();
+        CacheManager.getInstance().removeCache( "url-failures-cache" );
+
+        sr = new ServletRunner( getTestFile( "src/test/webapp/WEB-INF/web.xml" ) );
         sr.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
         sc = sr.newClient();
-        HttpSession session = sc.getSession( true );
-        ServletContext servletContext = session.getServletContext();
-        servletContext.setAttribute( PlexusConstants.PLEXUS_KEY, getContainer() );
     }
-    
+
     @Override
-    protected String getConfigurationName( String subname )
+    protected String getPlexusConfigLocation()
         throws Exception
     {
         return "org/apache/maven/archiva/web/repository/RepositoryServletTest.xml";
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
     {
-        release( archivaConfiguration );
-        
         if ( sc != null )
         {
             sc.clearContents();

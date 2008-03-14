@@ -19,22 +19,22 @@ package org.apache.maven.archiva.policies;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.PlexusTestCase;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
 /**
- * ChecksumPolicyTest 
+ * ChecksumPolicyTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ChecksumPolicyTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String GOOD = "good";
 
@@ -166,7 +166,7 @@ public class ChecksumPolicyTest
         Properties request = createRequest();
 
         boolean actualResult;
-        
+
         try
         {
             policy.applyPolicy( ChecksumPolicy.FAIL, request, localFile );
@@ -195,7 +195,7 @@ public class ChecksumPolicyTest
         Properties request = createRequest();
 
         boolean actualResult;
-        
+
         try
         {
             policy.applyPolicy( ChecksumPolicy.FIX, request, localFile );
@@ -205,7 +205,7 @@ public class ChecksumPolicyTest
         {
             actualResult = false;
         }
-        
+
         assertEquals( createMessage( ChecksumPolicy.FIX, md5State, sha1State ), expectedResult, actualResult );
 
         // End result should be legitimate SHA1 and MD5 files.

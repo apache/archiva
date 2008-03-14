@@ -20,15 +20,16 @@ package org.apache.maven.archiva.model;
  */
 
 import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
- * ArchivaModelClonerTest 
+ * ArchivaModelClonerTest
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public class ArchivaModelClonerTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     public void testCloneProjectModelWithParent()
     {

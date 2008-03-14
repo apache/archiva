@@ -19,21 +19,6 @@
   -->
 
 <plexus>
-  <load-on-start>
-    <component>
-      <role>org.apache.maven.archiva.web.startup.ArchivaStartup</role>
-      <role-hint>default</role-hint>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>database-update</role-hint>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>repository-scanning</role-hint>
-    </component>
-  </load-on-start>
-
   <components>
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
@@ -82,13 +67,16 @@
     </component>
 
     <component>
-      <role>org.codehaus.plexus.webdav.DavServerManager</role>
+      <role>org.apache.maven.archiva.webdav.DavServerManager</role>
       <role-hint>default</role-hint>
-      <implementation>org.codehaus.plexus.webdav.DefaultDavServerManager</implementation>
+      <implementation>org.apache.maven.archiva.webdav.DefaultDavServerManager</implementation>
       <description>DefaultDavServerManager</description>
-      <configuration>
-        <provider-hint>proxied</provider-hint>
-      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.archiva.webdav.DavServerComponent</role>
+          <role-hint>proxied</role-hint>
+        </requirement>
+      </requirements>
     </component>
 
     <component>
@@ -200,8 +188,8 @@
     </component>
     
     <component>
-      <role>org.codehaus.plexus.webdav.util.MimeTypes</role>
-      <implementation>org.codehaus.plexus.webdav.util.MimeTypes</implementation>
+      <role>org.apache.maven.archiva.webdav.util.MimeTypes</role>
+      <implementation>org.apache.maven.archiva.webdav.util.MimeTypes</implementation>
       <description>MimeTypes</description>
       <configuration>
         <resource>archiva-mime-types.txt</resource>

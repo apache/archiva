@@ -19,21 +19,6 @@ package org.apache.maven.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.configuration.ArchivaConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.maven.archiva.policies.CachedFailuresPolicy;
-import org.apache.maven.archiva.policies.ChecksumPolicy;
-import org.apache.maven.archiva.policies.ReleasesPolicy;
-import org.apache.maven.archiva.policies.SnapshotsPolicy;
-import org.apache.maven.archiva.policies.urlcache.UrlFailureCache;
-import org.apache.maven.archiva.repository.ManagedRepositoryContent;
-import org.apache.maven.wagon.Wagon;
-import org.codehaus.plexus.PlexusTestCase;
-import org.easymock.MockControl;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -45,6 +30,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.maven.archiva.policies.CachedFailuresPolicy;
+import org.apache.maven.archiva.policies.ChecksumPolicy;
+import org.apache.maven.archiva.policies.ReleasesPolicy;
+import org.apache.maven.archiva.policies.SnapshotsPolicy;
+import org.apache.maven.archiva.repository.ManagedRepositoryContent;
+import org.apache.maven.wagon.Wagon;
+import org.codehaus.plexus.spring.PlexusClassPathXmlApplicationContext;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+import org.easymock.MockControl;
+import org.springframework.beans.factory.BeanFactory;
+
 /**
  * AbstractProxyTestCase
  *
@@ -52,7 +53,7 @@ import java.util.Locale;
  * @version $Id$
  */
 public abstract class AbstractProxyTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
 
@@ -259,14 +260,6 @@ public abstract class AbstractProxyTestCase
         return repoContent;
     }
 
-    protected UrlFailureCache lookupUrlFailureCache()
-        throws Exception
-    {
-        UrlFailureCache failurlCache = (UrlFailureCache) lookup( UrlFailureCache.class.getName(), "default" );
-        assertNotNull( "URL Failure Cache cannot be null.", failurlCache );
-        return failurlCache;
-    }
-
     /**
      * Read the first line from the checksum file, and return it (trimmed).
      */
@@ -376,6 +369,17 @@ public abstract class AbstractProxyTestCase
         saveRemoteRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
 
         return repoLocation;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getConfigLocation()
+     */
+    @Override
+    protected String getSpringConfigLocation()
+        throws Exception
+    {
+        return "org/apache/maven/archiva/proxy/spring-context.xml";
     }
 
     @Override
@@ -493,7 +497,7 @@ public abstract class AbstractProxyTestCase
     {
         assertTrue( "Managed File should exist: ", managedFile.exists() );
         assertTrue( "Remote File should exist: ", remoteFile.exists() );
-        
+
         managedFile.setLastModified( remoteFile.lastModified() + 55000 );
     }
 
@@ -501,13 +505,13 @@ public abstract class AbstractProxyTestCase
     {
         assertTrue( "Managed File should exist: ", managedFile.exists() );
         assertTrue( "Remote File should exist: ", remoteFile.exists() );
-        
+
         managedFile.setLastModified( remoteFile.lastModified() - 55000 );
     }
 
     protected void assertNotModified( File file, long expectedModificationTime )
     {
-        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.", 
+        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.",
                       expectedModificationTime, file.lastModified() );
     }
 
@@ -516,11 +520,11 @@ public abstract class AbstractProxyTestCase
     {
         String managedLegacyPath = managedLegacyDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
-    
+
         assertTrue( "Unit Test Failure: File <" + testFile
             + "> should be have been defined within the legacy managed path of <" + managedLegacyPath + ">", testFile
             .startsWith( managedLegacyPath ) );
-    
+
         assertFalse( "File < " + testFile + "> should not exist in managed legacy repository.", file.exists() );
     }
 
@@ -529,11 +533,11 @@ public abstract class AbstractProxyTestCase
     {
         String managedDefaultPath = managedDefaultDir.getCanonicalPath();
         String testFile = file.getCanonicalPath();
-    
+
         assertTrue( "Unit Test Failure: File <" + testFile
             + "> should be have been defined within the managed default path of <" + managedDefaultPath + ">", testFile
             .startsWith( managedDefaultPath ) );
-    
+
         assertFalse( "File < " + testFile + "> should not exist in managed default repository.", file.exists() );
     }
 

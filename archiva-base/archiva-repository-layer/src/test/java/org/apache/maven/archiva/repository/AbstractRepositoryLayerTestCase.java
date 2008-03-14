@@ -21,19 +21,30 @@ package org.apache.maven.archiva.repository;
 
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 
 /**
- * AbstractRepositoryLayerTestCase 
+ * AbstractRepositoryLayerTestCase
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
 public abstract class AbstractRepositoryLayerTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
+     */
+    @Override
+    protected String getSpringConfigLocation()
+        throws Exception
+    {
+        return "org/apache/maven/archiva/repository/spring-context.xml";
+    }
+
     protected ManagedRepositoryConfiguration createRepository( String id, String name, File location )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
@@ -51,7 +62,7 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setUrl( url );
         return repo;
     }
-    
+
     protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location, String layout )
         throws Exception
     {

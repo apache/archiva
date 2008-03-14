@@ -19,55 +19,53 @@ package org.apache.maven.archiva.web.startup;
  * under the License.
  */
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.ServletException;
+
 import org.apache.maven.archiva.common.ArchivaException;
 import org.apache.maven.archiva.scheduled.ArchivaTaskScheduler;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.spring.PlexusToSpringUtils;
+import org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order. 
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component 
- *              role="org.apache.maven.archiva.web.startup.ArchivaStartup"
- *              role-hint="default"
  */
 public class ArchivaStartup
-    implements Initializable
+    implements ServletContextListener
 {
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private SecuritySynchronization securitySync;
+    public void contextDestroyed(ServletContextEvent arg0) {
+    }
 
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private ResolverFactoryInit resolverFactory;
-
-    /**
-     * @plexus.requirement role-hint="default"
-     */
-    private ArchivaTaskScheduler taskScheduler;
-
-    public void initialize()
-        throws InitializationException
-    {
-        Banner.display( ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
+    public void contextInitialized(ServletContextEvent arg0) {
+        WebApplicationContext wac =  WebApplicationContextUtils.getRequiredWebApplicationContext(arg0.getServletContext());
+        
+        SecuritySynchronization securitySync = (SecuritySynchronization) wac.getBean(PlexusToSpringUtils.buildSpringId(SecuritySynchronization.class));
+        ResolverFactoryInit resolverFactory = (ResolverFactoryInit) wac.getBean(PlexusToSpringUtils.buildSpringId(ResolverFactoryInit.class));
+        ArchivaTaskScheduler taskScheduler = (ArchivaTaskScheduler) wac.getBean(PlexusToSpringUtils.buildSpringId(ArchivaTaskScheduler.class));
+        TaskQueueExecutor databaseUpdateQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "database-update"));
+        TaskQueueExecutor repositoryScanningQueue = (TaskQueueExecutor) wac.getBean(PlexusToSpringUtils.buildSpringId(TaskQueueExecutor.class, "repository-scanning"));
+        Banner banner = (Banner) wac.getBean(PlexusToSpringUtils.buildSpringId(Banner.class));
 
         try
         {
             securitySync.startup();
             resolverFactory.startup();
             taskScheduler.startup();
+            banner.display();
         }
         catch ( ArchivaException e )
         {
-            throw new InitializationException( "Unable to properly startup archiva: " + e.getMessage(), e );
+            throw new RuntimeException( "Unable to properly startup archiva: " + e.getMessage(), e );
         }
     }
 

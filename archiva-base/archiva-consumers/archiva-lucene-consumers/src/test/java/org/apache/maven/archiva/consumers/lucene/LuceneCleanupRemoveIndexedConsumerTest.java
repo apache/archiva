@@ -22,7 +22,7 @@ package org.apache.maven.archiva.consumers.lucene;
 import org.apache.maven.archiva.consumers.DatabaseCleanupConsumer;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
-import org.codehaus.plexus.PlexusTestCase;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * LuceneCleanupRemoveIndexedConsumerTest
@@ -31,7 +31,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @version
  */
 public class LuceneCleanupRemoveIndexedConsumerTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private DatabaseCleanupConsumer luceneCleanupRemoveIndexConsumer;
     

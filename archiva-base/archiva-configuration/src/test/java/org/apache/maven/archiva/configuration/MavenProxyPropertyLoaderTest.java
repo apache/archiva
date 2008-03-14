@@ -19,21 +19,31 @@ package org.apache.maven.archiva.configuration;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
+
 /**
  * @author Edwin Punzalan
  */
 public class MavenProxyPropertyLoaderTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private MavenProxyPropertyLoader loader;
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.plexus.spring.PlexusInSpringTestCase#getSpringConfigLocation()
+     */
+    protected String getSpringConfigLocation()
+        throws Exception
+    {
+        return "org/apache/maven/archiva/configuration/spring-context.xml";
+    }
 
     public void testLoadValidMavenProxyConfiguration()
         throws IOException, InvalidConfigurationException

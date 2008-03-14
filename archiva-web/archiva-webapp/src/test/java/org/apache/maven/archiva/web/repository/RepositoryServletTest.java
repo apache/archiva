@@ -19,6 +19,7 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 
@@ -54,9 +55,10 @@ public class RepositoryServletTest
         RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
+        ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
         Configuration c = archivaConfiguration.getConfiguration();
         c.removeManagedRepository( c.findManagedRepositoryById( REPOID_INTERNAL ) );
-        saveConfiguration();
+        saveConfiguration( archivaConfiguration );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( REPOID_INTERNAL );
         assertNull( repository );
@@ -68,6 +70,7 @@ public class RepositoryServletTest
         RepositoryServlet servlet = (RepositoryServlet) sc.newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
+        ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
         Configuration c = archivaConfiguration.getConfiguration();
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( NEW_REPOSITORY_ID );
@@ -79,7 +82,7 @@ public class RepositoryServletTest
         }
         repo.setLocation( repoRoot.getAbsolutePath() );
         c.addManagedRepository( repo );
-        saveConfiguration();
+        saveConfiguration( archivaConfiguration );
 
         ManagedRepositoryConfiguration repository = servlet.getRepository( NEW_REPOSITORY_ID );
         assertNotNull( repository );

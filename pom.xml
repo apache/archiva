@@ -159,8 +159,7 @@
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <version>1.4.3</version>
+      <artifactId>slf4j-log4j12</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -311,9 +310,9 @@
         <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.4.3</version>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-webdav</artifactId>
+        <version>1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -406,7 +405,7 @@
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.8</version>
+        <version>1.2.14</version>
       </dependency>
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -651,16 +650,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.plexus.webdav</groupId>
-        <artifactId>plexus-webdav-simple</artifactId>
-        <version>1.0-beta-2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus.webdav</groupId>
-        <artifactId>plexus-webdav-api</artifactId>
-        <version>1.0-beta-2</version>
-      </dependency>	  
-      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.4</version>
@@ -669,6 +658,16 @@
         <groupId>opensymphony</groupId>
         <artifactId>sitemesh</artifactId>
         <version>2.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.0</version>
       </dependency>
       <dependency>
         <groupId>taglibs</groupId>
@@ -748,6 +747,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <source>1.5</source>
           <aggregate>true</aggregate>

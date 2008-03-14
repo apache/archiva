@@ -28,17 +28,19 @@ import java.util.Date;
  *
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
- * 
- * @plexus.component role="org.apache.maven.archiva.policies.urlcache.UrlFailureCache"
- *                   role-hint="default"
  */
 public class DefaultUrlFailureCache
     implements UrlFailureCache
 {
     /**
-     * @plexus.requirement role-hint="url-failures-cache"
+     * @todo spring cache instead
      */
     private Cache urlCache;
+
+    public DefaultUrlFailureCache( Cache urlCache )
+    {
+        this.urlCache = urlCache;
+    }
 
     public void cacheFailure( String url )
     {

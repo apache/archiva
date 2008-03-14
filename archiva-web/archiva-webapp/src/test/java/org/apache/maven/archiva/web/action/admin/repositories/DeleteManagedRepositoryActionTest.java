@@ -20,24 +20,20 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  */
 
 import com.opensymphony.xwork.Action;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-
-import org.apache.maven.archiva.model.ArchivaProjectModel;
-
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.configuration.RemoteRepositoryConfiguration;
-
+import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.ArchivaRoleConstants;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.role.RoleManager;
 import org.codehaus.plexus.redback.role.RoleManagerException;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 import java.io.File;
@@ -50,7 +46,7 @@ import java.util.Collections;
  * @version $Id$
  */
 public class DeleteManagedRepositoryActionTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private DeleteManagedRepositoryAction action;
 
@@ -67,7 +63,7 @@ public class DeleteManagedRepositoryActionTest
     private File location;
 
     @Override
-    protected String getCustomConfigurationName()
+    protected String getPlexusConfigLocation()
     {
         return AbstractManagedRepositoriesAction.class.getName().replace( '.', '/' ) + "Test.xml";
     }

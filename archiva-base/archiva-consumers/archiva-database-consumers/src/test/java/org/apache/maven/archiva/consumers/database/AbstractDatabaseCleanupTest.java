@@ -19,15 +19,15 @@ package org.apache.maven.archiva.consumers.database;
  * under the License.
  */
 
-import org.codehaus.plexus.PlexusTestCase;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactModel;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
+import org.apache.maven.archiva.repository.RepositoryContentFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 import java.io.File;
 
@@ -35,7 +35,7 @@ import java.io.File;
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
  */
 public abstract class AbstractDatabaseCleanupTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     ArchivaConfiguration archivaConfig;
     

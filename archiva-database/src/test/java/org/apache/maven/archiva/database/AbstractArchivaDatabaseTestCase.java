@@ -26,9 +26,9 @@ import org.apache.maven.archiva.database.updater.TestDatabaseCleanupConsumer;
 import org.apache.maven.archiva.database.updater.TestDatabaseUnprocessedConsumer;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.VersionedReference;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.jpox.SchemaTool;
 
 import java.io.File;
@@ -49,7 +49,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @version $Id$
  */
 public abstract class AbstractArchivaDatabaseTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private static final String TIMESTAMP = "yyyy/MM/dd HH:mm:ss";
 

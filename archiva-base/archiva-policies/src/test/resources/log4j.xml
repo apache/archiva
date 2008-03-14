@@ -39,6 +39,14 @@
     <level value="error"/>
   </logger>
 
+  <logger name="org.codehaus.plexus.spring">
+    <level value="warn"/>
+  </logger>
+
+  <logger name="org.springframework">
+    <level value="warn"/>
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="console" />

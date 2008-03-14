@@ -20,9 +20,9 @@ package org.apache.maven.archiva.reporting.artifact;
  */
 
 import org.apache.maven.archiva.database.ArchivaDAO;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.jdo.DefaultConfigurableJdoFactory;
 import org.codehaus.plexus.jdo.JdoFactory;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.jpox.SchemaTool;
 
 import java.io.File;
@@ -41,7 +41,7 @@ import javax.jdo.PersistenceManagerFactory;
  * @version $Id$
  */
 public abstract class AbstractArtifactReportsTestCase
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     protected ArchivaDAO dao;
     

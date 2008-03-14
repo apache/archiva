@@ -22,15 +22,15 @@ package org.apache.maven.archiva.web.action.admin.repositories;
 import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import com.opensymphony.xwork.Action;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionBundle;
 import org.codehaus.plexus.redback.xwork.interceptor.SecureActionException;
+import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 /**
  * Test the repositories action returns the correct data.
  */
 public class RepositoriesActionTest
-    extends PlexusTestCase
+    extends PlexusInSpringTestCase
 {
     private RepositoriesAction action;
 
