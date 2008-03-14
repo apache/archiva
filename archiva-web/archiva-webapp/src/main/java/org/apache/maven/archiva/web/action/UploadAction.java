@@ -55,13 +55,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Upload an artifact using Jakarta file upload in webwork. If set by the user
- * a pom will also be generated. Metadata will also be updated if one exists, 
- * otherwise it would be created.
+ * Upload an artifact using Jakarta file upload in webwork. If set by the user a pom will also be generated. Metadata
+ * will also be updated if one exists, otherwise it would be created.
  * 
  * @author <a href="mailto:wsmoak@apache.org">Wendy Smoak</a>
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
- * 
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="uploadAction"
  */
 public class UploadAction
@@ -117,7 +115,7 @@ public class UploadAction
      * Flag whether to generate a pom for the artifact or not.
      */
     private boolean generatePom;
-    
+
     /**
      * List of managed repositories to deploy to.
      */
@@ -249,9 +247,8 @@ public class UploadAction
             new ArrayList<String>( configuration.getConfiguration().getManagedRepositoriesAsMap().keySet() );
     }
 
-    public String upload()
+    public String input()
     {
-        // TODO form validation
         return INPUT;
     }
 
@@ -311,7 +308,10 @@ public class UploadAction
             }
 
             updateMetadata( getMetadata( targetPath.getAbsolutePath() ) );
-           
+
+            addActionMessage( "Artifact \'" + groupId + ":" + artifactId + ":" + version +
+                "\' was successfully deployed to repository \'" + repositoryId + "\'!" );
+
             return SUCCESS;
         }
         catch ( RepositoryNotFoundException re )
@@ -395,19 +395,20 @@ public class UploadAction
             {
                 availableVersions.add( version );
             }
-            
+
             String latestVersion = availableVersions.get( availableVersions.size() - 1 );
             metadata.setLatestVersion( latestVersion );
             metadata.setAvailableVersions( availableVersions );
             metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
-            
-            if( !VersionUtil.isSnapshot( version ) )
+
+            if ( !VersionUtil.isSnapshot( version ) )
             {
                 metadata.setReleasedVersion( latestVersion );
-            }  
+            }
             // TODO:
-            // what about the metadata checksums? re-calculate or 
-            //      just leave it to the consumers to fix it?
+            // what about the metadata checksums? re-calculate or
+            // just leave it to the consumers to fix it? or just delete it
+            // and let the consumers create a new checksum file?
         }
         else
         {
@@ -418,16 +419,16 @@ public class UploadAction
             metadata.setLatestVersion( version );
             metadata.setLastUpdatedTimestamp( Calendar.getInstance().getTime() );
             metadata.setAvailableVersions( availableVersions );
-            
-            if( !VersionUtil.isSnapshot( version ) )
+
+            if ( !VersionUtil.isSnapshot( version ) )
             {
                 metadata.setReleasedVersion( version );
             }
-        }         
-        
+        }
+
         RepositoryMetadataWriter.write( metadata, metadataFile );
     }
-    
+
     public void validate()
     {
         try
@@ -438,18 +439,15 @@ public class UploadAction
                 addActionError( "User is not authorized to upload in repository " + repositoryId );
             }
 
-            // TODO fix validation
-            /*
             if ( file == null || file.length() == 0 )
             {
                 addActionError( "Please add a file to upload." );
             }
-
+            
             if ( !VersionUtil.isVersion( version ) )
             {
                 addActionError( "Invalid version." );
-            }
-            */
+            }            
         }
         catch ( PrincipalNotFoundException pe )
         {
