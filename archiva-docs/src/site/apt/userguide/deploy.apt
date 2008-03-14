@@ -4,6 +4,48 @@
 
 Deploying to Repository
 
+ There are different ways on how you can deploy artifacts in an Archiva repository. 
+
+* Deploying via the Web UI Form
+
+  The easiest way to deploy in the repository is via the Web UI form, which can be accessed in the 'Upload Artifact' section.
+  Just follow these steps:
+
+  [[1]] Fill up the following required fields:
+
+  * Group Id - the groupId of the artifact to be deployed.
+
+  * Artifact Id - the artifactId of the artifact to be deployed.
+
+  * Version - the version of the artifact to be deployed.
+
+  * Packaging - the packaging of the artifact to be deployed. (ex. jar, war, ear, etc.)
+
+  * File - the actual artifact to be deployed.
+
+  []
+
+  [[2]] Select the repository you want to deploy to. Please note that if you do not have write permission to the repository,
+   you will not be allowed to deploy in it.
+
+  [[3]] Now, if you want Archiva to generate a pom for the artifact, check the Generate Pom field. Right now, only Maven 2 poms
+  can be generated.
+
+  [[4]] Click Submit and a message will be displayed notifying you if the upload/deployment was successful or not.
+
+  []
+  
+  These are the files that will be in your repository after deployment:
+
+  * artifact 
+
+  * pom file (if you checked Generate Pom)
+
+  * maven-metadata.xml (this will be created if none exists in the artifact level yet, otherwise it will just be updated)
+
+  * maven-metadata.xml.sha1 and maven-metadata.xml.md5 (these will be generated for newly created maven-metadata.xml files, otherwise
+  they will just be updated)
+
 * Configuring Maven to deploy to an Archiva repository
   
   [[1]] Create a user in Archiva to use for deployment
