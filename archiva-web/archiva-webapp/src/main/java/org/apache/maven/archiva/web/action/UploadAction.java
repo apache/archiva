@@ -20,6 +20,7 @@ package org.apache.maven.archiva.web.action;
  */
 
 import org.codehaus.plexus.xwork.action.PlexusActionSupport;
+import org.apache.maven.archiva.common.utils.Checksums;
 import org.apache.maven.archiva.common.utils.VersionComparator;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -145,6 +146,11 @@ public class UploadAction
      * @plexus.requirement role-hint="model400"
      */
     private ProjectModelWriter pomWriter;
+    
+    /**
+     * @plexus.requirement
+     */
+    private Checksums checksums;
 
     public void setUpload( File file )
     {
@@ -405,10 +411,6 @@ public class UploadAction
             {
                 metadata.setReleasedVersion( latestVersion );
             }
-            // TODO:
-            // what about the metadata checksums? re-calculate or
-            // just leave it to the consumers to fix it? or just delete it
-            // and let the consumers create a new checksum file?
         }
         else
         {
@@ -427,8 +429,10 @@ public class UploadAction
         }
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
+        
+        checksums.update( metadataFile );
     }
-
+    
     public void validate()
     {
         try
