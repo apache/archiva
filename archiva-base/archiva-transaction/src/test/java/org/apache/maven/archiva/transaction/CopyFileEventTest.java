@@ -19,9 +19,8 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
-import org.apache.maven.archiva.transaction.CopyFileEvent;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

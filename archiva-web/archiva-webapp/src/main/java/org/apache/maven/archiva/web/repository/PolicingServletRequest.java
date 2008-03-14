@@ -19,8 +19,9 @@ package org.apache.maven.archiva.web.repository;
  * under the License.
  */
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -50,7 +51,12 @@ public class PolicingServletRequest
             /* Perform a simple security normalization of the requested pathinfo.
              * This is to cleanup requests that use "/../" or "///" type hacks.
              */
-            fixedPathInfo = FileUtils.normalize( fixedPathInfo );
+            fixedPathInfo = FilenameUtils.normalize( fixedPathInfo );
+            if ( SystemUtils.IS_OS_WINDOWS )
+            {
+                // Adjust paths back to unix & url format expectations (when on windows)
+                fixedPathInfo = FilenameUtils.separatorsToUnix( fixedPathInfo );
+            }
         }
     }
 

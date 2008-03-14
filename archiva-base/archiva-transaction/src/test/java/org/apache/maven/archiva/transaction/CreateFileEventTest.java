@@ -21,9 +21,8 @@ package org.apache.maven.archiva.transaction;
 
 import java.io.File;
 
-import org.apache.maven.archiva.transaction.CreateFileEvent;
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.PlexusTestCase;
-import org.codehaus.plexus.util.FileUtils;
 
 /**
  * @author Edwin Punzalan
