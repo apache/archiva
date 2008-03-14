@@ -224,15 +224,8 @@ public class Banner
         return injectVersion( decode( encodedBanner ), version );
     }
 
-    public static void display( Logger logger, String version )
-    {
-        String banner = getBanner( version );
-        logger.info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
-    }
-    
-    public void initialize()
-        throws InitializationException
-    {
-        Banner.display( getLogger(), ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
-    }
+	public void display() {
+        String banner = getBanner( ArchivaVersion.determineVersion( this.getClass().getClassLoader() ) );
+        getLogger().info( StringUtils.repeat( "_", 25 ) + "\n" + banner );
+	}
 }

@@ -58,6 +58,10 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  <listener>
+    <!-- TODO: some Spring technique for this? -->
+  	<listener-class>org.apache.maven.archiva.web.startup.ArchivaStartup</listener-class>
+  </listener>
 
   <context-param>
     <param-name>contextClass</param-name>

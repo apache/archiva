@@ -19,21 +19,6 @@
   -->
 
 <plexus>
-  <load-on-start>
-    <component>
-      <role>org.apache.maven.archiva.web.startup.ArchivaStartup</role>
-      <role-hint>default</role-hint>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>database-update</role-hint>
-    </component>
-    <component>
-      <role>org.codehaus.plexus.taskqueue.execution.TaskQueueExecutor</role>
-      <role-hint>repository-scanning</role-hint>
-    </component>
-  </load-on-start>
-
   <components>
     <component>
       <role>org.codehaus.plexus.registry.Registry</role>
