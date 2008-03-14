@@ -9,7 +9,7 @@ package org.apache.maven.archiva.indexer.bytecode;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,10 +20,11 @@ package org.apache.maven.archiva.indexer.bytecode;
  */
 
 import junit.framework.AssertionFailedError;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactJavaDetails;
 import org.apache.maven.archiva.model.platform.JavaArtifactHelper;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -125,8 +126,8 @@ public class BytecodeRecordLoader
         }
         finally
         {
-            IOUtil.close( reader );
-            IOUtil.close( freader );
+            IOUtils.closeQuietly( reader );
+            IOUtils.closeQuietly( freader );
         }
 
 //        cache.put( artifact, record );

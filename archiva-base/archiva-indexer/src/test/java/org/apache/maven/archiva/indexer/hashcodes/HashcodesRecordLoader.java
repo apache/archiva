@@ -19,10 +19,10 @@ package org.apache.maven.archiva.indexer.hashcodes;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 import org.apache.maven.archiva.model.ArchivaArtifactJavaDetails;
 import org.apache.maven.archiva.model.platform.JavaArtifactHelper;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -97,8 +97,8 @@ public class HashcodesRecordLoader
         }
         finally
         {
-            IOUtil.close( reader );
-            IOUtil.close( freader );
+            IOUtils.closeQuietly( reader );
+            IOUtils.closeQuietly( freader );
         }
 
         return record;

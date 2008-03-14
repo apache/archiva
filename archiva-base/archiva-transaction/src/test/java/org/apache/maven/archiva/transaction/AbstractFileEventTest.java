@@ -19,9 +19,9 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +85,7 @@ public abstract class AbstractFileEventTest
         try
         {
             in = new FileInputStream( file );
-            return IOUtil.toString( in );
+            return IOUtils.toString( in );
         }
         finally
         {

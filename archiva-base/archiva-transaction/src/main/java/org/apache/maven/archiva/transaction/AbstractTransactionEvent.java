@@ -19,10 +19,10 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -215,19 +215,13 @@ public abstract class AbstractTransactionEvent
         }
     }
 
+    /**
+     * TODO: Remove in favor of using FileUtils directly.
+     */
     protected void writeStringToFile( File file, String content )
         throws IOException
     {
-        FileOutputStream out = null;
-        try
-        {
-            out = new FileOutputStream( file );
-            IOUtil.copy( content, out );
-        }
-        finally
-        {
-            IOUtil.close( out );
-        }
+        FileUtils.writeStringToFile( file, content );
     }
 
     /**

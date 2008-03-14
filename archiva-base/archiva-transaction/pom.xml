@@ -29,6 +29,10 @@
   <description>API for managing transaction.</description>
   <dependencies>
     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
       <version>1.0</version>
