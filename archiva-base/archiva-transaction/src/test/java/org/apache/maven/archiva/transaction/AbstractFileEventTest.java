@@ -19,6 +19,7 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.digest.Digester;
@@ -81,30 +82,12 @@ public abstract class AbstractFileEventTest
     protected String readFile( File file )
         throws IOException
     {
-        FileInputStream in = null;
-        try
-        {
-            in = new FileInputStream( file );
-            return IOUtils.toString( in );
-        }
-        finally
-        {
-            IOUtil.close( in );
-        }
+        return FileUtils.readFileToString( file );
     }
 
     protected void writeFile( File file, String content )
         throws IOException
     {
-        FileOutputStream out = null;
-        try
-        {
-            out = new FileOutputStream( file );
-            IOUtil.copy( content, out );
-        }
-        finally
-        {
-            IOUtil.close( out );
-        }
+        FileUtils.writeStringToFile( file, content );
     }
 }
