@@ -19,7 +19,6 @@ package org.apache.maven.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.PathUtil;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.converter.RepositoryConversionException;

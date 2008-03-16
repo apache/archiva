@@ -20,7 +20,6 @@ package org.apache.maven.archiva.model;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.archiva.model.ArchivaProjectModel;
 
 /**
  * Keys - utility methods for converting common objects into string keys. 

@@ -22,7 +22,6 @@ package org.apache.maven.archiva.consumers.lucene.stubs;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 import org.apache.maven.archiva.indexer.RepositoryContentIndexFactory;
-import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentIndex;
 
 /**
  * LuceneRepositoryContenIndexFactoryStub

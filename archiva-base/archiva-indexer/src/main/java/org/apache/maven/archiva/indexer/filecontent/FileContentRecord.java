@@ -22,8 +22,6 @@ package org.apache.maven.archiva.indexer.filecontent;
 import org.apache.maven.archiva.indexer.lucene.LuceneRepositoryContentRecord;
 import org.apache.maven.archiva.model.ArchivaArtifact;
 
-import java.io.File;
-
 /**
  * Lucene record for {@link File} contents. 
  *

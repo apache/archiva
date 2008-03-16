@@ -26,8 +26,6 @@ import com.meterware.httpunit.WebResponse;
 
 import org.apache.maven.archiva.policies.ReleasesPolicy;
 
-import java.io.File;
-
 /**
  * RepositoryServlet Tests, Proxied, Get of Release Artifacts, with varying policy settings.
  *

@@ -25,8 +25,6 @@ import org.apache.maven.archiva.dependency.graph.DependencyGraphEdge;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphKeys;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
 import org.apache.maven.archiva.dependency.graph.tasks.FlagCyclicEdgesTask;
-import org.apache.maven.archiva.dependency.graph.walk.DependencyGraphWalker;
-import org.apache.maven.archiva.dependency.graph.walk.WalkDepthFirstSearch;
 import org.apache.maven.archiva.model.ArtifactReference;
 
 import java.util.List;

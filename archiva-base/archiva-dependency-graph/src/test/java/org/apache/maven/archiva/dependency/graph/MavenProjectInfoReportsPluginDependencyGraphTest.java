@@ -19,12 +19,6 @@ package org.apache.maven.archiva.dependency.graph;
  * under the License.
  */
 
-import org.apache.maven.archiva.dependency.DependencyGraphFactory;
-import org.apache.maven.archiva.model.DependencyScope;
-import org.apache.maven.archiva.model.VersionedReference;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MavenProjectInfoReportsPluginDependencyGraphTest

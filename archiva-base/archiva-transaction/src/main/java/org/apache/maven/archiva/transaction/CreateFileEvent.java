@@ -19,8 +19,6 @@ package org.apache.maven.archiva.transaction;
  * under the License.
  */
 
-import org.codehaus.plexus.digest.Digester;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.List;

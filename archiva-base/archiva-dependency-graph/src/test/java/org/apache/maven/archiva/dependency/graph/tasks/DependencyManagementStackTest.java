@@ -21,7 +21,6 @@ package org.apache.maven.archiva.dependency.graph.tasks;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.dependency.graph.DependencyGraphNode;
-import org.apache.maven.archiva.dependency.graph.tasks.DependencyManagementStack;
 import org.apache.maven.archiva.dependency.graph.tasks.DependencyManagementStack.Rules;
 import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.model.Dependency;

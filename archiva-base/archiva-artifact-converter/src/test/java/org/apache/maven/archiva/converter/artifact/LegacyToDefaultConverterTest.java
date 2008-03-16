@@ -20,9 +20,6 @@ package org.apache.maven.archiva.converter.artifact;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.archiva.converter.artifact.ArtifactConversionException;
-import org.apache.maven.archiva.converter.artifact.ArtifactConverter;
-import org.apache.maven.archiva.converter.artifact.Messages;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;

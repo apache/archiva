@@ -19,7 +19,6 @@ package org.apache.maven.archiva.scheduled.executors;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.database.ArchivaDAO;
 import org.apache.maven.archiva.database.ArtifactDAO;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 

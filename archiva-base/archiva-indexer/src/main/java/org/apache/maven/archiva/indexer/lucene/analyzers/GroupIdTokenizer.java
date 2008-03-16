@@ -20,7 +20,6 @@ package org.apache.maven.archiva.indexer.lucene.analyzers;
  */
 
 import org.apache.lucene.analysis.CharTokenizer;
-import org.apache.maven.archiva.indexer.ArtifactKeys;
 
 import java.io.Reader;
 

@@ -20,13 +20,10 @@ package org.apache.maven.archiva.transaction;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.digest.Digester;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
