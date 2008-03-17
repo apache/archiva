@@ -30,6 +30,7 @@ import org.apache.maven.archiva.repository.RepositoryContentFactory;
 import org.apache.maven.archiva.repository.RepositoryException;
 import org.apache.maven.archiva.database.ProjectModelDAO;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.codehaus.plexus.cache.Cache;
 
 import java.util.List;
 import java.io.File;
@@ -64,11 +65,16 @@ public class DatabaseCleanupRemoveProjectConsumer
      * @plexus.requirement role-hint="jdo"
      */
     private ProjectModelDAO projectModelDAO;
-    
+   
     /**
      * @plexus.requirement
      */
     private RepositoryContentFactory repositoryFactory;
+
+    /**
+     * @plexus.requirement role-hint="effective-project-cache"
+     */
+    private Cache effectiveProjectCache;
 
     public void beginScan()
     {
@@ -81,44 +87,54 @@ public class DatabaseCleanupRemoveProjectConsumer
     }
 
     public List<String> getIncludedTypes()
-    {       	
-    	return null;
+    {
+        return null;
     }
 
     public void processArchivaArtifact( ArchivaArtifact artifact )
         throws ConsumerException
-    {    	
-    	if ( !StringUtils.equals( "pom", artifact.getType() ) )
+    {
+        if ( !StringUtils.equals( "pom", artifact.getType() ) )
         {
-            // Not a pom.  Skip it.
+            // Not a pom. Skip it.
             return;
         }
-    	
-    	try
-    	{
-	    	ManagedRepositoryContent repositoryContent = 
-	    		repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
-	        
-	    	File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
-	    		    	
-	    	if( !file.exists() )
-	        {	        	
-        		ArchivaProjectModel projectModel = projectModelDAO.getProjectModel( 
-        				artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );   
-        		
-        		projectModelDAO.deleteProjectModel( projectModel );        		
-	        }
-    	}
-    	catch ( RepositoryException re )
-    	{    		
-    		throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + 
-    				re.getMessage() );
-    	}
-    	catch ( ArchivaDatabaseException e )
-        {    	
+
+        try
+        {
+            ManagedRepositoryContent repositoryContent =
+                repositoryFactory.getManagedRepositoryContent( artifact.getModel().getRepositoryId() );
+
+            File file = new File( repositoryContent.getRepoRoot(), repositoryContent.toPath( artifact ) );
+
+            if ( !file.exists() )
+            {
+                ArchivaProjectModel projectModel =
+                    projectModelDAO.getProjectModel( artifact.getGroupId(), artifact.getArtifactId(),
+                                                     artifact.getVersion() );
+
+                projectModelDAO.deleteProjectModel( projectModel );
+                
+                // Force removal of project model from effective cache
+                String projectKey = toProjectKey( projectModel );
+                synchronized ( effectiveProjectCache )
+                {
+                    if ( effectiveProjectCache.hasKey( projectKey ) )
+                    {
+                        effectiveProjectCache.remove( projectKey );
+                    }
+                }
+            }
+        }
+        catch ( RepositoryException re )
+        {
+            throw new ConsumerException( "Can't run database cleanup remove artifact consumer: " + re.getMessage() );
+        }
+        catch ( ArchivaDatabaseException e )
+        {
             throw new ConsumerException( e.getMessage() );
-        }    	
-      
+        }
+
     }
 
     public String getDescription()
@@ -134,16 +150,31 @@ public class DatabaseCleanupRemoveProjectConsumer
     public boolean isPermanent()
     {
         return false;
-    }    
-    
+    }
+
     public void setProjectModelDAO( ProjectModelDAO projectModelDAO )
     {
         this.projectModelDAO = projectModelDAO;
     }
-    
+
     public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
     {
         this.repositoryFactory = repositoryFactory;
     }
     
+    public void setEffectiveProjectCache( Cache effectiveProjectCache )
+    {
+        this.effectiveProjectCache = effectiveProjectCache;
+    }
+
+    private String toProjectKey( ArchivaProjectModel project )
+    {
+        StringBuilder key = new StringBuilder();
+
+        key.append( project.getGroupId() ).append( ":" );
+        key.append( project.getArtifactId() ).append( ":" );
+        key.append( project.getVersion() );
+
+        return key.toString();
+    }
 }

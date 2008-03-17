@@ -62,4 +62,26 @@
       </requirements>
     </component>
   </components>
+  
+  <component>
+    <role>org.codehaus.plexus.cache.Cache</role>
+    <role-hint>effective-project-cache</role-hint>
+    <implementation>org.codehaus.plexus.cache.ehcache.EhcacheCache</implementation>
+    <description>Effective Project Cache</description>
+    <configuration>
+      <disk-expiry-thread-interval-seconds>600</disk-expiry-thread-interval-seconds>
+      <disk-persistent>true</disk-persistent>
+      <disk-store-path>${java.io.tmpdir}/archiva/effectiveproject</disk-store-path>
+      <eternal>true</eternal>
+      <max-elements-in-memory>1000</max-elements-in-memory>
+      <memory-eviction-policy>LRU</memory-eviction-policy>
+      <name>effective-project-cache</name>
+      <overflow-to-disk>false</overflow-to-disk>
+      <!-- TODO: Adjust the time to live to be more sane (ie: huge 4+ hours) -->
+      <!-- 45 minutes = 2700 seconds -->
+      <time-to-idle-seconds>2700</time-to-idle-seconds>
+      <!-- 30 minutes = 1800 seconds  -->
+      <time-to-live-seconds>1800</time-to-live-seconds>
+    </configuration>
+  </component>
 </component-set>
