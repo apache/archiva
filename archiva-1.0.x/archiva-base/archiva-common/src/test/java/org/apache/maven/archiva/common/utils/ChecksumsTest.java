@@ -27,8 +27,8 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * ChecksumsTest 
- *
+ * ChecksumsTest
+ * 
  * @author <a href="mailto:joakime@apache.org">Joakim Erdfelt</a>
  * @version $Id$
  */
@@ -256,14 +256,14 @@ public class ChecksumsTest
     private File createTestableFiles( String md5State, String sha1State )
         throws Exception
     {
-        File sourceDir = new File( "src/test/resources/checksums/" );
+
         File destDir = new File( "target/checksum-tests/" + getName() + "/" );
 
-        FileUtils.copyFileToDirectory( new File( sourceDir, "artifact.jar" ), destDir );
+        FileUtils.copyFileToDirectory( ResourceUtils.getResource( "/checksums/artifact.jar" ), destDir );
 
         if ( md5State != null )
         {
-            File md5File = new File( sourceDir, "artifact.jar.md5-" + md5State );
+            File md5File = ResourceUtils.getResource( "/checksums/artifact.jar.md5-" + md5State );
             assertTrue( "Testable file exists: " + md5File.getName() + ":", md5File.exists() && md5File.isFile() );
             File destFile = new File( destDir, "artifact.jar.md5" );
             FileUtils.copyFile( md5File, destFile );
@@ -271,7 +271,7 @@ public class ChecksumsTest
 
         if ( sha1State != null )
         {
-            File sha1File = new File( sourceDir, "artifact.jar.sha1-" + sha1State );
+            File sha1File = ResourceUtils.getResource( "/checksums/artifact.jar.sha1-" + sha1State );
             assertTrue( "Testable file exists: " + sha1File.getName() + ":", sha1File.exists() && sha1File.isFile() );
             File destFile = new File( destDir, "artifact.jar.sha1" );
             FileUtils.copyFile( sha1File, destFile );
@@ -284,8 +284,8 @@ public class ChecksumsTest
     private Checksums lookupChecksums()
         throws Exception
     {
-        Checksums policy = (Checksums) lookup( Checksums.class );
-        assertNotNull( policy );
-        return policy;
+        Checksums checksums = (Checksums) lookup( Checksums.class );
+        assertNotNull( checksums );
+        return checksums;
     }
 }
