@@ -65,15 +65,20 @@
           </td>
         </tr>
         <ww:textfield label="Checksum" size="50" name="md5"/>
-        <ww:submit value="Go!"/>
+        <ww:submit value="Search"/>
       </ww:form>
 
       <p>
-        Select the file you would like to locate in the remote repository.
+        This allows you to search the repository using the checksum of an artifact that you are trying to identify.
+        You can either specify the checksum to look for directly, or scan a local artifact file.
+      </p>
+
+      <p>
+        To scan a local file, select the file you would like to locate in the remote repository.
         The entire file will
         <b>not</b>
         be uploaded to the server. See the progress bar below for progress of
-        locally creating a checksum that is uploaded to the server after you hit "Go!".
+        locally creating a checksum that is uploaded to the server after you hit "Search".
         <ww:actionerror/>
       </p>
 
@@ -87,7 +92,7 @@
     <ww:else>
       <ww:form method="POST" action="checksumSearch" namespace="/">
         <ww:textfield label="Checksum" size="50" name="q"/>
-        <ww:submit value="Go!"/>
+        <ww:submit value="Search"/>
       </ww:form>
 
       <p>
