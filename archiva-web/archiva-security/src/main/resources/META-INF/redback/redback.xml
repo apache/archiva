@@ -1,223 +1,228 @@
 <redback-role-model>
-  <version>1.0.0</version>
-  <application>Archiva</application>
-  <operations>
-    <operation>
-      <id>archiva-manage-users</id>
-      <name>archiva-manage-users</name>
-      <description>Manage Archiva Users</description>
-    </operation>
-    <operation>
-      <id>archiva-manage-configuration</id>
-      <name>archiva-manage-configuration</name>
-      <description>Manage Archiva Configuration</description>
-    </operation>
-    <operation>
-      <id>archiva-regenerate-index</id>
-      <name>archiva-regenerate-index</name>
-      <description>Regenerate Archiva Index</description>
-    </operation>
-    <operation>
-      <id>archiva-run-indexer</id>
-      <name>archiva-run-indexer</name>
-      <description>Run Archiva Indexer</description>
-    </operation>
-    <operation>
-      <id>archiva-access-reports</id>
-      <name>archiva-access-reports</name>
-      <description>Access Archiva Reports</description>
-    </operation>
-    <operation>
-      <id>archiva-add-repository</id>
-      <name>archiva-add-repository</name>
-      <description>Add Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-delete-repository</id>
-      <name>archiva-delete-repository</name>
-      <description>Delete Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-read-repository</id>
-      <name>archiva-read-repository</name>
-      <description>Read Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-edit-repository</id>
-      <name>archiva-edit-repository</name>
-      <description>Edit Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-upload-repository</id>
-      <name>archiva-upload-repository</name>
-      <description>Upload Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-access-repository</id>
-      <name>archiva-access-repository</name>
-      <description>Access Archiva Repository</description>
-    </operation>
-    <operation>
-      <id>archiva-guest</id>
-      <name>archiva-guest</name>
-      <description>Active Archiva Guest</description>
-    </operation>
-  </operations>
-  <roles>
-    <role>
-      <id>archiva-system-administrator</id>
-      <name>Archiva System Administrator</name>
-      <permanent>true</permanent>
-      <assignable>false</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-manage-configuration</id>
-          <name>archiva-manage-configuration</name>
-          <operation>archiva-manage-configuration</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-        <permission>
-          <id>archiva-manage-users</id>
-          <name>archiva-manage-users</name>
-          <operation>archiva-manage-users</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-        <permission>
-          <id>archiva-run-indexer</id>
-          <name>archiva-run-indexer</name>
-          <operation>archiva-run-indexer</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-        <permission>
-          <id>archiva-regenerate-index</id>
-          <name>archiva-regenerate-index</name>
-          <operation>archiva-regenerate-index</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-        <permission>
-          <id>archiva-access-reports</id>
-          <name>archiva-access-reports</name>
-          <operation>archiva-access-reports</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-      </permissions>
-      <childRoles>
-      	<childRole>archiva-global-repository-manager</childRole>
-      </childRoles>
-      <parentRoles>
-      	<parentRole>system-administrator</parentRole>
-      </parentRoles>      
-    </role>
-    <role>
-      <id>archiva-user-administrator</id>
-      <name>Archiva User Administrator</name>
-      <permanent>true</permanent>
-      <assignable>false</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-guest</id>
-          <name>Archiva Guest Permission</name>
-          <operation>archiva-guest</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-      </permissions>
-      <parentRoles>
-      	<parentRole>user-administrator</parentRole>
-      </parentRoles>
-    </role>
-    <role>
-      <id>archiva-guest</id>
-      <name>Archiva Guest</name>
-      <permanent>true</permanent>
-      <assignable>false</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-guest</id>
-          <name>Archiva Guest Permission</name>
-          <operation>archiva-guest</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-      </permissions>
-      <parentRoles>
-      	<parentRole>guest</parentRole>
-      </parentRoles>
-    </role>
-    <role>
-      <id>archiva-global-repository-manager</id>
-      <name>Global Repository Manager</name>
-      <permanent>true</permanent>
-      <assignable>true</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-add-repository</id>
-          <name>Archiva Add Repository</name>
-          <operation>archiva-add-repository</operation>
-          <resource>global</resource>
-          <permanent>true</permanent>
-        </permission>
-      </permissions>
-    </role>
-    <role>
-      <id>archiva-global-repository-observer</id>
-      <name>Global Repository Observer</name>
-      <permanent>true</permanent>
-      <assignable>true</assignable>
-    </role>
-  </roles>
-  <templates>
-    <template>
-      <id>archiva-repository-manager</id>
-      <namePrefix>Repository Manager</namePrefix>
-      <assignable>true</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-edit-repository</id>
-          <name>Archiva Edit Repository</name>
-          <operation>archiva-edit-repository</operation>
-          <resource>${resource}</resource>
-        </permission>
-        <permission>
-          <id>archiva-delete-repository</id>
-          <name>Archiva Delete Repository</name>
-          <operation>archiva-delete-repository</operation>
-          <resource>${resource}</resource>
-        </permission>       
-        <permission>
-          <id>archiva-upload-repository</id>
-          <name>Archiva Upload to Repository</name>
-          <operation>archiva-upload-repository</operation>
-          <resource>${resource}</resource>
-        </permission>
-      </permissions>
-      <childTemplates>
-        <childTemplate>archiva-repository-observer</childTemplate>
-      </childTemplates>
-      <parentRoles>
-        <parentRole>archiva-global-repository-manager</parentRole>
-      </parentRoles>
-    </template>
-    <template>
-      <id>archiva-repository-observer</id>
-      <namePrefix>Repository Observer</namePrefix>
-      <assignable>true</assignable>
-      <permissions>
-        <permission>
-          <id>archiva-read-repository</id>
-          <name>Archiva Read Repository</name>
-          <operation>archiva-read-repository</operation>
-          <resource>${resource}</resource>
-        </permission>
-      </permissions>
-      <parentRoles>
-        <parentRole>archiva-global-repository-observer</parentRole>
-      </parentRoles>
-    </template>
-  </templates>
+	<modelVersion>1.0.0</modelVersion>
+	<applications>
+ 			<application>
+ 			  <id>Archiva</id>
+ 			  <version>1.0</version>
+			  <operations>
+			    <operation>
+			      <id>archiva-manage-users</id>
+			      <name>archiva-manage-users</name>
+			      <description>Manage Archiva Users</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-manage-configuration</id>
+			      <name>archiva-manage-configuration</name>
+			      <description>Manage Archiva Configuration</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-regenerate-index</id>
+			      <name>archiva-regenerate-index</name>
+			      <description>Regenerate Archiva Index</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-run-indexer</id>
+			      <name>archiva-run-indexer</name>
+			      <description>Run Archiva Indexer</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-access-reports</id>
+			      <name>archiva-access-reports</name>
+			      <description>Access Archiva Reports</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-add-repository</id>
+			      <name>archiva-add-repository</name>
+			      <description>Add Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-delete-repository</id>
+			      <name>archiva-delete-repository</name>
+			      <description>Delete Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-read-repository</id>
+			      <name>archiva-read-repository</name>
+			      <description>Read Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-edit-repository</id>
+			      <name>archiva-edit-repository</name>
+			      <description>Edit Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-upload-repository</id>
+			      <name>archiva-upload-repository</name>
+			      <description>Upload Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-access-repository</id>
+			      <name>archiva-access-repository</name>
+			      <description>Access Archiva Repository</description>
+			    </operation>
+			    <operation>
+			      <id>archiva-guest</id>
+			      <name>archiva-guest</name>
+			      <description>Active Archiva Guest</description>
+			    </operation>
+			  </operations>
+			  <roles>
+			    <role>
+			      <id>archiva-system-administrator</id>
+			      <name>Archiva System Administrator</name>
+			      <permanent>true</permanent>
+			      <assignable>false</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-manage-configuration</id>
+			          <name>archiva-manage-configuration</name>
+			          <operation>archiva-manage-configuration</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			        <permission>
+			          <id>archiva-manage-users</id>
+			          <name>archiva-manage-users</name>
+			          <operation>archiva-manage-users</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			        <permission>
+			          <id>archiva-run-indexer</id>
+			          <name>archiva-run-indexer</name>
+			          <operation>archiva-run-indexer</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			        <permission>
+			          <id>archiva-regenerate-index</id>
+			          <name>archiva-regenerate-index</name>
+			          <operation>archiva-regenerate-index</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			        <permission>
+			          <id>archiva-access-reports</id>
+			          <name>archiva-access-reports</name>
+			          <operation>archiva-access-reports</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			      </permissions>
+			      <childRoles>
+			      	<childRole>archiva-global-repository-manager</childRole>
+			      </childRoles>
+			      <parentRoles>
+			      	<parentRole>system-administrator</parentRole>
+			      </parentRoles>      
+			    </role>
+			    <role>
+			      <id>archiva-user-administrator</id>
+			      <name>Archiva User Administrator</name>
+			      <permanent>true</permanent>
+			      <assignable>false</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-guest</id>
+			          <name>Archiva Guest Permission</name>
+			          <operation>archiva-guest</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			      </permissions>
+			      <parentRoles>
+			      	<parentRole>user-administrator</parentRole>
+			      </parentRoles>
+			    </role>
+			    <role>
+			      <id>archiva-guest</id>
+			      <name>Archiva Guest</name>
+			      <permanent>true</permanent>
+			      <assignable>false</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-guest</id>
+			          <name>Archiva Guest Permission</name>
+			          <operation>archiva-guest</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			      </permissions>
+			      <parentRoles>
+			      	<parentRole>guest</parentRole>
+			      </parentRoles>
+			    </role>
+			    <role>
+			      <id>archiva-global-repository-manager</id>
+			      <name>Global Repository Manager</name>
+			      <permanent>true</permanent>
+			      <assignable>true</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-add-repository</id>
+			          <name>Archiva Add Repository</name>
+			          <operation>archiva-add-repository</operation>
+			          <resource>global</resource>
+			          <permanent>true</permanent>
+			        </permission>
+			      </permissions>
+			    </role>
+			    <role>
+			      <id>archiva-global-repository-observer</id>
+			      <name>Global Repository Observer</name>
+			      <permanent>true</permanent>
+			      <assignable>true</assignable>
+			    </role>
+			  </roles>
+			  <templates>
+			    <template>
+			      <id>archiva-repository-manager</id>
+			      <namePrefix>Repository Manager</namePrefix>
+			      <assignable>true</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-edit-repository</id>
+			          <name>Archiva Edit Repository</name>
+			          <operation>archiva-edit-repository</operation>
+			          <resource>${resource}</resource>
+			        </permission>
+			        <permission>
+			          <id>archiva-delete-repository</id>
+			          <name>Archiva Delete Repository</name>
+			          <operation>archiva-delete-repository</operation>
+			          <resource>${resource}</resource>
+			        </permission>       
+			        <permission>
+			          <id>archiva-upload-repository</id>
+			          <name>Archiva Upload to Repository</name>
+			          <operation>archiva-upload-repository</operation>
+			          <resource>${resource}</resource>
+			        </permission>
+			      </permissions>
+			      <childTemplates>
+			        <childTemplate>archiva-repository-observer</childTemplate>
+			      </childTemplates>
+			      <parentRoles>
+			        <parentRole>archiva-global-repository-manager</parentRole>
+			      </parentRoles>
+			    </template>
+			    <template>
+			      <id>archiva-repository-observer</id>
+			      <namePrefix>Repository Observer</namePrefix>
+			      <assignable>true</assignable>
+			      <permissions>
+			        <permission>
+			          <id>archiva-read-repository</id>
+			          <name>Archiva Read Repository</name>
+			          <operation>archiva-read-repository</operation>
+			          <resource>${resource}</resource>
+			        </permission>
+			      </permissions>
+			      <parentRoles>
+			        <parentRole>archiva-global-repository-observer</parentRole>
+			      </parentRoles>
+			    </template>
+			  </templates>
+		  </application>
+	  </applications>
 </redback-role-model>

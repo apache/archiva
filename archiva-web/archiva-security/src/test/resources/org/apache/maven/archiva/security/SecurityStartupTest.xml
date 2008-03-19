@@ -99,12 +99,7 @@
       <implementation>org.codehaus.plexus.redback.role.DefaultRoleManager</implementation>
       <instantiation-strategy>singleton</instantiation-strategy>
       <description>RoleProfileManager:</description>
-      <requirements>
-        <requirement>
-          <role>org.codehaus.plexus.redback.role.merger.RoleModelMerger</role>
-          <role-hint>default</role-hint>
-          <field-name>modelMerger</field-name>
-        </requirement>
+      <requirements>      
         <requirement>
           <role>org.codehaus.plexus.redback.role.validator.RoleModelValidator</role>
           <role-hint>default</role-hint>
