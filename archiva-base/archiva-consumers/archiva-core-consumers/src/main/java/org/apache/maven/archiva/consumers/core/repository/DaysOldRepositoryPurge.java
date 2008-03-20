@@ -140,11 +140,11 @@ public class DaysOldRepositoryPurge
         }
         catch ( LayoutException le )
         {
-            throw new RepositoryPurgeException( le.getMessage() );
+            throw new RepositoryPurgeException( le.getMessage(), le );
         }
         catch ( ContentNotFoundException e )
         {
-            throw new RepositoryPurgeException( e.getMessage() );
+            throw new RepositoryPurgeException( e.getMessage(), e );
         }
     }
 
