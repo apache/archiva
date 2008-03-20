@@ -17,7 +17,12 @@ Deploying to Repository
     ...
     <servers>
       <server>
-        <id>deployment.webdav</id>
+        <id>archiva.internal</id>
+        <username>{archiva-deployment-user}</username>
+        <password>{archiva-deployment-pwd}</password>
+      </server>
+      <server>
+        <id>archiva.snapshots</id>
         <username>{archiva-deployment-user}</username>
         <password>{archiva-deployment-pwd}</password>
       </server>
@@ -29,7 +34,9 @@ Deploying to Repository
 
 * Deploying to Archiva using WebDAV
 
-  [[1]] Configure the <<<distributionManagement>>> part of your <<<pom.xml>>> (customising the URLs as needed)
+  [[1]] Configure the <<<distributionManagement>>> part of your <<<pom.xml>>> (customising the URLs as needed).
+        The <<<id>>> of the repository in <<<distributionManagement>>> <<must>> match the <<<id>>> of the <<<server>>>
+        element in <<<settings.xml>>>.
  
 +-------------------------------------------------------------------------+
   <project>
@@ -115,7 +122,7 @@ Deploying to Repository
   
 +------+
 mvn deploy:deploy-file -Dfile=filename.jar -DpomFile=filename.pom
-    -DrepositoryId=deployment.webdav
+    -DrepositoryId=archiva.internal
     -Durl=dav:http://repo.mycompany.com:8080/repository/internal/
 +------+
 
