@@ -64,7 +64,7 @@ public class RetentionCountRepositoryPurge
             {
                 return;
             }
-
+                                                                     
             ArtifactReference artifact = repository.toArtifactReference( path );
 
             if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
@@ -99,7 +99,7 @@ public class RetentionCountRepositoryPurge
         }
         catch ( LayoutException le )
         {
-            throw new RepositoryPurgeException( le.getMessage() );
+            throw new RepositoryPurgeException( le.getMessage(), le );
         }
         catch ( ContentNotFoundException e )
         {
