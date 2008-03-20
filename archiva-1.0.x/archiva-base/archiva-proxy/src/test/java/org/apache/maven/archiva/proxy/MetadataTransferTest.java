@@ -22,6 +22,7 @@ package org.apache.maven.archiva.proxy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.common.utils.VersionUtil;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -123,7 +124,7 @@ public class MetadataTransferTest
 
         wagonMockControl.replay();
 
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         wagonMockControl.verify();
 
@@ -148,7 +149,7 @@ public class MetadataTransferTest
         assertResourceNotFound( requestedResource );
 
         // No proxy setup, nothing fetched, failure expected.
-        assertFetchProjectFailed( requestedResource );
+        assertFetchProjectOrGroupFailed( requestedResource );
 
         // No local artifactId, and no fetch, should equal no metadata file downloaded / created / updated.
         assertResourceNotFound( requestedResource );
@@ -164,7 +165,7 @@ public class MetadataTransferTest
         assertResourceExists( requestedResource );
 
         // No proxy setup, nothing fetched from remote, but local exists.
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // Nothing fetched.  Should only contain contents of what is in the repository.
         // A metadata update is not performed in this use case.  Local metadata content is only
@@ -190,7 +191,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
         // Two proxies setup, metadata fetched from both remotes.
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // Nothing fetched.  Should only contain contents of what is in the repository.
         assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1" }, "1.0.1", "1.0.1" );
@@ -216,7 +217,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
         // Two proxies setup, nothing fetched from remotes, local does not exist.
-        assertFetchProjectFailed( requestedResource );
+        assertFetchProjectOrGroupFailed( requestedResource );
 
         // Nothing fetched.  Nothing should exist.
         assertResourceNotFound( requestedResource );
@@ -239,7 +240,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
 
         // One proxy setup, metadata fetched from remote, local does not exist.
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // Remote fetched.  Local created/updated.
         assertProjectMetadataContents( requestedResource, new String[] { "1.0.5" }, "1.0.5", "1.0.5" );
@@ -264,7 +265,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
         // Two proxies setup, metadata fetched from both remotes.
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // metadata fetched from both repos, and merged with local version.
         assertProjectMetadataContents( requestedResource, new String[] { "1.0", "1.0.1", "2.0" }, "2.0", "2.0" );
@@ -290,7 +291,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
         // Two proxies setup, metadata fetch from remotes fail (because they dont exist).
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // metadata not fetched from both repos, and local version exists.
         // Since there was no updated metadata content from a remote/proxy, a metadata update on
@@ -315,7 +316,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
 
         // One proxy setup, metadata fetched from remote, local exists.
-        assertFetchProject( requestedResource );
+        assertFetchProjectOrGroup( requestedResource );
 
         // Remote fetched.  Local updated.
         assertProjectMetadataContents( requestedResource, new String[] { "1.0.8", "1.0.22", "2.0" }, "2.0", "2.0" );
@@ -416,7 +417,7 @@ public class MetadataTransferTest
 
         assertResourceNotFound( requestedResource );
 
-        assertFetchProjectFailed( requestedResource );
+        assertFetchProjectOrGroupFailed( requestedResource );
 
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
@@ -704,13 +705,197 @@ public class MetadataTransferTest
         assertRepoSnapshotMetadataContents( ID_PROXIED1, requestedResource, "20050831", "101112", 1 );
     }
 
+    public void testGetGroupMetadataNotProxiedNotLocal()
+        throws Exception
+    {
+        // The artifactId "get-default-metadata-nonexistant" does not exist (intentionally).
+        String requestedResource = "org/apache/maven/test/groups/get-default-metadata-nonexistant/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        assertResourceNotFound( requestedResource );
+
+        // No proxy setup, nothing fetched, failure expected.
+        assertFetchProjectOrGroupFailed( requestedResource );
+
+        // No local artifactId, and no fetch, should equal no metadata file downloaded / created / updated.
+        assertResourceNotFound( requestedResource );
+    }
+
+    public void testGetGroupMetadataNotProxiedOnLocal()
+        throws Exception
+    {
+        // Project metadata that exists and has multiple versions
+        String requestedResource = "org/apache/maven/test/groups/get-project-metadata/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        assertResourceExists( requestedResource );
+
+        // No proxy setup, nothing fetched from remote, but local exists.
+        assertFetchProjectOrGroup( requestedResource );
+
+        // Nothing fetched.  Should only contain contents of what is in the repository.
+        // A metadata update is not performed in this use case.  Local metadata content is only
+        // updated via the metadata updater consumer.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin1" } );
+    }
+
+    public void testGetGroupMetadataProxiedNotLocalMultipleRemotes()
+        throws Exception
+    {
+        // Project metadata that does not exist locally, but has multiple versions in remote repos
+        String requestedResource = "org/apache/maven/test/groups/get-default-layout/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertResourceNotFound( requestedResource );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+
+        // Two proxies setup, metadata fetched from both remotes.
+        assertFetchProjectOrGroup( requestedResource );
+
+        // Nothing fetched.  Should only contain contents of what is in the repository.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin2", "plugin1" } );
+        assertRepoGroupMetadataContents( ID_PROXIED1, requestedResource, new String[] { "plugin1" } );
+        assertRepoGroupMetadataContents( ID_PROXIED2, requestedResource, new String[] { "plugin2" } );
+    }
+
+    public void testGetGroupsMetadataProxiedNotLocalNotRemote()
+        throws Exception
+    {
+        // Non-existant project metadata that does not exist locally and doesn't exist on remotes.
+        String requestedResource = "org/apache/maven/test/groups/get-bogus-artifact/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertResourceNotFound( requestedResource );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+
+        // Two proxies setup, nothing fetched from remotes, local does not exist.
+        assertFetchProjectOrGroupFailed( requestedResource );
+
+        // Nothing fetched.  Nothing should exist.
+        assertResourceNotFound( requestedResource );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+    }
+
+    public void testGetGroupMetadataProxiedNotLocalOnRemote()
+        throws Exception
+    {
+        // New project metadata that does not exist locally but exists on remote.
+        String requestedResource = "org/apache/maven/test/groups/get-found-in-proxy/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertResourceNotFound( requestedResource );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+
+        // One proxy setup, metadata fetched from remote, local does not exist.
+        assertFetchProjectOrGroup( requestedResource );
+
+        // Remote fetched.  Local created/updated.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin3" } );
+        assertRepoGroupMetadataContents( ID_PROXIED1, requestedResource, new String[] { "plugin3" } );
+    }
+
+    public void testGetGroupMetadataProxiedOnLocalMultipleRemote()
+        throws Exception
+    {
+        // Project metadata that exist locally, and has multiple versions in remote repos
+        String requestedResource = "org/apache/maven/test/groups/get-on-multiple-repos/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin1" } );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+
+        // Two proxies setup, metadata fetched from both remotes.
+        assertFetchProjectOrGroup( requestedResource );
+
+        // metadata fetched from both repos, and merged with local version.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin1", "plugin2", "plugin4" } );
+        assertRepoGroupMetadataContents( ID_PROXIED1, requestedResource, new String[] { "plugin1", "plugin4" } );
+        assertRepoGroupMetadataContents( ID_PROXIED2, requestedResource, new String[] { "plugin1", "plugin2" } );
+    }
+
+    public void testGetGroupMetadataProxiedOnLocalNotRemote()
+        throws Exception
+    {
+        // Project metadata that exist locally, and does not exist in remote repos.
+        String requestedResource = "org/apache/maven/test/groups/get-not-on-remotes/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin5" } );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+
+        // Two proxies setup, metadata fetch from remotes fail (because they dont exist).
+        assertFetchProjectOrGroup( requestedResource );
+
+        // metadata not fetched from both repos, and local version exists.
+        // Since there was no updated metadata content from a remote/proxy, a metadata update on
+        // the local file never ran.  Local only updates are performed via the metadata updater consumer.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin5" } );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+        assertNoRepoMetadata( ID_PROXIED2, requestedResource );
+    }
+
+    public void testGetGroupMetadataProxiedOnLocalOnRemote()
+        throws Exception
+    {
+        // Project metadata that exist locally and exists on remote.
+        String requestedResource = "org/apache/maven/test/groups/get-on-local-on-remote/maven-metadata.xml";
+        setupTestableManagedRepository( requestedResource );
+
+        // Configure Connector (usually done within archiva.xml configuration)
+        saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
+                       SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO );
+
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin6", "plugin7" } );
+        assertNoRepoMetadata( ID_PROXIED1, requestedResource );
+
+        // One proxy setup, metadata fetched from remote, local exists.
+        assertFetchProjectOrGroup( requestedResource );
+
+        // Remote fetched.  Local updated.
+        assertGroupMetadataContents( requestedResource, new String[] { "plugin6", "plugin7", "plugin4" } );
+        assertRepoGroupMetadataContents( ID_PROXIED1, requestedResource, new String[] { "plugin7", "plugin4" } );
+    }
+
     /**
      * Transfer the metadata file.
      *
      * @param requestedResource the requested resource
      * @throws Exception
      */
-    private void assertFetchProject( String requestedResource )
+    private void assertFetchProjectOrGroup( String requestedResource )
         throws Exception
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
@@ -735,7 +920,7 @@ public class MetadataTransferTest
      * @param requestedResource the requested resource
      * @throws Exception
      */
-    private void assertFetchProjectFailed( String requestedResource )
+    private void assertFetchProjectOrGroupFailed( String requestedResource )
         throws Exception
     {
         File expectedFile = new File( managedDefaultDir, requestedResource );
@@ -848,6 +1033,64 @@ public class MetadataTransferTest
 
         File actualFile = new File( managedDefaultDir, proxiedFile );
         assertFalse( "Repo specific metadata should not exist: " + actualFile, actualFile.exists() );
+    }
+
+    private void assertGroupMetadataContents( String requestedResource, String expectedPlugins[] )
+        throws Exception
+    {
+        File actualFile = new File( managedDefaultDir, requestedResource );
+        assertTrue( "Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
+
+        ProjectReference actualMetadata = createGroupReference( requestedResource );
+
+        assertGroupMetadata( actualFile, actualMetadata, expectedPlugins );
+    }
+
+    private ProjectReference createGroupReference( String requestedResource )
+        throws RepositoryMetadataException
+    {
+        ProjectReference projectReference = createProjectReference( requestedResource );
+        projectReference.setGroupId( projectReference.getGroupId() + "." + projectReference.getArtifactId() );
+        projectReference.setArtifactId( null );
+        return projectReference;
+    }
+
+    private void assertRepoGroupMetadataContents( String proxiedRepoId, String requestedResource,
+                                                  String expectedPlugins[] )
+        throws Exception
+    {
+        String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
+
+        File actualFile = new File( managedDefaultDir, proxiedFile );
+        assertTrue( "Repo Specific Group Metadata should exist: " + requestedResource, actualFile.exists() );
+
+        ProjectReference actualMetadata = createGroupReference( requestedResource );
+
+        assertGroupMetadata( actualFile, actualMetadata, expectedPlugins );
+    }
+
+    private void assertGroupMetadata( File actualFile, ProjectReference actualMetadata, String expectedPlugins[] )
+        throws Exception
+    {
+        // Build expected metadata XML
+        StringWriter expectedMetadataXml = new StringWriter();
+        ArchivaRepositoryMetadata m = new ArchivaRepositoryMetadata();
+        m.setGroupId( actualMetadata.getGroupId() );
+
+        for ( String pluginId : expectedPlugins )
+        {
+            Plugin p = new Plugin();
+            p.setPrefix( pluginId );
+            p.setArtifactId( pluginId + "-maven-plugin" );
+            p.setName( "The " + pluginId + " Plugin" );
+            m.getPlugins().add( p );
+        }
+
+        m.setModelEncoding( null );
+        RepositoryMetadataWriter.write( m, expectedMetadataXml );
+
+        // Compare the file to the actual contents.
+        assertMetadataEquals( expectedMetadataXml.toString(), actualFile );
     }
 
     /**

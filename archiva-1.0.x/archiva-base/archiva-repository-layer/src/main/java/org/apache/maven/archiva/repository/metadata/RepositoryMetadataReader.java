@@ -21,6 +21,7 @@ package org.apache.maven.archiva.repository.metadata;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLReader;
@@ -76,6 +77,15 @@ public class RepositoryMetadataReader
                     snapshot.setBuildNumber( NumberUtils.toInt( tmp ) );
                 }
                 metadata.setSnapshotVersion( snapshot );
+            }
+
+            for ( Element plugin : xml.getElementList( "//metadata/plugins/plugin" ) )
+            {
+                Plugin p = new Plugin();
+                p.setPrefix( plugin.elementTextTrim( "prefix" ) );
+                p.setArtifactId( plugin.elementTextTrim( "artifactId" ) );
+                p.setName( plugin.elementTextTrim( "name" ) );
+                metadata.addPlugin( p );
             }
 
             return metadata;

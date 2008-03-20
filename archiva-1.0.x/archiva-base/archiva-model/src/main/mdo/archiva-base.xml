@@ -641,6 +641,20 @@
           </association>
         </field>
         <field>
+          <name>plugins</name>
+          <identifier>false</identifier>
+          <version>1.0.0+</version>
+          <required>false</required>
+          <description>
+            The available plugins.
+          </description>
+          <association stash.part="true"
+                       jpox.join="false">
+            <type>Plugin</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
           <name>availableVersions</name>
           <identifier>false</identifier>
           <version>1.0.0+</version>
@@ -764,6 +778,45 @@
           ]]></code>
         </codeSegment>
       </codeSegments>
+    </class>
+
+    <class stash.storable="true"
+           jpox.not-persisted-fields="modelEncoding"
+           jpox.table="REPOSITORY_METADATA_PLUGINS">
+      <name>Plugin</name>
+      <description>The Plugin</description>
+      <version>1.0.0+</version>
+      <fields>
+        <field stash.maxSize="20"
+               jpox.column="PLUGIN_PREFIX">
+          <name>prefix</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+            The prefix for a plugin
+          </description>
+        </field>
+        <field
+               jpox.column="PLUGIN_ARTIFACT_ID">
+          <name>artifactId</name>
+          <type>String</type>
+          <identifier>true</identifier>
+          <required>true</required>
+          <description>
+            The artifactId for a plugin
+          </description>
+        </field>
+        <field jpox.column="PLUGIN_NAME">
+          <name>name</name>
+          <type>String</type>
+          <identifier>false</identifier>
+          <required>true</required>
+          <description>
+            The name for a plugin
+          </description>
+        </field>
+      </fields>
     </class>
 
 
