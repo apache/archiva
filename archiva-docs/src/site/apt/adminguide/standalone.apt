@@ -102,7 +102,7 @@ Installing Standalone Distribution of Apache Archiva
 
  More information about using Derby Network Server as an external user database
  for Archiva can be found on the wiki:
- {{{http://docs.codehaus.org/display/MAVENUSER/Archiva+User+DB+on+Derby+Network+Server}
+ {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+User+DB+on+Derby+Network+Server}
  Archiva User DB on Derby Network Server}}
 
 
