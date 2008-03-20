@@ -14,7 +14,7 @@ Installing Apache Archiva as a Web Application
   Tomcat fails to start the context and you have to shutdown and restart again.
 
 
-To deploy Archiva on Tomcat 5.5
+To deploy Archiva on Tomcat 5.5 and Tomcat 6.0
 
    * Create a directory in tomcat called archiva, at the same level as bin, conf, logs and the others.
 
@@ -53,19 +53,17 @@ To deploy Archiva on Tomcat 5.5
    instead, or see {{{http://issues.apache.org/bugzilla/show_bug.cgi?id=40668}
    Bug 40668}} for a workaround.
 
-To deploy Archiva on Tomcat 6.0.x:
-
-    * Do the same steps specified above when deploying to Tomcat 5.5.
-
-    * The ${appserver.base} java property is used by the Archiva internal logging configuration to determine where to output its logs to.
-    It is important to define this property either in the $CATALINA_OPTS system environment variable (if Tomcat is being launched via the
-    command line) or the service properties (if being launched as a service or daemon). The format typically expected is
-    -Dappserver.base=<SOMEWHERE>. In this example, we'll put the logs in Tomcat's <<<logs>>> directory so we need to set appserver.base
-    property to where Tomcat is installed:
+   * The ${appserver.base} java property is used by the Archiva internal logging configuration to determine where to output its logs to.
+     It is important to define this property either in the $CATALINA_OPTS system environment variable (if Tomcat is being launched via the
+     command line) or the service properties (if being launched as a service or daemon). The format typically expected is
+     -Dappserver.base=<SOMEWHERE>. In this example, we'll put the logs in Tomcat's <<<logs>>> directory so we need to set appserver.base
+     property to where Tomcat is installed:
 
 +-----------+
 export CATALINA_OPTS="-Dappserver.home=$CATALINA_HOME -Dappserver.base=$CATALINA_HOME"
 +-----------+
+
+ For more information, see {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+on+Tomcat} Archiva on Tomcat}} in the wiki.
 
 Archiva Configuration
 
