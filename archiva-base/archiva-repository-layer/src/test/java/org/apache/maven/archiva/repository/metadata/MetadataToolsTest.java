@@ -37,14 +37,13 @@ import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * MetadataToolsTest
@@ -114,19 +113,20 @@ public class MetadataToolsTest
         assertMetadataPath( "commons-lang/commons-lang/maven-metadata-central.xml", convertedName );
     }
 
-    public void testUpdateProjectBadArtifact()
-        throws Exception
-    {
-        try
-        {
-            assertUpdatedProjectMetadata( "bad_artifact", null );
-            fail( "Should have thrown an IOException on a bad artifact." );
-        }
-        catch ( IOException e )
-        {
-            // Expected path
-        }
-    }
+    // TODO: replace with group tests
+//    public void testUpdateProjectBadArtifact()
+//        throws Exception
+//    {
+//        try
+//        {
+//            assertUpdatedProjectMetadata( "bad_artifact", null );
+//            fail( "Should have thrown an IOException on a bad artifact." );
+//        }
+//        catch ( IOException e )
+//        {
+//            // Expected path
+//        }
+//    }
 
     public void testUpdateProjectMissingMultipleVersions()
         throws Exception

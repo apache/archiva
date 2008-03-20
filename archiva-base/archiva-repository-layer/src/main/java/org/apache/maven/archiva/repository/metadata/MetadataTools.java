@@ -30,6 +30,7 @@ import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.model.ProjectReference;
 import org.apache.maven.archiva.model.SnapshotVersion;
 import org.apache.maven.archiva.model.VersionedReference;
@@ -56,6 +57,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -394,14 +396,16 @@ public class MetadataTools
     }
 
     /**
-     * Update the metadata to represent the all versions of
-     * the provided groupId:artifactId project reference,
+     * Update the metadata to represent the all versions/plugins of
+     * the provided groupId:artifactId project or group reference,
      * based off of information present in the repository,
      * the maven-metadata.xml files, and the proxy/repository specific
      * metadata file contents.
      *
+     * We must treat this as a group or a project metadata file as there is no way to know in advance
+     *
      * @param managedRepository the managed repository where the metadata is kept.
-     * @param reference         the versioned referencfe to update.
+     * @param reference         the reference to update.
      * @throws LayoutException
      * @throws RepositoryMetadataException
      * @throws IOException
@@ -421,6 +425,19 @@ public class MetadataTools
         // Gather up all versions found in the managed repository.
         Set<String> allVersions = managedRepository.getVersions( reference );
 
+        // Gather up all plugins found in the managed repository.
+        // TODO: do we know this information instead?
+//        Set<Plugin> allPlugins = managedRepository.getPlugins( reference );
+        Set<Plugin> allPlugins;
+        if ( metadataFile.exists() )
+        {
+            allPlugins = new LinkedHashSet<Plugin>( RepositoryMetadataReader.read( metadataFile ).getPlugins() );
+        }
+        else
+        {
+            allPlugins = new LinkedHashSet<Plugin>();
+        }
+
         // Does this repository have a set of remote proxied repositories?
         Set<String> proxiedRepoIds = this.proxies.get( managedRepository.getId() );
 
@@ -436,6 +453,7 @@ public class MetadataTools
                 if ( proxyMetadata != null )
                 {
                     allVersions.addAll( proxyMetadata.getAvailableVersions() );
+                    allPlugins.addAll( proxyMetadata.getPlugins() );
                     long proxyLastUpdated = getLastUpdated( proxyMetadata );
 
                     lastUpdated = Math.max( lastUpdated, proxyLastUpdated );
@@ -443,47 +461,55 @@ public class MetadataTools
             }
         }
 
-        if ( allVersions.size() == 0 )
+        if ( !allVersions.isEmpty() )
         {
-            throw new IOException( "No versions found for reference." );
-        }
+            // Sort the versions
+            List<String> sortedVersions = new ArrayList<String>( allVersions );
+            Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
-        // Sort the versions
-        List<String> sortedVersions = new ArrayList<String>( allVersions );
-        Collections.sort( sortedVersions, VersionComparator.getInstance() );
+            // Split the versions into released and snapshots.
+            List<String> releasedVersions = new ArrayList<String>();
+            List<String> snapshotVersions = new ArrayList<String>();
 
-        // Split the versions into released and snapshots.
-        List<String> releasedVersions = new ArrayList<String>();
-        List<String> snapshotVersions = new ArrayList<String>();
-
-        for ( String version : sortedVersions )
-        {
-            if ( VersionUtil.isSnapshot( version ) )
+            for ( String version : sortedVersions )
             {
-                snapshotVersions.add( version );
+                if ( VersionUtil.isSnapshot( version ) )
+                {
+                    snapshotVersions.add( version );
+                }
+                else
+                {
+                    releasedVersions.add( version );
+                }
             }
-            else
+
+            Collections.sort( releasedVersions, VersionComparator.getInstance() );
+            Collections.sort( snapshotVersions, VersionComparator.getInstance() );
+
+            String latestVersion = sortedVersions.get( sortedVersions.size() - 1 );
+            String releaseVersion = null;
+
+            if ( CollectionUtils.isNotEmpty( releasedVersions ) )
             {
-                releasedVersions.add( version );
+                releaseVersion = releasedVersions.get( releasedVersions.size() - 1 );
             }
+
+            // Add the versions to the metadata model.
+            metadata.setAvailableVersions( sortedVersions );
+
+            metadata.setLatestVersion( latestVersion );
+            metadata.setReleasedVersion( releaseVersion );
         }
-
-        Collections.sort( releasedVersions, VersionComparator.getInstance() );
-        Collections.sort( snapshotVersions, VersionComparator.getInstance() );
-
-        String latestVersion = sortedVersions.get( sortedVersions.size() - 1 );
-        String releaseVersion = null;
-
-        if ( CollectionUtils.isNotEmpty( releasedVersions ) )
+        else
         {
-            releaseVersion = releasedVersions.get( releasedVersions.size() - 1 );
+            // Add the plugins to the metadata model.
+            metadata.setPlugins( new ArrayList<Plugin>( allPlugins ) );
+
+            // artifact ID was actually the last part of the group
+            metadata.setGroupId( metadata.getGroupId() + "." + metadata.getArtifactId() );
+            metadata.setArtifactId( null );
         }
 
-        // Add the versions to the metadata model.
-        metadata.setAvailableVersions( sortedVersions );
-
-        metadata.setLatestVersion( latestVersion );
-        metadata.setReleasedVersion( releaseVersion );
         if ( lastUpdated > 0 )
         {
             metadata.setLastUpdatedTimestamp( toLastUpdatedDate( lastUpdated ) );

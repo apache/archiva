@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.repository;
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -59,6 +58,24 @@ public class RepositoryServletNoProxyMetadataTest
     {
         String commonsLangMetadata = "commons-lang/commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-commons-lang-version-for-project";
+
+        File checksumFile = new File( repoRootInternal, commonsLangMetadata );
+        checksumFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
+        WebResponse response = sc.getResponse( request );
+        assertResponseOK( response );
+
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+    }
+
+    public void testGetGroupMetadataDefaultLayout()
+        throws Exception
+    {
+        String commonsLangMetadata = "commons-lang/maven-metadata.xml";
+        String expectedMetadataContents = "metadata-for-commons-lang-group";
 
         File checksumFile = new File( repoRootInternal, commonsLangMetadata );
         checksumFile.getParentFile().mkdirs();

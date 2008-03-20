@@ -23,6 +23,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.maven.archiva.model.Plugin;
 import org.apache.maven.archiva.xml.XMLException;
 import org.apache.maven.archiva.xml.XMLWriter;
 import org.dom4j.Document;
@@ -34,6 +35,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * RepositoryMetadataWriter 
@@ -73,8 +75,20 @@ public class RepositoryMetadataWriter
         doc.setRootElement( root );
 
         root.addElement( "groupId" ).setText( metadata.getGroupId() );
-        root.addElement( "artifactId" ).setText( metadata.getArtifactId() );
+        addOptionalElementText( root, "artifactId", metadata.getArtifactId() );
         addOptionalElementText( root, "version", metadata.getVersion() );
+
+        if ( CollectionUtils.isNotEmpty( metadata.getPlugins() ) )
+        {
+            Element plugins = root.addElement( "plugins" );
+            for ( Plugin plugin : (List<Plugin>)metadata.getPlugins() )
+            {
+                Element p = plugins.addElement( "plugin" );
+                p.addElement( "prefix" ).setText( plugin.getPrefix() );
+                p.addElement( "artifactId" ).setText( plugin.getArtifactId() );
+                addOptionalElementText( p, "name", plugin.getName() );
+            }
+        }
 
         if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() )
             || StringUtils.isNotBlank( metadata.getReleasedVersion() )

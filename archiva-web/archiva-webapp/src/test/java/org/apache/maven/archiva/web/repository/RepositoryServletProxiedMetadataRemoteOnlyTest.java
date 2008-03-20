@@ -139,4 +139,28 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         // --- Verification
         assertExpectedMetadata( expectedMetadata, actualMetadata );
     }
+
+    public void testGetProxiedGroupMetadataRemoteOnly()
+        throws Exception
+    {
+        // --- Setup
+        setupSnapshotsRemoteRepo();
+        setupPrivateSnapshotsRemoteRepo();
+        setupCleanInternalRepo();
+
+        String path = "org/apache/archiva/maven-metadata.xml";
+        String expectedMetadata = createGroupMetadata( "org.apache.archiva", new String[] { "archivatest-maven-plugin" } );
+
+        File managedFile = populateRepo( remoteSnapshots, path, expectedMetadata );
+
+        setupConnector( REPOID_INTERNAL, remoteSnapshots );
+        setupConnector( REPOID_INTERNAL, remotePrivateSnapshots );
+        saveConfiguration();
+
+        // --- Execution
+        String actualMetadata = requestMetadataOK( path );
+
+        // --- Verification
+        assertExpectedMetadata( expectedMetadata, actualMetadata );
+    }
 }
