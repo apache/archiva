@@ -75,7 +75,7 @@
               </property>
               <property>
                 <name>url</name>
-                <value>jdbc:derby:${plexus.home}/data/users/database;create=true</value>
+                <value>jdbc:derby:${appserver.base}/data/users/database;create=true</value>
               </property>
               <property>
                 <name>username</name>
@@ -97,7 +97,7 @@
               </property>
               <property>
                 <name>url</name>
-                <value>jdbc:derby:${plexus.home}/data/archiva/database;create=true</value>
+                <value>jdbc:derby:${appserver.base}/data/archiva/database;create=true</value>
               </property>
               <property>
                 <name>username</name>
