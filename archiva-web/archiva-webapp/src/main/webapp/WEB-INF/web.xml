@@ -71,8 +71,8 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-        classpath*:/META-INF/plexus/components.xml
-        classpath*:/META-INF/spring-context.xml
+        classpath*:META-INF/plexus/components.xml
+        classpath*:META-INF/spring-context.xml
         /WEB-INF/classes/META-INF/plexus/application.xml
         /WEB-INF/classes/META-INF/plexus/components.xml
         /WEB-INF/applicationContext.xml
