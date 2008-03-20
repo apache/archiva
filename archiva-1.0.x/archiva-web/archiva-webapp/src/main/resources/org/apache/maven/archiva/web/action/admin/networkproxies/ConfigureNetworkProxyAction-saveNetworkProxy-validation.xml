@@ -50,8 +50,11 @@
     </field-validator>
     <field-validator type="int">
       <param name="min">1</param>
+<!-- Webwork bug renders this as 65.535
       <param name="max">65535</param>
       <message>Port needs to be between ${min} and ${max}</message>
+-->
+      <message>Port needs to be larger than ${min}</message>
     </field-validator>
   </field>
 </validators>

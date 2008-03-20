@@ -25,8 +25,7 @@
   <field name="rowCount">
     <field-validator type="int">
       <param name="min">10</param>
-      <param name="max">5000</param>
-      <message>Row count must be between ${min} and ${max}.</message>
+      <message>Row count must be larger than ${min}.</message>
     </field-validator>
   </field>
   <!-- 
