@@ -71,5 +71,9 @@
     <menu name="Customising Archiva">
       <item name="Writing a Consumer Plugin" href="/customising/writing-consumer.html" />
     </menu>
+
+    <menu name="More Information">
+      <item name="Archiva Wiki"              href="http://cwiki.apache.org/confluence/display/ARCHIVA/Index" />
+    </menu>
   </body>
 </project>
