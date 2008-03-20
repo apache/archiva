@@ -23,7 +23,6 @@ import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.HttpUnitOptions;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -139,6 +138,34 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
                 buf.append( "    </versions>\n" );
             }
             buf.append( "  </versioning>\n" );
+        }
+        buf.append( "</metadata>" );
+
+        return buf.toString();
+    }
+
+    protected String createGroupMetadata( String groupId, String[] plugins )
+    {
+        StringBuffer buf = new StringBuffer();
+
+        buf.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" );
+        buf.append( "<metadata>\n" );
+        buf.append( "  <groupId>" ).append( groupId ).append( "</groupId>\n" );
+
+        boolean hasPlugins = !ArrayUtils.isEmpty( plugins );
+
+        if ( hasPlugins )
+        {
+            buf.append( "  <plugins>\n" );
+            for ( String plugin : plugins )
+            {
+                buf.append( "    <plugin>\n" );
+                buf.append( "      <prefix>" ).append( plugin ).append( "</prefix>\n" );
+                buf.append( "      <artifactId>" ).append( plugin + "-maven-plugin" ).append( "</artifactId>\n" );
+                buf.append( "      <name>" ).append( "The " + plugin + " Plugin" ).append( "</name>\n" );
+                buf.append( "    </plugin>\n" );
+            }
+            buf.append( "  </plugins>\n" );
         }
         buf.append( "</metadata>" );
 

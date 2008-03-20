@@ -22,7 +22,6 @@ package org.apache.maven.archiva.web.repository;
 import com.meterware.httpunit.GetMethodWebRequest;
 import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -94,6 +93,24 @@ public class RepositoryServletNoProxyTest
     {
         String commonsLangMetadata = "commons-lang/commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "dummy-project-metadata";
+
+        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
+        metadataFile.getParentFile().mkdirs();
+
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, null );
+
+        WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
+        WebResponse response = sc.getResponse( request );
+        assertResponseOK( response );
+
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+    }
+
+    public void testGetNoProxyGroupMetadataDefaultLayout()
+        throws Exception
+    {
+        String commonsLangMetadata = "commons-lang/maven-metadata.xml";
+        String expectedMetadataContents = "dummy-group-metadata";
 
         File metadataFile = new File( repoRootInternal, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
