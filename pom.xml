@@ -175,7 +175,9 @@
     <module>archiva-scheduled</module>
     <module>archiva-web</module>
     <module>archiva-cli</module>
+    <!-- Causes Build Loop :-(
     <module>archiva-docs</module>
+      -->
   </modules>
   <dependencies>
     <dependency>
