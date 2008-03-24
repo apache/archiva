@@ -1,11 +1,5 @@
 package org.apache.maven.archiva.configuration;
 
-import junit.framework.TestCase;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +18,12 @@ import java.util.Map;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import junit.framework.TestCase;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Test the generated Configuration class from Modello. This is primarily to test the hand coded methods.

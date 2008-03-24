@@ -1,11 +1,5 @@
 package org.apache.maven.archiva.configuration.functors;
 
-import junit.framework.TestCase;
-import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
-
-import java.util.Comparator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +18,12 @@ import java.util.Comparator;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import junit.framework.TestCase;
+import org.apache.maven.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
+
+import java.util.Comparator;
 
 /**
  * Test the repositry comparator.

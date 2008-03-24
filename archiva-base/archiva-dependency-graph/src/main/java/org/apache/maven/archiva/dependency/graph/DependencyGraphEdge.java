@@ -1,8 +1,5 @@
 package org.apache.maven.archiva.dependency.graph;
 
-import org.apache.maven.archiva.model.ArtifactReference;
-import org.apache.maven.archiva.model.DependencyScope;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,6 +18,9 @@ import org.apache.maven.archiva.model.DependencyScope;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.maven.archiva.model.ArtifactReference;
+import org.apache.maven.archiva.model.DependencyScope;
 
 /**
  * DependencyGraphEdge 

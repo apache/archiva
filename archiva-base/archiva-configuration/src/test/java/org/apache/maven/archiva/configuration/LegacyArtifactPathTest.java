@@ -1,7 +1,5 @@
 package org.apache.maven.archiva.configuration;
 
-import junit.framework.TestCase;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,6 +18,8 @@ import junit.framework.TestCase;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import junit.framework.TestCase;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.
