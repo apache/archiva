@@ -23,6 +23,7 @@
     <version>5</version>
   </parent>
 
+  <groupId>org.apache.maven.archiva</groupId>
   <artifactId>archiva-build-resources</artifactId>
   <version>1-SNAPSHOT</version>
   <name>Archiva Build Resources</name>

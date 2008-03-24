@@ -95,6 +95,28 @@
         <version>2.4.1</version>
       </plugin>
       <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+          <configLocation>config/maven_checks.xml</configLocation>
+          <!-- TODO: enable when archiva-build-resources is active (released?)
+          <configLocation>checkstyle.xml</configLocation>
+          <headerLocation>header.txt</headerLocation>
+            -->
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <failOnViolation>true</failOnViolation>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>1.0-alpha-6</version>
@@ -134,6 +156,15 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <!-- TODO: enable when archiva-build-resources is active (released?)
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archiva</groupId>
+        <artifactId>archiva-build-resources</artifactId>
+        <version>1-SNAPSHOT</version>
+      </extension>
+    </extensions>
+     -->
   </build>
   <modules>
     <module>archiva-base</module>
@@ -741,10 +772,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.1</version>
-        <configuration>
-          <configLocation>config/maven_checks.xml</configLocation>
-        </configuration>
       </plugin>
 <!-- TODO: OOME
       <plugin>
