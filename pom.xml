@@ -105,6 +105,7 @@
           <headerLocation>header.txt</headerLocation>
             -->
         </configuration>
+        <!--
         <executions>
           <execution>
             <goals>
@@ -115,6 +116,7 @@
             </configuration>
           </execution>
         </executions>
+          -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
