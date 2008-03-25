@@ -25,7 +25,7 @@ To deploy Archiva on Tomcat 5.5 and Tomcat 6.0
 +-------------------------------------------------------------------------+
  <?xml version="1.0" encoding="UTF-8"?>
  <Context path="/archiva"
-          docBase="${catalina.home}/archiva/archiva-webapp-1.1.war">
+          docBase="${catalina.home}/archiva/apache-archiva-1.1.war">
 
  <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
            username="sa"
