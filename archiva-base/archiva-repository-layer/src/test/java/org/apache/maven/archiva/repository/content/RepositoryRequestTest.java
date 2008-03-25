@@ -209,20 +209,6 @@ public class RepositoryRequestTest
                      "org.apache.archiva.test", "redonkulous", "3.1-beta-1-20050831.101112-42", null, "jar" );
     }
 
-    public void testIsArtifact()
-    {
-        assertTrue( repoRequest.isArtifact( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
-        assertTrue( repoRequest.isArtifact( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
-        assertTrue( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
-
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.sha1" ) );
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.md5" ) );
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.asc" ) );
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml" ) );
-        assertFalse( repoRequest.isArtifact( "org/apache/derby/derby/maven-metadata.xml" ) );
-    }
-
     public void testIsSupportFile()
     {
         assertTrue( repoRequest.isSupportFile( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.sha1" ) );

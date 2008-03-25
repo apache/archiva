@@ -20,12 +20,16 @@ package org.apache.maven.archiva.consumers.core.repository;
  */
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.archiva.common.utils.BaseFile;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
+import org.apache.maven.archiva.configuration.FileType;
+import org.apache.maven.archiva.configuration.FileTypes;
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.maven.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexFactoryStub;
 import org.apache.maven.archiva.database.ArchivaDatabaseException;
+import org.apache.maven.archiva.repository.scanner.functors.ConsumerWantsFilePredicate;
 import org.custommonkey.xmlunit.XMLAssert;
 
 import java.io.File;
@@ -38,6 +42,46 @@ import java.util.List;
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
+    public void testConsumption()
+        throws Exception
+    {
+        assertNotConsumed( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata.xml" );
+    }
+
+    public void testConsumptionOfOtherMetadata()
+        throws Exception
+    {
+        assertNotConsumed( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata-central.xml" );
+    }
+
+    private void assertNotConsumed( String path )
+        throws Exception
+    {
+        ArchivaConfiguration archivaConfiguration = (ArchivaConfiguration) lookup( ArchivaConfiguration.ROLE );
+        FileType fileType =
+            (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
+        fileType.addPattern( "**/*.xml" );
+
+        // trigger reload
+        FileTypes fileTypes = (FileTypes) lookup( FileTypes.class );
+        fileTypes.afterConfigurationChange( null, "repositoryScanning.fileTypes", null );
+
+        KnownRepositoryContentConsumer repoPurgeConsumer =
+            (KnownRepositoryContentConsumer) lookup( KnownRepositoryContentConsumer.class, "repository-purge" );
+
+        File repoLocation = getTestFile( "target/test-" + getName() + "/test-repo" );
+
+        File localFile =
+            new File( repoLocation, path );
+
+        ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
+        BaseFile baseFile = new BaseFile( repoLocation, localFile );
+        predicate.setBasefile( baseFile );
+
+        assertFalse( predicate.evaluate( repoPurgeConsumer ) );
+    }
+
     private void setLastModified( String path )
     {
         File dir = new File( path );
@@ -168,7 +212,7 @@ public class RepositoryPurgeConsumerTest
 
     /**
      * Test the snapshot clean consumer on a repository set to NOT clean/delete snapshots based on released versions.
-     * 
+     *
      * @throws Exception
      */
     public void testReleasedSnapshotsWereNotCleaned()
