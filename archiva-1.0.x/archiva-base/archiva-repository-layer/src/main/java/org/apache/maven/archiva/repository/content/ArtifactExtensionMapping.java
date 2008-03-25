@@ -80,6 +80,12 @@ public class ArtifactExtensionMapping
 
     public static String mapExtensionAndClassifierToType( String classifier, String extension )
     {
+        return mapExtensionAndClassifierToType( classifier, extension, extension );
+    }
+
+    public static String mapExtensionAndClassifierToType( String classifier, String extension,
+                                                           String defaultExtension )
+    {
         if ( "sources".equals( classifier ) )
         {
             return "java-source";
@@ -88,10 +94,15 @@ public class ArtifactExtensionMapping
         {
             return "javadoc";
         }
-        return mapExtensionToType( extension );
+        return mapExtensionToType( extension, defaultExtension );
     }
 
     public static String mapExtensionToType( String extension )
+    {
+        return mapExtensionToType( extension, extension );
+    }
+
+    private static String mapExtensionToType( String extension, String defaultExtension )
     {
         if ( "tar.gz".equals( extension ) )
         {
@@ -105,6 +116,6 @@ public class ArtifactExtensionMapping
         {
             return "distribution-zip";
         }
-        return extension;
+        return defaultExtension;
     }
 }

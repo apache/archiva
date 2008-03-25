@@ -338,8 +338,38 @@ public class RepositoryRequestTest
         ManagedRepositoryContent repository = createManagedRepo( "default" );
 
         // Test (pom) legacy to default
-        assertEquals( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", repoRequest
-            .toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
+        assertEquals( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom",
+                      repoRequest.toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
+    }
+
+    public void testNativePathPomLegacyToLegacy()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
+
+        // Test (pom) legacy to default
+        assertEquals( "org.apache.derby/poms/derby-10.2.2.0.pom",
+                      repoRequest.toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
+    }
+
+    public void testNativePathPomLegacyToDefaultEjb()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "default" );
+
+        // Test (pom) legacy to default
+        assertEquals( "mygroup/myejb/1.0/myejb-1.0.jar",
+                      repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository ) );
+    }
+
+    public void testNativePathPomLegacyToLegacyEjb()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
+
+        // Test (pom) legacy to default
+        assertEquals( "mygroup/ejbs/myejb-1.0.jar",
+                      repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository ) );
     }
 
     public void testNativePathSupportFileLegacyToDefault()
