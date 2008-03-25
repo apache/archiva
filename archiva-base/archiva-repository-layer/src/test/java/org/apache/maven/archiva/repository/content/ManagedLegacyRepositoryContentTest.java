@@ -129,6 +129,8 @@ public class ManagedLegacyRepositoryContentTest
             "org.apache.maven/java-sources/testing-1.0-sources.jar",
             "org.apache.maven/jars/testing-1.0-20050611.112233-1.jar",
             "org.apache.maven/poms/testing-1.0.pom",
+            "org.apache.maven/distributions/testing-1.0.tar.gz",
+            "org.apache.maven/distributions/testing-1.0.zip",
             "org.apache.maven/javadoc.jars/testing-1.0-javadoc.jar" };
 
         StringBuffer relatedDebugString = new StringBuffer();
@@ -139,8 +141,6 @@ public class ManagedLegacyRepositoryContentTest
             relatedDebugString.append( actualPath ).append( ":" );
         }
         relatedDebugString.append( "]" );
-
-        assertEquals( "Related <" + relatedDebugString + ">:", expected.length, related.size() );
 
         for ( String expectedPath : expected )
         {
@@ -160,6 +160,7 @@ public class ManagedLegacyRepositoryContentTest
                     + "Related <" + relatedDebugString + ">" );
             }
         }
+        assertEquals( "Related <" + relatedDebugString + ">:", expected.length, related.size() );
     }
 
     @Override
