@@ -82,7 +82,7 @@ public class DefaultPathParserTest
         String artifactId = "example-presentation";
         String version = "3.2";
         String classifier = null;
-        String type = "xml-zip";
+        String type = "xml.zip";
         String path = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
 
         assertLayout( path, groupId, artifactId, version, classifier, type );

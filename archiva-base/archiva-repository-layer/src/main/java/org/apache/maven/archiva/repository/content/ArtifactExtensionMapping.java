@@ -64,7 +64,7 @@ public class ArtifactExtensionMapping
         }
 
         // Return type
-        return type.replace( '-', '.' );
+        return type;
     }
 
     /**
