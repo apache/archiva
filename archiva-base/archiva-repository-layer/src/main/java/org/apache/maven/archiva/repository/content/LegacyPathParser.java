@@ -178,7 +178,9 @@ public class LegacyPathParser
         String extension = parser.getExtension();
 
         // Set Type
-        artifact.setType( ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension ) );
+        String defaultExtension = expectedType.substring( 0, expectedType.length() - 1 );
+        artifact.setType(
+            ArtifactExtensionMapping.mapExtensionAndClassifierToType( classifier, extension, defaultExtension ) );
 
         // Sanity Check: does it have an extension?
         if ( StringUtils.isEmpty( artifact.getType() ) )
@@ -187,21 +189,19 @@ public class LegacyPathParser
         }
 
         // Special Case with Maven Plugins
-        if ( StringUtils.equals( "jar", artifact.getType() ) && StringUtils.equals( "plugins", expectedType ) )
+        if ( StringUtils.equals( "jar", extension ) && StringUtils.equals( "plugins", expectedType ) )
         {
             artifact.setType( ArtifactExtensionMapping.MAVEN_PLUGIN );
         }
         else
         {
             // Sanity Check: does extension match pathType on path?
-            String trimPathType = expectedType.substring( 0, expectedType.length() - 1 );
-
-            String expectedExtension = ArtifactExtensionMapping.getExtension( trimPathType );
+            String expectedExtension = ArtifactExtensionMapping.getExtension( artifact.getType() );
 
             if ( !expectedExtension.equals( extension ) )
             {
                 throw new LayoutException( INVALID_ARTIFACT_PATH + "mismatch on extension [" + extension
-                    + "] and layout specified type [" + expectedType + "] (which maps to extension: ["
+                    + "] and layout specified type [" + artifact.getType() + "] (which maps to extension: ["
                     + expectedExtension + "]) on path [" + path + "]" );
             }
         }
