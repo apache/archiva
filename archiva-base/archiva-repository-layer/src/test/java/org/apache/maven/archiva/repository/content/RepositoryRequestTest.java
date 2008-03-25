@@ -358,6 +358,16 @@ public class RepositoryRequestTest
                       repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository ) );
     }
 
+    public void testNativePathPomLegacyToLegacyStrutsModule()
+        throws Exception
+    {
+        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
+
+        // Test (pom) legacy to default
+        assertEquals( "WebPortal/struts-modules/eventsDB-1.2.3.struts-module",
+                      repoRequest.toNativePath( "WebPortal/struts-modules/eventsDB-1.2.3.struts-module", repository ) );
+    }
+
     public void testNativePathSupportFileLegacyToDefault()
         throws Exception
     {
