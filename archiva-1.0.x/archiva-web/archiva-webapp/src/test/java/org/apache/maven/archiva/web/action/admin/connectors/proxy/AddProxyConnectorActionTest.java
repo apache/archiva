@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Action;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -126,6 +125,8 @@ public class AddProxyConnectorActionTest
         action.prepare();
         ProxyConnectorConfiguration connector = action.getConnector();
         populateProxyConnector( connector );
+        // forms will use an array
+        connector.getProperties().put( "eat-a", new String[] { "gramov-a-bits" } );
 
         // Create the input screen.
         assertRequestStatus( action, Action.SUCCESS, "commit" );
@@ -143,6 +144,7 @@ public class AddProxyConnectorActionTest
         assertNull( actualConnector.getProxyId() );
         assertEquals( "corporate", actualConnector.getSourceRepoId() );
         assertEquals( "central", actualConnector.getTargetRepoId() );
+        assertEquals( "gramov-a-bits", actualConnector.getProperties().get( "eat-a" ) );
     }
 
     public void testAddProxyConnectorInitialPage()

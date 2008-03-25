@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Action;
-
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.IndeterminateConfigurationException;
@@ -122,6 +121,7 @@ public class EditProxyConnectorActionTest
         // Should have no error, and 1 property added.
         assertNoErrors( action );
         assertEquals( 1, connector.getProperties().size() );
+        assertEquals( "gramov-a-bits", connector.getProperties().get( "eat-a" ) );
     }
 
     public void testAddWhiteListPattern()
@@ -169,6 +169,8 @@ public class EditProxyConnectorActionTest
         action.prepare();
         ProxyConnectorConfiguration connector = action.getConnector();
         assertInitialProxyConnector( connector );
+        // forms will use an array
+        connector.getProperties().put( "eat-a", new String[] { "gramov-a-bits" } );
 
         // Create the input screen.
         assertRequestStatus( action, Action.SUCCESS, "commit" );
@@ -186,6 +188,7 @@ public class EditProxyConnectorActionTest
         assertNull( actualConnector.getProxyId() );
         assertEquals( "corporate", actualConnector.getSourceRepoId() );
         assertEquals( "central", actualConnector.getTargetRepoId() );
+
     }
 
     public void testEditProxyConnectorInitialPage()
