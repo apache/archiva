@@ -152,7 +152,7 @@ public class DefaultPathParser implements PathParser
                 case '.':
                     // We have an dual extension possibility.
                     String extension = parser.remaining() + '.' + parser.getExtension();
-                    artifact.setType( extension.replace( '.', '-' ) );
+                    artifact.setType( extension );
                     break;
                 case 0:
                     // End of the filename, only a simple extension left. - Set the type.

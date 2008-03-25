@@ -41,7 +41,7 @@ public class FilenameParser
     private static final Pattern mavenPluginPattern = Pattern.compile( "(maven-.*-plugin)|(.*-maven-plugin)" );
 
     private static final Pattern extensionPattern =
-        Pattern.compile( "(\\.tar\\.gz$)|(\\.tar\\.bz2$)|(\\.[a-z0-9]*$)", Pattern.CASE_INSENSITIVE );
+        Pattern.compile( "(\\.tar\\.gz$)|(\\.tar\\.bz2$)|(\\.[\\-a-z0-9]*$)", Pattern.CASE_INSENSITIVE );
 
     private static final Pattern SNAPSHOT_PATTERN = Pattern.compile( "^([0-9]{8}\\.[0-9]{6}-[0-9]+)(.*)$" );
 
