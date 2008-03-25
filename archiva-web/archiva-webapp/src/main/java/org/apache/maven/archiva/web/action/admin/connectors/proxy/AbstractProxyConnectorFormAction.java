@@ -20,7 +20,6 @@ package org.apache.maven.archiva.web.action.admin.connectors.proxy;
  */
 
 import com.opensymphony.xwork.Preparable;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.maven.archiva.policies.DownloadPolicy;
@@ -29,6 +28,7 @@ import org.apache.maven.archiva.policies.PreDownloadPolicy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -397,6 +397,19 @@ public abstract class AbstractProxyConnectorFormAction
                 {
                     addActionError( "Policy [" + policyId + "] must be set (missing id)." );
                     continue;
+                }
+
+                Map properties = connector.getProperties();
+                for ( Iterator j = properties.keySet().iterator(); j.hasNext(); )
+                {
+                    String key = (String) j.next();
+
+                    Object value = properties.get( key );
+                    if ( value.getClass().isArray() )
+                    {
+                        String[] arr = (String[]) value;
+                        properties.put( key, arr[0] );
+                    }
                 }
 
                 // Ugly hack to compensate for ugly browsers.
