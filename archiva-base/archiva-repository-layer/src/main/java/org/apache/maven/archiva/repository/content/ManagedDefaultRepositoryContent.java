@@ -30,16 +30,10 @@ import org.apache.maven.archiva.model.VersionedReference;
 import org.apache.maven.archiva.repository.ContentNotFoundException;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.util.SelectorUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,7 +49,7 @@ import java.util.Set;
  */
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
-    implements ManagedRepositoryContent, Initializable
+    implements ManagedRepositoryContent
 {
     /**
      * @plexus.requirement
@@ -63,8 +57,6 @@ public class ManagedDefaultRepositoryContent
     private FileTypes filetypes;
 
     private ManagedRepositoryConfiguration repository;
-
-    private List<String> artifactPatterns;
 
     public void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException
@@ -123,7 +115,7 @@ public class ManagedDefaultRepositoryContent
 
             String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
 
-            if ( matchesArtifactPattern( relativePath ) )
+            if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = toArtifactReference( relativePath );
                 
@@ -250,7 +242,7 @@ public class ManagedDefaultRepositoryContent
 
             String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
 
-            if ( matchesArtifactPattern( relativePath ) )
+            if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = toArtifactReference( relativePath );
 
@@ -298,13 +290,6 @@ public class ManagedDefaultRepositoryContent
         {
             return false;
         }
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        this.artifactPatterns = new ArrayList<String>();
-        initVariables();
     }
 
     public void setRepository( ManagedRepositoryConfiguration repository )
@@ -386,7 +371,7 @@ public class ManagedDefaultRepositoryContent
 
             String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
 
-            if ( matchesArtifactPattern( relativePath ) )
+            if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = toArtifactReference( relativePath );
 
@@ -409,36 +394,5 @@ public class ManagedDefaultRepositoryContent
         {
             return false;
         }
-    }
-
-    private void initVariables()
-    {
-        synchronized ( this.artifactPatterns )
-        {
-            this.artifactPatterns.clear();
-
-            this.artifactPatterns.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
-        }
-    }
-
-    private boolean matchesArtifactPattern( String relativePath )
-    {
-        // Correct the slash pattern.
-        relativePath = relativePath.replace( '\\', '/' );
-
-        Iterator<String> it = this.artifactPatterns.iterator();
-        while ( it.hasNext() )
-        {
-            String pattern = it.next();
-
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
-            {
-                // Found match
-                return true;
-            }
-        }
-
-        // No match.
-        return false;
     }
 }

@@ -125,7 +125,7 @@ public class RepositoryPurgeConsumer
 
     public List<String> getExcludes()
     {
-        return null;
+        return getDefaultArtifactExclusions();
     }
 
     public List<String> getIncludes()

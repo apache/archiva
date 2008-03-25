@@ -44,6 +44,7 @@
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
+          <role-hint>retention-count</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
@@ -101,6 +102,7 @@
     </component>
     <component>
       <role>org.apache.maven.archiva.configuration.FileTypes</role>
+      <role-hint>retention-count</role-hint>
       <implementation>org.apache.maven.archiva.configuration.FileTypes</implementation>
       <requirements>
         <requirement>
@@ -134,6 +136,7 @@
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.configuration.FileTypes</role>
+          <role-hint>days-old</role-hint>
         </requirement>
         <requirement>
           <role>org.apache.maven.archiva.indexer.RepositoryContentIndexFactory</role>
@@ -191,6 +194,7 @@
     </component>
     <component>
       <role>org.apache.maven.archiva.configuration.FileTypes</role>
+      <role-hint>days-old</role-hint>
       <implementation>org.apache.maven.archiva.configuration.FileTypes</implementation>
       <requirements>
         <requirement>

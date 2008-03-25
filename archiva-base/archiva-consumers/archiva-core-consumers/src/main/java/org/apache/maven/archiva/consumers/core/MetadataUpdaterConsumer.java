@@ -149,7 +149,7 @@ public class MetadataUpdaterConsumer
 
     public List<String> getExcludes()
     {
-        return null;
+        return getDefaultArtifactExclusions();
     }
 
     public List<String> getIncludes()
