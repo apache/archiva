@@ -42,7 +42,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.util.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -796,7 +795,7 @@ public class MetadataTools
 
             String relativePath = PathUtil.getRelative( managedRepository.getRepoRoot(), repoFiles[i] );
 
-            if ( matchesArtifactPattern( relativePath ) )
+            if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = managedRepository.toArtifactReference( relativePath );
 
@@ -806,26 +805,5 @@ public class MetadataTools
 
         // No artifact was found.
         return null;
-    }
-
-    private boolean matchesArtifactPattern( String relativePath )
-    {
-        // Correct the slash pattern.
-        relativePath = relativePath.replace( '\\', '/' );
-
-        Iterator<String> it = this.artifactPatterns.iterator();
-        while ( it.hasNext() )
-        {
-            String pattern = it.next();
-
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
-            {
-                // Found match
-                return true;
-            }
-        }
-
-        // No match.
-        return false;
     }
 }

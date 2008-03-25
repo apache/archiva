@@ -86,6 +86,7 @@ public class DuplicateArtifactsConsumer
      */
     private RepositoryContentFactory repositoryFactory;
 
+    // TODO: why is this not used? If it should be, what about excludes?
     private List<String> includes = new ArrayList<String>();
 
     public String getId()

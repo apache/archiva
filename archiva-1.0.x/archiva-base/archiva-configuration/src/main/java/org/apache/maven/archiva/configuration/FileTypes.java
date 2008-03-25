@@ -27,8 +27,11 @@ import org.apache.maven.archiva.configuration.io.registry.ConfigurationRegistryR
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.codehaus.plexus.registry.Registry;
 import org.codehaus.plexus.registry.RegistryException;
+import org.codehaus.plexus.registry.RegistryListener;
 import org.codehaus.plexus.registry.commons.CommonsConfigurationRegistry;
+import org.codehaus.plexus.util.SelectorUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -47,7 +50,7 @@ import java.util.Map;
  */
 public class FileTypes
     extends AbstractLogEnabled
-    implements Initializable
+    implements Initializable, RegistryListener
 {
     public static final String ARTIFACTS = "artifacts";
 
@@ -67,11 +70,18 @@ public class FileTypes
      */
     private Map<String, List<String>> defaultTypeMap = new HashMap<String, List<String>>();
 
+    private List<String> artifactPatterns;
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
+
     /**
      * <p>
      * Get the list of patterns for a specified filetype.
      * </p>
-     * 
+     *
      * <p>
      * You will always get a list.  In this order.
      *   <ul>
@@ -80,7 +90,7 @@ public class FileTypes
      *     <li>A single item list of <code>"**<span>/</span>*"</code></li>
      *   </ul>
      * </p>
-     * 
+     *
      * @param id the id to lookup.
      * @return the list of patterns.
      */
@@ -106,11 +116,33 @@ public class FileTypes
         return defaultPatterns;
     }
 
+    public synchronized boolean matchesArtifactPattern( String relativePath )
+    {
+        // Correct the slash pattern.
+        relativePath = relativePath.replace( '\\', '/' );
+
+        if ( artifactPatterns == null )
+        {
+            artifactPatterns = getFileTypePatterns( ARTIFACTS );
+        }
+        
+        for ( String pattern : artifactPatterns )
+        {
+            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
+            {
+                // Found match
+                return true;
+            }
+        }
+
+        // No match.
+        return false;
+    }
+
     public void initialize()
         throws InitializationException
     {
-        /* Initialize Default Type Map */
-        defaultTypeMap.clear();
+        // TODO: why is this done by hand?
 
         String errMsg = "Unable to load default archiva configuration for FileTypes: ";
         
@@ -129,19 +161,7 @@ public class FileTypes
             ConfigurationRegistryReader configReader = new ConfigurationRegistryReader();
             Configuration defaultConfig = configReader.read( commonsRegistry );
 
-            // Store the default file type declaration.
-            List<FileType> filetypes = defaultConfig.getRepositoryScanning().getFileTypes();
-            for ( FileType filetype : filetypes )
-            {
-                List<String> patterns = defaultTypeMap.get( filetype.getId() );
-                if ( patterns == null )
-                {
-                    patterns = new ArrayList<String>();
-                }
-                patterns.addAll( filetype.getPatterns() );
-
-                defaultTypeMap.put( filetype.getId(), patterns );
-            }
+            initialiseTypeMap( defaultConfig );
         }
         catch ( RegistryException e )
         {
@@ -163,5 +183,41 @@ public class FileTypes
         {
             throw new InitializationException( errMsg + e.getMessage(), e );
         }
+
+        this.archivaConfiguration.addChangeListener( this );
+    }
+
+    private void initialiseTypeMap( Configuration configuration )
+    {
+        defaultTypeMap.clear();
+
+        // Store the default file type declaration.
+        List<FileType> filetypes = configuration.getRepositoryScanning().getFileTypes();
+        for ( FileType filetype : filetypes )
+        {
+            List<String> patterns = defaultTypeMap.get( filetype.getId() );
+            if ( patterns == null )
+            {
+                patterns = new ArrayList<String>();
+            }
+            patterns.addAll( filetype.getPatterns() );
+
+            defaultTypeMap.put( filetype.getId(), patterns );
+        }
+    }
+
+    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        if ( propertyName.contains( "fileType" ) )
+        {
+            artifactPatterns = null;
+
+            initialiseTypeMap( archivaConfiguration.getConfiguration() );
+        }
+    }
+
+    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
+    {
+        /* nothing to do */
     }
 }

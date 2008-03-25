@@ -26,15 +26,6 @@ import org.apache.maven.archiva.model.ArtifactReference;
 import org.apache.maven.archiva.repository.ManagedRepositoryContent;
 import org.apache.maven.archiva.repository.layout.LayoutException;
 import org.apache.maven.archiva.repository.metadata.MetadataTools;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.codehaus.plexus.registry.Registry;
-import org.codehaus.plexus.registry.RegistryListener;
-import org.codehaus.plexus.util.SelectorUtils;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
@@ -47,7 +38,6 @@ import java.util.List;
  *      role="org.apache.maven.archiva.repository.content.RepositoryRequest"
  */
 public class RepositoryRequest
-    implements RegistryListener, Initializable
 {
     /**
      * @plexus.requirement
@@ -68,35 +58,6 @@ public class RepositoryRequest
      * @plexus.requirement role-hint="legacy"
      */
     private PathParser legacyPathParser;
-
-    private List<String> artifactPatterns;
-
-    /**
-     * Test path to see if it is an artifact being requested (or not).
-     *
-     * @param requestedPath the path to test.
-     * @return true if it is an artifact being requested.
-     */
-    public boolean isArtifact( String requestedPath )
-    {
-        // Correct the slash pattern.
-        String relativePath = requestedPath.replace( '\\', '/' );
-
-        Iterator<String> it = this.artifactPatterns.iterator();
-        while ( it.hasNext() )
-        {
-            String pattern = it.next();
-
-            if ( SelectorUtils.matchPath( pattern, relativePath, false ) )
-            {
-                // Found match
-                return true;
-            }
-        }
-
-        // No match.
-        return false;
-    }
 
     /**
      * Takes an incoming requested path (in "/" format) and gleans the layout
@@ -281,36 +242,5 @@ public class RepositoryRequest
         ArtifactReference ref = toArtifactReference( referencedResource );
         String adjustedPath = repository.toPath( ref );
         return adjustedPath + supportfile;
-    }
-
-    public void initialize()
-        throws InitializationException
-    {
-        this.artifactPatterns = new ArrayList<String>();
-        initVariables();
-        this.archivaConfiguration.addChangeListener( this );
-    }
-
-    private void initVariables()
-    {
-        synchronized ( this.artifactPatterns )
-        {
-            this.artifactPatterns.clear();
-            this.artifactPatterns.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
-        }
-    }
-
-    public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        if ( propertyName.contains( "fileType" ) )
-        {
-            initVariables();
-        }
-    }
-
-    public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
-    {
-        /* nothing to do */
-
     }
 }

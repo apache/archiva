@@ -19,6 +19,10 @@ package org.apache.maven.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
+import org.apache.maven.archiva.indexer.RepositoryContentIndex;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,10 +30,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.apache.maven.archiva.consumers.core.repository.stubs.LuceneRepositoryContentIndexStub;
-import org.apache.maven.archiva.indexer.RepositoryContentIndex;
 
 /**
  * @author <a href="mailto:oching@apache.org">Maria Odea Ching</a>
@@ -270,5 +270,5 @@ public class DaysOldRepositoryPurgeTest
         versions.add( "2.2-SNAPSHOT" );
 
         populateDb( "org.apache.maven.plugins", "maven-install-plugin", versions );
-    }    
+    }
 }
