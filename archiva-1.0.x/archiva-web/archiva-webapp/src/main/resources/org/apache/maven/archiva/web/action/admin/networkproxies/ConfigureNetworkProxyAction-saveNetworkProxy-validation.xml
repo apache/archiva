@@ -25,6 +25,10 @@
 
 <validators>
   <field name="proxy.id">
+    <field-validator type="requiredstring">
+      <param name="trim">true</param>
+      <message>You must enter an identifier.</message>
+    </field-validator>
     <field-validator type="stringlength">
       <param name="minLength">4</param>
       <param name="maxLength">45</param>
