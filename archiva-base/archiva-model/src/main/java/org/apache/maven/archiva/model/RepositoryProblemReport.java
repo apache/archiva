@@ -45,6 +45,7 @@ public class RepositoryProblemReport
         setOrigin( repositoryProblem.getOrigin() );
         setPath( repositoryProblem.getPath() );
         setType( repositoryProblem.getType() );
+        setRepositoryId( repositoryProblem.getRepositoryId() );
     }
 
     public void setGroupURL( String groupURL )

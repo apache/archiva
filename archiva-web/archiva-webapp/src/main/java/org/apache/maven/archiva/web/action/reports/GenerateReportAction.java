@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @plexus.component role="com.opensymphony.xwork.Action" role-hint="generateReport"
@@ -85,6 +87,9 @@ public class GenerateReportAction
     private Collection<String> repositoryIds;
 
     public static final String ALL_REPOSITORIES = "All Repositories";
+    
+    protected Map<String, List<RepositoryProblemReport>> repositoriesMap = 
+    		new TreeMap<String, List<RepositoryProblemReport>>();
 
     public void prepare()
     {
@@ -118,9 +123,12 @@ public class GenerateReportAction
             problemArtifactReport.setArtifactURL(
                 contextPath + "/browse/" + problemArtifact.getGroupId() + "/" + problemArtifact.getArtifactId() );
 
+            addToList( problemArtifactReport );
+            
+            // retained the reports list because this is the datasource for the jasper report            
             reports.add( problemArtifactReport );
         }
-
+        
         if ( reports.size() <= rowCount )
         {
             isLastPage = true;
@@ -194,7 +202,7 @@ public class GenerateReportAction
         }
         else
         {
-            constraint = new RangeConstraint( range );
+            constraint = new RangeConstraint( range, "repositoryId" );
         }
 
         return constraint;
@@ -265,6 +273,16 @@ public class GenerateReportAction
         return isLastPage;
     }
 
+    public void setRepositoriesMap( Map<String, List<RepositoryProblemReport>> repositoriesMap )
+    {
+    	this.repositoriesMap = repositoriesMap;
+    }
+    
+    public Map<String, List<RepositoryProblemReport>> getRepositoriesMap()
+    {
+    	return repositoriesMap;
+    }
+    
     public SecureActionBundle getSecureActionBundle()
         throws SecureActionException
     {
@@ -274,5 +292,22 @@ public class GenerateReportAction
         bundle.addRequiredAuthorization( ArchivaRoleConstants.OPERATION_ACCESS_REPORT, Resource.GLOBAL );
 
         return bundle;
+    }
+    
+    private void addToList( RepositoryProblemReport repoProblemReport )
+    {
+    	List<RepositoryProblemReport> problemsList = null;
+    	
+    	if ( repositoriesMap.containsKey( repoProblemReport.getRepositoryId() ) )
+    	{
+    		problemsList = ( List<RepositoryProblemReport> ) repositoriesMap.get( repoProblemReport.getRepositoryId() );
+    	}
+    	else
+    	{
+    		problemsList = new ArrayList<RepositoryProblemReport>();
+    		repositoriesMap.put( repoProblemReport.getRepositoryId(), problemsList );
+    	}
+    	
+    	problemsList.add( repoProblemReport );
     }
 }

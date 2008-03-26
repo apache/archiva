@@ -51,11 +51,11 @@ public class RepositoryProblemByGroupIdConstraint
 
     public String getSortColumn()
     {
-        return "artifactId";
+        return "repositoryId";
     }
 
     public String getWhereCondition()
     {
         return whereClause;
-    }
+    }    
 }

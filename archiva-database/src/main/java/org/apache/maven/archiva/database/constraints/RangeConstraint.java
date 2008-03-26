@@ -28,19 +28,29 @@ public class RangeConstraint
     extends AbstractDeclarativeConstraint
     implements Constraint
 {
+	private String sortColumn;
+	
     public RangeConstraint()
     {
         this.range = null;
+        this.sortColumn = null;
     }
-
+    
     public RangeConstraint( int[] range )
     {
         this.range = range;
+        this.sortColumn = null;
+    }
+    
+    public RangeConstraint( int[] range, String sortColumn )
+    {
+    	this.range = range;
+    	this.sortColumn = sortColumn;
     }
 
     public String getSortColumn()
     {
-        return null;
+        return sortColumn;
     }
 
     public String getWhereCondition()

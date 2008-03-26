@@ -32,23 +32,26 @@
 
 <div id="contentArea">
 
-  <ww:set name="reports" value="reports"/>
-  <c:forEach items="${reports}" var="report">
-
-    <p>
-      <archiva:groupIdLink var="${report.groupId}" includeTop="true"/>
-
-      <c:set var="url">
+  <ww:set name="reports" value="reports"/>  
+    
+  <c:forEach var="repository" items="${repositoriesMap}">
+	<strong>Repository: ${repository.key}</strong>
+	<c:forEach var="report" items='${repository.value}'>
+	
+	    <p>
+      	<archiva:groupIdLink var="${report.groupId}" includeTop="true"/>
+      	<c:set var="url">
         <ww:url action="browseArtifact" namespace="/">
           <ww:param name="groupId" value="%{'${report.groupId}'}"/>
           <ww:param name="artifactId" value="%{'${report.artifactId}'}"/>
         </ww:url>
-      </c:set>
-      <a href="${url}">${report.artifactId}</a> /
-      <strong>${report.version}</strong>
-    </p>
-
-    <blockquote>${report.message}</blockquote>
+      	</c:set>
+      	<a href="${url}">${report.artifactId}</a> /
+      	<strong>${report.version}</strong>
+    	</p>
+    
+		<blockquote>${report.message}</blockquote>
+	</c:forEach>
   </c:forEach>
 
   <ww:set name="page" value="page"/>
