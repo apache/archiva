@@ -161,8 +161,6 @@
               <jvmSettings>
                 <systemProperties>
                   <systemProperty>appserver.base="."</systemProperty>
-                </systemProperties>
-                <systemProperties>
                   <systemProperty>derby.system.home=logs</systemProperty>
                 </systemProperties>
               </jvmSettings> 
