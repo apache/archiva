@@ -156,6 +156,10 @@
                       <value>TRUE</value>
                     </property>
                     <property>
+                      <name>set.default.REPO_DIR</name>
+                      <value>lib</value>
+                    </property>
+                    <property>
                       <name>wrapper.logfile</name>
                       <value>./logs/wrapper.log</value>
                     </property>
@@ -170,9 +174,7 @@
               </jvmSettings> 
             </daemon>
           </daemons>          
-<!-- TODO:
-<repoPath>lib</repoPath>
--->
+          <repoPath>lib</repoPath>
           <repositoryLayout>flat</repositoryLayout>
           <assembleDirectory>target/generated-resources/appassembler/jsw/archiva</assembleDirectory>
         </configuration>
