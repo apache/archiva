@@ -282,9 +282,6 @@
         <Set name="properties">
           <New class="java.util.Properties">
             <Put name="mail.smtp.host">localhost</Put>
-            <Put name="mail.from">archiva@localhost</Put>
-            <Put name="mail.senderName">Archiva</Put>
-            <Put name="mail.debug">true</Put>
           </New>
         </Set>
       </New>
