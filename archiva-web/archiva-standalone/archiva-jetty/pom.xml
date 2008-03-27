@@ -136,8 +136,8 @@
               <id>archiva</id>
               <mainClass>org.mortbay.start.Main</mainClass>
               <commandLineArguments>
-                <commandLineArgument>etc/jetty.xml</commandLineArgument>
-                <commandLineArgument>etc/jetty-logging.xml</commandLineArgument> 
+                <commandLineArgument>conf/jetty.xml</commandLineArgument>
+                <commandLineArgument>conf/jetty-logging.xml</commandLineArgument> 
               </commandLineArguments>
               <platforms>
                 <platform>jsw</platform>
@@ -212,10 +212,7 @@
             <configuration>
               <tasks>
                 <copy todir="target/generated-resources/appassembler/jsw/archiva/conf">
-                  <fileset dir="src/main/appserver/conf" />                  
-                </copy>
-                <copy todir="target/generated-resources/appassembler/jsw/archiva/etc">
-                  <fileset dir="src/main/etc" />                  
+                  <fileset dir="src/main/conf" />                  
                 </copy>
                 <mkdir dir="target/generated-resources/appassembler/jsw/archiva/logs"/>      
               </tasks>

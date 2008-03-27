@@ -168,29 +168,10 @@
 	  <Set name="parentLoaderPriority">false</Set>
 	  <Set name="extract">true</Set>
 	  <Set name="allowDuplicates">false</Set>
-          <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/etc/webdefault.xml</Set>
+          <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="."/>/conf/webdefault.xml</Set>
         </New>
       </Arg>
     </Call>
-
-    <!-- =========================================================== -->
-    <!-- Configure Authentication Realms                             -->
-    <!-- Realms may be configured for the entire server here, or     -->
-    <!-- they can be configured for a specific web app in a context  -->
-    <!-- configuration (see $(jetty.home)/contexts/test.xml for an   -->
-    <!-- example).                                                   -->
-    <!-- =========================================================== -->
-    <Set name="UserRealms">
-      <Array type="org.mortbay.jetty.security.UserRealm">
-        <Item>
-          <New class="org.mortbay.jetty.security.HashUserRealm">
-            <Set name="name">Test Realm</Set>
-            <Set name="config"><SystemProperty name="jetty.home" default="."/>/etc/realm.properties</Set>
-            <Set name="refreshInterval">0</Set>
-          </New>
-        </Item>
-      </Array>
-    </Set>
 
     <!-- =========================================================== -->
     <!-- Configure Request Log                                       -->
@@ -263,22 +244,6 @@
   <!-- You can configure any transaction manager that implements   -->
   <!-- javax.transaction.UserTransaction.                          -->
 
-
-
-  <!-- =========================================================== -->
-  <!-- Example JAAS realm setup.                                   -->
-  <!-- The LoginModuleName must be exactly the same as in the      -->
-  <!-- login.conf file, and the realm Name must be the same as in  -->
-  <!-- the web.xml file.                                           -->
-  <!-- =========================================================== -->
-  <Call name="addUserRealm">
-    <Arg>
-      <New class="org.mortbay.jetty.plus.jaas.JAASUserRealm">
-	      <Set name="name">xyzrealm</Set>
-	      <Set name="LoginModuleName">xyz</Set>
-	    </New>
-    </Arg>
-  </Call>
 
 
   <!-- =========================================================== -->

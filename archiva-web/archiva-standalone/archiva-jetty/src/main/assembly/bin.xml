@@ -47,27 +47,6 @@
       <outputDirectory>logs</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/generated-resources/appassembler/jsw/archiva/services</directory>
-      <outputDirectory>services</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>target/generated-resources/appassembler/jsw/archiva/etc</directory>
-      <outputDirectory>etc</outputDirectory>
-      <includes>
-        <include>jetty.xml</include>
-        <include>jetty-logging.xml</include>
-        <include>webdefault.xml</include>
-        <include>realm.properties</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
-      <outputDirectory>bin</outputDirectory>
-      <includes>
-        <include>wrapper.conf</include>
-      </includes>
-    </fileSet>
-    <fileSet>
       <directory>target/generated-resources/appassembler/jsw/archiva/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>   
