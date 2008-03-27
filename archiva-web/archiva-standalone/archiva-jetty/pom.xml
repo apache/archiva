@@ -155,6 +155,10 @@
                       <name>wrapper.java.additional.1.stripquotes</name>
                       <value>TRUE</value>
                     </property>
+                    <property>
+                      <name>wrapper.logfile</name>
+                      <value>./logs/wrapper.log</value>
+                    </property>
                   </configuration>
                 </generatorConfiguration>
               </generatorConfigurations>
